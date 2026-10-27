@@ -110,10 +110,10 @@ Ya ubicas con confianza dónde vive el código, los recursos y la configuración
 
 **Escenario real:** El proyecto integrador RutaFlow (entregas en tiempo real) necesita capturar ubicación, manejar permisos, y ejecutar trabajo en background. La estructura que aprendiste en este tema es exactamente cómo RutaFlow organiza su código.
 
-**Tu tarea:** Inspecciona `examples/rutaflow/android/LocationPolicy.kt` en el repositorio Academia_Floci. Este archivo muestra cómo la política de muestreo de ubicación (basada en batería y actividad) vive en el módulo `:core` de RutaFlow, separada de la UI y la integración de Android.
+**Tu tarea:** Inspecciona `examples/rutaflow/android/LocationPolicy.kt` en el repositorio The_Imperial_Book. Este archivo muestra cómo la política de muestreo de ubicación (basada en batería y actividad) vive en el módulo `:core` de RutaFlow, separada de la UI y la integración de Android.
 
 ```bash
-cd Academia_Floci
+cd The_Imperial_Book
 cat examples/rutaflow/android/LocationPolicy.kt
 ```
 
@@ -358,7 +358,7 @@ flowchart TD
 - Cambios en `:core` requieren recompilación de `:location-service` y `:app`, pero cambios en `:app` solo afectan su propia compilación.
 - Un equipo puede mantener `:location-service` sin coordinarse constantemente con UI.
 
-En el repositorio Academia_Floci verás esta estructura ejemplificada en `examples/rutaflow/android/LocationPolicy.kt` (pertenece a `:core`). El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
+En el repositorio The_Imperial_Book verás esta estructura ejemplificada en `examples/rutaflow/android/LocationPolicy.kt` (pertenece a `:core`). El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
 
 ---
 

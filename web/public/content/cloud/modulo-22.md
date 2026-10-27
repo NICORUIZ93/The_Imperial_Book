@@ -225,6 +225,8 @@ aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID"
 
 **Cómo crece tu proyecto:** la zona raíz `demo.example.com` contiene nombres separados: `fotos.demo.example.com` apunta a CloudFront y `api.demo.example.com` al ALB. Un CNAME no puede ocupar el vértice de la zona.
 
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea la zona alojada del seguimiento y publica los subdominios de sus servicios como registros separados. Intenta borrar el `SOA` del vértice y conserva el rechazo como prueba de que ese registro lo gestiona el servicio, no tú.
+
 ### Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real
 
 #### Paso 1 · Objetivo y preparación

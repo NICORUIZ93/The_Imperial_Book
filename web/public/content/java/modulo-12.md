@@ -389,4 +389,4 @@ Selecciona la tarifa en la composición del caso de uso e inyecta su contrato. M
 
 </details>
 
-Referencia de lectura: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas impresas 148–157, 358–373 y 391–405. Los ejemplos anteriores son originales de Academia Floci. El registro de revisión y las páginas PDF están en `docs/biblioteca/shvets-patrones.md`.
+Referencia de lectura: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas impresas 148–157, 358–373 y 391–405. Los ejemplos anteriores son originales de The Imperial Book. El registro de revisión y las páginas PDF están en `docs/biblioteca/shvets-patrones.md`.

@@ -345,7 +345,7 @@ docker compose up -d
 docker compose ps
 ```
 
-**Evita el conflicto del puerto 4566:** el Compose de Floci UI incluye por defecto su propio runtime Floci, igual que la academia. Para probar su stack completo, detén primero el Compose de la academia con `docker compose down` desde la carpeta de Academia_Floci. Para mantener StackPort y Floci UI abiertos simultáneamente y viendo exactamente los mismos recursos, configura la API de Floci UI con `FLOCI_ENDPOINT` apuntando al runtime ya existente y no levantes el segundo servicio Floci; sigue el Compose y `.env.example` de la versión de Floci UI que hayas clonado.
+**Evita el conflicto del puerto 4566:** el Compose de Floci UI incluye por defecto su propio runtime Floci, igual que la academia. Para probar su stack completo, detén primero el Compose de la academia con `docker compose down` desde la carpeta de The_Imperial_Book. Para mantener StackPort y Floci UI abiertos simultáneamente y viendo exactamente los mismos recursos, configura la API de Floci UI con `FLOCI_ENDPOINT` apuntando al runtime ya existente y no levantes el segundo servicio Floci; sigue el Compose y `.env.example` de la versión de Floci UI que hayas clonado.
 
 Abre `http://localhost:4500`. Debes ver **Console Home**, el estado del runtime AWS y el acceso a **Cloud Explorer**. Para levantar también runtimes Azure y GCP usa `docker compose --profile multicloud up -d`. Los puertos predeterminados son UI `4500`, API `4501` y Floci AWS `4566`.
 

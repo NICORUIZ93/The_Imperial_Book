@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
-  await expect(page.locator('.catalog-topbar')).toContainText('Academia Floci');
+  await expect(page.locator('.catalog-topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.track-card').first()).toBeVisible();
   await expect(page.locator('.hero-stats')).toContainText('14');
 });
@@ -15,7 +15,7 @@ test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
 test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({ page }) => {
   await page.goto('/catalogo');
 
-  await expect(page.locator('.catalog-topbar')).toContainText('Academia Floci');
+  await expect(page.locator('.catalog-topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.track-group h3').first()).toBeVisible();
   await expect(page.locator('.track-card')).toHaveCount(14);
   await expect(page.locator('.hero-stats strong').nth(2)).not.toHaveText('—');
@@ -143,7 +143,7 @@ test('ruta antigua de laboratorio vuelve al inicio nuevo', async ({ page }) => {
   await page.goto('/laboratorio/floci');
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator('.catalog-topbar')).toContainText('Academia Floci');
+  await expect(page.locator('.catalog-topbar')).toContainText('The Imperial Book');
 });
 
 test('búsqueda: encuentra un tema real y navega a su fragmento', async ({ page }) => {

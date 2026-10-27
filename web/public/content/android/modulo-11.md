@@ -50,7 +50,7 @@ export KEY_PASSWORD="clave-de-prueba-academia"
 keytool -genkeypair -v -keystore app/keystore.jks -alias mi-app \
   -keyalg RSA -keysize 2048 -validity 10000 \
   -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
-  -dname "CN=Academia Floci, OU=Desarrollo, O=Academia, L=Ciudad, S=Estado, C=CL"
+  -dname "CN=The Imperial Book, OU=Desarrollo, O=Academia, L=Ciudad, S=Estado, C=CL"
 cat > app/build.gradle.kts.fragmento <<'EOF'
 android {
     signingConfigs {

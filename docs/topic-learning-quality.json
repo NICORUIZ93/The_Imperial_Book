@@ -53,10 +53,10 @@
       "runCommand": 154,
       "expectedResult": 154,
       "practice": 154,
-      "project": 153,
+      "project": 154,
       "modelMental": 154,
       "limitsDecision": 154,
-      "practicable": 153,
+      "practicable": 154,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -4104,13 +4104,13 @@
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }

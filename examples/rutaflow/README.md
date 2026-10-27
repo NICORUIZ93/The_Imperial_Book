@@ -1,6 +1,6 @@
 # RutaFlow: plataforma educativa de entregas
 
-RutaFlow es el proyecto transversal de Academia Floci. Modela una operación de paquetería sin copiar marcas, interfaces ni procesos privados. Cada ruta tecnológica implementa una capacidad del mismo producto y respeta contratos compartidos.
+RutaFlow es el proyecto transversal de The Imperial Book. Modela una operación de paquetería sin copiar marcas, interfaces ni procesos privados. Cada ruta tecnológica implementa una capacidad del mismo producto y respeta contratos compartidos.
 
 ## Primer recorrido funcional
 

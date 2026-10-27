@@ -26,7 +26,7 @@ export interface ServiceGroup {
 const m = createModule;
 
 // ── Track Cloud Local ────────────────────────────────────────────────────────
-// Módulos 0-9: ruta base "Academia Floci" (Docker, AWS local con Floci, S3, SQS,
+// Módulos 0-9: ruta base "The Imperial Book" (Docker, AWS local con Floci, S3, SQS,
 // DynamoDB, Lambda, API Gateway, IAM, Azure/GCP y proyecto final). Módulos 10-20:
 // contenido avanzado (Secrets, SNS/EventBridge, CloudWatch, RDS, ECR/ECS,
 // CloudFormation, Step Functions, Kinesis/MSK, Cognito, Athena/Glue, Bedrock).

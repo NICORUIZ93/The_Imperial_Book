@@ -1,4 +1,4 @@
-# Contribuir a Academia Floci
+# Contribuir a The Imperial Book
 
 Gracias por ayudar a mejorar la academia. Mantén el alcance de cada cambio claro
 y respeta las licencias y atribuciones de los materiales que aportes.

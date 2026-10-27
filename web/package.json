@@ -1,10 +1,10 @@
 {
-  "name": "academia-floci-web",
+  "name": "the-imperial-book-web",
   "version": "1.0.0",
   "private": true,
   "description": "Academia técnica en español con rutas prácticas de cero a nivel profesional.",
   "license": "SEE LICENSE IN ../LICENSE",
-  "author": "Academia Floci",
+  "author": "The Imperial Book",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {

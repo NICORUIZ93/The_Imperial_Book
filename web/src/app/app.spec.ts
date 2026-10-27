@@ -26,7 +26,7 @@ describe('App', () => {
     await harness.navigateByUrl('/', CourseCatalogComponent);
     harness.detectChanges();
     const text = harness.routeNativeElement?.textContent ?? '';
-    expect(text).toContain('Academia Floci');
+    expect(text).toContain('The Imperial Book');
     expect(text).toContain('Biblioteca de cursos');
     expect(TRACKS).toHaveLength(14);
     expect(harness.routeNativeElement?.querySelectorAll('.track-card').length).toBeGreaterThanOrEqual(14);

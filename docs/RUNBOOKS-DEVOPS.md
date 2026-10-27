@@ -585,7 +585,7 @@ argocd app sync rutaflow-prod
 **Fix si problema es Network (ArgoCD no puede alcanzar Git)**
 ```bash
 # Revisar Git credentials
-argocd repo add https://github.com/floci-io/Academia_Floci.git \
+argocd repo add https://github.com/floci-io/The_Imperial_Book.git \
   --username git \
   --password $GITHUB_TOKEN
 

@@ -1,4 +1,4 @@
-# Academia Floci: trabajo con contenido y experiencia de estudio
+# The Imperial Book: trabajo con contenido y experiencia de estudio
 
 Lee primero `docs/repo-graph.md`. La aplicación oficial es Angular (`web/`);
 las lecciones reales están en `web/public/content/<track>/modulo-N.md`.

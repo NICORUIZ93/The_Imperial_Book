@@ -1,6 +1,6 @@
 # Metodología Aprende construyendo
 
-Academia Floci utiliza una metodología propia de enseñanza práctica. Toma como referencia patrones públicos presentes en cursos técnicos claros y orientados a proyectos: anunciar los temas, explicar en partes pequeñas, demostrar, dejar una tarea antes de enseñar la solución, conservar el código alcanzado y cerrar con repaso.
+The Imperial Book utiliza una metodología propia de enseñanza práctica. Toma como referencia patrones públicos presentes en cursos técnicos claros y orientados a proyectos: anunciar los temas, explicar en partes pequeñas, demostrar, dejar una tarea antes de enseñar la solución, conservar el código alcanzado y cerrar con repaso.
 
 No reproduce clases, guiones, ejercicios ni materiales de terceros, y no implica afiliación con ningún instructor o plataforma.
 

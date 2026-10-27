@@ -291,7 +291,7 @@ def render_markdown(root: Path, nodes: list[FileNode]) -> str:
         by_kind[node.kind].append(node)
 
     lines = [
-        "# Academia Floci Repo Graph",
+        "# The Imperial Book Repo Graph",
         "",
         f"Generated: {generated}",
         f"Root: `{root.name}`",

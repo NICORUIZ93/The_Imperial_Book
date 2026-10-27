@@ -1,4 +1,4 @@
-// Demo Node.js para Academia_Floci.
+// Demo Node.js para The_Imperial_Book.
 // Objetivo: practicar servicios compatibles con AWS dentro de Floci/LocalStack
 // sin usar una cuenta real de AWS ni generar costos.
 import {

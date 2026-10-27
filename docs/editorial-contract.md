@@ -1,4 +1,4 @@
-# Contrato editorial de Academia Floci
+# Contrato editorial de The Imperial Book
 
 Este contrato adapta patrones pedagógicos observados en los libros técnicos de la biblioteca local: progresión por capítulos, mapa conceptual, ejemplo acumulativo, síntesis, fallo diagnosticable y práctica aplicada. No autoriza copiar texto, diagramas ni ejercicios de los libros.
 

@@ -88,9 +88,9 @@ Correcciones principales: IMG_1323 es Keycloak, IMG_0779 es un prompt pedagógic
 | El_Libro_Blanco_del_Hacker.pdf | (sin track directo) | ⏭️ Baja prioridad |
 | Hacking Dispositivos IOS.pdf | iOS (seguridad) | ⏭️ Baja prioridad |
 
-**Carpeta: `Programacion/Datos_IA_Machine_Learning/`** — sin track directo en Academia Floci hoy (no hay track de IA/ML) → ⏭️ Descartado por ahora.
+**Carpeta: `Programacion/Datos_IA_Machine_Learning/`** — sin track directo en The Imperial Book hoy (no hay track de IA/ML) → ⏭️ Descartado por ahora.
 
-**Carpeta: `Programacion/Python/`, `R_Matlab_Estadistica/`, `CPP_C_Ensamblador/`, `Otros_Lenguajes/`** — sin track directo (Academia Floci no tiene tracks de Python/C++/R) → ⏭️ Descartado por ahora, salvo que se use para enriquecer Foundations con ejemplos de algoritmos.
+**Carpeta: `Programacion/Python/`, `R_Matlab_Estadistica/`, `CPP_C_Ensamblador/`, `Otros_Lenguajes/`** — sin track directo (The Imperial Book no tiene tracks de Python/C++/R) → ⏭️ Descartado por ahora, salvo que se use para enriquecer Foundations con ejemplos de algoritmos.
 
 **Carpeta: `Bases_Datos/`** (relevante a Cloud/Spring Boot vía SQL)
 | Libro | Track destino | Estado |
@@ -101,7 +101,7 @@ Correcciones principales: IMG_1323 es Keycloak, IMG_0779 es un prompt pedagógic
 | BasesDatos_Oracle_Forms_Reports_Manual_Avanzado.pdf | (sin track directo) | ⏭️ Baja prioridad |
 | BasesDatos_SQL_Excel_Integracion_Guia_Intermedio.pdf | (sin track directo) | ⏭️ Baja prioridad |
 
-**Carpeta: `Inteligencia_Artificial/`** — sin track directo en Academia Floci hoy → ⏭️ Descartado por ahora.
+**Carpeta: `Inteligencia_Artificial/`** — sin track directo en The Imperial Book hoy → ⏭️ Descartado por ahora.
 
 **Carpeta: `Matematicas/Matematicas_Discretas/`**
 | Libro | Track destino | Estado |

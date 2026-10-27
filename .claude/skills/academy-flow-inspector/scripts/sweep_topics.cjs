@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Barrido automatizado de la app Academia Floci: visita cada página de módulo
+ * Barrido automatizado de la app The Imperial Book: visita cada página de módulo
  * (una por trackId/moduleId, derivadas de topic-index.json) y revisa, para
  * cada tema dentro de ella, señales de fidelidad de renderizado y errores de
  * flujo que un audit estático sobre el Markdown no puede ver: errores de

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "reviewedAt": "2026-07-18",
-  "policy": "Las etapas se derivan de rutas, tutoriales y guías mantenidas por el proyecto o proveedor. Academia Floci añade pruebas y producción cuando la guía inicial no pretende cubrir nivel experto.",
+  "policy": "Las etapas se derivan de rutas, tutoriales y guías mantenidas por el proyecto o proveedor. The Imperial Book añade pruebas y producción cuando la guía inicial no pretende cubrir nivel experto.",
   "tracks": [
     {"id":"foundations","guide":"MDN Curriculum and SWEBOK-aligned foundations","url":"https://developer.mozilla.org/en-US/curriculum/","structure":["Computer basics","Programming","Web standards","Quality and software engineering"]},
     {"id":"rutaflow","guide":"Integrating project using the official stack guides","url":"https://developer.mozilla.org/en-US/curriculum/","structure":["Problem and architecture","Backend","Web and mobile","Platform quality","Production evidence"]},

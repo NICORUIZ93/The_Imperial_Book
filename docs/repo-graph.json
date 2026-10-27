@@ -23,7 +23,7 @@
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Academia Floci: trabajo con contenido y experiencia de estudio",
+        "# The Imperial Book: trabajo con contenido y experiencia de estudio",
         "## Skills para el objetivo de la academia",
         "## Contrato de estudio desde cero",
         "## Verificaci\u00f3n"
@@ -75,7 +75,7 @@
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Contribuir a Academia Floci",
+        "# Contribuir a The Imperial Book",
         "## Antes de abrir un cambio",
         "## Licencias"
       ]
@@ -87,7 +87,7 @@
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Academia_Floci",
+        "# The_Imperial_Book",
         "## Como empezar",
         "## Levantar Floci",
         "# 1. Levantar todos los servicios",
@@ -363,7 +363,7 @@
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Contrato editorial de Academia Floci",
+        "# Contrato editorial de The Imperial Book",
         "## Unidad m\u00ednima: un tema explicado y practicable",
         "## Progresi\u00f3n de libro",
         "## C\u00f3digo y recursos visuales",
@@ -933,6 +933,206 @@
     {
       "path": "examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.architecture.json",
       "lines": 37,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.review-1/modulo-10-tema-1-secrets-manager.browser-check.json",
+      "lines": 723,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.review-1/modulo-10-tema-1-secrets-manager.finalize-summary.json",
+      "lines": 48,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.review-1/modulo-10-tema-1-secrets-manager.finalize.json",
+      "lines": 1009,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-16-tema-2-retry-catch.workflow.json",
+      "lines": 142,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.architecture.json",
+      "lines": 166,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.browser-check.json",
+      "lines": 723,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize-summary.json",
+      "lines": 48,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json",
+      "lines": 1012,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json",
+      "lines": 723,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json",
+      "lines": 48,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json",
+      "lines": 1012,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json",
+      "lines": 183,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json",
+      "lines": 189,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/foundations/modulo-12-tema-7-aliasing.dataflow.json",
+      "lines": 142,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/foundations/modulo-12-tema-8-media-movil.dataflow.json",
+      "lines": 98,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/java/modulo-0-tema-1-bytecode.dataflow.json",
+      "lines": 183,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/java/modulo-0-tema-2-main.tree.json",
+      "lines": 120,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/java/modulo-0-tema-3-jdk-jre-jvm.tree.json",
+      "lines": 122,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/java/modulo-4-tema-4-gatherers-window-sliding.dataflow.json",
+      "lines": 181,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/spring-boot/modulo-0-tema-1-ioc.architecture.json",
+      "lines": 118,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.architecture.json",
+      "lines": 277,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.review-1/modulo-0-tema-3-stereotypes-scopes.visual-check.html",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.review-1/modulo-0-tema-3-stereotypes-scopes.visual-check.json",
+      "lines": 963,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/spring-boot/modulo-1-tema-1-initializr-starters.workflow.json",
+      "lines": 194,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/spring-boot/modulo-17-tema-2-transacciones.lifecycle.json",
+      "lines": 177,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5242,7 +5442,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 267,
+      "lines": 282,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -6286,7 +6486,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-22.md",
-      "lines": 330,
+      "lines": 332,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10728,6 +10928,868 @@
       "headings": []
     },
     {
+      "path": "web/public/visuals/temas/cloud/modulo-16-tema-2-retry-catch.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/cloud/modulo-16-tema-2-retry-catch.html",
+      "lines": 14691,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/cloud/modulo-22-tema-5-edge-routes.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/cloud/modulo-22-tema-5-edge-routes.html",
+      "lines": 14757,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "node-photo-client",
+        "photo-client"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.browser-check.json",
+      "lines": 1034,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.finalize.json",
+      "lines": 1320,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.html",
+      "lines": 14700,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.browser-check.json",
+      "lines": 1154,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.finalize.json",
+      "lines": 1440,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.html",
+      "lines": 14714,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.finalize.json",
+      "lines": 984,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.html",
+      "lines": 14661,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.finalize.json",
+      "lines": 984,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.html",
+      "lines": 14627,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.finalize.json",
+      "lines": 984,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.html",
+      "lines": 14703,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.finalize.json",
+      "lines": 986,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.html",
+      "lines": 14695,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "node-entry"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.finalize.json",
+      "lines": 986,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.html",
+      "lines": 14694,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "node-jdk"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.finalize.json",
+      "lines": 984,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.html",
+      "lines": 14697,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.browser-check.json",
+      "lines": 722,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.finalize.json",
+      "lines": 1016,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html",
+      "lines": 14664,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "container-repository"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.browser-check.json",
+      "lines": 722,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.finalize-summary.json",
+      "lines": 77,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.finalize.json",
+      "lines": 1029,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.html",
+      "lines": 14803,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.browser-check.json",
+      "lines": 1154,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.finalize.json",
+      "lines": 1440,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.html",
+      "lines": 14723,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.browser-check.json",
+      "lines": 698,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.delivery.json",
+      "lines": 18,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.finalize-summary.json",
+      "lines": 48,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.finalize.json",
+      "lines": 984,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.html",
+      "lines": 14728,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-source-evidence-data",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "invoke-transaction"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/src/app/app.config.ts",
       "lines": 12,
       "kind": "angular-app",
@@ -11012,7 +12074,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 449,
+      "lines": 462,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -11020,7 +12082,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1024,
+      "lines": 1069,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",

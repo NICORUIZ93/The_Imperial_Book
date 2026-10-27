@@ -1,7 +1,7 @@
 # Licencia del contenido original
 
 Salvo donde exista un aviso distinto, la prosa original de las lecciones y la
-documentación editorial creada para Academia Floci se ofrece bajo
+documentación editorial creada para The Imperial Book se ofrece bajo
 [Creative Commons Atribución 4.0 Internacional (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
 Puedes compartir y adaptar ese material, incluso con fines comerciales, siempre

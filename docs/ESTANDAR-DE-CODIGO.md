@@ -1,6 +1,6 @@
 # Estándar transversal de código y diseño
 
-Todo ejemplo de Academia Floci debe enseñar simultáneamente el concepto técnico y una forma profesional de expresarlo. El código corto no está exento de calidad, pero tampoco debe llenarse de abstracciones que oculten la idea principal.
+Todo ejemplo de The Imperial Book debe enseñar simultáneamente el concepto técnico y una forma profesional de expresarlo. El código corto no está exento de calidad, pero tampoco debe llenarse de abstracciones que oculten la idea principal.
 
 ## Prioridades
 

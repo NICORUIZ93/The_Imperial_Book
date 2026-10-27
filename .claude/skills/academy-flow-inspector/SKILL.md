@@ -1,11 +1,11 @@
 ---
 name: academy-flow-inspector
-description: Inspecciona Academia Floci (la app Angular en web/) como lo haría un humano que la usa de verdad -- navegando catálogo -> ruta -> módulo -> tema -- para encontrar errores de flujo (enlaces rotos, diagramas que no renderizan, excepciones de consola, páginas donde el DOM no coincide con lo que el Markdown promete) y para confirmar que cada tema tiene explicación y ejemplo reales, no solo que "aparece en el índice". Usa esta skill siempre que el usuario pida auditar, inspeccionar, revisar de inicio a fin, validar el flujo, o encontrar errores/bugs en la app, los cursos, las rutas, los módulos o los temas de Academia Floci -- incluso si no menciona "inspector", "QA" o "end to end" explícitamente. También aplica cuando pregunte si "todos los temas tienen ejemplo y explicación" o si algo "se ve mal" al navegar un curso.
+description: Inspecciona The Imperial Book (la app Angular en web/) como lo haría un humano que la usa de verdad -- navegando catálogo -> ruta -> módulo -> tema -- para encontrar errores de flujo (enlaces rotos, diagramas que no renderizan, excepciones de consola, páginas donde el DOM no coincide con lo que el Markdown promete) y para confirmar que cada tema tiene explicación y ejemplo reales, no solo que "aparece en el índice". Usa esta skill siempre que el usuario pida auditar, inspeccionar, revisar de inicio a fin, validar el flujo, o encontrar errores/bugs en la app, los cursos, las rutas, los módulos o los temas de The Imperial Book -- incluso si no menciona "inspector", "QA" o "end to end" explícitamente. También aplica cuando pregunte si "todos los temas tienen ejemplo y explicación" o si algo "se ve mal" al navegar un curso.
 ---
 
 # Academia Flow Inspector
 
-Esta skill es para un proyecto concreto: Academia_Floci, una academia de 14 rutas / 236 módulos /
+Esta skill es para un proyecto concreto: The_Imperial_Book, una academia de 14 rutas / 236 módulos /
 983 temas servida por una sola app Angular (`web/`). El contenido real vive en Markdown
 (`web/public/content/<track>/modulo-N.md`); la app lo renderiza con `marked` y `lesson-viewer.ts`
 le añade estructura por tema (`.topic-card`, callouts, prompts de estudio, etc.).

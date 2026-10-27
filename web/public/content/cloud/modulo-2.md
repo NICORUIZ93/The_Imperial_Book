@@ -364,7 +364,7 @@ evento escrito en `ShipmentEvents`, para que el cliente vea su prueba de entrega
 No necesitas inventar una estructura ni copiar un fragmento aislado. El repositorio ya contiene dos clientes ejecutables que realizan la misma consulta con SDK diferentes:
 
 ```text
-Academia_Floci/
+The_Imperial_Book/
 └── examples/
     ├── node/
     │   ├── package.json

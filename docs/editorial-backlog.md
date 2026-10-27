@@ -14,10 +14,10 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ejecución | 983 | 0 |
 | Resultado | 983 | 0 |
 | Modificación | 983 | 0 |
-| Conexión con un proyecto | 982 | 1 |
+| Conexión con un proyecto | 983 | 0 |
 | Modelo mental | 983 | 0 |
 | Límites | 983 | 0 |
-| **Perfil de criterios detectado** | **982** | **1** |
+| **Perfil de criterios detectado** | **983** | **0** |
 
 ## Prioridad por track
 
@@ -25,7 +25,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | android | 50 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 67 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| cloud | 154 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| cloud | 154 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | devops | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | flutter | 57 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | foundations | 68 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 ## Pendientes por tema
 
-- [cloud · módulo 22](../web/public/content/cloud/modulo-22.md) · Tema 4: Route53 — zonas alojadas y registros de recursos: conexión con un proyecto.
+No hay criterios pendientes en esta auditoría de presencia editorial.
 
 ## Regla de cierre
 

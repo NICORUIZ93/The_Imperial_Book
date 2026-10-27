@@ -2,7 +2,7 @@
 
 ## Compromiso
 
-Quienes participan en Academia Floci se comprometen a mantener una comunidad
+Quienes participan en The Imperial Book se comprometen a mantener una comunidad
 respetuosa, segura y centrada en el aprendizaje, sin importar experiencia,
 identidad, origen, discapacidad o situación personal.
 

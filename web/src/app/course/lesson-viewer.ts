@@ -239,7 +239,7 @@ export class LessonViewerComponent implements OnDestroy {
   constructor() {
     effect(() => {
       const announcement = this.chapterAnnouncement();
-      if (announcement) this.titleService.setTitle(`${announcement} · Academia Floci`);
+      if (announcement) this.titleService.setTitle(`${announcement} · The Imperial Book`);
     });
     effect(() => {
       const trackId = this.trackId();

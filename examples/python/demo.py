@@ -1,4 +1,4 @@
-"""Demo Python para Academia_Floci.
+"""Demo Python para The_Imperial_Book.
 
 Este archivo muestra como usar boto3 contra Floci/LocalStack en localhost.
 La idea es practicar S3, SQS y DynamoDB con el mismo codigo mental que se usa

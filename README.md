@@ -1,4 +1,4 @@
-# Academia_Floci
+# The_Imperial_Book
 
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
@@ -241,7 +241,7 @@ software mas robusto. No incluye instrucciones para atacar sistemas de terceros.
 ## Estructura
 
 ```text
-Academia_Floci/
+The_Imperial_Book/
 ├── README.md
 ├── docker-compose.yml
 ├── .env.example

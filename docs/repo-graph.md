@@ -1,8 +1,8 @@
-# Academia Floci Repo Graph
+# The Imperial Book Repo Graph
 
-Generated: 2026-10-14 22:43 UTC
-Root: `Academia_Floci`
-Indexed files: 830
+Generated: 2026-10-27 22:50 UTC
+Root: `The_Imperial_Book`
+Indexed files: 919
 Import edges: 50
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,23 +19,23 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 27 files
 - `course-content`: 242 files
 - `documentation`: 69 files
-- `example`: 400 files
+- `example`: 425 files
 - `local-infra`: 1 files
-- `project-file`: 33 files
+- `project-file`: 97 files
 
 ## File Types
 
 - `.md`: 317
 - `.py`: 147
+- `.json`: 111
 - `.ts`: 64
 - `.js`: 53
 - `.java`: 49
-- `.json`: 37
+- `.html`: 30
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 19
 - `.swift`: 19
-- `.html`: 15
 - `.kt`: 11
 - `.yaml`: 9
 - `.scss`: 8
@@ -52,7 +52,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ## High Signal Files
 
 - `README.md` (299 lines, documentation)
-  - headings: # Academia_Floci, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
+  - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
 - `scripts/validate.sh` (131 lines, automation-script)
 - `scripts/build_repo_graph.py` (468 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, totalModules
 - `web/src/app/course/course-shell.ts` (59 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1024 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1069 lines, angular-app)
   - symbols: LessonViewerComponent, TocItem, track, module, officialSource, projectBootstrap, trackProject, projectStep, projectProgress, showProjectBootstrap
 
 ## Internal Import Graph
@@ -214,12 +214,12 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### documentation
 
-- `AGENTS.md` (47 lines) - headings: # Academia Floci: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ## Verificación
+- `AGENTS.md` (47 lines) - headings: # The Imperial Book: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ## Verificación
 - `CHANGELOG.md` (17 lines) - headings: # Changelog, ## Unreleased, ## 2026-10-13
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
-- `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a Academia Floci, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (299 lines) - headings: # Academia_Floci, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
+- `README.md` (299 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
@@ -241,20 +241,20 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/mobile-controls.css` (11 lines)
 - `examples/archify/recorrido-estudio.workflow.json` (235 lines)
 - `examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.architecture.json` (37 lines)
-- `examples/archify/verification.json` (31 lines)
-- `examples/cloud-http/server.mjs` (11 lines) - imports: node:http
-- `examples/devops-health/.env.example` (2 lines)
-- `examples/devops-health/Dockerfile` (8 lines)
-- `examples/devops-health/compose.yaml` (29 lines)
-- `examples/devops-health/package.json` (2 lines)
-- `examples/devops-health/server.mjs` (18 lines) - imports: node:http, pg
-- `examples/electronics/README.md` (6 lines) - headings: # Laboratorio de electrónica e IoT
-- `examples/electronics/analogica.py` (7 lines)
-- `examples/electronics/bajo-nivel.py` (6 lines) - imports: struct
-- `examples/electronics/circuitos.py` (7 lines)
-- `examples/electronics/comunicaciones.py` (7 lines)
-- `examples/electronics/control.py` (8 lines)
-- ... 382 more files
+- `examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.review-1/modulo-10-tema-1-secrets-manager.browser-check.json` (723 lines)
+- `examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.review-1/modulo-10-tema-1-secrets-manager.finalize-summary.json` (48 lines)
+- `examples/archify/temas/cloud/modulo-10-tema-1-secrets-manager.review-1/modulo-10-tema-1-secrets-manager.finalize.json` (1009 lines)
+- `examples/archify/temas/cloud/modulo-16-tema-2-retry-catch.workflow.json` (142 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.architecture.json` (166 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
+- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
+- `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
+- `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
+- ... 407 more files
 
 ### local-infra
 
@@ -280,4 +280,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/specialization-outcomes.json` (1249 lines)
 - `docs/topic-learning-quality.json` (21897 lines)
 - `install.sh` (99 lines)
-- ... 15 more files
+- ... 79 more files
