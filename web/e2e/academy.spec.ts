@@ -112,7 +112,7 @@ test('accesibilidad y respaldo: exporta y restaura progreso desde controles etiq
   const downloadPromise = page.waitForEvent('download');
   await exportButton.click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('academia-floci-progreso.json');
+  expect(download.suggestedFilename()).toBe('the-imperial-book-progreso.json');
   await expect(page.getByRole('status')).toContainText('Copia de progreso descargada.');
 
   await fileInput.setInputFiles({

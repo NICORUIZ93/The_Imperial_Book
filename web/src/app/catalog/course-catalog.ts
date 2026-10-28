@@ -94,7 +94,7 @@ export class CourseCatalogComponent {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'academia-floci-progreso.json';
+      link.download = 'the-imperial-book-progreso.json';
       link.click();
       URL.revokeObjectURL(url);
       this.backupStatus.set('Copia de progreso descargada.');
