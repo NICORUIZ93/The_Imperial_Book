@@ -27,6 +27,14 @@ struct AppRutaFlow: View {
 // Simula abrir una notificación push:
 // path.append(Envio(guia: "RF-4471"))
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: llamar `path.append(Envio(guia: "RF-4471"))` desde cualquier parte del código navega directamente a `DetalleEnvio`, sin que el usuario haya tocado nada en la lista.
 #### Paso 5 · Práctica guiada
 Pista: agregá un segundo tipo `EnvioUrgente` sin declarar su `.navigationDestination(for:)` correspondiente, y hacé `path.append(EnvioUrgente(guia: "RF-9999"))` — ese es el fallo deliberado: SwiftUI no tiene ninguna vista registrada para ese tipo, y la navegación se queda en un estado indefinido en vez de mostrar `DetalleEnvio`.
@@ -91,6 +99,14 @@ TabView {
     NavigationStack { HistorialEnvios() }.tabItem { Label("Historial", systemImage: "clock") }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: la confirmación de entrega aparece como un sheet descartable; el onboarding cubre toda la pantalla sin gesto de descarte trivial; cada pestaña mantiene su propio `NavigationStack`, así que cambiar de "Envíos" a "Historial" y volver preserva el punto exacto donde quedó cada una.
 #### Paso 5 · Práctica guiada
 Pista: cambiá el onboarding obligatorio de `.fullScreenCover` a `.sheet` — ese es el fallo deliberado: ahora el conductor puede deslizar hacia abajo y descartar el onboarding sin completarlo, exactamente la interrupción "liviana" que este flujo NO debería permitir.
@@ -151,6 +167,14 @@ Cuando el conductor toca una notificación push "nueva entrega asignada: RF-4471
     path.append(Envio(guia: guia))
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: abrir `rutaflow://envio/RF-4471` navega directamente a `DetalleEnvio(guia: "RF-4471")`, usando el mismo `NavigationPath` del Tema 1.
 #### Paso 5 · Práctica guiada
 Pista: quitá la validación `guia.hasPrefix("RF-")` y probá abrir `rutaflow://envio/<script>` — ese es el fallo deliberado: sin validar el formato de la guía antes de usarla, cualquier contenido arbitrario de una URL maliciosa terminaría navegando a `DetalleEnvio` con un valor que nunca debería tratarse como una guía real.

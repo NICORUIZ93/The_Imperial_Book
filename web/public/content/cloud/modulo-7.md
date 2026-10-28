@@ -183,6 +183,15 @@ Crea `src/policy.json` desde una carpeta vacía.
 mkdir ejemplo-policy
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: cambia Allow por Deny para provocar un fallo deliberado y corrígelo.

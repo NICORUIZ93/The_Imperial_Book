@@ -21,6 +21,16 @@ mkdir ejemplo-g1-vs-zgc
 cd ejemplo-g1-vs-zgc
 mkdir -p src/main/java/academia/perf
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `src/main/java/academia/perf/CargaAsignacion.java`: un bucle que crea millones de objetos pequeños de vida corta en un `while(true)` con un contador de iteraciones impreso cada segundo. Compílalo con `javac -d out src/main/java/academia/perf/CargaAsignacion.java` y ejecútalo primero con `java -Xlog:gc -XX:+UseG1GC -cp out academia.perf.CargaAsignacion`, luego con `-XX:+UseZGC`.
 
 #### Paso 5 · Práctica guiada
@@ -78,6 +88,16 @@ mkdir ejemplo-jfr-warmup
 cd ejemplo-jfr-warmup
 mkdir -p src/main/java/academia/perf
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `src/main/java/academia/perf/MetodoCaliente.java`: un método que hace una operación aritmética simple dentro de un bucle de 50 millones de iteraciones, imprimiendo el tiempo transcurrido cada 10 millones de iteraciones (deberías ver que las últimas mediciones son más rápidas que las primeras, evidencia del warm-up del JIT). Compílalo y ejecútalo con `java -XX:StartFlightRecording=filename=perfil.jfr -cp out academia.perf.MetodoCaliente`.
 
 #### Paso 5 · Práctica guiada
@@ -132,6 +152,16 @@ mkdir ejemplo-heap-dump-oom
 cd ejemplo-heap-dump-oom
 mkdir -p src/main/java/academia/perf
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `src/main/java/academia/perf/FugaCache.java`: una `List<byte[]>` estática donde un bucle agrega arreglos de 1MB indefinidamente sin nunca liberarlos, hasta agotar la heap. Compílalo y ejecútalo con `java -Xmx128m -XX:+HeapDumpOnOutOfMemoryError -cp out academia.perf.FugaCache`.
 
 #### Paso 5 · Práctica guiada
@@ -192,6 +222,16 @@ try (Arena arena = Arena.ofConfined()) {
     long longitud = (long) strlen.invoke(texto);
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Resultado esperado: `longitud` devuelve 15, obtenido invocando directamente la función `strlen` de la libc del sistema operativo desde Java puro, sin ningún código C ni JNI intermedio compilado por separado.
 
 #### Paso 5 · Práctica guiada

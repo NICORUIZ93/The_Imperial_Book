@@ -44,6 +44,16 @@ function FormularioConfirmacion() {
   return <button onClick={confirmarDosVeces}>Intentos: {intentos}</button>;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado.
 
 **Demo con React DevTools:**
@@ -163,6 +173,16 @@ function FormularioConfirmacion() {
   return <input value={pin} onChange={e => setPin(e.target.value)} />;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: llamar a `setPin('837201')` con el mismo valor que `pin` ya tiene dispara una nueva ejecución de la función (el `console.log` se imprime de nuevo), pero el input en pantalla no cambia visualmente, porque React compara el árbol resultante y no encuentra ninguna diferencia real que aplicar al DOM.
 
 #### Paso 5 · Práctica guiada
@@ -238,6 +258,16 @@ function confirmar() {
 }
 // dentro del componente: console.log('render')
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: después de un click que dispara `confirmar()`, el `console.log('render')` se imprime una única vez adicional, no tres — las tres llamadas a setters se agrupan en un único ciclo de render y commit que refleja el efecto combinado de las tres.
 
 #### Paso 5 · Práctica guiada
@@ -323,6 +353,16 @@ const [pin, setPin] = useState('');
   maxLength={6}
 />
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: escribir letras en el campo de PIN no las muestra en absoluto (`.replace(/\D/g, '')` las descarta antes de llegar a `setPin`), y el input nunca puede mostrar más de 6 caracteres — el valor mostrado en pantalla es siempre exactamente lo que React decidió que `pin` debía ser, nunca lo que el usuario tecleó directamente sin pasar por esa validación.
 
 #### Paso 5 · Práctica guiada

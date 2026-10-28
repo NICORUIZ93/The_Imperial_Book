@@ -12,21 +12,50 @@ Si la pantalla de detalle de un envío y la lista de envíos mostraran cada una 
 #### Paso 3 · Teoría, modelo mental y analogía
 `@State` pertenece a la vista que lo declara; `@Binding` es una referencia hacia el estado de otra vista, nunca una copia — un apoderado con autorización para modificar la casa de otro, sin ser dueño de ella.
 #### Paso 4 · Demostración guiada desde cero
+
+Crea un proyecto SwiftUI desde cero. En macOS con Xcode instalado, créalo por línea de comandos y ábrelo:
+
+```bash
+mkdir EstadoDemo && cd EstadoDemo
+# Genera un paquete Swift ejecutable (no requiere plantilla de Xcode)
+swift package init --type executable --name EstadoDemo
+swift --version   # confirma que tienes el toolchain de Swift
+```
+
+Para una app SwiftUI con interfaz, crea el proyecto en Xcode (`File ▸ New ▸ Project ▸ App`, interfaz SwiftUI) y reemplaza `ContentView.swift` con este contenido:
+
 ```swift
+import SwiftUI
+
 struct DetalleEnvio: View {
     @State private var entregado = false
     var body: some View {
-        ConfirmarEntregaBoton(entregado: $entregado)
+        VStack {
+            Text(entregado ? "Estado: Entregado" : "Estado: En ruta")
+            ConfirmarEntregaBoton(entregado: $entregado)
+        }
     }
 }
+
 struct ConfirmarEntregaBoton: View {
     @Binding var entregado: Bool
     var body: some View {
         Button(entregado ? "Entregado" : "Confirmar entrega") { entregado = true }
     }
 }
+
+#Preview {
+    DetalleEnvio()
+}
 ```
-Resultado esperado: tocar el botón dentro de `ConfirmarEntregaBoton` cambia `entregado` en `DetalleEnvio` directamente — no hay dos valores de `entregado` sincronizándose, hay uno solo con dos puntos de acceso.
+
+Ejecútalo y obsérvalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema de la app):
+
+```bash
+xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** al tocar "Confirmar entrega" dentro de `ConfirmarEntregaBoton`, el texto de `DetalleEnvio` cambia a "Estado: Entregado". Hay un solo valor `entregado` con dos puntos de acceso (el padre lo posee, el hijo lo modifica vía `$`), no dos copias sincronizándose. **Fallo deliberado:** mira el Paso 5 — al darle al hijo su propio `@State`, el texto del padre deja de cambiar.
 #### Paso 5 · Práctica guiada
 Pista: cambiá `ConfirmarEntregaBoton` para que declare su propio `@State private var entregado = false` en vez de recibir el `@Binding` — ese es el fallo deliberado: ahora tocar el botón cambia SU propia copia, pero `DetalleEnvio` nunca se entera, y las dos vistas muestran estados de entrega distintos para el mismo envío.
 #### Paso 6 · Práctica independiente
@@ -96,7 +125,13 @@ Si la pantalla de RutaFlow muestra tanto la lista de envíos como un contador de
 #### Paso 3 · Teoría, modelo mental y analogía
 `@Observable` redibuja solo las vistas que efectivamente leyeron la propiedad específica que cambió — un sistema de notificaciones que avisa solo a quien se suscribió a ese tema exacto, no a todo el canal.
 #### Paso 4 · Demostración guiada desde cero
+
+Continúa en el mismo proyecto SwiftUI del Tema 1 (o crea uno nuevo en Xcode: `File ▸ New ▸ Project ▸ App`, interfaz SwiftUI). Reemplaza `ContentView.swift`:
+
 ```swift
+import SwiftUI
+import Observation
+
 @Observable
 class EnviosViewModel {
     var envios: [String] = ["RF-4471", "RF-5002"]
@@ -105,10 +140,26 @@ class EnviosViewModel {
 
 struct ListaEnvios: View {
     @State private var vm = EnviosViewModel()
-    var body: some View { List(vm.envios, id: \.self) { Text($0) } }
+    var body: some View {
+        VStack {
+            List(vm.envios, id: \.self) { Text($0) }
+            Button("Cambiar conductor") { vm.conductorActivo = "c-999" }
+        }
+    }
+}
+
+#Preview {
+    ListaEnvios()
 }
 ```
-Resultado esperado: `ListaEnvios` solo lee `vm.envios` — si en otra parte del código cambiás `vm.conductorActivo`, `ListaEnvios` no se redibuja, porque nunca leyó esa propiedad en su `body`.
+
+Ejecútalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema con `xcodebuild`):
+
+```bash
+xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** `ListaEnvios` solo lee `vm.envios` en su `body`. Al tocar "Cambiar conductor" (que modifica `vm.conductorActivo`), la lista NO se redibuja, porque nunca leyó esa propiedad. Para comprobarlo, añade temporalmente `let _ = Self._printChanges()` al inicio del `body` y observa en la consola de Xcode que no se imprime un recálculo al cambiar el conductor. **Fallo deliberado:** mira el Paso 5 — al leer `conductorActivo` en el `body` "para tenerlo a mano", la lista empieza a redibujarse de más.
 #### Paso 5 · Práctica guiada
 Pista: agregá `Text(vm.conductorActivo)` dentro del `body` de `ListaEnvios` "solo para tenerlo a mano", sin usarlo realmente en la lógica visible — ese es el fallo deliberado: ahora `ListaEnvios` SÍ se redibuja cada vez que `conductorActivo` cambia, aunque la lista de envíos en sí no haya cambiado, porque `@Observable` rastrea exactamente qué leíste, no qué "parece que vas a necesitar".
 #### Paso 6 · Práctica independiente
@@ -163,18 +214,42 @@ Si `DetalleEnvio` está anidada tres niveles dentro de `ListaEnvios`, que a su v
 #### Paso 3 · Teoría, modelo mental y analogía
 `@Environment` es la electricidad disponible en cualquier toma del edificio: cualquier vista descendiente se "enchufa" sin que nadie tienda un cable manual desde la planta de generación hasta cada habitación.
 #### Paso 4 · Demostración guiada desde cero
+
+En el mismo proyecto SwiftUI, reemplaza el archivo de la app (`<NombreApp>App.swift`) y `ContentView.swift` con este contenido completo:
+
 ```swift
+import SwiftUI
+import Observation
+
+@Observable
+class ServicioAPI {
+    var base = "https://api.rutaflow.dev"
+}
+
+@main
 struct MiApp: App {
     var body: some Scene {
         WindowGroup { ListaEnvios().environment(ServicioAPI()) }
     }
 }
+
+struct ListaEnvios: View {           // no usa ServicioAPI, solo contiene al hijo
+    var body: some View { DetalleEnvio() }
+}
+
 struct DetalleEnvio: View {
     @Environment(ServicioAPI.self) var servicio
     var body: some View { Text("Conectado a: \(servicio.base)") }
 }
 ```
-Resultado esperado: `DetalleEnvio`, aunque esté anidada varios niveles dentro de `ListaEnvios`, lee `ServicioAPI` directamente sin que ninguna vista intermedia haya recibido ni reenviado esa dependencia explícitamente.
+
+Ejecútalo (en Xcode: ⌘R para el simulador; por terminal, compila el esquema):
+
+```bash
+xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** la pantalla muestra "Conectado a: https://api.rutaflow.dev". `DetalleEnvio` leyó `ServicioAPI` directamente del ambiente aunque `ListaEnvios` (la vista intermedia) nunca lo recibió ni lo reenvió. **Fallo deliberado:** mira el Paso 5 — al quitar `.environment(ServicioAPI())` del `WindowGroup`, la app compila pero crashea al arrancar, porque no hay ningún `ServicioAPI` en el ambiente que leer.
 #### Paso 5 · Práctica guiada
 Pista: quitá `.environment(ServicioAPI())` del `WindowGroup` pero dejá `@Environment(ServicioAPI.self) var servicio` en `DetalleEnvio` — ese es el fallo deliberado: en tiempo de ejecución, SwiftUI no encuentra ningún `ServicioAPI` inyectado en el ambiente y la app crashea al intentar leer `servicio`, un error silencioso en tiempo de compilación que solo aparece al correr.
 #### Paso 6 · Práctica independiente

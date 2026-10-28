@@ -21,6 +21,14 @@ Instruments mide CPU, memoria y frames reales durante una interacción concreta 
 3. Grabá mientras hacés scroll en ListaEnvios
 4. Detené la grabación y ordená por "Self Weight"
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: Time Profiler muestra qué función específica (por ejemplo, el formateo de fecha de cada fila dentro del `body`) consume más tiempo de CPU durante el scroll — no una sensación de "se traba", sino una función puntual identificada con un porcentaje de tiempo real.
 
 #### Paso 5 · Práctica guiada
@@ -73,6 +81,14 @@ Button(action: confirmarEntrega) {
 }
 .accessibilityLabel("Confirmar entrega")
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: al activar VoiceOver (Ajustes > Accesibilidad > VoiceOver) y deslizar hasta ese botón, el lector anuncia "Confirmar entrega, botón" — no "imagen, botón", que no le dice nada al usuario sobre qué hace.
 
 #### Paso 5 · Práctica guiada
@@ -132,6 +148,14 @@ Button(action: confirmarEntrega) {
     Image(systemName: "checkmark.circle").frame(width: 44, height: 44)
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: con el tamaño de texto por defecto, `envio.direccion` se ve en una sola línea; al activar el tamaño de texto más grande (Ajustes > Accesibilidad > Texto más grande > máximo) y volver a la pantalla, el texto se expande a dos o tres líneas sin truncarse ni desbordar el contenedor.
 
 #### Paso 5 · Práctica guiada
@@ -200,6 +224,14 @@ final class StopsViewController: UIViewController {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: `StopsViewController` no tiene ningún inicializador que funcione sin un `viewModel` (el `required init?(coder:)` falla intencionalmente), y `viewDidLoad()` dispara la carga una sola vez cuando la vista se crea, no cada vez que la pantalla reaparece.
 
 #### Paso 5 · Práctica guiada

@@ -42,6 +42,16 @@ class _AppState extends State<App> {
   ]);
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `pendientes` vive en `_AppState` y se pasa manualmente como prop hacia abajo a ambos widgets — funciona, pero cualquier widget nuevo que necesite leer `pendientes` en un nivel más profundo del árbol exigiría repetir ese mismo reenvío manual por cada nivel intermedio.
 
 #### Paso 5 · Práctica guiada
@@ -141,6 +151,16 @@ class DetalleEnvio extends ConsumerWidget {
     ElevatedButton(onPressed: () => ref.read(pendientesProvider.notifier).state--, child: Text("Entregado"));
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `BarraSuperior` y `DetalleEnvio` leen y modifican `pendientesProvider` sin que ningún widget entre ellos conozca ni reenvíe ese valor — el acoplamiento sin beneficio del Tema 1 desaparece.
 
 #### Paso 5 · Práctica guiada
@@ -255,6 +275,16 @@ BlocBuilder<PendientesCubit, int>(
   builder: (context, pendientes) => Text("$pendientes pendientes"),
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: llamar a `entregado()` disminuye el contador en uno, pero nunca por debajo de 0 (la guarda `if (state > 0)` lo impide); esa regla puede testearse de forma completamente aislada instanciando `PendientesCubit()` directamente, sin renderizar ningún widget.
 
 #### Paso 5 · Práctica guiada
@@ -326,6 +356,16 @@ final class ReasonInput extends FormzInput<String, ReasonError> {
   ReasonError? validator(String value) => value.isEmpty ? ReasonError.empty : null;
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: un `ReasonInput.pure()` sin que el usuario haya escrito nada no muestra ningún error todavía (porque está "pure"); en cuanto el usuario escribe algo y se convierte en `ReasonInput.dirty(valor)`, el validador corre y puebla el error correspondiente si el valor sigue vacío.
 
 #### Paso 5 · Práctica guiada

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "be3da56d-657e-479f-8e53-305419706b8c",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/proyectoapp/Documents/GitHub/The_Imperial_Book/.archify/sequence-login-jwt-20261028/candidate.json",
+  "output": "/Users/proyectoapp/Documents/GitHub/The_Imperial_Book/web/public/visuals/temas/spring-boot/modulo-4-tema-5-login-jwt.html",
+  "specification": {
+    "sha256": "2d81629a949c0635ed2b38bbdc6645a645e8bdc476e0aefd61bc8abba8be1e37",
+    "bytes": 2745
+  },
+  "artifact": {
+    "sha256": "9a0df89b2e0847ff447b532b3cde9dea9981336b0580b377514ebfd8ada6c126",
+    "bytes": 810079
+  }
+}

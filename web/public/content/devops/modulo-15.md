@@ -119,6 +119,14 @@ spec:
           command: ["npm", "run", "migrate"]
       restartPolicy: Never
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: Helm ejecuta este Job en la fase `pre-upgrade` y espera a que complete exitosamente antes de continuar con el upgrade del Deployment; si el Job falla, el `helm upgrade` se detiene y no reemplaza los pods de la API.
 
 #### Paso 5 · Práctica guiada
@@ -183,6 +191,14 @@ spec:
         - destination: { host: rutaflow-api, subset: v2 }
           weight: 10
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: `istioctl proxy-config endpoints` sobre un pod cliente muestra que aproximadamente el 10% de las peticiones nuevas llegan a pods con la etiqueta `version: v2`, sin ningún cambio en el código de quien consume la API.
 
 #### Paso 5 · Práctica guiada
@@ -244,6 +260,14 @@ spec:
   syncPolicy:
     automated: { prune: true, selfHeal: true }
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: Argo CD reconcilia el clúster contra `infra` cada pocos minutos; cualquier recurso que diverja del manifiesto en Git (incluido un `kubectl edit` manual) es revertido automáticamente al estado declarado, y la UI de Argo CD muestra el recurso como "OutOfSync" justo antes de corregirlo.
 
 #### Paso 5 · Práctica guiada

@@ -55,16 +55,22 @@ struct ListaEnvios: View {
     }
 }
 ```
-Resultado esperado: `ListaEnvios` compone dos `TarjetaEnvio` exactamente como compondría dos `Text` nativos — SwiftUI no distingue entre una vista "de sistema" y una propia.
+Crea el proyecto y ejecútalo desde cero:
 
-**Demostración en Simulador:**
+```bash
+mkdir ComposicionDemo && cd ComposicionDemo
+# Crea en Xcode: File ▸ New ▸ Project ▸ App (interfaz SwiftUI), nómbralo RutaFlowApp.
+# Pega el código anterior en ContentView.swift y añade #Preview { ListaEnvios() }
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
 
-1. **Abre Xcode** y crea un nuevo proyecto iOS (SwiftUI).
-2. **Copia el código anterior** a `ContentView.swift`.
-3. **Abre el Inspector** (Panel derecho en Xcode): verifica que aparecen dos tarjetas.
-4. **Corre en el simulador** (cmd+R): observa que ambas vistas se renderizan idénticamente.
-5. **Inspecciona elementos:** pausa la app en el Simulador y usa **Debug → View Hierarchy** para ver la estructura: `ListaEnvios` → `TarjetaEnvio` → `Text`.
-6. **Modifica el código:** cambiar el color de una `TarjetaEnvio` en la composición solo afecta esa instancia, no la otra — **prueba que son independientes**.
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+**Resultado esperado:** aparecen dos tarjetas ("RF-4471: en ruta" y "RF-5002: entregado"). `ListaEnvios` compone dos `TarjetaEnvio` igual que compondría dos `Text` nativos — SwiftUI no distingue entre una vista "de sistema" y una propia. Para comprobarlo visualmente, pausa la app y abre **Debug ▸ View Hierarchy**: verás `ListaEnvios → TarjetaEnvio → Text`.
+
+**Por qué este tema importa en el trabajo real:** la composición de vistas propias es la base de TODA app SwiftUI profesional. Sin ella, acabarías con un único `body` gigante e irrepetible; con ella, construyes una biblioteca de componentes reutilizables (tarjetas, filas, badges) que el equipo comparte entre pantallas. Es el mismo principio que hace mantenibles las apps grandes.
+
+**Fallo deliberado:** mira el Paso 5 — al cambiar el color de una sola `TarjetaEnvio`, confirmas que cada instancia es independiente, no un estado global compartido.
 
 #### Paso 5 · Práctica guiada · Fallo deliberado
 
@@ -229,18 +235,19 @@ Text("RF-4471: en ruta").padding().background(Color.blue)   // el fondo cubre ta
 Text("RF-4471: en ruta").background(Color.blue).padding()   // el fondo queda ajustado al texto, el padding se ve sin cubrir
 ```
 
-Resultado esperado: la primera línea muestra un rectángulo azul que incluye el espacio del padding; la segunda muestra el azul ajustado solo al texto, con un borde sin color alrededor — mismo texto, mismos modificadores, orden distinto, resultado visualmente distinto.
+Pégalo en una vista dentro de un `VStack`, en `ContentView.swift`, y ejecútalo:
 
-**Demostración en Simulador: Observa cómo cambia el tamaño del fondo**
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
 
-1. Copia el código anterior a `ContentView.swift`.
-2. **Abre el Simulador** (cmd+R).
-3. **Inspecciona visualmente:** pausa la app y usa **Debug → View Hierarchy** en Xcode.
-4. Expande el árbol de vistas: verás dos `Text` con diferentes cadenas de `padding` → `background` o `background` → `padding`.
-5. **Mide con la regla:** en ambas versiones, abre el inspector de propiedades en View Hierarchy y anota el tamaño del rectángulo azul.
-   - Primera versión: el azul cubre más píxeles (incluye padding).
-   - Segunda versión: el azul es más pequeño (solo texto).
-6. **Toma una captura:** guarda ambos estados para tu evidencia de aprendizaje.
+Luego ⌘R en el simulador, o ⌥⌘↵ para el canvas de Preview. Para medir las dos versiones, pausa la app y abre **Debug ▸ View Hierarchy**.
+
+**Resultado esperado:** la primera línea muestra un rectángulo azul que incluye el espacio del padding; la segunda muestra el azul ajustado solo al texto, con un borde sin color alrededor — mismo texto, mismos modificadores, orden distinto, resultado visualmente distinto.
+
+**Por qué este tema importa en el trabajo real:** en SwiftUI, cada modificador envuelve al anterior en una vista nueva, así que el orden no es un detalle estético: determina el resultado. Un bug clásico de principiante es "el fondo no cubre lo que esperaba" o "el tap no responde en toda el área" — casi siempre es orden de modificadores. Dominar esto te ahorra horas de depuración visual en producción.
+
+**Fallo deliberado:** mira el Paso 5 — un `.padding()` extra después del `.background()` revela cómo cada modificador crea una capa nueva.
 
 #### Paso 5 · Práctica guiada · Fallo deliberado
 
@@ -341,7 +348,16 @@ struct ListaEnviosGrid: View {
     ListaEnviosGrid(envios: [("RF-4471", "en ruta"), ("RF-5002", "entregado")])
 }
 ```
-Resultado esperado: el `#Preview` renderiza la grilla completa en el canvas de Xcode, sin compilar la app ni abrir el simulador — cambiar el array de `envios` se refleja casi al instante.
+
+Pega el código en `ContentView.swift`. Este tema se practica en el canvas de Preview (⌥⌘↵), pero confirma primero que el proyecto compila:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** el `#Preview` renderiza la grilla completa en el canvas de Xcode, sin compilar la app ni abrir el simulador — cambiar el array de `envios` se refleja casi al instante.
+
+**Por qué este tema importa en el trabajo real:** las Previews son lo que hace a SwiftUI productivo. Un desarrollador profesional itera el diseño en el canvas (segundos) en vez de recompilar y abrir el simulador (minutos) en cada cambio. `LazyVGrid` + `ScrollView` es, además, el patrón real para listas largas: "Lazy" significa que solo construye las celdas visibles, clave para que una lista de miles de envíos no agote la memoria.
 #### Paso 5 · Práctica guiada
 Pista: cambiá el Preview para que llame a una API real de RutaFlow en vez de pasar datos de muestra fijos — ese es el fallo deliberado: el canvas de Previews no está pensado para esperar una respuesta de red real, y el preview queda cargando indefinidamente o falla, en vez de iterar instantáneamente como se espera de este sistema.
 #### Paso 6 · Práctica independiente

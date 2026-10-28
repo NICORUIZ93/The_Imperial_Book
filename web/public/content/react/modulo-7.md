@@ -45,6 +45,16 @@ function BarraFiltro() {
   return <select value={zona} onChange={e => setZona(e.target.value)}>...</select>;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `PanelEnvios`, en cualquier otra parte del árbol, lee `useFiltroStore(state => state.zona)` y recibe el mismo valor actualizado sin que ningún Provider envuelva a ninguno de los dos componentes.
 
 #### Paso 5 · Práctica guiada
@@ -109,6 +119,16 @@ const filtroSlice = createSlice({
 const store = configureStore({ reducer: { filtro: filtroSlice.reducer } });
 // y envolver la app: <Provider store={store}>...
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: lograr el mismo comportamiento que el store de Zustand del Tema 1 exige además definir el slice, configurar `configureStore`, y envolver la aplicación completa con `<Provider>` — tres piezas de infraestructura que Zustand no necesitó para el mismo filtro de zona.
 
 **Demo con Redux DevTools:**
@@ -176,6 +196,16 @@ const useFiltroStore = create((set) => ({
   setEnvios: (envios) => set({ envios }),
 }));
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: con `envios` metido en Zustand, cualquier necesidad de revalidación, cache por zona, o invalidación tras una mutación (todo lo que TanStack Query ya resuelve, Módulo 6) tendría que reimplementarse manualmente dentro del store — y efectivamente nadie lo hace, dejando esos datos sin revalidar nunca después de la carga inicial.
 
 #### Paso 5 · Práctica guiada
@@ -236,6 +266,16 @@ const maquinaConfirmacion = createMachine({
   },
 });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: enviar el evento `EXITO` mientras la máquina está en `inactivo` no produce ninguna transición (la máquina permanece en `inactivo`), porque ese estado solo declara una transición válida para el evento `CONFIRMAR` — a diferencia de un reducer manual, donde un `case 'EXITO':` sin ninguna guarda aplicaría ese cambio sin importar el estado actual.
 
 #### Paso 5 · Práctica guiada

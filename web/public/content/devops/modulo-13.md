@@ -103,6 +103,14 @@ Commit (hash) → Imagen etiquetada con ese hash (nunca solo "latest")
       ante un incidente: ¿qué commit → qué imagen →
       pasó qué escaneo → lo desplegó qué pipeline → cuándo?
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: dado un incidente real en producción, el equipo de RutaFlow puede recorrer hacia atrás la cadena completa (imagen corriendo → tag → commit → resultado del escaneo → pipeline que lo desplegó) consultando únicamente el tag de la imagen y los logs con correlation ID, sin ninguna laguna de información.
 
 #### Paso 5 · Práctica guiada
@@ -167,6 +175,14 @@ Checklist de auto-evaluación (sin consultar notas):
 3. ¿Cómo diseñarías, desde cero, un despliegue canary con un umbral
    de rollback automático razonable?
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: respondés las tres preguntas con una justificación concreta anclada en una decisión real del pipeline de RutaFlow que construiste, confirmando que el conocimiento quedó conectado a una aplicación práctica, no memorizado de forma aislada.
 
 #### Paso 5 · Práctica guiada

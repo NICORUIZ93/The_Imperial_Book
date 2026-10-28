@@ -18,6 +18,15 @@ pregunta_multi_salto="g.V().has('nombre','Ana').out('cubrio_zona').in('cubrio_zo
 echo "clave: $pregunta_por_clave"
 echo "grafo: $pregunta_multi_salto"
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: las dos preguntas quedan lado a lado — la primera es exactamente lo que `ShipmentEvents` resuelve bien (Módulo 4); la segunda no tiene una forma natural y eficiente como JOIN repetido en SQL ni como escaneo en DynamoDB.
 #### Paso 5 · Práctica guiada
 Pista: intentá resolver la pregunta multi-salto con `ShipmentEvents` usando `Query` por `shipmentId` — ese es el fallo deliberado: no hay ningún `shipmentId` en la pregunta "repartidores que cubrieron la misma zona que Ana", porque la pregunta nunca fue sobre una clave conocida, es sobre seguir una cadena de relaciones que DynamoDB no modela como ciudadano de primera clase.

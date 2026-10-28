@@ -359,6 +359,14 @@ print('acotado, verbos:', docs_acotado[0]['rules'][0]['verbs'], 'recurso:', docs
 "
 ```
 
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+
 **Explicación línea por línea:** `pipeline-amplio.yaml` vincula el ServiceAccount `pipeline-ci` al `ClusterRole` predefinido `cluster-admin` (control total del clúster); `pipeline-acotado.yaml` define un `Role` que solo permite `get/update/patch` sobre el `Deployment` específico llamado `mi-api`, dentro del namespace `produccion` únicamente.
 
 Simula la verificación de permisos que un clúster real haría con `kubectl auth can-i` (documentando el resultado esperado ya que no hay clúster real disponible en este entorno):

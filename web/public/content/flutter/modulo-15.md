@@ -148,6 +148,16 @@ ListView.builder(
   ),
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: el DevTools Performance overlay muestra, al marcar un envío como entregado, que solo el `RepaintBoundary` de ESE ítem se repinta (resaltado en el overlay de "repaint rainbow"), no la lista completa.
 
 **Fallo deliberado:** quita `RepaintBoundary` y cambia `ValueKey(envios[i].id)` por `ValueKey(i)` (el índice, no el id real). Al marcar un envío como entregado (lo que puede reordenar la lista, moviendo los entregados al final), Flutter asocia el estado visual al ÍNDICE, no al envío real, y el checkbox de "entregado" aparece marcado en la fila equivocada tras el reordenamiento.

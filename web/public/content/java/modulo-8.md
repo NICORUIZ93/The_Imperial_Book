@@ -15,15 +15,22 @@ Un equipo necesita compilar, probar y publicar el mismo artefacto en su máquina
 Maven declara dependencias en XML estructurado (`pom.xml`); Gradle las declara con su Kotlin DSL, más conciso y programable. La analogía: un formulario impreso con casillas fijas (Maven) frente a una hoja de cálculo programable con fórmulas (Gradle).
 
 #### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+Parte de una carpeta vacía. El mismo proyecto se crea con cualquiera de las dos herramientas:
 ```bash
+# Maven
 mkdir ejemplo-maven-quickstart
 cd ejemplo-maven-quickstart
 mvn -B archetype:generate -DgroupId=academia.build -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app
 mvn test
 ```
-`mvn` es el comando que ejecuta Maven (aquí, el subcomando `archetype:generate` crea un proyecto desde una plantilla, y `test` corre las pruebas). Agrega `jackson-databind` fijada a una versión exacta en `pom.xml` y ejecuta de nuevo `mvn test`.
+```bash
+# Gradle (equivalente)
+mkdir ejemplo-gradle-quickstart && cd ejemplo-gradle-quickstart
+gradle init --type java-application --dsl kotlin --test-framework junit-jupiter --project-name app --package academia.build
+./gradlew test
+```
+`mvn` es el comando que ejecuta Maven (aquí, `archetype:generate` crea un proyecto desde una plantilla, y `test` corre las pruebas); `gradle init` + `./gradlew test` hace lo mismo en Gradle. Agrega `jackson-databind` fijada a una versión exacta —en `pom.xml` con `<dependency>` o en `build.gradle.kts` con `implementation("...")`— y ejecuta de nuevo `mvn test` / `./gradlew test`. (Equivalencias completas en el Tema 4.)
 
 #### Paso 5 · Práctica guiada
 Pista: fija deliberadamente una versión inexistente de `jackson-databind` (por ejemplo `99.99.99`) para provocar un fallo de resolución de dependencias; lee el mensaje de Maven, que identifica exactamente qué versión no pudo resolver. Resultado esperado: restaurar una versión real hace que el build vuelva a estar verde.
@@ -87,7 +94,11 @@ mvn -B archetype:generate -DgroupId=academia.build -DartifactId=app -DarchetypeA
 cd app
 mvn clean compile test package
 ```
-`mvn clean compile test package` ejecuta las cuatro fases en orden. Revisa `target/app-1.0-SNAPSHOT.jar` con `jar tf target/app-1.0-SNAPSHOT.jar` y confirma que las clases de JUnit (scope `test`) no aparecen en el listado; el código fuente generado vive en `src/main/java/academia/build/App.java`.
+```bash
+# Gradle (equivalente): el ciclo clean + build prueba y empaqueta
+./gradlew clean build
+```
+`mvn clean compile test package` ejecuta las cuatro fases en orden; `./gradlew clean build` cubre el mismo ciclo en Gradle. Revisa el `.jar` generado (`target/app-1.0-SNAPSHOT.jar` en Maven; `build/libs/*.jar` en Gradle) con `jar tf <ruta>` y confirma que las clases de JUnit (scope `test` / `testImplementation`) no aparecen en el listado; el código fuente generado vive en `src/main/java/academia/build/App.java`.
 
 #### Paso 5 · Práctica guiada
 Pista: cambia deliberadamente el scope de JUnit de `test` a la ausencia de scope (compile por defecto) y reempaqueta; ahora las clases de JUnit sí aparecen en el jar. Resultado esperado: comparar ambos listados de `jar tf` te muestra en la práctica qué hace el scope.
@@ -172,6 +183,73 @@ flowchart LR
 La estructura `core`/`api` de este tema es, en miniatura, la misma separación que el Proyecto integrador (Módulo 13) exige entre la lógica de dominio y la capa que la expone.
 
 **Cuándo no usarlo:** para una aplicación pequeña de un solo equipo y despliegue único, un multi-módulo añade sobrecarga de configuración sin beneficio; un solo módulo con paquetes bien organizados es suficiente hasta que el proyecto realmente lo justifique.
+
+### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás construir el mismo proyecto con Maven y con Gradle, traducir cualquier comando de uno al otro con una tabla de equivalencias, y decidir cuál usar según el contexto. Prerrequisitos: JDK 25, Maven y Gradle instalados. Comprueba `java --version`, `mvn --version` y `gradle --version`.
+
+#### Paso 2 · Contexto y caso real
+Casi todo proyecto Java que encontrarás usa Maven **o** Gradle, no los dos, y rara vez eliges tú: lo heredas. Un backend corporativo suele venir en Maven; un proyecto Android o Spring moderno, en Gradle. Saber leer y operar ambos —aunque prefieras uno— es lo que te permite entrar a cualquier repositorio sin quedarte bloqueado en el primer `./gradlew build` que no reconoces.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Maven y Gradle resuelven el mismo problema (compilar, resolver dependencias, probar, empaquetar) con dos filosofías: Maven es **convención sobre configuración** (estructura fija, XML declarativo, previsible); Gradle es **configuración programable** (Kotlin DSL, tareas componibles, caché incremental más agresiva). Ambos leen de los mismos repositorios (Maven Central), así que una misma dependencia se declara distinto pero resuelve el mismo artefacto.
+
+**Analogía:** es como conducir un coche automático (Maven: menos decisiones, comportamiento predecible) frente a uno manual (Gradle: más control y rendimiento, a cambio de aprender a usar el embrague). El destino es el mismo; cambia cómo llegas.
+
+**Tabla de equivalencias de comandos (referencia para todo el track):**
+
+| Tarea | Maven | Gradle (Kotlin DSL) |
+|---|---|---|
+| Compilar | `mvn compile` | `./gradlew compileJava` |
+| Ejecutar pruebas | `mvn test` | `./gradlew test` |
+| Empaquetar (.jar) | `mvn package` | `./gradlew build` |
+| Limpiar artefactos | `mvn clean` | `./gradlew clean` |
+| Limpiar + empaquetar | `mvn clean package` | `./gradlew clean build` |
+| Correr un test | `mvn test -Dtest=MiTest` | `./gradlew test --tests MiTest` |
+| Saltar pruebas | `mvn package -DskipTests` | `./gradlew build -x test` |
+| Ver árbol de dependencias | `mvn dependency:tree` | `./gradlew dependencies` |
+| Instalar en repo local | `mvn install` | `./gradlew publishToMavenLocal` |
+| Ejecutar la app (Spring Boot) | `mvn spring-boot:run` | `./gradlew bootRun` |
+
+> `./gradlew` (el *wrapper*) ejecuta la versión exacta de Gradle fijada en el proyecto, sin instalar nada global; su equivalente conceptual en Maven es `./mvnw`. Úsalos siempre en vez de `gradle`/`mvn` globales para builds reproducibles.
+
+#### Paso 4 · Demostración guiada desde cero
+Construye el mismo proyecto dos veces, una con cada herramienta, en carpetas separadas:
+
+```bash
+# --- Con Maven ---
+mkdir ejemplo-dual-maven && cd ejemplo-dual-maven
+mvn -B archetype:generate -DgroupId=academia.build -DartifactId=app \
+  -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app
+mvn clean test package          # limpia, prueba y empaqueta
+cd ../..
+
+# --- Con Gradle (mismo resultado) ---
+mkdir ejemplo-dual-gradle && cd ejemplo-dual-gradle
+gradle init --type java-application --dsl kotlin --test-framework junit-jupiter \
+  --project-name app --package academia.build
+./gradlew clean build           # limpia, prueba y empaqueta (equivalente)
+```
+
+**Resultado esperado:** ambos builds terminan en verde y producen un `.jar` (`target/app-1.0-SNAPSHOT.jar` en Maven; `app/build/libs/app.jar` en Gradle). Mismo código, misma dependencia resuelta desde Maven Central, dos rutas de salida distintas. **Fallo deliberado y diagnóstico:** en el proyecto Gradle ejecuta `mvn test` (el comando del otro sistema); falla con "no existe pom.xml". Confirma que cada herramienta solo entiende su propio archivo de build (`pom.xml` vs `build.gradle.kts`), y que por eso identificar cuál usa un repo es lo primero que haces al clonarlo.
+
+#### Paso 5 · Práctica guiada
+Pista: declara la misma dependencia (`jackson-databind`) en ambos proyectos —en `pom.xml` con el bloque `<dependency>` y en `build.gradle.kts` con `implementation("...")`— y ejecuta `mvn dependency:tree` y `./gradlew dependencies`. Compara cómo cada herramienta muestra el mismo árbol de dependencias resuelto.
+
+#### Paso 6 · Práctica independiente
+Toma cualquier comando `mvn` de los temas anteriores de este módulo y tradúcelo a su equivalente Gradle usando la tabla del Paso 3; ejecútalo en tu proyecto Gradle y confirma que produce el mismo efecto. Entrega al menos tres pares de comandos equivalentes con su salida.
+
+#### Paso 7 · Cierre y evidencia
+Guarda los dos proyectos (Maven y Gradle), los dos `.jar` generados y tu tabla de al menos tres comandos equivalentes verificados; como siguiente paso, cualquier tema del track que muestre un comando `mvn` ya sabes traducirlo a Gradle. Errores comunes: usar `gradle`/`mvn` global en vez del wrapper; buscar `target/` en un proyecto Gradle (está en `build/`); asumir que un comando de un sistema funciona en el otro. Fuentes oficiales: [Maven — Guides](https://maven.apache.org/guides/), [Gradle — User Manual](https://docs.gradle.org/current/userguide/userguide.html) y [Gradle — Migrating from Maven](https://docs.gradle.org/current/userguide/migrating_from_maven.html).
+**¿Por qué es importante?** Porque en un trabajo real no eliges la herramienta de build: la heredas del proyecto. Operar ambas con fluidez es lo que te hace productivo en cualquier repositorio Java desde el primer día.
+**Evidencia de aprendizaje:** entrega los dos proyectos construidos, ambos `.jar`, y tres comandos equivalentes Maven↔Gradle verificados.
+**Conceptos clave:** equivalencia de comandos, wrapper (`./gradlew`, `./mvnw`), convención (Maven) frente a configuración programable (Gradle).
+
+Este tema comparativo es la base para el proyecto integrador de este track: el build debe ser reproducible con la herramienta que el proyecto adopte, y la evidencia se entrega con el wrapper, no con una instalación global.
+
+**Cuándo no usarlo:** no mantengas los dos sistemas de build en paralelo en un mismo proyecto real (dos archivos de build que se desincronizan es una fuente de errores); elige uno. Este tema enseña ambos para que sepas leerlos, no para que los uses juntos en producción.
 
 ---
 

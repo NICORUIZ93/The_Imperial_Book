@@ -97,6 +97,14 @@ def confirmar_entrega(conductor_id: str, envio: dict, repositorio):
 envio = {"id": "RF-4471", "conductor_asignado": "c-891"}
 confirmar_entrega("c-891", envio, repositorio=FakeRepo())
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: la llamada con `c-891` (el conductor real asignado) se ejecuta sin error — la autorización depende del dato del envío, no solo de que el conductor haya iniciado sesión.
 
 #### Paso 5 · Práctica guiada
@@ -195,6 +203,14 @@ payload = json.dumps(comando, sort_keys=True).encode()
 firma = hmac.new(SECRET, payload, hashlib.sha256).hexdigest()
 print(hmac.compare_digest(firma, hmac.new(SECRET, payload, hashlib.sha256).hexdigest()))
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: `True` — la firma calculada sobre el payload exacto coincide, confirmando que nadie lo modificó entre que se firmó y que se verificó.
 
 #### Paso 5 · Práctica guiada
@@ -273,6 +289,14 @@ Validar decide qué entra; el encoding contextual decide cómo se interpreta al 
   document.getElementById("nota").textContent = notaDelConductor;
 </script>
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: el `div` muestra literalmente el texto "dejado con el portero" — `textContent` nunca interpreta el contenido como HTML, sin importar qué caracteres incluya.
 
 #### Paso 5 · Práctica guiada

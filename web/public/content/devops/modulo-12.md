@@ -556,6 +556,14 @@ chmod +x crear-servicio.sh
 find servicios -type f
 ```
 
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+
 **Explicación línea por línea:** un equipo de producto ejecuta un único comando (`./crear-servicio.sh mi-nuevo-servicio`) sin necesitar escribir manualmente ningún Dockerfile, workflow de CI o manifiesto de Kubernetes; la "plataforma" (este script, en una IDP real sería una herramienta interna mucho más sofisticada) ya incorpora el escaneo de seguridad del Módulo 11 y el healthcheck del Módulo 3/6 como comportamiento por defecto, sin que el equipo de producto tenga que recordarlos ni configurarlos manualmente.
 
 Confirma que dos equipos distintos, usando la misma IDP mínima, obtienen servicios consistentes sin ninguna variación accidental entre ellos:

@@ -53,6 +53,15 @@ public class Cliente {
 }
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 En `Pedido.java`, declara `@ManyToOne(fetch = FetchType.LAZY, optional = false)` y `@JoinColumn(name = "cliente_id", nullable = false)`. Crea un servicio con `@Transactional` que construya el cliente, agregue un pedido y guarde el agregado mediante `ClienteRepository`. Ejecuta `./mvnw test`.
 
 **Resultado esperado:** el test persiste ambos registros y `pedido.cliente_id` referencia al cliente. **Fallo deliberado:** elimina la llamada `pedido.asignarCliente(this)`; revisa la clave foránea para descubrir que actualizar solo la colección inversa no basta.
@@ -97,6 +106,15 @@ clientes.forEach(cliente -> cliente.getPedidos().size());
 long consultas = sessionFactory.getStatistics().getPrepareStatementCount();
 System.out.println("Consultas SQL: " + consultas);
 ```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
 
 Ejecuta `./mvnw test -Dtest=ConsultaClienteTest`. **Resultado esperado:** observa la consulta raíz y consultas de colección adicionales; el total depende de caché, datos y versión, así que registra también esas condiciones. **Fallo deliberado:** omite `clear()` del contexto y explica cómo la caché de primer nivel hace engañosa una medición repetida.
 

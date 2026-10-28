@@ -139,7 +139,8 @@ class TareaRepositoryTest {
 ```
 
 ```bash
-mvn test -Dtest=TareaRepositoryTest
+mvn test -Dtest=TareaRepositoryTest # Maven
+./gradlew test --tests TareaRepositoryTest # Gradle (equivalente)
 ```
 
 `mvn` es el comando que ejecuta Maven; `test` es la fase del ciclo de vida que compila y corre las pruebas, y `-Dtest=` es la propiedad que acota la ejecución a una sola clase de test.
@@ -292,7 +293,8 @@ class NMasUnoTest {
 ```
 
 ```bash
-mvn test -Dtest=NMasUnoTest
+mvn test -Dtest=NMasUnoTest         # Maven
+./gradlew test --tests NMasUnoTest  # Gradle (equivalente)
 ```
 
 **Resultado esperado:** el test pasa: `stats.getQueryExecutionCount()` reporta exactamente `4` queries (1 de `findAll()` + 3 de acceso perezoso, una por usuario) — la medición real del problema N+1, no una suposición.
@@ -386,7 +388,8 @@ cat >> src/main/resources/application.properties <<'EOF'
 spring.jpa.hibernate.ddl-auto=validate
 spring.flyway.enabled=true
 EOF
-mvn test
+mvn test          # Maven
+./gradlew test    # Gradle (equivalente)
 ```
 
 **Explicación línea por línea:** `V1__crear_tabla_tarea.sql` (prefijo `V1`, número de versión secuencial, seguido de `__` y una descripción) declara el esquema inicial en SQL real; `spring.jpa.hibernate.ddl-auto=validate` le indica a Hibernate que NO genere ni modifique el esquema, solo que valide que las entidades coincidan con lo que Flyway ya creó — si no coinciden, la aplicación falla al arrancar en vez de aplicar un cambio silencioso no revisado.
@@ -420,7 +423,8 @@ class MigracionFlywayTest {
 ```
 
 ```bash
-mvn test -Dtest=MigracionFlywayTest
+mvn test -Dtest=MigracionFlywayTest # Maven
+./gradlew test --tests MigracionFlywayTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS`, confirmando que Flyway aplicó `V1__crear_tabla_tarea.sql` antes de que el contexto de Spring arrancara, que `ddl-auto=validate` confirmó que la entidad `Tarea` coincide con ese esquema, y que guardar y leer una fila real funciona correctamente.

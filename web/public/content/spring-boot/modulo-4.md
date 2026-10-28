@@ -135,7 +135,8 @@ class SecurityFilterChainTest {
 ```
 
 ```bash
-mvn test -Dtest=SecurityFilterChainTest
+mvn test -Dtest=SecurityFilterChainTest           # Maven
+./gradlew test --tests SecurityFilterChainTest    # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con los 3 tests en verde: `/public/health` responde `200` sin credencial, `/api/entregas` responde `401` sin autenticar, y responde `200` cuando `@WithMockUser` simula un usuario autenticado real dentro del contexto de seguridad.
@@ -351,7 +352,8 @@ class JwtFilterTest {
 ```
 
 ```bash
-mvn test -Dtest=JwtFilterTest
+mvn test -Dtest=JwtFilterTest           # Maven
+./gradlew test --tests JwtFilterTest    # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con los 3 tests en verde: sin token, `401`; con un token real firmado pero de rol `DRIVER`, `403` (autenticado pero sin el rol requerido); con un token real de rol `ADMIN`, `200` — los tres casos usan tokens JWT genuinamente generados y validados por `JwtService`, no simulados.
@@ -502,7 +504,8 @@ class CorsConfigTest {
 ```
 
 ```bash
-mvn test -Dtest=CorsConfigTest
+mvn test -Dtest=CorsConfigTest           # Maven
+./gradlew test --tests CorsConfigTest    # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con ambos tests en verde: la petición preflight (`OPTIONS`) desde el origen permitido recibe `Access-Control-Allow-Origin: https://demo.academia.dev`, mientras la misma petición desde un origen no listado es rechazada por el propio filtro CORS de Spring Security antes de llegar al controller.
@@ -583,7 +586,8 @@ Requisitos: JDK 25 y Maven 3.9. Copia el laboratorio independiente con BOM Sprin
 ```bash
 cp -R examples/spring-ssrf ejemplo-ssrf
 cd ejemplo-ssrf
-mvn test
+mvn test          # Maven
+./gradlew test    # Gradle (equivalente)
 ```
 Crea o inspecciona `src/main/java/com/academia/SafeClient.java`:
 ```java
@@ -636,6 +640,207 @@ Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechaz
 ---
 
 La configuración de CORS, CSRF e InetAddressFilter de este tema es la que necesitará el frontend y los webhooks que consuma el proyecto integrador de este track (microservicio productivo, Módulo 12).
+
+### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás unir las piezas de los temas anteriores en un flujo real: un endpoint `POST /api/auth/login` que verifica credenciales y devuelve un JWT firmado por el `JwtService` (Tema 2), y un endpoint protegido `GET /api/usuarios` que solo responde cuando ese token viaja en `Authorization: Bearer`, todo confirmado con `MockMvc` real.
+
+**Conocimiento previo:** Temas 1 (SecurityFilterChain) y 2 (filtro JWT) de este módulo.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** En los temas anteriores generaste tokens y protegiste rutas en ejemplos separados. En el backend real de RutaFlow, el panel operativo hace login una sola vez (`POST /api/auth/login`), recibe un token y lo adjunta en cada operación posterior. Ver ese recorrido completo —credenciales → token → petición protegida— es lo que une la seguridad en un sistema que de verdad funciona, no piezas aisladas.
+
+#### Paso 3 · Teoría con analogía
+
+**Conceptos clave:** endpoint de login, emisión de JWT tras verificar credenciales, header `Authorization: Bearer`, flujo stateless de punta a punta.
+
+El flujo tiene tres momentos: (1) **login** — `POST /api/auth/login` recibe email y contraseña, verifica la contraseña contra el hash guardado (como en Node M6 Tema 1; en Spring con `PasswordEncoder`), y si coincide firma un JWT con `JwtService.generar(...)` (Tema 2); (2) **el cliente guarda el token**; (3) **uso** — cada petición a una ruta protegida lleva `Authorization: Bearer <token>`, que el `JwtFilter` (Tema 2) valida y convierte en una identidad en el `SecurityContextHolder` antes de que la ruta responda.
+
+**Analogía:** `/api/auth/login` es la recepción del edificio donde muestras tu documento una vez y recibes una tarjeta temporal; el header `Authorization: Bearer` es pasar esa tarjeta por el lector de cada puerta; el `401` es la puerta que no se abre sin tarjeta válida.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant C as Cliente
+  participant A as API (Spring)
+  C->>A: POST /api/auth/login { email, password }
+  A->>A: PasswordEncoder.matches + JwtService.generar (Tema 2)
+  A-->>C: 200 { token }
+  C->>A: GET /api/usuarios (sin token)
+  A-->>C: 401 (SecurityFilterChain, Tema 1)
+  C->>A: GET /api/usuarios + Authorization: Bearer <token>
+  A->>A: JwtFilter valida y puebla SecurityContextHolder (Tema 2)
+  A-->>C: 200 [ usuarios ]
+```
+
+**Diagrama interactivo:** [Flujo de login con JWT: de credenciales a ruta protegida](/visuals/temas/spring-boot/modulo-4-tema-5-login-jwt.html) — secuencia explorable con los tres momentos (login, sin token, con token) y la frontera de seguridad resaltada.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Reutiliza `academia-spring` (o créalo con `mkdir -p academia-spring` si es tu primera vez). Reutiliza el `JwtService` del Tema 2 y añade un controlador de login y uno de usuarios:
+
+```java
+// src/main/java/com/academia/seguridad/AuthController.java
+package com.academia.seguridad;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    private final JwtService jwtService;
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+    // Usuario de ejemplo: la contraseña se guarda HASHEADA, nunca en texto plano.
+    private final String emailValido = "ana@rutaflow.dev";
+    private final String hashGuardado = encoder.encode("clave-larga-segura");
+
+    public AuthController(JwtService jwtService) { this.jwtService = jwtService; }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        String email = body.getOrDefault("email", "");
+        String password = body.getOrDefault("password", "");
+        // Respuesta idéntica ante email inexistente o contraseña incorrecta.
+        if (!email.equals(emailValido) || !encoder.matches(password, hashGuardado)) {
+            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+        }
+        String token = jwtService.generar(email, "ADMIN");
+        return ResponseEntity.ok(Map.of("token", token));
+    }
+}
+```
+
+```java
+// src/main/java/com/academia/seguridad/UsuariosController.java
+package com.academia.seguridad;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+public class UsuariosController {
+
+    @GetMapping("/api/usuarios")
+    public List<Map<String, String>> listar() {
+        // Nunca se devuelve el hash de la contraseña.
+        return List.of(Map.of("email", "ana@rutaflow.dev", "rol", "ADMIN"));
+    }
+}
+```
+
+Asegúrate de que el `SecurityFilterChain` (Tema 1) permita `/api/auth/**` sin autenticar y exija token en `/api/usuarios`:
+
+```java
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/api/auth/**", "/public/**").permitAll()
+    .anyRequest().authenticated())
+```
+
+Confirma el flujo completo con `MockMvc` real, encadenando login → extraer token → usarlo:
+
+```java
+// src/test/java/com/academia/seguridad/LoginFlowTest.java
+package com.academia.seguridad;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class LoginFlowTest {
+
+    @Autowired private MockMvc mockMvc;
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    @Test
+    void flujoCompletoLoginYRutaProtegida() throws Exception {
+        // 1. Login devuelve un token
+        String respuesta = mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"ana@rutaflow.dev\",\"password\":\"clave-larga-segura\"}"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        JsonNode token = mapper.readTree(respuesta).get("token");
+
+        // 2. Sin token -> 401
+        mockMvc.perform(get("/api/usuarios")).andExpect(status().isUnauthorized());
+
+        // 3. Con token -> 200
+        mockMvc.perform(get("/api/usuarios")
+                .header("Authorization", "Bearer " + token.asText()))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void credencialesInvalidasResponde401() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"ana@rutaflow.dev\",\"password\":\"incorrecta\"}"))
+            .andExpect(status().isUnauthorized());
+    }
+}
+```
+
+```bash
+mvn test -Dtest=LoginFlowTest           # Maven
+./gradlew test --tests LoginFlowTest    # Gradle (equivalente)
+```
+
+**Resultado esperado:** `BUILD SUCCESS` con los 2 tests en verde: el flujo completo obtiene un token en el login, recibe `401` sin él y `200` con `Authorization: Bearer`; y las credenciales incorrectas responden `401` sin emitir token. **Fallo deliberado:** cambia en `AuthController` la verificación a `encoder.matches("otra", hashGuardado)` (siempre falsa) y ejecuta `flujoCompletoLoginYRutaProtegida` — el test FALLA en el login con `401` en vez de `200`, confirmando que sin credenciales válidas no se emite token y el resto del flujo no puede continuar. Revierte el cambio.
+
+#### Paso 5 · Práctica guiada — repetición progresiva
+
+1. Añade a `/api/usuarios` la anotación `@PreAuthorize("hasRole('ADMIN')")` y confirma que un token con rol `DRIVER` recibe `403` mientras el de `ADMIN` recibe `200`.
+2. Devuelve también el `sub` (email) dentro de la respuesta protegida leyéndolo del `SecurityContextHolder`, y confirma que coincide con el usuario que hizo login.
+3. Haz que el login responda lo mismo (`401`, mismo cuerpo) ante un email inexistente y ante una contraseña incorrecta; confirma con dos tests que ningún mensaje revela cuál de los dos falló.
+4. Escribe de memoria (sin mirar) el test que encadena login → token → petición protegida.
+
+**Pista:** extrae el token del JSON de respuesta con un `ObjectMapper`; no lo hardcodees, porque cada login genera un token distinto con una marca de tiempo nueva.
+
+#### Paso 6 · Práctica independiente
+
+**Completa el código:** rellena el espacio para que el login solo emita token cuando la contraseña coincide con el hash:
+
+```java
+if (!email.equals(emailValido) || !encoder.____(password, hashGuardado)) {
+    return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+}
+```
+
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `AuthController` con `POST /api/auth/login` que verifique credenciales y emita un JWT, más un test `MockMvc` que confirme el flujo login → `401` sin token → `200` con token. Compara después contra el patrón del Paso 4.
+
+#### Paso 7 · Cierre y evidencia
+
+Ya tienes el flujo de autenticación completo de punta a punta en Spring: `/api/auth/login` verifica credenciales y emite el JWT, y `/api/usuarios` lo exige vía `Authorization: Bearer`, confirmado con `MockMvc` real encadenando los tres pasos. Es el mismo recorrido que protege el proyecto integrador (microservicio productivo, Módulo 12). **Evidencia:** entrega los 2 tests de `LoginFlowTest` en verde y el resultado del fallo deliberado mostrando el login rechazado. Fuente oficial: [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
+
+**Errores comunes:** devolver el hash de la contraseña en la respuesta de `/api/usuarios`; responder distinto ante email inexistente vs contraseña incorrecta (filtra qué correos existen); olvidar permitir `/api/auth/**` en el `SecurityFilterChain` (el propio login quedaría bloqueado con `401`).
+
+**Cuándo no usarlo:** si delegás la autenticación a un proveedor externo (Keycloak/OIDC, Módulo 10), no implementas el login tú mismo: el proveedor emite el token y tu API solo lo valida como resource server.
+
+---
 
 ## Laboratorio práctico
 

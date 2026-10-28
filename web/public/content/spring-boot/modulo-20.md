@@ -47,6 +47,15 @@ public class PedidosScheduler {
 }
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 Activa scheduling con `@EnableScheduling` en una configuración. En `src/main/resources/application.yml` configura `app.revision.cron: "0 */5 * * * *"` para el laboratorio. Inyecta `Clock` o una interfaz de servicio para probar lógica de vencimiento determinísticamente. Ejecuta `./mvnw test`.
 
 **Resultado esperado:** la prueba invoca el servicio y comprueba el criterio de vencimiento; no depende de que el test duerma cinco minutos. **Fallo deliberado:** levanta dos instancias con el mismo cron y un contador compartido; observa dos ejecuciones. Diagnostica que un `@Scheduled` no es un lock distribuido.
@@ -86,6 +95,15 @@ En `src/main/java/academia/envios/EnvioCreado.java` declara un evento inmutable;
 ```java
 publisher.publishEvent(new EnvioCreado(envioId));
 ```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
 
 El listener en `src/main/java/academia/envios/AuditoriaEnvio.java`:
 
@@ -152,6 +170,15 @@ public class CorreoPedido {
 }
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 En un test, reemplaza `JavaMailSender` con un mock y captura `SimpleMailMessage`; valida destinatario y asunto sin enviar correo. Ejecuta `./mvnw test -Dtest=CorreoPedidoTest`.
 
 **Resultado esperado:** el mock recibe un mensaje con los campos esperados y ningún SMTP externo se contacta. **Fallo deliberado:** usa credenciales SMTP literales y falla la configuración en CI; mueve el secreto a variables externas y falla explícitamente si falta en el perfil de producción.
@@ -208,6 +235,15 @@ public class TarifaService {
 }
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 Activa caching con `@EnableCaching` y configura Caffeine con máximo de entradas y TTL. Escribe un test que invoque dos veces `buscar("NORTE")` y verifique una llamada al repository, luego actualice y verifique que la siguiente búsqueda vuelve a leer. Ejecuta `./mvnw test -Dtest=TarifaServiceTest`.
 
 **Resultado esperado:** la segunda lectura reutiliza la entrada y la escritura la invalida. **Fallo deliberado:** elimina `@CacheEvict`; actualiza tarifa y demuestra que el usuario recibe el valor viejo hasta expirar el TTL.
@@ -257,6 +293,15 @@ if not id_envio:
     raise ValueError("Falta id del envío en el contrato SOAP 1.2")
 print(f"Consultar envío: {id_envio}")
 ```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
 
 ```bash
 mkdir -p practica-integraciones

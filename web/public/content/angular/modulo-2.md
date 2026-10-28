@@ -594,6 +594,14 @@ Crea `src/app/carrito/cantidad.ts`:
 cantidad = linkedSignal(() => Math.min(this.stockDisponible(), 1));
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Angular, pega el código y arráncalo):
+
+```bash
+ng serve
+```
+Abre http://localhost:4200; corre las pruebas con `ng test`.
+
+
 ```html
 <input type="number" [value]="cantidad()" (input)="cantidad.set(+$event.target.value)">
 ```
@@ -673,6 +681,14 @@ conductor = resource({
   loader: ({ request }) => fetch(`/api/conductores/${request}`).then(r => r.json()),
 });
 ```
+
+**Ejecuta el ejemplo** (en un proyecto Angular, pega el código y arráncalo):
+
+```bash
+ng serve
+```
+Abre http://localhost:4200; corre las pruebas con `ng test`.
+
 
 ```html
 @if (conductor.isLoading()) { <p>Cargando...</p> }

@@ -27,6 +27,16 @@ lib/
     router.dart        ← go_router (módulo 3)
     theme.dart
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: recorriendo el código fuente carpeta por carpeta, ningún archivo en `domain/` importa nada de `data/` ni `presentation/`; `data/` implementa las interfaces definidas en `domain/`, y `presentation/` consume `domain/` sin conocer detalles de `dio` o Hive directamente.
 
 #### Paso 5 · Práctica guiada
@@ -102,6 +112,16 @@ class ListaEnviosScreen extends ConsumerWidget {
   }
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `ListaEnviosScreen` muestra el spinner mientras carga, la lista real cuando los datos llegan, o un mensaje de error si falla — los tres casos posibles manejados explícitamente, sin ningún estado ambiguo.
 
 #### Paso 5 · Práctica guiada
@@ -189,6 +209,16 @@ Principio universal: declarar la UI como función del estado actual
 (igual en SwiftUI y Compose), solo que Flutter además controla el
 renderizado final, mientras SwiftUI/Compose delegan en el sistema nativo.
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: tu retrospectiva separa explícitamente qué parte depende del motor de renderizado propio de Flutter de qué parte es un principio de UI declarativa que reconocerías en cualquiera de los tres.
 
 #### Paso 5 · Práctica guiada

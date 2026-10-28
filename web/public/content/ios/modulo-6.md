@@ -25,6 +25,14 @@ class EnvioLocal {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 ```swift
 WindowGroup { AppRutaFlow() }
     .modelContainer(for: EnvioLocal.self)
@@ -102,6 +110,14 @@ struct PendientesDeSincronizar: View {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: llamar `confirmarOffline(guia: "RF-7001", pin: "111222")` hace que `pendientes` (y por lo tanto la `List`) se actualice sola, mostrando el nuevo envío sin que nadie haya llamado a ningún método de "refrescar".
 #### Paso 5 · Práctica guiada
 Pista: modificá `envio.sincronizado = true` directamente sobre un objeto `EnvioLocal` obtenido de `pendientes`, pero sin llamar `try? context.save()` después — ese es el fallo deliberado: el cambio puede no persistir de inmediato al almacenamiento subyacente aunque la vista ya lo refleje en memoria; si la app se cierra antes del guardado automático, ese cambio podría perderse.
@@ -169,6 +185,14 @@ class EnvioLocal {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: los `EnvioLocal` guardados antes de este cambio siguen leyéndose sin error, con `fotoPath == nil` — agregar un campo opcional es una migración liviana que SwiftData maneja automáticamente.
 #### Paso 5 · Práctica guiada
 Pista: cambiá `fotoPath` de opcional a requerido (`var fotoPath: String` sin `?`, sin valor por defecto) — ese es el fallo deliberado: los registros `EnvioLocal` ya guardados en el dispositivo de un conductor real no tienen ningún valor para ese campo, y SwiftData no puede migrar automáticamente un campo requerido sin un valor conocido para los datos existentes.

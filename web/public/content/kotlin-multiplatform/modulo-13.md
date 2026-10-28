@@ -61,6 +61,14 @@ fun procesarBuffer(datos: ByteArray) {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: `c_funcion_nativa` recibe un puntero válido porque la llamada ocurre completamente dentro del bloque `usePinned`; apenas termina el bloque, el runtime de Kotlin/Native puede volver a mover o liberar esa memoria libremente.
 
 #### Paso 5 · Práctica guiada
@@ -92,6 +100,14 @@ Swift Export mapea tipos Kotlin (incluyendo funciones `suspend`) de forma más d
 ```kotlin
 public suspend fun TaskClient.task(id: TaskId): TaskResult // Swift Export mapea esto a: func task(id: TaskId) async -> TaskResult
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 ```swift
 let resultado = await taskClient.task(id: taskId) // consumido directamente como async de Swift
 ```
@@ -248,6 +264,14 @@ jobs:
       - run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
       - run: ./gradlew :shared:linkDebugFrameworkIosArm64
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: el pipeline de CI compila explícitamente contra la versión mínima de Xcode declarada como soportada (`15.0`) y contra la más reciente (`16.2`), detectando si un cambio reciente usa accidentalmente una API solo disponible en la versión más nueva.
 
 #### Paso 5 · Práctica guiada

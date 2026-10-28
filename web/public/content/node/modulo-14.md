@@ -33,6 +33,15 @@ const resultado = asignarConductor({ id: "p-1", conductorId: null }, "c-9");
 console.log(resultado);
 ```
 
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+
 Ejecuta directamente con `node src/asignar.ts` (sin `tsc`, sin `ts-node`, sin ningún paso de compilación). **Resultado esperado:** Node elimina las anotaciones de tipo (`: Pedido`, `: string`) en memoria y ejecuta el JavaScript resultante, imprimiendo `{ id: 'p-1', conductorId: 'c-9' }`, sin que ningún archivo `.js` compilado se haya generado en disco.
 
 #### Paso 5 · Práctica guiada
@@ -165,6 +174,15 @@ async function crearPedidoSaga(pedido) {
 }
 ```
 
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+
 **Resultado esperado:** si `cobrar` lanza una excepción (tarjeta rechazada), el `catch` compensa en orden inverso los pasos ya completados (`liberarConductor`, luego `cancelarPedido`), dejando el sistema en un estado consistente sin un pedido fantasma ni un conductor reservado indefinidamente.
 
 #### Paso 5 · Práctica guiada
@@ -227,6 +245,15 @@ export function calcularCosto({ distanciaKm, pesoKg }) {
   return distanciaKm * 1500 + pesoKg * 200;
 }
 ```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
 
 Y dos adaptadores delgados:
 
@@ -313,6 +340,15 @@ USER app
 CMD ["node", "src/servidor.js"]
 ```
 
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+
 Y en `src/servidor.js`, el manejo explícito de la señal:
 
 ```js
@@ -392,6 +428,15 @@ jobs:
       - run: docker tag registro/pedidos:${{ github.sha }} registro/pedidos:production
       - run: docker push registro/pedidos:production
 ```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
 
 **Resultado esperado:** la imagen se construye una única vez con el tag inmutable `${{ github.sha }}`; tanto `staging` como `production` son simplemente ese mismo artefacto re-etiquetado, nunca reconstruido, garantizando bit por bit el mismo binario en ambos entornos.
 

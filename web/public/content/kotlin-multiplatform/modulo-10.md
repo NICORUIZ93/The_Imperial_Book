@@ -28,6 +28,14 @@ jobs:
     steps:
       - run: ./gradlew :shared:linkDebugFrameworkIosArm64
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: el job `build-ios` corre específicamente en un runner `macos-latest` (porque el toolchain de Apple solo está disponible en macOS) y falla el pipeline completo si `commonMain` rompe la compilación de iOS, incluso si `build-android` pasó sin problemas.
 
 #### Paso 5 · Práctica guiada
@@ -118,6 +126,14 @@ lane :beta do
   upload_to_testflight
 end
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: `fastlane beta` incrementa automáticamente el número de build, compila el scheme correcto, y sube el `.ipa` resultante a TestFlight sin que nadie tenga que recordar manualmente el orden ni el número de build anterior.
 
 #### Paso 5 · Práctica guiada
@@ -194,6 +210,14 @@ Centralizar el número de versión en un archivo compartido leído por ambos pip
 # version.properties (leído por ambos pipelines de build)
 sharedVersion=2.3.1
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 ```kotlin
 // shared/build.gradle.kts
 val sharedVersion = file("../version.properties").readLines()

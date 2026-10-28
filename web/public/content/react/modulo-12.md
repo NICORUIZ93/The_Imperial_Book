@@ -61,6 +61,16 @@ src/
     uiStore.ts             ← Zustand, solo estado de cliente
   router.tsx
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: recorriendo el código fuente carpeta por carpeta, ningún archivo de `features/envios/` importa nada de `features/auth/` directamente (ambos se comunican solo a través de `RutaProtegida`), y `uiStore.ts` no contiene ningún dato que provenga de una API.
 
 #### Paso 5 · Práctica guiada
@@ -128,6 +138,16 @@ function ListaEnvios() {
   return /* ... */;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: un conductor sin sesión es redirigido a `/login` antes de que `ListaEnvios` llegue a montarse, por lo que `useEnvios()` nunca dispara ninguna petición de red para un usuario no autenticado.
 
 #### Paso 5 · Práctica guiada
@@ -184,6 +204,16 @@ function useEnvios() {
   });
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `ListaEnvios`, `ResumenZona` y `ContadorPendientes` llaman los tres a `useEnvios()` sin que ninguno escriba `queryKey` ni `queryFn` directamente — los tres comparten automáticamente la misma cache, sin riesgo de un typo que rompa la deduplicación entre ellos.
 
 #### Paso 5 · Práctica guiada

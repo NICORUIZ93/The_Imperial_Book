@@ -3,7 +3,7 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 236 módulos y 983 temas editoriales en formato de
+La academia reúne 14 rutas, 236 módulos y 1007 temas editoriales en formato de
 libro. La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -142,8 +142,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 235
-módulos y 983 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 236
+módulos y 1007 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -152,8 +152,10 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 983/983. La auditoría independiente de metodología de siete pasos
-registra 472/983 temas completos según sus marcadores. La diferencia y los
+registra 1007/1007 temas practicables (cada tema tiene demostración ejecutable con
+comando y resultado, verificado por el auditor endurecido). La auditoría independiente
+de metodología de siete pasos registra 496/1007 temas completos según sus marcadores. La
+diferencia y los
 criterios faltantes por tema permanecen visibles en
 [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md) y
 [`docs/editorial-backlog.md`](docs/editorial-backlog.md).

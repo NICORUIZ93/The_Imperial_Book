@@ -25,6 +25,14 @@ Criterios:
 - Dado un recipientPin de 4 dígitos, cuando se confirma, entonces se rechaza con TypeError, sin cambiar el estado del envío.
 - Dado un commandId ya procesado antes, cuando se reenvía el mismo comando, entonces se devuelve el resultado anterior sin volver a confirmar.
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: tres criterios, cada uno con un "dado/cuando/entonces" verificable — los tres ya están implementados literalmente en `confirmDelivery()`, lo que confirma que la especificación describe el código real, no una aspiración.
 
 #### Paso 5 · Práctica guiada
@@ -105,6 +113,14 @@ Entorno: operación normal con conexión intermitente
 Respuesta: la segunda llamada devuelve el resultado ya guardado, sin volver a confirmar ni duplicar
 Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: un escenario completo que explica por qué el código ya revisado en el Tema 1 necesita esa restricción — no es un detalle de implementación arbitrario, responde a un escenario de red real.
 
 #### Paso 5 · Práctica guiada
@@ -185,6 +201,14 @@ Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del r
 ```bash
 grep -n "interface DeliveryRepository" -A 3 examples/rutaflow/node/confirm-delivery.ts
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: ves `findCommandResult(commandId)` y `confirm(command)` — dos métodos, nada de SQL, DynamoDB ni HTTP en la firma. `confirmDelivery` solo conoce ese contrato.
 
 #### Paso 5 · Práctica guiada
@@ -280,6 +304,14 @@ Query eficiente por envío sin importar el volumen total de la tabla; a cambio,
 ninguna consulta ad hoc nueva ("todos los envíos de este mes") es gratis sin un GSI
 diseñado para ese patrón específico.
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: un documento completo con contexto, decisión y consecuencias — no solo "elegimos DynamoDB", sino por qué y qué se sacrificó a cambio.
 
 #### Paso 5 · Práctica guiada

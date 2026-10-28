@@ -22,6 +22,16 @@ AnimatedContainer(
   child: expandida ? DetalleCompacto(envio: envio) : null,
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: tocar `TarjetaEnvio` cambia `expandida` y la altura del contenedor se interpola suavemente de 72 a 160 píxeles en 300ms, sin ningún código explícito de animación.
 
 #### Paso 5 · Práctica guiada
@@ -96,6 +106,16 @@ El panel de Performance mide el tiempo real de cada frame; a 60fps cada frame ti
 3. Grabá mientras hacés scroll rápido en ListaEnvios
 4. Detené la grabación y revisá los frames marcados en rojo
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: DevTools muestra que varios frames durante el scroll exceden los 16ms, y señala específicamente que la fase de "build" (no layout ni paint) consume más tiempo — apuntando a que algo dentro del método `build` de `TarjetaEnvio` es costoso.
 
 #### Paso 5 · Práctica guiada
@@ -158,6 +178,16 @@ Row(children: [
   RepaintBoundary(child: IndicadorSincronizando()), // aísla su repintura del resto de la tarjeta
 ])
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: grabando de nuevo con DevTools, el ícono `const` ya no aparece en la lista de widgets reconstruidos en cada frame; el `IndicadorSincronizando` sigue animándose normalmente, pero su repintura ya no obliga a repintar el resto de `TarjetaEnvio`.
 
 #### Paso 5 · Práctica guiada
@@ -203,6 +233,89 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, `TarjetaEnvio` vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene envolver cada widget con `RepaintBoundary` "por si acaso" — cada capa de pintura adicional tiene su propio costo de memoria; usalo específicamente cuando DevTools confirma que un elemento se repinta frecuentemente dentro de contenido mayormente estático, no como optimización preventiva sin medir.
+
+### Tema 4: Isolates — trabajo pesado sin congelar la interfaz
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás mover un cálculo pesado a un **isolate** con `compute()` para que no bloquee el hilo de UI, y explicar por qué `async/await` por sí solo no basta para trabajo intensivo de CPU. Prerrequisitos: Módulo 0 (Futures y async/await) y Tema 2 de este módulo (detección de jank).
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, procesar el historial completo de posiciones GPS de un repartidor para calcular estadísticas (distancia total, tiempo detenido) es un cálculo pesado. Si lo haces en el hilo principal, la UI se **congela** varios segundos: los botones no responden y la animación se traba. Un isolate hace ese trabajo en paralelo, y la interfaz sigue fluida.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Dart es de un solo hilo: todo tu código (incluido el render) corre en el **isolate principal**. `async/await` sirve para esperar operaciones de E/S (red, disco) sin bloquear, pero NO para trabajo de CPU: un bucle que tritura números durante 3 segundos bloquea el hilo aunque sea `async`. Un **isolate** es un hilo de ejecución independiente con su propia memoria; `compute(funcion, dato)` ejecuta `funcion` en un isolate aparte y devuelve el resultado sin tocar la UI.
+
+**Analogía:** el isolate principal es un cocinero que también atiende a los clientes. Si se pone a pelar 10 kg de papas (trabajo de CPU), nadie es atendido. Un isolate es un segundo cocinero en otra cocina: pela las papas en paralelo mientras el primero sigue atendiendo. No comparten la misma tabla (memoria), se pasan los resultados por una ventanilla (mensajes).
+
+#### Paso 4 · Demostración guiada desde cero
+
+```dart
+import 'package:flutter/foundation.dart'; // compute
+import 'package:flutter/material.dart';
+
+// Función pesada que debe correr FUERA del hilo de UI (debe ser top-level o static).
+int sumaPesada(int n) {
+  var total = 0;
+  for (var i = 0; i < n; i++) {
+    total += i % 7;
+  }
+  return total;
+}
+
+class PantallaEstadisticas extends StatefulWidget {
+  const PantallaEstadisticas({super.key});
+  @override
+  State<PantallaEstadisticas> createState() => _PantallaEstadisticasState();
+}
+
+class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
+  String estado = 'Listo';
+
+  Future<void> calcular() async {
+    setState(() => estado = 'Calculando…');
+    // compute() corre sumaPesada en un ISOLATE aparte: la UI NO se congela.
+    final resultado = await compute(sumaPesada, 500000000);
+    setState(() => estado = 'Resultado: $resultado');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(estado),
+          ElevatedButton(onPressed: calcular, child: const Text('Calcular')),
+        ]),
+      ),
+    );
+  }
+}
+
+void main() => runApp(const MaterialApp(home: PantallaEstadisticas()));
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter, pega esto en `lib/main.dart` y arráncalo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+
+**Resultado esperado:** al pulsar "Calcular", el texto cambia a "Calculando…" y, tras un momento, muestra el resultado — y durante todo ese tiempo la interfaz sigue respondiendo (puedes seguir interactuando, no hay jank). **Fallo deliberado:** reemplaza `await compute(sumaPesada, 500000000)` por una llamada directa `final resultado = sumaPesada(500000000);`. Ahora, al pulsar el botón, la UI se **congela** completamente durante el cálculo: el texto "Calculando…" ni siquiera llega a pintarse hasta que termina. Confirma con el DevTools (Tema 2) el frame gigante bloqueado, y diagnostica por qué `async` no salvó a la UI: el trabajo era de CPU, no de E/S.
+
+#### Paso 5 · Práctica guiada
+Añade un `CircularProgressIndicator` girando mientras `estado == 'Calculando…'`. Con `compute`, el spinner gira suavemente; con la versión directa (fallo deliberado), el spinner se congela. Pista: el spinner es la prueba visual más clara de si el hilo de UI está libre.
+
+#### Paso 6 · Práctica independiente
+Usa `compute` para parsear un JSON grande (simula el historial GPS como una lista de 100.000 puntos) y calcular la distancia total. Entrega la versión con isolate y mide la diferencia de fluidez frente a hacerlo en el hilo principal.
+
+#### Paso 7 · Cierre y evidencia
+Entrega el cálculo con `compute`, el congelamiento del fallo deliberado y el spinner que distingue ambos casos. **¿Por qué es importante?** La regla de oro de una app móvil fluida es "nunca bloquees el hilo de UI". `async/await` cubre la E/S, pero el trabajo de CPU (parseo masivo, imágenes, criptografía, cálculos geoespaciales) necesita isolates. Es la diferencia entre una app que se siente profesional y una que "se traba". Fuentes: [Flutter — Concurrency and isolates](https://docs.flutter.dev/perf/isolates) y [dart:isolate](https://api.dart.dev/stable/dart-isolate/dart-isolate-library.html).
+**Conceptos clave:** hilo único de Dart, isolate principal, `compute()`, memoria no compartida y paso de mensajes, E/S vs CPU.
+**Cuándo no usarlo:** para operaciones de red o disco, `async/await` normal basta y es más simple — crear un isolate tiene un costo de arranque y de copia de datos. Usa isolates solo para trabajo de CPU que dure lo suficiente para causar jank perceptible.
+
+**Transferencia al proyecto integrador «RutaFlow»:** calcula las estadísticas del historial de entregas de un repartidor con `compute` y demuestra con DevTools que la lista de envíos sigue haciendo scroll fluido mientras el cálculo corre.
 
 ---
 

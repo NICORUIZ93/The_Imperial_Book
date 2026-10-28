@@ -65,6 +65,14 @@ android {
 EOF
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+
 **Explicación línea por línea:** `keytool -genkeypair` genera un par de claves RSA real y lo almacena en `keystore.jks`, protegido por `storepass`/`keypass`; `-validity 10000` establece que el certificado es válido por unos 27 años (Google recomienda una validez larga, dado que la keystore debe seguir siendo válida para toda la vida útil de la app); el fragmento de `build.gradle.kts` lee esas mismas credenciales desde `System.getenv(...)`, nunca hardcodeadas en el archivo.
 
 Verifica con `keytool` real que la keystore generada contiene el certificado esperado, y confirma su huella digital (fingerprint), el valor que Google Play y otros sistemas usan para verificar la identidad de la firma:
@@ -151,6 +159,14 @@ done
 cat simulacion-bundle/recursos-es/strings.dat simulacion-bundle/recursos-en/strings.dat simulacion-bundle/recursos-pt/strings.dat > simulacion-bundle/apk-universal-simulado.dat
 ls -la simulacion-bundle/*.dat simulacion-bundle/recursos-*/*.dat
 ```
+
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
 
 **Explicación línea por línea:** cada archivo `recursos-<idioma>/strings.dat` simula los recursos reales de un idioma específico (50 KB de datos reales, generados con `head -c ... /dev/urandom` para que el tamaño en disco sea genuino, no solo un número); `apk-universal-simulado.dat` concatena los tres, representando un APK universal que debe incluir TODOS los idiomas simultáneamente sin saber cuál necesitará cada usuario.
 
@@ -243,6 +259,14 @@ else
   exit 1
 fi
 ```
+
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
 
 **Explicación línea por línea:** `versionCode = 12` es el entero que Play Console compara contra el último ya publicado; `versionName = "1.3.0"` es el string que el usuario ve en la ficha de la app; el `grep`/`sed` extraen ambos valores del fragmento real, y la expresión regular de bash (`[[ ... =~ ... ]]`) confirma que `versionName` efectivamente sigue el formato `MAJOR.MINOR.PATCH` de versionado semántico.
 

@@ -89,7 +89,7 @@ main {
 .beginner-entry ol { padding-left:22px; }
 .beginner-entry li + li { margin-top:10px; }
 .eyebrow { margin:0 0 12px; color:$p; font:750 11px Inter,sans-serif; letter-spacing:.11em; text-transform:uppercase; }
-.catalog-hero h1 { max-width:850px; margin:0 auto; color:$ink; font:750 clamp(40px,6vw,72px)/1.03 Inter,sans-serif; letter-spacing:-.055em; }
+.catalog-hero h1 { max-width:880px; margin:0 auto; color:$ink; font-family:var(--font-serif); font-weight:580; font-style:italic; font-size:clamp(42px,6.2vw,76px); line-height:1.05; letter-spacing:-.02em; }
 .hero-copy { max-width:720px; margin:24px auto 0; color:$mu; font:450 clamp(17px,2vw,21px)/1.55 Inter,sans-serif; }
 .hero-stats { max-width:660px; display:grid; grid-template-columns:repeat(4,1fr); margin:38px auto 0; padding:18px; border:1px solid $bd; border-radius:22px; background:color-mix(in srgb,#{$wh} 86%,transparent); box-shadow:$sh; backdrop-filter:blur(18px); }
 .hero-stats span { display:grid; gap:2px; padding:4px 14px; border-right:1px solid $bd; }
@@ -151,65 +151,83 @@ main {
 .track-group + .track-group { margin-top: 48px; }
 .track-group h3 { margin:0 0 16px; color:$ink; font:700 20px Inter,sans-serif; letter-spacing:-.02em; }
 
-.catalog-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.catalog-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
 
+// Tarjeta "lomo de libro": un volumen apoyado en el estante. El lomo es la
+// franja izquierda del color de la ruta; el cuerpo es papel crema con esquinas
+// apenas redondeadas. Al pasar el cursor el libro se levanta un poco.
 .track-card {
+  position: relative;
   display: grid;
-  gap: 15px;
+  gap: 14px;
   min-width: 0;
-  padding: 22px;
+  padding: 24px 24px 24px 28px;
   border: 1px solid $bd;
-  border-radius: 22px;
+  border-left: 6px solid var(--track-color);
+  border-radius: 3px 10px 10px 3px;
   background:$wh;
   box-shadow:$sh;
   transition:transform $transition,box-shadow $transition,border-color $transition;
 }
-.track-card:hover { transform:translateY(-4px); border-color:color-mix(in srgb,var(--track-color) 32%,#{$bd}); box-shadow:$shm; }
+// Pliegue del lomo: una línea fina más oscura junto al color, como la sombra
+// interior de la encuadernación.
+.track-card::before {
+  content:''; position:absolute; top:-1px; bottom:-1px; left:-6px; width:6px;
+  border-right:1px solid color-mix(in srgb,var(--track-color) 45%,black);
+  pointer-events:none;
+}
+.track-card:hover { transform:translateY(-5px); box-shadow:$shm; }
 
-.track-card-main { gap: 12px; color: inherit; text-decoration: none; }
+.track-card-main { gap: 14px; color: inherit; text-decoration: none; align-items:flex-start; }
 
 .track-card-icon {
-  position:relative; width:54px; height:54px;
+  position:relative; width:48px; height:48px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  border-radius:16px;
+  border-radius:10px;
   color:#fff;
   background:var(--track-color);
-  box-shadow:0 10px 24px color-mix(in srgb,var(--track-color) 24%,transparent);
 }
-.track-card-icon span { font:800 16px/1 Inter,sans-serif; letter-spacing:-.05em; }
-.track-card-icon > img { width:27px; height:27px; object-fit:contain; }
-.track-card-icon lucide-icon { position:absolute; right:-4px; bottom:-4px; width:20px; height:20px; padding:4px; border:2px solid $wh; border-radius:8px; color:var(--track-color); background:$wh; }
-.track-kicker { margin:0 0 3px !important; color:var(--track-color) !important; font:750 10px Inter,sans-serif !important; text-transform:uppercase; letter-spacing:.07em; }
+.track-card-icon span { font:800 15px/1 Inter,sans-serif; letter-spacing:-.05em; }
+.track-card-icon > img { width:25px; height:25px; object-fit:contain; }
+.track-card-icon lucide-icon { position:absolute; right:-4px; bottom:-4px; width:19px; height:19px; padding:4px; border:2px solid $wh; border-radius:7px; color:var(--track-color); background:$wh; }
+.track-kicker { margin:2px 0 4px !important; color:var(--track-color) !important; font:800 10px Inter,sans-serif !important; text-transform:uppercase; letter-spacing:.09em; }
 
-.track-card h4 { margin:0 0 6px; font-size:18px; line-height:1.25; letter-spacing:-.025em; overflow-wrap:anywhere; }
+.track-card h4 { margin:0 0 7px; color:$ink; font:600 19px/1.22 var(--font-serif); letter-spacing:-.01em; overflow-wrap:anywhere; }
 .track-card p { margin: 0; overflow-wrap: anywhere; color: $mu; font-size: 14px; line-height: 1.65; }
 
-.track-card-meta { flex-wrap: wrap; gap: 8px; }
+// Metadatos como cintillo del lomo: texto en línea separado por puntos, sin
+// pastillas de colores que ensucien la portada del libro.
+.track-card-meta { flex-wrap: wrap; gap: 4px 10px; }
 .track-card-meta span {
-  padding: 4px 7px;
-  border-radius: 999px;
+  position: relative;
+  padding: 0;
+  border-radius: 0;
   color: $mu;
-  background:$bg2;
-  font-size: 11px;
-  font-weight: 850;
+  background: transparent;
+  font: 700 11.5px Inter,sans-serif;
 }
+.track-card-meta span:not(:last-child)::after { content:'·'; margin-left:10px; color:$bd2; }
 
-.track-card-progress { height: 7px; overflow: hidden; border-radius: 999px; background: $bd; }
+.track-card-progress { height: 3px; overflow: hidden; border-radius: 99px; background: $bd; }
 .track-card-progress span { display: block; height: 100%; border-radius: inherit; background: var(--track-color); }
 
-.track-levels { color: $ph; font-size: 12px; font-weight: 900; }
+.track-levels { color: $i3; font:650 12px Inter,sans-serif; }
 
 .track-topics { color: $i3; font-size: 13px; }
 .track-topics summary { min-height:42px; display:flex; align-items:center; cursor:pointer; font-weight:750; }
 .track-topics ol { display: grid; gap: 4px; margin: 8px 0 0; padding-left: 18px; color: $mu; font-size: 14px; line-height: 1.65; }
 
-.track-outcome { padding-top: 12px; border-top: 1px solid $bd; }
-.track-outcome strong { display: block; margin-bottom: 6px; font-size: 15px; }
+.track-outcome { padding-top: 14px; border-top: 1px solid $bd; }
+.track-outcome strong { display: block; margin-bottom: 6px; color:$ink; font:700 12px Inter,sans-serif; letter-spacing:.02em; }
 .track-outcome p { margin: 0; color: $mu; font-size: 14px; line-height: 1.65; }
-.track-action { min-height:44px; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:999px; color:#fff; background:var(--track-color); font:750 13px Inter,sans-serif; text-decoration:none; transition:filter $transition,transform $transition; }
-.track-action:hover { filter:brightness(1.08); transform:scale(1.01); }
+// Llamada a la acción como pie de capítulo: enlace con filete superior y el
+// color de la ruta, no una pastilla sólida que compita con el contenido.
+.track-action { min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:14px; border-top:1px solid $bd; color:var(--track-color); font:800 13px Inter,sans-serif; letter-spacing:.01em; text-decoration:none; transition:gap $transition; }
+.track-action span { transition:transform $transition; }
+.track-action:hover { gap:14px; }
+.track-action:hover span { transform:translateX(4px); }
 
 @media (max-width: 1080px) {
   .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

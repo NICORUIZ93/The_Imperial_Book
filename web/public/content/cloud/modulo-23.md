@@ -19,6 +19,15 @@ redis-cli -h localhost -p "$PUERTO" get posicion:c-891 || \
   redis-cli -h localhost -p "$PUERTO" set posicion:c-891 '{"lat":4.6097,"lon":-74.0817}' EX 10
 redis-cli -h localhost -p "$PUERTO" get posicion:c-891
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: la primera lectura falla (cache miss, nadie cacheó esa posición todavía), así que el script la guarda con TTL de 10 segundos; la segunda lectura la devuelve directamente (cache hit) sin volver a consultar `ShipmentEvents`.
 #### Paso 5 · Práctica guiada
 Pista: guardá la misma posición con `EX 0` (TTL cero) — ese es el fallo deliberado de rendimiento: la clave expira (o nunca llega a existir de forma útil) de inmediato, así que CADA lectura vuelve a ser un cache miss, forzando una consulta a la base de datos en cada refresco del mapa — exactamente lo que el caché debía evitar.
@@ -124,6 +133,15 @@ PUERTO=$(aws elasticache describe-replication-groups --replication-group-id demo
   --query 'ReplicationGroups[0].NodeGroups[0].PrimaryEndpoint.Port' --output text)
 redis-cli -h localhost -p "$PUERTO" ping
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: el puerto devuelto cae dentro del rango 6379–6399, y `ping` contra ese puerto responde `PONG` — el código nunca tuvo que adivinar el número.
 #### Paso 5 · Práctica guiada
 Pista: probá `aws elasticache describe-replication-groups --replication-group-id demo-cache-que-no-existe` — ese es el fallo deliberado: `ReplicationGroupNotFoundFault`, dejando claro que consultar el endpoint de un grupo que nunca creaste no devuelve un puerto "por defecto", directamente falla.

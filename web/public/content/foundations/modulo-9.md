@@ -23,6 +23,14 @@ Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; 
 Post: transition(current, requested) == requested implica requested ∈ ALLOWED_TRANSITIONS[current]
 Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 ```python
 from hypothesis import given, strategies as st
 from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS, transition
@@ -127,6 +135,14 @@ simetrica = all((b, a) in pares for (a, b) in pares)
 print("simétrica:", simetrica)
 print("pares:", pares)
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: `simétrica: False` — para cada par `(CREATED, ASSIGNED)` en la relación, el par inverso `(ASSIGNED, CREATED)` NO está, confirmando que esto NO es una relación de equivalencia (que dividiría los estados en clases intercambiables), sino algo con dirección.
 
 #### Paso 5 · Práctica guiada
@@ -218,6 +234,14 @@ def tiene_ciclo(grafo):
 
 print("tiene ciclo:", tiene_ciclo(grafo))
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: `tiene ciclo: False` — `ALLOWED_TRANSITIONS` es un DAG real, usando la misma función `tiene_ciclo` que ya viste en la teoría de este Tema, aplicada ahora al grafo real del dominio de RutaFlow.
 
 #### Paso 5 · Práctica guiada
@@ -317,6 +341,14 @@ p50 = median(tiempos)
 p95 = quantiles(tiempos, n=100)[94]
 print({"n": len(tiempos), "media": mean(tiempos), "p50": p50, "p95": p95})
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: un diccionario con media, p50 y p95 reales de 30 repeticiones — la heurística O(n²) sobre 200 paradas da tiempos consistentes, y podés comparar si la media y la mediana están cerca (señal de distribución simétrica) o lejos (señal de cola larga).
 
 #### Paso 5 · Práctica guiada

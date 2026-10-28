@@ -272,6 +272,14 @@ git add tareas.py
 git commit -m "fix"
 git log --oneline
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 **Resultado esperado:** `git log --oneline` muestra una sola línea con el hash y la palabra `fix` — nada más. **Fallo deliberado:** imaginá que pasaron tres semanas y necesitás saber por qué existe ese commit. Ejecutá `git show --stat HEAD`: ves qué archivo cambió, pero ni el mensaje ni el comando te dicen si "fix" arreglaba un typo, una regresión de `contar_pendientes` o algo urgente. El diagnóstico es que el único lugar donde el motivo podía sobrevivir —el mensaje del commit— nunca lo registró; el código ya está ahí, pero el porqué se perdió para siempre. Corregí el hábito con un commit nuevo que sí explica la decisión:
 ```bash
 printf 'ESTADO_INICIAL = "pendiente"  # valor por defecto al crear una tarea sin estado explícito\n' > tareas.py

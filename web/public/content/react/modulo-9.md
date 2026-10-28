@@ -48,6 +48,16 @@ graph TD
 4. Detené la grabación
 5. Inspeccioná qué componentes aparecen resaltados y por qué
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: el Profiler muestra que `EncabezadoPanel` (que ni siquiera lee el filtro) se re-renderizó igual, simplemente porque es hijo del mismo padre que cambió de estado — no porque `EncabezadoPanel` en sí sea lento, sino porque heredó un render de su padre.
 
 #### Paso 5 · Práctica guiada
@@ -100,6 +110,16 @@ const EncabezadoPanel = React.memo(function EncabezadoPanel({ titulo }) {
   return <h1>{titulo}</h1>;
 });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: grabando de nuevo con el Profiler mientras se escribe en el filtro de zona, `EncabezadoPanel` ya no aparece en la lista de componentes re-renderizados — React detecta que `titulo` sigue siendo exactamente el mismo string y se salta la re-ejecución completamente.
 
 **Demo con React DevTools Profiler:**
@@ -164,6 +184,16 @@ import { FixedSizeList } from 'react-window';
   {({ index, style }) => <div style={style}>{envios[index].guia}</div>}
 </FixedSizeList>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: inspeccionando el DOM real en las herramientas de desarrollador mientras se hace scroll sobre los 10,000 envíos, nunca existen más de unas pocas decenas de nodos `<div>` simultáneamente — los mismos nodos se reciclan mostrando contenido distinto a medida que el scroll avanza.
 
 #### Paso 5 · Práctica guiada
@@ -224,6 +254,16 @@ function manejarCambioFiltro(texto) {
   });
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: el input de filtro muestra cada letra tecleada instantáneamente (porque `setTextoInput` no está dentro de la transición), mientras la lista filtrada se actualiza con una prioridad menor, sin bloquear la respuesta del input; `isPending` permite mostrar un indicador sutil mientras esa actualización no urgente está en curso.
 
 #### Paso 5 · Práctica guiada
@@ -268,6 +308,70 @@ graph LR
 * Ejecutar: `npm test -- --testNamePattern="transition|deferred"`
 * Código: `src/hooks/useTransitionFilter.tsx`
 * Proyecto: proyecto integrador RutaFlow
+
+---
+
+### Tema 5: Suspense y React.lazy — carga diferida del lado cliente
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás dividir el bundle con `React.lazy` para que un componente pesado se descargue solo cuando se necesita, mostrando un `fallback` con `<Suspense>` mientras llega. Prerrequisitos: Tema 3 de este módulo (code-splitting).
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, el panel de analítica (gráficos pesados, con una librería grande) solo lo abre el administrador de vez en cuando. Si se incluye en el bundle inicial, TODOS los usuarios descargan ese peso al entrar, aunque nunca abran analítica. Con `React.lazy`, ese código se descarga solo cuando el admin abre el panel — el resto de usuarios arranca más rápido.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`React.lazy(() => import("./Componente"))` convierte un import normal en uno **diferido**: el bundler (Vite) separa ese componente en un *chunk* aparte que se descarga bajo demanda. Mientras el chunk viaja por la red, `<Suspense fallback={...}>` muestra un indicador de carga. Es el mismo Suspense del servidor (M10), pero aquí aplicado a carga de código en el cliente.
+
+**Analogía:** es como un menú de restaurante donde los platos no se cocinan todos al abrir: cada uno se prepara cuando alguien lo pide. `Suspense` es el "su pedido está en preparación" mientras llega.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```jsx
+import { lazy, Suspense, useState } from "react";
+
+// El panel de analítica se separa en su propio chunk y se descarga bajo demanda:
+const PanelAnalitica = lazy(() => import("./PanelAnalitica.jsx"));
+
+export default function App() {
+  const [verAnalitica, setVerAnalitica] = useState(false);
+  return (
+    <>
+      <h1>Panel de envíos</h1>
+      <button onClick={() => setVerAnalitica(true)}>Abrir analítica</button>
+      {verAnalitica && (
+        <Suspense fallback={<p>Cargando analítica…</p>}>
+          <PanelAnalitica />
+        </Suspense>
+      )}
+    </>
+  );
+}
+```
+
+Crea también `src/PanelAnalitica.jsx` con `export default function PanelAnalitica() { return <div>Gráficos pesados aquí</div>; }`.
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite, pega el código y observa la red):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+
+**Resultado esperado:** al cargar la página, abre las DevTools (pestaña Network) y verás que el chunk de `PanelAnalitica` NO se descarga. Solo al pulsar "Abrir analítica" se descarga ese chunk (aparece en Network) y, mientras llega, se muestra "Cargando analítica…". **Fallo deliberado:** cambia `const PanelAnalitica = lazy(...)` por un import normal `import PanelAnalitica from "./PanelAnalitica.jsx"`; ahora el chunk se incluye en el bundle inicial y se descarga al entrar, aunque nadie abra analítica. Compara el tamaño del bundle inicial con `npm run build` en ambos casos: con `lazy` es menor.
+
+#### Paso 5 · Práctica guiada
+Envuelve el `<Suspense>` en un Error Boundary (Módulo 2, Tema 5) para manejar el caso en que el chunk falle al descargarse (red caída). Pista: `lazy` puede rechazar la promesa de import; el boundary captura ese error.
+
+#### Paso 6 · Práctica independiente
+Divide por ruta: carga de forma diferida un componente de página completa en una ruta poco visitada (usa el code-splitting por ruta del Tema 3 de este módulo y del Módulo 5). Entrega la comparación de tamaño del bundle inicial antes y después con `npm run build`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la analítica diferida, la comparación de bundles y el boundary sobre el Suspense. **¿Por qué es importante?** El tamaño del bundle inicial es uno de los factores que más afecta el tiempo de carga (y las Core Web Vitals, Tema 1). `React.lazy` + `Suspense` es la herramienta estándar para que el usuario descargue solo lo que usa, clave en apps grandes donde el 80% del código corresponde a pantallas que la mayoría nunca visita. Fuentes: [React — lazy](https://react.dev/reference/react/lazy) y [React — Suspense](https://react.dev/reference/react/Suspense).
+**Conceptos clave:** import diferido, chunk/bundle, `fallback`, carga bajo demanda, impacto en el bundle inicial.
+**Cuándo no usarlo:** no difieras componentes pequeños o que se ven de inmediato: el costo de una petición de red extra supera el ahorro. `lazy` brilla con componentes pesados o pantallas poco frecuentes.
+
+**Transferencia al proyecto integrador «RutaFlow»:** carga de forma diferida el panel de analítica y el mapa, y demuestra con `npm run build` que el bundle inicial del operador baja de tamaño frente a importarlos directamente.
 
 ---
 

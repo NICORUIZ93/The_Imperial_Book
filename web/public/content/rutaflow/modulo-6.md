@@ -60,6 +60,14 @@ mkdir -p rutaflow-labs/tema-1-cotizacion-facturacion
 cd rutaflow-labs/tema-1-cotizacion-facturacion
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 ```java
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -203,6 +211,14 @@ mkdir -p rutaflow-labs/tema-2-recaudo-liquidacion-conciliacion
 cd rutaflow-labs/tema-2-recaudo-liquidacion-conciliacion
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 Primero el esquema PostgreSQL: una tabla de movimientos **append-only**, donde un ajuste siempre referencia al movimiento que corrige:
 
 ```sql
@@ -337,6 +353,14 @@ Crea una carpeta independiente para comprobar el concepto antes de conectarlo al
 mkdir -p rutaflow-labs/tema-3-fraude-responsable
 cd rutaflow-labs/tema-3-fraude-responsable
 ```
+
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
 
 ```java
 import java.util.Optional;

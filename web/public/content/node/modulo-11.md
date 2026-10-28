@@ -280,6 +280,15 @@ cd ejemplo-nginx
 mkdir app
 ```
 
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+
 Crea `app/server.js` y `nginx.conf`:
 
 ```js

@@ -23,6 +23,14 @@ Persistencia/      ← SwiftData (Módulo 6)
 Dominio/            ← structs/enums puros (Módulo 0)
 Tests/                ← Swift Testing sobre dominio (Módulo 9)
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: recorriendo el código fuente de RutaFlow carpeta por carpeta, cada archivo vive exactamente en la capa que le corresponde — ninguna vista en `Vistas/` importa `URLSession` ni `ModelContext` directamente, y ningún archivo en `Dominio/` importa nada de `Servicios/` ni `Persistencia/`.
 
 #### Paso 5 · Práctica guiada
@@ -105,6 +113,14 @@ class EnviosViewModel {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: `ListaEnvios` observa `envios` (poblado desde SwiftData), y llamar a `sincronizar()` actualiza esos datos locales con lo que responda `ServicioAPI`; si `ServicioAPI` falla, `sincronizar()` simplemente no actualiza nada, y la vista sigue mostrando los últimos envíos guardados localmente.
 
 #### Paso 5 · Práctica guiada
@@ -175,6 +191,14 @@ Principio universal: "state hoisting" — un componente hijo recibe el
 valor y una forma de notificar cambios, sin poseer el estado él mismo
 (igual en Compose/Android y en hooks de React).
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: tu retrospectiva separa explícitamente qué parte de la decisión depende del compilador y el runtime de Swift (imposible de trasladar literalmente a otra plataforma) de qué parte es un principio que reconocerías en cualquier framework de UI declarativa moderno.
 
 #### Paso 5 · Práctica guiada

@@ -100,6 +100,16 @@ mkdir ejemplo-herencia-anotacion
 cd ejemplo-herencia-anotacion
 mkdir -p src/main/java/academia/animales
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `Animal`/`Perro` con `@Override` (código en "Código del ejemplo") y, en un segundo archivo, la anotación `@Auditable` con `@Retention(RUNTIME)` y `EntregaService` que la usa. Compila ambos y ejecuta una clase `Main` que invoque `hablar()` sobre una referencia `Animal` que apunta a un `Perro`.
 
 #### Paso 5 · Práctica guiada
@@ -189,6 +199,16 @@ mkdir ejemplo-interfaz-abstracta
 cd ejemplo-interfaz-abstracta
 mkdir -p src/main/java/academia/formas
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `Volador`/`Pajaro` (interfaz) y `Forma`/`Circulo`/`Cuadrado` (clase abstracta con `area()` abstracto y `describir()` concreto). Compila y ejecuta una clase `Main` que invoque `describir()` sobre un `Circulo` y un `Cuadrado`.
 
 #### Paso 5 · Práctica guiada
@@ -247,6 +267,16 @@ mkdir ejemplo-sobrecarga-visibilidad
 cd ejemplo-sobrecarga-visibilidad
 mkdir -p src/main/java/academia/tarifas
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `Tarifa.java` con dos métodos `sumar` sobrecargados (`int`/`int` y `double`/`double`) y un campo `private` junto a uno `protected`. Compila y ejecuta una clase `Main` que invoque ambas variantes de `sumar` y muestre cuál se resuelve para cada tipo de argumento.
 
 #### Paso 5 · Práctica guiada

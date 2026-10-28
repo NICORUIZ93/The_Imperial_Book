@@ -25,6 +25,16 @@ testWidgets('TarjetaEnvio muestra la guía', (tester) async {
   expect(find.text('RF-4471'), findsOneWidget);
 });
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: el unit test verifica la regla de negocio en milisegundos sin ningún widget involucrado; el widget test renderiza `TarjetaEnvio` en un entorno simulado y confirma que el texto "RF-4471" aparece, sin necesitar un emulador completo corriendo.
 
 #### Paso 5 · Práctica guiada
@@ -113,6 +123,16 @@ test('el ViewModel carga envíos del repositorio', () async {
   expect(vm.envios, [envioDePrueba]);
 });
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: el test completa en milisegundos sin ninguna conexión de red real — `EnviosRepositoryFake` responde exactamente lo configurado con `when(...).thenAnswer(...)`, sin depender de que el backend de RutaFlow esté corriendo.
 
 #### Paso 5 · Práctica guiada
@@ -187,6 +207,16 @@ testWidgets('flujo completo: confirmar una entrega', (tester) async {
   expect(find.text('Entrega confirmada'), findsOneWidget);
 });
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: corriendo este test contra un emulador o dispositivo real, el flujo completo navega desde la lista hasta la confirmación exitosa, validando la integración real entre pantallas, formulario y backend de staging.
 
 #### Paso 5 · Práctica guiada

@@ -163,6 +163,15 @@ Crea `src/learning-plan.js` desde una carpeta vacía.
 mkdir ejemplo-plan
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: versión visible.
 #### Paso 5 · Práctica guiada
 Pista: salta un prerrequisito para provocar un fallo deliberado y corrígelo.
@@ -387,6 +396,15 @@ Crea `src/study-log.md` desde una carpeta vacía.
 mkdir ejemplo-bitacora
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Git disponible.
 #### Paso 5 · Práctica guiada
 Pista: omite una evidencia para provocar un fallo deliberado y complétala.

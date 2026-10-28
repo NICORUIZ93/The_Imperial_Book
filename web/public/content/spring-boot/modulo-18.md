@@ -51,6 +51,15 @@ public class SeguridadConfig {
 }
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 En `src/main/resources/application.yml`, configura `spring.security.oauth2.resourceserver.jwt.issuer-uri: ${OIDC_ISSUER_URI}`. Agrega `/api/envios` y `/api/admin/tarifas`; no guardes tokens reales en el repositorio. En un test con MockMvc puedes fijar authorities sin depender del issuer:
 
 ```java
@@ -108,6 +117,15 @@ public record CrearEnvioRequest(
     @Positive BigDecimal pesoKg
 ) {}
 ```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
 
 El controlador recibe `@Valid @RequestBody CrearEnvioRequest request`. Ejecuta `./mvnw test` con `MockMvc`: una referencia válida crea 201; peso negativo devuelve 400 con cuerpo de error estable. Configura CORS con origen exacto de desarrollo, no `*` combinado con credenciales.
 

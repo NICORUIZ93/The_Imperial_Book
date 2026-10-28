@@ -3,7 +3,7 @@
   <div class="lesson-layout" [class.focus-mode="focusMode()"]>
     <article class="lesson">
       <header class="lesson-hero">
-        <div class="lesson-eyebrow"><lucide-icon [img]="icons.BookOpen" /> {{ track()?.name }} · Capítulo {{ moduleIndex() + 1 }}</div>
+        <div class="lesson-eyebrow"><lucide-icon [img]="icons.BookOpen" /> {{ track()?.name }} · Módulo {{ moduleIndex() + 1 }} de {{ track()?.modules?.length }}</div>
         <h1>{{ m.title }}</h1>
         <p class="lesson-description">{{ m.description }}</p>
         <div class="lesson-meta">

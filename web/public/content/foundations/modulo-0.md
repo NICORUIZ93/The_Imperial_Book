@@ -146,6 +146,14 @@ pwd
 printf "tarea-001\n" > tareas.txt
 cat tareas.txt
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 **Resultado esperado:** `pwd` muestra la ruta absoluta completa de `proyecto-cero`, y `tareas.txt` existe exactamente ahí porque lo creaste con una ruta relativa evaluada respecto a esa carpeta.
 
 **Fallo deliberado:** sin moverte de carpeta, subí un nivel con `cd ..` y ejecutá de nuevo `cat tareas.txt`. Falla con `No such file or directory` — no porque el archivo se haya borrado, sino porque la ruta relativa `tareas.txt` ahora se evalúa respecto a una carpeta distinta (`academia-fundamentos`), donde ese archivo nunca existió.
@@ -248,6 +256,14 @@ git init
 git status --short
 echo $?
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 **Resultado esperado:** `git status --short` no muestra nada (repo vacío) y `echo $?` imprime `0` — el comando se ejecutó sin error, aunque no haya nada que mostrar todavía.
 
 **Fallo deliberado:** ejecutá `git status --opcion-inexistente`. Git responde con `error: unknown option` y, al revisar `echo $?` inmediatamente después, el código ya NO es `0` (es `129` en git) — confirmando que el código de salida distingue "el comando corrió pero no encontró nada" (Paso 4, código `0`) de "el comando ni siquiera pudo interpretarse" (código distinto de cero), aunque ambos casos muestren algo en pantalla.

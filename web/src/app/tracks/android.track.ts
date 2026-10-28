@@ -3,7 +3,7 @@ import { CourseModule, createModule as m } from '../course-module.model';
 export const ANDROID_MODULES: CourseModule[] = [
   m(0, 'Kotlin aplicado a Android', 'Kotlin en Android', 'Fundamentos', '2 h', '#3ddc84',
     'Arranca un proyecto Android moderno y entiende su estructura antes de escribir UI.',
-    ['Estructura de un proyecto Android Studio', 'Gradle y módulos de app', 'AndroidManifest.xml', 'Recursos (strings, dimens, drawables)'],
+    ['Estructura de un proyecto Android Studio', 'Gradle y módulos de app', 'AndroidManifest.xml', 'Recursos (strings, dimens, drawables)', 'Kotlin esencial: null safety, data class y lambdas', 'Coroutines: suspend, launch y viewModelScope'],
     [
       'Crea un proyecto nuevo en Android Studio con la plantilla "Empty Activity" y ejecútalo en un emulador',
       'Recorre la estructura generada: app/src/main/java, AndroidManifest.xml, res/',

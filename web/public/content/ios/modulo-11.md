@@ -21,6 +21,14 @@ Un certificado identifica al firmante; un provisioning profile vincula ese certi
 3. Elegí tu Team (cuenta de Apple Developer)
 4. Product > Archive
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: Xcode genera y descarga automáticamente un certificado de distribución y un provisioning profile que vinculan tu Team, `com.rutaflow.conductor` y las capacidades habilitadas (por ejemplo, Push Notifications); el Archive se completa sin errores de firma.
 
 #### Paso 5 · Práctica guiada
@@ -74,6 +82,14 @@ Archive produce un artefacto firmado localmente; subirlo a App Store Connect lo 
 3. En App Store Connect, esperá a que el build termine de procesarse
 4. TestFlight > Internal Testing -> agregate como tester
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: tras unos minutos de procesamiento, el build aparece disponible en la pestaña de TestFlight de App Store Connect, y podés instalarlo en tu propio iPhone a través de la app TestFlight sin pasar por ninguna revisión de Apple, por ser testing interno.
 
 #### Paso 5 · Práctica guiada
@@ -127,6 +143,14 @@ El build de RutaFlow ya está en TestFlight, pero promoverlo a revisión de la A
 CFBundleShortVersionString: 1.3.0   ← versión visible (semver), cambia por release
 CFBundleVersion: 42                  ← número de build, SIEMPRE incremental
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 En App Store Connect: completá descripción, palabras clave, capturas por tamaño de dispositivo, política de privacidad (URL obligatoria) y el cuestionario de privacidad (qué datos recolecta RutaFlow: ubicación del conductor, para el tracking de entregas).
 
 Resultado esperado: App Store Connect solo habilita enviar a revisión cuando todos los campos obligatorios están completos; si falta la política de privacidad o el cuestionario, el botón de enviar a revisión queda deshabilitado con el campo faltante señalado explícitamente.

@@ -52,6 +52,16 @@ class _ContadorIntentosState extends State<ContadorIntentos> {
   );
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `TarjetaEnvio` nunca necesita reconstruirse por sí misma (no tiene ningún `setState`); `ContadorIntentos` incrementa visualmente su contador cada vez que se toca el botón, porque `setState()` dispara la reconstrucción de `_ContadorIntentosState`.
 
 #### Paso 5 · Práctica guiada
@@ -184,6 +194,16 @@ class _ListaEnviosState extends State<ListaEnvios> {
   }
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: el ícono de "urgente" aparece superpuesto en la esquina solo cuando corresponde, sin desplazar el `Row`; el `Timer` refresca la pantalla cada minuto mientras `ListaEnvios` está montada, y se cancela automáticamente al salir de esa pantalla.
 
 #### Paso 5 · Práctica guiada
@@ -283,6 +303,16 @@ graph TB
 ```dart
 ListView(children: envios.map((e) => TarjetaEnvio(key: ValueKey(e.id), guia: e.guia, estado: e.estado)).toList())
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: al arrastrar un envío urgente al principio de la lista, el checkbox "revisado" de cada `TarjetaEnvio` sigue asociado al envío correcto (identificado por `e.id`), sin importar su nueva posición.
 
 #### Paso 5 · Práctica guiada

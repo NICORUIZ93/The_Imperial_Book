@@ -30,6 +30,16 @@ EnvioId parseEnvioLink(Uri uri, Session session) {
   return id;
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `parseEnvioLink` lanza `FormatException` si la URL no tiene exactamente la forma esperada, y lanza `ForbiddenException` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual.
 
 #### Paso 5 · Práctica guiada
@@ -116,6 +126,16 @@ Future<void> logout(SessionVault vault, LocalDatabase db) async {
   state.invalidateSession();
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `logout()` cancela cualquier sincronización en curso, borra el token del vault seguro, elimina los datos de envíos cacheados de la cuenta actual, e invalida la sesión en memoria — ningún rastro de la cuenta anterior sobrevive al cierre de sesión.
 
 #### Paso 5 · Práctica guiada
@@ -197,6 +217,16 @@ List<Envio> decodeEnvios(String body) =>
 
 Future<List<Envio>> decodeOffUi(String body) => compute(decodeEnvios, body);
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: grabando con DevTools mientras se abre el historial, el isolate de UI permanece respondiendo mientras `decodeEnvios` corre en un isolate worker separado, que solo devuelve el resultado final ya decodificado.
 
 #### Paso 5 · Práctica guiada
@@ -272,6 +302,16 @@ final class PendingMutation {
   int attempts = 0;
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: confirmar una entrega sin red crea un `PendingMutation` con un `id` fijo; reintentarla más tarde con conectividad real reusa ese mismo `id`, permitiendo que el servidor reconozca si ya procesó ese intento y evite aplicar el efecto dos veces.
 
 #### Paso 5 · Práctica guiada

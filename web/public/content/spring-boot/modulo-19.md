@@ -40,6 +40,15 @@ RF-1002,0
 RF-1003,49.99
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 Crea `PedidoImportado` como record y `src/main/java/academia/batch/ImportJobConfig.java`. Configura `schema.sql` con una tabla destino `pedido_importado(referencia varchar(40) primary key, importe decimal(12,2) not null)`. Declara estos beans de reader y processor; el archivo se inyecta por parámetro del job:
 
 ```java
@@ -142,6 +151,15 @@ return new StepBuilder("importarPedidos", jobRepository)
     .listener(importMetricsListener)
     .build();
 ```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
 
 Ejecuta el job con `JobParameters` que incluyan `inputFile=pedidos.csv` y `runDate=2026-10-13`; configura el test para forzar una falla tras el primer chunk y volver a lanzar **la misma instancia lógica**. Ejecuta `./mvnw test -Dtest=ImportJobRestartTest`.
 

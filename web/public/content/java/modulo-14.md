@@ -23,6 +23,16 @@ mkdir ejemplo-visibilidad-volatile
 cd ejemplo-visibilidad-volatile
 mkdir -p src/main/java/academia/concurrencia
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `src/main/java/academia/concurrencia/WorkerControl.java` con el campo `stopped` **sin** `volatile` (`private boolean stopped;`), y un `Main.java` que lance un hilo ejecutando `runLoop()`, espere un segundo con `Thread.sleep(1000)`, llame `stop()` desde el hilo principal, y luego mida cuánto tarda el hilo en detenerse.
 
 #### Paso 5 · Práctica guiada
@@ -116,6 +126,7 @@ mvn archetype:generate -DinteractiveMode=false -DarchetypeGroupId=org.openjdk.jm
 cd app
 mvn clean package
 ```
+> **Con Gradle:** JMH no usa archetype; se aplica el plugin `id("me.champeau.jmh")` en `build.gradle.kts` y los benchmarks se ejecutan con `./gradlew jmh`. El resto del tema (escribir el `@Benchmark`, el `Blackhole`) es idéntico. Ver la tabla de equivalencias en el track de Java, Módulo 8, Tema 4.
 Primero escribe un benchmark "ingenuo" en `src/main/java/academia/bench/CronometroIngenuo.java`: mide `System.nanoTime()` antes y después de una sola llamada a `values.indexOf(size - 1)` sobre una lista de 10000 elementos, sin warmup ni repetición. Luego reemplázalo por `src/main/java/academia/bench/SearchBenchmark.java` con `@State`, `@Setup`, `@Param({"100", "10000"})` y `@Benchmark` que consume el resultado con `Blackhole`. Ejecuta `java -jar target/benchmarks.jar`.
 
 #### Paso 5 · Práctica guiada
@@ -198,6 +209,16 @@ mkdir ejemplo-objectinputfilter
 cd ejemplo-objectinputfilter
 mkdir -p src/main/java/academia/dto
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `academia.dto.ImportBatch implements Serializable` con un campo `List<String> items`. Escribe un `Main.java` que serialice una instancia con `ObjectOutputStream` a un archivo, y luego la deserialice con `ObjectInputStream` **sin** ningún filtro configurado.
 
 #### Paso 5 · Práctica guiada
@@ -275,6 +296,16 @@ mkdir ejemplo-jlink-runtime
 cd ejemplo-jlink-runtime
 mkdir -p src/main/java/academia/runtime
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea una clase mínima que use `java.net.http.HttpClient` para hacer una petición GET. Compílala a un JAR simple, luego ejecuta:
 ```bash
 jdeps --print-module-deps --ignore-missing-deps app.jar

@@ -45,6 +45,14 @@ struct ListaEnvios: View {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: `ListaEnvios` ya no referencia `ServicioAPI` ni decide qué hacer si falla — esa decisión vive en `EnviosViewModel.cargar()`, que ahora se puede invocar y probar sin renderizar ninguna vista.
 
 #### Paso 5 · Práctica guiada
@@ -110,6 +118,14 @@ class EnviosViewModel {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: en producción, `EnviosViewModel()` usa el valor por defecto `ServicioAPI()` sin que nadie lo especifique; en un test, `EnviosViewModel(servicio: ServicioAPIFalso())` construye el mismo ViewModel con una implementación falsa, sin tocar una línea de `EnviosViewModel`.
 
 #### Paso 5 · Práctica guiada
@@ -168,6 +184,14 @@ struct EsEnvioAtrasado {
 class EnviosViewModel { private let esAtrasado = EsEnvioAtrasado() }
 class DetalleEnvioViewModel { private let esAtrasado = EsEnvioAtrasado() }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: la regla de negocio vive en un solo lugar (`EsEnvioAtrasado`); si RutaFlow cambia la definición de "atrasado" (agregando, por ejemplo, un margen de tolerancia de 15 minutos), se corrige en un único archivo en vez de buscar cada copia dispersa entre ViewModels.
 
 #### Paso 5 · Práctica guiada

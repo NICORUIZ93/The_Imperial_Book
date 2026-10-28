@@ -165,7 +165,7 @@ export const IOS_MODULES: CourseModule[] = [
     'App iOS con SwiftUI, datos reales, persistencia local y tests.'),
   m(13, 'iOS en producción: seguridad, sincronización y operación', 'Producción', 'Experto', '4 h', '#0a84ff',
     'Endurece y opera una app iOS real ante enlaces hostiles, pérdida de red, datos sensibles y releases imperfectos.',
-    ['Sandbox, entitlements y Universal Links', 'Keychain, Data Protection y privacidad', 'Sincronización offline y conflictos', 'MetricKit, Instruments y releases seguros'],
+    ['Sandbox, entitlements y Universal Links', 'Keychain, Data Protection y privacidad', 'Sincronización offline y conflictos', 'MetricKit, Instruments y releases seguros', 'Keychain: guardar secretos de forma segura', 'Permisos y privacidad: pedir acceso con criterio', 'Notificaciones push con APNs'],
     [
       'Construye un modelo de amenazas y audita entitlements, permisos y Universal Links',
       'Protege credenciales con Keychain y define una política de datos, logs, backups y capturas',

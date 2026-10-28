@@ -1,35 +1,35 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 68,
-      "code": 68,
-      "commentedCode": 39,
-      "mermaid": 48,
-      "archifyVisual": 4,
+      "topics": 73,
+      "code": 73,
+      "commentedCode": 43,
+      "mermaid": 50,
+      "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 68,
-      "runCommand": 67,
+      "filePath": 73,
+      "runCommand": 73,
       "officialSource": 6
     },
     "cloud": {
-      "topics": 154,
-      "code": 154,
-      "commentedCode": 69,
-      "mermaid": 79,
-      "archifyVisual": 3,
+      "topics": 155,
+      "code": 155,
+      "commentedCode": 70,
+      "mermaid": 80,
+      "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
-      "filePath": 154,
-      "runCommand": 154,
-      "officialSource": 138
+      "filePath": 155,
+      "runCommand": 155,
+      "officialSource": 139
     },
     "devops": {
       "topics": 99,
       "code": 99,
       "commentedCode": 46,
       "mermaid": 50,
-      "archifyVisual": 0,
+      "archifyVisual": 1,
       "asciiVisual": 43,
       "misleadingDiagramLabel": 0,
       "filePath": 99,
@@ -49,124 +49,124 @@
       "officialSource": 65
     },
     "node": {
-      "topics": 72,
-      "code": 72,
-      "commentedCode": 31,
-      "mermaid": 18,
+      "topics": 75,
+      "code": 75,
+      "commentedCode": 34,
+      "mermaid": 19,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
-      "filePath": 72,
-      "runCommand": 72,
-      "officialSource": 42
+      "filePath": 75,
+      "runCommand": 75,
+      "officialSource": 43
     },
     "angular": {
-      "topics": 67,
-      "code": 67,
-      "commentedCode": 66,
+      "topics": 68,
+      "code": 68,
+      "commentedCode": 67,
       "mermaid": 28,
       "archifyVisual": 0,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 67,
+      "filePath": 68,
       "runCommand": 67,
-      "officialSource": 56
+      "officialSource": 57
     },
     "react": {
-      "topics": 55,
-      "code": 55,
-      "commentedCode": 34,
-      "mermaid": 36,
+      "topics": 57,
+      "code": 57,
+      "commentedCode": 36,
+      "mermaid": 37,
       "archifyVisual": 0,
       "asciiVisual": 9,
       "misleadingDiagramLabel": 0,
-      "filePath": 55,
-      "runCommand": 55,
-      "officialSource": 36
+      "filePath": 57,
+      "runCommand": 57,
+      "officialSource": 38
     },
     "java": {
-      "topics": 71,
-      "code": 71,
-      "commentedCode": 17,
+      "topics": 72,
+      "code": 72,
+      "commentedCode": 49,
       "mermaid": 15,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 71,
-      "runCommand": 71,
+      "filePath": 72,
+      "runCommand": 72,
       "officialSource": 36
     },
     "spring-boot": {
-      "topics": 78,
-      "code": 78,
-      "commentedCode": 62,
-      "mermaid": 39,
-      "archifyVisual": 2,
+      "topics": 80,
+      "code": 80,
+      "commentedCode": 64,
+      "mermaid": 41,
+      "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 78,
-      "runCommand": 78,
-      "officialSource": 48
+      "filePath": 80,
+      "runCommand": 80,
+      "officialSource": 49
     },
     "kotlin-multiplatform": {
-      "topics": 54,
-      "code": 54,
+      "topics": 55,
+      "code": 55,
       "commentedCode": 36,
       "mermaid": 31,
       "archifyVisual": 0,
       "asciiVisual": 22,
       "misleadingDiagramLabel": 0,
-      "filePath": 54,
-      "runCommand": 54,
+      "filePath": 55,
+      "runCommand": 55,
       "officialSource": 40
     },
     "android": {
-      "topics": 50,
-      "code": 50,
+      "topics": 52,
+      "code": 52,
       "commentedCode": 48,
       "mermaid": 10,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 50,
+      "filePath": 52,
       "runCommand": 50,
-      "officialSource": 47
+      "officialSource": 49
     },
     "ios": {
-      "topics": 51,
-      "code": 51,
-      "commentedCode": 22,
-      "mermaid": 29,
+      "topics": 55,
+      "code": 55,
+      "commentedCode": 25,
+      "mermaid": 30,
       "archifyVisual": 0,
       "asciiVisual": 16,
       "misleadingDiagramLabel": 0,
-      "filePath": 51,
-      "runCommand": 51,
-      "officialSource": 51
+      "filePath": 55,
+      "runCommand": 55,
+      "officialSource": 55
     },
     "flutter": {
-      "topics": 57,
-      "code": 57,
-      "commentedCode": 18,
+      "topics": 58,
+      "code": 58,
+      "commentedCode": 19,
       "mermaid": 47,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 57,
-      "runCommand": 57,
-      "officialSource": 48
+      "filePath": 58,
+      "runCommand": 58,
+      "officialSource": 49
     },
     "rutaflow": {
-      "topics": 24,
-      "code": 24,
-      "commentedCode": 24,
+      "topics": 25,
+      "code": 25,
+      "commentedCode": 25,
       "mermaid": 24,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 24,
-      "runCommand": 22,
-      "officialSource": 5
+      "filePath": 25,
+      "runCommand": 23,
+      "officialSource": 6
     }
   },
   "priorityDebt": [
@@ -244,6 +244,13 @@
       "track": "foundations",
       "module": 11,
       "topic": "Tema 6: Redes, seguridad, web e ingeniería profesional",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "foundations",
+      "module": 2,
+      "topic": "Tema 6: Tablas hash — búsqueda en tiempo constante",
       "missingCode": false,
       "missingComments": true
     },
@@ -1859,113 +1866,8 @@
     },
     {
       "track": "java",
-      "module": 0,
-      "topic": "Tema 4: Tipos primitivos vs referencias",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 0,
-      "topic": "Tema 5: Variables, conversiones y `String`",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 0,
-      "topic": "Tema 6: Operadores, precedencia y control de flujo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 0,
-      "topic": "Tema 7: Arreglos, wrappers y paso de argumentos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 0,
-      "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
       "module": 1,
       "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 1,
-      "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 10,
-      "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 10,
-      "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 11,
-      "topic": "Tema 1: Generaciones de memoria y recolectores",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 11,
-      "topic": "Tema 2: Java Flight Recorder y JIT compilation",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 11,
-      "topic": "Tema 3: Referencias especiales y heap dumps",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 11,
-      "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 1: Builder — configuración paso a paso y validación",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 2: Factory Method y Strategy",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
       "missingCode": false,
       "missingComments": true
     },
@@ -1986,28 +1888,7 @@
     {
       "track": "java",
       "module": 14,
-      "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 14,
       "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 14,
-      "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 14,
-      "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "missingCode": false,
       "missingComments": true
     },
@@ -2022,69 +1903,6 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 2: Gradle y builds reproducibles",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 5: Pruebas de integración reproducibles",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 17,
-      "topic": "Tema 1: JDBC, PreparedStatement y DAO",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 17,
-      "topic": "Tema 2: Transacciones, ACID y aislamiento",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 18,
-      "topic": "Tema 1: HttpClient, REST, timeouts y fallos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 18,
-      "topic": "Tema 2: Tokens, validación y límites de seguridad",
       "missingCode": false,
       "missingComments": true
     },
@@ -2120,13 +1938,6 @@
       "track": "java",
       "module": 4,
       "topic": "Tema 2: Optional — evitar null explícitamente",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 4,
-      "topic": "Tema 4: Stream Gatherers (Java 24)",
       "missingCode": false,
       "missingComments": true
     },
@@ -2183,27 +1994,6 @@
       "track": "java",
       "module": 7,
       "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 7,
-      "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 8,
-      "topic": "Tema 1: pom.xml vs build.gradle.kts",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 8,
-      "topic": "Tema 2: Ciclo de vida de build y scopes",
       "missingCode": false,
       "missingComments": true
     },
@@ -2447,6 +2237,13 @@
     },
     {
       "track": "kotlin-multiplatform",
+      "module": 5,
+      "topic": "Tema 5: kotlinx.serialization — JSON compartido entre plataformas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "kotlin-multiplatform",
       "module": 8,
       "topic": "Tema 2: Mapeo de tipos Kotlin ↔ Swift",
       "missingCode": false,
@@ -2470,6 +2267,20 @@
       "track": "kotlin-multiplatform",
       "module": 9,
       "topic": "Tema 3: runTest para coroutines",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 0,
+      "topic": "Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 0,
+      "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
       "missingCode": false,
       "missingComments": true
     },
@@ -2580,6 +2391,27 @@
     },
     {
       "track": "ios",
+      "module": 13,
+      "topic": "Tema 5: Keychain — guardar secretos de forma segura",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "ios",
+      "module": 13,
+      "topic": "Tema 6: Permisos y privacidad — pedir acceso con criterio",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "ios",
+      "module": 13,
+      "topic": "Tema 7: Notificaciones push con APNs",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "ios",
       "module": 14,
       "topic": "Tema 3: Combine avanzado",
       "missingCode": false,
@@ -2596,20 +2428,6 @@
       "track": "ios",
       "module": 14,
       "topic": "Tema 6: UIViewControllerRepresentable y Coordinator",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 2,
-      "topic": "Tema 1: @State y @Binding",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 2,
-      "topic": "Tema 2: @Observable",
       "missingCode": false,
       "missingComments": true
     },

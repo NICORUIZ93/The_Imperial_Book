@@ -90,6 +90,15 @@ spring:
         spring.json.trusted.packages: academia.rutaflow.event
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 `auto-offset-reset: earliest` aplica cuando el grupo aún no tiene un offset confirmado; no rebobina automáticamente un grupo ya existente. En producción, restringe paquetes deserializables y configura TLS/SASL desde secretos externos.
 
 Define un contrato versionable en `src/main/java/academia/rutaflow/event/EnvioCreado.java`:
@@ -208,6 +217,15 @@ DefaultErrorHandler kafkaErrorHandler(KafkaTemplate<Object, Object> kafka) {
 }
 ```
 
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
+
 Con esta política se realizan dos reintentos después del intento inicial; en producción separa excepciones recuperables de permanentes y evita que un error de negocio se convierta en retry infinito.
 
 Para la proyección PostgreSQL, en `src/main/resources/db/migration/V2__evento_procesado.sql` crea una tabla inbox y una restricción única:
@@ -273,6 +291,15 @@ public UUID crear(String referencia) {
     return envio.getId();
 }
 ```
+
+**Ejecuta el ejemplo** (genera el proyecto con Spring Initializr, pega el código y corre las pruebas):
+
+```bash
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
+./mvnw test
+```
+Equivalencias Maven/Gradle en el Módulo 1.
+
 
 En `src/main/java/academia/rutaflow/outbox/OutboxDispatcher.java`, el dispatcher selecciona un lote pequeño de pendientes, envía cada evento usando `aggregate_id` como key y espera confirmación limitada del broker. Solo después marca `published_at` y confirma esa actualización SQL. Registra timeout/causa e incrementa `attempts`; no marques publicado antes del ack del broker.
 

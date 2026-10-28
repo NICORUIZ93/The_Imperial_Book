@@ -111,6 +111,16 @@ function BotonConfirmarEntrega({ envioId }) {
   return <button onClick={() => setConfirmando(true)}>{confirmando ? 'Confirmando...' : 'Confirmar entrega'}</button>;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente.
 
 #### Paso 5 · Práctica guiada
@@ -175,6 +185,16 @@ El streaming con `Suspense` del lado del servidor envía el HTML de las partes y
   <HistorialUbicaciones envioId={envio.id} /> {/* consulta lenta */}
 </Suspense>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `DatosBasicosEnvio` (guía, destinatario, estado) aparece en pantalla de inmediato; el spinner de `HistorialUbicaciones` se reemplaza por el historial real varios segundos después, sin que el resto de la página haya esperado ese tiempo.
 
 #### Paso 5 · Práctica guiada
@@ -233,6 +253,16 @@ async function confirmarEntregaAction(formData) {
   <input name="guia" /><input name="pin" /><button>Confirmar</button>
 </form>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: enviar el formulario ejecuta `confirmarEntregaAction` directamente en el servidor con los datos del formulario, sin ninguna ruta API adicional definida ni ningún `fetch` manual escrito en el cliente.
 
 #### Paso 5 · Práctica guiada

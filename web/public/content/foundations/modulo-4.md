@@ -35,6 +35,13 @@ INSERT INTO tareas(titulo, categoria_id) VALUES ('Pagar factura', 1), ('Comprar 
 DELETE FROM categorias WHERE nombre='trabajo';
 SELECT * FROM tareas;
 ```
+
+**Ejecuta el ejemplo** (carga el schema en una base SQLite real y observa el resultado):
+
+```bash
+sqlite3 tareas.db < src/schema.sql
+```
+```
 ```bash
 sqlite3 tareas.db < src/schema.sql
 ```
@@ -86,6 +93,8 @@ CREATE TABLE productos (
 Guardar el nombre de categoría repetido en cada producto produce inconsistencias: “Periféricos” y “perifericos” podrían representar lo mismo. Separar la entidad y referenciarla reduce repetición. Normalizar no significa fragmentar todo: busca representar cada hecho en un lugar coherente, evaluando después necesidades de lectura.
 
 El diagrama entidad-relación se diseña antes del `CREATE TABLE`. Anota cardinalidad: una categoría tiene muchos productos; un producto puede tener muchos movimientos. Decide si una relación es obligatoria y qué debe ocurrir al eliminar.
+
+**Diagrama interactivo:** [Esquema entidad-relación del gestor: tablas, claves y cardinalidad](/visuals/temas/foundations/modulo-4-tema-1-erd.html) — modelo explorable con temas claro/oscuro, cada columna física con su tipo y las claves foráneas resaltadas.
 
 **Analogía:** una clave primaria es el número de documento; una foránea es escribir ese número en otro expediente para enlazarlo sin copiar a la persona completa.
 

@@ -155,6 +155,15 @@ confirmar-entrega         5 min     ~0        rol IAM temporal + reintentos (Mó
 ShipmentEvents            30 min    5 min     PITR de DynamoDB (Módulo 4) + réplica
 rutaflow-facturacion      4 h       24 h      snapshot diario (Módulo 13) + restore probado
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: tres servicios reales de RutaFlow, tres combinaciones de RTO/RPO distintas — ninguna es "cero" porque cero tiene un costo y una complejidad que ningún servicio de este curso justifica todavía.
 #### Paso 5 · Práctica guiada
 Pista: eliminá el punto de recuperación más reciente de `rutaflow-facturacion` (Módulo 13) y recién después intentá cumplir el RPO de 24 horas de la tabla — ese es el fallo deliberado: sin ese punto de recuperación, el RPO real que podés cumplir es el del snapshot anterior, potencialmente mucho más viejo que las 24 horas prometidas.

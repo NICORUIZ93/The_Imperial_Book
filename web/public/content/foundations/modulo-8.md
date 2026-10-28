@@ -121,6 +121,14 @@ hilos = [Thread(target=reservar_lugar) for _ in range(10)]
 [h.join() for h in hilos]
 print(capacidad["disponible"])
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: en la mayoría de las corridas, el resultado NO es `0` (el esperado tras 10 reservas de un vehículo con capacidad 10) — algunas actualizaciones se pisan entre sí, y el número exacto varía de ejecución en ejecución.
 
 #### Paso 5 · Práctica guiada

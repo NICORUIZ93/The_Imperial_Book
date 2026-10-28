@@ -29,6 +29,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       'Variables, tipos, expresiones y estado',
       'Condiciones, bucles y trazado manual',
       'Funciones, parámetros, retorno, alcance y descomposición',
+      'Representación de datos: binario, UTF-8 y punto flotante',
     ],
     [
       'Diseña en papel el algoritmo para calcular el precio final de una compra',
@@ -50,6 +51,10 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       'Pilas, colas y modelos de uso',
       'Búsqueda lineal, búsqueda binaria y precondiciones',
       'Ordenamiento, recursión, complejidad temporal y espacial',
+      'Árboles y árboles binarios de búsqueda (BST)',
+      'Tablas hash: búsqueda en tiempo constante y colisiones',
+      'Grafos y recorridos BFS/DFS',
+      'Programación dinámica y memoización',
     ],
     [
       'Modela un inventario y justifica la estructura elegida para cada operación',

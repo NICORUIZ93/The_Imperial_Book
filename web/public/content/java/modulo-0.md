@@ -228,6 +228,16 @@ Desde una **carpeta vacía**, crea `src/ValoresYReferencias.java`:
 mkdir java-tipos && cd java-tipos
 mkdir src out
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 ```java
 public final class ValoresYReferencias {
     public static void main(String[] args) {
@@ -291,6 +301,16 @@ Desde una **carpeta vacía**, crea `src/Conversiones.java`:
 mkdir java-conversiones && cd java-conversiones
 mkdir src out
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 ```java
 import java.math.BigDecimal;
 
@@ -372,6 +392,16 @@ Desde una **carpeta vacía**, crea `src/ControlEntrega.java`:
 mkdir java-control && cd java-control
 mkdir src out
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 ```java
 public final class ControlEntrega {
     enum Estado { CREADA, EN_RUTA, ENTREGADA }
@@ -447,6 +477,16 @@ Desde una **carpeta vacía**, crea `src/Argumentos.java`:
 mkdir java-argumentos && cd java-argumentos
 mkdir src out
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 ```java
 import java.util.Arrays;
 
@@ -518,6 +558,16 @@ Desde una **carpeta vacía**, crea `src/FechaEntrega.java`:
 mkdir java-fechas && cd java-fechas
 mkdir src out
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 ```java
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

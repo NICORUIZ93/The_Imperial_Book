@@ -513,6 +513,142 @@ SESSION_SECRET='cambia-este-secreto-local' npm test -- session
 
 **Límites y decisión de uso:** CSRF depende de credenciales que el navegador adjunta automáticamente, no del nombre JWT o sesión. Revisa dónde viaja la credencial, combina protección de mutaciones y cookies apropiadas, y mantén controles separados contra XSS y acceso a recursos ajenos.
 
+### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida
+
+**Evidencia de aprendizaje:** entrega la secuencia completa de tres respuestas (`POST /api/auth/login` devuelve un token; `GET /api/usuarios` sin token responde `401`; `GET /api/usuarios` con `Authorization: Bearer <token>` responde `200`), con sus códigos de estado.
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás unir en un solo servidor las piezas de los temas anteriores: un endpoint de login que recibe credenciales y devuelve un JWT, y un endpoint protegido que solo responde cuando ese JWT viaja en el header `Authorization: Bearer`. **Prerrequisitos:** Temas 1 (hashing), 2 (JWT) y 3 (middleware) de este módulo; Node LTS, npm y una carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Hasta ahora firmaste tokens y validaste roles en ejemplos separados. En una aplicación real (el panel de RutaFlow, por ejemplo) el usuario escribe su correo y contraseña una vez en una pantalla de login, el backend responde con un token, y la app guarda ese token y lo adjunta en cada petición siguiente. Ver ese recorrido completo de punta a punta es lo que convierte piezas sueltas en un sistema de autenticación que de verdad funciona.
+
+#### Paso 3 · Teoría y analogía aplicada
+
+El flujo tiene tres momentos: (1) **login** — el cliente envía credenciales a `POST /api/auth/login`; el servidor verifica la contraseña con el hash guardado (Tema 1) y, si coincide, firma un JWT (Tema 2) y lo devuelve; (2) **almacenamiento** — el cliente guarda el token (en una app móvil, almacenamiento seguro; en web, cookie httpOnly); (3) **uso** — en cada petición protegida el cliente añade el header `Authorization: Bearer <token>`, y el middleware (Tema 3) lo valida antes de dejar pasar.
+
+**Analogía:** el login es como presentar tu documento en la recepción de un edificio y recibir a cambio una tarjeta de acceso temporal; a partir de ahí no vuelves a mostrar el documento en cada puerta, solo pasas la tarjeta por el lector. `/api/auth/login` es la recepción; el `Authorization: Bearer` es pasar la tarjeta; el `401` es la puerta que no se abre sin ella.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant C as Cliente
+  participant A as API
+  C->>A: POST /api/auth/login { email, password }
+  A->>A: Verifica hash (Tema 1) y firma JWT (Tema 2)
+  A-->>C: 200 { token }
+  C->>A: GET /api/usuarios (sin token)
+  A-->>C: 401 No autorizado
+  C->>A: GET /api/usuarios + Authorization: Bearer <token>
+  A->>A: Middleware valida el JWT (Tema 3)
+  A-->>C: 200 [ usuarios ]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-login-flow
+cd ejemplo-login-flow
+npm init -y
+npm pkg set type=module
+npm install express jose bcrypt
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+import bcrypt from "bcrypt";
+import { SignJWT, jwtVerify } from "jose";
+
+const app = express();
+app.use(express.json());
+const secreto = new TextEncoder().encode("secreto-solo-para-demo-local");
+
+// "Base de datos" de ejemplo: la contraseña se guarda hasheada, nunca en texto plano (Tema 1).
+const usuarios = [
+  { id: 1, email: "ana@rutaflow.dev", rol: "admin", hash: await bcrypt.hash("clave-larga-segura", 10) },
+];
+
+// (1) LOGIN: verifica credenciales y devuelve un JWT firmado.
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body ?? {};
+  const usuario = usuarios.find((u) => u.email === email);
+  if (!usuario || !(await bcrypt.compare(password ?? "", usuario.hash))) {
+    return res.status(401).json({ error: "Credenciales inválidas" });
+  }
+  const token = await new SignJWT({ sub: String(usuario.id), rol: usuario.rol })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("15m")
+    .sign(secreto);
+  res.json({ token });
+});
+
+// Middleware de autenticación (Tema 3).
+async function exigirToken(req, res, next) {
+  const header = req.headers.authorization ?? "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: "Falta Bearer token" });
+  try {
+    const { payload } = await jwtVerify(token, secreto);
+    req.user = payload;
+    next();
+  } catch {
+    res.status(401).json({ error: "Token inválido o expirado" });
+  }
+}
+
+// (3) RUTA PROTEGIDA: solo responde con un token válido.
+app.get("/api/usuarios", exigirToken, (_req, res) => {
+  res.json(usuarios.map(({ id, email, rol }) => ({ id, email, rol })));
+});
+
+app.listen(3000, () => console.log("API en http://127.0.0.1:3000"));
+```
+
+Ejecuta `node src/server.js` y, en otra terminal, prueba el recorrido completo:
+
+```bash
+# 1. Login: obtén el token
+curl -s -X POST http://127.0.0.1:3000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"ana@rutaflow.dev","password":"clave-larga-segura"}'
+
+# 2. Ruta protegida SIN token -> 401
+curl -s -i http://127.0.0.1:3000/api/usuarios | head -1
+
+# 3. Ruta protegida CON token -> 200 (pega el token del paso 1)
+curl -s -i http://127.0.0.1:3000/api/usuarios \
+  -H "Authorization: Bearer PEGA_AQUI_EL_TOKEN" | head -1
+```
+
+**Resultado esperado:** el login devuelve `{ "token": "eyJ..." }`; `GET /api/usuarios` sin token responde `HTTP/1.1 401`; con el header `Authorization: Bearer <token>` responde `HTTP/1.1 200` y la lista de usuarios (sin el hash). **Fallo deliberado y diagnóstico:** haz login con `"password":"incorrecta"`; el servidor responde `401 Credenciales inválidas` y NO devuelve token, porque `bcrypt.compare` falla. Confirma que la respuesta de error es idéntica para email inexistente y contraseña incorrecta, para no revelar cuál de los dos falló.
+
+#### Paso 5 · Práctica guiada
+
+Añade un segundo endpoint protegido `GET /api/usuarios/:id` que solo devuelva el usuario si coincide con el `sub` del token (cada usuario solo se ve a sí mismo, salvo rol `admin`). **Pista:** lee `req.user.sub` y `req.user.rol` del payload ya verificado; nunca confíes en un `id` que venga solo de la URL.
+
+#### Paso 6 · Práctica independiente
+
+Separa el login en dos respuestas: access token (15 min) y refresh token (7 días, Tema 2), y añade `POST /api/auth/refresh` que entregue un nuevo access token sin pedir la contraseña. Entrega las cuatro respuestas: login, acceso con token válido, acceso con token expirado (`401`) y refresh exitoso.
+
+#### Paso 7 · Cierre y conexión
+
+Ya tienes el flujo de autenticación completo de punta a punta: login que emite el token, almacenamiento en el cliente, y ruta protegida que lo exige. Este es exactamente el recorrido que usa el proyecto integrador «API operativa de entregas»: el panel y la app hacen login contra `/api/auth/login` y adjuntan el `Bearer` en cada operación sobre entregas.
+
+**Cuándo no usarlo:** si delegas la autenticación a un proveedor externo de identidad (OAuth 2.0/OIDC con Google o Keycloak, Tema 4), no implementas `/api/auth/login` tú mismo: el proveedor emite el token y tu API solo lo valida. La diferencia frente a este tema es quién custodia las credenciales: aquí las verifica tu backend; con un proveedor externo, no las ve nunca. Implementa el login propio cuando controlas la base de usuarios; delega cuando prefieres no gestionar contraseñas.
+
+**Errores comunes:** devolver el hash de la contraseña en la respuesta de `/api/usuarios`; responder distinto ante email inexistente vs contraseña incorrecta (filtra qué correos existen); poner el token en la URL en vez del header; no expirar el access token.
+
+**Fuentes oficiales:** [RFC 6750 — Bearer Token Usage](https://www.rfc-editor.org/rfc/rfc6750), [Express — routing](https://expressjs.com/en/guide/routing.html) y [jose](https://github.com/panva/jose).
+
+**Conceptos clave:** flujo login → token → petición protegida, endpoint `/api/auth/login`, header `Authorization: Bearer`, verificación de credenciales con hash.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** implementar autenticación completa con hashing de contraseñas, JWT de access y refresh, y control de roles sobre la API construida en módulos anteriores.

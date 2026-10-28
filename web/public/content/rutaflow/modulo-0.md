@@ -78,6 +78,14 @@ mkdir -p rutaflow-labs/tema-1-proceso-logistico/src
 cd rutaflow-labs/tema-1-proceso-logistico
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 Crea `src/envio-estado.js`:
 
 ```javascript
@@ -293,6 +301,14 @@ flowchart LR
 mkdir -p rutaflow-labs/tema-3-privacidad-y-amenazas/src
 cd rutaflow-labs/tema-3-privacidad-y-amenazas
 ```
+
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
 
 Crea `src/registrar-evento.js`:
 

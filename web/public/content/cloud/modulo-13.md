@@ -146,6 +146,15 @@ BEGIN
 END \$\$;
 "
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: `facturas` ahora tiene la columna `estado_pago`, y `migraciones_aplicadas` registra que la versión 1 ya se aplicó — cualquiera que corra este mismo script contra otro ambiente obtiene exactamente el mismo resultado.
 #### Paso 5 · Práctica guiada
 Pista: corré el mismo bloque `DO $$ ... END $$;` del Paso 4 una segunda vez SIN el `IF NOT EXISTS` de `migraciones_aplicadas` (quitalo mentalmente o probalo con un `ALTER TABLE facturas ADD COLUMN estado_pago TEXT` suelto) — ese es el fallo deliberado: `ERROR: column "estado_pago" of relation "facturas" already exists`. Una migración que no es idempotente rompe apenas alguien la corre dos veces por error.

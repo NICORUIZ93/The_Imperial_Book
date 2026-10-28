@@ -17,6 +17,15 @@ API_ID=$(aws apigateway create-rest-api --name "API RutaFlow" --query id --outpu
 ROOT_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --query 'items[0].id' --output text)
 echo "API_ID=$API_ID ROOT_ID=$ROOT_ID"
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: `API_ID` y `ROOT_ID` quedan guardados en variables de shell — todavía no hay ningún recurso propio ni ningún método, solo el contenedor vacío y su raíz (`/`).
 #### Paso 5 · Práctica guiada
 Pista: probá `curl http://localhost:4566/restapis/$API_ID/dev/_user_request_/entregas` ahora mismo, antes de crear nada más — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, porque ni el recurso `/entregas` ni el stage `dev` existen todavía.

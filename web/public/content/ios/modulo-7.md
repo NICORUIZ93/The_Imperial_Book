@@ -24,6 +24,14 @@ class BuscadorEnviosViewModel: ObservableObject {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: cada letra que se escribe en `textoBusqueda` imprime una línea nueva — `$textoBusqueda` emite un valor por cada cambio, no una sola vez al final.
 #### Paso 5 · Práctica guiada
 Pista: quitá `.store(in: &cancelables)` de la suscripción — ese es el fallo deliberado: la suscripción se cancela inmediatamente al salir de ámbito del `init`, y el `sink` nunca vuelve a imprimir nada aunque `textoBusqueda` siga cambiando.
@@ -91,6 +99,14 @@ Publishers.CombineLatest($textoBusqueda, $zonaFiltro)
     .sink { texto, zona in print("filtrar: \(texto) en \(zona)") }
     .store(in: &cancelables)
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: escribir "RF-4471" letra por letra solo dispara UN `print` de búsqueda, 300ms después de la última letra; cambiar `zonaFiltro` sin tocar el texto vuelve a imprimir el filtro combinado, reusando el último texto conocido.
 #### Paso 5 · Práctica guiada
 Pista: quitá `.debounce(...)` de la primera cadena — ese es el fallo deliberado: ahora "buscando guía:" se imprime una vez por cada letra tecleada, siete veces para "RF-4471" en vez de una sola vez tras terminar de escribir, exactamente la sobrecarga de backend que `debounce` existe para evitar.
@@ -145,6 +161,14 @@ $textoBusqueda.debounce(for: .milliseconds(300), scheduler: RunLoop.main).sink {
 // Operación puntual: correcto con async/await (Módulo 5), NO con Combine
 let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: la búsqueda en vivo usa Combine porque nunca "termina" mientras la pantalla esté abierta; `confirmarEntrega` usa `async`/`await` porque es una sola llamada con un resultado final, sin necesidad de ningún `AnyCancellable`.
 #### Paso 5 · Práctica guiada
 Pista: reescribí `confirmarEntrega` como un `Publisher` con `Future` en vez de una función `async` — ese es el fallo deliberado de elegir la herramienta equivocada: ahora necesitás gestionar un `AnyCancellable` y un `.store(in:)` para una operación que de por sí termina una sola vez, agregando complejidad de gestión de vida que `async`/`await` nunca necesitó.

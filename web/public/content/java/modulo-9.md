@@ -21,7 +21,8 @@ mkdir ejemplo-junit-lifecycle
 cd ejemplo-junit-lifecycle
 mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app
-mvn test
+mvn test          # Maven
+./gradlew test    # Gradle (equivalente; genera el proyecto con `gradle init --type java-application --dsl kotlin --test-framework junit-jupiter`)
 ```
 Crea `src/test/java/academia/entregas/CalculadoraTest.java` con un `@Test` que llame `assertEquals(5, new Calculadora().sumar(2, 3))` y un `@BeforeEach` que reinicie el estado; ejecuta `mvn test`.
 
@@ -80,7 +81,8 @@ mkdir ejemplo-mockito-repositorio
 cd ejemplo-mockito-repositorio
 mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app
-mvn test
+mvn test          # Maven
+./gradlew test    # Gradle (equivalente)
 ```
 Crea `src/test/java/academia/entregas/ServicioPedidosTest.java` con `@Mock RepositorioPedidos repositorio` y `@InjectMocks ServicioPedidos servicio`; configura `when(repositorio.guardar(any())).thenReturn(new Pedido(1))` y verifica con `verify(repositorio).guardar(any())`.
 
@@ -144,7 +146,8 @@ mkdir ejemplo-parametrizado-cobertura
 cd ejemplo-parametrizado-cobertura
 mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app
-mvn test jacoco:report
+mvn test jacoco:report            # Maven (plugin jacoco-maven-plugin)
+./gradlew test jacocoTestReport   # Gradle (equivalente, con el plugin `jacoco`)
 ```
 Crea `src/test/java/academia/entregas/FibonacciTest.java` con `@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero)`; ejecuta `mvn test jacoco:report` y abre `target/site/jacoco/index.html`.
 

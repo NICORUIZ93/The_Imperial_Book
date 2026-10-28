@@ -111,7 +111,7 @@ export const JAVA_MODULES: CourseModule[] = [
     'Modelo de dominio inmutable usando records, sealed interfaces, pattern matching y unnamed patterns.'),
   m(8, 'Build tools: Maven y Gradle', 'Maven/Gradle', 'Integración', '2 h', '#5382a1',
     'Gestiona dependencias y el ciclo de build de un proyecto Java real.',
-    ['pom.xml vs build.gradle.kts', 'Ciclo de vida de build', 'Gestión de dependencias y scopes', 'Multi-módulo'],
+    ['pom.xml vs build.gradle.kts', 'Ciclo de vida de build', 'Gestión de dependencias y scopes', 'Multi-módulo', 'Maven y Gradle lado a lado: el mismo proyecto en dos herramientas'],
     [
       'Crea un proyecto con Maven (mvn archetype:generate) y otro con Gradle (gradle init) y compara la estructura generada',
       'Agrega una dependencia externa (ej. Jackson) en ambos formatos y ejecuta el build',

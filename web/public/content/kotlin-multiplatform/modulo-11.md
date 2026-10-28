@@ -24,6 +24,14 @@ shared/src/
 androidApp/           <- UI Compose o Jetpack Compose nativo
 iosApp/                <- UI SwiftUI consumiendo Shared.framework (Módulo 8)
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: cualquier regla de negocio nueva (como una validación de tareas) tiene un lugar inequívoco donde vivir — `dominio/` si es lógica pura, `data/` si involucra persistencia — y ninguna de las dos apps específicas de plataforma necesita reimplementarla.
 
 #### Paso 5 · Práctica guiada
@@ -99,6 +107,14 @@ class TareaRepositoryImpl(
     }
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: con conexión, `obtenerTodas()` devuelve datos remotos frescos ya persistidos en caché; sin conexión, el mismo método devuelve los últimos datos guardados en caché en vez de propagar la excepción de red hacia la UI.
 
 #### Paso 5 · Práctica guiada
@@ -183,6 +199,14 @@ La promesa realista de KMP es compartir específicamente lo que es redundancia p
 Compartido (redundancia pura si se duplicara): lógica de negocio, networking, persistencia
 Decisión de arquitectura del equipo: UI nativa (fidelidad) vs Compose Multiplatform (velocidad compartida)
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: un documento de cierre del proyecto que lista explícitamente cada capa del proyecto integrador (dominio, datos, UI) junto con la razón concreta de por qué se comparte o por qué se mantiene nativa, en vez de una decisión implícita o "por costumbre".
 
 #### Paso 5 · Práctica guiada

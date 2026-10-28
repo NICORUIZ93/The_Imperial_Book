@@ -15,6 +15,15 @@ Los principios de diseño (puerto + adaptador) son el plano; el SDK de DynamoDB 
 ```bash
 grep -n "interface DeliveryRepository" examples/rutaflow/node/confirm-delivery.ts
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: `confirmDelivery(command, repository)` recibe un `DeliveryRepository` (el puerto: `findCommandResult`/`confirm`) como parámetro — nunca importa directamente `@aws-sdk/client-dynamodb` ni ningún cliente de Azure dentro de la función. Esa separación ya existe en el código real del proyecto, no es solo una idea teórica.
 #### Paso 5 · Práctica guiada
 Pista: reescribí `confirmDelivery` para que llame directamente a `new DynamoDBClient()` adentro de la función, en vez de recibir `repository` por parámetro — ese es el fallo deliberado de diseño: ahora la lógica de negocio quedó acoplada a AWS, y migrar a Azure exigiría reescribir y volver a probar `confirmDelivery` entero, no solo escribir un adaptador nuevo.
@@ -64,6 +73,15 @@ Crea `tests/container.test.js` desde una carpeta vacía.
 mkdir ejemplo-testcontainers
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
@@ -152,6 +170,15 @@ Crea `tests/isolated.test.js` desde una carpeta vacía.
 mkdir ejemplo-isolated-tests
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.

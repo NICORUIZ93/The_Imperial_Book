@@ -558,6 +558,312 @@ Medición: time.time() antes/después, imprime diferencia
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Compara dos estrategias de ordenamiento con tareas equivalentes y tamaños crecientes. Verifica primero que producen el mismo orden y registra condiciones de medición antes de elegir por velocidad.
 
+### Tema 5: Árboles y árboles binarios de búsqueda (BST)
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad).
+
+#### Paso 2 · Contexto y caso real
+En el gestor de tareas, cuando tienes 10.000 tareas y necesitas encontrar una por su fecha de vencimiento, recorrer una lista entera (O(n)) es lento. Un árbol binario de búsqueda ordenado por fecha encuentra cualquier tarea en unos pocos saltos, el mismo principio que usan los índices de una base de datos (Módulo 4).
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un árbol es una estructura jerárquica: cada nodo tiene hijos. Un **BST** añade una regla de orden: todo lo menor que un nodo va a su izquierda, todo lo mayor a su derecha. Buscar es como adivinar un número entre 1 y 100 preguntando "¿mayor o menor?": cada pregunta descarta la mitad. Por eso la búsqueda es logarítmica mientras el árbol esté equilibrado.
+
+**Analogía:** un BST es como un torneo de eliminación donde en cada ronda descartas la mitad de los candidatos; una lista es como revisar a cada candidato uno por uno hasta el final.
+
+**Diagrama:**
+
+```mermaid
+graph TD
+    A[50] --> B[30]
+    A --> C[70]
+    B --> D[20]
+    B --> E[40]
+    C --> F[60]
+    C --> G[80]
+```
+
+**Diagrama interactivo:** [Árbol binario de búsqueda: invariante de orden y por qué degenera](/visuals/temas/foundations/modulo-2-tema-5-bst.html) — versión explorable con temas claro/oscuro y la regla de orden de cada nodo.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea `bst.py`:
+
+```python
+class Nodo:
+    def __init__(self, valor):
+        self.valor = valor
+        self.izq = None
+        self.der = None
+
+class BST:
+    def __init__(self):
+        self.raiz = None
+
+    def insertar(self, valor):
+        self.raiz = self._insertar(self.raiz, valor)
+
+    def _insertar(self, nodo, valor):
+        if nodo is None:
+            return Nodo(valor)
+        if valor < nodo.valor:
+            nodo.izq = self._insertar(nodo.izq, valor)
+        elif valor > nodo.valor:
+            nodo.der = self._insertar(nodo.der, valor)
+        return nodo
+
+    def buscar(self, valor):
+        nodo = self.raiz
+        pasos = 0
+        while nodo is not None:
+            pasos += 1
+            if valor == nodo.valor:
+                return pasos          # encontrado en 'pasos' comparaciones
+            nodo = nodo.izq if valor < nodo.valor else nodo.der
+        return -1                      # no está
+
+arbol = BST()
+for v in [50, 30, 70, 20, 40, 60, 80]:
+    arbol.insertar(v)
+print("Buscar 60:", arbol.buscar(60), "comparaciones")
+print("Buscar 99:", arbol.buscar(99))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 bst.py
+```
+
+**Resultado esperado:** `Buscar 60: 3 comparaciones` (raíz 50 → 70 → 60) y `Buscar 99: -1`. Con 7 nodos, hallar un elemento cuesta a lo sumo 3 pasos, no 7 — ahí se ve el O(log n). **Fallo deliberado:** inserta los valores ya ordenados (`[20, 30, 40, 50, 60, 70, 80]`) y vuelve a buscar 80: ahora cuesta 7 comparaciones, porque el árbol degeneró en una lista. Diagnostica por qué un BST sin equilibrar pierde su ventaja y por qué existen los árboles balanceados (AVL, rojo-negro).
+
+#### Paso 5 · Práctica guiada
+Añade un recorrido en orden (`inorder`) que imprima los valores de menor a mayor. Pista: recorre recursivamente izquierda → nodo → derecha; en un BST eso devuelve los elementos ordenados automáticamente.
+
+#### Paso 6 · Práctica independiente
+Implementa `eliminar(valor)` para el caso de un nodo hoja y un nodo con un solo hijo. Entrega el árbol antes y después de eliminar, y explica por qué eliminar un nodo con dos hijos es el caso difícil.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en Java, `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
+**Conceptos clave:** jerarquía, invariante de orden, búsqueda logarítmica, degeneración y equilibrio.
+**Cuándo no usarlo:** si solo necesitas buscar por igualdad exacta sin orden, una tabla hash (Tema 6) da O(1) promedio y es más simple; el BST brilla cuando necesitas orden (rangos, mínimo, máximo, recorrido ordenado).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** indexa las tareas por fecha de vencimiento en un BST y compara el número de comparaciones de una búsqueda contra el recorrido lineal de la lista, con 100 y 10.000 tareas.
+
+### Tema 6: Tablas hash — búsqueda en tiempo constante
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás implementar una tabla hash con manejo de colisiones por encadenamiento, y explicar por qué el acceso promedio es O(1) y qué lo degrada a O(n). Prerrequisitos: Temas 1-4 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En el gestor de tareas, buscar una tarea por su ID exacto debería ser instantáneo sin importar cuántas tareas haya. Una tabla hash (lo que en Python es un `dict`) hace justo eso: convierte la clave en una posición directa del arreglo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una tabla hash usa una **función hash** que transforma una clave en un índice de un arreglo. Como dos claves distintas pueden caer en el mismo índice (**colisión**), se guarda una lista en cada posición (encadenamiento). Mientras las colisiones sean pocas, acceder es O(1).
+
+**Analogía:** es como un guardarropa numerado: en vez de buscar tu abrigo revisando todos, la función hash (tu número de ficha) te lleva directo al casillero. Una colisión es cuando dos personas comparten casillero: hay que mirar los pocos abrigos de ESE casillero, no los de todo el guardarropa.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea `tabla_hash.py`:
+
+```python
+class TablaHash:
+    def __init__(self, capacidad=8):
+        self.capacidad = capacidad
+        self.cubetas = [[] for _ in range(capacidad)]
+
+    def _indice(self, clave):
+        return hash(clave) % self.capacidad   # función hash -> posición
+
+    def poner(self, clave, valor):
+        cubeta = self.cubetas[self._indice(clave)]
+        for i, (k, _) in enumerate(cubeta):
+            if k == clave:
+                cubeta[i] = (clave, valor)    # actualiza si ya existe
+                return
+        cubeta.append((clave, valor))         # inserta si es nueva
+
+    def obtener(self, clave):
+        cubeta = self.cubetas[self._indice(clave)]
+        for k, v in cubeta:
+            if k == clave:
+                return v
+        raise KeyError(clave)
+
+tabla = TablaHash()
+tabla.poner("RF-4471", "en ruta")
+tabla.poner("RF-5002", "entregado")
+print("RF-4471 ->", tabla.obtener("RF-4471"))
+print("Distribución:", [len(c) for c in tabla.cubetas])
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 tabla_hash.py
+```
+
+**Resultado esperado:** `RF-4471 -> en ruta` y una distribución donde las dos claves caen en cubetas (idealmente distintas). **Fallo deliberado:** fija `capacidad=1`: todas las claves caen en la única cubeta, y `obtener` vuelve a ser O(n) porque debe recorrer la lista entera. Diagnostica por qué el tamaño de la tabla y una buena función hash son lo que mantiene el O(1); por eso los `dict` reales redimensionan automáticamente cuando se llenan.
+
+#### Paso 5 · Práctica guiada
+Añade un método `eliminar(clave)`. Pista: encuentra la cubeta correcta y quita solo el par con esa clave, sin tocar los demás de la misma cubeta.
+
+#### Paso 6 · Práctica independiente
+Mide cuántas claves caen en cada cubeta al insertar 1000 claves con `capacidad=16` vs `capacidad=256`, y explica la relación entre el "factor de carga" (claves/capacidad) y el rendimiento.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado con capacidad 1. **¿Por qué es importante?** las tablas hash son probablemente la estructura más usada en programación real — todo `dict`, `Map`, `HashMap`, caché o índice en memoria es una. Entender colisiones y factor de carga explica por qué a veces un `dict` "se pone lento" y cómo evitarlo. Fuentes: [Hash table (Wikipedia)](https://en.wikipedia.org/wiki/Hash_table).
+**Conceptos clave:** función hash, colisión, encadenamiento, factor de carga, O(1) amortizado.
+**Cuándo no usarlo:** si necesitas recorrer los datos en orden o buscar rangos, usa un árbol (Tema 5); una tabla hash no tiene orden.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** guarda las tareas en una tabla hash indexada por ID y mide el factor de carga a medida que crece el inventario, confirmando que la búsqueda por ID se mantiene constante.
+
+### Tema 7: Grafos y recorridos BFS/DFS
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás representar un grafo y recorrerlo en anchura (BFS) y en profundidad (DFS), y decidir cuál usar según el problema. Prerrequisitos: Temas 2 (pilas/colas) y 5 (árboles) de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, las ciudades conectadas por carreteras forman un grafo. Encontrar la ruta con menos tramos entre dos ciudades es un BFS; explorar todas las ciudades alcanzables desde un depósito es un DFS. Los grafos modelan redes sociales, dependencias entre tareas, mapas y rutas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **grafo** son nodos (vértices) conectados por aristas. **BFS** explora por niveles usando una **cola** (primero los vecinos directos, luego los vecinos de los vecinos): encuentra el camino más corto en número de saltos. **DFS** explora yendo lo más profundo posible usando una **pila** (o recursión) antes de retroceder.
+
+**Analogía:** BFS es explorar un laberinto con un equipo que avanza en abanico, cubriendo todo lo cercano antes de alejarse; DFS es una sola persona que sigue un pasillo hasta el final, y si no hay salida, retrocede al último cruce.
+
+**Diagrama:**
+
+```mermaid
+graph LR
+    A[Depósito] --- B[Ciudad B]
+    A --- C[Ciudad C]
+    B --- D[Ciudad D]
+    C --- D
+    D --- E[Ciudad E]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Crea `grafos.py`:
+
+```python
+from collections import deque
+
+grafo = {
+    "Deposito": ["B", "C"],
+    "B": ["Deposito", "D"],
+    "C": ["Deposito", "D"],
+    "D": ["B", "C", "E"],
+    "E": ["D"],
+}
+
+def bfs(inicio):
+    visitados, cola, orden = {inicio}, deque([inicio]), []
+    while cola:
+        nodo = cola.popleft()          # cola: primero en entrar, primero en salir
+        orden.append(nodo)
+        for vecino in grafo[nodo]:
+            if vecino not in visitados:
+                visitados.add(vecino)
+                cola.append(vecino)
+    return orden
+
+def dfs(inicio, visitados=None, orden=None):
+    if visitados is None:
+        visitados, orden = set(), []
+    visitados.add(inicio)
+    orden.append(inicio)
+    for vecino in grafo[inicio]:
+        if vecino not in visitados:
+            dfs(vecino, visitados, orden)  # recursión = pila implícita
+    return orden
+
+print("BFS:", bfs("Deposito"))
+print("DFS:", dfs("Deposito"))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 grafos.py
+```
+
+**Resultado esperado:** `BFS: ['Deposito', 'B', 'C', 'D', 'E']` (por niveles: primero B y C, luego D, luego E) y `DFS: ['Deposito', 'B', 'D', 'C', 'E']` (baja por un camino antes de retroceder). Observa cómo la **cola** produce exploración por niveles y la **recursión/pila** produce exploración en profundidad. **Fallo deliberado:** quita el conjunto `visitados` del BFS: con el ciclo Depósito↔B↔D↔C↔Depósito el programa entra en bucle infinito. Diagnostica por qué en un grafo (a diferencia de un árbol) SIEMPRE hay que marcar lo visitado.
+
+#### Paso 5 · Práctica guiada
+Modifica `bfs` para que devuelva el camino más corto (lista de nodos) entre dos ciudades, no solo el orden de visita. Pista: guarda de qué nodo llegaste a cada vecino y reconstruye el camino al llegar al destino.
+
+#### Paso 6 · Práctica independiente
+Añade una ciudad aislada (sin aristas) y confirma que no aparece en el recorrido desde el depósito. Luego cuenta cuántos "componentes conectados" tiene el grafo.
+
+#### Paso 7 · Cierre y evidencia
+Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del fallo deliberado. **¿Por qué es importante?** los grafos y sus recorridos están detrás de los mapas (rutas), las redes sociales (amigos de amigos), los planificadores de tareas (orden de dependencias) y los rastreadores web. BFS para "el más cercano", DFS para "explorar todo" es una decisión que tomarás muchas veces. Fuentes: [Graph traversal (Wikipedia)](https://en.wikipedia.org/wiki/Graph_traversal).
+**Conceptos clave:** vértices y aristas, lista de adyacencia, BFS con cola, DFS con pila/recursión, marcar visitados.
+**Cuándo no usarlo:** para datos jerárquicos de un solo padre (un sistema de archivos, un organigrama) un árbol (Tema 5) es más simple; el grafo general se justifica cuando hay múltiples conexiones o ciclos.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela las dependencias entre tareas (una tarea que debe hacerse antes que otra) como un grafo y usa un recorrido para detectar si hay un ciclo de dependencias imposible de resolver.
+
+### Tema 8: Programación dinámica — resolver una vez, recordar el resultado
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás reconocer un problema con subproblemas repetidos y resolverlo con memoización, convirtiendo una solución exponencial en una lineal. Prerrequisitos: Tema 4 (recursión y complejidad) de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, calcular el costo mínimo de una ruta con muchos tramos recalcula los mismos sub-tramos una y otra vez si lo haces ingenuamente. La programación dinámica guarda cada resultado la primera vez que lo calcula, para no repetirlo — la diferencia entre una respuesta instantánea y una que tarda minutos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La **programación dinámica (DP)** aplica a problemas con dos propiedades: subproblemas que se **solapan** (se repiten) y una solución que se construye desde subproblemas más pequeños. La **memoización** guarda cada resultado ya calculado en un diccionario (una tabla hash, Tema 6) y lo reutiliza.
+
+**Analogía:** es como hacer un examen donde varias preguntas comparten el mismo cálculo intermedio: en vez de rehacerlo cada vez, lo escribes una vez en el margen y lo copias. Fibonacci ingenuo recalcula `fib(5)` miles de veces; con memoización, cada valor se calcula exactamente una vez.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea `dp.py`:
+
+```python
+import time
+
+# Versión ingenua: recalcula los mismos subproblemas (exponencial, O(2^n))
+def fib_ingenuo(n):
+    if n < 2:
+        return n
+    return fib_ingenuo(n - 1) + fib_ingenuo(n - 2)
+
+# Versión con memoización: cada subproblema se resuelve una sola vez (lineal, O(n))
+def fib_dp(n, memo=None):
+    if memo is None:
+        memo = {}
+    if n < 2:
+        return n
+    if n in memo:
+        return memo[n]                     # ya calculado: lo reutiliza
+    memo[n] = fib_dp(n - 1, memo) + fib_dp(n - 2, memo)
+    return memo[n]
+
+for etiqueta, fn in [("ingenuo", fib_ingenuo), ("con DP", fib_dp)]:
+    inicio = time.time()
+    resultado = fn(32)
+    print(f"fib(32) {etiqueta}: {resultado} en {time.time() - inicio:.3f}s")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 dp.py
+```
+
+**Resultado esperado:** ambos dan `fib(32): 2178309`, pero el ingenuo tarda un tiempo perceptible (décimas de segundo o más) y el de DP es casi instantáneo. **Fallo deliberado:** sube a `fib_ingenuo(45)`: el programa se cuelga segundos o minutos, porque hace miles de millones de llamadas repetidas, mientras `fib_dp(45)` responde al instante. Diagnostica contando (con un contador global) cuántas veces se llama a cada función: ahí ves el crecimiento exponencial frente al lineal.
+
+#### Paso 5 · Práctica guiada
+Añade un contador que cuente cuántas veces se ejecuta el cuerpo de cada versión para `n=20`, y compara los números. Pista: el ingenuo hará miles de llamadas; el de DP, unas 20.
+
+#### Paso 6 · Práctica independiente
+Resuelve con DP el problema de "cuántas formas hay de subir una escalera de n escalones dando pasos de 1 o 2". Entrega la versión memoizada y explica cuáles son los subproblemas que se solapan.
+
+#### Paso 7 · Cierre y evidencia
+Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y el problema de la escalera. **¿Por qué es importante?** la DP aparece en entrevistas técnicas constantemente y en problemas reales: rutas óptimas, diffs de texto, asignación de recursos, subsecuencias. Reconocer "esto tiene subproblemas repetidos" y aplicar memoización es una de las habilidades que más distingue a un programador que resuelve de uno que solo codifica. Fuentes: [Dynamic programming (Wikipedia)](https://en.wikipedia.org/wiki/Dynamic_programming).
+**Conceptos clave:** subproblemas solapados, memoización, tabla de resultados, exponencial vs lineal.
+**Cuándo no usarlo:** si los subproblemas no se repiten (cada uno es único), la DP no aporta y añade complejidad; úsala solo cuando detectes recálculo del mismo subproblema.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor calcula alguna métrica acumulada sobre rangos de fechas repetidos, memoiza el resultado por rango y demuestra con un contador que evitas recalcular los mismos rangos.
+
 ## Construcción guiada del capítulo
 
 ### Proyecto 2: gestor de inventario con análisis de rendimiento

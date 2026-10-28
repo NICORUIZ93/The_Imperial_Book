@@ -28,6 +28,16 @@ Row(children: [
   Expanded(flex: 2, child: MapaRuta()),
 ])
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: `LayoutBuilder` dentro del panel reporta correctamente que su espacio disponible es solo un tercio del ancho total de la pantalla (porque comparte la fila con `MapaRuta`), permitiendo elegir `ListaEnviosCompacta` incluso en una tablet ancha, donde `MediaQuery` hubiera reportado un ancho total mucho mayor y elegido incorrectamente la versión expandida.
 
 #### Paso 5 · Práctica guiada
@@ -99,6 +109,16 @@ Column(children: [
   ),
 ])
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: envolver el `ListView` en `Expanded` le comunica una constraint de alto máximo finito (el espacio restante de la `Column` después de `Text`), permitiendo que el `ListView` decida su tamaño dentro de ese límite y haga scroll internamente sin romper el layout.
 
 #### Paso 5 · Práctica guiada
@@ -165,6 +185,16 @@ TipoDispositivo segunAncho(double ancho) {
 
 Scaffold(body: SafeArea(child: PanelEnvios()))
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: cada pantalla de RutaFlow llama a `segunAncho(constraints.maxWidth)` en vez de comparar números directamente; `SafeArea` evita que la primera fila de `PanelEnvios` quede oculta detrás del notch en dispositivos con cámara frontal pronunciada.
 
 #### Paso 5 · Práctica guiada

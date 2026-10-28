@@ -39,6 +39,16 @@ final cancelToken = CancelToken();
 final respuesta = await dio.get('/envios', queryParameters: {'guia': guia}, cancelToken: cancelToken);
 // al escribir una nueva guía: cancelToken.cancel('nueva búsqueda');
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: al escribir una guía nueva antes de que la búsqueda anterior complete, llamar a `cancelToken.cancel()` cancela efectivamente esa petición en curso — la respuesta vieja nunca llega a sobrescribir el resultado de la búsqueda más reciente.
 
 #### Paso 5 · Práctica guiada
@@ -102,6 +112,16 @@ class Envio {
   factory Envio.fromJson(Map<String, dynamic> json) => _$EnvioFromJson(json);
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: deserializar una respuesta de la API que le falte el campo `estado` lanza un error explícito y claro en el punto exacto de `Envio.fromJson(json)` — no un `null` silencioso que recién falla mucho más adelante al intentar mostrar `envio.estado` en pantalla.
 
 #### Paso 5 · Práctica guiada
@@ -202,6 +222,16 @@ class Cargando extends EstadoEnvios {}
 class Exito extends EstadoEnvios { final List<Envio> envios; Exito(this.envios); }
 class ErrorEnvios extends EstadoEnvios { final String mensaje; ErrorEnvios(this.mensaje); }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: cualquier petición nueva agregada al cliente `dio` incluye automáticamente el header de autenticación sin código adicional por llamada; un `switch` sobre `EstadoEnvios` que no maneje alguno de los tres casos produce una advertencia del analizador de Dart, no un bug silencioso descubierto en producción.
 
 #### Paso 5 · Práctica guiada
