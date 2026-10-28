@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-28 20:34 UTC
+Generated: 2026-10-28 20:39 UTC
 Root: `The_Imperial_Book`
-Indexed files: 919
+Indexed files: 877
 Import edges: 50
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,20 +18,20 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 58 files
 - `automation-script`: 27 files
 - `course-content`: 242 files
-- `documentation`: 69 files
+- `documentation`: 75 files
 - `example`: 425 files
 - `local-infra`: 1 files
-- `project-file`: 97 files
+- `project-file`: 49 files
 
 ## File Types
 
-- `.md`: 317
+- `.md`: 322
 - `.py`: 147
-- `.json`: 111
 - `.ts`: 64
+- `.json`: 57
 - `.js`: 53
 - `.java`: 49
-- `.html`: 30
+- `.html`: 36
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 19
@@ -45,8 +45,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.jsx`: 5
 - `.tf`: 4
 - `.example`: 3
+- `.txt`: 3
 - `Dockerfile`: 2
-- `.txt`: 2
 - `.css`: 1
 
 ## High Signal Files
@@ -228,11 +228,11 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
+- `docs/auditoria-profundidad-cobertura.md` (174 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca/clean-code.md` (30 lines) - headings: # Identificación e índice: Código limpio, ## Temas localizados en el índice, pendientes de lectura
 - `docs/biblioteca/cola.md` (78 lines) - headings: # Cola de revisión libro por libro
 - `docs/biblioteca/revision-imagenes-20261013.md` (118 lines) - headings: # Revisión individual de imágenes — 2026-10-13, ## Correcciones al registro anterior, ## Contraste puntual con fuentes oficiales, ## Registro completo
-- `docs/biblioteca/shvets-patrones.md` (37 lines) - headings: # Revisión parcial: Sumérgete en los patrones de diseño, ## Alcance comprobado, ## Hallazgos aplicados, ## Temas del índice aún por revisar
-- ... 51 more files
+- ... 57 more files
 
 ### example
 
@@ -280,4 +280,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/specialization-outcomes.json` (1249 lines)
 - `docs/topic-learning-quality.json` (22425 lines)
 - `install.sh` (99 lines)
-- ... 79 more files
+- ... 31 more files

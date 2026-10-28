@@ -250,6 +250,27 @@
       ]
     },
     {
+      "path": "docs/auditoria-profundidad-cobertura.md",
+      "lines": 174,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de profundidad y cobertura \u2014 The Imperial Book",
+        "## Resumen ejecutivo (sin adornos)",
+        "## Eje 1 \u2014 PROFUNDIDAD (\u00bfel Paso 4 es ejecutable de cero a profesional?)",
+        "### Evidencia directa (le\u00edda, no inferida)",
+        "### Conclusi\u00f3n eje 1",
+        "## Eje 2 \u2014 COBERTURA (\u00bfest\u00e1n todos los temas del stack?)",
+        "## El problema de la m\u00e9trica (por qu\u00e9 esto estaba oculto)",
+        "## Plan de correcci\u00f3n priorizado (propuesta, no ejecutado)",
+        "### P0 \u2014 Arreglar el instrumento de medici\u00f3n",
+        "### P1 \u2014 Profundidad cr\u00edtica (Paso 4 ejecutable)",
+        "### P2 \u2014 Cobertura: puerta de entrada",
+        "### P3 \u2014 Cobertura: huecos por track"
+      ]
+    },
+    {
       "path": "docs/biblioteca/catalogo.json",
       "lines": 564,
       "kind": "project-file",
@@ -335,6 +356,20 @@
       ]
     },
     {
+      "path": "docs/cruce-rutaflow-vs-repo.md",
+      "lines": 102,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cruce: temario RutaFlow (IMG_1030) vs. contenido existente del repo",
+        "## RutaFlow APP (Flutter) \u2014 cobertura",
+        "## RutaFlow BACKEND (Spring Boot + Java) \u2014 cobertura",
+        "## Diferencias / cosas a revisar (no son faltantes, son matices)",
+        "## Conclusi\u00f3n"
+      ]
+    },
+    {
       "path": "docs/curriculum-matrix.json",
       "lines": 329,
       "kind": "project-file",
@@ -372,6 +407,14 @@
       ]
     },
     {
+      "path": "docs/extraccion-pdf/merged-texto.txt",
+      "lines": 4172,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/floci-official-curriculum.json",
       "lines": 14,
       "kind": "project-file",
@@ -397,6 +440,27 @@
         "## Siguiente acci\u00f3n concreta",
         "## Verificaci\u00f3n del primer incremento",
         "## Recuperar este incremento en otra PC"
+      ]
+    },
+    {
+      "path": "docs/inventario-imagenes.md",
+      "lines": 389,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Inventario de im\u00e1genes de Descargas",
+        "## Clasificaci\u00f3n",
+        "## Lote 1",
+        "### 1. `07DB3F7B-13F7-4453-9C79-B2992EC36A40.PNG` \u2014 Material t\u00e9cnico",
+        "### 2. `095A28B9-D208-4942-B22A-AF562E2457FE.PNG` \u2014 Material de electr\u00f3nica/circuitos",
+        "### 3. `131607D4-2F83-4CF8-BC54-CFB2CFF588A7.PNG` \u2014 Material t\u00e9cnico (seguridad/fintech)",
+        "## Lote 2",
+        "### 4. `1832B290-561D-4287-A11B-A051A72603E2.PNG` \u2014 Material t\u00e9cnico (Java/Spring + IA)",
+        "### 5. `2C4EC0D1-E591-4891-BFCD-F6ECDF6116F5.PNG` \u2014 No relacionado",
+        "### 6. `2DEB0ECE-6AE1-4EFA-BF5F-7A9B7FD2126D.PNG` \u2014 Material de estudio general",
+        "## Lote 3",
+        "### 7. `4620C2A8-FA33-45CB-9111-CBAD4D508AAD.PNG` \u2014 Material t\u00e9cnico (arquitectura Java)"
       ]
     },
     {
@@ -446,6 +510,25 @@
       "symbols": [],
       "imports": [],
       "headings": []
+    },
+    {
+      "path": "docs/plan-estudio-rutaflow.md",
+      "lines": 116,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan de estudio RutaFlow \u2014 de cero a profesional",
+        "## Temario original (tal cual aparece en IMG_1030)",
+        "### APP",
+        "### BACKEND",
+        "## Ruta BACKEND (Spring Boot) \u2014 ordenada por dependencias",
+        "## Ruta APP (Flutter) \u2014 ordenada por dependencias",
+        "## Orden recomendado global (de cero a profesional)",
+        "## Vac\u00edos a cubrir \u2014 RESUELTOS tras el cruce con el repo",
+        "## Lo que s\u00ed queda pendiente (coherencia, no contenido faltante)",
+        "## Material de apoyo (del inventario de im\u00e1genes)"
+      ]
     },
     {
       "path": "docs/prerequisite-graph.json",
@@ -883,6 +966,27 @@
       "headings": [
         "# Auditor\u00eda pedag\u00f3gica tema por tema",
         "## Regla editorial"
+      ]
+    },
+    {
+      "path": "docs/validacion-extensa-roadmaps.md",
+      "lines": 157,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
+        "## Tablero maestro: cobertura + profundidad por track",
+        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
+        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
+        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
+        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
+        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
+        "### java \u2014 profundidad (41/72)",
+        "### android \u2014 cobertura",
+        "### cloud \u2014 cobertura (amplitud enorme, bien)",
+        "### node \u2014 cobertura (casi completo)",
+        "### angular \u2014 cobertura (casi completo)"
       ]
     },
     {
@@ -10863,38 +10967,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.browser-check.json",
-      "lines": 722,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.finalize.json",
-      "lines": 1006,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.html",
       "lines": 14763,
       "kind": "project-file",
@@ -10924,14 +10996,6 @@
         "0",
         "1"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-16-tema-2-retry-catch.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -10969,10 +11033,35 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/cloud/modulo-22-tema-5-edge-routes.delivery.json",
-      "lines": 18,
+      "path": "web/public/visuals/temas/cloud/modulo-21-tema-6-vpc.html",
+      "lines": 14723,
       "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0",
+        "1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11010,34 +11099,35 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.browser-check.json",
-      "lines": 1034,
+      "path": "web/public/visuals/temas/devops/modulo-4-tema-4-pipeline-ci.html",
+      "lines": 14765,
       "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.finalize.json",
-      "lines": 1320,
-      "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0",
+        "lane-1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11075,38 +11165,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.browser-check.json",
-      "lines": 1154,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.finalize.json",
-      "lines": 1440,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.html",
       "lines": 14714,
       "kind": "project-file",
@@ -11136,38 +11194,6 @@
         "grid",
         "lane-0"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11205,38 +11231,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.html",
       "lines": 14627,
       "kind": "project-file",
@@ -11270,34 +11264,68 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.browser-check.json",
-      "lines": 698,
+      "path": "web/public/visuals/temas/foundations/modulo-2-tema-5-bst.html",
+      "lines": 14781,
       "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "node-n50",
+        "n50"
+      ],
       "imports": [],
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.delivery.json",
-      "lines": 18,
+      "path": "web/public/visuals/temas/foundations/modulo-4-tema-1-erd.html",
+      "lines": 14870,
       "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "er-one-end",
+        "er-many-start"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11335,38 +11363,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.finalize.json",
-      "lines": 986,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.html",
       "lines": 14695,
       "kind": "project-file",
@@ -11396,38 +11392,6 @@
         "grid",
         "node-entry"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.finalize.json",
-      "lines": 986,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11465,38 +11429,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.html",
       "lines": 14697,
       "kind": "project-file",
@@ -11526,38 +11458,6 @@
         "grid",
         "0"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.browser-check.json",
-      "lines": 722,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.finalize.json",
-      "lines": 1016,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11595,38 +11495,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.browser-check.json",
-      "lines": 722,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.finalize-summary.json",
-      "lines": 77,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.finalize.json",
-      "lines": 1029,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.html",
       "lines": 14803,
       "kind": "project-file",
@@ -11656,38 +11524,6 @@
         "grid",
         "0"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.browser-check.json",
-      "lines": 1154,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.finalize.json",
-      "lines": 1440,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11725,34 +11561,35 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.browser-check.json",
-      "lines": 698,
+      "path": "web/public/visuals/temas/spring-boot/modulo-10-tema-8-temporal-saga.html",
+      "lines": 14755,
       "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0",
+        "lane-1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11785,6 +11622,39 @@
         "arrowhead-dashed",
         "grid",
         "invoke-transaction"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/visuals/temas/spring-boot/modulo-4-tema-5-login-jwt.html",
+      "lines": 14736,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0",
+        "1"
       ],
       "imports": [],
       "headings": []

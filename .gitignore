@@ -36,3 +36,10 @@ skills-lock.json
 .DS_Store
 .vscode/
 /tmp/
+
+# Recibos de build de archify: metadatos de finalize, no assets web.
+# Solo se publican los .html de los diagramas, no sus recibos.
+web/public/visuals/**/*.finalize.json
+web/public/visuals/**/*.finalize-summary.json
+web/public/visuals/**/*.browser-check.json
+web/public/visuals/**/*.delivery.json
