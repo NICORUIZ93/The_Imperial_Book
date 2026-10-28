@@ -50,7 +50,7 @@
       "codeExplanation": 155,
       "execution": 155,
       "expectedResult": 155,
-      "deliberateFailure": 150,
+      "deliberateFailure": 149,
       "guidedPractice": 152,
       "independentPractice": 155,
       "closure": 154,
@@ -58,7 +58,7 @@
       "resources": 152,
       "standaloneExample": 93,
       "learningEvidence": 150,
-      "complete": 90
+      "complete": 89
     },
     "devops": {
       "topics": 99,
@@ -150,15 +150,15 @@
       "codeExplanation": 72,
       "execution": 72,
       "expectedResult": 71,
-      "deliberateFailure": 62,
-      "guidedPractice": 65,
+      "deliberateFailure": 71,
+      "guidedPractice": 64,
       "independentPractice": 72,
       "closure": 67,
       "commonErrors": 72,
       "resources": 68,
       "standaloneExample": 71,
       "learningEvidence": 72,
-      "complete": 47
+      "complete": 54
     },
     "javascript": {
       "topics": 83,
@@ -5889,7 +5889,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": true,
+          "deliberateFailure": false,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -5899,8 +5899,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 16,
-          "complete": true
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
@@ -15259,7 +15259,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -15269,8 +15269,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -15571,7 +15571,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -15581,8 +15581,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -15597,7 +15597,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -15607,8 +15607,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -15675,7 +15675,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -15685,8 +15685,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -15701,7 +15701,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -15711,8 +15711,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -15779,8 +15779,8 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
-          "guidedPractice": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
@@ -16585,7 +16585,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -16595,8 +16595,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -16611,7 +16611,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -16621,7 +16621,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -16715,7 +16715,7 @@
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
+          "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
           "closure": true,
@@ -16725,8 +16725,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       }
     ],

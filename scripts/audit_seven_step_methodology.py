@@ -42,7 +42,13 @@ def evaluate(block: str) -> dict[str, bool]:
         "codeExplanation": matches(r"//.{6,}|explica.{0,40}(línea|bloque|parte)", block),
         "execution": matches(r"^```bash[\s\S]{0,500}\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|curl|flutter|dart|swift|xcodebuild|xcrun|docker|terraform|tofu|kubectl|aws|az|gcloud|sam|serverless|helm)\b", block),
         "expectedResult": matches(r"resultado esperado|salida esperada", block),
-        "deliberateFailure": matches(r"(fallo deliberado|provoca[rl]?\s+deliberadamente|provoca[rl]?\s+(?:un|el|una|la)\b)", block) and matches(r"(error|falla|diagn[oó]st)", block),
+        # Fallo deliberado: romper algo a propósito para observar/diagnosticar
+        # el efecto. Acepta "fallo deliberado", "provocar deliberadamente …" y
+        # el orden inverso "… deliberadamente … provoca …".
+        "deliberateFailure": (
+            matches(r"(fallo deliberado|provoca[rl]?\s+deliberadamente)", block)
+            or matches(r"deliberadamente[\s\S]{0,120}provoca", block)
+        ) and matches(r"(error|falla|diagn[oó]st)", block),
         "guidedPractice": matches(r"paso 5.{0,60}práctica guiada", block) and matches(r"pista", block),
         "independentPractice": matches(r"paso 6.{0,60}práctica independiente", block),
         "closure": matches(r"paso 7.{0,50}cierre", block) and matches(r"(siguiente|próximo)", block),

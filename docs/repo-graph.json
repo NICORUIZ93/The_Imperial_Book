@@ -5104,7 +5104,7 @@
     },
     {
       "path": "scripts/audit_seven_step_methodology.py",
-      "lines": 161,
+      "lines": 167,
       "kind": "automation-script",
       "symbols": [
         "matches",

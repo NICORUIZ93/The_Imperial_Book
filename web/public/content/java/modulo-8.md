@@ -101,7 +101,7 @@ mvn clean compile test package
 `mvn clean compile test package` ejecuta las cuatro fases en orden; `./gradlew clean build` cubre el mismo ciclo en Gradle. Revisa el `.jar` generado (`target/app-1.0-SNAPSHOT.jar` en Maven; `build/libs/*.jar` en Gradle) con `jar tf <ruta>` y confirma que las clases de JUnit (scope `test` / `testImplementation`) no aparecen en el listado; el código fuente generado vive en `src/main/java/academia/build/App.java`.
 
 #### Paso 5 · Práctica guiada
-Pista: cambia deliberadamente el scope de JUnit de `test` a la ausencia de scope (compile por defecto) y reempaqueta; ahora las clases de JUnit sí aparecen en el jar. Resultado esperado: comparar ambos listados de `jar tf` te muestra en la práctica qué hace el scope.
+Pista: cambia deliberadamente el scope de JUnit de `test` a la ausencia de scope (compile por defecto) y reempaqueta. **Fallo deliberado:** al provocar este cambio, las clases de JUnit se filtran al jar de producción — un error real de empaquetado que infla el artefacto y mezcla dependencias de prueba con las de ejecución. Diagnostícalo comparando `jar tf` antes y después: la presencia de `org/junit/...` en el jar final es la señal del problema. Resultado esperado: restaurar `scope=test` deja el jar sin las clases de prueba, confirmando qué hace el scope en la práctica.
 
 #### Paso 6 · Práctica independiente
 Agrega una segunda dependencia real (por ejemplo `jackson-databind`) sin scope, verifica que sí queda en el jar por ser necesaria en runtime, y documenta la diferencia frente a una dependencia de test.

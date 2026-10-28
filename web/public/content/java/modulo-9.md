@@ -152,7 +152,7 @@ mvn test jacoco:report            # Maven (plugin jacoco-maven-plugin)
 Crea `src/test/java/academia/entregas/FibonacciTest.java` con `@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero)`; ejecuta `mvn test jacoco:report` y abre `target/site/jacoco/index.html`.
 
 #### Paso 5 · Práctica guiada
-Pista: quita deliberadamente el valor `8` de `@ValueSource` para reducir la cobertura de un caso límite, y observa en el reporte de JaCoCo qué rama del método `esFibonacci` deja de ejecutarse. Resultado esperado: restaurar el valor recupera la cobertura de esa rama.
+Pista: agrega el valor `4` a `@ValueSource(ints = {1, 2, 3, 5, 8})` → `{1, 2, 3, 4, 5, 8}`. **Fallo deliberado:** `4` no es un número de Fibonacci, así que `assertTrue(esFibonacci(4))` **falla** con un error `AssertionFailedError: expected: <true> but was: <false>`. Diagnostica el mensaje: JUnit reporta el fallo indicando `[4]` como el parámetro que lo provocó, no un fallo genérico — esa es la ventaja de `@ParameterizedTest`, que señala exactamente cuál de los valores de entrada rompió la aserción. Resultado esperado: quitar el `4` deja la suite en verde de nuevo; el reporte de JaCoCo además muestra qué rama del método `esFibonacci` ejercita cada valor restante.
 
 #### Paso 6 · Práctica independiente
 Convierte el test a `@MethodSource` con un método que genere los mismos casos programáticamente, y agrega un caso inválido (un número negativo) para verificar el manejo de error.

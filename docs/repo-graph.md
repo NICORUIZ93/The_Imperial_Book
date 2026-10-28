@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-28 22:35 UTC
+Generated: 2026-10-28 23:04 UTC
 Root: `The_Imperial_Book`
 Indexed files: 877
 Import edges: 50
@@ -171,7 +171,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ### automation-script
 
 - `scripts/audit_code_visual_quality.py` (138 lines) - symbols: student_visible_content, structural_text, blocks, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
-- `scripts/audit_seven_step_methodology.py` (161 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
+- `scripts/audit_seven_step_methodology.py` (167 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_30_step_roadmaps.py` (1042 lines) - symbols: Topic, Block, t, combine, render_steps, render_block, render_index, render_web_index; imports: __future__, argparse, json, re, sys, dataclasses, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
