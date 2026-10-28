@@ -442,7 +442,7 @@ Entregá el OCR funcional del Paso 4, la degradación de precisión con `.fast` 
 flowchart LR
     A["UIImage de la etiqueta\n(cámara, Tema 6)"] -->|cgImage| B["VNImageRequestHandler"]
     B -->|perform| C["VNRecognizeTextRequest\n(modelo de Vision del sistema)"]
-    C -->|topCandidates(1)| D["Líneas de texto + confianza"]
+    C -->|mejor candidato por región| D["Líneas de texto + confianza"]
     D -->|validar patrón| E["Número de guía confirmado"]
 ```
 
