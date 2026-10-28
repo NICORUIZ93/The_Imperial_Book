@@ -82,7 +82,7 @@
     },
     {
       "path": "README.md",
-      "lines": 303,
+      "lines": 306,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5104,7 +5104,7 @@
     },
     {
       "path": "scripts/audit_seven_step_methodology.py",
-      "lines": 138,
+      "lines": 161,
       "kind": "automation-script",
       "symbols": [
         "matches",

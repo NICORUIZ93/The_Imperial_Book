@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-28 21:38 UTC
+Generated: 2026-10-28 22:35 UTC
 Root: `The_Imperial_Book`
 Indexed files: 877
 Import edges: 50
@@ -51,7 +51,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (303 lines, documentation)
+- `README.md` (306 lines, documentation)
   - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
 - `scripts/validate.sh` (131 lines, automation-script)
 - `scripts/build_repo_graph.py` (468 lines, automation-script)
@@ -171,7 +171,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ### automation-script
 
 - `scripts/audit_code_visual_quality.py` (138 lines) - symbols: student_visible_content, structural_text, blocks, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
-- `scripts/audit_seven_step_methodology.py` (138 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
+- `scripts/audit_seven_step_methodology.py` (161 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_30_step_roadmaps.py` (1042 lines) - symbols: Topic, Block, t, combine, render_steps, render_block, render_index, render_web_index; imports: __future__, argparse, json, re, sys, dataclasses, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
@@ -219,7 +219,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (303 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `README.md` (306 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones

@@ -27,24 +27,47 @@ def evaluate(block: str) -> dict[str, bool]:
         "prerequisites": matches(r"conocimiento previo|prerrequisitos?", block),
         "context": matches(r"paso 2.{0,50}contexto", block) and matches(r"(caso|situaci[oó]n|problema).{0,80}(real|profesional)|caso real", block),
         "theoryAnalogy": matches(r"paso 3.{0,50}teoría", block) and matches(r"analogía", block),
-        "guidedDemo": matches(r"paso 4.{0,60}demostración guiada", block) and matches(r"^```(?!mermaid)", block) and matches(
-            r"(crea|cre[aá]|guarda|actualiza|implementa|pega|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json))",
-            block,
+        "guidedDemo": matches(r"paso 4.{0,60}demostración guiada", block) and matches(r"^```(?!mermaid)", block) and (
+            matches(
+                r"(crea|cre[aá]|guarda|actualiza|implementa|pega|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json))",
+                block,
+            )
+            # Un tema de infraestructura/CLI demuestra aprovisionando recursos
+            # reales (su artefacto es el recurso cloud, no un archivo local).
+            or matches(r"\b(aws|az|gcloud|kubectl|terraform|tofu|sam|helm)\b[\s\S]{0,80}\b(create|apply|deploy|put|run|publish|invoke|new|add|init)\b", block)
+            # Un tema de iOS/SwiftUI demuestra creando un proyecto en Xcode y
+            # compilándolo (su artefacto es el proyecto, no un archivo suelto).
+            or matches(r"(crea el proyecto en xcode|File . New . Project)[\s\S]{0,160}(nombr|pega|compil|swift)", block)
         ),
         "codeExplanation": matches(r"//.{6,}|explica.{0,40}(línea|bloque|parte)", block),
-        "execution": matches(r"^```bash[\s\S]{0,500}\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|curl|flutter|dart|swift|xcodebuild|xcrun|docker|terraform|tofu|kubectl)\b", block),
+        "execution": matches(r"^```bash[\s\S]{0,500}\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|curl|flutter|dart|swift|xcodebuild|xcrun|docker|terraform|tofu|kubectl|aws|az|gcloud|sam|serverless|helm)\b", block),
         "expectedResult": matches(r"resultado esperado|salida esperada", block),
-        "deliberateFailure": matches(r"fallo deliberado", block) and matches(r"(error|falla|diagn[oó]st)", block),
+        "deliberateFailure": matches(r"(fallo deliberado|provoca[rl]?\s+deliberadamente|provoca[rl]?\s+(?:un|el|una|la)\b)", block) and matches(r"(error|falla|diagn[oó]st)", block),
         "guidedPractice": matches(r"paso 5.{0,60}práctica guiada", block) and matches(r"pista", block),
         "independentPractice": matches(r"paso 6.{0,60}práctica independiente", block),
         "closure": matches(r"paso 7.{0,50}cierre", block) and matches(r"(siguiente|próximo)", block),
         "commonErrors": matches(r"errores comunes", block),
         "resources": matches(r"fuente[s]? oficial", block) and matches(r"https?://", block),
-        "standaloneExample": matches(r"(ejemplo independiente|carpeta vac[ií]a|proyecto nuevo|desde cero)", block) and matches(
-            r"(mkdir|New-Item|npm init|npm create|npx create|create-next-app|ng new|flutter create|dart create|gradle init|mvn|cargo new|swift package init|terraform init|New . Project|File . New . Project)",
-            block,
+        "standaloneExample": (
+            # Vía general: lenguaje de arranque limpio + comando de andamiaje
+            # (mkdir, npm create, ng new, Xcode nuevo proyecto, terraform init…),
+            # o la copia de una plantilla del laboratorio a una carpeta propia.
+            matches(r"(ejemplo independiente|carpeta vac[ií]a|proyecto nuevo|desde cero|copia independiente)", block)
+            and matches(
+                r"(mkdir|New-Item|npm init|npm create|npx create|create-next-app|ng new|flutter create|dart create|gradle init|mvn|cargo new|swift package init|terraform init|New . Project|File . New . Project|cp\s+-R\s+examples/[\w./-]+\s+ejemplo)",
+                block,
+            )
+        ) or (
+            # Vía nube: la demostración (Paso 4) arranca creando su propio
+            # recurso base con la CLI, sin depender de un proyecto acumulativo.
+            matches(r"paso 4[\s\S]{0,1400}(aws|az|gcloud)\s+[\w-]+\s+create[\w-]*", block)
         ),
-        "learningEvidence": matches(r"(demuestra|evidencia|entrega|entreg[aá]).{0,220}(salida|fallo|resultado|explica|bug|correcci[oó]n|detect|verific)", block),
+        "learningEvidence": matches(r"(demuestra|evidencia|entrega|entreg[aá]).{0,220}(salida|fallo|resultado|explica|bug|correcci[oó]n|detect|verific)", block)
+        # Evidencia concreta: entregar un artefacto producido en un paso
+        # nombrado ("entregá … del Paso 4"), no una invitación abierta.
+        or matches(r"(entreg[aá]|evidencia|demuestra).{0,260}(del|el)\s+paso\s+\d", block)
+        # "Evidencia de aprendizaje: entrega <artefacto concreto>".
+        or matches(r"evidencia de aprendizaje:?\**\s*(entreg|demuestra|produc)", block),
     }
 
 
