@@ -753,6 +753,71 @@ Ya confirmas, con un componente real y un test que verifica tanto el error de `v
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Enfoca el campo de búsqueda después de abrir su panel. Prueba que la consulta de vista soporta su ausencia y que cerrar el panel antes del render no intenta operar sobre un elemento destruido.
 
+### Tema 6: Directivas y pipes personalizados
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás crear una **directiva de atributo** que modifica el comportamiento de un elemento y un **pipe** que transforma un valor en la plantilla, reutilizables en toda la app. Prerrequisitos: Temas 1-4 de este módulo (componentes y binding).
+
+#### Paso 2 · Contexto y caso real
+En el centro de control logístico, muchas vistas necesitan resaltar la fila de un envío urgente (comportamiento repetido → directiva) y mostrar la distancia en formato legible "3,4 km" a partir de metros (transformación repetida → pipe). Sin estas herramientas, copiarías la misma lógica en cada componente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **pipe** (`|`) transforma un valor solo para mostrarlo, sin cambiar el dato (`{{ metros | distancia }}`). Una **directiva de atributo** se aplica a un elemento (`<tr appResaltar>`) y modifica su apariencia o comportamiento vía `ElementRef`/`HostBinding`. Ambos son reutilizables y se declaran `standalone`.
+
+**Analogía:** un pipe es un filtro de Instagram sobre una foto (cambia cómo se ve, no la foto original); una directiva es un accesorio que le pones a un mueble (una rueda, una luz) que cambia cómo se comporta sin rehacer el mueble.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```typescript
+// distancia.pipe.ts — transforma metros en texto legible
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'distancia', standalone: true })
+export class DistanciaPipe implements PipeTransform {
+  transform(metros: number): string {
+    return metros >= 1000 ? `${(metros / 1000).toFixed(1)} km` : `${metros} m`;
+  }
+}
+```
+
+```typescript
+// resaltar.directive.ts — resalta el elemento según una condición
+import { Directive, ElementRef, input, effect } from '@angular/core';
+
+@Directive({ selector: '[appResaltar]', standalone: true })
+export class ResaltarDirective {
+  urgente = input(false, { alias: 'appResaltar' });
+  constructor(private el: ElementRef<HTMLElement>) {
+    effect(() => {
+      this.el.nativeElement.style.background = this.urgente() ? '#ffe3e3' : '';
+    });
+  }
+}
+```
+
+Úsalos en una plantilla: `<tr [appResaltar]="envio.urgente"><td>{{ envio.metros | distancia }}</td></tr>`.
+
+**Ejecuta el ejemplo** (en un proyecto Angular, declara el pipe y la directiva en los `imports` del componente y arráncalo):
+
+```bash
+ng serve
+```
+
+**Resultado esperado:** la celda muestra "3.4 km" en vez de "3400", y las filas de envíos urgentes aparecen con fondo rojizo. **Fallo deliberado:** olvida añadir `DistanciaPipe` a los `imports` del componente standalone; Angular lanza un error claro "The pipe 'distancia' could not be found". Diagnostica por qué en Angular standalone cada pipe/directiva debe importarse donde se usa, a diferencia del viejo modelo de NgModules donde se declaraba una vez.
+
+#### Paso 5 · Práctica guiada
+Añade un parámetro al pipe para elegir la unidad (`{{ metros | distancia:'millas' }}`). Pista: `transform` acepta argumentos adicionales después del valor.
+
+#### Paso 6 · Práctica independiente
+Crea una directiva `appSoloNumeros` que impida escribir letras en un input (escuchando el evento de teclado con `HostListener`). Entrega el input que rechaza caracteres no numéricos.
+
+#### Paso 7 · Cierre y evidencia
+Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-números. **¿Por qué es importante?** Directivas y pipes son el mecanismo de Angular para no repetir lógica de presentación y comportamiento: un pipe de fecha/moneda/distancia y una directiva de permisos o resaltado se usan en decenas de plantillas. Saber crearlos propios es lo que distingue usar Angular de dominarlo. Fuentes: [Angular — Pipes](https://angular.dev/guide/templates/pipes) y [Angular — Attribute directives](https://angular.dev/guide/directives/attribute-directives).
+**Conceptos clave:** pipe puro de transformación, directiva de atributo, `ElementRef`, `HostListener`, importación en standalone.
+**Cuándo no usarlo:** no crees una directiva/pipe para algo que se usa en un solo sitio y una sola vez; su valor está en la reutilización. Para lógica compleja de negocio, un servicio es más apropiado que un pipe.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** crea el pipe `distancia` y la directiva `appResaltar` y úsalos en la tabla de envíos para mostrar distancias legibles y marcar los urgentes.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un componente Tarjeta reutilizable con inputs/outputs basados en signals, control de flujo nativo, content projection y manejo correcto del ciclo de vida.

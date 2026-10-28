@@ -57,6 +57,16 @@ function BarraSuperior() {
   return <span>Operador: {operador.nombre}</span>;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `BarraSuperior`, sin importar cuántos componentes intermedios existan entre ella y `App`, lee `operador.nombre` directamente — ningún componente entre ambos necesitó recibir ni reenviar esa prop.
 
 #### Paso 5 · Práctica guiada
@@ -119,6 +129,16 @@ Cada cambio en el valor de un Context re-renderiza todos sus consumidores, sin d
 // Mal: mezclar un valor de cambio frecuente dentro de un Context de cambio infrecuente
 <SesionContext.Provider value={{ operador, filtroBusqueda, setFiltroBusqueda }}>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: agregando un `console.log('render')` en `BarraSuperior` (que solo lee `operador`, nunca `filtroBusqueda`), escribir en el campo de búsqueda re-renderiza `BarraSuperior` de todas formas — React re-renderiza todos los consumidores del Context cuando el valor provisto cambia, sin importar qué parte de ese valor cada consumidor efectivamente lee.
 
 **Demo con React DevTools:**
@@ -193,6 +213,16 @@ Pestanias.Panel = function Panel({ indice, titulo, children }) {
   );
 };
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `<Pestanias><Pestanias.Panel indice={0} titulo="Envíos activos">...</Pestanias.Panel></Pestanias>` coordina automáticamente cuál panel se muestra, sin que el código que usa `Pestanias` escriba ningún `useState` propio para rastrear la pestaña activa.
 
 #### Paso 5 · Práctica guiada

@@ -28,6 +28,14 @@ def confirmar_con_timeout(sock, command_id, segundos=2):
     except socket.timeout:
         return None  # estado desconocido: no sabemos si el servidor procesó el comando
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: si el servidor tarda más que `segundos`, la función devuelve `None` — eso significa literalmente "no sé qué pasó", no "falló".
 
 #### Paso 5 · Práctica guiada
@@ -137,6 +145,14 @@ def leer_estado(fuente, shipment_id):
 print("primaria:", leer_estado(primaria, "env-4471"))
 print("réplica (obsoleta):", leer_estado(replica, "env-4471"))
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: `primaria` devuelve `"entregado"`, `réplica` todavía devuelve `"en_ruta"` — ambos valores son reales en su propia copia, la inconsistencia es temporal, no un bug.
 
 #### Paso 5 · Práctica guiada
@@ -242,6 +258,14 @@ const comando = { commandId: "cmd-1", shipmentId: "env-4471", occurredAt: "2026-
 console.log(await confirmDelivery(comando, repo));
 console.log(await confirmDelivery(comando, repo)); // mismo commandId, reenviado
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: ambas líneas imprimen el mismo resultado, pero `repo.confirm()` solo se ejecuta una vez — la segunda llamada a `confirmDelivery` lo detecta con `findCommandResult` y devuelve el resultado ya guardado, sin volver a "confirmar" nada.
 
 #### Paso 5 · Práctica guiada
@@ -347,6 +371,14 @@ eventos = [
 ]
 print(sli_confirmaciones(eventos))
 ```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
 Resultado esperado: `0.6666...` — dos de tres confirmaciones cumplieron el SLI de 300ms; si el SLO es 99.9% en 28 días, este único evento lento ya consume una fracción real y medible del presupuesto de error, no una sensación vaga.
 
 #### Paso 5 · Práctica guiada

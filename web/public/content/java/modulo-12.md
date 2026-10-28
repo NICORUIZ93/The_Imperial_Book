@@ -21,6 +21,16 @@ mkdir ejemplo-builder-pedido
 cd ejemplo-builder-pedido
 mkdir -p src/main/java/academia/pedidos
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `src/main/java/academia/pedidos/Pedido.java` con una clase estática interna `Builder` que exponga `cliente(String)`, `codigo(String)`, `unidades(int)` y `build()`; cliente y código son obligatorios, y unidades tiene valor predeterminado 1. Haz que `Pedido` conserve campos `final` y que `build()` lance `IllegalStateException("cliente y codigo son obligatorios")` si falta un dato requerido. En `Main.java`, construye un pedido con `Pedido.builder().cliente("Ana").codigo("RF-1").unidades(2).build()`. Compara tu resultado con el ejemplo ejecutable del repositorio.
 
 #### Paso 5 · Práctica guiada
@@ -77,6 +87,16 @@ mkdir ejemplo-factory-strategy
 cd ejemplo-factory-strategy
 mkdir -p src/main/java/academia/notificaciones
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea la interfaz `Notificador` con dos implementaciones (`EmailNotificador`, `SmsNotificador`) y una `SimpleNotificadorFactory.crear(String tipo)` que use `switch` para devolver la implementación correcta. Esta es una Factory simple: la selección está centralizada, pero no es Factory Method. Luego crea un creador abstracto y dos subclases para observar el patrón GoF:
 
 ```java
@@ -171,6 +191,16 @@ final class LocalFactory implements TransportistaFactory {
 }
 ```
 
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+
 #### Paso 5 · Práctica guiada
 Provoca una incompatibilidad creando a mano `new InternacionalFactory().crearEtiqueta()` y combinándola con `new LocalFactory().crearGuia()`. Aunque Java no lo impide porque ambos objetos cumplen sus interfaces, el resultado contradice la regla del dominio. Corrígelo inyectando una sola `TransportistaFactory` al servicio y pide a esa misma instancia ambos productos. La consistencia depende de conservar la familia como una unidad; las interfaces por sí solas no pueden validar una pareja creada desde fábricas diferentes.
 
@@ -224,6 +254,16 @@ mkdir ejemplo-srp-pedido
 cd ejemplo-srp-pedido
 mkdir -p src/main/java/academia/pedidos
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `src/main/java/academia/pedidos/Pedido.java` mezclando deliberadamente tres responsabilidades: datos del pedido, `enviarEmailConfirmacion()` con una salida SMTP simulada y `generarPdfFactura()` con una salida PDF simulada. Anota las razones de cambio. Después ejecuta `java examples/java/patrones-rutaflow/StrategyDemo.java`: `Cotizador` recibe `Tarifa` por constructor y no hereda de `Normal`, un ejemplo existente de programación contra contrato y composición.
 
 #### Paso 5 · Práctica guiada

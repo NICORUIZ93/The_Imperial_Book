@@ -63,6 +63,14 @@ mkdir -p rutaflow-labs/tema-1-grafos-y-problema-de-rutas
 cd rutaflow-labs/tema-1-grafos-y-problema-de-rutas
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 ```python
 import heapq
 
@@ -193,6 +201,14 @@ mkdir -p rutaflow-labs/tema-2-geocoding-y-map-matching
 cd rutaflow-labs/tema-2-geocoding-y-map-matching
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 ```python
 # Simula el indice de un geocodificador real (p. ej. Nominatim sobre PostGIS):
 # la misma combinacion de calle y carrera existe en mas de una ciudad.
@@ -315,6 +331,14 @@ Crea una carpeta independiente y, dentro, `eta.py`:
 mkdir -p rutaflow-labs/tema-3-streaming-y-eta-con-incertidumbre
 cd rutaflow-labs/tema-3-streaming-y-eta-con-incertidumbre
 ```
+
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
 
 ```python
 from datetime import datetime

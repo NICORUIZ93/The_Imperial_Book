@@ -19,6 +19,16 @@ Un `MethodChannel` establece un canal bidireccional identificado por un nombre �
 const canal = MethodChannel('com.rutaflow/bateria');
 final nivel = await canal.invokeMethod<int>('obtenerNivelBateria');
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 ```kotlin
 MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rutaflow/bateria")
     .setMethodCallHandler { call, result ->
@@ -114,6 +124,16 @@ geolocator (interfaz Dart pública)
   ├── geolocator_apple (implementación iOS/macOS, paquete separado)
   └── geolocator_web (implementación web, agregable sin tocar los demás)
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: inspeccionando pub.dev, cada implementación de plataforma de `geolocator` vive en su propio paquete versionado independientemente — actualizar `geolocator_android` no exige ni afecta ninguna modificación en `geolocator_apple`.
 
 #### Paso 5 · Práctica guiada
@@ -167,6 +187,16 @@ if (estado.isGranted) {
   mostrarMensajePermisoDenegado();
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: si el conductor concede el permiso, la cámara se abre normalmente; si lo rechaza, la app muestra un mensaje explicando por qué no puede fotografiar la evidencia, en vez de intentar abrir la cámara igual o quedar sin ninguna respuesta visible.
 
 #### Paso 5 · Práctica guiada
@@ -230,6 +260,16 @@ final class DeliveryProof {
   final String mimeType;
 }
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: construir un `DeliveryProof` con una imagen de 6 MB (o un tipo MIME no permitido) lanza un `ArgumentError` inmediatamente en el dominio, antes de que esos bytes lleguen siquiera a considerarse para una subida por red.
 
 #### Paso 5 · Práctica guiada

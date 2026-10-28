@@ -115,7 +115,8 @@ class JwtConfigTest {
 ```
 
 ```bash
-mvn test -Dtest=JwtConfigTest
+mvn test -Dtest=JwtConfigTest       # Maven
+./gradlew test --tests JwtConfigTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que `ApplicationContextRunner` levantó un contexto real con esas propiedades y `JwtConfig` las enlazó correctamente a un tipo fuertemente tipado, sin ningún `@Value` disperso.
@@ -231,7 +232,8 @@ class FalloArranqueTest {
 ```
 
 ```bash
-mvn test -Dtest=FalloArranqueTest
+mvn test -Dtest=FalloArranqueTest   # Maven
+./gradlew test --tests FalloArranqueTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** ambos tests pasan: sin `app.jwt.secreto`, el contexto falla al arrancar con una causa raíz `BindValidationException` (la excepción real que Spring lanza cuando `@Validated` rechaza un valor); con todos los valores obligatorios presentes, el contexto arranca sin fallos — la diferencia medida directamente sobre el resultado real del arranque, no sobre una suposición.
@@ -400,7 +402,8 @@ class ManejadorGlobalErroresTest {
 ```
 
 ```bash
-mvn test -Dtest=ManejadorGlobalErroresTest
+mvn test -Dtest=ManejadorGlobalErroresTest # Maven
+./gradlew test --tests ManejadorGlobalErroresTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** ambos tests pasan: exceder el límite devuelve `422` con el formato `application/problem+json` estándar (el mismo formato RFC 7807 usado por cualquier otro error ya manejado en el Módulo 2), y una petición dentro del límite responde `200` normalmente.

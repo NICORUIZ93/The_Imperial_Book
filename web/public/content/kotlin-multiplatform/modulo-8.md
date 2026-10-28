@@ -91,6 +91,14 @@ case is ResultadoError: mostrarError(resultado)
 default: break
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: el `switch` compila y maneja ambos casos conocidos (`Exito`, `Error`) correctamente, con un `default` necesario porque Swift trata esto como una jerarquía de clases abierta, no como un conjunto cerrado verificado.
 
 #### Paso 5 · Práctica guiada
@@ -158,6 +166,14 @@ class TareasRepository {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 La anotación forma parte del contrato exportado: las excepciones declaradas llegan como NSError; otras excepciones no controladas pueden terminar el proceso. Una función suspend sin `@Throws` solo propaga CancellationException por esta vía. No uses una excepción no declarada para simular el error.
 
 Crea `iosApp/iosApp/TareasAdapter.swift`:

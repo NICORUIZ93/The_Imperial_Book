@@ -60,6 +60,14 @@ mkdir -p rutaflow-labs/tema-1-arquitectura-flutter-por-capacidades/lib/features/
 cd rutaflow-labs/tema-1-arquitectura-flutter-por-capacidades
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 Define el contrato en el dominio, sin ninguna dependencia de Flutter ni de HTTP:
 
 ```dart

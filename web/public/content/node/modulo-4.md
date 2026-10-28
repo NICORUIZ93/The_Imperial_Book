@@ -526,6 +526,135 @@ Ya puedes comparar los dos frameworks por sus contratos y ergonomía. El próxim
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Implementa el mismo contrato de consulta en el framework elegido y compruébalo por HTTP. Justifica la elección con plugins, tipado y necesidades observadas, manteniendo el dominio independiente del framework.
 
+### Tema 5: WebSocket — comunicación en tiempo real bidireccional
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás abrir un canal WebSocket por el que el servidor empuja datos al cliente sin que este los pida, y explicar cuándo WebSocket vence a HTTP y a polling. Prerrequisitos: Temas 1-4 de este módulo; nociones de HTTP (Módulo 3).
+
+#### Paso 2 · Contexto y caso real
+En la API de entregas, el panel del operador debe ver la posición del repartidor **en vivo**. Con HTTP normal, el cliente tendría que preguntar "¿nueva posición?" cada segundo (polling), gastando recursos y llegando tarde. Con WebSocket, el servidor empuja cada nueva posición en el instante en que ocurre.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+HTTP es petición→respuesta: el cliente pregunta, el servidor contesta, se cierra. **WebSocket** abre una conexión persistente y bidireccional: ambos lados pueden enviar mensajes en cualquier momento mientras la conexión viva. Se inicia con un "handshake" HTTP que luego se "actualiza" (upgrade) a WebSocket.
+
+**Analogía:** HTTP es como enviar cartas (una pregunta, una respuesta, cerrar sobre); WebSocket es como una llamada telefónica abierta donde cualquiera de los dos habla cuando quiere.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea el servidor con la librería `ws`:
+
+```js
+// server.js
+import { WebSocketServer } from "ws";
+
+const wss = new WebSocketServer({ port: 3001 });
+
+wss.on("connection", (socket) => {
+  console.log("Repartidor conectado");
+  // El servidor EMPUJA una posición nueva cada 2 segundos, sin que el cliente la pida:
+  let lat = 4.60;
+  const timer = setInterval(() => {
+    lat += 0.001;
+    socket.send(JSON.stringify({ guia: "RF-4471", lat }));
+  }, 2000);
+  socket.on("close", () => clearInterval(timer));
+});
+console.log("WebSocket en ws://localhost:3001");
+```
+
+```js
+// cliente.js
+import WebSocket from "ws";
+const socket = new WebSocket("ws://localhost:3001");
+socket.on("message", (data) => console.log("Posición recibida:", data.toString()));
+```
+
+**Ejecuta el ejemplo** (monta el proyecto, instala `ws` y corre servidor y cliente):
+
+```bash
+npm init -y && npm pkg set type=module && npm install ws
+node server.js &
+node cliente.js
+```
+
+**Resultado esperado:** el cliente imprime una posición nueva cada 2 segundos (`Posición recibida: {"guia":"RF-4471","lat":4.601}`...) **sin haberla pedido**: el servidor la empuja. **Fallo deliberado:** intenta lograr lo mismo con un endpoint HTTP GET y un `setInterval` en el cliente que haga `fetch` cada 2 s (polling). Compara: el polling genera una petición nueva completa cada vez (con su sobrecarga) y nunca es verdaderamente instantáneo; diagnostica por qué para tiempo real WebSocket es superior, y por qué Socket.IO (que el proyecto usa) añade reconexión y salas sobre este mismo mecanismo.
+
+#### Paso 5 · Práctica guiada
+Haz que el cliente también envíe mensajes al servidor (por ejemplo, "confirmar entrega") y que el servidor responda. Pista: `socket.send(...)` funciona en ambas direcciones; escucha `message` en el servidor.
+
+#### Paso 6 · Práctica independiente
+Añade "salas": varios clientes conectados y el servidor empuja la posición solo a los que siguen esa guía concreta. Entrega la prueba con dos clientes y guías distintas.
+
+#### Paso 7 · Cierre y evidencia
+Entrega el servidor empujando posiciones, el mensaje cliente→servidor y las salas. **¿Por qué es importante?** El tiempo real (posiciones GPS, chats, notificaciones, dashboards en vivo) es un requisito común y WebSocket es su base. El proyecto RutaFlow usa Socket.IO, que se apoya en WebSocket; entender el mecanismo crudo explica qué hace la librería por debajo. Fuentes: [MDN — WebSocket](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API) y [ws](https://github.com/websockets/ws).
+**Conceptos clave:** conexión persistente bidireccional, handshake/upgrade, push del servidor, polling vs WebSocket.
+**Cuándo no usarlo:** si los datos cambian rara vez o el cliente solo consulta de vez en cuando, HTTP normal es más simple y cacheable; WebSocket se justifica cuando hay actualizaciones frecuentes empujadas por el servidor.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** expón la posición del repartidor por un canal en tiempo real y comprueba que el panel recibe actualizaciones sin hacer polling.
+
+### Tema 6: Subida de archivos — multipart y validación segura
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás recibir la subida de un archivo (una foto de evidencia de entrega) con `multipart/form-data`, validando tipo y tamaño antes de guardarlo. Prerrequisitos: Temas 1-3 de este módulo (Express y middleware).
+
+#### Paso 2 · Contexto y caso real
+El repartidor sube una foto como prueba de entrega. Aceptar archivos sin validar es un riesgo real: un archivo gigante agota el disco, un tipo inesperado (un `.exe` renombrado) o una ruta manipulada compromete el servidor. Hay que recibir, validar y almacenar con cuidado.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Los formularios con archivos usan la codificación `multipart/form-data` (distinta de JSON): el cuerpo se divide en partes, cada una con sus cabeceras. En Express se procesa con `multer`, que separa los campos de texto de los archivos y te deja validar antes de persistir.
+
+**Analogía:** recibir una subida sin validar es como aceptar cualquier paquete en recepción sin revisar remitente, tamaño ni contenido. `multer` + validación es el control de seguridad que pesa, escanea y rechaza lo que no cumple antes de dejarlo entrar al edificio.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```js
+// server.js
+import express from "express";
+import multer from "multer";
+
+const app = express();
+// Límite de tamaño y filtro de tipo ANTES de guardar:
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "uploads/",
+    filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+  }),
+  limits: { fileSize: 2 * 1024 * 1024 },   // máximo 2 MB
+  fileFilter: (_req, file, cb) => {
+    const permitido = ["image/jpeg", "image/png"].includes(file.mimetype);
+    cb(permitido ? null : new Error("Solo JPEG o PNG"), permitido);
+  },
+});
+
+app.post("/entregas/:guia/evidencia", upload.single("foto"), (req, res) => {
+  res.json({ guardado: req.file.filename, guia: req.params.guia });
+});
+
+app.listen(3000, () => console.log("API en http://localhost:3000"));
+```
+
+**Ejecuta el ejemplo** (monta el proyecto, instala dependencias y prueba con curl):
+
+```bash
+npm init -y && npm pkg set type=module && npm install express multer
+mkdir -p uploads && node server.js &
+curl -F "foto=@una-foto.jpg" http://localhost:3000/entregas/RF-4471/evidencia
+```
+
+**Resultado esperado:** devuelve `{"guardado":"...-una-foto.jpg","guia":"RF-4471"}` y el archivo aparece en `uploads/`. **Fallo deliberado:** sube un archivo de más de 2 MB o un `.txt` renombrado a `.jpg`; el `fileFilter`/`limits` lo rechaza antes de guardarlo. Diagnostica por qué validar tipo y tamaño en el servidor es imprescindible: el cliente puede mentir, así que la frontera de confianza es el backend, no el formulario.
+
+#### Paso 5 · Práctica guiada
+Añade un manejador de errores que convierta el error de `multer` (archivo muy grande o tipo inválido) en una respuesta `400` con un mensaje claro, en vez de un `500` genérico. Pista: `multer` lanza `MulterError`; captúralo en un middleware de error.
+
+#### Paso 6 · Práctica independiente
+Guarda la referencia del archivo (nombre, tamaño, guía) en una estructura en memoria y expón `GET /entregas/:guia/evidencia` que devuelva la metadata. No guardes el binario en la base; guarda la ruta.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la subida válida, el rechazo por tamaño/tipo y la metadata consultable. **¿Por qué es importante?** La subida de archivos (fotos, documentos, comprobantes) es un requisito casi universal, y es una superficie de ataque clásica. Hacerlo con validación de tipo/tamaño y nombres controlados es lo que separa una feature de una vulnerabilidad. Fuentes: [multer](https://github.com/expressjs/multer) y [OWASP — File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
+**Conceptos clave:** `multipart/form-data`, `multer`, límite de tamaño, filtro de tipo MIME, el servidor como frontera de validación.
+**Cuándo no usarlo:** para archivos grandes o de producción a escala, no los guardes en el disco del servidor de app: usa almacenamiento de objetos (S3/Floci, track Cloud) y URLs pre-firmadas; `multer` a disco es para aprender y para cargas pequeñas.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** recibe la foto de evidencia de entrega validando tipo y tamaño, y guarda solo la referencia, dejando el binario en almacenamiento de objetos.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API REST con Express que incluya middleware de logging, validación con Zod y manejo de errores centralizado, y repetir el ejercicio con Fastify para comparar.

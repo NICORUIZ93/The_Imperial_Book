@@ -28,7 +28,7 @@ export const REACT_MODULES: CourseModule[] = [
     'Formulario controlado con validación en tiempo real basada en useState.'),
   m(2, 'Hooks esenciales', 'Hooks', 'Fundamentos', '3 h', '#149eca',
     'Los hooks son el mecanismo para "engancharse" al ciclo de vida y memoria de un componente de función.',
-    ['useEffect: dependencias y limpieza', 'useRef para valores mutables sin re-render', 'useMemo y useCallback: cuándo realmente ayudan', 'Reglas de los hooks', 'useReducer: reducers, dispatch y action types', 'useImperativeHandle y forwardRef'],
+    ['useEffect: dependencias y limpieza', 'useRef para valores mutables sin re-render', 'useMemo y useCallback: cuándo realmente ayudan', 'Reglas de los hooks', 'useReducer: reducers, dispatch y action types', 'useImperativeHandle y forwardRef', 'Error Boundaries: contener errores de render'],
     [
       'Crea un useEffect que se suscriba a un evento de window (resize) y verifica que se limpia correctamente al desmontar el componente',
       'Usa useRef para guardar el valor anterior de una prop sin causar un re-render adicional',
@@ -114,7 +114,7 @@ export const REACT_MODULES: CourseModule[] = [
     'Suite de pruebas de un flujo completo (formulario + fetching) con MSW.'),
   m(9, 'Performance en React', 'Performance', 'Experto', '2 h 30 min', '#149eca',
     'Identifica y corrige renders innecesarios antes de optimizar a ciegas.',
-    ['React DevTools Profiler', 'memo, useMemo y useCallback con criterio', 'Code-splitting con lazy/Suspense', 'Virtualización de listas largas', 'useTransition, useDeferredValue y startTransition', 'Fiber architecture y Reconciliation (algoritmo de diff)'],
+    ['React DevTools Profiler', 'memo, useMemo y useCallback con criterio', 'Code-splitting con lazy/Suspense', 'Virtualización de listas largas', 'useTransition, useDeferredValue y startTransition', 'Fiber architecture y Reconciliation (algoritmo de diff)', 'React.lazy y Suspense: carga diferida del lado cliente'],
     [
       'Graba una interacción con React DevTools Profiler y encuentra qué componente se re-renderiza sin necesidad',
       'Envuelve ese componente con React.memo y confirma con el Profiler que el render innecesario desaparece',

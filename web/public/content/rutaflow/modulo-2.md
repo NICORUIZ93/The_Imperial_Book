@@ -61,6 +61,14 @@ mkdir -p rutaflow-labs/tema-1-contratos-http-y-autorizacion
 cd rutaflow-labs/tema-1-contratos-http-y-autorizacion
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 Contrato mínimo del endpoint (OpenAPI), en `contrato.yaml`:
 
 ```yaml
@@ -211,6 +219,14 @@ mkdir -p rutaflow-labs/tema-2-casos-de-uso-y-transacciones
 cd rutaflow-labs/tema-2-casos-de-uso-y-transacciones
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 ```javascript
 // Simulación en memoria de dos "tablas" para poder ejecutar el demo sin una base real.
 const envios = { 'RF-4471': { estado: 'pendiente', conductorId: null } };
@@ -350,6 +366,14 @@ Crea una carpeta independiente y, dentro, `src/outbox.js`:
 mkdir -p rutaflow-labs/tema-3-outbox-colas-y-observabilidad
 cd rutaflow-labs/tema-3-outbox-colas-y-observabilidad
 ```
+
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
 
 ```javascript
 // Simulación en memoria: una "tabla" envios, una "tabla" outbox y una cola externa.

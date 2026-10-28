@@ -124,7 +124,8 @@ class TareaControllerTest {
 ```
 
 ```bash
-mvn test -Dtest=TareaControllerTest
+mvn test -Dtest=TareaControllerTest # Maven
+./gradlew test --tests TareaControllerTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde en una fracción del tiempo que tomaría un `@SpringBootTest` completo (arranca solo el controller y su infraestructura web), confirmando `201 Created` y el cuerpo esperado — sin que `TareaService.crear` real (que lanzaría `UnsupportedOperationException`) llegue a ejecutarse nunca, porque `@MockitoBean` la reemplazó completamente.
@@ -284,7 +285,8 @@ class TareaRepositoryTestcontainersTest {
 
 ```bash
 # requiere Docker corriendo localmente; Testcontainers lo usa para levantar el contenedor real
-mvn test -Dtest=TareaRepositoryTestcontainersTest
+mvn test -Dtest=TareaRepositoryTestcontainersTest # Maven
+./gradlew test --tests TareaRepositoryTestcontainersTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que Testcontainers levantó un contenedor PostgreSQL real, Spring se conectó a él dinámicamente, y la fila guardada se lee correctamente — el mismo motor de base de datos que correría en producción, no una aproximación.
@@ -425,7 +427,8 @@ class CrearTareaEndToEndTest {
 **Explicación línea por línea:** `@SpringBootTest` (sin especificar una clase concreta como `@WebMvcTest`) levanta el contexto completo: el `TareaController` real, el `TareaService` real (sin ningún `@MockitoBean`) y el `TareaRepository` real contra una base de datos embebida; la aserción final consulta el repositorio REAL directamente, confirmando que la petición HTTP efectivamente persistió datos, no solo que el controller respondió el código esperado.
 
 ```bash
-mvn test -Dtest=CrearTareaEndToEndTest
+mvn test -Dtest=CrearTareaEndToEndTest # Maven
+./gradlew test --tests CrearTareaEndToEndTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde, pero notablemente más lento de arrancar que `TareaControllerTest` (Tema 1) — confirma con `mvn test -Dtest=TareaControllerTest,CrearTareaEndToEndTest` que el tiempo reportado para el segundo es mayor, evidencia directa del costo de levantar el contexto completo.

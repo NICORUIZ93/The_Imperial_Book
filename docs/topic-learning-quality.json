@@ -13,50 +13,50 @@
   ],
   "summary": {
     "android": {
-      "topics": 50,
-      "explanation": 50,
-      "code": 50,
+      "topics": 52,
+      "explanation": 52,
+      "code": 52,
       "visual": 50,
-      "filePath": 50,
-      "runCommand": 50,
-      "expectedResult": 50,
-      "practice": 50,
-      "project": 50,
-      "modelMental": 50,
-      "limitsDecision": 50,
-      "practicable": 50,
+      "filePath": 52,
+      "runCommand": 52,
+      "expectedResult": 52,
+      "practice": 52,
+      "project": 52,
+      "modelMental": 52,
+      "limitsDecision": 52,
+      "practicable": 52,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "angular": {
-      "topics": 67,
-      "explanation": 67,
-      "code": 67,
+      "topics": 68,
+      "explanation": 68,
+      "code": 68,
       "visual": 66,
-      "filePath": 67,
-      "runCommand": 67,
-      "expectedResult": 67,
-      "practice": 67,
-      "project": 67,
-      "modelMental": 67,
-      "limitsDecision": 67,
-      "practicable": 67,
+      "filePath": 68,
+      "runCommand": 68,
+      "expectedResult": 68,
+      "practice": 68,
+      "project": 68,
+      "modelMental": 68,
+      "limitsDecision": 68,
+      "practicable": 68,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "cloud": {
-      "topics": 154,
-      "explanation": 154,
-      "code": 154,
-      "visual": 98,
-      "filePath": 154,
-      "runCommand": 154,
-      "expectedResult": 154,
-      "practice": 154,
-      "project": 154,
-      "modelMental": 154,
-      "limitsDecision": 154,
-      "practicable": 154,
+      "topics": 155,
+      "explanation": 155,
+      "code": 155,
+      "visual": 99,
+      "filePath": 155,
+      "runCommand": 155,
+      "expectedResult": 155,
+      "practice": 155,
+      "project": 155,
+      "modelMental": 155,
+      "limitsDecision": 155,
+      "practicable": 155,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -77,66 +77,66 @@
       "repeatedDemo": 0
     },
     "flutter": {
-      "topics": 57,
-      "explanation": 57,
-      "code": 57,
+      "topics": 58,
+      "explanation": 58,
+      "code": 58,
       "visual": 48,
-      "filePath": 57,
-      "runCommand": 57,
-      "expectedResult": 57,
-      "practice": 57,
-      "project": 57,
-      "modelMental": 57,
-      "limitsDecision": 57,
-      "practicable": 57,
+      "filePath": 58,
+      "runCommand": 58,
+      "expectedResult": 58,
+      "practice": 58,
+      "project": 58,
+      "modelMental": 58,
+      "limitsDecision": 58,
+      "practicable": 58,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "foundations": {
-      "topics": 68,
-      "explanation": 68,
-      "code": 68,
-      "visual": 52,
-      "filePath": 68,
-      "runCommand": 68,
-      "expectedResult": 68,
-      "practice": 68,
-      "project": 68,
-      "modelMental": 68,
-      "limitsDecision": 68,
-      "practicable": 68,
+      "topics": 73,
+      "explanation": 73,
+      "code": 73,
+      "visual": 54,
+      "filePath": 73,
+      "runCommand": 73,
+      "expectedResult": 73,
+      "practice": 73,
+      "project": 73,
+      "modelMental": 73,
+      "limitsDecision": 73,
+      "practicable": 73,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "ios": {
-      "topics": 51,
-      "explanation": 51,
-      "code": 51,
-      "visual": 30,
-      "filePath": 51,
-      "runCommand": 51,
-      "expectedResult": 51,
-      "practice": 51,
-      "project": 51,
-      "modelMental": 51,
-      "limitsDecision": 51,
-      "practicable": 51,
+      "topics": 55,
+      "explanation": 55,
+      "code": 55,
+      "visual": 31,
+      "filePath": 55,
+      "runCommand": 55,
+      "expectedResult": 55,
+      "practice": 55,
+      "project": 55,
+      "modelMental": 55,
+      "limitsDecision": 55,
+      "practicable": 55,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "java": {
-      "topics": 71,
-      "explanation": 71,
-      "code": 71,
+      "topics": 72,
+      "explanation": 72,
+      "code": 72,
       "visual": 18,
-      "filePath": 71,
-      "runCommand": 71,
-      "expectedResult": 71,
-      "practice": 71,
-      "project": 71,
-      "modelMental": 71,
-      "limitsDecision": 71,
-      "practicable": 71,
+      "filePath": 72,
+      "runCommand": 72,
+      "expectedResult": 72,
+      "practice": 72,
+      "project": 72,
+      "modelMental": 72,
+      "limitsDecision": 72,
+      "practicable": 72,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -157,42 +157,10 @@
       "repeatedDemo": 0
     },
     "kotlin-multiplatform": {
-      "topics": 54,
-      "explanation": 54,
-      "code": 54,
-      "visual": 46,
-      "filePath": 54,
-      "runCommand": 54,
-      "expectedResult": 54,
-      "practice": 54,
-      "project": 54,
-      "modelMental": 54,
-      "limitsDecision": 54,
-      "practicable": 54,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "node": {
-      "topics": 72,
-      "explanation": 72,
-      "code": 72,
-      "visual": 22,
-      "filePath": 72,
-      "runCommand": 72,
-      "expectedResult": 72,
-      "practice": 72,
-      "project": 72,
-      "modelMental": 72,
-      "limitsDecision": 72,
-      "practicable": 72,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "react": {
       "topics": 55,
       "explanation": 55,
       "code": 55,
-      "visual": 36,
+      "visual": 46,
       "filePath": 55,
       "runCommand": 55,
       "expectedResult": 55,
@@ -204,35 +172,67 @@
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
+    "node": {
+      "topics": 75,
+      "explanation": 75,
+      "code": 75,
+      "visual": 23,
+      "filePath": 75,
+      "runCommand": 75,
+      "expectedResult": 75,
+      "practice": 75,
+      "project": 75,
+      "modelMental": 75,
+      "limitsDecision": 75,
+      "practicable": 75,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "react": {
+      "topics": 57,
+      "explanation": 57,
+      "code": 57,
+      "visual": 37,
+      "filePath": 57,
+      "runCommand": 57,
+      "expectedResult": 57,
+      "practice": 57,
+      "project": 57,
+      "modelMental": 57,
+      "limitsDecision": 57,
+      "practicable": 57,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
     "rutaflow": {
-      "topics": 24,
-      "explanation": 24,
-      "code": 24,
+      "topics": 25,
+      "explanation": 25,
+      "code": 25,
       "visual": 24,
-      "filePath": 24,
-      "runCommand": 24,
-      "expectedResult": 24,
-      "practice": 24,
-      "project": 24,
-      "modelMental": 24,
-      "limitsDecision": 24,
-      "practicable": 24,
+      "filePath": 25,
+      "runCommand": 25,
+      "expectedResult": 25,
+      "practice": 25,
+      "project": 25,
+      "modelMental": 25,
+      "limitsDecision": 25,
+      "practicable": 25,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 78,
-      "explanation": 78,
-      "code": 78,
-      "visual": 61,
-      "filePath": 78,
-      "runCommand": 78,
-      "expectedResult": 78,
-      "practice": 78,
-      "project": 78,
-      "modelMental": 78,
-      "limitsDecision": 78,
-      "practicable": 78,
+      "topics": 80,
+      "explanation": 80,
+      "code": 80,
+      "visual": 63,
+      "filePath": 80,
+      "runCommand": 80,
+      "expectedResult": 80,
+      "practice": 80,
+      "project": 80,
+      "modelMental": 80,
+      "limitsDecision": 80,
+      "practicable": 80,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -300,6 +300,50 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -1534,6 +1578,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 6: Directivas y pipes personalizados",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -4022,6 +4088,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -9576,6 +9664,28 @@
         }
       },
       {
+        "module": 8,
+        "topic": "Tema 4: Isolates — trabajo pesado sin congelar la interfaz",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 9,
         "topic": "Tema 1: Unit tests y widget tests",
         "criteria": {
@@ -9836,6 +9946,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 5: Cómo la computadora representa los datos — binario, texto y decimales",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -10518,6 +10650,94 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 5: Árboles y árboles binarios de búsqueda (BST)",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 6: Tablas hash — búsqueda en tiempo constante",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 7: Grafos y recorridos BFS/DFS",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 8: Programación dinámica — resolver una vez, recordar el resultado",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -11604,6 +11824,72 @@
         }
       },
       {
+        "module": 13,
+        "topic": "Tema 5: Keychain — guardar secretos de forma segura",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 6: Permisos y privacidad — pedir acceso con criterio",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 7: Notificaciones push con APNs",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 14,
         "topic": "Tema 1: Swift Testing y pruebas asíncronas",
         "criteria": {
@@ -11716,6 +12002,28 @@
       {
         "module": 14,
         "topic": "Tema 6: UIViewControllerRepresentable y Coordinator",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 7: Core ML y Vision — inferencia en el dispositivo",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13756,6 +14064,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -16538,6 +16868,28 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 5: kotlinx.serialization — JSON compartido entre plataformas",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Esquemas SQLDelight y queries tipadas",
         "criteria": {
@@ -17904,6 +18256,50 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 5: WebSocket — comunicación en tiempo real bidireccional",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 6: Subida de archivos — multipart y validación segura",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: PostgreSQL desde Node con el driver puro",
         "criteria": {
@@ -18082,6 +18478,28 @@
       {
         "module": 6,
         "topic": "Tema 5: Sesiones, cookies seguras y protección CSRF",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19138,6 +19556,28 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 5: Error Boundaries — contener errores de render sin romper toda la app",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 3,
         "topic": "Tema 1: React Hook Form y el problema del re-render por tecla",
         "criteria": {
@@ -19638,6 +20078,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 5: Suspense y React.lazy — carga diferida del lado cliente",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -20153,7 +20615,29 @@
       },
       {
         "module": 7,
-        "topic": "Tema 3: Continuidad, costes y proyecto final",
+        "topic": "Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend)",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 4: Continuidad, costes y proyecto final",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20442,6 +20926,28 @@
       {
         "module": 10,
         "topic": "Tema 7: DDD para decidir límites y propiedad de datos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21498,6 +22004,28 @@
       {
         "module": 4,
         "topic": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
         "criteria": {
           "explanation": true,
           "code": true,

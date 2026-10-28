@@ -45,6 +45,16 @@ const { data: envios, isLoading, error } = useQuery({
   queryFn: () => fetch(`/api/envios?zona=${zona}`).then(r => r.json()),
 });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: si `PanelEnvios` y `ResumenZona` usan ambos `useQuery` con la misma `queryKey: ['envios', zona]`, la pestaña Network muestra una única petición de red, no dos — TanStack Query deduplica y comparte el resultado cacheado entre ambos componentes.
 
 #### Paso 5 · Práctica guiada
@@ -129,6 +139,16 @@ const registrar = useMutation({
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['envios'] }),
 });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: al llamar `registrar.mutate(nuevoEnvio)` y completarse exitosamente, TanStack Query invalida todas las queries cuya key empiece con `['envios']` (incluyendo `['envios', 'norte']`, `['envios', 'sur']`, etc.) y las refetchea automáticamente — `PanelEnvios` muestra el nuevo envío sin que nadie haya llamado a `setEnvios` manualmente.
 
 #### Paso 5 · Práctica guiada
@@ -196,6 +216,16 @@ useMutation({
   onError: (err, envioId, contexto) => queryClient.setQueryData(['envios'], contexto.anterior),
 });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: tocar "Marcar entregado" cambia visualmente el estado del envío en la lista de forma instantánea, sin esperar ninguna respuesta de red; si la mutación falla (el servidor rechaza porque ese envío ya fue entregado por otro operador), la lista vuelve exactamente al estado anterior guardado en `anterior`.
 
 #### Paso 5 · Práctica guiada

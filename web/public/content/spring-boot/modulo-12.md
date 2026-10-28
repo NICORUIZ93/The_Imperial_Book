@@ -41,12 +41,17 @@ Parte de una carpeta vacía y crea `src/main/java/io/academia/integrador/`:
 ```bash
 mkdir demo-integrador
 cd demo-integrador
-curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip
+# Maven (type=maven-project, por defecto): genera pom.xml y ./mvnw
+curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip
+# Gradle (alternativa equivalente): genera build.gradle.kts y ./gradlew
+#   curl -fsSL https://start.spring.io/starter.zip -d type=gradle-project-kotlin -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip
 unzip app.zip
 mkdir -p src/main/java/io/academia/integrador/{controller,service,repository}
 mkdir -p src/main/resources/db/migration
 mkdir -p src/test/java/io/academia/integrador
 ```
+
+> **Build con Maven o Gradle:** el proyecto integrador puede generarse con cualquiera de los dos sistemas (cambia el parámetro `type` del Initializr arriba). Para compilar y probar usa `./mvnw test` (Maven) o `./gradlew test` (Gradle); para ejecutar el microservicio, `./mvnw spring-boot:run` o `./gradlew bootRun`. La tabla completa de equivalencias está en el track de Java, Módulo 8, Tema 4.
 
 ```sql
 -- src/main/resources/db/migration/V1__crear_tarea.sql

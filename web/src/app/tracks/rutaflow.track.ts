@@ -45,7 +45,7 @@ export const RUTAFLOW_MODULES: CourseModule[] = [
     ['Java', 'Spring Boot', 'PostgreSQL'], 'Subsistema financiero balanceado con tarifas, recaudo, liquidación, conciliación y auditoría.'),
   m(7, 'Producción: cloud, DevOps, seguridad y operación', 'Producción', 'Experto', '16 h', '#f97316',
     'Despliega RutaFlow con infraestructura como código, supply chain verificable, observabilidad, SLO, continuidad y respuesta a incidentes.',
-    ['Terraform y Kubernetes', 'Secretos y supply chain', 'SLI/SLO y alertas', 'Backup, restore, DR y FinOps'],
+    ['Terraform y Kubernetes', 'Secretos y supply chain', 'SLI/SLO y alertas', 'Pruebas end-to-end del sistema (app ↔ backend)', 'Backup, restore, DR y FinOps'],
     ['Construye pipeline', 'Firma imágenes', 'Ejecuta game day', 'Restaura datos', 'Mide coste por entrega'],
     ['¿Qué demuestra una firma y qué no?', '¿Cómo se prueba realmente un backup?'],
     ['Terraform', 'Kubernetes', 'OpenTelemetry', 'Floci', 'StackPort'], 'RutaFlow desplegado con CI/CD, políticas, SLO, restore probado, runbook y postmortem.'),

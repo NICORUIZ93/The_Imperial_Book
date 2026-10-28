@@ -164,6 +164,15 @@ echo "Azure -> $AZURE_STORAGE_CONNECTION_STRING" | grep -o 'BlobEndpoint=[^;]*'
 eval "$(floci gcp env)"
 echo "GCP storage -> $STORAGE_EMULATOR_HOST"
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: los tres `echo` muestran endpoints con `localhost` en los puertos 4566, 4577 y 4588 — confirmación de que las tres CLI oficiales apuntan a Floci, no a AWS, Azure o GCP reales.
 #### Paso 5 · Práctica guiada
 Pista: comentá la línea `eval "$(floci env)"` y repetí el primer `echo` — ese es el fallo deliberado: `AWS_ENDPOINT_URL` queda vacío o apunta al endpoint real de AWS, el síntoma exacto de un override que nunca se aplicó, y la razón por la que nunca deberías ejecutar un comando destructivo sin haber impreso el endpoint primero.
@@ -425,6 +434,15 @@ az storage blob upload --container-name evidencias --name RF-101.json --file evi
 az storage blob download --container-name evidencias --name RF-101.json --file recuperada.json --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
 cmp evidencia.json recuperada.json
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: `cmp` no imprime nada cuando ambos archivos son idénticos — la evidencia de `RF-101` subió y bajó intacta de Blob Storage, sin pasar nunca por S3.
 #### Paso 5 · Práctica guiada
 Pista: intentá descargar un blob de un contenedor que nunca creaste (`evidencias-inexistente`) — ese es el fallo deliberado: el comando falla con un error claro de recurso no disponible, no con un archivo vacío silencioso; corregilo apuntando al contenedor real `evidencias`.
@@ -490,6 +508,15 @@ gcloud storage cp evento.json gs://demo-local/eventos/RF-102.json
 gcloud storage cp gs://demo-local/eventos/RF-102.json recuperado.json
 cmp evento.json recuperado.json
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: `cmp` termina con código `0` — el evento `RF-102` subió y bajó intacto de Cloud Storage local, con `CLOUDSDK_CORE_PROJECT=floci-local` identificando el proyecto, sin ningún JSON de cuenta de servicio real.
 #### Paso 5 · Práctica guiada
 Pista: si `gcloud` te pide iniciar sesión en cualquier momento de este flujo — ese es el fallo deliberado: significa que faltan los overrides locales; detenete ahí mismo, nunca inicies sesión real para "que funcione", y corregilo con `floci gcp env --service gcs,pubsub` aplicado de nuevo.
@@ -669,6 +696,15 @@ Crea `examples/floci-oficial/production-boundaries.js` y `production-boundaries.
 mkdir ejemplo-floci-limits
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: afirma paridad total para provocar un fallo deliberado de diseño y corrígelo.

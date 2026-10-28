@@ -20,6 +20,15 @@ TG_ARN=$(aws elbv2 create-target-group --name demo-objetivos --protocol HTTP --p
 LISTENER_ARN=$(aws elbv2 create-listener --load-balancer-arn "$LB_ARN" --protocol HTTP --port 80 \
   --default-actions Type=forward,TargetGroupArn="$TG_ARN" --query 'Listeners[0].ListenerArn' --output text)
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: los tres comandos devuelven sus ARN respectivos — `demo-alb` ya existe con un listener HTTP y un grupo objetivo `demo-objetivos`, listo para recibir instancias reales del Módulo 21.
 #### Paso 5 · Práctica guiada
 Pista: registrá un target con un ID de instancia que nunca lanzaste (`aws elbv2 register-targets --target-group-arn "$TG_ARN" --targets Id=i-00000000falso`) — ese es el fallo deliberado: el registro se acepta sin error inmediato, pero `describe-target-health` nunca va a reportar esa instancia como saludable porque simplemente no existe.
@@ -130,6 +139,15 @@ DIST_ID=$(aws cloudfront create-distribution --distribution-config \
   '{"CallerReference":"pruebas-entrega-1","Enabled":true,"Origins":{"Quantity":1,"Items":[{"Id":"origen-pruebas-entrega","DomainName":"pruebas-entrega.s3.amazonaws.com","S3OriginConfig":{"OriginAccessIdentity":""}}]},"DefaultCacheBehavior":{"TargetOriginId":"origen-pruebas-entrega","ViewerProtocolPolicy":"redirect-to-https","CachePolicyId":"658327ea-f89d-4fab-a63d-7e88639e58f6"}}' \
   --query 'Distribution.Id' --output text)
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: la distribución pasa a `Deployed` de inmediato con un `DomainName` tipo `{id}.cloudfront.net` — ese dominio, no la URL directa de S3, es el que debería recibir el cliente del pedido para ver su foto de entrega.
 #### Paso 5 · Práctica guiada
 Pista: intentá borrar esta distribución directamente con `aws cloudfront delete-distribution --id "$DIST_ID" --if-match <etag>` sin deshabilitarla antes — ese es el fallo deliberado: `DistributionNotDisabled`, porque CloudFront exige desactivar explícitamente una distribución (`update-distribution` con `Enabled=false`) antes de permitir borrarla.

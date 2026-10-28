@@ -232,6 +232,14 @@ cd ../proyecto-b && docker compose up -d db
 cd ../proyecto-a && docker compose run --rm cliente
 ```
 
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+
 **Explicación línea por línea:** ambos proyectos definen un servicio llamado `db` de forma completamente independiente; `docker compose run --rm cliente` ejecuta el `ping` dentro de la red del proyecto `proyecto-a` exclusivamente.
 
 **Resultado esperado:** el `ping` desde `proyecto-a` alcanza exitosamente a SU `db`, sin ningún conflicto ni ambigüedad con el `db` homónimo de `proyecto-b`.

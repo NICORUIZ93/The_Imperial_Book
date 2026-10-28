@@ -48,6 +48,16 @@ function EnvioCard({ guia, direccion, children }: EnvioCardProps) {
   return <div><h3>{guia}</h3><p>{direccion}</p>{children}</div>;
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `<EnvioCard direccion="Calle 10" />` (sin `guia`) falla en tiempo de compilación con un error explícito señalando que falta la prop obligatoria `guia` — nunca llega a ejecutarse con un valor `undefined` en producción.
 
 #### Paso 5 · Práctica guiada
@@ -123,6 +133,16 @@ function useLocalStorage<T>(clave: string, valorInicial: T) {
 const [zona, setZona] = useLocalStorage<string>('zona', 'todas');
 const [columnas, setColumnas] = useLocalStorage<string[]>('columnas', ['guia', 'estado']);
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: el mismo `useLocalStorage` tipa correctamente `zona` como `string` y `columnas` como `string[]` en cada punto de uso, sin que la implementación del hook necesite conocer de antemano cuáles serían esos tipos concretos.
 
 #### Paso 5 · Práctica guiada
@@ -189,6 +209,16 @@ function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonPr
 }
 // <Boton as="a" href="/envios/RF-4471">Ver detalle</Boton>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: `<Boton as="a" href="/envios/RF-4471">` compila correctamente (TypeScript sabe que `<a>` acepta `href`); `<Boton href="/envios/RF-4471">` sin `as="a"` (dejando el `button` por defecto) es rechazado en tiempo de compilación, porque un `<button>` no tiene una prop `href` válida.
 
 #### Paso 5 · Práctica guiada

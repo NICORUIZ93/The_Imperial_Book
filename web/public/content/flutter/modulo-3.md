@@ -25,6 +25,16 @@ final router = GoRouter(routes: [
 ]);
 context.go('/envios/RF-4471'); // navegación declarativa, la URL es la fuente de verdad
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: tocar un envío en la lista llama a `context.go('/envios/RF-4471')`, y `DetalleEnvio` lee el id directamente de `state.pathParameters['id']` — la URL `/envios/RF-4471` representa exactamente qué se está mostrando, sin ningún stack imperativo oculto.
 
 #### Paso 5 · Práctica guiada
@@ -102,6 +112,16 @@ GoRoute(
   builder: (context, state) => AdminScreen(),
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: un operador sin sesión de supervisor que navega a `/admin` es redirigido automáticamente a `/login`; un deep link externo a `/envios/RF-4471` abre `DetalleEnvio` directamente, porque esa URL ya coincide con una ruta existente del router, sin ningún código adicional de "manejo de deep links".
 
 #### Paso 5 · Práctica guiada
@@ -174,6 +194,16 @@ GoRoute(
   ),
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: al confirmar una entrega, la navegación hacia `ConfirmacionExitosa` usa un fundido de opacidad en vez del deslizamiento estándar, comunicando visualmente que ese flujo concluyó, distinto de navegar "un paso más adentro" en la jerarquía habitual.
 
 #### Paso 5 · Práctica guiada

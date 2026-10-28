@@ -18,6 +18,15 @@ az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg -
 az storage blob download --container-name pruebas-entrega --name envio-4471/entrega-001.jpg --file descargada-azure.jpg --connection-string "$AZURE_CONN_LOCAL"
 diff entrega-001.jpg descargada-azure.jpg
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: `diff` no muestra ninguna diferencia — el mismo archivo que subiste a S3 en el Módulo 2 ahora hace el mismo ciclo completo (subir, descargar, verificar) en Blob Storage.
 #### Paso 5 · Práctica guiada
 Pista: reintentá el `upload` apuntando la cadena de conexión al puerto de Queue Storage (10001) en vez del puerto de Blob (10000) — ese es el fallo deliberado: la conexión falla o el servicio rechaza la operación, porque Queue Storage no entiende peticiones de blobs aunque esté en la misma cuenta de almacenamiento.
@@ -72,6 +81,15 @@ gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-comman
 gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-4471","recipientPin":"837201"}' --project mi-proyecto-local
 gcloud pubsub subscriptions pull delivery-commands-sub --auto-ack --project mi-proyecto-local
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: el `pull` devuelve el mismo JSON que publicaste — el mismo comando "confirmar entrega" que en el Módulo 3 viajaba por `DeliveryCommands` (SQS), ahora viajando por un topic+suscripción de Pub/Sub.
 #### Paso 5 · Práctica guiada
 Pista: publicá un mensaje contra `delivery-commands-fallback` (un topic que nunca creaste) — ese es el fallo deliberado: `NOT_FOUND: Resource not found`, a diferencia de SQS donde al menos la URL de la cola identifica el recurso; en Pub/Sub el topic tiene que existir antes de poder publicar nada en él.
@@ -124,6 +142,15 @@ La equivalencia funcional entre proveedores no implica la misma garantía de com
 ```bash
 gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project mi-proyecto-local
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: ese es el fallo deliberado — `FAILED_PRECONDITION: The subscription delivery-commands-sub does not have message ordering enabled`, porque publicar con `--ordering-key` no alcanza: también hay que habilitar el ordenamiento en la suscripción.
 #### Paso 5 · Práctica guiada
 Pista: corregí el error del Paso 4 recreando la suscripción con `gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --enable-message-ordering --project mi-proyecto-local`, y repetí el `publish` con `--ordering-key` — ahora sí se acepta, porque tanto el productor como la suscripción acordaron explícitamente mantener el orden.

@@ -17,6 +17,15 @@ Crea `src/instance.js` desde una carpeta vacía.
 mkdir ejemplo-ec2
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: usa una imagen inexistente para provocar un fallo deliberado y corrígelo.
@@ -136,6 +145,15 @@ Crea `src/bootstrap.sh` desde una carpeta vacía.
 mkdir ejemplo-bootstrap
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: usa una instrucción inválida para provocar un fallo deliberado y corrígelo.
@@ -284,6 +302,61 @@ aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Aumenta la demanda simulada de procesamiento y observa las decisiones de capacidad. Documenta umbral, enfriamiento y capacidad máxima; al bajar la carga, comprueba que las tareas en curso no se pierden.
+
+### Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás crear una VPC con una subred pública y una privada, un security group, y explicar por qué una base de datos va en la subred privada mientras el balanceador va en la pública. Prerrequisitos: Módulo 0 (fundamentos de redes: IP, puertos) y Floci corriendo.
+
+#### Paso 2 · Contexto y caso real
+Casi todo recurso de nube vive dentro de una **VPC** (red virtual privada). Entender VPC es lo que separa "lancé una instancia" de "diseñé una arquitectura segura": la base de datos de RutaFlow NO debe ser accesible desde internet, solo desde los servidores de la app; eso se logra con subredes y security groups, no con suerte.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una **VPC** es tu red aislada con un rango de IPs (CIDR, p. ej. `10.0.0.0/16`). Se divide en **subredes**: una *pública* (con ruta a internet vía Internet Gateway) para lo que debe ser accesible (balanceador), y una *privada* (sin ruta directa a internet) para lo sensible (base de datos). Un **security group** es un firewall a nivel de recurso: define qué tráfico entra y sale.
+
+**Analogía:** la VPC es un edificio privado; las subredes son plantas (la planta baja pública con recepción, las plantas altas privadas); el security group es el control de acceso de cada oficina, que dice quién puede tocar a esa puerta y por qué puerto.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    I[Internet] --> IGW[Internet Gateway]
+    IGW --> PUB[Subred pública: Balanceador]
+    PUB --> PRIV[Subred privada: App + Base de datos]
+    PRIV -.sin ruta directa a internet.-> I
+```
+
+**Diagrama interactivo:** [VPC de RutaFlow: subred pública y privada](/visuals/temas/cloud/modulo-21-tema-6-vpc.html) — arquitectura explorable con las subredes, el flujo del tráfico y la base de datos aislada.
+
+#### Paso 4 · Demostración guiada desde cero
+Con Floci corriendo (`floci start` y `eval $(floci env)`, Módulo 1):
+
+```bash
+# 1. Crear la VPC
+VPC=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query Vpc.VpcId --output text)
+# 2. Subred pública y subred privada
+aws ec2 create-subnet --vpc-id "$VPC" --cidr-block 10.0.1.0/24   # pública
+aws ec2 create-subnet --vpc-id "$VPC" --cidr-block 10.0.2.0/24   # privada
+# 3. Security group que solo permite entrada por el puerto 5432 (Postgres) desde la propia VPC
+SG=$(aws ec2 create-security-group --group-name db-sg --description "DB" --vpc-id "$VPC" --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id "$SG" --protocol tcp --port 5432 --cidr 10.0.0.0/16
+aws ec2 describe-security-groups --group-ids "$SG"
+```
+
+**Resultado esperado:** la VPC y las dos subredes se crean, y el security group muestra una regla de entrada que permite el puerto 5432 solo desde `10.0.0.0/16` (dentro de la VPC), no desde internet. **Fallo deliberado:** cambia la regla a `--cidr 0.0.0.0/0` (abrir el puerto de la base de datos a todo internet). Diagnostica por qué eso es exactamente la mala configuración que causa las filtraciones de bases de datos más famosas: una base nunca debe aceptar tráfico de `0.0.0.0/0`.
+
+#### Paso 5 · Práctica guiada
+Crea un segundo security group para el balanceador que permita el puerto 443 (HTTPS) desde internet, y confirma que es correcto que ESE sí acepte `0.0.0.0/0` mientras la base no. Pista: la regla depende del rol del recurso.
+
+#### Paso 6 · Práctica independiente
+Dibuja (o describe) la ruta completa de una petición de un usuario: Internet → Gateway → subred pública (balanceador) → subred privada (app) → base de datos, indicando qué security group permite cada salto.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la VPC con sus subredes, el security group restrictivo y el análisis del fallo `0.0.0.0/0`. **¿Por qué es importante?** La VPC y los security groups son la base de la seguridad de red en la nube; el error de exponer una base de datos a internet es tan común como grave. Diseñar el flujo del tráfico (qué es público, qué es privado) es una decisión de arquitectura que tomarás en cada proyecto cloud. Fuentes: [AWS — VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html).
+**Conceptos clave:** VPC y CIDR, subred pública vs privada, Internet Gateway, security group, principio de mínima exposición.
+**Cuándo no usarlo:** para un experimento local efímero no necesitas diseñar subredes; pero en cuanto hay datos reales o producción, la segmentación de red no es opcional.
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** coloca la base de datos de RutaFlow en la subred privada y el balanceador en la pública, y demuestra que la base no acepta conexiones desde fuera de la VPC.
 
 ## Laboratorio práctico
 

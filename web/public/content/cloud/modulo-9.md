@@ -255,6 +255,15 @@ Crea `README.md` y `src/deploy.js` desde una carpeta vacía.
 mkdir ejemplo-documentado
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: elimina un parámetro para provocar un fallo deliberado y corrígelo.

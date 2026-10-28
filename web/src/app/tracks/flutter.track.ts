@@ -104,7 +104,7 @@ export const FLUTTER_MODULES: CourseModule[] = [
     'Platform channel propio que invoca una API nativa simple desde Dart.'),
   m(8, 'Animaciones y rendimiento', 'Animaciones', 'Experto', '2 h 30 min', '#02569b',
     'Flutter renderiza su propio motor gráfico: aprovéchalo para animaciones fluidas a 60/120fps.',
-    ['AnimationController y Tween', 'Animaciones implícitas vs explícitas', 'Flutter DevTools: detectar jank', 'const widgets y rebuilds innecesarios', 'RepaintBoundary y shouldRepaint', 'Key especializadas: ValueKey, ObjectKey, UniqueKey y GlobalKey'],
+    ['AnimationController y Tween', 'Animaciones implícitas vs explícitas', 'Flutter DevTools: detectar jank', 'const widgets y rebuilds innecesarios', 'RepaintBoundary y shouldRepaint', 'Key especializadas: ValueKey, ObjectKey, UniqueKey y GlobalKey', 'Isolates y compute(): trabajo pesado sin congelar la UI'],
     [
       'Implementa una animación implícita simple con AnimatedContainer',
       'Implementa la misma animación con AnimationController + Tween (animación explícita) y compara el control que da cada enfoque',

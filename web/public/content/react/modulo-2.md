@@ -42,6 +42,16 @@ useEffect(() => {
   return () => controller.abort();
 }, [zona]);
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: cambiar `zona` cancela la petición anterior (todavía en vuelo) antes de disparar la nueva, y desmontar `PanelEnvios` cancela cualquier petición pendiente — nunca llega una respuesta vieja a actualizar `envios` después de que la zona o el componente ya cambiaron.
 
 #### Paso 5 · Práctica guiada
@@ -118,6 +128,16 @@ function PanelEnvios() {
   // ...
 }
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: cada letra que el operador escribe en el filtro de zona incrementa `renderCount.current` y lo imprime, pero ese incremento por sí mismo nunca provoca un render adicional — el contador solo avanza como consecuencia de renders que ya ocurrían por otra razón (el cambio de `zona`).
 
 #### Paso 5 · Práctica guiada
@@ -190,6 +210,16 @@ console.time('ordenar');
 const ordenados = [...envios].sort((a, b) => a.fechaEstimada - b.fechaEstimada);
 console.timeEnd('ordenar');
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: con una lista realista de RutaFlow (decenas de envíos, no miles), `console.timeEnd` reporta una fracción de milisegundo — un costo insignificante que no justifica envolver ese `sort` en `useMemo`, dado que el propio overhead de comparar dependencias en cada render sería comparable o mayor al costo del cálculo real.
 
 **Demo con React DevTools Profiler + console.time:**
@@ -258,6 +288,16 @@ function reducer(estado, accion) {
 }
 const [estado, dispatch] = useReducer(reducer, { estado: 'cargando', envios: [], error: null });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: en cualquier momento, `estado.estado` es exactamente uno de `'cargando'`, `'listo'` o `'error'` — nunca una combinación ambigua de "cargando con error" al mismo tiempo, porque cada `case` del reducer devuelve un objeto completo y consistente, no un parche parcial sobre el estado anterior.
 
 #### Paso 5 · Práctica guiada
@@ -307,6 +347,96 @@ graph TD
 * Ejecutar: `npm test -- --testNamePattern="reducer|rules"`
 * Código: `src/hooks/useShipmentReducer.tsx`
 * Proyecto: proyecto integrador RutaFlow
+
+---
+
+### Tema 5: Error Boundaries — contener errores de render sin romper toda la app
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás envolver una parte de la UI en un Error Boundary que atrape un error de render y muestre una interfaz de recuperación, en vez de que toda la app quede en blanco. Prerrequisitos: Módulo 1 (componentes y estado).
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, si el widget del mapa lanza un error al renderizar (por ejemplo, coordenadas corruptas de un envío), sin protección **toda la pantalla del operador queda en blanco** y pierde también la lista de envíos, que funcionaba bien. Un Error Boundary aísla el fallo: el mapa muestra "No se pudo cargar el mapa", y el resto de la pantalla sigue operativo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **Error Boundary** es un componente (hoy en día, de clase, porque usa `componentDidCatch`/`getDerivedStateFromError`, o el envoltorio `react-error-boundary`) que captura errores lanzados durante el render de sus hijos y renderiza una UI alternativa. No captura errores de eventos ni de código async — solo errores de renderizado.
+
+**Analogía:** es como los compartimentos estancos de un barco: si uno se inunda (un componente falla), el mamparo contiene el agua en esa sección y el barco sigue a flote, en vez de hundirse entero.
+
+**Diagrama:**
+
+```mermaid
+graph TD
+    A[App] --> B[Lista de envíos ✓]
+    A --> C[ErrorBoundary]
+    C --> D[Mapa 💥 lanza error]
+    C -.captura.-> E[UI de recuperación: 'No se pudo cargar el mapa']
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```jsx
+import { Component } from "react";
+
+class ErrorBoundary extends Component {
+  state = { haFallado: false };
+
+  static getDerivedStateFromError() {
+    return { haFallado: true };   // al fallar un hijo, cambia el estado
+  }
+
+  componentDidCatch(error, info) {
+    console.error("Error capturado por el boundary:", error, info);
+  }
+
+  render() {
+    if (this.state.haFallado) {
+      return <p>No se pudo cargar el mapa. La lista de envíos sigue disponible.</p>;
+    }
+    return this.props.children;
+  }
+}
+
+function Mapa({ coordenadas }) {
+  // Error deliberado si las coordenadas son inválidas:
+  return <div>Lat: {coordenadas.lat.toFixed(4)}</div>;
+}
+
+export default function App() {
+  return (
+    <>
+      <h1>Panel de envíos</h1>
+      <p>RF-4471 · en ruta</p>              {/* sigue visible aunque el mapa falle */}
+      <ErrorBoundary>
+        <Mapa coordenadas={null} />          {/* null -> lanza al leer .lat */}
+      </ErrorBoundary>
+    </>
+  );
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite, pega esto en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+
+**Resultado esperado:** la página muestra "Panel de envíos", "RF-4471 · en ruta" y, en lugar del mapa (que falló al leer `.lat` de `null`), el mensaje de recuperación. Lo clave: **el resto de la app sigue renderizado**. **Fallo deliberado:** quita el `<ErrorBoundary>` y deja `<Mapa coordenadas={null} />` directo; ahora React propaga el error hasta la raíz y toda la pantalla queda en blanco (en desarrollo, con el overlay de error). Diagnostica por qué sin boundary un error de un componente pequeño derriba la app entera.
+
+#### Paso 5 · Práctica guiada
+Añade un botón "Reintentar" a la UI de recuperación que reinicie `haFallado` a `false`. Pista: necesitas un método que haga `this.setState({ haFallado: false })` y pasarlo al botón.
+
+#### Paso 6 · Práctica independiente
+Reemplaza tu boundary de clase por la librería `react-error-boundary` (`npm install react-error-boundary`) usando `<ErrorBoundary FallbackComponent={...} onReset={...}>`. Entrega ambas versiones y explica qué aporta la librería (reset, aislamiento por boundary, integración con hooks).
+
+#### Paso 7 · Cierre y evidencia
+Entrega la app con el mapa contenido, el reintento y la versión con `react-error-boundary`. **¿Por qué es importante?** Sin Error Boundaries, un solo componente con un bug deja al usuario ante una pantalla en blanco sin explicación — la peor experiencia posible. En producción, los boundaries son los que convierten "la app se cayó" en "esta sección no cargó, el resto funciona", y suelen conectarse a un servicio de reporte de errores (Sentry) en `componentDidCatch`. Fuentes: [React — Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+**Conceptos clave:** error de render vs error async, `getDerivedStateFromError`, UI de recuperación, aislamiento de fallos.
+**Cuándo no usarlo:** no sirven para errores de manejadores de eventos (un `onClick`) ni de código async (un `fetch`): esos se atrapan con `try/catch` normal. El boundary es solo para errores que ocurren durante el renderizado.
+
+**Transferencia al proyecto integrador «RutaFlow»:** envuelve el widget del mapa y el panel de notificaciones en boundaries separados, y demuestra que un fallo en uno no derriba al otro ni a la lista de envíos.
 
 ---
 

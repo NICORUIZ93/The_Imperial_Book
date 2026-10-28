@@ -30,6 +30,14 @@ public sealed interface TaskResult {
     public data class Unavailable(val retryable: Boolean) : TaskResult
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: Swift consume únicamente `TaskClient`, `TaskResult` y `TaskSummary` — ningún tipo interno del repositorio, del cliente Ktor ni de SQLDelight aparece en la superficie exportada, de modo que un refactor interno de esas capas no rompe la compilación de la app iOS.
 
 #### Paso 5 · Práctica guiada
@@ -138,6 +146,14 @@ public fun TaskClient.subscribe(
     scope.launch { observeTasks().collect(listener) },
 )
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: llamar a `subscription.close()` desde el `deinit` de Swift cancela explícitamente el `Job` de Kotlin, deteniendo la colección del `Flow` y rompiendo el ciclo de referencias cruzado entre ambos runtimes, en vez de esperar a que algún recolector de basura lo resuelva por su cuenta.
 
 #### Paso 5 · Práctica guiada
@@ -226,7 +242,15 @@ kotlin {
     }
 }
 ```
-Resultado esperado: `./gradlew :shared:check` ahora compara la API pública actual contra un dump aprobado previamente, y falla explícitamente si alguien modifica una firma pública sin actualizar ese dump de forma consciente.
+
+**Ejecuta el ejemplo** (añade el bloque a `shared/build.gradle.kts`, genera el dump de referencia y valida):
+
+```bash
+./gradlew :shared:updateLegacyAbi
+./gradlew :shared:check
+```
+
+Resultado esperado: `./gradlew :shared:check` compara la API pública actual contra el dump aprobado previamente, y falla explícitamente si alguien modifica una firma pública sin actualizar ese dump de forma consciente.
 
 #### Paso 5 · Práctica guiada
 Pista: dejá `abiValidation { enabled.set(false) }` (o no lo actives) "porque todavía no tenemos tiempo de revisar el dump completo". Ese es el fallo deliberado: un cambio que agrega un parámetro sin valor default a una función pública pasa `check` sin ninguna advertencia, y recién se descubre que rompió la compatibilidad binaria cuando el consumidor iOS (que todavía no recompiló contra la nueva versión) falla en producción.
@@ -310,6 +334,14 @@ public interface Diagnostics {
 
 public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: al provocar deliberadamente un `SYNC_FAILED` en ambas apps (forzando un conflicto de sincronización del Módulo 11), cada adaptador nativo registra el evento con su propio proveedor de telemetría, y ambos reportes pueden correlacionarse por `build ID` aunque los stacks nativos se vean completamente distintos entre sí.
 
 #### Paso 5 · Práctica guiada

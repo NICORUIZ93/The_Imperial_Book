@@ -34,6 +34,14 @@ struct EsEnvioAtrasadoTests {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: ambos tests verifican exactamente la misma regla de `EsEnvioAtrasado` (Módulo 8) sobre un envío con fecha estimada una hora en el pasado; el de Swift Testing es más corto porque `#expect` reemplaza la elección entre `XCTAssertTrue`, `XCTAssertEqual` y el resto de variantes.
 
 #### Paso 5 · Práctica guiada
@@ -108,6 +116,14 @@ Marcar el test mismo como `async` permite usar `await` directamente dentro del t
     #expect(resultado.estado == .entregado)
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: el test completa cuando `confirmarEntrega` efectivamente retorna, sin ningún `XCTestExpectation` ni timeout configurado a mano — `await` dentro de un test `async` espera exactamente como en código de producción.
 
 #### Paso 5 · Práctica guiada
@@ -174,6 +190,14 @@ func testConfirmarEntregaDesdeLaUI() {
     XCTAssertTrue(app.staticTexts["Entrega confirmada"].waitForExistence(timeout: 5))
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: el test lanza la app real, escribe guía y PIN como lo haría un conductor, y confirma que "Entrega confirmada" aparece en pantalla dentro de 5 segundos — valida el flujo completo, no solo la función `confirmarEntrega` en memoria.
 
 #### Paso 5 · Práctica guiada

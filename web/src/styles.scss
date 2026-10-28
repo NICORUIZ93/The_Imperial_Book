@@ -1,71 +1,74 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&display=swap');
 
-// ── Tema global "libro técnico": paleta clara/oscura, tipografía y transiciones ──
-// [data-theme] se aplica en <html> vía ThemeService (ver app/theme.service.ts)
-// y es la fuente de verdad para todos los componentes (catálogo, course-shell,
-// lesson-viewer, lesson-index, command-palette) a través de src/styles/_tokens.scss.
-// Gris papel con sesgo frío + tinta grafito-azulada + un único acento petróleo,
-// coherente con la experiencia de lectura del curso: la misma identidad en
-// todas partes, no un tema para el catálogo y otro para el lector.
+// ── Tema global "The Imperial Book": identidad EDITORIAL de libro premium ──
+// [data-theme] se aplica en <html> vía ThemeService y es la fuente de verdad
+// para todos los componentes a través de src/styles/_tokens.scss.
+// Papel crema cálido + tinta cálida + acento terracota, con títulos en serif
+// (Fraunces) y cuerpo en Inter — una sola identidad de libro en toda la app.
+// --font-serif se usa en títulos; --font-sans en UI y cuerpo.
 :root,
 :root[data-theme='light'] {
-  --bg: #f2f4f4;
+  --bg: #faf7f2;               /* papel crema */
   --bg-elevated: #ffffff;
-  --bg-subtle: #e7ebec;
-  --bg-instrument: #141c20;
-  --text: #141b1f;
-  --text-secondary: #4c5a60;
-  --text-faint: #7c8a90;
-  --accent: #0e6b74;
-  --accent-hover: #0a4f56;
-  --accent-soft: #dcedee;
-  --accent-2: #4c5a60;
-  --success: #16a34a;
-  --success-soft: #f0fdf4;
-  --warning: #9a6113;
-  --warning-soft: #f3e6d1;
-  --error: #dc2626;
+  --bg-subtle: #f0ebe2;        /* crema más cálido para cajas */
+  --bg-instrument: #1c1917;
+  --text: #1c1917;             /* tinta cálida casi negra */
+  --text-secondary: #57534e;
+  --text-faint: #8a7f70;
+  --accent: #9a3412;           /* terracota */
+  --accent-hover: #7c2d12;
+  --accent-soft: #fbeee3;      /* terracota muy claro */
+  --accent-2: #b45309;         /* ámbar para lomos/detalles */
+  --success: #166534;
+  --success-soft: #ecfdf5;
+  --warning: #b45309;
+  --warning-soft: #fef3e2;
+  --error: #b91c1c;
   --error-soft: #fef2f2;
-  --border: #d3dade;
-  --border-strong: #b7c1c5;
-  --shadow-sm: 0 1px 2px rgba(20,28,32,.05);
-  --shadow-md: 0 8px 24px rgba(20,28,32,.06);
-  --shadow-lg: 0 16px 40px rgba(20,28,32,.09);
+  --border: #e7e0d6;           /* bordes cálidos suaves */
+  --border-strong: #d6cdbf;
+  --shadow-sm: 0 1px 2px rgba(60,40,20,.05);
+  --shadow-md: 0 8px 24px rgba(60,40,20,.07);
+  --shadow-lg: 0 18px 44px rgba(60,40,20,.10);
   --transition: .2s cubic-bezier(.2,.8,.2,1);
-  --code-bg: #141c20;
-  --code-text: #dfe8e8;
+  --code-bg: #1c1917;
+  --code-text: #e7e0d6;
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 :root[data-theme='dark'] {
-  --bg: #10161a;
-  --bg-elevated: #161e22;
-  --bg-subtle: #1b2429;
-  --bg-instrument: #0a1013;
-  --text: #e7eeee;
-  --text-secondary: #a9b7bb;
-  --text-faint: #75868c;
-  --accent: #4fc4bd;
-  --accent-hover: #79d6cf;
-  --accent-soft: #173238;
-  --accent-2: #a9b7bb;
-  --success: #22c55e;
-  --success-soft: rgba(34, 197, 94, .14);
+  --bg: #1a1714;               /* papel oscuro cálido (sepia noche) */
+  --bg-elevated: #211d18;
+  --bg-subtle: #262019;
+  --bg-instrument: #12100d;
+  --text: #f0e9df;
+  --text-secondary: #c4b8a6;
+  --text-faint: #8a7f70;
+  --accent: #e8814e;           /* terracota luminoso */
+  --accent-hover: #f0a075;
+  --accent-soft: #3a241a;
+  --accent-2: #e0ac57;
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, .12);
   --warning: #e0ac57;
   --warning-soft: #2c2312;
   --error: #f87171;
   --error-soft: rgba(248, 113, 113, .14);
-  --border: #293338;
-  --border-strong: #3a464c;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
-  --shadow-md: 0 10px 30px rgba(0,0,0,.4);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,.5);
+  --border: #3a332b;
+  --border-strong: #4d4439;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.35);
+  --shadow-md: 0 10px 30px rgba(0,0,0,.45);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,.55);
   --transition: .3s ease;
-  --code-bg: #0a1013;
-  --code-text: #e4ece9;
+  --code-bg: #12100d;
+  --code-text: #e7ddd0;
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 :root {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -77,11 +80,18 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(900px 520px at 8% -10%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 68%),
-    radial-gradient(760px 460px at 94% 0%, color-mix(in srgb, var(--accent-2) 6%, transparent), transparent 70%),
+    radial-gradient(1100px 600px at 50% -15%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 70%),
     var(--bg);
   color: var(--text);
   transition: background var(--transition), color var(--transition);
+}
+
+// Identidad editorial: todos los títulos en serif Fraunces, con óptica fina.
+// Los componentes heredan esto salvo que fijen su propia fuente.
+h1, h2, h3, h4, .serif {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
 }
 button, input, textarea { font: inherit; letter-spacing: 0; }
 button { cursor: pointer; }
@@ -103,7 +113,8 @@ img, video, svg { max-width: 100%; height: auto; display: block; }
   transform: translateY(-160%); transition: transform var(--transition);
 }
 .skip-link:focus { transform: translateY(0); }
-.visually-hidden {
+.visually-hidden,
+.sr-only {
   position: absolute !important; width: 1px !important; height: 1px !important;
   padding: 0 !important; margin: -1px !important; overflow: hidden !important;
   clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;

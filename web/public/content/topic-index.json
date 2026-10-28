@@ -12,6 +12,14 @@
       {
         "title": "AndroidManifest.xml y módulos Gradle",
         "fragment": "tema-3-androidmanifest-xml-y-modulos-gradle"
+      },
+      {
+        "title": "Kotlin esencial para Android — lo que usarás en cada pantalla",
+        "fragment": "tema-4-kotlin-esencial-para-android-lo-que-usaras-en-cada-pantalla"
+      },
+      {
+        "title": "Coroutines — asincronía sin bloquear la UI",
+        "fragment": "tema-5-coroutines-asincronia-sin-bloquear-la-ui"
       }
     ],
     "1": [
@@ -270,6 +278,10 @@
       {
         "title": "Consultas signal y trabajo posterior al render",
         "fragment": "tema-5-consultas-signal-y-trabajo-posterior-al-render"
+      },
+      {
+        "title": "Directivas y pipes personalizados",
+        "fragment": "tema-6-directivas-y-pipes-personalizados"
       }
     ],
     "10": [
@@ -784,6 +796,10 @@
       {
         "title": "El reconciliador de capacidad y las políticas de escalado",
         "fragment": "tema-5-el-reconciliador-de-capacidad-y-las-politicas-de-escalado"
+      },
+      {
+        "title": "VPC y redes — subredes, security groups y el flujo del tráfico",
+        "fragment": "tema-6-vpc-y-redes-subredes-security-groups-y-el-flujo-del-trafico"
       }
     ],
     "22": [
@@ -1900,6 +1916,10 @@
       {
         "title": "const widgets, RepaintBoundary y shouldRepaint",
         "fragment": "tema-3-const-widgets-repaintboundary-y-shouldrepaint"
+      },
+      {
+        "title": "Isolates — trabajo pesado sin congelar la interfaz",
+        "fragment": "tema-4-isolates-trabajo-pesado-sin-congelar-la-interfaz"
       }
     ],
     "9": [
@@ -1956,6 +1976,10 @@
       {
         "title": "Funciones y descomposición de problemas",
         "fragment": "tema-4-funciones-y-descomposicion-de-problemas"
+      },
+      {
+        "title": "Cómo la computadora representa los datos — binario, texto y decimales",
+        "fragment": "tema-5-como-la-computadora-representa-los-datos-binario-texto-y-decimales"
       }
     ],
     "10": [
@@ -2088,6 +2112,22 @@
       {
         "title": "Complejidad, medición, ordenamiento y recursión",
         "fragment": "tema-4-complejidad-medicion-ordenamiento-y-recursion"
+      },
+      {
+        "title": "Árboles y árboles binarios de búsqueda (BST)",
+        "fragment": "tema-5-arboles-y-arboles-binarios-de-busqueda-bst"
+      },
+      {
+        "title": "Tablas hash — búsqueda en tiempo constante",
+        "fragment": "tema-6-tablas-hash-busqueda-en-tiempo-constante"
+      },
+      {
+        "title": "Grafos y recorridos BFS/DFS",
+        "fragment": "tema-7-grafos-y-recorridos-bfs-dfs"
+      },
+      {
+        "title": "Programación dinámica — resolver una vez, recordar el resultado",
+        "fragment": "tema-8-programacion-dinamica-resolver-una-vez-recordar-el-resultado"
       }
     ],
     "3": [
@@ -2312,6 +2352,18 @@
       {
         "title": "Operar significa detectar, limitar y aprender del fallo",
         "fragment": "tema-4-operar-significa-detectar-limitar-y-aprender-del-fallo"
+      },
+      {
+        "title": "Keychain — guardar secretos de forma segura",
+        "fragment": "tema-5-keychain-guardar-secretos-de-forma-segura"
+      },
+      {
+        "title": "Permisos y privacidad — pedir acceso con criterio",
+        "fragment": "tema-6-permisos-y-privacidad-pedir-acceso-con-criterio"
+      },
+      {
+        "title": "Notificaciones push con APNs",
+        "fragment": "tema-7-notificaciones-push-con-apns"
       }
     ],
     "14": [
@@ -2338,6 +2390,10 @@
       {
         "title": "UIViewControllerRepresentable y Coordinator",
         "fragment": "tema-6-uiviewcontrollerrepresentable-y-coordinator"
+      },
+      {
+        "title": "Core ML y Vision — inferencia en el dispositivo",
+        "fragment": "tema-7-core-ml-y-vision-inferencia-en-el-dispositivo"
       }
     ],
     "2": [
@@ -2760,6 +2816,10 @@
       {
         "title": "Proyectos multi-módulo",
         "fragment": "tema-3-proyectos-multi-modulo"
+      },
+      {
+        "title": "Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+        "fragment": "tema-4-maven-y-gradle-lado-a-lado-el-mismo-proyecto-en-dos-herramientas"
       }
     ],
     "9": [
@@ -3320,6 +3380,10 @@
       {
         "title": "Reintentos con backoff exponencial",
         "fragment": "tema-4-reintentos-con-backoff-exponencial"
+      },
+      {
+        "title": "kotlinx.serialization — JSON compartido entre plataformas",
+        "fragment": "tema-5-kotlinx-serialization-json-compartido-entre-plataformas"
       }
     ],
     "6": [
@@ -3598,6 +3662,14 @@
       {
         "title": "Express frente a Fastify",
         "fragment": "tema-4-express-frente-a-fastify"
+      },
+      {
+        "title": "WebSocket — comunicación en tiempo real bidireccional",
+        "fragment": "tema-5-websocket-comunicacion-en-tiempo-real-bidireccional"
+      },
+      {
+        "title": "Subida de archivos — multipart y validación segura",
+        "fragment": "tema-6-subida-de-archivos-multipart-y-validacion-segura"
       }
     ],
     "5": [
@@ -3638,6 +3710,10 @@
       {
         "title": "Sesiones, cookies seguras y protección CSRF",
         "fragment": "tema-5-sesiones-cookies-seguras-y-proteccion-csrf"
+      },
+      {
+        "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "fragment": "tema-6-flujo-de-login-completo-de-api-auth-login-a-una-ruta-protegida"
       }
     ],
     "7": [
@@ -3850,6 +3926,10 @@
       {
         "title": "Reglas de los hooks, useReducer y useImperativeHandle",
         "fragment": "tema-4-reglas-de-los-hooks-usereducer-y-useimperativehandle"
+      },
+      {
+        "title": "Error Boundaries — contener errores de render sin romper toda la app",
+        "fragment": "tema-5-error-boundaries-contener-errores-de-render-sin-romper-toda-la-app"
       }
     ],
     "3": [
@@ -3956,6 +4036,10 @@
       {
         "title": "useTransition, useDeferredValue y Fiber",
         "fragment": "tema-4-usetransition-usedeferredvalue-y-fiber"
+      },
+      {
+        "title": "Suspense y React.lazy — carga diferida del lado cliente",
+        "fragment": "tema-5-suspense-y-react-lazy-carga-diferida-del-lado-cliente"
       }
     ]
   },
@@ -4068,8 +4152,12 @@
         "fragment": "tema-2-slo-y-respuesta-a-incidentes"
       },
       {
+        "title": "Pruebas end-to-end del sistema completo (app ↔ backend)",
+        "fragment": "tema-3-pruebas-end-to-end-del-sistema-completo-app-backend"
+      },
+      {
         "title": "Continuidad, costes y proyecto final",
-        "fragment": "tema-3-continuidad-costes-y-proyecto-final"
+        "fragment": "tema-4-continuidad-costes-y-proyecto-final"
       }
     ]
   },
@@ -4130,6 +4218,10 @@
       {
         "title": "DDD para decidir límites y propiedad de datos",
         "fragment": "tema-7-ddd-para-decidir-limites-y-propiedad-de-datos"
+      },
+      {
+        "title": "Orquestación de microservicios con Temporal y Spring Boot",
+        "fragment": "tema-8-orquestacion-de-microservicios-con-temporal-y-spring-boot"
       }
     ],
     "11": [
@@ -4350,6 +4442,10 @@
       {
         "title": "Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
         "fragment": "tema-4-proteccion-ssrf-con-inetaddressfilter-spring-boot-4-1"
+      },
+      {
+        "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "fragment": "tema-5-flujo-de-login-completo-de-api-auth-login-a-una-ruta-protegida"
       }
     ],
     "5": [

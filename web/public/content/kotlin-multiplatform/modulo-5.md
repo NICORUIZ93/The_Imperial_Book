@@ -574,6 +574,63 @@ Ya implementas un mecanismo de reintentos con backoff exponencial, confirmando c
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Reintenta solo operaciones recuperables con espera acotada y clave de idempotencia estable. Con reloj controlado, verifica número de intentos y que cancelar detiene la secuencia.
 
+### Tema 5: kotlinx.serialization — JSON compartido entre plataformas
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás serializar y deserializar modelos entre JSON y objetos Kotlin con `kotlinx.serialization` en el módulo común, de forma que Android e iOS compartan el mismo mapeo. Prerrequisitos: Temas 1-2 de este módulo (Ktor Client y manejo de errores).
+
+#### Paso 2 · Contexto y caso real
+El núcleo compartido de RutaFlow consume la API de entregas y debe convertir el JSON de respuesta en objetos `Envio` usables desde Android e iOS. Hacerlo a mano por plataforma duplicaría trabajo y bugs; `kotlinx.serialization` lo hace una vez en el código común, verificado en tiempo de compilación.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`kotlinx.serialization` es la librería oficial de Kotlin para convertir entre objetos y formatos como JSON. Es **multiplataforma** (funciona en el common main de KMP) y genera el código de serialización en tiempo de compilación con el plugin, sin reflexión — por eso funciona en Kotlin/Native (iOS). Anotas una `data class` con `@Serializable` y listo.
+
+**Analogía:** es un traductor jurado que convierte un documento (JSON) a tu idioma (objeto Kotlin) y de vuelta, con las reglas fijadas una sola vez; Android e iOS usan el mismo traductor en vez de uno cada uno que podría traducir distinto.
+
+#### Paso 4 · Demostración guiada desde cero
+Añade el plugin y la dependencia en `build.gradle.kts` del módulo compartido (`plugins { kotlin("plugin.serialization") }` y `implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")`). Luego, en `commonMain`:
+
+```kotlin
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+
+@Serializable
+data class Envio(
+    val guia: String,
+    val estado: String,
+    @SerialName("recipient_pin") val pin: String? = null   // mapea nombre JSON distinto
+)
+
+fun main() {
+    val json = """{"guia":"RF-4471","estado":"en ruta","recipient_pin":"837201"}"""
+    val envio = Json.decodeFromString<Envio>(json)          // JSON -> objeto
+    println(envio)
+    val devuelta = Json.encodeToString(envio)               // objeto -> JSON
+    println(devuelta)
+}
+```
+
+**Ejecuta el ejemplo** (corre la prueba o el main del módulo común):
+
+```bash
+./gradlew :shared:allTests
+```
+
+**Resultado esperado:** imprime `Envio(guia=RF-4471, estado=en ruta, pin=837201)` y el JSON de vuelta, con `recipient_pin` mapeado a `pin` gracias a `@SerialName`. **Fallo deliberado:** quita la anotación `@Serializable` de `Envio` y compila: falla en tiempo de compilación con "Serializer has not been found for type 'Envio'". Diagnostica por qué la serialización de kotlinx se resuelve en compilación (no en runtime), lo que la hace segura y compatible con iOS, a diferencia de librerías basadas en reflexión como Gson.
+
+#### Paso 5 · Práctica guiada
+Añade un campo opcional nuevo al modelo con valor por defecto y confirma que un JSON viejo (sin ese campo) sigue deserializando. Pista: `ignoreUnknownKeys = true` en `Json { }` tolera campos extra del servidor.
+
+#### Paso 6 · Práctica independiente
+Serializa una lista de `Envio` y un objeto anidado (un `Envio` con una lista de `Evento`). Entrega el JSON generado y el objeto reconstruido.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la (de)serialización, el mapeo con `@SerialName` y el fallo por falta de `@Serializable`. **¿Por qué es importante?** Toda app conectada convierte JSON a objetos constantemente; en KMP, hacerlo en el código común con `kotlinx.serialization` es lo que permite compartir modelos y lógica de red entre Android e iOS sin duplicar. Es una pieza central del valor de KMP. Fuentes: [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization).
+**Conceptos clave:** `@Serializable`, `@SerialName`, serialización en compilación, `ignoreUnknownKeys`, multiplataforma.
+**Cuándo no usarlo:** para formatos binarios muy específicos o rendimiento extremo puedes necesitar otra estrategia, pero para JSON (el 99% de las APIs) kotlinx.serialization es la opción estándar en KMP.
+
+**Transferencia al proyecto integrador «Núcleo móvil compartido»:** define los modelos de la API de RutaFlow como `data class @Serializable` en commonMain y úsalos sin cambios desde Android e iOS.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un cliente HTTP compartido que consume una API real desde Android e iOS, con manejo de errores, autenticación centralizada y reintentos.

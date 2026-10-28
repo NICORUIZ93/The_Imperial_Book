@@ -204,7 +204,7 @@ export class LessonViewerComponent implements OnDestroy {
   readonly chapterAnnouncement = computed(() => {
     const track = this.track();
     const module = this.module();
-    return track && module ? `Capítulo ${this.moduleIndex() + 1} de ${track.modules.length}: ${module.title}` : '';
+    return track && module ? `Módulo ${this.moduleIndex() + 1} de ${track.modules.length}: ${module.title}` : '';
   });
 
   readonly lessonHtml = signal<string | null>(null);
@@ -451,11 +451,18 @@ export class LessonViewerComponent implements OnDestroy {
     // en el Markdown, así que no depende de que cada archivo lo lleve bien.
     const chapterNumber = this.moduleIndex() + 1;
     let temaIndex = 0;
+    const topicSlugSeen = new Set<string>();
     container.querySelectorAll<HTMLHeadingElement>('h3').forEach(heading => {
       const text = heading.textContent?.trim() ?? '';
       if (!text.startsWith('Tema ')) return;
       heading.classList.add('topic-heading');
       temaIndex += 1;
+      // El id se calcula sobre el TÍTULO CRUDO (con "Tema N:"), igual que
+      // scripts/build_web_topic_index.py genera el fragment del índice. Así el
+      // ancla del encabezado coincide con el fragment del menú lateral y el
+      // click en un tema sí hace scroll hasta él. Debe asignarse ANTES de quitar
+      // el prefijo "Tema N:", porque después ese texto ya no está disponible.
+      if (!heading.id) heading.id = slugify(text, topicSlugSeen);
       const title = text.replace(/^Tema\s+\d+\s*:\s*/i, '');
       heading.innerHTML = `<span class="section-number">§ ${chapterNumber}.${temaIndex}</span>${escapeHtml(title)}`;
     });

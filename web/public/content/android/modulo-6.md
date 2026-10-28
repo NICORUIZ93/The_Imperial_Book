@@ -87,6 +87,14 @@ con.close()
 "
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+
 **Explicación línea por línea:** `@Entity` mapea `Tarea` a una tabla SQL con las mismas columnas que sus propiedades; `@PrimaryKey` corresponde a `PRIMARY KEY` en SQL; `@Query("SELECT * FROM Tarea")` es la query literal que Room verifica contra el esquema declarado en tiempo de compilación; el script Python con `sqlite3` confirma, contra el motor SQLite real, que ese esquema y esa query son válidos y ejecutables.
 
 Simula el error que Room detectaría en tiempo de compilación si la query referenciara una columna inexistente, ejecutando esa misma query contra SQLite real:
@@ -197,6 +205,14 @@ print('después de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
 con.close()
 "
 ```
+
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
 
 **Explicación línea por línea:** `MIGRATION_1_2` declara explícitamente el `ALTER TABLE` que transforma la versión 1 del esquema a la versión 2; el script Python ejecuta ese mismo SQL literal contra una base de datos SQLite real con datos preexistentes, confirmando que las dos filas ya insertadas sobreviven la migración con el nuevo valor por defecto (`0`) para la columna agregada.
 
@@ -330,6 +346,14 @@ print('UI muestra (tras sincronizar con éxito):', ui_lee_siempre_de_room())
 con.close()
 "
 ```
+
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
 
 **Explicación línea por línea:** `TareaRepository` se declara como interfaz (no como clase concreta) desde ahora, para poder inyectarla con Hilt (Módulo 7) y sustituirla por un fake en tests (Módulo 9) más adelante sin cambiar el código que la consume; `TareaRepositoryImpl.tareas` expone directamente `dao.observarTodas()` como la única fuente que la UI consulta; `sincronizar()` es un método completamente separado que actualiza la base de datos en background — la UI nunca llama directamente a `api.obtenerTareas()`, solo observa `tareas`, que siempre refleja el estado del caché local, se haya sincronizado recientemente o no.
 

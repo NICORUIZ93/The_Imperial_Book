@@ -264,6 +264,8 @@ Un pipeline como código vive en un archivo versionado junto al resto del proyec
 └─────────────────────────────────────────────┘
 ```
 
+**Diagrama interactivo:** [El pipeline de CI de principio a fin: de pull request a reporte de cobertura, con el gate que bloquea la fusión](/visuals/temas/devops/modulo-4-tema-4-pipeline-ci.html) — flujo explorable con temas claro/oscuro y el camino de fallo resaltado.
+
 #### Paso 4 · Demostración guiada desde cero
 
 Desde una carpeta vacía crea `academia-devops/src/modulo4/pipeline-como-codigo` y demuestra la reproducibilidad histórica versionando dos versiones del pipeline:

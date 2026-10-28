@@ -25,6 +25,14 @@ sum(rate(http_requests_total{route="/envios",code=~"2.."}[5m]))
 /
 sum(rate(http_requests_total{route="/envios"}[5m]))
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: esta consulta devuelve la proporción real de peticiones exitosas a `/envios` en los últimos 5 minutos; comparada contra un SLO de 99.9% mensual, permite calcular cuánto del presupuesto de error ya se consumió en lo que va del mes.
 
 #### Paso 5 · Práctica guiada
@@ -96,6 +104,14 @@ Configura tu Prometheus con el YAML de alertas y ejecuta `kubectl` para aplicar 
     summary: "La API de envíos consume rápidamente su presupuesto de error"
     runbook: "https://runbooks.rutaflow.app/envios-api/high-burn"
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: esta alerta se dispara únicamente cuando la tasa de consumo de presupuesto es lo bastante rápida como para agotarlo en horas, señalando urgencia genuina; quien la recibe abre directamente el runbook vinculado en `annotations.runbook` y sabe qué verificar primero.
 
 #### Paso 5 · Práctica guiada
@@ -165,6 +181,14 @@ cosign verify \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
   registry.rutaflow.app/api@sha256:ABC
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: `cosign verify` confirma que la imagen con ese digest exacto fue firmada específicamente por el workflow de GitHub Actions del repositorio `rutaflow/api`, mediante una identidad OIDC emitida por GitHub — no por cualquier firma válida de cualquier origen.
 
 #### Paso 5 · Práctica guiada
@@ -244,6 +268,14 @@ deny[msg] {
   msg := sprintf("%s debe ejecutar como non-root", [c.name])
 }
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 Resultado esperado: un Pod de RutaFlow que no declara `runAsNonRoot: true` en su `securityContext` es rechazado en el momento de la admisión, con un mensaje específico que indica exactamente qué contenedor y qué regla violó.
 
 #### Paso 5 · Práctica guiada

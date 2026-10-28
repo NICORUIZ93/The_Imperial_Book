@@ -43,6 +43,16 @@ const boton = screen.getByRole('button', { name: /confirmar entrega/i });
 await userEvent.click(boton);
 expect(screen.getByText(/entrega confirmada/i)).toBeInTheDocument();
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: el test encuentra el botón por su rol semántico (`button`) y su nombre accesible ("Confirmar entrega"), sin importar qué clase CSS tenga en ese momento, y confirma que el mensaje de éxito aparece tras el click.
 
 #### Paso 5 · Práctica guiada
@@ -98,6 +108,16 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: al hacer click en "Confirmar entrega" dentro del test, la llamada real a `fetch('/api/envios/RF-4471/confirmar', ...)` del código de `DetalleEnvio` es interceptada por MSW, que responde con `{ estado: 'entregado' }` sin que ningún servidor real haya recibido nada.
 
 #### Paso 5 · Práctica guiada
@@ -155,6 +175,16 @@ const { result } = renderHook(() => useFiltroZona());
 act(() => result.current.setZona('NORTE'));
 expect(result.current.zona).toBe('norte'); // normalizado a minúsculas
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: el test confirma que `useFiltroZona` normaliza `'NORTE'` a `'norte'` internamente, sin haber renderizado ningún componente visual — solo se invocó el hook y se inspeccionó su resultado.
 
 #### Paso 5 · Práctica guiada

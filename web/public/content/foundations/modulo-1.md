@@ -550,6 +550,61 @@ Función más fácil de testear: _________ (¿por qué?)
 
 **Límites y decisión de uso:** Una función demasiado fragmentada puede ocultar el flujo tanto como una función enorme. Extrae responsabilidades con un contrato comprensible y evita dependencias globales; no crees envoltorios que solo cambian el nombre de una línea.
 
+### Tema 5: Cómo la computadora representa los datos — binario, texto y decimales
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás explicar cómo un número, una letra y un decimal se guardan realmente como ceros y unos, convertir entre binario y decimal, y entender por qué `0.1 + 0.2` no da exactamente `0.3`. Prerrequisitos: Temas 1-2 de este módulo (variables y tipos).
+
+#### Paso 2 · Contexto y caso real
+Un día el gestor de tareas muestra un total de `0.30000000000000004` en vez de `0.3`, o un nombre con acento aparece como `JosÃ©`. No son bugs misteriosos: son consecuencias directas de cómo la máquina representa números y texto. Entender la representación te ahorra horas de confusión y es la base de todo lo demás.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La computadora solo almacena **bits** (0 o 1). Un número entero se guarda en **binario** (base 2): `1011` = 8+0+2+1 = 11. El texto se guarda asignando un número a cada carácter mediante una **codificación** (ASCII para el inglés básico, **UTF-8** para todos los idiomas y emojis). Los decimales usan **punto flotante** (IEEE 754), que representa fracciones en base 2 — y como `0.1` no tiene representación exacta en base 2 (igual que `1/3` no la tiene en base 10), aparecen pequeños errores de redondeo.
+
+**Analogía:** el binario es como un ábaco donde cada cuenta vale el doble que la anterior (1, 2, 4, 8...); el punto flotante es como escribir `1/3` en decimal: por más dígitos que pongas (`0.3333...`), nunca es exacto, así que la máquina corta en algún punto.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea `representacion.py`:
+
+```python
+# Enteros en binario
+print("11 en binario:", bin(11))          # 0b1011
+print("0b1011 en decimal:", 0b1011)        # 11
+
+# Texto: cada carácter es un número (code point), codificado en bytes UTF-8
+print("Código de 'A':", ord("A"))          # 65
+print("'é' en bytes UTF-8:", "é".encode("utf-8"))   # b'\xc3\xa9' (2 bytes)
+print("'🚚' en bytes UTF-8:", "🚚".encode("utf-8"))  # 4 bytes
+
+# Punto flotante: la suma NO es exacta
+resultado = 0.1 + 0.2
+print("0.1 + 0.2 =", resultado)            # 0.30000000000000004
+print("¿Es igual a 0.3?", resultado == 0.3)   # False
+# Forma correcta de comparar decimales:
+print("¿Casi igual?", abs(resultado - 0.3) < 1e-9)   # True
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 representacion.py
+```
+
+**Resultado esperado:** `11 en binario: 0b1011`, el acento `é` ocupa 2 bytes y el emoji 🚚 ocupa 4, y `0.1 + 0.2` da `0.30000000000000004` (distinto de `0.3`). **Fallo deliberado:** usa `if precio == 0.3:` para decidir algo en el gestor de tareas con un precio calculado como `0.1 + 0.2`; la condición será `False` y la lógica fallará sin error visible. Diagnostica por qué NUNCA se comparan decimales con `==` y por qué el dinero se maneja en centavos (enteros) o con el tipo `Decimal`.
+
+#### Paso 5 · Práctica guiada
+Convierte a mano (y luego verifica con `bin()`) el número 42 a binario, y el binario `110100` a decimal. Pista: suma las potencias de 2 donde hay un 1.
+
+#### Paso 6 · Práctica independiente
+Escribe una función que reciba un texto y devuelva cuántos **bytes** ocupa en UTF-8 (no cuántos caracteres), y pruébala con "hola", "ñandú" y "café ☕". Explica por qué bytes y caracteres no coinciden.
+
+#### Paso 7 · Cierre y evidencia
+Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo de comparación de decimales. **¿Por qué es importante?** casi todo principiante tropieza con el bug de `0.1 + 0.2` y con el texto "roto" por codificación. Entender binario, UTF-8 y punto flotante explica errores reales que verás en bases de datos, APIs y archivos, y es la base para entender tipos, memoria y redes. Fuentes: [IEEE 754 (Wikipedia)](https://es.wikipedia.org/wiki/IEEE_754) y [UTF-8 (Wikipedia)](https://es.wikipedia.org/wiki/UTF-8).
+**Conceptos clave:** bit, binario/decimal, code point, codificación UTF-8, punto flotante y error de redondeo.
+**Cuándo no usarlo:** no necesitas convertir binario a mano en el día a día, pero sí entender por qué los decimales fallan: para dinero usa enteros (centavos) o `Decimal`, nunca `float`.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor maneja importes o presupuestos, guárdalos en centavos (enteros) y demuestra con una prueba que sumar `0.1 + 0.2` como `float` produce un total incorrecto frente a la versión en centavos.
+
 ## Construcción guiada del capítulo
 
 ### Proyecto 1: calculadora de presupuesto desde carpeta vacía

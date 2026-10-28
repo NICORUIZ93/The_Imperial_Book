@@ -401,6 +401,14 @@ PredictiveBackHandler { progress: Flow<BackEventCompat> ->
 }
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+
 **Resultado esperado:** mientras el usuario desliza desde el borde, la UI participa del progreso del gesto; solo al completarlo efectivamente se decide mostrar el diálogo o navegar, evitando que la previsualización del sistema prometa algo que no ocurre.
 
 **Fallo deliberado:** reemplazá `PredictiveBackHandler` por un `BackHandler` simple que directamente llama a `mostrarDialogoDescartar()` sin participar del flujo de progreso. Compila el proyecto con Gradle (`./gradlew :app:compileDebugKotlin`) para confirmar que compila, y probá el gesto en un dispositivo o emulador con Android 14+: el sistema muestra su previsualización genérica de "volviendo atrás" durante todo el deslizamiento, y solo al completarlo aparece el diálogo en vez de la navegación que la preview sugería — diagnostica confirmando la discrepancia confusa que este Tema busca evitar.

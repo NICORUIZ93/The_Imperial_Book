@@ -55,7 +55,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'API con persistencia real en PostgreSQL y migraciones versionadas con Flyway.'),
   m(4, 'Spring Security y protección SSRF', 'Spring Security', 'Integración', '4 h', '#6db33f',
     'Protege endpoints con autenticación y autorización declarativa, y cierra vulnerabilidades SSRF en clientes HTTP salientes con InetAddressFilter (Spring Boot 4.1).',
-    ['SecurityFilterChain y configuración moderna (sin WebSecurityConfigurerAdapter)', 'JWT con Spring Security', 'Autorización basada en roles/permisos', 'CORS y CSRF', 'Versionado de APIs: por URI, por header y por content negotiation', 'Protección SSRF con InetAddressFilter (Spring Boot 4.1)'],
+    ['SecurityFilterChain y configuración moderna (sin WebSecurityConfigurerAdapter)', 'JWT con Spring Security', 'Autorización basada en roles/permisos', 'CORS y CSRF', 'Versionado de APIs: por URI, por header y por content negotiation', 'Protección SSRF con InetAddressFilter (Spring Boot 4.1)', 'Flujo de login completo: de /api/auth/login a una ruta protegida'],
     [
       'Configura un SecurityFilterChain con @Bean que requiera autenticación para /api/** y permita /public/** sin login',
       'Implementa un filtro JWT que valide el token del header Authorization en cada request',
@@ -133,7 +133,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Endpoint reactivo que compone múltiples llamadas no bloqueantes con WebClient.'),
   m(10, 'Microservicios con Spring Cloud y Spring gRPC', 'Spring Cloud', 'Experto', '4 h 30 min', '#6db33f',
     'Coordina múltiples servicios Spring Boot: configuración centralizada, descubrimiento, gateway y comunicación binaria interna con Spring gRPC (Boot 4.1).',
-    ['Config Server', 'Service discovery (Eureka)', 'Spring Cloud Gateway', 'Resiliencia con Resilience4j (circuit breaker)', '@Retry, @RateLimiter, @Bulkhead y @TimeLimiter', 'Spring Cloud Bus y @RefreshScope para config dinámica', 'Spring gRPC: contrato .proto y evolución segura de campos (Spring Boot 4.1)'],
+    ['Config Server', 'Service discovery (Eureka)', 'Spring Cloud Gateway', 'Resiliencia con Resilience4j (circuit breaker)', '@Retry, @RateLimiter, @Bulkhead y @TimeLimiter', 'Spring Cloud Bus y @RefreshScope para config dinámica', 'Spring gRPC: contrato .proto y evolución segura de campos (Spring Boot 4.1)', 'Orquestación de microservicios con Temporal y Spring Boot (Workflow, Activities, Saga)'],
     [
       'Levanta dos microservicios Spring Boot simples que se comuniquen entre sí vía HTTP',
       'Registra ambos en Eureka y haz que se descubran por nombre de servicio en vez de URL hardcodeada',

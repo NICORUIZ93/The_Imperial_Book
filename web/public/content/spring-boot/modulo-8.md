@@ -161,7 +161,8 @@ class EventoPublisherTest {
 ```
 
 ```bash
-mvn test -Dtest=EventoPublisherTest
+mvn test -Dtest=EventoPublisherTest # Maven
+./gradlew test --tests EventoPublisherTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: `@EmbeddedKafka` levantó un broker Kafka real dentro del proceso de test, `EventoPublisher` publicó de verdad hacia el topic `tareas.creadas`, y `NotificacionListener` —un consumidor completamente independiente, sin ninguna referencia directa al publicador— lo recibió y registró, confirmando el desacoplamiento real entre ambos.
@@ -339,7 +340,8 @@ class DeadLetterQueueTest {
 ```
 
 ```bash
-mvn test -Dtest=DeadLetterQueueTest
+mvn test -Dtest=DeadLetterQueueTest # Maven
+./gradlew test --tests DeadLetterQueueTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: el mensaje `"payload-invalido"` se reintenta 2 veces (falla ambas), y `DeadLetterPublishingRecoverer` lo republica automáticamente en `pedidos.procesar.DLT`, donde el consumidor de verificación del test lo lee directamente desde ese topic real — confirmando que el mensaje problemático quedó aislado y trazable, no perdido.
@@ -544,7 +546,8 @@ class ProductorIdempotenteTest {
 ```
 
 ```bash
-mvn test -Dtest=ProductorIdempotenteTest
+mvn test -Dtest=ProductorIdempotenteTest # Maven
+./gradlew test --tests ProductorIdempotenteTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: ambos mensajes llegan realmente al topic `pagos.registrados` y ambos son entregados a `ProcesadorPagosIdempotente`, pero `idsYaAplicados.add(evento.id())` solo devuelve `true` en la primera entrega — `cobrosRealmenteAplicados` queda en exactamente `1`, confirmando "exactamente una vez" desde la perspectiva de negocio aunque el transporte haya entregado el evento dos veces.
@@ -745,7 +748,8 @@ class RebalanceoRealTest {
 ```
 
 ```bash
-mvn test -Dtest=RebalanceoRealTest
+mvn test -Dtest=RebalanceoRealTest  # Maven
+./gradlew test --tests RebalanceoRealTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: la primera instancia arranca sola y recibe las 2 particiones del topic (`onPartitionsAssigned` real); cuando la segunda se une al mismo `groupId`, el broker fuerza un rebalanceo genuino — la primera instancia recibe `onPartitionsRevoked` real para al menos una partición, y al final las 2 particiones quedan repartidas entre ambas (ninguna se pierde ni se duplica), confirmando que el estado de `particionesAsignadasActualmente` de cada instancia se mantiene fiel a lo que el broker realmente le asignó en cada momento.
@@ -917,7 +921,8 @@ class RabbitVsKafkaTest {
 
 ```bash
 # requiere Docker corriendo localmente; Testcontainers levanta el broker RabbitMQ real
-mvn test -Dtest=RabbitVsKafkaTest
+mvn test -Dtest=RabbitVsKafkaTest   # Maven
+./gradlew test --tests RabbitVsKafkaTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: el mensaje se entrega al listener real vía RabbitMQ, y al intentar leer la cola de nuevo directamente (`receiveAndConvert`), no queda ningún mensaje pendiente — confirmando en código, no solo en teoría, la diferencia central con Kafka (Tema 1): RabbitMQ elimina el mensaje de la cola tras la entrega, mientras Kafka lo retiene y permitiría que un nuevo `groupId` lo releyera desde el principio del topic.

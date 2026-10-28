@@ -46,6 +46,8 @@ Maven distingue declarar una versión administrada de incorporar una dependencia
 
 Los perfiles no deben convertir el build en una configuración secreta por ambiente. Úsalos para diferencias del proceso de construcción, no para contraseñas ni reglas de negocio. Maven Enforcer puede exigir JDK, prohibir dependencias duplicadas o vulnerables y detener un entorno incompatible antes de compilar.
 
+> **Equivalente en Gradle:** lo que Enforcer hace con reglas, Gradle lo logra con *resolution strategies* (`configurations.all { resolutionStrategy.failOnVersionConflict() }`), *version catalogs* (`libs.versions.toml`) para versiones centralizadas, y *platforms* (`platform("grupo:bom:version")`) como equivalente del BOM. El `java { toolchain { languageVersion.set(JavaLanguageVersion.of(25)) } }` exige una versión de JDK, igual que la regla `requireJavaVersion` de Enforcer. Este tema usa Maven por ser el estándar empresarial de este tipo de control; la tabla de equivalencias general está en el Módulo 8, Tema 4.
+
 **¿Por qué es importante?** Un build empresarial debe detectar versiones divergentes y entornos inválidos antes de producir un artefacto aparentemente correcto.
 
 #### Aplicación práctica
@@ -144,6 +146,16 @@ mkdir ejemplo-archunit-capas
 cd ejemplo-archunit-capas
 mkdir -p domain/src/main/java application/src/main/java infrastructure/src/main/java api/src/main/java architecture-tests/src/test/java
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 En `settings.gradle.kts` incluye los cuatro módulos. Crea `architecture-tests/src/test/java/academia/arquitectura/DependencyRulesTest.java` con ArchUnit: una regla `noClasses().that().resideInAPackage("..domain..").should().dependOnClassesThat().resideInAPackage("..infrastructure..")`.
 
 #### Paso 5 · Práctica guiada
@@ -200,6 +212,16 @@ mkdir ejemplo-confirmar-entrega
 cd ejemplo-confirmar-entrega
 mkdir -p application/src/main/java application/src/test/java
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `application/src/test/java/academia/application/ConfirmarEntregaTest.java` con un fake en memoria de `RepositorioGuias` (una `Map` simple) y un `@Mock PuertoNotificacion notificacion`. Escribe `@Test void confirma_y_notifica()` que llame `casoDeUso.confirmar("GUIA-1")`, verifique `assertThat(resultado.estado()).isEqualTo(ENTREGADA)` y `verify(notificacion).enviar(any(EventoEntrega.class))`. Ejecuta `./gradlew :application:test`.
 
 #### Paso 5 · Práctica guiada
@@ -258,6 +280,16 @@ mkdir ejemplo-testcontainers-postgres
 cd ejemplo-testcontainers-postgres
 mkdir -p infrastructure/src/integrationTest/java infrastructure/src/main/resources/db/migration
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea una migración Flyway `V1__crear_guias.sql` con una tabla `guias(id, monto NUMERIC(10,2), fecha DATE)`. Crea `infrastructure/src/integrationTest/java/academia/infrastructure/RepositorioGuiasIT.java` con `@Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:17-alpine")`, que inserte y recupere una guía verificando que el monto decimal y la fecha coincidan exactamente. Ejecuta `./gradlew :infrastructure:integrationTest`.
 
 #### Paso 5 · Práctica guiada
@@ -313,6 +345,16 @@ mkdir ejemplo-mdc-correlacion
 cd ejemplo-mdc-correlacion
 mkdir -p api/src/main/resources api/src/main/java/academia/api
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `api/src/main/resources/logback.xml` con un encoder JSON. Crea `api/src/main/java/academia/api/CorrelationFilter.java` con `try (var ignored = MDC.putCloseable("traceId", traceId)) { chain.doFilter(request, response); }`. Ejecuta `./gradlew :api:run`, procesa dos solicitudes con distinto `traceId` y verifica en los logs los campos `timestamp`, `level`, `traceId` y `message`.
 
 #### Paso 5 · Práctica guiada

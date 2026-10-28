@@ -143,7 +143,8 @@ class ActuatorHealthTest {
 ```
 
 ```bash
-mvn test -Dtest=ActuatorHealthTest
+mvn test -Dtest=ActuatorHealthTest  # Maven
+./gradlew test --tests ActuatorHealthTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** ambos tests pasan: con la dependencia simulada disponible, `/actuator/health` responde `200` con `status: UP`; al marcarla como no disponible, responde `503 Service Unavailable` con `status: DOWN`, y el componente específico (`servicioExterno`) refleja el mismo estado dentro de `components` — Actuator agrega automáticamente el estado del indicador personalizado al estado general de salud de toda la aplicación.
@@ -305,7 +306,8 @@ class PedidoServiceMetricaTest {
 ```
 
 ```bash
-mvn test -Dtest=PedidoServiceMetricaTest
+mvn test -Dtest=PedidoServiceMetricaTest # Maven
+./gradlew test --tests PedidoServiceMetricaTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: el `MeterRegistry` real confirma que el contador se incrementó exactamente en 2 tras dos llamadas a `crear(...)`, y la misma cifra aparece expuesta en `/actuator/metrics/pedidos.creados`, la ruta real que un sistema de monitoreo consultaría en producción.
@@ -463,7 +465,8 @@ class LivenessReadinessTest {
 ```
 
 ```bash
-mvn test -Dtest=LivenessReadinessTest
+mvn test -Dtest=LivenessReadinessTest # Maven
+./gradlew test --tests LivenessReadinessTest # Gradle (equivalente)
 ```
 
 **Resultado esperado:** el test pasa: tras marcar la aplicación como no lista, `/actuator/health/readiness` responde `503` con `OUT_OF_SERVICE`, mientras `/actuator/health/liveness` sigue respondiendo `200` con `UP` — la aplicación sigue perfectamente viva (no necesita reiniciarse), solo temporalmente fuera de la rotación de tráfico, exactamente el comportamiento que este Tema explica.

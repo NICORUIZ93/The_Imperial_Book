@@ -22,6 +22,16 @@ cd ejemplo-jpms-exports
 mkdir -p core/src/main/java/academia/core/dominio
 mkdir -p core/src/main/java/academia/core/interno
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `core/src/main/java/module-info.java` con `module academia.core { exports academia.core.dominio; }`; agrega una clase pública en `academia.core.dominio` y otra en `academia.core.interno` (no exportado). Compila con `javac --module-source-path core/src/main/java -d out $(find core -name '*.java')`.
 
 #### Paso 5 · Práctica guiada
@@ -80,6 +90,16 @@ cd ejemplo-migracion-jpms
 mkdir -p domain/src/main/java/academia/domain
 mkdir -p application/src/main/java/academia/application
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Identifica primero el módulo "hoja" (`domain`, sin dependencias internas) y crea su `module-info.java` con `module academia.domain { exports academia.domain; }`. Luego crea `application/src/main/java/module-info.java` con `module academia.application { requires academia.domain; }`. Compila ambos y confirma que `application` puede usar tipos de `academia.domain`.
 
 #### Paso 5 · Práctica guiada
@@ -133,6 +153,16 @@ mkdir ejemplo-jpms-opens
 cd ejemplo-jpms-opens
 mkdir -p dominio/src/main/java/academia/dominio
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
 Crea `dominio/src/main/java/module-info.java` con `module academia.dominio { exports academia.dominio; }` (sin `opens`) y una clase `record Entrega(String id)`. Agrega Jackson al classpath e intenta serializarla con `new ObjectMapper().writeValueAsString(new Entrega("E1"))` desde otro módulo.
 
 #### Paso 5 · Práctica guiada

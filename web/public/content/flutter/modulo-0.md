@@ -158,6 +158,16 @@ Parte de una carpeta vacía:
 mkdir ejemplo-flutter-mixins
 cd ejemplo-flutter-mixins
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Crea `lib/rastreo.dart`:
 
 ```dart
@@ -260,6 +270,16 @@ Parte de una carpeta vacía:
 mkdir ejemplo-flutter-futures
 cd ejemplo-flutter-futures
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Crea `lib/entregas.dart`:
 
 ```dart

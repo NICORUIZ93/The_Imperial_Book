@@ -60,6 +60,14 @@ mkdir -p rutaflow-labs/tema-1-infraestructura-y-entrega-segura
 cd rutaflow-labs/tema-1-infraestructura-y-entrega-segura
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 `main.tf` — un namespace y un deployment mínimos para `api-envios`:
 
 ```hcl
@@ -204,6 +212,14 @@ mkdir -p rutaflow-labs/tema-2-slo-y-respuesta-a-incidentes
 cd rutaflow-labs/tema-2-slo-y-respuesta-a-incidentes
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 `slo.md` — el SLO concreto del servicio:
 
 ```text
@@ -276,7 +292,76 @@ Entregá `slo.md`, el `deployment.yaml` con el bug y el corregido, y la evidenci
 
 **Límites y decisión de uso:** Un SLO resume un objetivo, no garantiza cada petición ni reemplaza respuesta a incidentes. Define qué usuarios y operaciones cuenta y prueba ventanas sin tráfico; una métrica incompleta puede ocultar impacto real.
 
-### Tema 3: Continuidad, costes y proyecto final
+### Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend)
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás escribir una prueba end-to-end que ejercite el flujo real cruzando la app (Flutter) y el backend (Spring Boot): login → crear entrega → asignar repartidor → confirmar, contra servicios reales levantados con Docker. Prerrequisitos: Temas 1-2 de este módulo; testing de cada lado en sus tracks (Flutter M9, Spring Boot M6).
+
+#### Paso 2 · Contexto y caso real
+Cada track prueba su mitad: Flutter prueba widgets, Spring prueba endpoints. Pero nadie prueba que **las dos mitades encajen**: que el JSON que envía la app sea el que el backend espera, que el token del login sirva en la siguiente llamada, que el contrato HTTP real funcione de punta a punta. Esa es la prueba que atrapa los bugs de integración que ninguna prueba unitaria ve.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una prueba **E2E de sistema** levanta el backend real (con su base de datos real vía Docker/Testcontainers) y ejercita su API tal como lo haría la app, verificando el flujo de negocio completo. No mockea la frontera: usa el contrato HTTP de verdad. Es la cúspide de la pirámide de pruebas: pocas, lentas, pero las únicas que validan el sistema integrado.
+
+**Analogía:** las pruebas unitarias comprueban que cada pieza del coche funciona en el banco; la prueba E2E es la vuelta de prueba con el coche armado en la pista. Solo ahí descubres que el pedal encaja con el motor.
+
+#### Paso 4 · Demostración guiada desde cero
+Levanta el backend real con Docker Compose y ejecuta una prueba que recorra el flujo contra él:
+
+```bash
+# 1. Levanta backend + base de datos reales
+docker compose up -d
+# 2. Ejecuta la prueba E2E (recorre login -> crear -> asignar -> confirmar por HTTP real)
+./mvnw test -Dtest=FlujoEntregaE2ETest
+```
+
+La prueba vive en `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` y ejercita el contrato que la app consume:
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
+class FlujoEntregaE2ETest {
+    @Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:16");
+    @Autowired TestRestTemplate http;
+
+    @Test
+    void flujoCompletoDeEntrega() {
+        // 1. Login: obtiene el token (igual que haría la app Flutter)
+        var login = http.postForEntity("/api/auth/login",
+            Map.of("email", "ana@rutaflow.dev", "password", "clave-larga-segura"), Map.class);
+        String token = (String) login.getBody().get("token");
+
+        // 2. Crear entrega con el token (contrato real que consume la app)
+        var headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        var crear = http.exchange("/api/entregas", HttpMethod.POST,
+            new HttpEntity<>(Map.of("guia", "RF-9001"), headers), Map.class);
+        assertThat(crear.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // 3. Confirmar entrega y verificar el estado final
+        var confirmar = http.exchange("/api/entregas/RF-9001/confirmar", HttpMethod.POST,
+            new HttpEntity<>(headers), Map.class);
+        assertThat(confirmar.getBody().get("estado")).isEqualTo("ENTREGADA");
+    }
+}
+```
+
+**Resultado esperado:** `BUILD SUCCESS`: el flujo login → crear → confirmar funciona contra un PostgreSQL real, usando el mismo contrato HTTP que la app Flutter consume con Dio (Flutter M5). **Fallo deliberado:** cambia en la prueba el campo `"guia"` por `"tracking"` (un nombre que el backend no espera); la creación responde `400`, revelando justo el tipo de desajuste de contrato app↔backend que una prueba de un solo lado jamás detectaría. Diagnostica por qué la E2E es la única que protege la frontera entre los dos equipos.
+
+#### Paso 5 · Práctica guiada
+Añade al flujo el paso de "asignar repartidor" entre crear y confirmar, y verifica que confirmar sin asignar primero responde un error de negocio. Pista: el orden de los pasos es parte del contrato.
+
+#### Paso 6 · Práctica independiente
+Desde el lado Flutter, escribe una prueba de integración (`integration_test`) que apunte al backend levantado con Docker y recorra el mismo flujo desde la UI. Entrega ambas pruebas (backend y app) y explica qué bug atraparía cada una.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la prueba E2E en verde, el fallo por contrato roto y la prueba desde Flutter. **¿Por qué es importante?** En un sistema de dos partes (app + backend) desarrolladas a menudo por equipos distintos, los bugs más caros viven en la frontera: un campo renombrado, un token mal propagado, un código de estado inesperado. La prueba E2E de sistema es la red de seguridad que atrapa esos fallos antes de producción. Fuentes: [Testcontainers](https://testcontainers.com/) y [Flutter integration testing](https://docs.flutter.dev/testing/integration-tests).
+**Conceptos clave:** prueba de sistema, contrato HTTP real, Testcontainers, frontera app↔backend, cúspide de la pirámide de pruebas.
+**Cuándo no usarlo:** no uses E2E para lo que una prueba unitaria o de componente cubre mejor (lógica interna): son lentas y frágiles. Resérvalas para los flujos de negocio críticos que cruzan el sistema completo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** automatiza la prueba E2E del flujo "entrega asignada y confirmada" en el pipeline de CI, levantando backend y base de datos con Docker antes de ejecutarla.
+
+### Tema 4: Continuidad, costes y proyecto final
 
 **Conceptos clave:** backup, restore, RPO, RTO, game day, DR y coste por entrega.
 

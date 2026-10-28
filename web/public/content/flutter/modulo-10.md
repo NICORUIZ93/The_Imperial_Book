@@ -22,6 +22,16 @@ MaterialApp(
   themeMode: ThemeMode.system,
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: cada botón "Confirmar" en toda la app usa automáticamente el mismo tono derivado de `Colors.indigo`, sin que ningún widget individual especifique su propio color hardcodeado — cambiar `colorSchemeSeed` en un solo lugar actualiza el color en toda la app.
 
 #### Paso 5 · Práctica guiada
@@ -91,6 +101,16 @@ Widget botonConfirmar() => Platform.isIOS
     ? CupertinoButton.filled(child: Text('Confirmar entrega'), onPressed: confirmar)
     : ElevatedButton(child: Text('Confirmar entrega'), onPressed: confirmar);
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: corriendo la app en un simulador de iOS, el botón se ve como un `CupertinoButton` nativo; corriendo exactamente el mismo código Dart en un emulador de Android, el mismo botón lógico se renderiza como `ElevatedButton` con las convenciones de Material.
 
 #### Paso 5 · Práctica guiada
@@ -159,6 +179,16 @@ Semantics(
   child: IconButton(icon: Icon(Icons.delete), onPressed: eliminarEnvio),
 )
 ```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
 Resultado esperado: activando TalkBack o VoiceOver y navegando hasta ese botón, el lector anuncia "Eliminar envío, botón" — no "botón" genérico sin ninguna indicación de qué acción realiza.
 
 #### Paso 5 · Práctica guiada

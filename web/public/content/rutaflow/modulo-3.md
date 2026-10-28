@@ -59,6 +59,14 @@ mkdir -p rutaflow-labs/tema-1-estado-vista/src
 cd rutaflow-labs/tema-1-estado-vista
 ```
 
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
+
 ```javascript
 // src/estado-vista.js
 // Union discriminada: el campo "tipo" es la unica fuente de verdad del estado.
@@ -204,6 +212,14 @@ Crea una carpeta independiente para comprobar el clustering antes de conectarlo 
 mkdir -p rutaflow-labs/tema-2-clustering/src
 cd rutaflow-labs/tema-2-clustering
 ```
+
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
 
 ```javascript
 // src/clustering.js
@@ -363,6 +379,14 @@ Crea una carpeta independiente para comprobar el cálculo de nombre accesible an
 mkdir -p rutaflow-labs/tema-3-accesibilidad/src
 cd rutaflow-labs/tema-3-accesibilidad
 ```
+
+**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+
+```bash
+./mvnw test
+```
+Confirma el resultado contra el criterio del paso.
+
 
 ```javascript
 // src/nombre-accesible.js

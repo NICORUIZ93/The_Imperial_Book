@@ -42,6 +42,16 @@ const { register, handleSubmit, formState: { errors } } = useForm();
   {errors.destinatario && <span>{errors.destinatario.message}</span>}
 </form>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: agregando un `console.log('render')` en el cuerpo del componente, escribir en el campo `destinatario` no imprime ese log en cada tecla — React Hook Form gestiona el valor internamente sin pasar por `setState` de React en cada cambio.
 
 #### Paso 5 · Práctica guiada
@@ -102,6 +112,16 @@ const schemaPaquete = z.object({
 });
 useForm({ resolver: zodResolver(schemaPaquete) });
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: intentar enviar el paso 1 con `peso: -5` o `direccion: ''` puebla automáticamente `errors.peso`/`errors.direccion` con el mensaje del schema, sin que el componente escriba ninguna lógica de validación manual.
 
 #### Paso 5 · Práctica guiada
@@ -169,6 +189,16 @@ function manejarSubmit(e) {
 }
 <form onSubmit={manejarSubmit}>
 ```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
 Resultado esperado: al enviar el formulario, la página no se recarga (no aparece el parpadeo característico de una recarga completa), y el estado de React (los datos ya ingresados, cualquier mensaje de error visible) permanece intacto mientras `registrarEnvio` procesa el envío.
 
 #### Paso 5 · Práctica guiada

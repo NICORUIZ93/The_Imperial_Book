@@ -1,38 +1,38 @@
 {
   "summary": {
     "android": {
-      "topics": 50,
-      "objective": 50,
-      "prerequisites": 50,
-      "context": 50,
-      "theoryAnalogy": 50,
+      "topics": 52,
+      "objective": 52,
+      "prerequisites": 52,
+      "context": 52,
+      "theoryAnalogy": 52,
       "guidedDemo": 50,
-      "codeExplanation": 50,
+      "codeExplanation": 52,
       "execution": 48,
-      "expectedResult": 50,
-      "deliberateFailure": 50,
-      "guidedPractice": 50,
-      "independentPractice": 50,
-      "closure": 50,
+      "expectedResult": 52,
+      "deliberateFailure": 52,
+      "guidedPractice": 52,
+      "independentPractice": 52,
+      "closure": 51,
       "commonErrors": 50,
       "resources": 50,
       "standaloneExample": 49,
-      "learningEvidence": 49,
+      "learningEvidence": 50,
       "complete": 48
     },
     "angular": {
-      "topics": 67,
-      "objective": 67,
-      "prerequisites": 67,
-      "context": 67,
-      "theoryAnalogy": 67,
+      "topics": 68,
+      "objective": 68,
+      "prerequisites": 68,
+      "context": 68,
+      "theoryAnalogy": 68,
       "guidedDemo": 63,
-      "codeExplanation": 67,
+      "codeExplanation": 68,
       "execution": 65,
-      "expectedResult": 67,
-      "deliberateFailure": 67,
-      "guidedPractice": 67,
-      "independentPractice": 67,
+      "expectedResult": 68,
+      "deliberateFailure": 68,
+      "guidedPractice": 68,
+      "independentPractice": 68,
       "closure": 66,
       "commonErrors": 67,
       "resources": 67,
@@ -41,23 +41,23 @@
       "complete": 60
     },
     "cloud": {
-      "topics": 154,
-      "objective": 154,
-      "prerequisites": 154,
-      "context": 154,
-      "theoryAnalogy": 154,
+      "topics": 155,
+      "objective": 155,
+      "prerequisites": 155,
+      "context": 155,
+      "theoryAnalogy": 155,
       "guidedDemo": 40,
-      "codeExplanation": 154,
+      "codeExplanation": 155,
       "execution": 49,
-      "expectedResult": 154,
-      "deliberateFailure": 148,
-      "guidedPractice": 151,
-      "independentPractice": 154,
+      "expectedResult": 155,
+      "deliberateFailure": 149,
+      "guidedPractice": 152,
+      "independentPractice": 155,
       "closure": 154,
       "commonErrors": 154,
       "resources": 152,
       "standaloneExample": 30,
-      "learningEvidence": 48,
+      "learningEvidence": 49,
       "complete": 30
     },
     "devops": {
@@ -68,7 +68,7 @@
       "theoryAnalogy": 99,
       "guidedDemo": 90,
       "codeExplanation": 99,
-      "execution": 92,
+      "execution": 93,
       "expectedResult": 99,
       "deliberateFailure": 99,
       "guidedPractice": 99,
@@ -81,83 +81,83 @@
       "complete": 85
     },
     "flutter": {
-      "topics": 57,
-      "objective": 57,
-      "prerequisites": 57,
-      "context": 57,
-      "theoryAnalogy": 57,
-      "guidedDemo": 12,
-      "codeExplanation": 57,
-      "execution": 21,
-      "expectedResult": 51,
-      "deliberateFailure": 57,
-      "guidedPractice": 57,
-      "independentPractice": 57,
+      "topics": 58,
+      "objective": 58,
+      "prerequisites": 58,
+      "context": 58,
+      "theoryAnalogy": 58,
+      "guidedDemo": 53,
+      "codeExplanation": 58,
+      "execution": 58,
+      "expectedResult": 52,
+      "deliberateFailure": 58,
+      "guidedPractice": 58,
+      "independentPractice": 58,
       "closure": 57,
       "commonErrors": 57,
       "resources": 57,
       "standaloneExample": 3,
-      "learningEvidence": 18,
+      "learningEvidence": 19,
       "complete": 1
     },
     "foundations": {
-      "topics": 68,
-      "objective": 68,
-      "prerequisites": 68,
-      "context": 68,
-      "theoryAnalogy": 68,
-      "guidedDemo": 41,
-      "codeExplanation": 68,
-      "execution": 47,
-      "expectedResult": 67,
-      "deliberateFailure": 68,
-      "guidedPractice": 68,
-      "independentPractice": 68,
+      "topics": 73,
+      "objective": 73,
+      "prerequisites": 73,
+      "context": 73,
+      "theoryAnalogy": 73,
+      "guidedDemo": 46,
+      "codeExplanation": 73,
+      "execution": 73,
+      "expectedResult": 72,
+      "deliberateFailure": 73,
+      "guidedPractice": 73,
+      "independentPractice": 73,
       "closure": 54,
       "commonErrors": 68,
       "resources": 68,
       "standaloneExample": 32,
-      "learningEvidence": 50,
+      "learningEvidence": 55,
       "complete": 23
     },
     "ios": {
-      "topics": 51,
-      "objective": 51,
-      "prerequisites": 51,
-      "context": 51,
-      "theoryAnalogy": 51,
-      "guidedDemo": 7,
-      "codeExplanation": 51,
-      "execution": 6,
-      "expectedResult": 51,
-      "deliberateFailure": 51,
-      "guidedPractice": 50,
-      "independentPractice": 51,
-      "closure": 51,
-      "commonErrors": 51,
-      "resources": 51,
+      "topics": 55,
+      "objective": 55,
+      "prerequisites": 55,
+      "context": 55,
+      "theoryAnalogy": 55,
+      "guidedDemo": 12,
+      "codeExplanation": 55,
+      "execution": 12,
+      "expectedResult": 55,
+      "deliberateFailure": 55,
+      "guidedPractice": 54,
+      "independentPractice": 55,
+      "closure": 52,
+      "commonErrors": 52,
+      "resources": 52,
       "standaloneExample": 4,
-      "learningEvidence": 22,
+      "learningEvidence": 24,
       "complete": 3
     },
     "java": {
-      "topics": 71,
-      "objective": 71,
-      "prerequisites": 65,
-      "context": 71,
-      "theoryAnalogy": 65,
-      "guidedDemo": 60,
-      "codeExplanation": 71,
-      "execution": 60,
-      "expectedResult": 70,
-      "deliberateFailure": 43,
-      "guidedPractice": 64,
-      "independentPractice": 71,
-      "closure": 66,
-      "commonErrors": 71,
-      "resources": 67,
+      "topics": 72,
+      "objective": 72,
+      "prerequisites": 66,
+      "context": 72,
+      "theoryAnalogy": 66,
+      "guidedDemo": 61,
+      "codeExplanation": 72,
+      "execution": 72,
+      "expectedResult": 71,
+      "deliberateFailure": 44,
+      "guidedPractice": 65,
+      "independentPractice": 72,
+      "closure": 67,
+      "commonErrors": 72,
+      "resources": 68,
       "standaloneExample": 58,
-      "learningEvidence": 41,
+      "learningEvidence": 42,
       "complete": 18
     },
     "javascript": {
@@ -181,103 +181,103 @@
       "complete": 69
     },
     "kotlin-multiplatform": {
-      "topics": 54,
-      "objective": 54,
-      "prerequisites": 54,
-      "context": 54,
-      "theoryAnalogy": 54,
-      "guidedDemo": 35,
-      "codeExplanation": 54,
-      "execution": 33,
-      "expectedResult": 54,
-      "deliberateFailure": 54,
-      "guidedPractice": 54,
-      "independentPractice": 54,
-      "closure": 53,
-      "commonErrors": 54,
-      "resources": 54,
-      "standaloneExample": 32,
-      "learningEvidence": 34,
-      "complete": 32
-    },
-    "node": {
-      "topics": 72,
-      "objective": 72,
-      "prerequisites": 69,
-      "context": 72,
-      "theoryAnalogy": 72,
-      "guidedDemo": 69,
-      "codeExplanation": 72,
-      "execution": 63,
-      "expectedResult": 72,
-      "deliberateFailure": 71,
-      "guidedPractice": 72,
-      "independentPractice": 72,
-      "closure": 72,
-      "commonErrors": 72,
-      "resources": 72,
-      "standaloneExample": 61,
-      "learningEvidence": 63,
-      "complete": 57
-    },
-    "react": {
       "topics": 55,
       "objective": 55,
       "prerequisites": 55,
       "context": 55,
       "theoryAnalogy": 55,
-      "guidedDemo": 5,
+      "guidedDemo": 35,
       "codeExplanation": 55,
-      "execution": 11,
+      "execution": 39,
       "expectedResult": 55,
       "deliberateFailure": 55,
-      "guidedPractice": 50,
+      "guidedPractice": 55,
       "independentPractice": 55,
+      "closure": 53,
+      "commonErrors": 54,
+      "resources": 54,
+      "standaloneExample": 32,
+      "learningEvidence": 35,
+      "complete": 32
+    },
+    "node": {
+      "topics": 75,
+      "objective": 75,
+      "prerequisites": 72,
+      "context": 75,
+      "theoryAnalogy": 75,
+      "guidedDemo": 70,
+      "codeExplanation": 75,
+      "execution": 75,
+      "expectedResult": 75,
+      "deliberateFailure": 74,
+      "guidedPractice": 75,
+      "independentPractice": 75,
+      "closure": 73,
+      "commonErrors": 73,
+      "resources": 73,
+      "standaloneExample": 62,
+      "learningEvidence": 63,
+      "complete": 57
+    },
+    "react": {
+      "topics": 57,
+      "objective": 57,
+      "prerequisites": 57,
+      "context": 57,
+      "theoryAnalogy": 57,
+      "guidedDemo": 6,
+      "codeExplanation": 57,
+      "execution": 57,
+      "expectedResult": 57,
+      "deliberateFailure": 57,
+      "guidedPractice": 52,
+      "independentPractice": 57,
       "closure": 54,
       "commonErrors": 55,
       "resources": 55,
       "standaloneExample": 2,
-      "learningEvidence": 9,
+      "learningEvidence": 10,
       "complete": 2
     },
     "rutaflow": {
-      "topics": 24,
-      "objective": 24,
-      "prerequisites": 24,
-      "context": 24,
-      "theoryAnalogy": 24,
+      "topics": 25,
+      "objective": 25,
+      "prerequisites": 25,
+      "context": 25,
+      "theoryAnalogy": 25,
       "guidedDemo": 14,
-      "codeExplanation": 24,
-      "execution": 16,
-      "expectedResult": 24,
-      "deliberateFailure": 24,
-      "guidedPractice": 24,
-      "independentPractice": 24,
-      "closure": 16,
+      "codeExplanation": 25,
+      "execution": 22,
+      "expectedResult": 25,
+      "deliberateFailure": 25,
+      "guidedPractice": 25,
+      "independentPractice": 25,
+      "closure": 17,
       "commonErrors": 24,
       "resources": 24,
       "standaloneExample": 16,
-      "learningEvidence": 17,
-      "complete": 6
+      "learningEvidence": 18,
+      "complete": 9
     },
     "spring-boot": {
-      "topics": 78,
-      "objective": 78,
-      "prerequisites": 63,
-      "context": 78,
-      "theoryAnalogy": 63,
+      "topics": 80,
+      "objective": 80,
+      "prerequisites": 65,
+      "context": 80,
+      "theoryAnalogy": 65,
       "guidedDemo": 70,
-      "codeExplanation": 69,
-      "execution": 64,
-      "expectedResult": 78,
-      "deliberateFailure": 72,
-      "guidedPractice": 63,
-      "independentPractice": 78,
-      "closure": 67,
-      "commonErrors": 63,
-      "resources": 63,
+      "codeExplanation": 80,
+      "execution": 80,
+      "expectedResult": 80,
+      "deliberateFailure": 74,
+      "guidedPractice": 65,
+      "independentPractice": 80,
+      "closure": 68,
+      "commonErrors": 65,
+      "resources": 65,
       "standaloneExample": 59,
-      "learningEvidence": 66,
+      "learningEvidence": 68,
       "complete": 59
     }
   },
@@ -359,6 +359,58 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 11,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 9,
+          "complete": false
         }
       },
       {
@@ -1816,6 +1868,32 @@
         },
         "classification": {
           "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 6: Directivas y pipes personalizados",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 9,
           "complete": false
         }
       },
@@ -4756,6 +4834,32 @@
         },
         "classification": {
           "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 10,
           "complete": false
         }
       },
@@ -8437,7 +8541,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -8449,7 +8553,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -9997,9 +10101,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10011,7 +10115,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10023,9 +10127,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10037,7 +10141,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10049,9 +10153,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10063,7 +10167,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10075,9 +10179,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10089,7 +10193,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10101,9 +10205,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10115,7 +10219,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10127,9 +10231,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10141,7 +10245,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10205,9 +10309,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10219,7 +10323,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10231,9 +10335,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10245,7 +10349,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10257,9 +10361,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10271,7 +10375,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -10283,9 +10387,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10297,7 +10401,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10309,9 +10413,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10323,7 +10427,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10335,9 +10439,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10349,7 +10453,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10361,9 +10465,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10375,7 +10479,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10387,9 +10491,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10401,7 +10505,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10621,9 +10725,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10635,7 +10739,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -10725,9 +10829,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10739,7 +10843,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10751,9 +10855,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10765,7 +10869,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -10777,9 +10881,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10791,7 +10895,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10803,9 +10907,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10817,7 +10921,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10829,9 +10933,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10843,7 +10947,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10855,9 +10959,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10869,7 +10973,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10881,9 +10985,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10895,7 +10999,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10907,9 +11011,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -10921,7 +11025,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10933,7 +11037,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -10947,7 +11051,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -10959,7 +11063,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -10973,7 +11077,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -10985,111 +11089,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 12,
-          "complete": false
-        }
-      },
-      {
-        "module": 5,
-        "topic": "Tema 2: json_serializable",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 12,
-          "complete": false
-        }
-      },
-      {
-        "module": 5,
-        "topic": "Tema 3: Interceptores y estados explícitos",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 12,
-          "complete": false
-        }
-      },
-      {
-        "module": 6,
-        "topic": "Tema 1: shared_preferences",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 12,
-          "complete": false
-        }
-      },
-      {
-        "module": 6,
-        "topic": "Tema 2: sqflite vs Hive",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -11103,7 +11103,111 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 2: json_serializable",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 3: Interceptores y estados explícitos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 1: shared_preferences",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 2: sqflite vs Hive",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11115,9 +11219,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11129,7 +11233,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11141,9 +11245,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11155,7 +11259,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11167,9 +11271,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11181,7 +11285,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11193,9 +11297,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11207,7 +11311,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11245,9 +11349,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11259,7 +11363,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11271,9 +11375,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11285,7 +11389,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -11297,9 +11401,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11309,6 +11413,32 @@
           "resources": true,
           "standaloneExample": false,
           "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 4: Isolates — trabajo pesado sin congelar la interfaz",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
         },
         "classification": {
           "stepsPassed": 12,
@@ -11323,9 +11453,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11337,7 +11467,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -11349,33 +11479,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 12,
-          "complete": false
-        }
-      },
-      {
-        "module": 9,
-        "topic": "Tema 3: Integration tests",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -11389,7 +11493,33 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 3: Integration tests",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 14,
           "complete": false
         }
       }
@@ -11630,6 +11760,32 @@
         }
       },
       {
+        "module": 1,
+        "topic": "Tema 5: Cómo la computadora representa los datos — binario, texto y decimales",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
         "module": 10,
         "topic": "Tema 1: La red convierte el resultado en una incertidumbre",
         "criteria": {
@@ -11639,7 +11795,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11651,7 +11807,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -11665,7 +11821,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11677,7 +11833,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -11691,7 +11847,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11703,7 +11859,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -11717,7 +11873,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11729,7 +11885,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -11743,7 +11899,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11755,7 +11911,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -11769,7 +11925,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11781,7 +11937,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -11795,7 +11951,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11807,7 +11963,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -11821,7 +11977,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11833,7 +11989,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -11847,7 +12003,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11859,7 +12015,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -11873,7 +12029,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -11885,7 +12041,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -12436,6 +12592,110 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 5: Árboles y árboles binarios de búsqueda (BST)",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 6: Tablas hash — búsqueda en tiempo constante",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 7: Grafos y recorridos BFS/DFS",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 8: Programación dinámica — resolver una vez, recordar el resultado",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
         "module": 3,
         "topic": "Tema 1: De una URL al servidor: red, DNS, IP y puertos",
         "criteria": {
@@ -12783,7 +13043,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -12795,7 +13055,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -12809,7 +13069,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -12821,7 +13081,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -12835,7 +13095,33 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 1: Requisitos, stakeholders y criterios verificables",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -12853,32 +13139,6 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: Requisitos, stakeholders y criterios verificables",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": true
-        },
-        "classification": {
-          "stepsPassed": 12,
-          "complete": false
-        }
-      },
-      {
-        "module": 7,
         "topic": "Tema 2: Arquitectura guiada por atributos de calidad",
         "criteria": {
           "objective": true,
@@ -12887,7 +13147,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -12899,7 +13159,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -12939,7 +13199,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -12951,7 +13211,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -12991,7 +13251,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -13003,7 +13263,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -13069,7 +13329,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -13081,7 +13341,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -13095,7 +13355,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -13107,7 +13367,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -13121,7 +13381,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -13133,7 +13393,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -13147,7 +13407,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -13159,7 +13419,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       }
@@ -13279,7 +13539,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -13291,7 +13551,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -13591,7 +13851,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -13603,7 +13863,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -13708,6 +13968,84 @@
         },
         "classification": {
           "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 5: Keychain — guardar secretos de forma segura",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 10,
+          "complete": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 6: Permisos y privacidad — pedir acceso con criterio",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 10,
+          "complete": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 7: Notificaciones push con APNs",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 11,
           "complete": false
         }
       },
@@ -13868,8 +14206,8 @@
         }
       },
       {
-        "module": 2,
-        "topic": "Tema 1: @State y @Binding",
+        "module": 14,
+        "topic": "Tema 7: Core ML y Vision — inferencia en el dispositivo",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -13895,13 +14233,39 @@
       },
       {
         "module": 2,
+        "topic": "Tema 1: @State y @Binding",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
         "topic": "Tema 2: @Observable",
         "criteria": {
           "objective": true,
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": false,
           "expectedResult": true,
@@ -13915,7 +14279,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -14111,7 +14475,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -14123,7 +14487,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -14189,7 +14553,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -14201,7 +14565,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -14423,7 +14787,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -14435,7 +14799,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -14971,7 +15335,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -14983,7 +15347,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -15049,7 +15413,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": false,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -15061,7 +15425,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 10,
+          "stepsPassed": 11,
           "complete": false
         }
       },
@@ -15439,7 +15803,59 @@
           "theoryAnalogy": false,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 9,
+          "complete": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 1: JDBC, PreparedStatement y DAO",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -15456,58 +15872,6 @@
         }
       },
       {
-        "module": 16,
-        "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 8,
-          "complete": false
-        }
-      },
-      {
-        "module": 17,
-        "topic": "Tema 1: JDBC, PreparedStatement y DAO",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": false,
-          "learningEvidence": true
-        },
-        "classification": {
-          "stepsPassed": 10,
-          "complete": false
-        }
-      },
-      {
         "module": 17,
         "topic": "Tema 2: Transacciones, ACID y aislamiento",
         "criteria": {
@@ -15517,7 +15881,7 @@
           "theoryAnalogy": false,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -15529,7 +15893,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 10,
+          "stepsPassed": 11,
           "complete": false
         }
       },
@@ -15543,7 +15907,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -15555,7 +15919,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 9,
+          "stepsPassed": 10,
           "complete": false
         }
       },
@@ -15569,7 +15933,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -15581,7 +15945,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 9,
           "complete": false
         }
       },
@@ -15829,7 +16193,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -15841,7 +16205,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -15985,7 +16349,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -15997,7 +16361,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -16167,7 +16531,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -16179,7 +16543,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -16217,7 +16581,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -16231,7 +16595,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -16254,6 +16618,32 @@
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
           "learningEvidence": true
         },
         "classification": {
@@ -18771,7 +19161,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -18783,7 +19173,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -18875,7 +19265,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -18887,7 +19277,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -18901,7 +19291,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -18913,7 +19303,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -19031,7 +19421,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -19043,7 +19433,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -19542,6 +19932,32 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 5: kotlinx.serialization — JSON compartido entre plataformas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 10,
+          "complete": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Esquemas SQLDelight y queries tipadas",
         "criteria": {
@@ -19785,7 +20201,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -19797,7 +20213,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -19811,7 +20227,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -19823,7 +20239,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -20489,7 +20905,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20501,7 +20917,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -20515,7 +20931,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20527,7 +20943,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -20541,7 +20957,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20553,7 +20969,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -20567,7 +20983,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20579,7 +20995,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -20619,7 +21035,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20631,7 +21047,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -20671,7 +21087,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20683,7 +21099,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -20697,7 +21113,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20709,7 +21125,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -20723,7 +21139,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20735,7 +21151,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -20749,7 +21165,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -20761,7 +21177,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -21156,6 +21572,58 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 5: WebSocket — comunicación en tiempo real bidireccional",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 10,
+          "complete": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 6: Subida de archivos — multipart y validación segura",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 10,
+          "complete": false
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: PostgreSQL desde Node con el driver puro",
         "criteria": {
@@ -21387,6 +21855,32 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
@@ -21817,7 +22311,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21829,7 +22323,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 11,
+          "stepsPassed": 12,
           "complete": false
         }
       },
@@ -21843,7 +22337,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21855,7 +22349,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 11,
+          "stepsPassed": 12,
           "complete": false
         }
       },
@@ -21869,7 +22363,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21881,7 +22375,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 11,
+          "stepsPassed": 12,
           "complete": false
         }
       },
@@ -21895,7 +22389,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -21907,7 +22401,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -21921,7 +22415,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -21933,7 +22427,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -21947,7 +22441,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -21959,7 +22453,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -21973,7 +22467,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -21985,7 +22479,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22025,7 +22519,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22037,7 +22531,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22051,7 +22545,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22063,7 +22557,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22077,7 +22571,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22089,7 +22583,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -22103,7 +22597,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22115,7 +22609,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22129,7 +22623,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22141,7 +22635,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22181,7 +22675,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22193,7 +22687,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22207,7 +22701,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22219,7 +22713,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22233,7 +22727,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22245,7 +22739,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22259,7 +22753,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22271,7 +22765,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22285,7 +22779,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22297,7 +22791,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22311,7 +22805,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22323,7 +22817,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22337,7 +22831,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22349,7 +22843,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22519,7 +23013,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22531,7 +23025,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22545,7 +23039,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22557,7 +23051,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22571,7 +23065,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22583,7 +23077,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22597,7 +23091,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22609,7 +23103,33 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
+          "complete": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 5: Error Boundaries — contener errores de render sin romper toda la app",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 11,
           "complete": false
         }
       },
@@ -22623,7 +23143,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22635,7 +23155,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22649,7 +23169,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -22661,7 +23181,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 11,
+          "stepsPassed": 12,
           "complete": false
         }
       },
@@ -22675,7 +23195,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22687,7 +23207,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22701,7 +23221,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22713,7 +23233,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22727,7 +23247,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22739,7 +23259,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22753,7 +23273,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22765,7 +23285,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22779,7 +23299,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22791,7 +23311,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22805,7 +23325,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22817,7 +23337,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22831,7 +23351,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22843,7 +23363,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22857,7 +23377,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22869,7 +23389,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22883,7 +23403,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -22895,7 +23415,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 11,
+          "stepsPassed": 12,
           "complete": false
         }
       },
@@ -22935,7 +23455,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22947,7 +23467,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22961,7 +23481,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22973,7 +23493,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -22987,7 +23507,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -22999,7 +23519,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -23013,7 +23533,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23025,7 +23545,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -23039,7 +23559,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23051,7 +23571,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
+          "stepsPassed": 14,
           "complete": false
         }
       },
@@ -23065,7 +23585,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23077,7 +23597,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -23117,7 +23637,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23129,7 +23649,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -23143,7 +23663,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23155,7 +23675,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -23169,7 +23689,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23181,7 +23701,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
           "complete": false
         }
       },
@@ -23195,7 +23715,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23207,7 +23727,33 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 12,
+          "stepsPassed": 13,
+          "complete": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 5: Suspense y React.lazy — carga diferida del lado cliente",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 11,
           "complete": false
         }
       }
@@ -23379,7 +23925,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23391,8 +23937,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -23405,7 +23951,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23417,8 +23963,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -23431,7 +23977,7 @@
           "theoryAnalogy": true,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23443,8 +23989,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -23717,7 +24263,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23729,7 +24275,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
+          "stepsPassed": 15,
           "complete": false
         }
       },
@@ -23795,7 +24341,7 @@
           "theoryAnalogy": true,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -23807,13 +24353,39 @@
           "learningEvidence": false
         },
         "classification": {
+          "stepsPassed": 13,
+          "complete": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend)",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
           "stepsPassed": 12,
           "complete": false
         }
       },
       {
         "module": 7,
-        "topic": "Tema 3: Continuidad, costes y proyecto final",
+        "topic": "Tema 4: Continuidad, costes y proyecto final",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -24175,6 +24747,32 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 8: Orquestación de microservicios con Temporal y Spring Boot",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
         }
       },
       {
@@ -24758,166 +25356,10 @@
           "context": true,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": false,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 4,
-          "complete": false
-        }
-      },
-      {
-        "module": 16,
-        "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": false,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 5,
-          "complete": false
-        }
-      },
-      {
-        "module": 17,
-        "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": true,
-          "codeExplanation": false,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": false,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 5,
-          "complete": false
-        }
-      },
-      {
-        "module": 17,
-        "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": false,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 5,
-          "complete": false
-        }
-      },
-      {
-        "module": 18,
-        "topic": "Tema 1: SecurityFilterChain y autorización",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": false,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 5,
-          "complete": false
-        }
-      },
-      {
-        "module": 18,
-        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": true,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": true,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false,
-          "learningEvidence": false
-        },
-        "classification": {
-          "stepsPassed": 7,
-          "complete": false
-        }
-      },
-      {
-        "module": 19,
-        "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
-        "criteria": {
-          "objective": true,
-          "prerequisites": false,
-          "context": true,
-          "theoryAnalogy": false,
-          "guidedDemo": true,
-          "codeExplanation": false,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
           "guidedPractice": false,
           "independentPractice": true,
           "closure": false,
@@ -24932,6 +25374,162 @@
         }
       },
       {
+        "module": 16,
+        "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": false,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": false,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 1: SecurityFilterChain y autorización",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
+        "criteria": {
+          "objective": true,
+          "prerequisites": false,
+          "context": true,
+          "theoryAnalogy": false,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": false,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 8,
+          "complete": false
+        }
+      },
+      {
         "module": 19,
         "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
         "criteria": {
@@ -24941,7 +25539,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -24953,7 +25551,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 7,
+          "stepsPassed": 8,
           "complete": false
         }
       },
@@ -25044,8 +25642,8 @@
           "context": true,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
-          "execution": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -25057,7 +25655,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 8,
           "complete": false
         }
       },
@@ -25070,8 +25668,8 @@
           "context": true,
           "theoryAnalogy": false,
           "guidedDemo": true,
-          "codeExplanation": false,
-          "execution": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": false,
           "guidedPractice": false,
@@ -25083,7 +25681,7 @@
           "learningEvidence": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -25096,8 +25694,8 @@
           "context": true,
           "theoryAnalogy": false,
           "guidedDemo": true,
-          "codeExplanation": false,
-          "execution": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -25109,7 +25707,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 10,
           "complete": false
         }
       },
@@ -25123,7 +25721,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": false,
           "guidedPractice": false,
@@ -25135,7 +25733,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 7,
+          "stepsPassed": 8,
           "complete": false
         }
       },
@@ -25200,8 +25798,8 @@
           "context": true,
           "theoryAnalogy": false,
           "guidedDemo": false,
-          "codeExplanation": false,
-          "execution": false,
+          "codeExplanation": true,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -25213,7 +25811,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 8,
           "complete": false
         }
       },
@@ -25227,7 +25825,7 @@
           "theoryAnalogy": false,
           "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": false,
           "guidedPractice": false,
@@ -25239,7 +25837,7 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 8,
+          "stepsPassed": 9,
           "complete": false
         }
       },
@@ -25422,6 +26020,32 @@
         },
         "classification": {
           "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 13,
           "complete": false
         }
       },

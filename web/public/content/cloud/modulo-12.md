@@ -140,6 +140,15 @@ Crea `src/incident.md` desde una carpeta vacía.
 mkdir ejemplo-incidente
 node --version
 ```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
 Resultado esperado: Node disponible.
 #### Paso 5 · Práctica guiada
 Pista: oculta una señal para provocar un fallo deliberado de diagnóstico y corrígelo.

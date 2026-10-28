@@ -72,7 +72,7 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
     { track: 'flutter', module: 5, diagrams: 3 },
     { track: 'foundations', module: 8, diagrams: 4 },
     { track: 'ios', module: 12, diagrams: 3 },
-    { track: 'ios', module: 14, diagrams: 6 },
+    { track: 'ios', module: 14, diagrams: 7 },
     { track: 'react', module: 6, diagrams: 3 },
     { track: 'spring-boot', module: 2, diagrams: 3 },
   ];

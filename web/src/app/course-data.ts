@@ -863,20 +863,23 @@ export const GCP_GROUPS: AltCloudGroup[] = [
 // descripción, conceptos clave y entregable previstos.
 
 export const TRACKS: Track[] = [
-  { id: 'rutaflow', name: 'RutaFlow — Plataforma profesional de entregas', shortName: 'RutaFlow', tagline: 'Proyecto full-stack: paquetería, GPS, mapas, Flutter, backend, datos, contabilidad, cloud y DevOps.', color: '#f97316', icon: 'truck', modules: RUTAFLOW_MODULES },
-  { id: 'foundations', name: 'Fundamentos de Ingeniería de Software', shortName: 'Fundamentos', tagline: 'De cero absoluto: computador, terminal, programación y bases profesionales.', color: '#6d5dfc', icon: 'book-open', modules: FOUNDATIONS_MODULES },
-  { id: 'cloud', name: 'Cloud Local — AWS, Azure y GCP', shortName: 'Cloud', tagline: 'Servicios cloud reales en local, sin pagar ni crear cuentas.', color: '#137c8b', icon: 'cloud-cog', modules: COURSE_MODULES },
-  { id: 'devops', name: 'DevOps', shortName: 'DevOps', tagline: 'Linux, Docker, CI/CD, Kubernetes e infraestructura como código.', color: '#475569', icon: 'git-branch', modules: DEVOPS_MODULES },
-  { id: 'javascript', name: 'JavaScript de cero a master', shortName: 'JavaScript', tagline: 'El lenguaje base de la web: del primer script al rendimiento avanzado.', color: '#e9b400', icon: 'braces', modules: JAVASCRIPT_MODULES },
-  { id: 'node', name: 'Node.js de cero a master', shortName: 'Node.js', tagline: 'Backend en JavaScript: APIs, bases de datos y producción.', color: '#3c873a', icon: 'server', modules: NODE_MODULES },
-  { id: 'angular', name: 'Angular — última versión y migraciones', shortName: 'Angular', tagline: 'Componentes, signals y arquitectura moderna sin NgModules.', color: '#dd0031', icon: 'shield', modules: ANGULAR_MODULES },
-  { id: 'react', name: 'React de cero a master', shortName: 'React', tagline: 'Hooks, estado, datos y frameworks full-stack con React.', color: '#149eca', icon: 'atom', modules: REACT_MODULES },
-  { id: 'java', name: 'Java de cero a avanzado', shortName: 'Java', tagline: 'POO, concurrencia y JVM moderna, de Java 8 a Java 25.', color: '#5382a1', icon: 'coffee', modules: JAVA_MODULES },
-  { id: 'spring-boot', name: 'Spring Boot', shortName: 'Spring Boot', tagline: 'APIs, persistencia, seguridad y microservicios con Spring.', color: '#6db33f', icon: 'leaf', modules: SPRING_BOOT_MODULES },
-  { id: 'kotlin-multiplatform', name: 'Kotlin Multiplatform', shortName: 'Kotlin MP', tagline: 'Lógica compartida entre Android e iOS con Kotlin.', color: '#7f52ff', icon: 'layers', modules: KOTLIN_MULTIPLATFORM_MODULES },
-  { id: 'android', name: 'Android con Jetpack Compose', shortName: 'Android', tagline: 'Apps Android nativas modernas con Compose y Kotlin.', color: '#3ddc84', icon: 'smartphone', modules: ANDROID_MODULES },
-  { id: 'ios', name: 'iOS con SwiftUI', shortName: 'iOS', tagline: 'Apps iOS nativas con Swift, SwiftUI y concurrencia moderna.', color: '#0a84ff', icon: 'apple', modules: IOS_MODULES },
-  { id: 'flutter', name: 'Flutter', shortName: 'Flutter', tagline: 'Una base de código para Android, iOS y web con Dart.', color: '#02569b', icon: 'wind', modules: FLUTTER_MODULES },
+  // Paleta editorial "lomos de libro": gama cálida (terracota, ámbar, ocre,
+  // burdeos, verde bosque, azul tinta) para que cada ruta tenga su color
+  // distintivo sin romper la identidad crema+terracota de The Imperial Book.
+  { id: 'rutaflow', name: 'RutaFlow — Plataforma profesional de entregas', shortName: 'RutaFlow', tagline: 'Proyecto full-stack: paquetería, GPS, mapas, Flutter, backend, datos, contabilidad, cloud y DevOps.', color: '#9a3412', icon: 'truck', modules: RUTAFLOW_MODULES },
+  { id: 'foundations', name: 'Fundamentos de Ingeniería de Software', shortName: 'Fundamentos', tagline: 'De cero absoluto: computador, terminal, programación y bases profesionales.', color: '#b45309', icon: 'book-open', modules: FOUNDATIONS_MODULES },
+  { id: 'cloud', name: 'Cloud Local — AWS, Azure y GCP', shortName: 'Cloud', tagline: 'Servicios cloud reales en local, sin pagar ni crear cuentas.', color: '#3f6212', icon: 'cloud-cog', modules: COURSE_MODULES },
+  { id: 'devops', name: 'DevOps', shortName: 'DevOps', tagline: 'Linux, Docker, CI/CD, Kubernetes e infraestructura como código.', color: '#57534e', icon: 'git-branch', modules: DEVOPS_MODULES },
+  { id: 'javascript', name: 'JavaScript de cero a master', shortName: 'JavaScript', tagline: 'El lenguaje base de la web: del primer script al rendimiento avanzado.', color: '#a16207', icon: 'braces', modules: JAVASCRIPT_MODULES },
+  { id: 'node', name: 'Node.js de cero a master', shortName: 'Node.js', tagline: 'Backend en JavaScript: APIs, bases de datos y producción.', color: '#4d7c0f', icon: 'server', modules: NODE_MODULES },
+  { id: 'angular', name: 'Angular — última versión y migraciones', shortName: 'Angular', tagline: 'Componentes, signals y arquitectura moderna sin NgModules.', color: '#be123c', icon: 'shield', modules: ANGULAR_MODULES },
+  { id: 'react', name: 'React de cero a master', shortName: 'React', tagline: 'Hooks, estado, datos y frameworks full-stack con React.', color: '#1d6a6a', icon: 'atom', modules: REACT_MODULES },
+  { id: 'java', name: 'Java de cero a avanzado', shortName: 'Java', tagline: 'POO, concurrencia y JVM moderna, de Java 8 a Java 25.', color: '#92400e', icon: 'coffee', modules: JAVA_MODULES },
+  { id: 'spring-boot', name: 'Spring Boot', shortName: 'Spring Boot', tagline: 'APIs, persistencia, seguridad y microservicios con Spring.', color: '#4d7c0f', icon: 'leaf', modules: SPRING_BOOT_MODULES },
+  { id: 'kotlin-multiplatform', name: 'Kotlin Multiplatform', shortName: 'Kotlin MP', tagline: 'Lógica compartida entre Android e iOS con Kotlin.', color: '#7c3aed', icon: 'layers', modules: KOTLIN_MULTIPLATFORM_MODULES },
+  { id: 'android', name: 'Android con Jetpack Compose', shortName: 'Android', tagline: 'Apps Android nativas modernas con Compose y Kotlin.', color: '#15803d', icon: 'smartphone', modules: ANDROID_MODULES },
+  { id: 'ios', name: 'iOS con SwiftUI', shortName: 'iOS', tagline: 'Apps iOS nativas con Swift, SwiftUI y concurrencia moderna.', color: '#334155', icon: 'apple', modules: IOS_MODULES },
+  { id: 'flutter', name: 'Flutter', shortName: 'Flutter', tagline: 'Una base de código para Android, iOS y web con Dart.', color: '#1e40af', icon: 'wind', modules: FLUTTER_MODULES },
 ];
 
 export const findTrack = (trackId: string): Track | undefined => TRACKS.find(t => t.id === trackId);

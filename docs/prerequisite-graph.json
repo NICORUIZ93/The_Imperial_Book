@@ -111,6 +111,17 @@
       ]
     },
     {
+      "id": "foundations:1:5",
+      "track": "foundations",
+      "module": 1,
+      "position": 5,
+      "title": "Cómo la computadora representa los datos — binario, texto y decimales",
+      "file": "web/public/content/foundations/modulo-1.md",
+      "requires": [
+        "foundations:1:4"
+      ]
+    },
+    {
       "id": "foundations:2:1",
       "track": "foundations",
       "module": 2,
@@ -118,7 +129,7 @@
       "title": "Elegir estructuras según las operaciones",
       "file": "web/public/content/foundations/modulo-2.md",
       "requires": [
-        "foundations:1:4"
+        "foundations:1:5"
       ]
     },
     {
@@ -155,6 +166,50 @@
       ]
     },
     {
+      "id": "foundations:2:5",
+      "track": "foundations",
+      "module": 2,
+      "position": 5,
+      "title": "Árboles y árboles binarios de búsqueda (BST)",
+      "file": "web/public/content/foundations/modulo-2.md",
+      "requires": [
+        "foundations:2:4"
+      ]
+    },
+    {
+      "id": "foundations:2:6",
+      "track": "foundations",
+      "module": 2,
+      "position": 6,
+      "title": "Tablas hash — búsqueda en tiempo constante",
+      "file": "web/public/content/foundations/modulo-2.md",
+      "requires": [
+        "foundations:2:5"
+      ]
+    },
+    {
+      "id": "foundations:2:7",
+      "track": "foundations",
+      "module": 2,
+      "position": 7,
+      "title": "Grafos y recorridos BFS/DFS",
+      "file": "web/public/content/foundations/modulo-2.md",
+      "requires": [
+        "foundations:2:6"
+      ]
+    },
+    {
+      "id": "foundations:2:8",
+      "track": "foundations",
+      "module": 2,
+      "position": 8,
+      "title": "Programación dinámica — resolver una vez, recordar el resultado",
+      "file": "web/public/content/foundations/modulo-2.md",
+      "requires": [
+        "foundations:2:7"
+      ]
+    },
+    {
       "id": "foundations:3:1",
       "track": "foundations",
       "module": 3,
@@ -162,7 +217,7 @@
       "title": "De una URL al servidor: red, DNS, IP y puertos",
       "file": "web/public/content/foundations/modulo-3.md",
       "requires": [
-        "foundations:2:4"
+        "foundations:2:8"
       ]
     },
     {
@@ -2087,6 +2142,17 @@
       ]
     },
     {
+      "id": "java:8:4",
+      "track": "java",
+      "module": 8,
+      "position": 4,
+      "title": "Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+      "file": "web/public/content/java/modulo-8.md",
+      "requires": [
+        "java:8:3"
+      ]
+    },
+    {
       "id": "java:9:1",
       "track": "java",
       "module": 9,
@@ -2094,7 +2160,7 @@
       "title": "JUnit 5 — anotaciones y ciclo de vida",
       "file": "web/public/content/java/modulo-9.md",
       "requires": [
-        "java:8:3"
+        "java:8:4"
       ]
     },
     {
@@ -2703,6 +2769,28 @@
       ]
     },
     {
+      "id": "node:4:5",
+      "track": "node",
+      "module": 4,
+      "position": 5,
+      "title": "WebSocket — comunicación en tiempo real bidireccional",
+      "file": "web/public/content/node/modulo-4.md",
+      "requires": [
+        "node:4:4"
+      ]
+    },
+    {
+      "id": "node:4:6",
+      "track": "node",
+      "module": 4,
+      "position": 6,
+      "title": "Subida de archivos — multipart y validación segura",
+      "file": "web/public/content/node/modulo-4.md",
+      "requires": [
+        "node:4:5"
+      ]
+    },
+    {
       "id": "node:5:1",
       "track": "node",
       "module": 5,
@@ -2710,7 +2798,7 @@
       "title": "PostgreSQL desde Node con el driver puro",
       "file": "web/public/content/node/modulo-5.md",
       "requires": [
-        "node:4:4"
+        "node:4:6"
       ]
     },
     {
@@ -2802,6 +2890,17 @@
       ]
     },
     {
+      "id": "node:6:6",
+      "track": "node",
+      "module": 6,
+      "position": 6,
+      "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+      "file": "web/public/content/node/modulo-6.md",
+      "requires": [
+        "node:6:5"
+      ]
+    },
+    {
       "id": "node:7:1",
       "track": "node",
       "module": 7,
@@ -2809,7 +2908,7 @@
       "title": "Vitest y Supertest — pruebas de integración HTTP reales",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
-        "node:6:5"
+        "node:6:6"
       ]
     },
     {
@@ -3418,6 +3517,17 @@
       ]
     },
     {
+      "id": "spring-boot:4:5",
+      "track": "spring-boot",
+      "module": 4,
+      "position": 5,
+      "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+      "file": "web/public/content/spring-boot/modulo-4.md",
+      "requires": [
+        "spring-boot:4:4"
+      ]
+    },
+    {
       "id": "spring-boot:5:1",
       "track": "spring-boot",
       "module": 5,
@@ -3425,7 +3535,7 @@
       "title": "@ConfigurationProperties tipado",
       "file": "web/public/content/spring-boot/modulo-5.md",
       "requires": [
-        "spring-boot:4:4"
+        "spring-boot:4:5"
       ]
     },
     {
@@ -3682,6 +3792,17 @@
       ]
     },
     {
+      "id": "spring-boot:10:8",
+      "track": "spring-boot",
+      "module": 10,
+      "position": 8,
+      "title": "Orquestación de microservicios con Temporal y Spring Boot",
+      "file": "web/public/content/spring-boot/modulo-10.md",
+      "requires": [
+        "spring-boot:10:7"
+      ]
+    },
+    {
       "id": "spring-boot:11:1",
       "track": "spring-boot",
       "module": 11,
@@ -3689,7 +3810,7 @@
       "title": "Fat JAR vs capas de Docker",
       "file": "web/public/content/spring-boot/modulo-11.md",
       "requires": [
-        "spring-boot:10:7"
+        "spring-boot:10:8"
       ]
     },
     {
@@ -4199,6 +4320,17 @@
       ]
     },
     {
+      "id": "angular:1:6",
+      "track": "angular",
+      "module": 1,
+      "position": 6,
+      "title": "Directivas y pipes personalizados",
+      "file": "web/public/content/angular/modulo-1.md",
+      "requires": [
+        "angular:1:5"
+      ]
+    },
+    {
       "id": "angular:2:1",
       "track": "angular",
       "module": 2,
@@ -4206,7 +4338,7 @@
       "title": "signal(), computed() y effect()",
       "file": "web/public/content/angular/modulo-2.md",
       "requires": [
-        "angular:1:5"
+        "angular:1:6"
       ]
     },
     {
@@ -4969,6 +5101,17 @@
       ]
     },
     {
+      "id": "react:2:5",
+      "track": "react",
+      "module": 2,
+      "position": 5,
+      "title": "Error Boundaries — contener errores de render sin romper toda la app",
+      "file": "web/public/content/react/modulo-2.md",
+      "requires": [
+        "react:2:4"
+      ]
+    },
+    {
       "id": "react:3:1",
       "track": "react",
       "module": 3,
@@ -4976,7 +5119,7 @@
       "title": "React Hook Form y el problema del re-render por tecla",
       "file": "web/public/content/react/modulo-3.md",
       "requires": [
-        "react:2:4"
+        "react:2:5"
       ]
     },
     {
@@ -5222,6 +5365,17 @@
       ]
     },
     {
+      "id": "react:9:5",
+      "track": "react",
+      "module": 9,
+      "position": 5,
+      "title": "Suspense y React.lazy — carga diferida del lado cliente",
+      "file": "web/public/content/react/modulo-9.md",
+      "requires": [
+        "react:9:4"
+      ]
+    },
+    {
       "id": "react:10:1",
       "track": "react",
       "module": 10,
@@ -5229,7 +5383,7 @@
       "title": "Server Components por defecto",
       "file": "web/public/content/react/modulo-10.md",
       "requires": [
-        "react:9:4"
+        "react:9:5"
       ]
     },
     {
@@ -5706,6 +5860,17 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:5:5",
+      "track": "kotlin-multiplatform",
+      "module": 5,
+      "position": 5,
+      "title": "kotlinx.serialization — JSON compartido entre plataformas",
+      "file": "web/public/content/kotlin-multiplatform/modulo-5.md",
+      "requires": [
+        "kotlin-multiplatform:5:4"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:6:1",
       "track": "kotlin-multiplatform",
       "module": 6,
@@ -5713,7 +5878,7 @@
       "title": "Esquemas SQLDelight y queries tipadas",
       "file": "web/public/content/kotlin-multiplatform/modulo-6.md",
       "requires": [
-        "kotlin-multiplatform:5:4"
+        "kotlin-multiplatform:5:5"
       ]
     },
     {
@@ -6069,6 +6234,28 @@
       ]
     },
     {
+      "id": "android:0:4",
+      "track": "android",
+      "module": 0,
+      "position": 4,
+      "title": "Kotlin esencial para Android — lo que usarás en cada pantalla",
+      "file": "web/public/content/android/modulo-0.md",
+      "requires": [
+        "android:0:3"
+      ]
+    },
+    {
+      "id": "android:0:5",
+      "track": "android",
+      "module": 0,
+      "position": 5,
+      "title": "Coroutines — asincronía sin bloquear la UI",
+      "file": "web/public/content/android/modulo-0.md",
+      "requires": [
+        "android:0:4"
+      ]
+    },
+    {
       "id": "android:1:1",
       "track": "android",
       "module": 1,
@@ -6076,7 +6263,7 @@
       "title": "Ciclo de vida de una Activity",
       "file": "web/public/content/android/modulo-1.md",
       "requires": [
-        "android:0:3"
+        "android:0:5"
       ]
     },
     {
@@ -7079,6 +7266,39 @@
       ]
     },
     {
+      "id": "ios:13:5",
+      "track": "ios",
+      "module": 13,
+      "position": 5,
+      "title": "Keychain — guardar secretos de forma segura",
+      "file": "web/public/content/ios/modulo-13.md",
+      "requires": [
+        "ios:13:4"
+      ]
+    },
+    {
+      "id": "ios:13:6",
+      "track": "ios",
+      "module": 13,
+      "position": 6,
+      "title": "Permisos y privacidad — pedir acceso con criterio",
+      "file": "web/public/content/ios/modulo-13.md",
+      "requires": [
+        "ios:13:5"
+      ]
+    },
+    {
+      "id": "ios:13:7",
+      "track": "ios",
+      "module": 13,
+      "position": 7,
+      "title": "Notificaciones push con APNs",
+      "file": "web/public/content/ios/modulo-13.md",
+      "requires": [
+        "ios:13:6"
+      ]
+    },
+    {
       "id": "ios:14:1",
       "track": "ios",
       "module": 14,
@@ -7086,7 +7306,7 @@
       "title": "Swift Testing y pruebas asíncronas",
       "file": "web/public/content/ios/modulo-14.md",
       "requires": [
-        "ios:13:4"
+        "ios:13:7"
       ]
     },
     {
@@ -7142,6 +7362,17 @@
       "file": "web/public/content/ios/modulo-14.md",
       "requires": [
         "ios:14:5"
+      ]
+    },
+    {
+      "id": "ios:14:7",
+      "track": "ios",
+      "module": 14,
+      "position": 7,
+      "title": "Core ML y Vision — inferencia en el dispositivo",
+      "file": "web/public/content/ios/modulo-14.md",
+      "requires": [
+        "ios:14:6"
       ]
     },
     {
@@ -7462,6 +7693,17 @@
       ]
     },
     {
+      "id": "flutter:8:4",
+      "track": "flutter",
+      "module": 8,
+      "position": 4,
+      "title": "Isolates — trabajo pesado sin congelar la interfaz",
+      "file": "web/public/content/flutter/modulo-8.md",
+      "requires": [
+        "flutter:8:3"
+      ]
+    },
+    {
       "id": "flutter:9:1",
       "track": "flutter",
       "module": 9,
@@ -7469,7 +7711,7 @@
       "title": "Unit tests y widget tests",
       "file": "web/public/content/flutter/modulo-9.md",
       "requires": [
-        "flutter:8:3"
+        "flutter:8:4"
       ]
     },
     {
@@ -9838,6 +10080,17 @@
       ]
     },
     {
+      "id": "cloud:21:6",
+      "track": "cloud",
+      "module": 21,
+      "position": 6,
+      "title": "VPC y redes — subredes, security groups y el flujo del tráfico",
+      "file": "web/public/content/cloud/modulo-21.md",
+      "requires": [
+        "cloud:21:5"
+      ]
+    },
+    {
       "id": "cloud:22:1",
       "track": "cloud",
       "module": 22,
@@ -9845,7 +10098,7 @@
       "title": "ELB v2 — balanceadores, grupos objetivo y reglas",
       "file": "web/public/content/cloud/modulo-22.md",
       "requires": [
-        "cloud:21:5"
+        "cloud:21:6"
       ]
     },
     {
@@ -10810,10 +11063,21 @@
       "track": "rutaflow",
       "module": 7,
       "position": 3,
-      "title": "Continuidad, costes y proyecto final",
+      "title": "Pruebas end-to-end del sistema completo (app ↔ backend)",
       "file": "web/public/content/rutaflow/modulo-7.md",
       "requires": [
         "rutaflow:7:2"
+      ]
+    },
+    {
+      "id": "rutaflow:7:4",
+      "track": "rutaflow",
+      "module": 7,
+      "position": 4,
+      "title": "Continuidad, costes y proyecto final",
+      "file": "web/public/content/rutaflow/modulo-7.md",
+      "requires": [
+        "rutaflow:7:3"
       ]
     }
   ]

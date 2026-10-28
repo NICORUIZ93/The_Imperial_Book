@@ -16,16 +16,17 @@
       >
         <span class="status-dot" [class.done]="status(module.id) === 'done'" [class.current]="status(module.id) === 'current'" [class.pending]="status(module.id) === 'pending'" aria-hidden="true"></span>
         <span class="sr-only">{{ status(module.id) === 'done' ? 'Completado' : status(module.id) === 'current' ? 'Módulo actual' : 'Pendiente' }}</span>
+        <span class="lesson-index-number">{{ module.id + 1 }}</span>
         <span class="lesson-index-title">{{ module.shortTitle }}</span>
         <span class="topic-count">{{ topicIndex.topics(trackId, module.id).length }}</span>
       </a>
       <div class="module-topics" *ngIf="topicQuery().length > 0 || status(module.id) === 'current'">
         <a
-          *ngFor="let topic of topics(module.id)"
+          *ngFor="let topic of topics(module.id); let i = index"
           [routerLink]="['/curso', trackId, module.id]"
           [fragment]="topic.fragment"
           [title]="topic.title"
-        >{{ topic.title }}</a>
+        ><span class="topic-number">{{ i + 1 }}.</span> {{ topic.title }}</a>
       </div>
     </div>
   </div>

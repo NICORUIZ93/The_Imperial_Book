@@ -57,6 +57,14 @@ node server.js &
 sleep 1
 ```
 
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+
 Crea `environment.json` apuntando al servidor local **por IP explícita, no por `localhost`**:
 
 ```bash
@@ -167,6 +175,14 @@ node server.js &
 sleep 1
 ```
 
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+
 Agrega la petición `Crear envio` a `collection.json` (consérvala junto a `Salud del servicio` del Tema 1):
 
 ```bash
@@ -250,6 +266,14 @@ npm install --no-save newman-reporter-html
 npx newman run collection.json -e environment.json --reporters cli,html --reporter-html-export reporte.html
 ls -la reporte.html
 ```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
 
 **Resultado esperado:** la salida `cli` se imprime igual que antes, y además se genera `reporte.html` (un archivo de varios cientos de KB) navegable en un navegador con el detalle de cada petición y aserción.
 

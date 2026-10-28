@@ -82,7 +82,7 @@
     },
     {
       "path": "README.md",
-      "lines": 299,
+      "lines": 301,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -250,6 +250,27 @@
       ]
     },
     {
+      "path": "docs/auditoria-profundidad-cobertura.md",
+      "lines": 174,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Auditor\u00eda de profundidad y cobertura \u2014 The Imperial Book",
+        "## Resumen ejecutivo (sin adornos)",
+        "## Eje 1 \u2014 PROFUNDIDAD (\u00bfel Paso 4 es ejecutable de cero a profesional?)",
+        "### Evidencia directa (le\u00edda, no inferida)",
+        "### Conclusi\u00f3n eje 1",
+        "## Eje 2 \u2014 COBERTURA (\u00bfest\u00e1n todos los temas del stack?)",
+        "## El problema de la m\u00e9trica (por qu\u00e9 esto estaba oculto)",
+        "## Plan de correcci\u00f3n priorizado (propuesta, no ejecutado)",
+        "### P0 \u2014 Arreglar el instrumento de medici\u00f3n",
+        "### P1 \u2014 Profundidad cr\u00edtica (Paso 4 ejecutable)",
+        "### P2 \u2014 Cobertura: puerta de entrada",
+        "### P3 \u2014 Cobertura: huecos por track"
+      ]
+    },
+    {
       "path": "docs/biblioteca/catalogo.json",
       "lines": 564,
       "kind": "project-file",
@@ -317,7 +338,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2968,
+      "lines": 2786,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -332,6 +353,20 @@
       "headings": [
         "# Auditor\u00eda de c\u00f3digo y visuales",
         "## Regla editorial"
+      ]
+    },
+    {
+      "path": "docs/cruce-rutaflow-vs-repo.md",
+      "lines": 102,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cruce: temario RutaFlow (IMG_1030) vs. contenido existente del repo",
+        "## RutaFlow APP (Flutter) \u2014 cobertura",
+        "## RutaFlow BACKEND (Spring Boot + Java) \u2014 cobertura",
+        "## Diferencias / cosas a revisar (no son faltantes, son matices)",
+        "## Conclusi\u00f3n"
       ]
     },
     {
@@ -372,6 +407,14 @@
       ]
     },
     {
+      "path": "docs/extraccion-pdf/merged-texto.txt",
+      "lines": 4172,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/floci-official-curriculum.json",
       "lines": 14,
       "kind": "project-file",
@@ -397,6 +440,27 @@
         "## Siguiente acci\u00f3n concreta",
         "## Verificaci\u00f3n del primer incremento",
         "## Recuperar este incremento en otra PC"
+      ]
+    },
+    {
+      "path": "docs/inventario-imagenes.md",
+      "lines": 389,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Inventario de im\u00e1genes de Descargas",
+        "## Clasificaci\u00f3n",
+        "## Lote 1",
+        "### 1. `07DB3F7B-13F7-4453-9C79-B2992EC36A40.PNG` \u2014 Material t\u00e9cnico",
+        "### 2. `095A28B9-D208-4942-B22A-AF562E2457FE.PNG` \u2014 Material de electr\u00f3nica/circuitos",
+        "### 3. `131607D4-2F83-4CF8-BC54-CFB2CFF588A7.PNG` \u2014 Material t\u00e9cnico (seguridad/fintech)",
+        "## Lote 2",
+        "### 4. `1832B290-561D-4287-A11B-A051A72603E2.PNG` \u2014 Material t\u00e9cnico (Java/Spring + IA)",
+        "### 5. `2C4EC0D1-E591-4891-BFCD-F6ECDF6116F5.PNG` \u2014 No relacionado",
+        "### 6. `2DEB0ECE-6AE1-4EFA-BF5F-7A9B7FD2126D.PNG` \u2014 Material de estudio general",
+        "## Lote 3",
+        "### 7. `4620C2A8-FA33-45CB-9111-CBAD4D508AAD.PNG` \u2014 Material t\u00e9cnico (arquitectura Java)"
       ]
     },
     {
@@ -448,8 +512,27 @@
       "headings": []
     },
     {
+      "path": "docs/plan-estudio-rutaflow.md",
+      "lines": 116,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan de estudio RutaFlow \u2014 de cero a profesional",
+        "## Temario original (tal cual aparece en IMG_1030)",
+        "### APP",
+        "### BACKEND",
+        "## Ruta BACKEND (Spring Boot) \u2014 ordenada por dependencias",
+        "## Ruta APP (Flutter) \u2014 ordenada por dependencias",
+        "## Orden recomendado global (de cero a profesional)",
+        "## Vac\u00edos a cubrir \u2014 RESUELTOS tras el cruce con el repo",
+        "## Lo que s\u00ed queda pendiente (coherencia, no contenido faltante)",
+        "## Material de apoyo (del inventario de im\u00e1genes)"
+      ]
+    },
+    {
       "path": "docs/prerequisite-graph.json",
-      "lines": 10821,
+      "lines": 11085,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -833,7 +916,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 25873,
+      "lines": 26497,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -868,7 +951,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 21897,
+      "lines": 22425,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -883,6 +966,27 @@
       "headings": [
         "# Auditor\u00eda pedag\u00f3gica tema por tema",
         "## Regla editorial"
+      ]
+    },
+    {
+      "path": "docs/validacion-extensa-roadmaps.md",
+      "lines": 157,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
+        "## Tablero maestro: cobertura + profundidad por track",
+        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
+        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
+        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
+        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
+        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
+        "### java \u2014 profundidad (41/72)",
+        "### android \u2014 cobertura",
+        "### cloud \u2014 cobertura (amplitud enorme, bien)",
+        "### node \u2014 cobertura (casi completo)",
+        "### angular \u2014 cobertura (casi completo)"
       ]
     },
     {
@@ -5022,7 +5126,7 @@
     },
     {
       "path": "scripts/audit_topic_learning_quality.py",
-      "lines": 213,
+      "lines": 233,
       "kind": "automation-script",
       "symbols": [
         "student_visible_content",
@@ -5499,7 +5603,7 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 402,
+      "lines": 537,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -5562,7 +5666,7 @@
     },
     {
       "path": "web/public/content/android/modulo-11.md",
-      "lines": 319,
+      "lines": 343,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -5583,7 +5687,7 @@
     },
     {
       "path": "web/public/content/android/modulo-12.md",
-      "lines": 328,
+      "lines": 336,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -5667,7 +5771,7 @@
     },
     {
       "path": "web/public/content/android/modulo-3.md",
-      "lines": 453,
+      "lines": 461,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -5730,7 +5834,7 @@
     },
     {
       "path": "web/public/content/android/modulo-6.md",
-      "lines": 382,
+      "lines": 406,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -5835,7 +5939,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-1.md",
-      "lines": 783,
+      "lines": 848,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6003,7 +6107,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-2.md",
-      "lines": 743,
+      "lines": 759,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6171,7 +6275,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-0.md",
-      "lines": 468,
+      "lines": 486,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6255,7 +6359,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-12.md",
-      "lines": 199,
+      "lines": 208,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6276,7 +6380,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-13.md",
-      "lines": 213,
+      "lines": 222,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6381,7 +6485,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-18.md",
-      "lines": 206,
+      "lines": 215,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6465,7 +6569,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-21.md",
-      "lines": 326,
+      "lines": 399,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6486,7 +6590,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-22.md",
-      "lines": 332,
+      "lines": 350,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6507,7 +6611,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-23.md",
-      "lines": 252,
+      "lines": 270,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6528,7 +6632,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-24.md",
-      "lines": 355,
+      "lines": 364,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6591,7 +6695,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-27.md",
-      "lines": 264,
+      "lines": 273,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6612,7 +6716,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-28.md",
-      "lines": 271,
+      "lines": 280,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6696,7 +6800,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-31.md",
-      "lines": 324,
+      "lines": 351,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6717,7 +6821,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-32.md",
-      "lines": 295,
+      "lines": 304,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6759,7 +6863,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-34.md",
-      "lines": 726,
+      "lines": 762,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6822,7 +6926,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-6.md",
-      "lines": 387,
+      "lines": 396,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6843,7 +6947,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-7.md",
-      "lines": 323,
+      "lines": 332,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6864,7 +6968,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-8.md",
-      "lines": 246,
+      "lines": 273,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6885,7 +6989,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-9.md",
-      "lines": 455,
+      "lines": 464,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6969,7 +7073,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-11.md",
-      "lines": 593,
+      "lines": 601,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6990,7 +7094,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-12.md",
-      "lines": 617,
+      "lines": 625,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7011,7 +7115,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-13.md",
-      "lines": 250,
+      "lines": 266,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7032,7 +7136,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 345,
+      "lines": 377,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7053,7 +7157,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-15.md",
-      "lines": 404,
+      "lines": 428,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7074,7 +7178,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-16.md",
-      "lines": 561,
+      "lines": 585,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7116,7 +7220,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-3.md",
-      "lines": 373,
+      "lines": 381,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7137,7 +7241,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-4.md",
-      "lines": 351,
+      "lines": 353,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7221,7 +7325,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-8.md",
-      "lines": 701,
+      "lines": 709,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7283,7 +7387,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-0.md",
-      "lines": 381,
+      "lines": 401,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7304,7 +7408,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-1.md",
-      "lines": 375,
+      "lines": 405,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7325,7 +7429,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-10.md",
-      "lines": 240,
+      "lines": 270,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7346,7 +7450,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-11.md",
-      "lines": 259,
+      "lines": 269,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7367,7 +7471,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-12.md",
-      "lines": 260,
+      "lines": 290,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7388,7 +7492,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-13.md",
-      "lines": 370,
+      "lines": 410,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7430,7 +7534,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-15.md",
-      "lines": 361,
+      "lines": 371,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7451,7 +7555,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-2.md",
-      "lines": 253,
+      "lines": 283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7472,7 +7576,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-3.md",
-      "lines": 255,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7493,7 +7597,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-4.md",
-      "lines": 550,
+      "lines": 590,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7514,7 +7618,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-5.md",
-      "lines": 310,
+      "lines": 340,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7535,7 +7639,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-6.md",
-      "lines": 256,
+      "lines": 286,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7556,7 +7660,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-7.md",
-      "lines": 421,
+      "lines": 461,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7577,7 +7681,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-8.md",
-      "lines": 232,
+      "lines": 345,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7598,7 +7702,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-9.md",
-      "lines": 271,
+      "lines": 301,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7619,7 +7723,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-0.md",
-      "lines": 541,
+      "lines": 557,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7640,7 +7744,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-1.md",
-      "lines": 576,
+      "lines": 631,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7661,7 +7765,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 455,
+      "lines": 487,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7682,7 +7786,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-11.md",
-      "lines": 509,
+      "lines": 557,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7724,7 +7828,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-2.md",
-      "lines": 588,
+      "lines": 894,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7766,7 +7870,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-4.md",
-      "lines": 573,
+      "lines": 582,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7787,7 +7891,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-5.md",
-      "lines": 540,
+      "lines": 548,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7808,7 +7912,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-6.md",
-      "lines": 359,
+      "lines": 383,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7829,7 +7933,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 376,
+      "lines": 408,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7850,7 +7954,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-8.md",
-      "lines": 403,
+      "lines": 411,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7871,7 +7975,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-9.md",
-      "lines": 406,
+      "lines": 438,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7913,7 +8017,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-1.md",
-      "lines": 419,
+      "lines": 435,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7925,16 +8029,16 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Crea en Xcode: File \u25b8 New \u25b8 Project \u25b8 App (interfaz SwiftUI), n\u00f3mbralo RutaFlowApp.",
+        "# Pega el c\u00f3digo anterior en ContentView.swift y a\u00f1ade #Preview { ListaEnvios() }",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u00b7 Fallo deliberado",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Orden de modificadores y layout con stacks",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-10.md",
-      "lines": 375,
+      "lines": 407,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7955,7 +8059,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-11.md",
-      "lines": 213,
+      "lines": 237,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7976,7 +8080,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-12.md",
-      "lines": 247,
+      "lines": 271,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7997,7 +8101,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-13.md",
-      "lines": 391,
+      "lines": 620,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8018,7 +8122,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-14.md",
-      "lines": 353,
+      "lines": 472,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8039,7 +8143,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 255,
+      "lines": 330,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8051,16 +8155,16 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Genera un paquete Swift ejecutable (no requiere plantilla de Xcode)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### C\u00f3mo leer `@State`, `@Binding` y el prefijo `$`",
-        "### Tema 2: @Observable"
+        "#### C\u00f3mo leer `@State`, `@Binding` y el prefijo `$`"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-3.md",
-      "lines": 230,
+      "lines": 254,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8081,7 +8185,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 258,
+      "lines": 282,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8102,7 +8206,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-5.md",
-      "lines": 255,
+      "lines": 279,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8123,7 +8227,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-6.md",
-      "lines": 239,
+      "lines": 263,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8144,7 +8248,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-7.md",
-      "lines": 213,
+      "lines": 237,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8165,7 +8269,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-8.md",
-      "lines": 245,
+      "lines": 269,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8186,7 +8290,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-9.md",
-      "lines": 263,
+      "lines": 287,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8207,7 +8311,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 625,
+      "lines": 675,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8228,7 +8332,7 @@
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 309,
+      "lines": 339,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8249,7 +8353,7 @@
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 197,
+      "lines": 227,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8261,16 +8365,16 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Migraci\u00f3n incremental y cu\u00e1ndo JPMS aporta valor",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 270,
+      "lines": 310,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8282,16 +8386,16 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Java Flight Recorder y JIT compilation",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 393,
+      "lines": 433,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8303,11 +8407,11 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Factory Method y Strategy",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
@@ -8333,7 +8437,7 @@
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 396,
+      "lines": 427,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8345,16 +8449,16 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: La JVM optimiza y puede invalidar un cron\u00f3metro ingenuo",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 363,
+      "lines": 405,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8375,7 +8479,7 @@
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 174,
+      "lines": 194,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8388,15 +8492,15 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: FetchType.LAZY, EAGER y el problema N+1"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
       "path": "web/public/content/java/modulo-17.md",
-      "lines": 134,
+      "lines": 154,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8409,15 +8513,15 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Transacciones, ACID y aislamiento"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
       "path": "web/public/content/java/modulo-18.md",
-      "lines": 137,
+      "lines": 157,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8430,10 +8534,10 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "# Maven",
+        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Tokens, validaci\u00f3n y l\u00edmites de seguridad"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
@@ -8480,7 +8584,7 @@
     },
     {
       "path": "web/public/content/java/modulo-4.md",
-      "lines": 265,
+      "lines": 275,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8501,7 +8605,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 417,
+      "lines": 427,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8543,7 +8647,7 @@
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 306,
+      "lines": 316,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8564,7 +8668,7 @@
     },
     {
       "path": "web/public/content/java/modulo-8.md",
-      "lines": 202,
+      "lines": 280,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8576,16 +8680,16 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Maven",
+        "# Gradle (equivalente)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Ciclo de vida de build y scopes",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/java/modulo-9.md",
-      "lines": 214,
+      "lines": 217,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8963,7 +9067,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 261,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8984,7 +9088,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "lines": 253,
+      "lines": 277,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9005,7 +9109,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-12.md",
-      "lines": 425,
+      "lines": 457,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9026,7 +9130,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-13.md",
-      "lines": 313,
+      "lines": 337,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9110,7 +9214,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-5.md",
-      "lines": 601,
+      "lines": 658,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9173,7 +9277,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-8.md",
-      "lines": 265,
+      "lines": 281,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9194,7 +9298,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-9.md",
-      "lines": 250,
+      "lines": 274,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9278,7 +9382,7 @@
     },
     {
       "path": "web/public/content/node/modulo-11.md",
-      "lines": 365,
+      "lines": 374,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9320,7 +9424,7 @@
     },
     {
       "path": "web/public/content/node/modulo-13.md",
-      "lines": 573,
+      "lines": 609,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9341,7 +9445,7 @@
     },
     {
       "path": "web/public/content/node/modulo-14.md",
-      "lines": 437,
+      "lines": 482,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9404,7 +9508,7 @@
     },
     {
       "path": "web/public/content/node/modulo-4.md",
-      "lines": 553,
+      "lines": 682,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9446,7 +9550,7 @@
     },
     {
       "path": "web/public/content/node/modulo-6.md",
-      "lines": 540,
+      "lines": 676,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9530,7 +9634,7 @@
     },
     {
       "path": "web/public/content/react/modulo-0.md",
-      "lines": 457,
+      "lines": 487,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9551,7 +9655,7 @@
     },
     {
       "path": "web/public/content/react/modulo-1.md",
-      "lines": 392,
+      "lines": 432,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9572,7 +9676,7 @@
     },
     {
       "path": "web/public/content/react/modulo-10.md",
-      "lines": 328,
+      "lines": 358,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9593,7 +9697,7 @@
     },
     {
       "path": "web/public/content/react/modulo-11.md",
-      "lines": 279,
+      "lines": 309,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9614,7 +9718,7 @@
     },
     {
       "path": "web/public/content/react/modulo-12.md",
-      "lines": 283,
+      "lines": 313,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9635,7 +9739,7 @@
     },
     {
       "path": "web/public/content/react/modulo-13.md",
-      "lines": 444,
+      "lines": 484,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9677,7 +9781,7 @@
     },
     {
       "path": "web/public/content/react/modulo-2.md",
-      "lines": 342,
+      "lines": 472,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9698,7 +9802,7 @@
     },
     {
       "path": "web/public/content/react/modulo-3.md",
-      "lines": 256,
+      "lines": 286,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9719,7 +9823,7 @@
     },
     {
       "path": "web/public/content/react/modulo-4.md",
-      "lines": 285,
+      "lines": 315,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9740,7 +9844,7 @@
     },
     {
       "path": "web/public/content/react/modulo-5.md",
-      "lines": 290,
+      "lines": 320,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9761,7 +9865,7 @@
     },
     {
       "path": "web/public/content/react/modulo-6.md",
-      "lines": 297,
+      "lines": 327,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9782,7 +9886,7 @@
     },
     {
       "path": "web/public/content/react/modulo-7.md",
-      "lines": 312,
+      "lines": 352,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9803,7 +9907,7 @@
     },
     {
       "path": "web/public/content/react/modulo-8.md",
-      "lines": 240,
+      "lines": 270,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9824,7 +9928,7 @@
     },
     {
       "path": "web/public/content/react/modulo-9.md",
-      "lines": 302,
+      "lines": 406,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9845,7 +9949,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-0.md",
-      "lines": 343,
+      "lines": 359,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9887,7 +9991,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-2.md",
-      "lines": 430,
+      "lines": 454,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9908,7 +10012,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-3.md",
-      "lines": 432,
+      "lines": 456,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9929,7 +10033,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-4.md",
-      "lines": 470,
+      "lines": 478,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9950,7 +10054,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-5.md",
-      "lines": 395,
+      "lines": 419,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9971,7 +10075,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-6.md",
-      "lines": 417,
+      "lines": 441,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9992,7 +10096,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-7.md",
-      "lines": 391,
+      "lines": 476,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10055,7 +10159,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1085,
+      "lines": 1370,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10097,7 +10201,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-12.md",
-      "lines": 587,
+      "lines": 592,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10109,11 +10213,11 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Maven (type=maven-project, por defecto): genera pom.xml y ./mvnw",
+        "# Gradle (alternativa equivalente): genera build.gradle.kts y ./gradlew",
+        "# curl -fsSL https://start.spring.io/starter.zip -d type=gradle-project-kotlin -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Integrando seguridad, persistencia y observabilidad",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
@@ -10181,7 +10285,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-16.md",
-      "lines": 114,
+      "lines": 132,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10202,7 +10306,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 146,
+      "lines": 164,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10223,7 +10327,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 127,
+      "lines": 145,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10244,7 +10348,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 161,
+      "lines": 179,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10286,7 +10390,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 278,
+      "lines": 323,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10307,7 +10411,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 311,
+      "lines": 338,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10328,7 +10432,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 484,
+      "lines": 488,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10349,7 +10453,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 665,
+      "lines": 870,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10370,7 +10474,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 466,
+      "lines": 469,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10391,7 +10495,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 491,
+      "lines": 494,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10412,7 +10516,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 527,
+      "lines": 530,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10433,7 +10537,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 986,
+      "lines": 991,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10475,7 +10579,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4435,
+      "lines": 4531,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10863,38 +10967,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.browser-check.json",
-      "lines": 722,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.finalize.json",
-      "lines": 1006,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.html",
       "lines": 14763,
       "kind": "project-file",
@@ -10924,14 +10996,6 @@
         "0",
         "1"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/cloud/modulo-16-tema-2-retry-catch.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -10969,10 +11033,35 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/cloud/modulo-22-tema-5-edge-routes.delivery.json",
-      "lines": 18,
+      "path": "web/public/visuals/temas/cloud/modulo-21-tema-6-vpc.html",
+      "lines": 14723,
       "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0",
+        "1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11010,34 +11099,35 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.browser-check.json",
-      "lines": 1034,
+      "path": "web/public/visuals/temas/devops/modulo-4-tema-4-pipeline-ci.html",
+      "lines": 14765,
       "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-10-lazo-p.finalize.json",
-      "lines": 1320,
-      "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0",
+        "lane-1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11075,38 +11165,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.browser-check.json",
-      "lines": 1154,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.finalize.json",
-      "lines": 1440,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/foundations/modulo-12-tema-17-plc-scan.html",
       "lines": 14714,
       "kind": "project-file",
@@ -11136,38 +11194,6 @@
         "grid",
         "lane-0"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-7-aliasing.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11205,38 +11231,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/foundations/modulo-12-tema-8-media-movil.html",
       "lines": 14627,
       "kind": "project-file",
@@ -11270,34 +11264,68 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.browser-check.json",
-      "lines": 698,
+      "path": "web/public/visuals/temas/foundations/modulo-2-tema-5-bst.html",
+      "lines": 14781,
       "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "node-n50",
+        "n50"
+      ],
       "imports": [],
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.delivery.json",
-      "lines": 18,
+      "path": "web/public/visuals/temas/foundations/modulo-4-tema-1-erd.html",
+      "lines": 14870,
       "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-1-bytecode.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "er-one-end",
+        "er-many-start"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11335,38 +11363,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.finalize.json",
-      "lines": 986,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/java/modulo-0-tema-2-main.html",
       "lines": 14695,
       "kind": "project-file",
@@ -11396,38 +11392,6 @@
         "grid",
         "node-entry"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-0-tema-3-jdk-jre-jvm.finalize.json",
-      "lines": 986,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11465,38 +11429,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.browser-check.json",
-      "lines": 698,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/java/modulo-4-tema-4-gatherers-window-sliding.html",
       "lines": 14697,
       "kind": "project-file",
@@ -11526,38 +11458,6 @@
         "grid",
         "0"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.browser-check.json",
-      "lines": 722,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.finalize.json",
-      "lines": 1016,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11595,38 +11495,6 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.browser-check.json",
-      "lines": 722,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.finalize-summary.json",
-      "lines": 77,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.finalize.json",
-      "lines": 1029,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/public/visuals/temas/spring-boot/modulo-0-tema-3-stereotypes-scopes.html",
       "lines": 14803,
       "kind": "project-file",
@@ -11656,38 +11524,6 @@
         "grid",
         "0"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.browser-check.json",
-      "lines": 1154,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-1-tema-1-initializr-starters.finalize.json",
-      "lines": 1440,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11725,34 +11561,35 @@
       "headings": []
     },
     {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.browser-check.json",
-      "lines": 698,
+      "path": "web/public/visuals/temas/spring-boot/modulo-10-tema-8-temporal-saga.html",
+      "lines": 14755,
       "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.delivery.json",
-      "lines": 18,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.finalize-summary.json",
-      "lines": 48,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/visuals/temas/spring-boot/modulo-17-tema-2-transacciones.finalize.json",
-      "lines": 984,
-      "kind": "project-file",
-      "symbols": [],
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "lane-0",
+        "lane-1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -11790,8 +11627,41 @@
       "headings": []
     },
     {
+      "path": "web/public/visuals/temas/spring-boot/modulo-4-tema-5-login-jwt.html",
+      "lines": 14736,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0",
+        "1"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/src/app/app.config.ts",
-      "lines": 12,
+      "lines": 19,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -11871,7 +11741,7 @@
     },
     {
       "path": "web/src/app/catalog/course-catalog.scss",
-      "lines": 235,
+      "lines": 253,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12022,7 +11892,7 @@
     },
     {
       "path": "web/src/app/course/lesson-index.html",
-      "lines": 33,
+      "lines": 34,
       "kind": "angular-app",
       "symbols": [
         "topic-search"
@@ -12032,7 +11902,7 @@
     },
     {
       "path": "web/src/app/course/lesson-index.scss",
-      "lines": 48,
+      "lines": 50,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12074,7 +11944,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 462,
+      "lines": 479,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12082,7 +11952,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1069,
+      "lines": 1076,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12133,7 +12003,7 @@
     },
     {
       "path": "web/src/app/course-data.ts",
-      "lines": 883,
+      "lines": 886,
       "kind": "angular-app",
       "symbols": [
         "ServiceGroup",
@@ -12421,7 +12291,7 @@
     },
     {
       "path": "web/src/app/tracks/foundations.track.ts",
-      "lines": 250,
+      "lines": 255,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12539,7 +12409,7 @@
     },
     {
       "path": "web/src/styles.scss",
-      "lines": 111,
+      "lines": 122,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],

@@ -58,7 +58,7 @@ export const NODE_MODULES: CourseModule[] = [
     'Servidor HTTP nativo con 3 rutas y manejo de errores, sin frameworks.'),
   m(4, 'Express/Fastify: routing y middleware', 'Express/Fastify', 'Aplicación', '3 h', '#3c873a',
     'El patrón middleware es la base de casi todos los frameworks web de Node.',
-    ['Middleware: orden de ejecución y next()', 'Routers anidados', 'Manejo centralizado de errores', 'Validación de entrada (zod/joi)', 'express-validator como alternativa', 'Diferencias clave Express vs Fastify: hooks y JSON Schema nativo'],
+    ['Middleware: orden de ejecución y next()', 'Routers anidados', 'Manejo centralizado de errores', 'Validación de entrada (zod/joi)', 'express-validator como alternativa', 'Diferencias clave Express vs Fastify: hooks y JSON Schema nativo', 'WebSocket: tiempo real bidireccional', 'Subida de archivos: multipart y validación segura'],
     [
       'Crea una API Express con GET /tareas y POST /tareas, usando express.json() como middleware',
       'Escribe un middleware de logging propio que imprima método, ruta y tiempo de respuesta de cada request',
@@ -86,7 +86,7 @@ export const NODE_MODULES: CourseModule[] = [
     'API con persistencia real en PostgreSQL usando Prisma y migraciones versionadas.'),
   m(6, 'Autenticación y autorización', 'Auth', 'Integración', '2 h 30 min', '#3c873a',
     'Implementa login seguro sin reinventar criptografía desde cero.',
-    ['Hashing de contraseñas (bcrypt/argon2)', 'JWT: access y refresh tokens', 'Sesiones vs tokens', 'OAuth 2.0 con un proveedor externo', 'Passport.js y sus estrategias de autenticación', 'Cookies seguras, sesiones y protección CSRF'],
+    ['Hashing de contraseñas (bcrypt/argon2)', 'JWT: access y refresh tokens', 'Sesiones vs tokens', 'OAuth 2.0 con un proveedor externo', 'Passport.js y sus estrategias de autenticación', 'Cookies seguras, sesiones y protección CSRF', 'Flujo de login completo: de /api/auth/login a una ruta protegida'],
     [
       'Implementa registro de usuario con contraseña hasheada usando bcrypt — nunca guardes contraseñas en texto plano',
       'Implementa login que verifica la contraseña con bcrypt.compare y devuelve un access token JWT de corta duración',

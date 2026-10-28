@@ -51,9 +51,9 @@
     },
     {
       "name": "build_daemon",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/build_daemon-4.1.2",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/build_daemon-4.1.7",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.11"
     },
     {
       "name": "build_resolvers",
@@ -75,9 +75,9 @@
     },
     {
       "name": "built_collection",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/built_collection-5.1.1",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/built_collection-5.1.2",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.11"
     },
     {
       "name": "built_value",
@@ -87,7 +87,7 @@
     },
     {
       "name": "characters",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/characters-1.4.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/characters-1.4.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -99,15 +99,21 @@
     },
     {
       "name": "clock",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/clock-1.1.2",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/clock-1.1.3",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
-      "name": "code_builder",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/code_builder-4.11.1",
+      "name": "code_assets",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/code_assets-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.10"
+    },
+    {
+      "name": "code_builder",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/code_builder-4.13.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.10"
     },
     {
       "name": "collection",
@@ -123,7 +129,7 @@
     },
     {
       "name": "crypto",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/crypto-3.0.7",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/crypto-3.0.8",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -189,9 +195,9 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/proyectoapp/fvm/versions/3.35.1/packages/flutter",
+      "rootUri": "file:///opt/homebrew/share/flutter/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.10"
     },
     {
       "name": "flutter_lints",
@@ -201,9 +207,9 @@
     },
     {
       "name": "flutter_plugin_android_lifecycle",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.34",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.35",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.10"
     },
     {
       "name": "flutter_riverpod",
@@ -213,15 +219,15 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///Users/proyectoapp/fvm/versions/3.35.1/packages/flutter_test",
+      "rootUri": "file:///opt/homebrew/share/flutter/packages/flutter_test",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.10"
     },
     {
       "name": "flutter_web_plugins",
-      "rootUri": "file:///Users/proyectoapp/fvm/versions/3.35.1/packages/flutter_web_plugins",
+      "rootUri": "file:///opt/homebrew/share/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.10"
     },
     {
       "name": "freezed_annotation",
@@ -231,9 +237,9 @@
     },
     {
       "name": "frontend_server_client",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/frontend_server_client-4.2.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.13"
     },
     {
       "name": "geolocator",
@@ -249,13 +255,13 @@
     },
     {
       "name": "geolocator_apple",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/geolocator_apple-2.3.14",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/geolocator_apple-2.4.3",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
     {
       "name": "geolocator_platform_interface",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/geolocator_platform_interface-4.4.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/geolocator_platform_interface-4.4.1",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -285,33 +291,33 @@
     },
     {
       "name": "google_maps_flutter",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter-2.14.2",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter-2.18.1",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.10"
     },
     {
       "name": "google_maps_flutter_android",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_android-2.19.8",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_android-2.21.0",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.12"
     },
     {
       "name": "google_maps_flutter_ios",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_ios-2.17.4",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_ios-2.18.7",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.11"
     },
     {
       "name": "google_maps_flutter_platform_interface",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_platform_interface-2.15.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_platform_interface-2.17.0",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.10"
     },
     {
       "name": "google_maps_flutter_web",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_web-0.5.14+3",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/google_maps_flutter_web-0.6.5",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.11"
     },
     {
       "name": "graphs",
@@ -332,6 +338,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "hooks",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/hooks-2.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.10"
+    },
+    {
       "name": "html",
       "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/html-0.15.7",
       "packageUri": "lib/",
@@ -345,7 +357,7 @@
     },
     {
       "name": "http_multi_server",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/http_multi_server-3.2.2",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/http_multi_server-3.2.3",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -366,6 +378,24 @@
       "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/io-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "jni",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/jni-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "jni_flutter",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/jni_flutter-1.0.4+1",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "jni_util",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/jni_util-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "js",
@@ -417,27 +447,33 @@
     },
     {
       "name": "matcher",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/matcher-0.12.17",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/matcher-0.12.20",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.10"
     },
     {
       "name": "material_color_utilities",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/material_color_utilities-0.13.0",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.5"
     },
     {
       "name": "meta",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/meta-1.16.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/meta-1.19.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.5"
     },
     {
       "name": "mime",
       "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/mime-2.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
+    },
+    {
+      "name": "objective_c",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/objective_c-9.6.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.10"
     },
     {
       "name": "package_config",
@@ -453,33 +489,33 @@
     },
     {
       "name": "path_provider",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider-2.1.5",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider-2.1.6",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.10"
     },
     {
       "name": "path_provider_android",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_android-2.2.23",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_android-2.3.1",
       "packageUri": "lib/",
       "languageVersion": "3.9"
     },
     {
       "name": "path_provider_foundation",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_foundation-2.5.1",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_foundation-2.6.0",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.10"
     },
     {
       "name": "path_provider_linux",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.10"
     },
     {
       "name": "path_provider_platform_interface",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.2",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.10"
     },
     {
       "name": "path_provider_windows",
@@ -489,9 +525,9 @@
     },
     {
       "name": "platform",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/platform-3.1.6",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/platform-3.2.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.10"
     },
     {
       "name": "plugin_platform_interface",
@@ -513,9 +549,15 @@
     },
     {
       "name": "pubspec_parse",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/pubspec_parse-1.6.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0",
       "packageUri": "lib/",
       "languageVersion": "3.8"
+    },
+    {
+      "name": "record_use",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/record_use-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.10"
     },
     {
       "name": "riverpod",
@@ -549,9 +591,9 @@
     },
     {
       "name": "shelf",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/shelf-1.4.2",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/shelf-1.4.3",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.9"
     },
     {
       "name": "shelf_web_socket",
@@ -561,9 +603,9 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/proyectoapp/fvm/versions/3.35.1/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///opt/homebrew/share/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.10"
     },
     {
       "name": "source_gen",
@@ -585,7 +627,7 @@
     },
     {
       "name": "stack_trace",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/stack_trace-1.12.1",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/stack_trace-1.12.2",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -621,9 +663,9 @@
     },
     {
       "name": "test_api",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/test_api-0.7.6",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/test_api-0.7.12",
       "packageUri": "lib/",
-      "languageVersion": "3.5"
+      "languageVersion": "3.10"
     },
     {
       "name": "timing",
@@ -645,13 +687,13 @@
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/vector_math-2.2.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/vector_math-2.4.4",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "3.10"
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/vm_service-15.3.0",
+      "rootUri": "file:///Users/proyectoapp/.pub-cache/hosted/pub.dev/vm_service-15.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -699,8 +741,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.9.0",
-  "flutterRoot": "file:///Users/proyectoapp/fvm/versions/3.35.1",
-  "flutterVersion": "3.35.1",
+  "generatorVersion": "3.13.0-108.0.dev",
+  "flutterRoot": "file:///opt/homebrew/share/flutter",
+  "flutterVersion": "3.48.0-0.4.pre",
   "pubCache": "file:///Users/proyectoapp/.pub-cache"
 }

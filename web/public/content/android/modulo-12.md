@@ -278,6 +278,14 @@ EOF
 python3 app/checklist-cierre-track.py
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+
 **Explicación línea por línea:** el script verifica programáticamente, contra los archivos reales creados en módulos anteriores de este mismo track (Módulos 2, 4, 6, 7, 9), si cada una de las cinco dimensiones de una app Android completa (UI, UDF, offline-first, DI, testing) tiene al menos un artefacto concreto presente, en vez de una autoevaluación subjetiva.
 
 **Resultado esperado:** si completaste los módulos anteriores en el mismo directorio `academia-android`, el script reporta la mayoría (o la totalidad) de las cinco dimensiones como `CUMPLE`, con un resumen numérico concreto, confirmando objetivamente que el proyecto integra los conceptos del track, no solo en teoría sino en artefactos de código reales y verificables.

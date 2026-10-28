@@ -28,6 +28,14 @@ class ObtenerTareasPendientesUseCaseTest {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: `./gradlew :shared:allTests` compila y ejecuta este mismo test contra el target de Android y contra el target de iOS (Kotlin/Native) de forma independiente, confirmando que ambos targets filtran exactamente 1 tarea pendiente sin ninguna diferencia de comportamiento entre plataformas.
 
 #### Paso 5 · Práctica guiada
@@ -104,6 +112,14 @@ class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
     override suspend fun obtenerTodas() = datos
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: este fake compila y funciona de forma idéntica en el target Android y en el target iOS porque es código Kotlin ordinario sin ninguna dependencia de un runtime particular, a diferencia de un mock generado dinámicamente.
 
 #### Paso 5 · Práctica guiada
@@ -172,6 +188,14 @@ fun pruebaConDelay() = runTest {
     assertEquals(esperado, resultado)
 }
 ```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
 Resultado esperado: este test, que internamente simula un `delay(5000)` dentro de `funcionConDelay()`, corre en milisegundos reales de ejecución, no en los 5 segundos simulados.
 
 #### Paso 5 · Práctica guiada

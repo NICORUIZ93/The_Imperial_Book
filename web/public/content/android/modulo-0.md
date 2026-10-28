@@ -77,6 +77,14 @@ find app/src/main -maxdepth 3 -type d
 cat app/build.gradle.kts | grep -A3 "^android {"
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+
 **Explicación línea por línea:** `find app/src/main -maxdepth 3 -type d` lista los directorios reales generados por la plantilla (`java/`, `res/values`, `res/drawable`), confirmando visualmente la separación código/recursos que describe el Paso 3; el `grep` sobre `build.gradle.kts` muestra el bloque `android { ... }` que declara la configuración de compilación del módulo `:app`.
 
 Confirma que el string de bienvenida y el nombre de la app viven en `res/`, no hardcodeados en el código Kotlin:
@@ -187,6 +195,14 @@ ET.parse('app/src/main/res/values-en/strings.xml')
 print('values-en/strings.xml es XML bien formado')
 "
 ```
+
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
 
 `python3` es el comando que ejecuta el intérprete de Python 3 (aquí, un script inline con `-c` para validar el XML generado).
 
@@ -301,6 +317,14 @@ grep -q 'implementation(project(":core"))' app/build.gradle.kts || \
 grep -n "project(\":core\")" app/build.gradle.kts
 ```
 
+**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+
 **Explicación línea por línea:** `core/build.gradle.kts` declara el módulo `:core` como un módulo Kotlin puro (sin dependencias de Android), conteniendo lógica reutilizable (`formatearBienvenida`); agregar `implementation(project(":core"))` en `app/build.gradle.kts` establece que `:app` depende de `:core`, permitiendo que Gradle compile `:core` primero y lo ponga a disposición de `:app`.
 
 Confirma que el grafo de dependencias declarado coincide con la estructura de carpetas real creada:
@@ -359,6 +383,117 @@ flowchart TD
 - Un equipo puede mantener `:location-service` sin coordinarse constantemente con UI.
 
 En el repositorio The_Imperial_Book verás esta estructura ejemplificada en `examples/rutaflow/android/LocationPolicy.kt` (pertenece a `:core`). El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
+
+### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar dominarás los elementos de Kotlin que aparecen en TODO el track: `val`/`var`, null safety (`?`, `?.`, `?:`), `data class`, `when`, funciones lambda y las funciones de alcance (`let`, `apply`, `copy`). Prerrequisitos: Android Studio instalado (Antes de comenzar).
+
+#### Paso 2 · Contexto y caso real
+El resto del track usa Kotlin desde la primera pantalla (ViewModels, StateFlow, Compose), pero nunca lo introduce. Sin estas bases, el código de los módulos siguientes parece magia. Aquí construyes el modelo `Tarea` que usarás en todo el proyecto integrador.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Kotlin es explícito sobre lo que puede ser nulo: un `String` NUNCA es null; un `String?` sí puede serlo, y el compilador te obliga a manejar ese caso antes de usarlo. Una `data class` genera por ti `equals`, `hashCode`, `toString` y `copy`. El `when` es un `switch` que también devuelve valor.
+
+**Analogía:** el `?` de Kotlin es como una etiqueta en una caja que avisa "puede estar vacía": no puedes sacar el contenido sin comprobar primero, y eso evita el error nulo más común de la programación (el `NullPointerException`).
+
+#### Paso 4 · Demostración guiada desde cero
+Crea un archivo Kotlin (en Android Studio: botón derecho ▸ New ▸ Kotlin Class/File, o usa el scratch file ⌘⇧N) con `fun main()`:
+
+```kotlin
+data class Tarea(val id: String, val titulo: String, val completada: Boolean = false)
+
+fun resumen(tarea: Tarea?): String = when {
+    tarea == null -> "Sin tarea"
+    tarea.completada -> "✓ ${tarea.titulo}"
+    else -> "○ ${tarea.titulo}"
+}
+
+fun main() {
+    val tarea = Tarea(id = "RF-1", titulo = "Entregar paquete")
+    val entregada = tarea.copy(completada = true)   // copia inmutable con un cambio
+    println(resumen(tarea))        // ○ Entregar paquete
+    println(resumen(entregada))    // ✓ Entregar paquete
+    println(resumen(null))         // Sin tarea
+
+    val titulo: String? = null
+    println(titulo?.uppercase() ?: "SIN TÍTULO")   // null safety + Elvis
+}
+```
+
+**Ejecuta el ejemplo** (compila el módulo o corre el archivo con el toolchain de Kotlin):
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+En Android Studio, también puedes pulsar el ▶ junto a `fun main()` para ejecutarlo directamente.
+
+**Resultado esperado:** imprime `○ Entregar paquete`, `✓ Entregar paquete`, `Sin tarea` y `SIN TÍTULO`. **Fallo deliberado:** cambia `val titulo: String?` por `val titulo: String = null`; el código NO compila, con el error "Null can not be a value of a non-null type String". Diagnostica por qué Kotlin te protege en tiempo de compilación del `NullPointerException`, a diferencia de lenguajes donde el null explota en ejecución.
+
+#### Paso 5 · Práctica guiada
+Añade a `Tarea` un campo `prioridad: Int = 0` y usa `copy` para subir la prioridad sin mutar el objeto original. Pista: `copy` devuelve una instancia nueva; el original no cambia.
+
+#### Paso 6 · Práctica independiente
+Escribe una función que reciba `List<Tarea>` y devuelva, usando `filter` y `map`, los títulos de las tareas no completadas. Entrega la salida con una lista de ejemplo.
+
+#### Paso 7 · Cierre y evidencia
+Entrega el modelo `Tarea`, el `when`, el manejo de null y el filtrado funcional. **¿Por qué es importante?** Kotlin es el lenguaje de Android moderno: cada ViewModel, cada estado de Compose y cada repositorio del resto del track se escribe con estos elementos. Dominar `data class`, null safety y lambdas aquí hace que todo lo demás se entienda en vez de copiarse a ciegas. Fuentes: [Kotlin docs — Basics](https://kotlinlang.org/docs/basic-syntax.html) y [Null safety](https://kotlinlang.org/docs/null-safety.html).
+**Conceptos clave:** `val`/`var`, null safety, `data class`, `copy`, `when`, lambdas y funciones de orden superior.
+**Cuándo no usarlo:** no fuerces una `data class` para objetos con identidad y ciclo de vida (como una Activity); las data class son para contenedores de datos inmutables, no para entidades con comportamiento mutable.
+
+**Transferencia al proyecto integrador «RutaFlow»:** define el modelo `Tarea`/`Envio` del proyecto como `data class` con null safety, y úsalo sin cambios en los ViewModels de los módulos siguientes.
+
+### Tema 5: Coroutines — asincronía sin bloquear la UI
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás lanzar una operación asíncrona con una corrutina (`suspend` + `launch`) sin congelar la interfaz, y entender `viewModelScope`, que usarás en cada ViewModel del track. Prerrequisitos: Tema 4 de este módulo (Kotlin esencial).
+
+#### Paso 2 · Contexto y caso real
+Cargar los envíos desde la red tarda. Si lo haces en el hilo principal, la app se congela y Android puede matarla por "ANR" (Application Not Responding). Las corrutinas permiten escribir código asíncrono que se lee como secuencial, sin callbacks anidados — y el track las usa desde el Módulo 5 (Retrofit) sin introducirlas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una función `suspend` puede pausarse y reanudarse sin bloquear el hilo. `launch` inicia una corrutina; `viewModelScope` la ata al ciclo de vida del ViewModel (se cancela sola si el ViewModel muere). `withContext(Dispatchers.IO)` mueve el trabajo pesado a un pool de hilos de E/S.
+
+**Analogía:** una corrutina es como pedir comida y recibir un buzón vibrador: no te quedas parado en la caja bloqueando la fila (el hilo), te vas a tu mesa y el buzón te avisa cuando está lista. `suspend` es ese "te aviso cuando esté".
+
+#### Paso 4 · Demostración guiada desde cero
+
+```kotlin
+import kotlinx.coroutines.*
+
+suspend fun cargarEnvios(): List<String> {
+    delay(1000)                       // simula una llamada de red (suspende, no bloquea)
+    return listOf("RF-4471", "RF-5002")
+}
+
+fun main() = runBlocking {            // runBlocking solo para este ejemplo de consola
+    println("Cargando…")
+    val envios = withContext(Dispatchers.Default) { cargarEnvios() }
+    println("Recibidos: $envios")
+}
+```
+
+**Ejecuta el ejemplo** (necesita la dependencia `kotlinx-coroutines-core`; en un módulo Android ya está disponible):
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+En Android Studio, pulsa el ▶ junto a `fun main()`.
+
+**Resultado esperado:** imprime "Cargando…", espera ~1 segundo (la corrutina suspende sin bloquear) y luego "Recibidos: [RF-4471, RF-5002]". En un ViewModel real usarías `viewModelScope.launch { ... }` en vez de `runBlocking`. **Fallo deliberado:** reemplaza `delay(1000)` por `Thread.sleep(1000)`: `Thread.sleep` BLOQUEA el hilo de verdad (no suspende), que es exactamente lo que causa el ANR en una app real. Diagnostica la diferencia entre suspender (liberar el hilo) y bloquear (retenerlo).
+
+#### Paso 5 · Práctica guiada
+Lanza DOS cargas en paralelo con `async`/`await` y mide que juntas tardan ~1 segundo, no 2. Pista: `async` devuelve un `Deferred`; `await()` espera su resultado; dos `async` corren concurrentemente.
+
+#### Paso 6 · Práctica independiente
+Simula un error en `cargarEnvios` (lanza una excepción) y manéjalo con `try/catch` dentro de la corrutina, devolviendo una lista vacía. Explica por qué el `try/catch` funciona aunque el código sea asíncrono.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la carga asíncrona, las dos cargas en paralelo y el manejo de error. **¿Por qué es importante?** Toda operación de red, base de datos o archivo en Android se hace con corrutinas: `viewModelScope`, `Dispatchers.IO`, `suspend` aparecen en cada módulo del track a partir del 4. Entenderlas aquí convierte el resto del curso en comprensible. Fuentes: [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) y [Android — Coroutines](https://developer.android.com/kotlin/coroutines).
+**Conceptos clave:** `suspend`, `launch`, `async`/`await`, `viewModelScope`, `Dispatchers`, suspender vs bloquear.
+**Cuándo no usarlo:** para trabajo puramente síncrono y rápido (una suma, formatear un texto) no necesitas corrutinas; añaden complejidad sin beneficio. Son para operaciones que esperan (E/S) o que tardan.
+
+**Transferencia al proyecto integrador «RutaFlow»:** carga la lista de envíos en el ViewModel con `viewModelScope.launch` y `Dispatchers.IO`, y confirma que la UI no se congela durante la carga.
 
 ---
 

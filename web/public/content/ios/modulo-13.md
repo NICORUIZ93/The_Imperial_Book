@@ -28,6 +28,14 @@ func envioID(from url: URL, session: Session) throws -> EnvioID {
     return id
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: `envioID(from:session:)` lanza `.malformed` si la URL no tiene exactamente la forma esperada, y lanza `.forbidden` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual — nunca abre un envío solo porque la URL "se ve bien".
 #### Paso 5 · Práctica guiada
 Pista: quitá la línea `guard session.puedeLeer(id) else { throw LinkError.forbidden }` "porque ya validamos la estructura de la URL arriba" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, exactamente la amenaza que la verificación de dominio no cubre por sí sola.
@@ -113,6 +121,14 @@ func guardarToken(_ data: Data, conductorID: String) throws {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: el token queda en Keychain con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` (no migra a otro dispositivo vía backup ni es legible con el teléfono bloqueado); buscar el string del token en los logs de la app no encuentra ninguna coincidencia.
 #### Paso 5 · Práctica guiada
 Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .utf8) ?? "")")` justo después de `SecItemAdd` "para depurar" — ese es el fallo deliberado: ahora el token completo del conductor queda en los logs del sistema en texto plano, exactamente la copia secundaria sin control que vuelve inútil haber usado Keychain para el almacén principal.
@@ -201,6 +217,14 @@ actor MotorSincronizacion {
     }
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendiente` con un `id` fijo; cuando vuelve la conectividad, `MotorSincronizacion.vaciar()` envía esa misma confirmación identificada por ese `id` — si el servidor ya la había procesado antes de que se perdiera la respuesta, reconoce el mismo `id` y no la aplica dos veces.
 #### Paso 5 · Práctica guiada
 Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
@@ -291,6 +315,14 @@ func sincronizacionMedida() async throws {
     try await motorSincronizacion.vaciar()
 }
 ```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
 Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
 #### Paso 5 · Práctica guiada
 Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
@@ -346,6 +378,203 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, `sincronizacionMedida` vive en `examples/ios-lab/Sources/RutaFlowLab/MotorSincronizacion.swift`.
+
+### Tema 5: Keychain — guardar secretos de forma segura
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás guardar y leer un token de sesión en el **Keychain** de iOS, y explicar por qué nunca se guarda un secreto en `UserDefaults`. Prerrequisitos: Temas 1-2 de este módulo (seguridad y copias de datos).
+
+#### Paso 2 · Contexto y caso real
+Tras el login, la app de RutaFlow recibe un token JWT (Módulo 5). Si lo guardas en `UserDefaults`, queda en texto plano en un `.plist` legible, accesible en un backup o en un dispositivo con jailbreak. El Keychain lo guarda cifrado por el sistema, protegido por el hardware de seguridad del dispositivo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`UserDefaults` es para preferencias no sensibles (tema claro/oscuro, última pestaña). El **Keychain** es el almacén cifrado del sistema para secretos (tokens, contraseñas, claves), con control de acceso por biometría y atributos de accesibilidad (`kSecAttrAccessibleWhenUnlocked`).
+
+**Analogía:** `UserDefaults` es la libreta de notas en tu escritorio (cualquiera que entre la lee); el Keychain es la caja fuerte empotrada del edificio, cifrada y con control de quién la abre y cuándo.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `Sources/RutaFlowApp/Llavero.swift`:
+
+```swift
+import Foundation
+import Security
+
+enum Llavero {
+    static func guardar(_ token: String, cuenta: String) {
+        let dato = Data(token.utf8)
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: cuenta,
+            kSecValueData as String: dato,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
+        ]
+        SecItemDelete(query as CFDictionary)        // borra el anterior si existe
+        SecItemAdd(query as CFDictionary, nil)       // guarda cifrado por el sistema
+    }
+
+    static func leer(cuenta: String) -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: cuenta,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ]
+        var resultado: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &resultado) == errSecSuccess,
+              let dato = resultado as? Data else { return nil }
+        return String(decoding: dato, as: UTF8.self)
+    }
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode, pega el código y úsalo desde una vista con un botón que llame a `Llavero.guardar(...)` y `Llavero.leer(...)`):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** `Llavero.guardar("jwt-abc", cuenta: "sesion")` seguido de `Llavero.leer(cuenta: "sesion")` devuelve `"jwt-abc"`, y el valor NO aparece en ningún `.plist` legible. **Fallo deliberado:** guarda el token en `UserDefaults.standard.set(token, forKey: "token")` y localiza el archivo de preferencias en el contenedor de la app del simulador: el token está en texto plano. Diagnostica por qué eso es una fuga de credenciales esperando a ocurrir.
+
+#### Paso 5 · Práctica guiada
+Añade un método `borrar(cuenta:)` que elimine el token al cerrar sesión. Pista: usa `SecItemDelete` con la misma query de clase y cuenta.
+
+#### Paso 6 · Práctica independiente
+Protege la lectura del token con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` y explica la diferencia frente a `WhenUnlocked` respecto a backups y migración a otro dispositivo.
+
+#### Paso 7 · Cierre y evidencia
+Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿Por qué es importante?** Toda app con login maneja un token, y dónde lo guardas es una decisión de seguridad real: el Keychain es el único lugar correcto en iOS. Equivocarse aquí es una de las fallas de seguridad móvil más comunes. Fuentes: [Apple — Keychain Services](https://developer.apple.com/documentation/security/keychain_services).
+**Conceptos clave:** Keychain vs UserDefaults, `SecItemAdd`/`SecItemCopyMatching`, atributos de accesibilidad, cifrado del sistema.
+**Cuándo no usarlo:** no uses Keychain para datos no sensibles o grandes (preferencias de UI, cachés): es más lento y limitado; resérvalo para secretos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda el JWT de sesión en el Keychain tras el login y bórralo al cerrar sesión; confirma que no queda rastro en UserDefaults.
+
+### Tema 6: Permisos y privacidad — pedir acceso con criterio
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en `Info.plist` y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega. Prerrequisitos: Temas 1-2 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+RutaFlow necesita la ubicación del repartidor. iOS exige declarar POR QUÉ la quieres (en `Info.plist`) y mostrar un diálogo de permiso; si pides sin declarar el motivo, la app crashea; si pides al arrancar sin contexto, el usuario deniega. Pedir bien es una habilidad de producto y de App Store (un motivo pobre puede hacer que rechacen la app).
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Cada dato sensible (ubicación, cámara, contactos, notificaciones) requiere: (1) una clave de uso en `Info.plist` con una explicación en lenguaje humano, y (2) una solicitud en runtime en el momento con contexto. El usuario puede conceder, denegar o conceder "solo esta vez".
+
+**Analogía:** pedir un permiso es como pedir una llave: si no explicas para qué (Info.plist) el portero (iOS) no te deja ni preguntar; y si pides todas las llaves nada más entrar, desconfían y dicen que no. Pides la llave concreta cuando vas a usar esa puerta.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Primero declara el motivo en `Info.plist` (clave `NSLocationWhenInUseUsageDescription`): `"RutaFlow usa tu ubicación para asignarte las entregas más cercanas."` Luego crea `Sources/RutaFlowApp/GestorUbicacion.swift`:
+
+```swift
+import CoreLocation
+
+@Observable
+class GestorUbicacion: NSObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+    var estado: CLAuthorizationStatus = .notDetermined
+
+    override init() {
+        super.init()
+        manager.delegate = self
+    }
+
+    func pedirPermiso() {
+        manager.requestWhenInUseAuthorization()   // muestra el diálogo del sistema
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        estado = manager.authorizationStatus
+    }
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto, añade la clave a Info.plist, pega el código y llama a `pedirPermiso()` desde un botón):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** al pulsar el botón aparece el diálogo del sistema con tu texto de motivo; conceder cambia `estado` a `.authorizedWhenInUse`, denegar lo deja en `.denied`. **Fallo deliberado:** quita la clave `NSLocationWhenInUseUsageDescription` del `Info.plist` y pide el permiso: la app **crashea** inmediatamente con un mensaje sobre la descripción de uso faltante. Diagnostica por qué iOS obliga a declarar el motivo antes de permitir siquiera preguntar.
+
+#### Paso 5 · Práctica guiada
+Maneja el estado `.denied` mostrando un mensaje que explique cómo habilitar el permiso desde Ajustes (no puedes volver a mostrar el diálogo una vez denegado). Pista: reacciona al `estado` en la vista.
+
+#### Paso 6 · Práctica independiente
+Añade el permiso de notificaciones (`UNUserNotificationCenter.requestAuthorization`) con su propia lógica de estado, y explica por qué conviene pedirlo tras una acción que lo justifique, no al arrancar.
+
+#### Paso 7 · Cierre y evidencia
+Entrega la solicitud de ubicación, el manejo de denegación y el crash por motivo faltante. **¿Por qué es importante?** Los permisos son la frontera de privacidad del usuario y un punto de revisión de la App Store. Pedirlos bien (con motivo claro, en el momento adecuado, manejando la negativa) es diferencia directa entre una app que se aprueba y una que se rechaza o se desinstala. Fuentes: [Apple — Requesting authorization](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
+**Conceptos clave:** clave de uso en Info.plist, solicitud en runtime, estados de autorización, denegación irreversible.
+**Cuándo no usarlo:** no pidas un permiso que no vas a usar de inmediato ni "por si acaso": cada permiso extra reduce la confianza y puede costar la aprobación en la App Store.
+
+**Transferencia al proyecto integrador «RutaFlow»:** pide la ubicación del repartidor en el momento en que acepta su primera entrega, con un motivo claro, y maneja el caso de denegación sin romper el flujo.
+
+### Tema 7: Notificaciones push con APNs
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación. Prerrequisitos: Tema 6 (permisos) de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Cuando se asigna una entrega a un repartidor, su app debe avisarle aunque esté cerrada. Eso solo es posible con push: el backend de RutaFlow (Módulo Spring/Node) envía la notificación a APNs, y APNs la entrega al dispositivo correcto usando su device token.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y recibe un **device token** único; (3) la app envía ese token a tu backend; (4) cuando hay un evento, tu backend le pide a APNs que entregue una notificación a ese token. La app no "recibe" del backend directamente: APNs es el intermediario de confianza de Apple.
+
+**Analogía:** el device token es como la dirección postal del dispositivo, y APNs es el servicio de correos oficial de Apple: tu backend no entrega la carta en mano, se la da a correos (APNs) con la dirección (token), y correos la entrega.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `Sources/RutaFlowApp/AppDelegate.swift`:
+
+```swift
+import SwiftUI
+import UserNotifications
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ app: UIApplication,
+                     didFinishLaunchingWithOptions opts: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { concedido, _ in
+            guard concedido else { return }
+            DispatchQueue.main.async { app.registerForRemoteNotifications() }  // pide el device token
+        }
+        return true
+    }
+
+    func application(_ app: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let token = deviceToken.map { String(format: "%02x", $0) }.joined()
+        print("Device token APNs:", token)   // se enviaría al backend de RutaFlow
+    }
+}
+
+@main
+struct RutaFlowApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    var body: some Scene { WindowGroup { ContentView() } }
+}
+```
+
+**Ejecuta el ejemplo** (requiere capability "Push Notifications" en el target; en Simulador se puede probar con un archivo `.apns`):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** al conceder el permiso, la consola imprime el device token (una cadena hex larga). En el Simulador, arrastrar un archivo `.apns` con el payload sobre la ventana muestra la notificación. **Fallo deliberado:** omite `registerForRemoteNotifications()`: nunca llega el device token, y aunque el permiso esté concedido, el backend no tiene a dónde enviar. Diagnostica por qué el permiso y el registro son dos pasos distintos y ambos necesarios.
+
+#### Paso 5 · Práctica guiada
+Maneja `didFailToRegisterForRemoteNotificationsWithError` para registrar (log) el caso en que el registro falla (por ejemplo, sin conexión o sin capability). Pista: es el callback hermano del de éxito.
+
+#### Paso 6 · Práctica independiente
+Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y almacena el device token por usuario, y explica por qué el token puede cambiar y hay que actualizarlo.
+
+#### Paso 7 · Cierre y evidencia
+Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
+**Conceptos clave:** APNs como intermediario, device token, permiso vs registro, payload de notificación.
+**Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
+
+**Transferencia al proyecto integrador «RutaFlow»:** registra el device token del repartidor y envíalo al backend; define el evento "entrega asignada" que dispara una push desde el servidor.
 
 ## Revisión oficial de plataforma — julio de 2026
 

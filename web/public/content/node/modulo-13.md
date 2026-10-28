@@ -32,6 +32,15 @@ function parseCreateEnvio(value: unknown) {
   return CreateEnvioInput.parse(value);
 }
 ```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
 Resultado esperado: llamar a `parseCreateEnvio({ guia: 'RF-4471', direccion: 'Calle 10' })` devuelve el objeto tipado; llamar con `{ guia: 'XX', direccion: '' }` lanza un error de zod detallando qué campo falló, antes de que ese dato toque ninguna lógica de negocio real. Prueba ejecutando `npm test` con este parser.
 
 #### Paso 5 · Práctica guiada
@@ -143,6 +152,15 @@ Crea `docs/openapi.yaml` en la raíz de tu proyecto Node y ejecuta npm para ejec
           application/problem+json:
             schema: { $ref: '#/components/schemas/Problem' }
 ```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
 Resultado esperado: un test de contrato que envía requests reales contra la API y compara la respuesta contra este documento pasa en verde mientras ambos coincidan — y falla explícitamente en CI en cuanto alguien cambia la forma real de la respuesta sin actualizar el documento. Ejecuta `npm run test:contract` para validar.
 
 #### Paso 5 · Práctica guiada
@@ -240,6 +258,15 @@ SET status = 'completed', response_status = 201, resource_id = $4
 WHERE owner_id = $1 AND operation = 'create-envio' AND key = $2;
 COMMIT;
 ```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
 Resultado esperado: enviar la misma petición de creación de envío dos veces con la misma clave de idempotencia produce un único envío real en la base de datos; la segunda llamada recibe la misma respuesta `201` registrada la primera vez.
 
 #### Paso 5 · Práctica guiada
@@ -341,6 +368,15 @@ function validSignature(raw: Buffer, timestamp: string, receivedHex: string, sec
   return received.length === expected.length && timingSafeEqual(received, expected);
 }
 ```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
 Resultado esperado: un webhook con la firma correcta (calculada por el proveedor real con el secreto compartido) pasa la verificación; un POST falso sin conocer el secreto falla la comparación y se rechaza antes de procesar ningún cambio de estado.
 
 #### Paso 5 · Práctica guiada
@@ -397,7 +433,7 @@ reconciliador compara fuente/proyección -> replay auditado
 
 ### Línea LTS, línea Current y APIs del runtime
 
-Producción debe partir de **Node.js 24 LTS** mientras **Node.js 26** se evalúa como línea Current. Node 26 habilita `Temporal` por defecto y actualiza V8, Undici y deprecaciones; eso no justifica migrar sin probar dependencias, imágenes, rendimiento y observabilidad. Distingue API estable, experimental y retirada leyendo notas de la versión mayor y cada release de seguridad. El soporte nativo de TypeScript no reemplaza comprobación de tipos ni todas las transformaciones de un compilador.
+Producción debe partir de una línea **LTS**: hoy conviven **Node.js 24 LTS** (en mantenimiento) y **Node.js 26 LTS** (Active LTS desde octubre de 2026, soporte hasta abril de 2029). Node 26 habilita `Temporal` por defecto y actualiza V8, Undici y deprecaciones; que ya sea LTS no justifica migrar sin probar dependencias, imágenes, rendimiento y observabilidad. Distingue API estable, experimental y retirada leyendo notas de la versión mayor y cada release de seguridad. El soporte nativo de TypeScript no reemplaza comprobación de tipos ni todas las transformaciones de un compilador.
 
 **Aplicación al proyecto:** ejecuta contratos y benchmarks en una matriz 24/26, prueba fechas con Temporal, convierte deprecaciones en fallo controlado de CI y conserva Node 24 como runtime de despliegue hasta aprobar la evidencia.
 
