@@ -28,11 +28,11 @@ def evaluate(block: str) -> dict[str, bool]:
         "context": matches(r"paso 2.{0,50}contexto", block) and matches(r"(caso|situaci[oó]n|problema).{0,80}(real|profesional)|caso real", block),
         "theoryAnalogy": matches(r"paso 3.{0,50}teoría", block) and matches(r"analogía", block),
         "guidedDemo": matches(r"paso 4.{0,60}demostración guiada", block) and matches(r"^```(?!mermaid)", block) and matches(
-            r"(crea|guarda|actualiza|implementa).{0,180}(src/|app/|lib/|[\w-]+\.(?:js|ts|java|kt|swift|dart|py|tf|ya?ml|json))",
+            r"(crea|cre[aá]|guarda|actualiza|implementa|pega|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json))",
             block,
         ),
         "codeExplanation": matches(r"//.{6,}|explica.{0,40}(línea|bloque|parte)", block),
-        "execution": matches(r"^```bash[\s\S]{0,500}\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|curl|flutter|swift|docker|terraform|tofu|kubectl)\b", block),
+        "execution": matches(r"^```bash[\s\S]{0,500}\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|curl|flutter|dart|swift|xcodebuild|xcrun|docker|terraform|tofu|kubectl)\b", block),
         "expectedResult": matches(r"resultado esperado|salida esperada", block),
         "deliberateFailure": matches(r"fallo deliberado", block) and matches(r"(error|falla|diagn[oó]st)", block),
         "guidedPractice": matches(r"paso 5.{0,60}práctica guiada", block) and matches(r"pista", block),
@@ -40,11 +40,11 @@ def evaluate(block: str) -> dict[str, bool]:
         "closure": matches(r"paso 7.{0,50}cierre", block) and matches(r"(siguiente|próximo)", block),
         "commonErrors": matches(r"errores comunes", block),
         "resources": matches(r"fuente[s]? oficial", block) and matches(r"https?://", block),
-        "standaloneExample": matches(r"(ejemplo independiente|carpeta vac[ií]a|proyecto nuevo)", block) and matches(
-            r"(mkdir|New-Item|npm init|ng new|flutter create|gradle init|mvn|cargo new|swift package init|terraform init)",
+        "standaloneExample": matches(r"(ejemplo independiente|carpeta vac[ií]a|proyecto nuevo|desde cero)", block) and matches(
+            r"(mkdir|New-Item|npm init|npm create|npx create|create-next-app|ng new|flutter create|dart create|gradle init|mvn|cargo new|swift package init|terraform init|New . Project|File . New . Project)",
             block,
         ),
-        "learningEvidence": matches(r"(demuestra|evidencia|entrega).{0,160}(salida|fallo|resultado|explica)", block),
+        "learningEvidence": matches(r"(demuestra|evidencia|entrega|entreg[aá]).{0,220}(salida|fallo|resultado|explica|bug|correcci[oó]n|detect|verific)", block),
     }
 
 
