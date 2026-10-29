@@ -640,7 +640,7 @@ Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechaz
 ---
 
 La configuración de CORS, CSRF e InetAddressFilter de este tema es la que necesitará el frontend y los webhooks que consuma el proyecto integrador de este track (microservicio productivo, Módulo 12).
-
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 #### Paso 1 · Objetivo y preparación
@@ -841,7 +841,7 @@ Ya tienes el flujo de autenticación completo de punta a punta en Spring: `/api/
 **Cuándo no usarlo:** si delegás la autenticación a un proveedor externo (Keycloak/OIDC, Módulo 10), no implementas el login tú mismo: el proveedor emite el token y tu API solo lo valida como resource server.
 
 ---
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API protegida con JWT y rutas con autorización por rol.

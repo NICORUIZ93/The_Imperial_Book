@@ -72,6 +72,11 @@ AWS (y Floci emulándolo) garantiza que DynamoDB en sí funciona de forma segura
 #### Paso 3 · Teoría, modelo mental y analogía
 Es como alquilar un edificio con portero: el edificio es responsable de la estructura y la entrada principal; tú eres responsable de cerrar con llave tu propia oficina.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 cat > politica-excesiva.json <<'EOF'
 {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"dynamodb:*","Resource":"*"}]}

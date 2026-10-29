@@ -15,6 +15,8 @@ El proyecto integrador Fundamentos necesita, además de su CLI, una interfaz web
 Abrir una URL dispara pasos distintos: si el host es un dominio público, DNS traduce el nombre a una dirección IP; después el cliente abre una conexión TCP contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. `localhost` salta el primer paso — el sistema operativo lo resuelve a `127.0.0.1` sin consultar ningún servidor DNS —, así que en desarrollo local el cuello de botella casi nunca es la resolución de nombres: es que el puerto donde escucha tu servidor coincida exactamente con el puerto que pedís. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 mkdir ejemplo-url-servidor
 cd ejemplo-url-servidor
@@ -129,6 +131,8 @@ El proyecto integrador Fundamentos va a exponer una API HTTP simple para consult
 Una petición HTTP es texto estructurado: un método (`GET`, `POST`...), una ruta, una versión, cabeceras y, a veces, un cuerpo. Una respuesta es simétrica: una línea de estado con un código numérico, cabeceras y, a veces, un cuerpo. El código de estado por sí solo ya es un contrato observable: un cliente puede decidir si algo salió bien (`2xx`), si el problema es suyo (`4xx`) o del servidor (`5xx`) sin necesidad de parsear el cuerpo de la respuesta. La analogía: pedís algo por correo certificado — el acuse de recibo (código de estado) te confirma la entrega sin que tengas que abrir el sobre (el cuerpo) para saberlo.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 mkdir ejemplo-http-contrato
 cd ejemplo-http-contrato
@@ -290,7 +294,7 @@ python3 -m http.server 8000
 <input id="guia" name="guia">
 ```
 Volvé a inspeccionar: ahora el campo se anuncia como "Número de guía, edit text". Confirmalo también desde la consola del navegador: `document.querySelector('#guia').labels` devolvía una lista vacía antes de agregar el label, y ahora devuelve el label real — es el propio DOM, no solo la vista, confirmando la relación.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: hacé clic directamente sobre el texto "Número de guía" (no sobre el input) — si el `for` coincide con el `id` real, el clic enfoca el input igual que si lo hubieras tocado directamente; si eso no pasa, el `for` no coincide con el `id`.
 

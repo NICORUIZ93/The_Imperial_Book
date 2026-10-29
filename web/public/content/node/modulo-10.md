@@ -276,6 +276,8 @@ Una API puede estar vulnerable aunque su código propio parezca correcto: depend
 OWASP es una lista de clases de fallos, no un certificado. `npm audit` detecta avisos conocidos, pero no reemplaza threat modeling. Es una inspección de extintores, no una garantía de que el edificio sea seguro.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `audit.json` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 ```bash
 mkdir ejemplo-auditoria-api

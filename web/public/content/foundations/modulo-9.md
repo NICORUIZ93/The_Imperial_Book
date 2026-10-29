@@ -17,6 +17,13 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 Una precondición es lo que debe cumplirse antes de llamar a `transition`; una postcondición describe el resultado — el contrato de una caja fuerte, no todavía cómo están hechas las bisagras.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```text
 Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
 Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; si no, lanza ValueError
@@ -114,7 +121,7 @@ flowchart LR
 El contrato formal de este Tema vive directamente sobre el archivo real `examples/rutaflow/foundation/domain.py`: la precondición, transición y postcondición descritas arriba son, literalmente, la especificación en prosa de lo que esas pocas líneas de código ya implementan.
 
 **Límites y decisión de uso:** Una especificación lógica solo protege las propiedades que expresa. Añade casos límite y supuestos del entorno; una implementación puede satisfacer una condición parcial y seguir siendo incorrecta para requisitos omitidos.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 2: Conjuntos, relaciones, funciones e inducción
 
 #### Paso 1 · Objetivo y preparación
@@ -127,6 +134,13 @@ Al finalizar vas a confirmar que `ALLOWED_TRANSITIONS` de RutaFlow es, matemáti
 Una relación de equivalencia es reflexiva, simétrica y transitiva; un orden parcial es reflexivo, antisimétrico y transitivo — "es prerrequisito de" debería ser un orden, nunca una equivalencia, porque un envío entregado nunca vuelve a estar creado.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
 
@@ -215,6 +229,13 @@ Si `ALLOWED_TRANSITIONS` tuviera un ciclo (por ejemplo, `DELIVERED` pudiendo vol
 Un grafo dirigido sin ciclos (DAG) admite un orden topológico — como una lista de tareas donde cada una depende solo de las anteriores, nunca de una futura.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
 
@@ -312,7 +333,7 @@ flowchart LR
 ```
 
 `tiene_ciclo()` se aplicó arriba al grafo real construido desde `examples/rutaflow/foundation/domain.py` — el mismo archivo que sostiene el proyecto integrador Fundamentos desde el Módulo 6, ahora leído como estructura de grafo en vez de solo como función de transición.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 4: Probabilidad y evidencia para decisiones técnicas
 
 #### Paso 1 · Objetivo y preparación
@@ -325,6 +346,13 @@ Si RutaFlow necesitara decidir cuántas paradas por zona puede manejar antes de 
 La mediana y los percentiles describen mejor una distribución asimétrica que el promedio — informar solo el promedio puede ocultar que el 5% de las zonas con más paradas tarda muchísimo más que el resto.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 import time
 from statistics import mean, median, quantiles
@@ -409,7 +437,7 @@ flowchart LR
 Esta medición de percentiles corre sobre `nearest_neighbor_route`, definida en `examples/rutaflow/foundation/domain.py` — el mismo archivo del proyecto integrador que ya usaste en los tres Temas anteriores, ahora medido en tiempo real en vez de solo leído como lógica.
 
 **Límites y decisión de uso:** Una muestra pequeña o sesgada no permite generalizar resultados con certeza. Registra procedencia, tamaño y variabilidad, y distingue asociación de causalidad antes de elegir una solución a partir de una medición.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ## Construcción guiada del capítulo
 
 ### Proyecto 9: cuaderno de propiedades, grafos y evidencia

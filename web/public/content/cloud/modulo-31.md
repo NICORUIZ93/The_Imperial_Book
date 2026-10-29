@@ -12,6 +12,11 @@ Si RutaFlow tuviera que migrar su backend de AWS a Azure, la lógica de negocio 
 #### Paso 3 · Teoría, modelo mental y analogía
 Los principios de diseño (puerto + adaptador) son el plano; el SDK de DynamoDB o de Cosmos DB es la herramienta local específica que cada adaptador usa por detrás.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 grep -n "interface DeliveryRepository" examples/rutaflow/node/confirm-delivery.ts
 ```
@@ -121,6 +126,11 @@ El equipo de RutaFlow necesita un único entorno local que cubra AWS, Azure y GC
 #### Paso 3 · Teoría, modelo mental y analogía
 Un endpoint unificado es un aeropuerto de entrenamiento con servicios simulados: un solo lugar, una sola configuración, en vez de tres instalaciones separadas con reglas propias.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `docker-compose.yml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 docker compose up -d
 eval $(floci env)

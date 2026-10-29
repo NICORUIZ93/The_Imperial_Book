@@ -16,7 +16,7 @@ Compara los límites de transacción y el consumo de memoria con más de un chun
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás distinguir un `Job`, un `Step`, un `Tasklet` y un step orientado a chunks, y ejecutar un job reproducible. Genera un proyecto Spring Boot desde Initializr con `batch`, `jdbc` y `h2`; JDK 25+ y Maven.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 Cada noche se importa un archivo de pedidos. Cargarlo completo en una lista puede agotar memoria; detenerse al primer error obliga a rehacer manualmente el lote entero.
@@ -28,8 +28,13 @@ Cada noche se importa un archivo de pedidos. Cargarlo completo en una lista pued
 Un `Job` coordina la ejecución; sus `Step`s separan fases. Un `Tasklet` sirve para una tarea acotada (por ejemplo, marcar inicio de importación). El modelo chunk lee elementos, los procesa y escribe un bloque dentro de límites transaccionales: cada chunk confirmado queda persistido.
 
 `ItemReader` obtiene registros; `ItemProcessor` transforma o filtra; `ItemWriter` escribe un chunk. `JobRepository` mantiene metadatos de instancias y ejecuciones. `JobParameters` identifican una ejecución lógica y deben incluir parámetros estables como fecha de archivo, no una hora aleatoria que impida reanudar.
-
+**Analogía:** un `Job` es la receta completa de un menú; cada `Step` es un plato de esa receta. Un `Tasklet` es un paso que se hace de una sola vez (encender el horno); el *chunk processing* es una cadena de montaje que toma ingredientes de a lotes, los cocina y los emplata en grupos, en vez de uno por uno.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/batch/ImportJobConfig.java` dentro.
+```bash
+curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+```
+
 
 Incluye `src/main/resources/pedidos.csv` con:
 
@@ -106,7 +111,7 @@ Define `Job` con `new JobBuilder("importPedidos", jobRepository).start(importarP
 #### Paso 5 · Práctica guiada
 
 Implementa dos steps: validar archivo y luego importar. Compara `Tasklet` para registrar el resumen final con un step chunk para procesar cada fila. Añade un reader JDBC paginado (`JdbcPagingItemReader`) para leer desde una tabla sin materializar todos los resultados.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processor que normalice códigos y writer persistente con `JdbcBatchItemWriter`. Agrega conteos leídos, filtrados, escritos y fallidos. Verifica que la memoria usada no crece linealmente con el total de filas.
@@ -114,13 +119,16 @@ Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processo
 #### Paso 7 · Cierre y evidencia
 
 Entrega job, archivo fixture, test del step y conteos del lote como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no elijas Batch para una petición HTTP inmediata y pequeña; una cola/eventos o una operación síncrona pueden ser más apropiadas. **Evidencia:** tests con más de un chunk y SQL o logs que demuestren límites transaccionales.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás reanudar un job fallido desde su estado guardado, distinguir errores recuperables de registros inválidos y auditar el resultado del lote.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 El job procesó 80 000 filas cuando el sistema perdió conectividad. Reiniciar desde cero puede duplicar efectos; saltar silenciosamente cualquier error hace que la conciliación sea imposible.
@@ -132,8 +140,10 @@ El job procesó 80 000 filas cuando el sistema perdió conectividad. Reiniciar d
 Una instancia de job se identifica por nombre y parámetros de identificación; sus ejecuciones registran estado y contexto. La reanudación requiere que reader/writer y efectos externos sean compatibles con reinicio. `skip` aplica a datos no recuperables dentro de un límite y debe registrar la fila; `retry` aplica a fallos transitorios con límite/backoff. No clasifiques toda excepción como retryable.
 
 El listener observa inicio/fin para métricas, pero no reemplaza transacciones ni manejo de errores. Un efecto externo debe tener idempotencia para no duplicarse si el job reinicia después de enviarlo.
-
+**Analogía:** reiniciar un batch es como retomar una serie donde la dejaste, no desde el capítulo uno: los `JobParameters` son el marcador que recuerda dónde ibas. `retry` es volver a intentar una escena que salió mal; `skip` es saltarse un fotograma dañado para no frenar toda la reproducción; y los `listeners` son las notas al margen que registran qué pasó en cada tramo.
 #### Paso 4 · Demostración guiada
+**Crea** el archivo `src/main/java/academia/batch/ImportJobConfig.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 En `src/main/java/academia/batch/ImportJobConfig.java`, limita el retry a fallos transitorios y el skip a errores de parseo que el negocio permita excluir:
 
@@ -168,7 +178,7 @@ Ejecuta el job con `JobParameters` que incluyan `inputFile=pedidos.csv` y `runDa
 #### Paso 5 · Práctica guiada
 
 Añade retry acotado para un error temporal de base y skip para una fila con campo inválido; registra referencia y causa sin almacenar datos sensibles. Falla una escritura después de un efecto externo y demuestra por qué un envío de email o evento necesita outbox/idempotencia.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Diseña un plan para un lote de un millón de filas: chunk size, paginación, restart, deduplicación, archivo de errores y métricas. Como extensión, particiona por rangos disjuntos y programa el job con un scheduler; verifica que dos workers no reclamen el mismo rango.
@@ -176,3 +186,6 @@ Diseña un plan para un lote de un millón de filas: chunk size, paginación, re
 #### Paso 7 · Cierre y evidencia
 
 Entrega test de fallo y reinicio, parámetros exactos, conteos y política documentada de retry/skip para el proyecto integrador de RutaFlow: el lote de liquidación debe poder reanudarse sin duplicar pagos. **Cuándo no usarlo:** no llames `skip` a errores de infraestructura ni configures retry infinito; no ejecutes jobs simultáneos con parámetros que colisionan. **Evidencia:** log del primer fallo, reanudación y resultado final conciliado. Referencia: [Spring Batch Reference](https://docs.spring.io/spring-batch/reference/).
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).

@@ -306,6 +306,8 @@ Una prueba **E2E de sistema** levanta el backend real (con su base de datos real
 **Analogía:** las pruebas unitarias comprueban que cada pieza del coche funciona en el banco; la prueba E2E es la vuelta de prueba con el coche armado en la pista. Solo ahí descubres que el pedal encaja con el motor.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 Levanta el backend real con Docker Compose y ejecuta una prueba que recorra el flujo contra él:
 
 ```bash
@@ -360,7 +362,8 @@ Entrega la prueba E2E en verde, el fallo por contrato roto y la prueba desde Flu
 **Cuándo no usarlo:** no uses E2E para lo que una prueba unitaria o de componente cubre mejor (lógica interna): son lentas y frágiles. Resérvalas para los flujos de negocio críticos que cruzan el sistema completo.
 
 **Transferencia al proyecto integrador «RutaFlow»:** automatiza la prueba E2E del flujo "entrega asignada y confirmada" en el pipeline de CI, levantando backend y base de datos con Docker antes de ejecutarla.
-
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de RutaFlow](https://docs.flutter.dev/).
 ### Tema 4: Continuidad, costes y proyecto final
 
 **Conceptos clave:** backup, restore, RPO, RTO, game day, DR y coste por entrega.
@@ -409,6 +412,13 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Trabaja en una base local de laboratorio con las tablas `envios` y `envio_eventos` del módulo 1 y al menos un envío. Detén las escrituras durante la comparación; en un sistema activo necesitas coordinar una instantánea consistente. Instala los clientes PostgreSQL y configura `DATABASE_URL` para el origen y `PGHOST`, `PGPORT`, `PGUSER` para el servidor local de restauración, donde necesitas permiso para crear bases.
 

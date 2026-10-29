@@ -17,6 +17,13 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 Un programa es el archivo `domain.py`; un proceso es ese programa corriendo de verdad, con PID, memoria y descriptores propios — el kernel es el bibliotecario que presta esos recursos, nunca el programa accediendo directo al hardware.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 python3 -c "
 import time
@@ -83,8 +90,7 @@ flowchart LR
     KERNEL --> DISK["disco"]
     KERNEL --> NET["red"]
 ```
-
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 #### Profundización · Dos instancias del CLI, dos procesos distintos
 
 Lanzá el gestor de tareas del proyecto integrador dos veces en paralelo (`python3 cli.py list &` repetido dos veces) e inspeccioná ambas con `ps -o pid,ppid,etime,command | grep cli.py`.
@@ -107,6 +113,13 @@ Si dos procesos de asignación intentaran reservar un lugar en el mismo vehícul
 `capacidad = capacidad - 1` no es una operación atómica: es leer, calcular y escribir — dos hilos pueden leer el mismo valor antes de que ninguno escriba, perdiendo una actualización, igual que dos agentes vendiendo el mismo último asiento desde copias separadas.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 from threading import Thread
 
@@ -201,7 +214,7 @@ sequenceDiagram
 El proyecto integrador Fundamentos tiene la misma sección crítica escondida en `almacenamiento.py`: si dos invocaciones de `python3 cli.py add` corrieran en paralelo, ambas podrían leer la misma lista de tareas antes de que ninguna la reescriba, y una de las dos tareas agregadas se perdería silenciosamente — el mismo patrón de leer-calcular-escribir sin lock que este Tema demuestra con `capacidad["disponible"]`.
 
 **Límites y decisión de uso:** Más concurrencia no implica más velocidad y puede introducir carreras o presión de memoria. Identifica estado compartido y trabajo independiente antes de añadir tareas; compara resultados y recursos con la versión secuencial.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 3: Linux como entorno observable
 
 #### Paso 1 · Objetivo y preparación
@@ -214,6 +227,13 @@ Si el servicio que calcula rutas para RutaFlow dejara de responder, un operador 
 Operar un servicio es como la medicina clínica: observás signos (CPU, puertos, logs) antes de intervenir, en vez de "reiniciar y ver si se arregla".
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 python3 -m http.server 8000 --directory /tmp &
 sleep 1
@@ -275,7 +295,7 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Identifica proceso, puerto y logs del gestor en Linux. Detén únicamente el proceso de laboratorio y conserva el diagnóstico que diferencia aplicación detenida de error en sus datos.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 4: Contenedores: aislamiento reproducible
 
 #### Paso 1 · Objetivo y preparación
@@ -364,7 +384,7 @@ flowchart TB
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Empaqueta el gestor y ejecuta su prueba de humo desde un contenedor limpio. Recrea el proceso y comprueba qué datos persisten mediante el volumen, sin depender de archivos de tu equipo.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ## Construcción guiada del capítulo
 
 ### Proyecto 8 — Inventario operable en un contenedor

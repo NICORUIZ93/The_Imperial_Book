@@ -50,6 +50,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Crea una carpeta independiente, levanta un Postgres local y aplica el esquema real de `envios` + historial:
 
@@ -125,7 +127,7 @@ Entrega `schema.sql`, la salida de la consulta con los dos eventos, y la salida 
 **Transferencia al proyecto integrador «RutaFlow»:** Añade el esquema de envíos e historial a migraciones versionadas. Inserta una transición válida e intenta modificar el hecho anterior; guarda la evidencia de integridad y la política de corrección mediante eventos nuevos.
 
 **Límites y decisión de uso:** Un historial append-only conserva evidencia, pero no impide insertar hechos falsos o duplicados. Valida identidad y transiciones y controla permisos; corrige mediante nuevos eventos, con una política distinta para datos personales que requieran tratamiento especial.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 2: Geografía con precisión útil
 
 **Conceptos clave:** PostGIS, SRID, índices, distancia, geocodificación y privacidad.
@@ -174,6 +176,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Usa el mismo Postgres del Tema anterior y activa PostGIS:
 
@@ -240,7 +244,7 @@ Entrega `conductores.sql`, la salida con la distancia correcta en metros y la sa
 **Transferencia al proyecto integrador «RutaFlow»:** Consulta candidatos cercanos a una recogida con coordenadas conocidas. Verifica distancia, unidad y precisión, y conserva un caso donde cercanía geográfica no equivale a menor tiempo de conducción.
 
 **Límites y decisión de uso:** Distancia geodésica y precisión decimal no predicen tiempo de conducción ni calidad del GPS. Considera red vial, antigüedad y error reportado; no asignes una entrega solo porque un punto parece cercano en el mapa.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 3: Ledger de doble partida
 
 **Conceptos clave:** cuentas, débitos, créditos, tarifas versionadas y conciliación.
@@ -293,6 +297,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Usa el mismo Postgres de los Temas anteriores:
 
@@ -360,3 +366,4 @@ Entrega `ledger.sql`, la salida vacía de la verificación para el asiento balan
 **Transferencia al proyecto integrador «RutaFlow»:** Registra un cobro con contrapartidas balanceadas y una corrección mediante reverso. Comprueba igualdad de débitos y créditos por asiento y moneda, sin editar movimientos históricos para cuadrar el saldo.
 
 **Límites y decisión de uso:** Que un asiento balancee no demuestra que represente un cobro autorizado o verdadero. Conserva referencia del hecho, moneda e idempotencia y concilia con la fuente externa; no mezcles monedas para forzar una suma cero.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

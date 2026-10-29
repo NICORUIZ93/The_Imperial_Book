@@ -645,6 +645,13 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+```bash
+ng new ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tracking --standalone --skip-git --defaults`), crea la carpeta de la feature `tracking` con sus archivos relacionados:
 
@@ -767,6 +774,13 @@ Un **pipe** (`|`) transforma un valor solo para mostrarlo, sin cambiar el dato (
 **Analogía:** un pipe es un filtro de Instagram sobre una foto (cambia cómo se ve, no la foto original); una directiva es un accesorio que le pones a un mueble (una rueda, una luz) que cambia cómo se comporta sin rehacer el mueble.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+```bash
+ng new ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 ```typescript
 // distancia.pipe.ts — transforma metros en texto legible
@@ -817,7 +831,10 @@ Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-n
 **Cuándo no usarlo:** no crees una directiva/pipe para algo que se usa en un solo sitio y una sola vez; su valor está en la reutilización. Para lógica compleja de negocio, un servicio es más apropiado que un pipe.
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** crea el pipe `distancia` y la directiva `appResaltar` y úsalos en la tabla de envíos para mostrar distancias legibles y marcar los urgentes.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Angular](https://angular.dev/).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un componente Tarjeta reutilizable con inputs/outputs basados en signals, control de flujo nativo, content projection y manejo correcto del ciclo de vida.

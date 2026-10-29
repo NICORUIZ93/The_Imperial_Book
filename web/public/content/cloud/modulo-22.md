@@ -81,6 +81,11 @@ El tráfico de los clientes y conductores de RutaFlow hacia la API de seguimient
 #### Paso 3 · Teoría, modelo mental y analogía
 Un certificado ACM es una matrícula criptográfica real con fecha y autoridad verificable, aunque en Floci se emita al instante en vez de esperar la validación real de DNS.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 CERT_ARN=$(aws acm request-certificate --domain-name api.demo.example.com --validation-method DNS \
   --query 'CertificateArn' --output text)
@@ -254,6 +259,11 @@ La API de seguimiento de RutaFlow (servida por `demo-alb`, no por archivos está
 #### Paso 3 · Teoría, modelo mental y analogía
 ACM es la identidad criptográfica; el ALB es la recepción que termina esa conexión TLS; Route53 es el directorio que le dice al cliente a qué recepción ir.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws elbv2 add-listener-certificates --listener-arn "$LISTENER_ARN" --certificates CertificateArn="$CERT_ARN"
 aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch \

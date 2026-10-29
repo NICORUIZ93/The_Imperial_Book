@@ -91,6 +91,8 @@ El equipo de Pedidos y el equipo de Conductores mantienen cada uno su propio ser
 Apollo Federation permite que cada subgrafo declare una entidad con una clave (`@key`) y que OTRO subgrafo extienda esa entidad agregando campos propios, sin acceso directo a la base de datos del otro; un gateway compone ambos esquemas en un supergrafo único, resolviendo cada campo contra el subgrafo que lo declaró. La analogía: dos oficinas distintas que comparten únicamente un número de legajo común, cada una completando su propia parte del expediente sin acceso a los archivos internos de la otra.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 Desde la raíz del repositorio prepara una copia independiente del laboratorio completo:
 ```bash
 cp -R examples/node-federation ejemplo-federation
@@ -322,6 +324,8 @@ La imagen actual del servicio de pedidos corre como `root` dentro del contenedor
 Un build multi-stage separa la etapa de instalación de dependencias (que necesita herramientas de build) de la imagen final de ejecución (mínima, sin esas herramientas); correr como un usuario no-root limita el daño si el proceso es comprometido; manejar `SIGTERM` explícitamente permite terminar las conexiones en curso antes de salir. La analogía: cerrar un restaurante ordenadamente (dejar de recibir clientes nuevos, pero terminar de atender a los que ya están sentados) frente a apagar las luces de golpe con gente todavía comiendo.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/servidor.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Crea `Dockerfile`:
 

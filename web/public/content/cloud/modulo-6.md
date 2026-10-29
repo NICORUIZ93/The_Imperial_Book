@@ -189,6 +189,7 @@ aws lambda add-permission --function-name confirmar-entrega --statement-id apigw
 Resultado esperado: `put-integration` confirma `type: AWS_PROXY`; `add-permission` devuelve la política de recurso agregada a `confirmar-entrega` — sin ese segundo comando, API Gateway no tiene autorización para invocar la función aunque la integración esté bien configurada.
 #### Paso 5 · Práctica guiada
 Pista: comentá mentalmente (o probá de verdad) qué pasaría si NO hubieras corrido el `add-permission` del Paso 4 — ese es el fallo real documentado en el laboratorio de este módulo: el `curl` contra el endpoint responde con un error 500 genérico, aunque invocar `confirmar-entrega` directamente con `aws lambda invoke` funcione perfecto. El problema nunca está en la Lambda en sí, está en el permiso que falta entre los dos servicios.
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Confirmá el permiso ya otorgado con `aws lambda get-policy --function-name confirmar-entrega`, y ubicá dentro del JSON el `Sid: apigw-entregas` con el `Resource` apuntando a tu `API_ID` — esa es la diferencia concreta entre "configurado" y "autorizado".
 #### Paso 7 · Cierre y evidencia
@@ -243,7 +244,7 @@ En el proyecto integrador RutaFlow, esta misma integración proxy y el `AWS::Lam
 implícito que SAM genera a partir del evento `Api:` de `ConfirmarEntregaFn` en
 `examples/rutaflow/cloud/template.yaml` reemplazan en producción los dos comandos manuales
 (`put-integration` y `add-permission`) que ejecutaste arriba.
-
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 4: Mapeo de entrada/salida y validación con modelos
 
 #### Paso 1 · Objetivo y preparación

@@ -12,6 +12,11 @@ El panel de seguimiento consulta la posición GPS más reciente de cada conducto
 #### Paso 3 · Teoría, modelo mental y analogía
 Cache-aside es una estantería de consulta rápida con vencimiento: preguntás primero ahí, y solo vas al almacén completo (la base de datos) si no está.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 PUERTO=$(aws elasticache describe-replication-groups --replication-group-id demo-cache \
   --query 'ReplicationGroups[0].NodeGroups[0].PrimaryEndpoint.Port' --output text)
@@ -128,6 +133,11 @@ Si el servicio de RutaFlow que lee posiciones GPS tuviera el puerto de `demo-cac
 #### Paso 3 · Teoría, modelo mental y analogía
 Crear el clúster instala la flota; `describe-replication-groups` es preguntarle a recepción "¿en qué habitación me hospedé?" en vez de asumir que siempre es la misma.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 PUERTO=$(aws elasticache describe-replication-groups --replication-group-id demo-cache \
   --query 'ReplicationGroups[0].NodeGroups[0].PrimaryEndpoint.Port' --output text)

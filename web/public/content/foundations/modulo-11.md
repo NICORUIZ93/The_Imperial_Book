@@ -17,6 +17,11 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 El sistema operativo coordina recursos como el administrador de una mesa compartida por turnos: cada proceso usa la CPU por un tiempo fijo (quantum) y vuelve a la cola si le queda trabajo.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `round_robin.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Ejecutá el `round_robin.py` de más abajo con los procesos `gps` (ráfaga 5) y `sync` (ráfaga 3) y `quantum=2`.
 #### Paso 5 · Práctica guiada
 Pista: cambiá `quantum = 0` y volvé a correr el simulador — ese es el fallo deliberado: el programa nunca avanza, porque ningún proceso consume CPU con un quantum nulo; `quantum` tiene que ser mayor que cero para que el planificador tenga sentido.
@@ -111,6 +116,11 @@ Antes de buscar un envío en `ShipmentEvents`, RutaFlow necesita confirmar que l
 #### Paso 3 · Teoría, modelo mental y analogía
 Un autómata recorre un texto carácter por carácter, cambiando de estado — cada carácter abre o cierra el camino hacia un estado válido, como seguir un mapa de decisiones fijo.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `tracking_parser.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Ejecutá el `tracking_parser.py` de más abajo contra `"RF-2048"`, `"RF-20A8"` y `"RF-12345"`.
 #### Paso 5 · Práctica guiada
 Pista: quitá la comprobación `digits == 4` del `return` final, dejando que acepte cualquier cantidad de dígitos — ese es el fallo deliberado: `"RF-12345"` (5 dígitos) pasaría a ser válido, aceptando guías con una forma distinta a la que RutaFlow realmente usa.
@@ -220,6 +230,11 @@ RutaFlow necesita saber el tiempo promedio de entrega por zona para decidir dón
 #### Paso 3 · Teoría, modelo mental y analogía
 Una base de datos es un archivo con reglas de acceso y consistencia; la base operacional es la libreta de trabajo del día, el almacén analítico es el archivo histórico que se consulta para comparar periodos.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `delivery_data.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Ejecutá el `delivery_data.py` de más abajo y confirmá que agrupa minutos de entrega por zona (`norte`/`sur`).
 #### Paso 5 · Práctica guiada
 Pista: intentá insertar una entrega con `minutes = 0` — ese es el fallo deliberado: la restricción `CHECK(minutes > 0)` rechaza el dato con un error real de SQLite, no en silencio; si quitaras esa restricción, el promedio seguiría calculándose, pero sobre un dato que no debería existir.
@@ -289,6 +304,11 @@ Antes de entrenar un modelo complejo para predecir cuánto va a tardar una entre
 #### Paso 3 · Teoría, modelo mental y analogía
 Aprender es ajustar una función con datos y validar con datos que el modelo nunca vio — la línea base es el rival mínimo que cualquier modelo nuevo debe superar.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `delay_baseline.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Ejecutá el `delay_baseline.py` de más abajo y confirmá `predicción=28.0, mae=4.0`.
 #### Paso 5 · Práctica guiada
 Pista: calculá la predicción usando TODOS los minutos (entrenamiento + prueba mezclados) en vez de solo `training_minutes` — ese es el fallo deliberado (fuga de datos): el modelo "adivinaría" mejor de lo que realmente podría en producción, porque ya vio los datos que se supone debía predecir.
@@ -392,6 +412,11 @@ Si el panel de seguimiento de RutaFlow necesitara reorientar el mapa de una zona
 #### Paso 3 · Teoría, modelo mental y analogía
 Un gráfico traduce variables y escalas en una comparación visible; una rotación es una transformación que debe conservar propiedades conocidas, como la distancia entre dos puntos.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `transform.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Ejecutá el `transform.py` de más abajo y confirmá que rotar `(1.0, 0.0)` por 90 grados da `(0.0, 1.0)`.
 #### Paso 5 · Práctica guiada
 Pista: quitá el `round(..., 6)` de la impresión final — ese es el fallo deliberado: vas a ver un número diminuto distinto de cero donde esperabas exactamente `0.0` (algo como `6.123e-17`); no es un error de la fórmula de rotación, es precisión finita de punto flotante, y confundir ambas cosas lleva a "corregir" código que ya era correcto.
@@ -484,6 +509,11 @@ Si alguien reporta "RutaFlow está lento", esa frase no es evidencia ni una deci
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada capa de ingeniería profesional tiene contrato, amenaza, prueba y responsable; evidencia es lo observado, inferencia es la explicación provisional, decisión es la acción reversible.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `evidence.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Ejecutá el `evidence.py` de más abajo y confirmá que `Finding` imprime sus tres campos (`evidence`, `inference`, `decision`) por separado.
 #### Paso 5 · Práctica guiada
 Pista: cambiá `frozen=True` por `False` en `Finding`, y modificá `finding.evidence` DESPUÉS de haber tomado la decisión — ese es el fallo deliberado: técnicamente funciona, pero destruye la trazabilidad; alguien podría reescribir la evidencia original para que coincida con la decisión ya tomada, en vez de que la decisión siga respaldada por lo que realmente se observó.

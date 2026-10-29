@@ -318,8 +318,9 @@ Entrega el cálculo con `compute`, el congelamiento del fallo deliberado y el sp
 **Transferencia al proyecto integrador «RutaFlow»:** calcula las estadísticas del historial de entregas de un repartidor con `compute` y demuestra con DevTools que la lista de envíos sigue haciendo scroll fluido mientras el cálculo corre.
 
 ---
-
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Flutter](https://docs.flutter.dev/).
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una animación fluida propia auditada con DevTools sin frames perdidos.

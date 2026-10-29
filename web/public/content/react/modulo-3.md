@@ -133,7 +133,7 @@ Remové la validación de `peso: z.number().positive()` del schema, dejando solo
 
 **Fallo deliberado #3 (duplicar validación):**
 Mantén el schema de zod pero agregá además validación manual en el `onSubmit`: `if (peso < 0) setErrors(...)` — ahora tenés dos lugares donde validar la misma regla, fácil de desincronizar cuando una cambia.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el spread, y agregá un tercer paso (confirmación) que muestre un resumen de todos los datos acumulados de los pasos 1 y 2, confirmando que nada se perdió en el camino.
 

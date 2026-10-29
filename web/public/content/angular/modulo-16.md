@@ -38,6 +38,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/app/app.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Requisitos reales del proyecto (alpha, pueden cambiar entre versiones `0.x`): Angular 22, Expo SDK 57, React Native 0.86 con la New Architecture, y Node 22.18 o posterior. Crea el proyecto con el template oficial:
 
@@ -148,6 +150,11 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/lista-entregas.ts` dentro.
+```bash
+ng new ejemplo
+```
+
 
 Sobre el proyecto `rutaflow-conductor` del Tema 1, crea `src/app/lista-entregas.ts`:
 
@@ -254,6 +261,13 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/app.routes.ts` dentro.
+```bash
+ng new ejemplo
+```
+
+**Crea** el archivo `src/app/app.routes.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Define dos rutas en `src/app/app.routes.ts` y usa el servicio de ubicación inyectado en el detalle:
 
@@ -380,6 +394,11 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/detalle-entrega.test.ts` dentro.
+```bash
+ng new ejemplo
+```
+
 
 Sobre `rutaflow-conductor`, ejecuta la suite de pruebas sin simulador que el proyecto ofrece (requiere el paquete de testing del template):
 
@@ -436,3 +455,4 @@ Ya aplicas un criterio explícito y verificable (no el entusiasmo de una demo) p
 **Cuándo no usarlo:** todavía no para el flujo de producción de un cliente final de RutaFlow, exactamente como el propio proyecto lo advierte en su README; sí es razonable para un piloto interno, una prueba de concepto con el equipo, o para dejarlo evaluado y listo para reconsiderar cuando alcance una versión `1.0` estable.
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** documenta en el README de `rutaflow-conductor` una decisión explícita de adopción (piloto interno / esperar a 1.0 / descartado) con la fecha y los tres criterios del Paso 3 que la sustentan, para que el equipo no tenga que repetir esta evaluación desde cero dentro de seis meses.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

@@ -306,6 +306,11 @@ El comando `tarea listar --estado pendiente` del proyecto integrador Fundamentos
 Un índice es una estructura auxiliar ordenada que SQLite mantiene junto a la tabla para localizar filas por el valor de una columna sin recorrerlas todas. `EXPLAIN QUERY PLAN` muestra, sin ejecutar realmente la consulta sobre los datos, qué estrategia usaría el motor: `SCAN TABLE` significa "voy a revisar cada fila una por una"; `SEARCH TABLE ... USING INDEX` significa "voy directo a las filas que coinciden". Un índice no es gratis: ocupa espacio en disco y SQLite debe actualizarlo en cada `INSERT`/`UPDATE`/`DELETE` sobre esa columna, no solo en cada lectura. La analogía: buscar un apellido en una guía telefónica ordenada alfabéticamente (índice) es muy distinto de buscarlo en una pila de fichas sueltas sin orden (`SCAN`) — pero si alguien agrega una ficha nueva, mantener la guía ordenada cuesta más trabajo que agregar la ficha al final de la pila.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/indice.sql` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Parte de la base `tareas.db` del Tema 1 y crea `src/indice.sql`:
 ```bash
 cd fundamentos-sqlite
@@ -423,6 +428,11 @@ El proyecto integrador Fundamentos necesita que marcar una tarea como completada
 Una transacción agrupa varias sentencias SQL como si fueran una sola unidad indivisible: o se aplican todas (`COMMIT`), o no se aplica ninguna (`ROLLBACK`). Esa garantía se resume en ACID: atomicidad (todo o nada), consistencia (las reglas declaradas — `CHECK`, `UNIQUE`, claves foráneas — se siguen cumpliendo), aislamiento (una transacción no ve resultados a medio terminar de otra) y durabilidad (lo confirmado con `COMMIT` sobrevive incluso a un corte de luz). Elegir SQL o NoSQL no es una cuestión de moda: depende de si tus datos necesitan esas garantías fuertes entre entidades relacionadas (pagos, reservas, un historial de cambios) o si cada registro es independiente y puede vivir sin relaciones estrictas (una sesión de caché, un documento con forma variable). La analogía: una transacción es una transferencia bancaria firmada ante un notario — o se completan todos los pasos del contrato, o el notario rompe el papel entero; no existe un mundo donde el dinero salió de una cuenta pero el contrato quedó "a medias".
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/transaccion.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Parte de la base `tareas.db` de los Temas anteriores y crea `src/transaccion.py`:
 ```bash
 cd fundamentos-sqlite

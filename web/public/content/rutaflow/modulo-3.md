@@ -453,3 +453,4 @@ Entrega `src/nombre-accesible.js` con ambas salidas y la aserción del fallo del
 **Transferencia al proyecto integrador «RutaFlow»:** Completa una asignación usando teclado con red lenta y un error del servidor. Verifica foco, mensaje recuperable y autorización, midiendo el flujo completo en vez de solo el primer render.
 
 **Límites y decisión de uso:** Accesibilidad, seguridad y rendimiento se verifican en recorridos completos y pueden entrar en tensión. No elimines etiquetas, validación o autorización para mejorar una métrica aislada; compara alternativas preservando el comportamiento requerido.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

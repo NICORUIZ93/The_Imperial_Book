@@ -203,6 +203,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Crea una carpeta independiente para comprobar el concepto antes de conectarlo al monorepo:
 

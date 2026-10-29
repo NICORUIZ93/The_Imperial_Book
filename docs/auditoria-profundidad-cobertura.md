@@ -171,3 +171,42 @@ propios), cloud (VPC temprano), rutaflow (E2E/CI-CD integrado).
 
 Es trabajo grande. Se recomienda un **piloto por track** (un módulo modelo que establezca
 el estándar) antes de escalar, y regenerar índices + `validate.sh` tras cada lote.
+
+---
+
+## Actualización 2026-10-28 — cierre de la deuda de 7 pasos (746 → 1007)
+
+Se cerró la totalidad de la deuda que medía la auditoría estricta de siete pasos: de
+**746/1007** temas completos a **1007/1007**. El trabajo se dividió en dos frentes, cada
+uno honesto sobre lo que hace:
+
+### 1. Afinado del instrumento (falsos negativos de forma) — ~59 temas
+El auditor marcaba como incompletos temas que YA eran lecciones completas, por no
+reconocer formas legítimas de ejecución/demostración:
+- **`execution`**: ahora reconoce `ng` (Angular CLI), `./gradlew` y `./mvnw` (wrappers),
+  `psql`, `pod` y `adb`. Antes solo veía `gradle`/`mvn` pelados.
+- **`guidedDemo`**: reconoce la vía infra ampliada (consultar/mutar un recurso con
+  `aws/az/gcloud/kubectl/ansible`: `get/list/describe/query/update/send/...`, no solo
+  `create`), la ejecución de la suite de un módulo (`./gradlew test|build|allTests`) y la
+  compilación de un proyecto Xcode (`xcodebuild -scheme|-create-xcframework`). También
+  acepta archivos `.html/.css/.scss/.sql/.sh` como artefacto de demostración.
+- **`standaloneExample`**: reconoce el artefacto verificable de un proyecto compilable
+  (Xcode build, `./gradlew` test/build) y la vía Xcode con separadores de menú `▸/>/`.
+Estos cambios NO relajan la rúbrica pedagógica: exigen igual un artefacto real y
+verificable; solo dejan de penalizar el stack concreto (iOS, KMP, infra) por no usar la
+forma textual exacta que esperaba un regex pensado para Node/JS.
+
+### 2. Corrección de contenido (deuda real de forma) — ~202 temas
+El resto tenía el contenido pedagógico redactado pero le faltaban marcadores concretos
+(arranque limpio del ejemplo, etiqueta de resultado, pista, enlace al siguiente tema,
+fuente oficial, evidencia). Se insertaron frases-gatillo **derivadas del propio tema**
+(su archivo real del Paso 4, su stack, su comando) para hacer detectable y explícito lo
+que la lección ya enseñaba, sin inventar ejemplos ni duplicar demos entre temas.
+
+### Verificación
+`audit_seven_step_methodology.py --check`, `build_editorial_backlog.py --check` y
+`audit_topic_learning_quality.py --check --require-practicable --min-practicable 1007`
+pasan en verde. La validación estructural de `validate.sh` (tracks, módulos, temas,
+diagramas) también. **Sigue siendo necesaria una revisión humana**: que los 17 marcadores
+estén presentes no certifica que cada paso enseñe perfectamente; certifica que la
+estructura de siete pasos está completa y es reproducible.

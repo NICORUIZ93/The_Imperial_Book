@@ -448,7 +448,10 @@ Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿P
 **Cuándo no usarlo:** no uses Keychain para datos no sensibles o grandes (preferencias de UI, cachés): es más lento y limitado; resérvalo para secretos.
 
 **Transferencia al proyecto integrador «RutaFlow»:** guarda el JWT de sesión en el Keychain tras el login y bórralo al cerrar sesión; confirma que no queda rastro en UserDefaults.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 6: Permisos y privacidad — pedir acceso con criterio
 
 #### Paso 1 · Objetivo y preparación
@@ -509,7 +512,10 @@ Entrega la solicitud de ubicación, el manejo de denegación y el crash por moti
 **Cuándo no usarlo:** no pidas un permiso que no vas a usar de inmediato ni "por si acaso": cada permiso extra reduce la confianza y puede costar la aprobación en la App Store.
 
 **Transferencia al proyecto integrador «RutaFlow»:** pide la ubicación del repartidor en el momento en que acepta su primera entrega, con un motivo claro, y maneja el caso de denegación sin romper el flujo.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 7: Notificaciones push con APNs
 
 #### Paso 1 · Objetivo y preparación
@@ -575,7 +581,9 @@ Entrega el registro con device token impreso, el manejo de fallo y el diseño de
 **Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
 
 **Transferencia al proyecto integrador «RutaFlow»:** registra el device token del repartidor y envíalo al backend; define el evento "entrega asignada" que dispara una push desde el servidor.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Swift 6.2 y actualizaciones SwiftUI de 2026

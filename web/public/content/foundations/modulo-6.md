@@ -15,6 +15,13 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 Un activo es lo que hay que proteger (que el estado de un envío no se corrompa); una amenaza es lo que podría romperlo (un operador que fuerza una transición inválida); STRIDE es la checklist que te hace preguntar por seis formas distintas de ataque, no solo la obvia.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 python3 -c "
 from examples.rutaflow.foundation.domain import ShipmentStatus, transition
@@ -75,7 +82,7 @@ flowchart LR
     THREAT["activo + actor + camino"] --> RISK["impacto y probabilidad"]
     RISK --> CONTROL["control y propietario"] --> RESIDUAL["riesgo residual"]
 ```
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 2: Identidad, contraseñas, sesiones y autorización
 
 #### Paso 1 · Objetivo y preparación
@@ -88,6 +95,13 @@ Que un conductor haya iniciado sesión correctamente (autenticación) no signifi
 Autenticación responde "¿quién eres?"; autorización responde "¿podés hacer esto sobre ESTE recurso puntual?" — mostrar tu identificación en la puerta del edificio no te da llave de todas las oficinas.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 def confirmar_entrega(conductor_id: str, envio: dict, repositorio):
     if envio["conductor_asignado"] != conductor_id:
@@ -181,7 +195,7 @@ flowchart LR
 ```
 
 El proyecto integrador Fundamentos aplica la misma separación: en el gestor de tareas CLI, `tareas.py` guarda qué usuario creó cada tarea, y una futura función `completar(tarea_id, usuario)` tendría que verificar autorización (¿esta tarea es del usuario que la pide completar?) exactamente igual que `confirmar_entrega` verifica que el conductor sea el asignado — autenticarse para usar el CLI nunca implica poder modificar la tarea de otra persona.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 3: Criptografía aplicada, TLS, claves y secretos
 
 #### Paso 1 · Objetivo y preparación
@@ -194,6 +208,11 @@ El comando `{"shipmentId": "RF-4471", "recipientPin": "837201"}` viaja por una c
 Un MAC (HMAC) usa un secreto compartido para producir una "huella" ligada al contenido exacto: si el contenido cambia una sola letra, la huella ya no coincide — es un sello de lacre con una firma secreta, no un simple hash público que cualquiera podría recalcular.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 ```python
 import hmac, hashlib, json
 
@@ -269,7 +288,7 @@ flowchart LR
 ```
 
 Esta misma técnica HMAC es la que protegería al proyecto integrador Fundamentos si su CLI alguna vez enviara comandos a un servicio remoto: la firma viviría junto a `almacenamiento.py`, nunca como una constante pegada en `cli.py`, y `SECRET` nunca se versiona en el repositorio — se lee desde una variable de entorno, igual que `database_url` en el ejemplo de este Tema.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 4: Validación, vulnerabilidades web, privacidad y respuesta
 
 #### Paso 1 · Objetivo y preparación
@@ -282,6 +301,11 @@ Cuando un conductor escribe "dejado con el portero" como nota de una entrega, es
 Validar decide qué entra; el encoding contextual decide cómo se interpreta al mostrarlo — `textContent` trata el valor siempre como texto, `innerHTML` lo interpreta como marcado ejecutable si lo dejás pasar.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 ```html
 <div id="nota"></div>
 <script>
@@ -355,7 +379,7 @@ flowchart LR
 ```
 
 El proyecto integrador Fundamentos aplica esta misma validación de entrada en `tareas.py`: antes de guardar una descripción de tarea ejecutando el CLI con Python 3 (`python3 cli.py add "<descripción>"`), el código debe rechazar descripciones vacías o con longitud excesiva en el servidor/lógica (no solo en la interfaz), exactamente la misma regla de "validar según el dominio real del campo" que aplica a la nota de entrega de RutaFlow de este Tema.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ## Construcción guiada del capítulo
 
 ### Proyecto 6: endurecimiento del inventario

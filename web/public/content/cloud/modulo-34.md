@@ -156,6 +156,11 @@ RutaFlow usa las tres nubes a la vez (Módulo 8) — antes de automatizar nada, 
 #### Paso 3 · Teoría, modelo mental y analogía
 La CLI es una conversación interactiva con el proveedor; el SDK es esa misma conversación integrada en tu código — ambos hablan contra el mismo endpoint, real o local, según qué variables de entorno estén activas.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 eval "$(floci env)"
 echo "AWS -> $AWS_ENDPOINT_URL"
@@ -281,6 +286,11 @@ Si un agente de IA ayuda a escribir código para RutaFlow, necesita poder ejecut
 #### Paso 3 · Teoría, modelo mental y analogía
 La UI muestra estado para que una persona observe; el agente ejecuta acciones; el script deja evidencia reproducible — las tres cosas se complementan, ninguna sustituye a las otras dos.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 floci start
 eval "$(floci env)"
@@ -425,6 +435,11 @@ Si RutaFlow migrara la evidencia de entregas a Azure, necesitaría el mismo cicl
 #### Paso 3 · Teoría, modelo mental y analogía
 Equivalencia funcional no significa misma API ni mismo coste: Blob Storage resuelve el mismo problema que S3, pero con su propia cadena de conexión y su propia CLI.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 eval "$(floci az env)"
 mkdir -p examples/tracks/cloud/azure-blob && cd examples/tracks/cloud/azure-blob

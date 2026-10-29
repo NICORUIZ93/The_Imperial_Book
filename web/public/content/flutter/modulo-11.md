@@ -15,6 +15,13 @@ RutaFlow está lista para subir a ambas tiendas — nadie generó todavía los a
 `flutter build appbundle --release` genera el `.aab` requerido por Google Play; `flutter build ipa --release` genera el `.ipa` para App Store, requiriendo específicamente macOS con Xcode.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 flutter build appbundle --release   # → .aab para Google Play Console
 flutter build ipa --release          # → .ipa para App Store Connect (requiere macOS/Xcode)
@@ -82,6 +89,13 @@ Android necesita el ícono de RutaFlow en múltiples resoluciones para distintas
 `flutter_launcher_icons` y `flutter_native_splash` toman una única imagen fuente declarada en `pubspec.yaml` y generan automáticamente todas las variantes requeridas por cada plataforma.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```yaml
 # pubspec.yaml
 flutter_launcher_icons:

@@ -39,6 +39,11 @@ Una app de entregas debe mostrar estados de red y ubicación sin perder acciones
 Riverpod es la central de despacho que distribuye un estado único y observable; un estado cerrado (`sealed class`) obliga a un `switch` exhaustivo en la vista, que nunca puede olvidar visualmente un caso como el offline.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/journey/presentation/journey_controller.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
 Ejecuta `flutter create ejemplo_riverpod`, crea `lib/features/journey/presentation/journey_controller.dart` y separa dominio, aplicación y presentación; comenta cada bloque.
 ```bash
 flutter create ejemplo_riverpod
@@ -46,7 +51,7 @@ flutter analyze
 ```
 **Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y la pantalla debe mostrar cada estado.
 **Fallo deliberado:** elimina el provider para observar el diagnóstico, registra el error y restáuralo.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: observa el diagnóstico antes de corregirlo, y añade un estado offline siguiendo la pista del modelo `JourneyState`.
 
@@ -116,6 +121,11 @@ Una app de entregas debe mostrar estados de red y ubicación sin perder acciones
 El mapa es un tablero y el GPS una fuente de eventos que debe filtrarse antes de confiar en ella; una muestra GPS es una medición con margen de error, como una balanza que informa peso y tolerancia.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/location/location_service.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
 Ejecuta `flutter create ejemplo_mapa`, crea `lib/features/location/location_service.dart` y documenta permisos y claves.
 ```bash
 flutter create ejemplo_mapa
@@ -123,7 +133,7 @@ flutter analyze
 ```
 **Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y la posición debe actualizarse.
 **Fallo deliberado:** deniega permisos para observar el diagnóstico, registra el error y restáuralo.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: observa el diagnóstico antes de corregirlo, y añade un estado explícito para "sin señal" cuando el servicio de ubicación está desactivado.
 
@@ -197,6 +207,11 @@ Una app de entregas recibe cambios de ruta en tiempo real; sin un orden explíci
 El socket es un teléfono persistente; cada evento necesita contrato, orden e idempotencia. Reconectar restablece la llamada, pero no reproduce lo dicho mientras estaba desconectado — hace falta reanudar desde la última secuencia confirmada.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/realtime/route_gateway.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
 Ejecuta `flutter create ejemplo_socket`, crea `lib/features/realtime/route_gateway.dart` y documenta conexión y reconexión.
 ```bash
 flutter create ejemplo_socket
@@ -204,7 +219,7 @@ flutter analyze
 ```
 **Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y el evento debe reflejarse una sola vez.
 **Fallo deliberado:** corta la red para observar el diagnóstico, registra el error y restáuralo.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: observa el diagnóstico antes de corregirlo, y añade backoff antes de reconectar tras una caída de red.
 
@@ -277,6 +292,11 @@ Un marcador debe moverse sin saltos en el mapa; actualizar la posición directam
 La interpolación es un puente entre dos muestras; no inventa una ruta válida que el vehículo no haya recorrido, solo suaviza visualmente la transición entre dos posiciones ya confirmadas.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/map/presentation/marker_motion.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
 Ejecuta `flutter create ejemplo_animacion`, crea `lib/features/map/presentation/marker_motion.dart` y comenta duración y curva.
 ```bash
 flutter create ejemplo_animacion
@@ -284,7 +304,7 @@ flutter analyze
 ```
 **Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y el marcador debe llegar al destino.
 **Fallo deliberado:** usa una duración extrema para observar el diagnóstico, registra el error y corrígelo.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: observa el diagnóstico antes de corregirlo, y añade cancelación del `AnimationController` si llega una muestra nueva antes de que termine la animación anterior.
 
@@ -331,6 +351,11 @@ El conductor debe conservar una entrega aunque pierda conexión; si la confirmac
 La cola local es un cuaderno con orden, estado y reintento seguro: cada comando tiene un UUID idempotente, y una imagen capturada se guarda comprimida y cifrada con solo una referencia local, nunca los bytes completos en una fila.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/offline/pending_delivery.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
 Ejecuta `flutter create ejemplo_offline`, crea `lib/features/offline/pending_delivery.dart` y documenta tamaño y cifrado.
 ```bash
 flutter create ejemplo_offline
@@ -338,7 +363,7 @@ flutter analyze
 ```
 **Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y la cola debe sobrevivir un reinicio.
 **Fallo deliberado:** llena el almacenamiento para observar el diagnóstico, registra el error y restáuralo.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: observa el diagnóstico antes de corregirlo, y añade un checksum a cada evidencia guardada para detectar corrupción antes de sincronizar.
 
@@ -387,6 +412,11 @@ Una entrega necesita HTTP autenticado y avisos accionables; si varias peticiones
 Dio es la ventanilla con interceptores; push es un telegrama que no sustituye al servidor. FCM/APNs despierta o informa, pero la app siempre debe consultar el backend como fuente de verdad antes de actuar sobre el contenido del mensaje.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/shared/network/dio_client.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
 Ejecuta `flutter create ejemplo_http`, crea `lib/shared/network/dio_client.dart` y `lib/features/notifications/push_service.dart`.
 ```bash
 flutter create ejemplo_http
@@ -394,7 +424,7 @@ flutter analyze
 ```
 **Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y un token vencido debe producir estado recuperable.
 **Fallo deliberado:** usa un endpoint 401 para observar el diagnóstico, registra el error y restáuralo.
-
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 #### Paso 5 · Práctica guiada
 Pista: observa el diagnóstico antes de corregirlo, y añade un reintento acotado (no infinito) tras renovar el token.
 
