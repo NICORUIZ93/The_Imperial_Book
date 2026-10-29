@@ -337,6 +337,176 @@
       ]
     },
     {
+      "path": "docs/biblioteca-externa-gaps-android.md",
+      "lines": 31,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Android frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libros cotejados",
+        "## Huecos",
+        "## Fuera de alcance",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-angular.md",
+      "lines": 27,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Angular frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libro cotejado",
+        "## Veredicto",
+        "## Fuera de alcance",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-devops.md",
+      "lines": 29,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track DevOps frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libros cotejados",
+        "## Huecos (administraci\u00f3n Linux)",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-flutter.md",
+      "lines": 28,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Flutter frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libro cotejado",
+        "## Huecos",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-foundations.md",
+      "lines": 43,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Foundations frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libros cotejados",
+        "## Hueco 1: algoritmos cl\u00e1sicos (prioridad alta) \u2014 \u2705 resuelto",
+        "## Hueco 2: cat\u00e1logo GoF incompleto (prioridad alta)",
+        "## Hueco 3: SQL avanzado (prioridad media)",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-java.md",
+      "lines": 57,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Java frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libros cotejados",
+        "## Veredicto general",
+        "## Huecos reales (coinciden en 2+ libros) \u2014 candidatos a tema nuevo",
+        "## Deliberadamente fuera de alcance (no son huecos)",
+        "## Propuesta de incorporaci\u00f3n (si se aprueba)"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-javascript.md",
+      "lines": 26,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track JavaScript frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libro cotejado",
+        "## Veredicto",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-node.md",
+      "lines": 33,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Node frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libro cotejado",
+        "## Veredicto",
+        "## Fuera de alcance",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-spring-boot.md",
+      "lines": 29,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Huecos del track Spring Boot frente a la biblioteca externa",
+        "## Estado (2026-10-28)",
+        "## Libros cotejados",
+        "## Veredicto",
+        "## Propuesta"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps-tracks-nuevos.md",
+      "lines": 18,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# \u00c1reas de la biblioteca sin track en la academia",
+        "## Libros que no se pudieron leer (resuelto con OCR, ver biblioteca-externa-ocr.md)"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-gaps.md",
+      "lines": 40,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Biblioteca externa: \u00edndice de huecos por track",
+        "## Estado por track",
+        "## Estado de avance (2026-10-28)",
+        "## Top 10 de huecos por impacto",
+        "## Siguiente paso"
+      ]
+    },
+    {
+      "path": "docs/biblioteca-externa-ocr.md",
+      "lines": 25,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# OCR de los libros escaneados de la biblioteca externa",
+        "## Resultado por libro",
+        "## Pendiente"
+      ]
+    },
+    {
       "path": "docs/code-visual-quality.json",
       "lines": 2786,
       "kind": "project-file",
@@ -5289,6 +5459,18 @@
       "headings": []
     },
     {
+      "path": "scripts/extract_pdf_toc.py",
+      "lines": 33,
+      "kind": "automation-script",
+      "symbols": [],
+      "imports": [
+        "sys",
+        "pathlib",
+        "pymupdf"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/fix_lessons.py",
       "lines": 114,
       "kind": "automation-script",
@@ -5761,6 +5943,27 @@
         "#### Paso 7 \u00b7 Cierre y evidencia",
         "### Tema 2: Finders, assertions y actions navegan el \u00e1rbol sem\u00e1ntico",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/android/modulo-15.md",
+      "lines": 556,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 15: Android como plataforma \u2014 Intents, broadcasts, servicios y content providers",
+        "## Aprende construyendo",
+        "### Tema 1: Intents impl\u00edcitos y Activity Result API",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# En Android Studio: File \u25b8 New \u25b8 New Project \u25b8 Empty Activity, nombre Repartidor,",
+        "# paquete com.rutaflow.repartidor, guardado dentro de esta carpeta",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
@@ -7842,6 +8045,69 @@
       ]
     },
     {
+      "path": "web/public/content/foundations/modulo-13.md",
+      "lines": 578,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 13: Algoritmos cl\u00e1sicos",
+        "## Aprende construyendo",
+        "### Tema 1: Ordenamientos: insertion, merge y quick sort",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: Algoritmos codiciosos y \u00e1rbol de expansi\u00f3n m\u00ednima",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/foundations/modulo-14.md",
+      "lines": 867,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 14: Cat\u00e1logo de patrones de dise\u00f1o",
+        "## Aprende construyendo",
+        "### Tema 1: Decorator: agregar comportamiento sin heredar",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: State: un objeto que cambia de comportamiento seg\u00fan su estado",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/foundations/modulo-15.md",
+      "lines": 435,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 15: C\u00f3digo limpio",
+        "## Aprende construyendo",
+        "### Tema 1: Nombres que revelan intenci\u00f3n y funciones peque\u00f1as",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# ANTES: nombres cr\u00edpticos, una funci\u00f3n que hace tres cosas y un argumento bandera",
+        "# DESPU\u00c9S: nombres que revelan intenci\u00f3n y funciones peque\u00f1as de un solo nivel de abstracci\u00f3n",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia"
+      ]
+    },
+    {
       "path": "web/public/content/foundations/modulo-2.md",
       "lines": 922,
       "kind": "course-content",
@@ -8553,6 +8819,27 @@
         "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+      ]
+    },
+    {
+      "path": "web/public/content/java/modulo-19.md",
+      "lines": 841,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 19: Java del d\u00eda a d\u00eda \u2014 reflexi\u00f3n, regex, dinero, contratos, plugins e i18n",
+        "## Aprende construyendo",
+        "### Tema 1: Reflexi\u00f3n y anotaciones en tiempo de ejecuci\u00f3n",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: Expresiones regulares con Pattern y Matcher",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
