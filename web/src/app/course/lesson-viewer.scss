@@ -25,6 +25,16 @@ $sans-ui:var(--font-sans);
 .lesson-meta { display:flex; flex-wrap:wrap; align-items:center; gap:9px 18px; margin-top:18px; color:$mu; font:600 12px/1.2 var(--font-sans); }
 .lesson-meta span { display:flex; align-items:center; gap:6px; }
 .lesson-meta lucide-icon { width:15px; height:15px; }
+.chapter-topic-strip { margin-top:24px; padding:15px 0 0; border-top:1px solid $bd; }
+.chapter-topic-strip-heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.chapter-topic-strip-heading span { color:$ink; font:700 10px/1.2 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
+.chapter-topic-strip-heading small { color:$mu; font:500 11px var(--font-sans); }
+.chapter-topic-strip-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:7px; }
+.chapter-topic-strip-list a { min-width:0; display:flex; align-items:flex-start; gap:8px; padding:10px 11px; border:1px solid $bd; border-radius:9px; color:$i3; background:$wh; text-decoration:none; font:600 11px/1.4 var(--font-sans); }
+.chapter-topic-strip-list a:hover { border-color:var(--accent); color:var(--accent); }
+.chapter-topic-strip-list a.current { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+.chapter-topic-strip-list a.done { color:$mu; }
+.chapter-topic-strip-list a span { flex:0 0 auto; color:var(--accent); font:700 10px var(--font-mono); }
 // Hilo conductor del proyecto: no un panel con fondo de color, sino una
 // sección abierta delimitada arriba y abajo por un filete, como el resumen
 // de proyecto al margen de un capítulo. El dato (%) manda; la barra es fina.
@@ -391,6 +401,8 @@ $sans-ui:var(--font-sans);
   .lesson-hero { margin:0 -2px 34px; padding:27px 23px 25px; border-radius:16px; }
   .lesson h1 { font-size:31px; }
   .lesson-description { font-size:16px; line-height:1.65; }
+  .chapter-topic-strip-list { display:flex; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:4px; }
+  .chapter-topic-strip-list a { flex:0 0 190px; scroll-snap-align:start; min-height:62px; }
   .level-progress li:not(.current) { display:none; }
   .chapter-map summary { align-items:flex-start; flex-direction:column; justify-content:center; gap:3px; padding-block:9px; }
   .chapter-map-grid { grid-template-columns:1fr; }

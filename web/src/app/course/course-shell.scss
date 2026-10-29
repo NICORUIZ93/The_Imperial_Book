@@ -52,6 +52,9 @@
   color:$mu; font-size:14px;
 }
 .shell-missing a { color:$p; font-weight:600; }
+.shell.overview-mode .shell-sidebar { display:none; }
+.shell.overview-mode .shell-main { width:100%; }
+.overview-only-hidden { display:none !important; }
 
 @media (max-width: 860px) {
   .mobile-only { display:grid; }

@@ -14,6 +14,7 @@ import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { glossaryFor } from '../technical-glossary';
 import { learningPrompt, LearningPromptMode } from '../learning-prompts';
+import { TopicIndexService } from '../topic-index.service';
 
 let mermaidInitialized = false;
 
@@ -107,6 +108,7 @@ export class LessonViewerComponent implements OnDestroy {
   private readonly router = inject(Router);
   private readonly contentService = inject(ContentService);
   readonly progressService = inject(ProgressService);
+  readonly topicIndex = inject(TopicIndexService);
 
   readonly trackId = toSignal(
     this.route.parent!.paramMap.pipe(map(params => params.get('trackId') ?? '')),
@@ -199,6 +201,15 @@ export class LessonViewerComponent implements OnDestroy {
     const track = this.track();
     const module = this.module();
     return track && module ? `Módulo ${this.moduleIndex() + 1} de ${track.modules.length}: ${module.title}` : '';
+  });
+  /** Resumen corto del capítulo para que el siguiente tema no quede escondido
+   * al final del documento largo. El Markdown sigue siendo la fuente real. */
+  readonly chapterTopics = computed(() => this.topicIndex.topics(this.trackId(), this.moduleId()));
+  readonly currentTopicIndex = computed(() => {
+    const fragment = this.requestedFragment();
+    const topics = this.chapterTopics();
+    const index = fragment ? topics.findIndex(topic => topic.fragment === fragment) : -1;
+    return index >= 0 ? index : 0;
   });
 
   readonly lessonHtml = signal<string | null>(null);
@@ -1004,6 +1015,22 @@ export class LessonViewerComponent implements OnDestroy {
 
   goToModule(moduleId: number): void {
     this.router.navigate(['/curso', this.trackId(), moduleId]);
+  }
+
+  jumpToTopic(event: Event, fragment: string): void {
+    event.preventDefault();
+    const container = this.lessonContent()?.nativeElement;
+    const destination = container?.querySelector<HTMLElement>(`#${CSS.escape(fragment)}`);
+    const card = destination?.closest<HTMLElement>('.topic-card');
+    if (destination && card) {
+      card.classList.add('expanded');
+      const toggle = card.querySelector<HTMLButtonElement>('[data-topic-toggle]');
+      toggle?.setAttribute('aria-expanded', 'true');
+      const label = toggle?.querySelector('span');
+      if (label) label.textContent = 'Ocultar tema';
+      destination.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' });
+    }
+    void this.router.navigate([], { relativeTo: this.route, fragment, replaceUrl: true });
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,6 @@
-<div class="shell" *ngIf="track() as t; else missing" [style.--track-color]="t.color">
+<div class="shell" *ngIf="track() as t; else missing" [class.overview-mode]="isOverview()" [style.--track-color]="t.color">
   <header class="shell-topbar">
-    <button #openSidebarButton class="icon-button mobile-only" title="Abrir índice" aria-label="Abrir índice del curso" [attr.aria-expanded]="sidebarOpen()" (click)="sidebarOpen.set(true)"><lucide-icon [img]="icons.Menu" /></button>
+    <button #openSidebarButton class="icon-button mobile-only" [class.overview-only-hidden]="isOverview()" title="Abrir índice" aria-label="Abrir índice del curso" [attr.aria-expanded]="sidebarOpen()" (click)="sidebarOpen.set(true)"><lucide-icon [img]="icons.Menu" /></button>
     <a class="back-link" routerLink="/catalogo"><lucide-icon [img]="icons.ArrowLeft" /><span>Catálogo</span></a>
     <span class="shell-track-logo" *ngIf="trackLogo() as logo" aria-hidden="true" [style.background]="t.color"><img [src]="logo" alt="" /></span>
     <div class="shell-title">

@@ -1,7 +1,7 @@
 # Propuesta de página nueva: Academia por rutas, módulos y temas
 
 Fecha: 2026-10-29  
-Estado: propuesta lista para implementación por fases  
+Estado: Fase 1 implementada; Fases 2–4 pendientes
 Alcance: catálogo, entrada a una ruta, índice de módulos y lector de temas
 
 ## Decisión de diseño
@@ -18,6 +18,25 @@ ruta de estudio en tres niveles visibles:
 La regla principal es **una decisión por pantalla**: elegir una ruta, elegir un
 módulo o estudiar un tema. El texto completo sigue existiendo, pero deja de
 competir visualmente con el índice y con los controles de navegación.
+
+### Fase 1 entregada
+
+La primera fase ya está aplicada en Angular:
+
+- `/curso/:trackId` abre un mapa de ruta (`track-overview`) antes de cualquier
+  lección.
+- El catálogo enlaza a la ruta y conserva los accesos directos de `Continuar`
+  para el progreso existente.
+- La página de ruta muestra resultado, preparación, proyecto, niveles, módulos,
+  temas disponibles, duración y estado del recorrido.
+- El índice lateral se oculta en el mapa para no duplicar la misma lista.
+- El lector muestra una franja de temas del capítulo en el encabezado y mantiene
+  el salto por fragmento al tema elegido.
+- Las URLs históricas `/curso/:trackId/:moduleId` siguen funcionando.
+
+La metadata rica por tema y la ruta individual `/tema/:topicId` quedan para las
+fases siguientes; no se inventaron resúmenes ni prerrequisitos para acelerar
+esta primera entrega.
 
 ## Qué está causando el cansancio visual ahora
 

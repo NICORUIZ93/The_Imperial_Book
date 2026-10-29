@@ -116,11 +116,15 @@ test('accesibilidad y respaldo: exporta y restaura progreso desde controles etiq
   await expect(javaCard.locator('.card-bottom')).toContainText('5% marcado');
 });
 
-test('curso cloud: abre el lector por capítulos con el contenido base de Floci', async ({ page }) => {
+test('curso cloud: abre primero el mapa de ruta y después el contenido base de Floci', async ({ page }) => {
   await page.goto('/curso/cloud');
 
+  await expect(page.locator('.overview-page')).toContainText('Cloud Local — AWS, Azure y GCP');
+  await expect(page.locator('.module-row').first()).toContainText('Introducción');
+  await expect(page.locator('.module-row').nth(1)).toContainText('Docker');
+  await page.locator('.module-row').first().getByRole('link', { name: /Abrir módulo 1/ }).click();
+  await expect(page).toHaveURL(/\/curso\/cloud\/0$/);
   await expect(page.locator('body')).toContainText('Introducción y preparación');
-  await expect(page.locator('body')).toContainText('Docker');
 });
 
 test('ruta antigua de laboratorio vuelve al inicio nuevo', async ({ page }) => {

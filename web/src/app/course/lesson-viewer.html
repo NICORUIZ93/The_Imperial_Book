@@ -13,6 +13,12 @@
             {{ focusMode() ? 'Salir de concentración' : 'Modo concentración' }}
           </button>
         </div>
+        <nav class="chapter-topic-strip" *ngIf="chapterTopics().length > 1" aria-label="Temas de este capítulo">
+          <div class="chapter-topic-strip-heading"><span>Temas de este capítulo</span><small>{{ currentTopicIndex() + 1 }} de {{ chapterTopics().length }}</small></div>
+          <div class="chapter-topic-strip-list">
+            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="i < currentTopicIndex()" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ topic.title }}</a>
+          </div>
+        </nav>
         <details class="course-guide" *ngIf="moduleId() === 0 && courseGuide() as guide">
           <summary>Antes de empezar esta ruta <span>Requisitos y resultado</span></summary>
           <p>{{ guide.entry }}</p>

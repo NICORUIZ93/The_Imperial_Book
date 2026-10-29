@@ -18,7 +18,8 @@ export const routes: Routes = [
     path: 'curso/:trackId',
     loadComponent: () => import('./course/course-shell').then(m => m.CourseShellComponent),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: '0' },
+      { path: '', pathMatch: 'full', redirectTo: 'overview' },
+      { path: 'overview', loadComponent: () => import('./course/track-overview').then(m => m.TrackOverviewComponent) },
       { path: ':moduleId', loadComponent: () => import('./course/lesson-viewer').then(m => m.LessonViewerComponent) },
     ],
   },

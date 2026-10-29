@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ArrowLeft, LucideAngularModule, Menu, Moon, Search, Sun, X } from 'lucide-angular';
-import { map } from 'rxjs';
+import { filter, map, startWith } from 'rxjs';
 import { findTrack } from '../course-data';
 import { CommandPaletteService } from '../command-palette.service';
 import { ProgressService } from '../progress.service';
@@ -23,6 +23,7 @@ export class CourseShellComponent {
   readonly paletteService = inject(CommandPaletteService);
   readonly themeService = inject(ThemeService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   // Reactivo (no snapshot): Angular reutiliza esta instancia al navegar entre tracks hermanos
   // (ej. desde la paleta de comandos), así que el trackId debe seguir al ActivatedRoute.
@@ -33,6 +34,14 @@ export class CourseShellComponent {
   readonly track = computed(() => findTrack(this.trackId()));
   readonly officialPath = computed(() => findOfficialLearningPath(this.trackId()));
   readonly sidebarOpen = signal(false);
+  readonly isOverview = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(event => event.urlAfterRedirects.endsWith('/overview')),
+      startWith(this.router.url.endsWith('/overview')),
+    ),
+    { initialValue: this.router.url.endsWith('/overview') },
+  );
   private readonly openSidebarButton = viewChild<ElementRef<HTMLButtonElement>>('openSidebarButton');
   readonly trackLogo = computed(() => {
     const id = this.trackId();

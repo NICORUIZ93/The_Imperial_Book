@@ -1,0 +1,71 @@
+<ng-container *ngIf="track() as t; else missing">
+  <div class="overview-page" [style.--track-color]="t.color">
+    <header class="overview-hero">
+      <div class="overview-kicker"><lucide-icon [img]="icons.BookOpen" /> Mapa de la ruta <span>· {{ t.modules.length }} módulos</span></div>
+      <h1>{{ t.name }}</h1>
+      <p class="overview-tagline">{{ t.tagline }}</p>
+      <div class="overview-actions">
+        <a class="primary-action" [routerLink]="['/curso', t.id, nextModuleId()]">
+          <lucide-icon [img]="icons.Play" />
+          {{ percent() ? 'Continuar ruta' : 'Comenzar desde el módulo 1' }}
+        </a>
+        <a class="secondary-action" href="#module-list">Ver módulos <lucide-icon [img]="icons.ArrowRight" /></a>
+      </div>
+      <dl class="overview-stats" aria-label="Resumen de la ruta">
+        <div><dt>{{ t.modules.length }}</dt><dd>módulos</dd></div>
+        <div><dt>{{ totalTopics() || '—' }}</dt><dd>temas disponibles</dd></div>
+        <div><dt>{{ percent() }}%</dt><dd>marcado en este navegador</dd></div>
+      </dl>
+    </header>
+
+    <section class="orientation-grid" aria-label="Orientación de la ruta">
+      <article class="orientation-card outcome-card">
+        <span class="card-label"><lucide-icon [img]="icons.Target" /> Resultado de la ruta</span>
+        <strong>{{ t.modules.at(-1)?.deliverable }}</strong>
+        <p>Avanza módulo a módulo y conserva el archivo, salida o explicación que demuestra cada incremento.</p>
+      </article>
+      <article class="orientation-card">
+        <span class="card-label"><lucide-icon [img]="icons.Clock3" /> Antes de comenzar</span>
+        <strong>{{ guide().entry }}</strong>
+        <ul><li *ngFor="let skill of guide().skills.slice(0, 3)">{{ skill }}</li></ul>
+      </article>
+      <article class="orientation-card project-card" *ngIf="project() as routeProject">
+        <span class="card-label"><lucide-icon [img]="icons.BookOpen" /> Proyecto conductor</span>
+        <strong>{{ routeProject.title }}</strong>
+        <p>{{ routeProject.problem }}</p>
+      </article>
+    </section>
+
+    <section class="module-section" id="module-list" aria-labelledby="module-list-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">Secuencia de estudio</span><h2 id="module-list-title">Módulos de esta ruta</h2></div>
+        <span class="section-note">Una etapa a la vez</span>
+      </div>
+      <div class="module-groups">
+        <section class="module-group" *ngFor="let group of groups()">
+          <div class="group-heading"><span>{{ group.level }}</span><small>{{ group.modules.length }} {{ group.modules.length === 1 ? 'módulo' : 'módulos' }} · {{ moduleHours(group.modules) }}</small></div>
+          <ol class="module-list">
+            <li *ngFor="let module of group.modules" class="module-row" [class.is-next]="status(module.id) === 'next'" [class.is-done]="status(module.id) === 'done'">
+              <div class="module-number" aria-hidden="true">{{ moduleIndex(module.id).toString().padStart(2, '0') }}</div>
+              <div class="module-main">
+                <div class="module-title-line"><h3>{{ module.shortTitle }}</h3><span class="module-status" [class]="'status-' + status(module.id)"><lucide-icon [img]="status(module.id) === 'done' ? icons.Check : icons.Play" />{{ statusLabel(module.id) }}</span></div>
+                <p>{{ module.description }}</p>
+                <div class="module-meta"><span>{{ topicCount(module.id) || '—' }} temas</span><span>{{ module.duration }}</span><span>{{ module.level }}</span></div>
+              </div>
+              <a class="module-link" [routerLink]="['/curso', t.id, module.id]" [attr.aria-label]="'Abrir módulo ' + moduleIndex(module.id) + ': ' + module.shortTitle">Abrir <lucide-icon [img]="icons.ArrowRight" /></a>
+            </li>
+          </ol>
+        </section>
+      </div>
+    </section>
+
+    <footer class="overview-footer" *ngIf="project() as routeProject">
+      <div><span class="section-kicker">Hilo conductor</span><h2>El proyecto crece contigo</h2><p>{{ routeProject.deliverable }}</p></div>
+      <a [routerLink]="['/curso', t.id, nextModuleId()]">Abrir el siguiente módulo <lucide-icon [img]="icons.ArrowRight" /></a>
+    </footer>
+  </div>
+</ng-container>
+
+<ng-template #missing>
+  <div class="overview-missing"><p>No encontramos esta ruta.</p><a routerLink="/catalogo">Volver al catálogo</a></div>
+</ng-template>

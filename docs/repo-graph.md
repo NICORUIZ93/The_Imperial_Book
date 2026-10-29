@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-29 20:50 UTC
+Generated: 2026-10-29 21:07 UTC
 Root: `The_Imperial_Book`
-Indexed files: 900
+Indexed files: 901
 Import edges: 54
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 56 files
 - `automation-script`: 31 files
 - `course-content`: 247 files
-- `documentation`: 51 files
+- `documentation`: 52 files
 - `example`: 462 files
 - `local-infra`: 1 files
 - `project-file`: 52 files
 
 ## File Types
 
-- `.md`: 305
+- `.md`: 306
 - `.py`: 157
 - `.ts`: 65
 - `.json`: 64
@@ -62,9 +62,9 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: ServiceGroup, CloudComparison, AltCloudGroup
 - `web/src/app/catalog/course-catalog.ts` (158 lines, angular-app)
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
-- `web/src/app/course/course-shell.ts` (59 lines, angular-app)
+- `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1015 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1042 lines, angular-app)
   - symbols: LessonViewerComponent, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject, moduleIndex
 
 ## Internal Import Graph
@@ -154,7 +154,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
-- `web/src/app/app.routes.ts` (27 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/lesson-viewer
+- `web/src/app/app.routes.ts` (28 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
 - `web/src/app/app.spec.ts` (182 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
@@ -168,8 +168,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-data.ts` (887 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
 - `web/src/app/course-module.model.ts` (34 lines) - symbols: CourseModule, Track
 - `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
-- `web/src/app/course/course-shell.scss` (76 lines)
-- `web/src/app/course/course-shell.ts` (59 lines) - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../command-palette.service
+- `web/src/app/course/course-shell.scss` (79 lines)
+- `web/src/app/course/course-shell.ts` (68 lines) - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../command-palette.service
 - ... 38 more files
 
 ### automation-script
@@ -236,7 +236,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
 - `docs/biblioteca-externa-gaps-angular.md` (27 lines) - headings: # Huecos del track Angular frente a la biblioteca externa, ## Estado (2026-10-28), ## Libro cotejado, ## Veredicto
-- ... 33 more files
+- ... 34 more files
 
 ### example
 

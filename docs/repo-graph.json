@@ -785,6 +785,27 @@
       ]
     },
     {
+      "path": "docs/propuesta-pagina-nueva-academia.md",
+      "lines": 315,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Propuesta de p\u00e1gina nueva: Academia por rutas, m\u00f3dulos y temas",
+        "## Decisi\u00f3n de dise\u00f1o",
+        "### Fase 1 entregada",
+        "## Qu\u00e9 est\u00e1 causando el cansancio visual ahora",
+        "## Nueva arquitectura de p\u00e1ginas",
+        "### 1. Cat\u00e1logo: \u00abelige una direcci\u00f3n\u00bb",
+        "### 2. P\u00e1gina de ruta: \u00abeste es tu mapa\u00bb",
+        "### 3. P\u00e1gina de m\u00f3dulo: \u00absabes qu\u00e9 vas a conseguir\u00bb",
+        "### 4. Lector de tema: \u00abuna pr\u00e1ctica completa\u00bb",
+        "## Modelo de contenido que hace posible la p\u00e1gina",
+        "## Cambios visuales concretos",
+        "## Plan de implementaci\u00f3n por fases"
+      ]
+    },
+    {
       "path": "docs/renovacion-cursos-2026-10-29.md",
       "lines": 27,
       "kind": "documentation",
@@ -5902,7 +5923,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 309,
+      "lines": 313,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -11811,13 +11832,14 @@
     },
     {
       "path": "web/src/app/app.routes.ts",
-      "lines": 27,
+      "lines": 28,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
         "@angular/router",
         "./catalog/course-catalog",
         "./course/course-shell",
+        "./course/track-overview",
         "./course/lesson-viewer"
       ],
       "headings": []
@@ -11991,7 +12013,7 @@
     },
     {
       "path": "web/src/app/course/course-shell.scss",
-      "lines": 76,
+      "lines": 79,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -11999,7 +12021,7 @@
     },
     {
       "path": "web/src/app/course/course-shell.ts",
-      "lines": 59,
+      "lines": 68,
       "kind": "angular-app",
       "symbols": [
         "CourseShellComponent",
@@ -12068,7 +12090,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.html",
-      "lines": 129,
+      "lines": 135,
       "kind": "angular-app",
       "symbols": [
         "project-progress-title",
@@ -12079,7 +12101,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 517,
+      "lines": 529,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12087,7 +12109,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1015,
+      "lines": 1042,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12107,13 +12129,13 @@
         "previousModule",
         "nextModule",
         "chapterAnnouncement",
+        "chapterTopics",
+        "currentTopicIndex",
         "lessonHtml",
         "lessonLoading",
         "lessonError",
         "diagramError",
-        "readingProgress",
-        "focusMode",
-        "copiedCode"
+        "readingProgress"
       ],
       "imports": [
         "@angular/common",
@@ -12132,6 +12154,7 @@
         "../learning-activities",
         "../technical-glossary",
         "../learning-prompts",
+        "../topic-index.service",
         "mermaid"
       ],
       "headings": []
