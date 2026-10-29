@@ -152,6 +152,7 @@ UPDATE en diseño normalizado: afecta _________ fila(s)
 > **Nombres inconsistentes:** En parte. `UNIQUE` en `categorias.nombre` impide dos filas idénticas "trabajo", pero "trabajo" y "Trabajo " (con mayúscula o espacio) siguen siendo valores distintos para SQLite — normalizar la tabla evita la duplicación masiva, no sustituye la validación del texto de entrada.
 
 </details>
+
 ### Tema 2: SQL para definir, escribir, consultar y relacionar
 
 #### Paso 1 · Objetivo y preparación
