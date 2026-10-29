@@ -50,8 +50,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
+**Crea** el archivo `schema.sql` con las dos tablas y el trigger que ves más abajo, y guárdalo antes de aplicarlo con `psql -f schema.sql`.
 
 Crea una carpeta independiente, levanta un Postgres local y aplica el esquema real de `envios` + historial:
 
@@ -176,8 +175,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
+**Crea** el archivo `conductores.sql` con la extensión PostGIS, la tabla `conductores` y la consulta de cercanía que ves más abajo, y guárdalo antes de aplicarlo con `psql -f conductores.sql`.
 
 Usa el mismo Postgres del Tema anterior y activa PostGIS:
 
@@ -297,8 +295,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
+**Crea** el archivo `ledger.sql` con la tabla `movimientos_contables` y el asiento de ejemplo que ves más abajo, y guárdalo antes de aplicarlo con `psql -f ledger.sql`.
 
 Usa el mismo Postgres de los Temas anteriores:
 

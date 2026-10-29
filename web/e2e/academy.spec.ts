@@ -148,7 +148,8 @@ test('aprendizaje: presenta el proyecto integrador sin evaluación generada', as
   await expect(page.locator('.module-practice')).toHaveCount(0);
   await expect(page.locator('.module-quiz')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText('XP');
-  await expect(page.locator('.track-project')).toContainText('Centro de control logístico');
+  await expect(page.locator('.project-progress-card')).toContainText('Centro de control logístico');
+  await expect(page.locator('.project-definition-of-done')).toBeAttached();
   await expect(page.locator('.topic-troubleshooting').first()).toBeAttached();
   await expect(page.locator('.topic-step-navigation')).toHaveCount(
     await page.locator('h3.topic-heading').count(),

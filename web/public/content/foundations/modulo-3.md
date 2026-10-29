@@ -15,7 +15,7 @@ El proyecto integrador Fundamentos necesita, además de su CLI, una interfaz web
 Abrir una URL dispara pasos distintos: si el host es un dominio público, DNS traduce el nombre a una dirección IP; después el cliente abre una conexión TCP contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. `localhost` salta el primer paso — el sistema operativo lo resuelve a `127.0.0.1` sin consultar ningún servidor DNS —, así que en desarrollo local el cuello de botella casi nunca es la resolución de nombres: es que el puerto donde escucha tu servidor coincida exactamente con el puerto que pedís. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+Guarda la página que vas a servir en `index.html` con el `printf` que sigue, antes de levantar el servidor en esa misma carpeta.
 
 ```bash
 mkdir ejemplo-url-servidor
@@ -102,7 +102,8 @@ Servidor sin memoria: _________ (código)
 Respuesta JSON: {“error”: “_________”, “code”: _________}
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -119,6 +120,8 @@ Respuesta JSON: {“error”: “_________”, “code”: _________}
 > {“error”: “Tarea no encontrada”, “code”: 404, “timestamp”: “2026-10-06T14:00:00Z”}
 > ```
 
+</details>
+
 ### Tema 2: HTTP como contrato observable
 
 #### Paso 1 · Objetivo y preparación
@@ -131,7 +134,7 @@ El proyecto integrador Fundamentos va a exponer una API HTTP simple para consult
 Una petición HTTP es texto estructurado: un método (`GET`, `POST`...), una ruta, una versión, cabeceras y, a veces, un cuerpo. Una respuesta es simétrica: una línea de estado con un código numérico, cabeceras y, a veces, un cuerpo. El código de estado por sí solo ya es un contrato observable: un cliente puede decidir si algo salió bien (`2xx`), si el problema es suyo (`4xx`) o del servidor (`5xx`) sin necesidad de parsear el cuerpo de la respuesta. La analogía: pedís algo por correo certificado — el acuse de recibo (código de estado) te confirma la entrega sin que tengas que abrir el sobre (el cuerpo) para saberlo.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+Guarda la página que vas a servir en `index.html` con el `printf` que sigue, antes de levantar el servidor y observar el intercambio con `curl -v`.
 
 ```bash
 mkdir ejemplo-http-contrato
@@ -231,7 +234,8 @@ Idempotencia GET: _________ (sí/no, ¿por qué?)
 Header decisivo: _________ (Request-Line: VERBO ...)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -252,6 +256,8 @@ Header decisivo: _________ (Request-Line: VERBO ...)
 > **Bodies:**
 > - POST/PUT: llevan body (JSON con datos)
 > - GET/DELETE: no llevan body (por convención)
+
+</details>
 
 **Límites y decisión de uso:** Un 200 confirma el contrato HTTP definido, no necesariamente que todo proceso posterior terminó. Para trabajo asíncrono documenta estado y consulta de seguimiento; un timeout tampoco prueba que el servidor no aplicó el cambio.
 
@@ -400,7 +406,8 @@ Validación: if (!titulo.value) { _________ }
 Label + input: <label for="titulo">...</label> <input id="titulo" ...>
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -433,6 +440,8 @@ Label + input: <label for="titulo">...</label> <input id="titulo" ...>
 > <label for="titulo">Título</label>
 > <input id="titulo" type="text" required>
 > ```
+
+</details>
 
 ### Tema 4: CSS, layout responsive y accesibilidad verificable
 
@@ -573,7 +582,8 @@ Color alternativo: _________ (más oscuro para cumplir)
 Herramienta: contrast-ratio.com, comprobación: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -593,6 +603,8 @@ Herramienta: contrast-ratio.com, comprobación: _________
 > ```css
 > body { background: #FFF; color: #333; }
 > ```
+
+</details>
 
 **Límites y decisión de uso:** Superar una medida de contraste no garantiza accesibilidad completa. Comprueba teclado, semántica, ampliación y mensajes de error; evita corregir colores sin revisar si el contenido puede leerse y operarse en distintas condiciones.
 

@@ -22,8 +22,6 @@ Una precondición es lo que debe cumplirse antes de llamar a `transition`; una p
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```text
 Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
 Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; si no, lanza ValueError
@@ -75,7 +73,6 @@ Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contra
 [SOLUCIÓN PLEGADA]
 > Invariante: `∀s ∈ Shipments: s.status ∈ {CREATED, ASSIGNED, OUT_FOR_DELIVERY, DELIVERED} ∧ s.created_at ≤ s.assigned_at ≤ s.delivered_at`. Garantía: restricción CHECK en DB + validación en dominio. Envío NULL es violación, DB rechaza. Transacción anidada (SAVEPOINT) preserva invariante si rollback parcial restaura estado válido. Prueba: hypothes con `status` generado y verifica que toda secuencia deja invariante cierto.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** proposición, valor de verdad, negación, conjunción, disyunción, implicación, equivalencia, predicado, cuantificador universal, cuantificador existencial, precondición, postcondición e invariante.
 
 Una proposición afirma algo que puede ser verdadero o falso. `stock >= 0` es una proposición cuando `stock` tiene un valor; `stock(x) >= 0` es un predicado sobre productos. Los conectores permiten formar reglas: un retiro es aceptable si el producto existe **y** el stock alcanza. La implicación `P -> Q` exige que cuando P sea verdadera, Q también lo sea; no afirma que P sea verdadera.
@@ -139,8 +136,6 @@ Una relación de equivalencia es reflexiva, simétrica y transitiva; un orden pa
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
 
@@ -179,7 +174,6 @@ Entregá la relación no simétrica confirmada del Paso 4, la transición hacia 
 [SOLUCIÓN PLEGADA]
 > Reflexividad: (a,a) ∈ relación. En ALLOWED_TRANSITIONS, ¿{DELIVERED: {DELIVERED}}? Permitido si soportas reintentos (segundo intento de confirmar devuelve resultado anterior sin cambio). Prohibido si cada confirmación es nueva (evento nuevo). Decisión: si usas `command_id` único, reflexividad es permitida (idempotencia) y test debe pasar. Si cada intento es suceso, test debe fallar. El test define la regla de negocio, no al revés.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** conjunto, pertenencia, subconjunto, unión, intersección, diferencia, producto cartesiano, función, inyección, sobreyección, relación, equivalencia, orden parcial, caso base, paso inductivo y recursión.
 
 Un conjunto agrupa elementos sin orden ni repetición. Si `A` contiene permisos concedidos y `R` permisos requeridos, la autorización puede expresarse `R ⊆ A`. La intersección encuentra elementos comunes; la diferencia identifica faltantes. Estas operaciones están detrás de roles, filtros, etiquetas y consultas.
@@ -234,8 +228,6 @@ Un grafo dirigido sin ciclos (DAG) admite un orden topológico — como una list
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
 
@@ -285,7 +277,6 @@ Entregá la confirmación de DAG del Paso 4, el ciclo introducido y detectado de
 [SOLUCIÓN PLEGADA]
 > DAG: nodo = etapa, arista = dependencia. Detección de ciclo: DFS con colores (blanco/gris/negro) — gris-a-gris = ciclo. Orden topológico: Kahn o DFS-post. Válido si satisface todas las dependencias (pueden haber múltiples órdenes válidos). Ejecución paralela: ejecutar todas las etapas sin dependencias juntas, esperar que terminen, seguir. Herramientas: Airflow, Prefect modelan esto automáticamente.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** regla de suma, regla de producto, permutación, combinación, principio del palomar, grafo, vértice, arista, grado, camino, ciclo, grafo dirigido, DAG, árbol, BFS, DFS y orden topológico.
 
 La combinatoria responde cuántas posibilidades existen sin enumerarlas. Si una API tiene 3 roles, 4 operaciones y 2 estados de cuenta, hay hasta `3 × 4 × 2 = 24` combinaciones de decisión. Esa cifra ayuda a diseñar particiones de prueba, aunque no obliga a ejecutar cada combinación si algunas son equivalentes.
@@ -351,8 +342,6 @@ La mediana y los percentiles describen mejor una distribución asimétrica que e
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 import time
 from statistics import mean, median, quantiles
@@ -399,7 +388,6 @@ Entregá la distribución con 30 repeticiones del Paso 4, la conclusión frágil
 [SOLUCIÓN PLEGADA]
 > Intervalo de confianza = rango donde crees que está el verdadero p95 (ej. 140-160ms con 95% confianza). Necesitas >300 muestras para que sea confiable (regla del pulgar). El volumen afecta p99/p95 porque aumenta contención; si duplicas carga, p95 puede multiplicarse. Re-medir mensualmente o ante cambios arquitectónicos. SLI debe ser "p95 < 200ms por mes", no "ahora".
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** experimento, espacio muestral, evento, probabilidad condicional, independencia, variable aleatoria, esperanza, varianza, distribución, población, muestra, sesgo, intervalo de confianza, correlación, causalidad y prueba de hipótesis.
 
 La probabilidad modela incertidumbre, no ignorancia absoluta. Una variable aleatoria asigna un número a cada resultado: latencia, errores por minuto o demanda diaria. La media resume centro, pero es sensible a extremos; mediana y percentiles describen mejor latencias asimétricas. La varianza y desviación expresan dispersión. Informar solo el promedio puede ocultar usuarios que sufren una cola larga.

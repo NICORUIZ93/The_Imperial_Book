@@ -244,7 +244,8 @@ Estado tras 2 × Deshacer y 1 × Rehacer: _________ items en undo, _________ en 
 Cola vs pila: Perderías _________ (¿qué?)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -263,6 +264,8 @@ Cola vs pila: Perderías _________ (¿qué?)
 > ```
 >
 > **Cola:** Invertirías el orden de reversión (FIFO). Deshacer sería mal: "deshacer A primero" en vez de "deshacer C primero".
+
+</details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Usa una cola para tareas pendientes y una pila para una demostración de deshacer. Prueba el orden de extracción y explica qué operaciones necesitarían persistencia antes de usarse en el gestor real.
 
@@ -388,7 +391,8 @@ Algoritmo para ultimo_t2: búsqueda binaria pero _________
 Si 0 coincidencias: devuelve _________ (None, -1, excepción)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -408,6 +412,8 @@ Si 0 coincidencias: devuelve _________ (None, -1, excepción)
 > mientras ultimo < len(lista)-1 y lista[ultimo+1] == t2: ultimo += 1
 > return (primer, ultimo)
 > ```
+
+</details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Busca una tarea por identificador con precondiciones explícitas. Si usas búsqueda binaria, prueba una colección desordenada y muestra por qué primero debes establecer y conservar el orden.
 
@@ -539,7 +545,8 @@ Punto inflexión (timeout 10s): N máximo = _________
 Medición: time.time() antes/después, imprime diferencia
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -558,6 +565,8 @@ Medición: time.time() antes/después, imprime diferencia
 > # O(n²): for i in range(n): for j in range(n): pass
 > print(f"Tiempo: {time.time() - start:.4f}s")
 > ```
+
+</details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Compara dos estrategias de ordenamiento con tareas equivalentes y tamaños crecientes. Verifica primero que producen el mismo orden y registra condiciones de medición antes de elegir por velocidad.
 

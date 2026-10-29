@@ -24,7 +24,7 @@ flowchart LR
 | foundations | 97 |
 | javascript | 88 |
 | java | 80 |
-| node | 80 |
+| node | 77 |
 | spring-boot | 84 |
 | angular | 71 |
 | react | 58 |
@@ -36,4 +36,4 @@ flowchart LR
 | cloud | 156 |
 | rutaflow | 26 |
 
-**Total:** 1076 temas.
+**Total:** 1073 temas.

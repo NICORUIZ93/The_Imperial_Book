@@ -11,7 +11,7 @@ $sans-ui:var(--font-sans);
 .reading-progress { position:fixed; top:$th; left:$sw; right:0; z-index:19; height:2px; background:transparent; }
 .reading-progress span { display:block; height:100%; background:var(--accent); transition:width .12s linear; }
 
-.lesson-layout { display:grid; grid-template-columns:minmax(0,820px) 210px; gap:36px; align-items:start; max-width:1066px; margin:0 auto; }
+.lesson-layout { display:grid; grid-template-columns:minmax(0,820px); justify-content:center; max-width:1066px; margin:0 auto; }
 .lesson { min-width:0; }
 
 // Cabecera de capítulo: sin lomo de color, sin sombra pronunciada, sin
@@ -60,7 +60,6 @@ $sans-ui:var(--font-sans);
 .focus-toggle { min-height:36px; margin-left:auto; padding:0 12px; border:1px solid $bd2; border-radius:999px; color:$i3; background:transparent; font:700 11px/1 var(--font-sans); transition:background .18s ease,color .18s ease,border-color .18s ease; }
 .focus-toggle:hover, .focus-toggle[aria-pressed='true'] { border-color:var(--accent); color:var(--accent); background:color-mix(in srgb,var(--accent) 9%,transparent); }
 .focus-mode { grid-template-columns:minmax(0,780px); justify-content:center; max-width:780px; }
-.focus-mode .lesson-toc { display:none; }
 .focus-mode .lesson-hero { margin-bottom:34px; }
 // Mapa del capítulo: resumen plegable sin caja de color ni rejilla de líneas.
 // Al abrir, tres columnas separadas por aire con un filete superior fino —
@@ -122,16 +121,6 @@ $sans-ui:var(--font-sans);
 .build-method strong { color:$ink; font:750 11px var(--font-sans); }
 .build-method small { overflow:hidden; color:$mu; font:500 9.5px var(--font-sans); text-overflow:ellipsis; white-space:nowrap; }
 
-.lesson-toc { position:sticky; top:84px; width:210px; max-height:calc(100vh - 110px); overflow:auto; padding:18px 16px; border:1px solid $bd; border-radius:14px; background:$wh; box-shadow:$sh; }
-.lesson-toc-heading { display:flex; align-items:center; gap:10px; margin-bottom:15px; color:$ink; }
-.lesson-toc-heading lucide-icon { width:18px; color:$p; }
-.lesson-toc-heading span { display:block; font:800 12px/1.2 var(--font-sans); text-transform:uppercase; letter-spacing:.06em; }
-.lesson-toc-heading small { display:block; margin-top:3px; color:$mu; font:500 11px/1.2 var(--font-sans); }
-.lesson-toc nav { display:flex; flex-direction:column; border-left:1px solid $bd; }
-.lesson-toc-link { display:block; margin-left:-1px; padding:7px 0 7px 13px; border-left:2px solid transparent; color:$mu; font:500 12px/1.42 var(--font-sans); text-decoration:none; transition:.18s ease; }
-.lesson-toc-link.level-3 { padding-left:22px; font-size:11.5px; }
-.lesson-toc-link:hover { color:$ink; }
-.lesson-toc-link.active { border-left-color:var(--accent); color:$p; font-weight:700; }
 
 .lesson-markdown ::ng-deep .topic-map { margin:22px 0 30px; padding:20px 22px; border:1px solid $bd; border-radius:16px; background:$bg2; }
 .lesson-markdown ::ng-deep .topic-map-heading { display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; margin-bottom:16px; }
@@ -380,18 +369,9 @@ $sans-ui:var(--font-sans);
 .concept-chips span { padding:7px 10px; border-radius:99px; background:$pl; color:$ph; font:700 12px var(--font-sans); }
 .lesson-deliverable { padding:15px 17px; border-radius:10px; background:$pl; }
 
-.track-project { margin:38px 0; border:1px solid $bd; border-radius:20px; background:$wh; box-shadow:$sh; overflow:hidden; }
-.track-project > summary { min-height:76px; display:flex; align-items:center; gap:13px; padding:19px 22px; cursor:pointer; list-style:none; }
-.track-project > summary::-webkit-details-marker { display:none; }
-.track-project > summary lucide-icon { width:25px; color:var(--accent); }
-.track-project > summary span { display:grid; gap:3px; }
-.track-project > summary small { color:var(--accent); font:800 9px var(--font-sans); letter-spacing:.07em; text-transform:uppercase; }
-.track-project > summary strong { color:$ink; font:750 16px var(--font-sans); }
-.track-project-body { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:22px; border-top:1px solid $bd; background:$bg2; }
-.track-project-body > p { grid-column:1/-1; margin:0; color:$i3; font:500 13px/1.6 var(--font-sans); }
-.track-project-body > div { padding:16px; border:1px solid $bd; border-radius:12px; background:$wh; }
-.track-project-body h3 { margin:0 0 10px; color:$ink; font:750 13px var(--font-sans); }
-.track-project-body ol,.track-project-body ul { margin:0; padding-left:20px; color:$i3; font:500 12px/1.55 var(--font-sans); }
+.project-definition-of-done { margin-top:14px; padding-top:14px; border-top:1px solid $bd; }
+.project-definition-of-done h3 { margin:0 0 8px; color:$ink; font:750 12px var(--font-sans); text-transform:uppercase; letter-spacing:.05em; }
+.project-definition-of-done ul { margin:0; padding-left:20px; color:$i3; font:500 12px/1.55 var(--font-sans); }
 
 .lesson-footer { margin-top:58px; padding-top:26px; border-top:1px solid $bd; display:flex; flex-direction:column; gap:22px; }
 .complete-toggle { align-self:flex-start; display:flex; align-items:center; gap:9px; padding:10px 15px; border:1px solid $bd2; border-radius:9px; background:$wh; color:$i3; font:700 13px var(--font-sans); }
@@ -405,10 +385,6 @@ $sans-ui:var(--font-sans);
 .lesson-missing { padding:70px 24px; text-align:center; color:$mu; }
 .lesson-missing a { color:$p; font-weight:700; }
 
-@media (max-width:1440px) {
-  .lesson-layout { grid-template-columns:minmax(0,820px); justify-content:center; }
-  .lesson-toc { display:none; }
-}
 @media (max-width:860px) { .reading-progress { left:0; } }
 @media (max-width:640px) {
   :host { padding:22px 15px 64px; }
@@ -441,7 +417,6 @@ $sans-ui:var(--font-sans);
   .lesson-markdown ::ng-deep .topic-step-navigation > strong { grid-column:1/-1; grid-row:1; text-align:center; }
   .lesson-markdown ::ng-deep .topic-step-navigation a { grid-row:2; }
   .lesson-markdown ::ng-deep .topic-step-navigation a small { max-width:132px; }
-  .track-project-body { grid-template-columns:1fr; padding:16px; }
   .lesson-markdown ::ng-deep .section-guide { align-items:flex-start; flex-direction:column; gap:4px; }
   .lesson-markdown ::ng-deep .learning-contract { grid-template-columns:1fr; }
   .lesson-markdown ::ng-deep .concept-flow > div { grid-template-columns:1fr; }
@@ -481,7 +456,7 @@ $sans-ui:var(--font-sans);
 
 // Lector de academia: ancho de lectura estable y jerarquía sin mayúsculas forzadas.
 :host { padding:32px clamp(18px,3vw,44px) 72px; }
-.lesson-layout { grid-template-columns:minmax(0,780px) 190px; max-width:1030px; gap:28px; }
+.lesson-layout { grid-template-columns:minmax(0,780px); justify-content:center; max-width:1030px; }
 .lesson { background:$wh; padding:32px clamp(20px,3vw,44px); border:1px solid $bd; border-radius:16px; box-shadow:none; }
 .lesson-hero { margin-bottom:28px; }
 .lesson-eyebrow { font-size:11px; line-height:1.6; text-transform:none; letter-spacing:0; color:$mu; }
@@ -518,13 +493,10 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep pre { font:400 12.5px/1.9 var(--font-mono); background:var(--bg-instrument); color:var(--code-text); }
 .lesson-markdown ::ng-deep :not(pre)>code { background:$bg2; color:$ink; padding:2px 5px; border-radius:4px; font-size:.85em; }
 .lesson-markdown ::ng-deep table { font-size:13px; border-radius:8px; }
-.lesson-toc { top:96px; }
-.lesson-toc-heading span { font-size:13px; }
-.lesson-toc-link { font-size:12px; line-height:1.6; }
 .lesson-markdown ::ng-deep .topic-learning-prompts { margin-top:24px; border-radius:10px; }
 .lesson-nav button { border-radius:10px; }
 .focus-mode { grid-template-columns:minmax(0,780px); max-width:780px; }
-@media(max-width:1250px) { .lesson-layout { grid-template-columns:minmax(0,1fr); max-width:800px; } .lesson-toc { display:none; } }
+@media(max-width:1250px) { .lesson-layout { grid-template-columns:minmax(0,1fr); max-width:800px; } }
 @media(max-width:620px) { :host { padding:18px 10px 48px; } .lesson { padding:24px 18px; border-radius:12px; } .lesson h1 { font-size:27px; letter-spacing:-.7px; } .lesson-description { font-size:14px; } .lesson-markdown,.lesson-markdown ::ng-deep .step-body { font-size:15px; line-height:1.8; } .lesson-markdown ::ng-deep h3.topic-heading { font-size:21px; padding-right:0; padding-top:44px; } .lesson-markdown ::ng-deep .topic-toggle { top:0; right:0; } .chapter-map summary { flex-wrap:wrap; padding-block:10px; } .lesson-markdown ::ng-deep .code-example-bar button { min-height:44px; } .project-milestones { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 .reading-progress { top:72px; left:270px; }
 .course-guide { margin-top:20px; padding:14px 18px; border:1px solid $bd; border-radius:10px; background:$bg; font-size:13px; line-height:1.8; }

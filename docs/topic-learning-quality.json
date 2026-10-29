@@ -173,18 +173,18 @@
       "repeatedDemo": 0
     },
     "node": {
-      "topics": 80,
-      "explanation": 80,
-      "code": 80,
+      "topics": 77,
+      "explanation": 77,
+      "code": 77,
       "visual": 27,
-      "filePath": 80,
-      "runCommand": 80,
-      "expectedResult": 80,
-      "practice": 80,
-      "project": 80,
-      "modelMental": 80,
-      "limitsDecision": 80,
-      "practicable": 80,
+      "filePath": 77,
+      "runCommand": 77,
+      "expectedResult": 77,
+      "practice": 77,
+      "project": 77,
+      "modelMental": 77,
+      "limitsDecision": 77,
+      "practicable": 77,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -19313,51 +19313,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: Streams legibles, escribibles y transform",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 2,
-        "topic": "Tema 4: Backpressure: write() y el evento drain",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 2,
-        "topic": "Tema 5: Backpressure",
+        "topic": "Tema 3: Backpressure: write() y el evento drain",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19379,29 +19335,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 6: pipeline() básico para componer streams",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 2,
-        "topic": "Tema 7: pipeline() para componer streams de forma segura",
+        "topic": "Tema 4: pipeline() para componer streams de forma segura",
         "criteria": {
           "explanation": true,
           "code": true,

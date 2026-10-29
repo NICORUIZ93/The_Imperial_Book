@@ -20,8 +20,6 @@ RutaFlow está lista para subir a ambas tiendas — nadie generó todavía los a
 flutter create ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```bash
 flutter build appbundle --release   # → .aab para Google Play Console
 flutter build ipa --release          # → .ipa para App Store Connect (requiere macOS/Xcode)
@@ -93,8 +91,6 @@ Android necesita el ícono de RutaFlow en múltiples resoluciones para distintas
 ```bash
 flutter create ejemplo
 ```
-
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 ```yaml
 # pubspec.yaml
@@ -376,7 +372,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** compila la app del repartidor contra la API de QA o de producción sin cambiar código, y muestra el entorno en la pantalla de ajustes.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** correr `flutter build --release` sin `--dart-define-from-file=config/prod.json`, confiando en que el build "ya sabe" a qué entorno apunta — las constantes de `String.fromEnvironment` caen en su valor por defecto (`ENTORNO` queda en `desconocido`, `API_URL` queda vacío), y el binario compila sin ningún error aunque no tenga a dónde conectarse.
 
 ## Laboratorio práctico
 

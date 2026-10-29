@@ -53,12 +53,17 @@
           <div><small>Hilo conductor</small><h2 id="project-progress-title">{{ project.title }}</h2></div>
           <strong>{{ projectProgress() }}%</strong>
         </div>
-        <p>{{ project.deliverable }}</p>
+        <p><strong>Problema:</strong> {{ project.problem }}</p>
+        <p><strong>Entrega final:</strong> {{ project.deliverable }}</p>
         <div class="project-progress-bar" role="progressbar" aria-label="Progreso del proyecto integrador" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="projectProgress()"><span [style.width.%]="projectProgress()"></span></div>
         <ol class="project-milestones" aria-label="Hitos del proyecto">
           <li *ngFor="let milestone of project.milestones; let i = index" [class.current]="i + 1 === projectStep()" [class.reached]="i + 1 < projectStep()"><span>{{ i + 1 }}</span><small>{{ milestone }}</small></li>
         </ol>
         <p class="project-current-step"><strong>Hoy:</strong> trabaja el hito {{ projectStep() }} de {{ project.milestones.length }}. Marca el capítulo al finalizar para conservar tu progreso.</p>
+        <div class="project-definition-of-done" *ngIf="showTrackProject()">
+          <h3>Definición de terminado</h3>
+          <ul><li *ngFor="let item of project.verification">{{ item }}</li></ul>
+        </div>
       </details>
 
       <section class="floci-overview" *ngIf="isCloudIntroduction()" aria-labelledby="floci-overview-title">
@@ -101,16 +106,6 @@
         <p *ngIf="diagramError() as error" class="lesson-error" role="alert">{{ error }}</p>
       </section>
 
-      <details class="track-project" *ngIf="showTrackProject() && trackProject() as project">
-        <summary><lucide-icon [img]="icons.Trophy" /><span><small>Proyecto integrador del track</small><strong>{{ project.title }}</strong></span></summary>
-        <div class="track-project-body">
-          <p><strong>Problema:</strong> {{ project.problem }}</p>
-          <p><strong>Entrega final:</strong> {{ project.deliverable }}</p>
-          <div><h3>Hitos</h3><ol><li *ngFor="let milestone of project.milestones">{{ milestone }}</li></ol></div>
-          <div><h3>Definición de terminado</h3><ul><li *ngFor="let item of project.verification">{{ item }}</li></ul></div>
-        </div>
-      </details>
-
       <footer class="lesson-footer">
         <button class="complete-toggle" [class.done]="isComplete()" [attr.aria-pressed]="isComplete()" (click)="toggleComplete()">
           <lucide-icon [img]="icons.CircleCheck" />
@@ -122,20 +117,6 @@
         </div>
       </footer>
     </article>
-
-    <aside class="lesson-toc" *ngIf="tocItems().length && !hasMarginNotes()" aria-label="En esta lección">
-      <div class="lesson-toc-heading"><lucide-icon [img]="icons.ListTree" /><div><span>Índice</span><small>En este capítulo</small></div></div>
-      <nav>
-        <a
-          *ngFor="let item of tocItems()"
-          [href]="'#' + item.id"
-          class="lesson-toc-link"
-          [class.level-3]="item.level === 3"
-          [class.active]="activeTocId() === item.id"
-          (click)="scrollToHeading($event, item.id)"
-        >{{ item.text }}</a>
-      </nav>
-    </aside>
   </div>
 </ng-container>
 

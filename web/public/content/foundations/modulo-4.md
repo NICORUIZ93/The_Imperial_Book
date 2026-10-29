@@ -138,7 +138,8 @@ UPDATE en diseño normalizado: afecta _________ fila(s)
 ¿El modelo normalizado evita nombres inconsistentes? _________ (¿por qué?)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Datos repetidos:** `categoria_nombre` y `categoria_color` se repiten en cada tarea de la misma categoría.
 >
@@ -149,6 +150,8 @@ UPDATE en diseño normalizado: afecta _________ fila(s)
 > **UPDATE normalizado:** `UPDATE categorias SET color='azul' WHERE nombre='trabajo'` afecta 1 fila; las 500 tareas heredan el cambio a través de la relación, sin tocarlas.
 >
 > **Nombres inconsistentes:** En parte. `UNIQUE` en `categorias.nombre` impide dos filas idénticas "trabajo", pero "trabajo" y "Trabajo " (con mayúscula o espacio) siguen siendo valores distintos para SQLite — normalizar la tabla evita la duplicación masiva, no sustituye la validación del texto de entrada.
+
+</details>
 ### Tema 2: SQL para definir, escribir, consultar y relacionar
 
 #### Paso 1 · Objetivo y preparación
@@ -223,7 +226,8 @@ Complejidad con índice (estado): O(_)
 EXPLAIN QUERY PLAN output debe mostrar: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -234,6 +238,8 @@ EXPLAIN QUERY PLAN output debe mostrar: _________
 > **Idempotencia:** No exactamente. `DATE('now','-1 day')` cambia cada día. Mejor: usar timestamp fijo o rango: `created_at BETWEEN '2026-10-05' AND '2026-10-06'`.
 >
 > **EXPLAIN:** Debe mostrar `SEARCH entrega USING INDEX idx_estado_fecha` en lugar de `SCAN TABLE entrega`.
+
+</details>
 
 **Conceptos clave:** DDL, DML, SELECT, INSERT, UPDATE, DELETE, WHERE, ORDER BY, GROUP BY, agregación, JOIN y parámetro.
 
@@ -361,7 +367,8 @@ EXPLAIN después: _________
 Número de índices que ralentiza INSERT: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -372,6 +379,8 @@ Número de índices que ralentiza INSERT: _________
 > **Plan:** Antes: `SCAN TABLE tarea`. Después: `SEARCH tarea USING INDEX idx_urgente_prioridad`.
 >
 > **Trade-off:** Cada índice ralentiza INSERT/UPDATE. 2-3 índices = negligible; 10+ = significante. Balance con frecuencia de consulta.
+
+</details>
 
 **Conceptos clave:** índice, escaneo, búsqueda, selectividad, índice compuesto, plan de consulta, coste de escritura y constraint.
 
@@ -494,7 +503,8 @@ Transacción: BEGIN; _________ ; COMMIT;
 Si error entre INSERT: ejecutas _________ y el resultado es _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -511,6 +521,8 @@ Si error entre INSERT: ejecutas _________ y el resultado es _________
 > ```
 >
 > **Si error:** `ROLLBACK` y ninguna operación persiste. Tarea y etiqueta quedan inexistentes (atomicidad).
+
+</details>
 
 **Conceptos clave:** transacción, ACID, atomicidad, consistencia, aislamiento, durabilidad, commit, rollback, concurrencia, documento y patrón de acceso.
 
@@ -708,7 +720,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una tabla de auditoría de tareas alimentada por un trigger y una vista con las tareas vencidas por responsable.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** crear un trigger `BEFORE UPDATE` sin una condición `WHEN`, lo que lo aplica a todas las filas en vez de solo a las que debían rechazarse (el fallo deliberado al borrar `WHEN OLD.estado = 'entregada'`); y meter en triggers lógica de negocio tan compleja que nadie que lea el código de la aplicación puede saber que existe.
 
 ### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL
 
@@ -846,7 +858,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** calcula el cierre diario de tareas por responsable con un procedimiento y compáralo con la versión en Python.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** invocar un procedimiento con `SELECT cerrar_dia()` en vez de `CALL cerrar_dia()` (el fallo deliberado), confundiendo procedimientos con funciones; y usar un cursor y un bucle `FOR` para algo que un solo `INSERT ... SELECT` resolvería con menos código y mejor rendimiento.
 ### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas
 
 #### Paso 1 · Objetivo y preparación
@@ -962,7 +974,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** exporta cada semana las tareas por responsable a un Excel con filtros y porcentaje de cumplimiento.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** nombrar una tabla de Excel con espacios (como `displayName="Resumen Zonas"`), lo que falla con `ValueError: Table names cannot have spaces` porque sigue reglas de identificador; y asumir que `openpyxl` calculó las fórmulas al leer el archivo, cuando en realidad devuelve el texto de la fórmula (o `None` con `data_only=True`) hasta que alguien lo abrió en Excel.
 
 ## Construcción guiada del capítulo
 

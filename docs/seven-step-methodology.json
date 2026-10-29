@@ -201,24 +201,24 @@
       "complete": 56
     },
     "node": {
-      "topics": 80,
-      "objective": 80,
-      "prerequisites": 80,
-      "context": 80,
-      "theoryAnalogy": 80,
-      "guidedDemo": 80,
-      "codeExplanation": 80,
-      "execution": 80,
-      "expectedResult": 80,
-      "deliberateFailure": 80,
-      "guidedPractice": 80,
-      "independentPractice": 80,
-      "closure": 80,
-      "commonErrors": 80,
-      "resources": 80,
-      "standaloneExample": 80,
-      "learningEvidence": 80,
-      "complete": 80
+      "topics": 77,
+      "objective": 77,
+      "prerequisites": 77,
+      "context": 77,
+      "theoryAnalogy": 77,
+      "guidedDemo": 77,
+      "codeExplanation": 77,
+      "execution": 77,
+      "expectedResult": 77,
+      "deliberateFailure": 77,
+      "guidedPractice": 77,
+      "independentPractice": 77,
+      "closure": 77,
+      "commonErrors": 77,
+      "resources": 77,
+      "standaloneExample": 77,
+      "learningEvidence": 77,
+      "complete": 77
     },
     "react": {
       "topics": 58,
@@ -22821,7 +22821,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: Streams legibles, escribibles y transform",
+        "topic": "Tema 3: Backpressure: write() y el evento drain",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -22847,85 +22847,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 4: Backpressure: write() y el evento drain",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
-          "codeExplanation": true,
-          "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
-        },
-        "classification": {
-          "stepsPassed": 16,
-          "complete": true
-        }
-      },
-      {
-        "module": 2,
-        "topic": "Tema 5: Backpressure",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
-          "codeExplanation": true,
-          "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
-        },
-        "classification": {
-          "stepsPassed": 16,
-          "complete": true
-        }
-      },
-      {
-        "module": 2,
-        "topic": "Tema 6: pipeline() básico para componer streams",
-        "criteria": {
-          "objective": true,
-          "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
-          "codeExplanation": true,
-          "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
-          "commonErrors": true,
-          "resources": true,
-          "standaloneExample": true,
-          "learningEvidence": true
-        },
-        "classification": {
-          "stepsPassed": 16,
-          "complete": true
-        }
-      },
-      {
-        "module": 2,
-        "topic": "Tema 7: pipeline() para componer streams de forma segura",
+        "topic": "Tema 4: pipeline() para componer streams de forma segura",
         "criteria": {
           "objective": true,
           "prerequisites": true,

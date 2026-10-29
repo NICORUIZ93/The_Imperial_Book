@@ -228,8 +228,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
+**Crea** el archivo `lib/features/entrega/data/politica_ubicacion.dart` con la clase `PoliticaUbicacion` que ves más abajo, y guárdalo antes de ejecutar la app con `flutter run`.
 
 Crea una carpeta independiente y agrega los paquetes reales de ubicación y batería:
 
@@ -358,8 +357,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
+**Crea** el archivo `lib/features/entrega/data/outbox_entregas.dart` con la clase `OutboxEntregas` que ves más abajo, y guárdalo antes de ejecutarlo.
 
 Crea una carpeta independiente y agrega `sqflite` junto con la variante que corre sobre el Dart VM para poder verificar sin un emulador:
 

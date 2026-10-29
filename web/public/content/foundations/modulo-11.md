@@ -79,10 +79,13 @@ Ejecuta `python3 src/round_robin.py`. **Resultado esperado:** turnos alternados 
 3. ¿Qué mide el "tiempo de espera" de un proceso en una cola Round Robin, y por qué `photo` (la ráfaga más larga) tiende a tener el peor tiempo de espera promedio bajo esta política?
 4. ¿Qué política de planificación elegirías si `gps` NUNCA puede esperar más de 1 segundo?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Para dar más turnos a `sync` sin cambiar el quantum, agregá dos entradas de `sync` en la cola inicial en vez de una: así compite por el doble de turnos solo por estar dos veces en la fila. Con un coste fijo por cambio de contexto, un quantum chico (2) produce más cambios de proceso que uno grande (5) para la misma carga total, así que ese coste penaliza más al quantum chico aunque reparta turnos de forma más pareja — es el trade-off real entre equidad y overhead. El tiempo de espera es el tiempo total que un proceso pasa en la cola sin ejecutar; `photo` espera más porque necesita más vueltas completas a la cola para completar sus 7 unidades de ráfaga. Si `gps` tiene un límite estricto de espera, Round Robin puro no lo garantiza: hace falta una política con prioridades o un planificador de tiempo real (deadline scheduling), no solo ajustar el quantum.
+
+</details>
 
 **Diagrama (Round Robin - máquina de estados):**
 
@@ -142,10 +145,13 @@ Entrega código, salida, fallo y corrección; explica el resultado. Siguiente pa
 3. ¿Qué estructura de datos agregarías a tu parser para resolver esto, y por qué una pila (stack) encaja naturalmente con el anidamiento?
 4. ¿En qué nivel de la jerarquía de Chomsky cae "paréntesis balanceados" frente a `RF-####`?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > No: un autómata finito tiene memoria fija (su estado actual), y "balanceado" requiere contar un número de paréntesis abiertos que no tiene límite superior — necesitarías infinitos estados para contar infinitos niveles de anidamiento. Lo que falta es una memoria que crezca con la entrada. Una pila resuelve esto: empujás al ver `(`, sacás al ver `)`, y el texto es válido si la pila queda vacía al terminar. `RF-####` es un lenguaje regular (nivel 3 de Chomsky, reconocible con autómata finito); "paréntesis balanceados" es un lenguaje libre de contexto (nivel 2), reconocible con un autómata de pila o un parser recursivo — exactamente la frontera que separa a un validador de formato de un compilador real.
+
+</details>
 
 **¿Por qué es importante?** Convierte reglas informales en lenguajes que una máquina puede reconocer, rechazar y probar de manera determinista.
 
@@ -256,10 +262,13 @@ Entrega código, salida, fallo y corrección; explica el resultado. Siguiente pa
 3. ¿Caché, GC, otros factores?
 4. ¿Cómo medir complejidad en producción?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Predicción: basada en análisis teórico. Realidad: incluye overhead (GC, syscalls, cache miss). Mide con profiler real. Identifica cuello: sorting, JOINs no indexados, loops anidados.
+
+</details>
 
 **¿Por qué es importante?** Ayuda a separar decisiones operativas de análisis histórico y evita extraer conclusiones que los datos no respaldan.
 
@@ -330,10 +339,13 @@ Entrega código, salida, fallo y corrección; explica el resultado. Siguiente pa
 3. Con solo 7 valores totales, ¿tiene sentido hacer 5-fold cross-validation? ¿Qué problema aparece con folds muy chicos?
 4. Si el modelo complejo (no la línea base) tuviera MAE=3.9 contra el MAE=4.0 de la línea base, ¿esa diferencia justifica la complejidad adicional?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > No, el MAE cambiaría con otro split: con tan pocos datos, un solo valor atípico en el conjunto de test puede dominar el promedio de errores. k-fold cross-validation divide los datos en k partes, entrena con k-1 y prueba con la restante, repitiendo k veces y promediando el error — así cada dato pasa por el conjunto de prueba exactamente una vez, reduciendo la dependencia de un split particular. Con 7 valores, folds muy chicos (por ejemplo "leave-one-out") dejan un solo dato de prueba por fold, lo que vuelve el MAE de cada fold tan ruidoso como el problema original; en la práctica se necesitan muchos más datos para que cross-validation aporte señal real. Una mejora de 4.0 a 3.9 con tan poca evidencia no justifica nada por sí sola: hay que ver si esa diferencia se mantiene a través de los folds o es solo ruido de muestra.
+
+</details>
 
 **¿Por qué es importante?** Obliga a comparar cualquier modelo con una línea base y a medir errores antes de confiar decisiones a una predicción.
 
@@ -438,10 +450,13 @@ Entrega código, salida, fallo y corrección; explica el resultado. Siguiente pa
 3. ¿Cómo lo comprobarías sin solo "mirar" los números impresos?
 4. ¿Qué alternativa reduce la acumulación de error frente a aplicar la misma rotación muchas veces?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > No exactamente: cada llamada a `rotate()` redondea internamente con la precisión finita de `float`, y ese error chico (como el `6.123e-17` del Paso 5) se vuelve la entrada de la siguiente rotación, en vez de desaparecer. Una sola rotación introduce un error del orden de `1e-16`; 360 rotaciones encadenadas pueden acumular un error visible en la segunda o tercera cifra decimal. Para comprobarlo, calculá la distancia entre el punto final y el original (debería ser 0.0 exacto) y compará con una tolerancia (`abs(distancia) < 1e-9`) en vez de comparar igualdad exacta de floats. La alternativa más estable es calcular una sola rotación de 360 grados (que matemáticamente es la identidad) en vez de encadenar 360 rotaciones de 1 grado, porque así el error de redondeo no se acumula paso a paso.
+
+</details>
 
 **¿Por qué es importante?** Explica cómo mapas, animaciones y simulaciones transforman coordenadas conservando propiedades que pueden verificarse.
 
@@ -535,10 +550,13 @@ Entrega código, salida, fallo y corrección; explica el resultado. Siguiente pa
 3. ¿Por qué la inmutabilidad de cada `Finding` (Paso 5 de este Tema) es precisamente lo que permite reconstruir esa línea temporal con confianza después?
 4. ¿Qué parte de un postmortem (Módulo 10) depende directamente de tener varios `Finding` ordenados en vez de un solo resumen escrito después de que todo terminó?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Un campo `timestamp` (o mejor, un reloj lógico/secuencia, como viste en el Módulo 10) permite ordenar los `Finding` sin depender de relojes de máquina desincronizados. La segunda decisión no borra la primera: se agrega un `Finding` nuevo que referencia al anterior (por ejemplo con un campo `supersedes`), y ambos quedan en la colección — la línea temporal es la lista completa, no el último registro. La inmutabilidad importa porque si cualquier `Finding` pudiera editarse después, alguien podría "corregir" el primero para que parezca que ya sabían del problema de infraestructura desde el principio, destruyendo la posibilidad de aprender de la secuencia real de decisiones. Un postmortem sin culpables (Módulo 10) depende exactamente de esto: reconstruir qué se sabía en cada momento, no juzgar con la información que solo apareció al final.
+
+</details>
 
 **¿Por qué es importante?** Enseña a comunicar evidencia y riesgos para que una decisión técnica pueda revisarse, reproducirse y corregirse.
 

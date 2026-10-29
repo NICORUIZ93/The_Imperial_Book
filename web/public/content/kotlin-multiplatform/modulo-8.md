@@ -20,8 +20,6 @@ Kotlin/Native compila el módulo compartido directamente a un binario nativo rea
 gradle init --type kotlin-application
 ```
 
-**Crea** el archivo `src/ejemplo.kt` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```kotlin
 // shared/build.gradle.kts
 kotlin {

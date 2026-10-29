@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-29 16:09 UTC
+Generated: 2026-10-29 18:53 UTC
 Root: `The_Imperial_Book`
 Indexed files: 879
 Import edges: 51
@@ -64,8 +64,8 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (59 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1081 lines, angular-app)
-  - symbols: LessonViewerComponent, TocItem, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
+- `web/src/app/course/lesson-viewer.ts` (1015 lines, angular-app)
+  - symbols: LessonViewerComponent, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject, moduleIndex
 
 ## Internal Import Graph
 
@@ -152,7 +152,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (27 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (185 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (182 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (133 lines)
@@ -164,8 +164,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/content.service.ts` (40 lines) - symbols: ContentService; imports: @angular/core, marked
 - `web/src/app/course-data.ts` (887 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
 - `web/src/app/course-module.model.ts` (34 lines) - symbols: CourseModule, Track
-- `web/src/app/course/course-shell.html` (53 lines) - symbols: official-path-title, main-content
-- `web/src/app/course/course-shell.scss` (100 lines)
+- `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
+- `web/src/app/course/course-shell.scss` (76 lines)
 - `web/src/app/course/course-shell.ts` (59 lines) - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../command-palette.service
 - ... 38 more files
 
@@ -269,16 +269,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2849 lines)
-- `docs/course-depth-review.json` (12218 lines)
+- `docs/code-visual-quality.json` (2828 lines)
+- `docs/course-depth-review.json` (12183 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (11844 lines)
+- `docs/prerequisite-graph.json` (11811 lines)
 - `docs/requested-master-topics.json` (189 lines)
-- `docs/seven-step-methodology.json` (28291 lines)
+- `docs/seven-step-methodology.json` (28213 lines)
 - `docs/skills-visual-learning.json` (120 lines)
 - ... 33 more files

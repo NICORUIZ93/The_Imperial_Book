@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Injector, OnDestroy, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BookOpen, Boxes, Check, CircleCheck, ChevronLeft, ChevronRight, Clock3, Code2, Copy, Database, Gauge, ListTree, LockKeyhole, LucideAngularModule, ShieldCheck, Trophy, Zap } from 'lucide-angular';
+import { BookOpen, Boxes, Check, CircleCheck, ChevronLeft, ChevronRight, Clock3, Code2, Copy, Database, Gauge, LockKeyhole, LucideAngularModule, ShieldCheck, Zap } from 'lucide-angular';
 import { map } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { findTrack } from '../course-data';
@@ -17,11 +17,6 @@ import { learningPrompt, LearningPromptMode } from '../learning-prompts';
 
 let mermaidInitialized = false;
 
-export interface TocItem {
-  id: string;
-  text: string;
-  level: 2 | 3;
-}
 
 const LEVEL_STAGES: CourseModule['level'][] = ['Fundamentos', 'Aplicación', 'Integración', 'Experto'];
 
@@ -106,7 +101,7 @@ function escapeHtml(text: string): string {
   styleUrl: './lesson-viewer.scss',
 })
 export class LessonViewerComponent implements OnDestroy {
-  readonly icons = { BookOpen, Boxes, Check, ChevronLeft, ChevronRight, CircleCheck, Clock3, Code2, Copy, Database, Gauge, ListTree, LockKeyhole, ShieldCheck, Trophy, Zap };
+  readonly icons = { BookOpen, Boxes, Check, ChevronLeft, ChevronRight, CircleCheck, Clock3, Code2, Copy, Database, Gauge, LockKeyhole, ShieldCheck, Zap };
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -215,16 +210,10 @@ export class LessonViewerComponent implements OnDestroy {
   private readonly themeService = inject(ThemeService);
   private readonly titleService = inject(Title);
 
-  readonly tocItems = signal<TocItem[]>([]);
-  readonly activeTocId = signal<string | null>(null);
   readonly readingProgress = signal(0);
-  /** Cuando la lección trae notas al margen, el margen reemplaza al índice
-   * lateral (evita que ambos ocupen la misma columna y se superpongan). */
-  readonly hasMarginNotes = signal(false);
   /** Reduce la carga visual cuando el estudiante quiere leer un único tema. */
   readonly focusMode = signal(false);
   readonly copiedCode = signal<string | null>(null);
-  private tocObserver: IntersectionObserver | null = null;
   private copyTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly updateReadingProgress = (): void => {
     const article = this.lessonContent()?.nativeElement;
@@ -343,7 +332,6 @@ export class LessonViewerComponent implements OnDestroy {
     this.prepareArchifyVisuals(container);
     this.enhanceEducationalContent(container);
     this.enhanceVerifiableExercises(container);
-    this.buildTableOfContents(container);
     this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')));
     this.buildTopicMap(container);
     const fragment = this.requestedFragment();
@@ -445,7 +433,6 @@ export class LessonViewerComponent implements OnDestroy {
   private enhanceEducationalContent(container: HTMLElement): void {
     this.groupLessonSections(container);
     this.addSectionGuides(container);
-    this.hasMarginNotes.set(false);
 
     // Numeración "§ capítulo.tema" (como un libro de texto real) en vez del
     // prefijo "Tema N:" suelto — el número se calcula, no se escribe a mano
@@ -478,10 +465,7 @@ export class LessonViewerComponent implements OnDestroy {
       if (label.startsWith('Conceptos clave:')) this.renderKeyTerms(paragraph, label);
       // Convención "libro de texto": términos clave y referencias cruzadas ("Ver
       // Tema 3.4") viven en el margen, igual que en Stewart Calculus o Halliday.
-      if (label.startsWith('Margen:')) {
-        paragraph.classList.add('margin-note');
-        this.hasMarginNotes.set(true);
-      }
+      if (label.startsWith('Margen:')) paragraph.classList.add('margin-note');
     });
 
     container.querySelectorAll<HTMLElement>('pre:not(.mermaid)').forEach((pre, index) => {
@@ -1002,60 +986,11 @@ export class LessonViewerComponent implements OnDestroy {
     }, 1800);
   }
 
-  private buildTableOfContents(container: HTMLElement): void {
-    this.tocObserver?.disconnect();
-    // El índice muestra la estructura pedagógica principal. Los subtítulos
-    // internos (Windows, macOS, pasos, etc.) permanecen en la lectura, pero no
-    // compiten con capítulos y temas en una navegación ya extensa.
-    const headings = Array.from(container.querySelectorAll<HTMLElement>('h2, h3.topic-heading'));
-    const seen = new Set<string>();
-    const items: TocItem[] = headings.map(el => {
-      const level = el.tagName === 'H2' ? 2 : 3;
-      const label = el.cloneNode(true) as HTMLElement;
-      label.querySelectorAll('button, .section-number').forEach(node => node.remove());
-      const text = label.textContent?.trim() ?? '';
-      const id = el.id || slugify(text, seen);
-      el.id = id;
-      return { id, text, level };
-    });
-    this.tocItems.set(items);
-    this.activeTocId.set(items[0]?.id ?? null);
-    if (!headings.length || typeof IntersectionObserver === 'undefined') return;
-    this.tocObserver = new IntersectionObserver(
-      entries => {
-        const visible = entries.filter(e => e.isIntersecting).map(e => e.target as HTMLElement);
-        if (!visible.length) return;
-        const topmost = visible.reduce((a, b) => (a.getBoundingClientRect().top <= b.getBoundingClientRect().top ? a : b));
-        this.activeTocId.set(topmost.id);
-      },
-      { rootMargin: '-72px 0px -70% 0px', threshold: 0 },
-    );
-    headings.forEach(h => this.tocObserver!.observe(h));
-  }
-
   private scrollToRequestedFragment(container: HTMLElement, fragment: string): void {
     requestAnimationFrame(() => {
       const target = container.querySelector<HTMLElement>(`#${CSS.escape(fragment)}`);
       target?.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' });
-      if (target) this.activeTocId.set(fragment);
     });
-  }
-
-  scrollToHeading(event: Event, id: string): void {
-    event.preventDefault();
-    const target = this.lessonContent()?.nativeElement.querySelector(`#${CSS.escape(id)}`);
-    if (!target) return;
-    const topicCard = target.closest<HTMLElement>('.topic-card');
-    if (topicCard && !topicCard.classList.contains('expanded')) {
-      topicCard.classList.add('expanded');
-      const toggle = topicCard.querySelector<HTMLButtonElement>('[data-topic-toggle]');
-      toggle?.setAttribute('aria-expanded', 'true');
-      const label = toggle?.querySelector('span');
-      if (label) label.textContent = 'Ocultar tema';
-    }
-    target.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' });
-    this.router.navigate([], { relativeTo: this.route, fragment: id, replaceUrl: true });
-    this.activeTocId.set(id);
   }
 
   private scrollBehavior(): ScrollBehavior {
@@ -1073,7 +1008,6 @@ export class LessonViewerComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     ++this.lessonRequest;
-    this.tocObserver?.disconnect();
     window.removeEventListener('scroll', this.updateReadingProgress);
     if (this.copyTimer) clearTimeout(this.copyTimer);
   }

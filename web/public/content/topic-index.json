@@ -3862,24 +3862,12 @@
         "fragment": "tema-2-streams-basicos-readable-writable-y-transform"
       },
       {
-        "title": "Streams legibles, escribibles y transform",
-        "fragment": "tema-3-streams-legibles-escribibles-y-transform"
-      },
-      {
         "title": "Backpressure: write() y el evento drain",
-        "fragment": "tema-4-backpressure-write-y-el-evento-drain"
-      },
-      {
-        "title": "Backpressure",
-        "fragment": "tema-5-backpressure"
-      },
-      {
-        "title": "pipeline() básico para componer streams",
-        "fragment": "tema-6-pipeline-basico-para-componer-streams"
+        "fragment": "tema-3-backpressure-write-y-el-evento-drain"
       },
       {
         "title": "pipeline() para componer streams de forma segura",
-        "fragment": "tema-7-pipeline-para-componer-streams-de-forma-segura"
+        "fragment": "tema-4-pipeline-para-componer-streams-de-forma-segura"
       }
     ],
     "3": [

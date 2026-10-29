@@ -102,7 +102,7 @@ struct ListaEnviosConDuplicacion: View {
 **¿Por qué ocurre?** Copiar y pegar layout hace una copia independiente que no se actualiza con el original. Es una violación del principio DRY (Don't Repeat Yourself).
 
 **Corrección:** extrae el código duplicado de vuelta a una instancia de `TarjetaEnvio`, y ahora un cambio futuro se aplica automáticamente en los tres lugares.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+Pista: cambiá el color SOLO en `TarjetaEnvio` y corré la app antes de tocar el código duplicado — así confirmás, una tarjeta a la vez, cuál de las tres sigue sin actualizarse en vez de sospechar de las tres al mismo tiempo.
 #### Paso 6 · Práctica independiente
 Extraé ese tercer envío de vuelta a una instancia de `TarjetaEnvio`, y agregale un estado `loading` que muestre un placeholder en vez de la guía real mientras el dato todavía no llegó.
 #### Paso 7 · Cierre y evidencia

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
-import { ArrowLeft, BookOpenCheck, LucideAngularModule, Menu, Moon, Search, Sun, X } from 'lucide-angular';
+import { ArrowLeft, LucideAngularModule, Menu, Moon, Search, Sun, X } from 'lucide-angular';
 import { map } from 'rxjs';
 import { findTrack } from '../course-data';
 import { CommandPaletteService } from '../command-palette.service';
@@ -18,7 +18,7 @@ import { findOfficialLearningPath } from '../official-learning-paths';
   styleUrl: './course-shell.scss',
 })
 export class CourseShellComponent {
-  readonly icons = { ArrowLeft, BookOpenCheck, Menu, Search, X, Sun, Moon };
+  readonly icons = { ArrowLeft, Menu, Search, X, Sun, Moon };
   readonly progressService = inject(ProgressService);
   readonly paletteService = inject(CommandPaletteService);
   readonly themeService = inject(ThemeService);

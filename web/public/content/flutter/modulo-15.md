@@ -315,8 +315,6 @@ La firma identifica al emisor del artefacto. **Analogía:** fabricar un sello no
 flutter create ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 En una copia de laboratorio, crea una clave fuera del repositorio; `keytool` solicita contraseña y datos de certificado interactivamente:
 
 ```bash

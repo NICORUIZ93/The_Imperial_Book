@@ -20,8 +20,6 @@ Un activo es lo que hay que proteger (que el estado de un envío no se corrompa)
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```bash
 python3 -c "
 from examples.rutaflow.foundation.domain import ShipmentStatus, transition
@@ -50,7 +48,6 @@ Entregá la excepción real del Paso 4, el control roto del Paso 5, y el threat 
 [SOLUCIÓN PLEGADA]
 > Tampering: impacto 5 (fraude masivo), probabilidad 3 (requiere acceso BD) = riesgo 15. Repudiation: impacto 2 (disputa operador), probabilidad 4 (sin audit log) = riesgo 8. Tampering primero. Control: restricción `ALLOWED_TRANSITIONS` en el dominio (bajo coste, alto valor). Repudiation: audit log de quién pidió qué cambio (medio coste). Residual: ambos pueden ocurrir si alguien compromete el servidor de aplicación (transferir a otro equipo o evitar con segmentación).
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** activo, actor, amenaza, vulnerabilidad, control, impacto, probabilidad, riesgo, superficie de ataque, límite de confianza y STRIDE.
 
 Seguridad no empieza instalando una librería. Empieza preguntando qué debe protegerse, de quién y con qué consecuencias. Un **activo** puede ser credenciales, inventario, disponibilidad o reputación. Una amenaza es un evento potencial; una vulnerabilidad es una debilidad explotable; un control reduce probabilidad o impacto. Riesgo combina contexto, no solo severidad técnica.
@@ -100,8 +97,6 @@ Autenticación responde "¿quién eres?"; autorización responde "¿podés hacer
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 def confirmar_entrega(conductor_id: str, envio: dict, repositorio):
     if envio["conductor_asignado"] != conductor_id:
@@ -141,7 +136,6 @@ Entregá la confirmación exitosa del Paso 4, el `PermissionError` del Paso 5, y
 [SOLUCIÓN PLEGADA]
 > Audit log: `{timestamp, conductor_id, action, shipment_id, ip, session_token}`. Retención: 2 años (GDPR de entrega), logs inmutables en S3 con versionado. Revocación: cambiar contraseña + invalidar tokens activos inmediatamente (servidor mantiene lista de revocados en caché). Revocación debe ser <5 segundos en propagación a todos los workers. Revert: transacción que restaura estado anterior registrando "anulación por fraude" en su propio log.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** identidad, autenticación, autorización, credencial, password hashing, salt, sesión, token, rol, permiso y mínimo privilegio.
 
 Autenticación responde “¿quién eres?”; autorización responde “¿puedes hacer esto sobre este recurso?”. Un usuario autenticado no obtiene automáticamente permisos administrativos.
@@ -253,7 +247,6 @@ Entregá la verificación exitosa del Paso 4, la detección de manipulación del
 [SOLUCIÓN PLEGADA]
 > NO en repo porque Git preserva historial — una eliminación no borra el secret de commits anteriores. Diseño: en dev, `.env.local` (ignorado, solo local); en CI, variables de entorno cifradas que GitHub Actions desencripta; en prod, servicio de secretos (AWS Secrets Manager, HashiCorp Vault) con acceso por IAM role, no credenciales explícitas. Rotación: crear nueva clave en el servicio, actualizar referencia en aplicación, desactivar antigua tras verificación. Detección: honeypot (fake credentials en logs públicos que alertan si se usan) + escaneo de público.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** hash, MAC, firma, cifrado simétrico/asimétrico, confidencialidad, integridad, autenticidad, TLS, clave, rotación y secret manager.
 
 Criptografía ofrece propiedades distintas. Un hash detecta cambios, pero no autentica origen si cualquiera puede recalcularlo. Un MAC usa secreto compartido para integridad/autenticidad. Una firma usa clave privada y se verifica con pública. Cifrado protege confidencialidad, pero debe incluir autenticación para detectar manipulación.
@@ -344,7 +337,6 @@ Entregá la nota mostrada de forma segura del Paso 4, la ejecución de XSS provo
 [SOLUCIÓN PLEGADA]
 > CSP header: `Content-Security-Policy: script-src 'self' https://analytics.example.com; default-src 'self'`. Prueba: inyectar `<script>alert('hacked')</script>` en consola — debería bloquearse sin ejecutarse. Report-only en staging para auditar falsos positivos antes de bloqueo en prod. CSP no autentica, pero reduce superficie de inyección. Combinar con `X-Frame-Options: DENY` para evitar clickjacking.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** validación, encoding, inyección, XSS, CSRF, CORS, logging seguro, minimización, retención, incidente y defensa en profundidad.
 
 Valida entrada según el dominio: tipo, longitud, formato, rango y relación. Validar no significa “eliminar caracteres malos” universalmente. Mantén datos y código separados: SQL parametrizado; encoding contextual al renderizar HTML; APIs seguras para comandos.
@@ -508,7 +500,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** marca como sospechosos los enlaces externos en los comentarios de las tareas antes de mostrarlos.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** usar coincidencia exacta de dominio (`distancia(dominio, cercano) == 0`, el fallo deliberado) en vez de una tolerancia como `<= 2`, lo que deja pasar sin alerta un dominio typosquatted como `rutaf1ow.co`; y confiar en el nombre de remitente visible sin revisar el dominio real después del `@`, que un atacante también puede falsificar.
 
 ## Construcción guiada del capítulo
 

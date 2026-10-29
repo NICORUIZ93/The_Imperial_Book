@@ -319,7 +319,7 @@ Entrega el cálculo con `compute`, el congelamiento del fallo deliberado y el sp
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** pasar a `compute()` un método de instancia o una función anidada en vez de una función top-level o `static` como `sumaPesada` — el isolate nuevo no puede copiar referencias como `this`, así que `compute` falla al intentar enviar la función en vez de simplemente ejecutarla.
 **Fuente oficial:** [documentación de Flutter](https://docs.flutter.dev/).
 
 ### Tema 5: CustomPainter: dibujar con Canvas sin repintar de más
@@ -471,7 +471,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** muestra el avance de la ruta del día en la pantalla principal con este componente y su etiqueta accesible.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** agregar un campo nuevo al painter (como `fallidas` en el Paso 5) y olvidar incluirlo en la comparación de `shouldRepaint` — Flutter sigue reutilizando el dibujo anterior porque, según esa comparación, "nada cambió", aunque el estado real sí haya cambiado.
 
 ## Laboratorio práctico
 

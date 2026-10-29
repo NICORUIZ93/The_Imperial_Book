@@ -49,16 +49,16 @@
       "officialSource": 68
     },
     "node": {
-      "topics": 80,
-      "code": 80,
+      "topics": 77,
+      "code": 77,
       "commentedCode": 38,
       "mermaid": 23,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
-      "filePath": 80,
-      "runCommand": 80,
-      "officialSource": 49
+      "filePath": 77,
+      "runCommand": 77,
+      "officialSource": 46
     },
     "angular": {
       "topics": 71,
@@ -1581,27 +1581,6 @@
       "track": "node",
       "module": 14,
       "topic": "Tema 6: CI/CD y promoción de artefactos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 2,
-      "topic": "Tema 2: Streams básicos: Readable, Writable y Transform",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 2,
-      "topic": "Tema 4: Backpressure: write() y el evento drain",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 2,
-      "topic": "Tema 6: pipeline() básico para componer streams",
       "missingCode": false,
       "missingComments": true
     },

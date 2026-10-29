@@ -22,8 +22,6 @@ Un programa es el archivo `domain.py`; un proceso es ese programa corriendo de v
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```bash
 python3 -c "
 import time
@@ -56,7 +54,6 @@ Entregá el proceso real inspeccionado con `ps` del Paso 4, la terminación abru
 [SOLUCIÓN PLEGADA]
 > Handler: cambiar flag `shutdown_requested=True`, rechazar entrada, esperar workers en vuelo. Protección BD: transacciones son atómicas — si SIGTERM interrumpe, la BD revierte automáticamente (el conexión se cierra). Timeout de gracia: 30 segundos (configurable, < readiness probe de Kubernetes). Log: `{timestamp, entregas_procesadas, entregas_pendientes, motivo_salida}`. Salir con código 0 (éxito ordenado) para que Kubernetes no reinicie indefinidamente.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** hardware, kernel, espacio de usuario, llamada al sistema, programa, proceso, PID, descriptor de archivo, sistema de archivos, usuario, permisos, señal y código de salida.
 
 Un **programa** es información almacenada en un archivo. Un **proceso** es una instancia viva del programa con identidad, memoria, recursos y estado. Al ejecutar `python app.py`, la shell pide al kernel crear un proceso. El kernel carga el intérprete, asigna memoria, agenda momentos de CPU y registra descriptores para entrada, salida y errores. Python no escribe directamente en el disco: solicita la operación mediante llamadas al sistema.
@@ -118,8 +115,6 @@ Si dos procesos de asignación intentaran reservar un lugar en el mismo vehícul
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 from threading import Thread
 
@@ -164,7 +159,6 @@ Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y det
 [SOLUCIÓN PLEGADA]
 > Pseudocódigo: P1 lock(A) → lock(B); P2 lock(B) → lock(A). Ambas retienen un lock y esperan al otro. Condiciones Coffman: (1) exclusión mutua (locks), (2) sin preemption (no desalojar), (3) retención con espera, (4) espera circular. Detección: timeout en lock (si esperas >30s, rollback), o detector de ciclos de espera. Prevención: ordenar locks (A siempre antes de B) o usar transacciones serializables que detectan y revierten.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** memoria virtual, stack, heap, proceso, hilo, concurrencia, paralelismo, intercalado, sección crítica, condición de carrera, mutex, semáforo, deadlock e inmutabilidad.
 
 Cada proceso observa un espacio de direcciones virtual propio. El sistema y el hardware traducen direcciones a memoria física. El **stack** contiene normalmente marcos de llamadas y variables locales; el **heap** guarda objetos con vida más flexible. Es un modelo útil, aunque los detalles dependen del lenguaje y su runtime.
@@ -232,8 +226,6 @@ Operar un servicio es como la medicina clínica: observás signos (CPU, puertos,
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```bash
 python3 -m http.server 8000 --directory /tmp &
 sleep 1
@@ -263,7 +255,6 @@ Entregá los tres ángulos de diagnóstico del Paso 4, el fallo real confirmado 
 [SOLUCIÓN PLEGADA]
 > `VmSize`: memoria virtual total; `VmRSS`: resident (realmente usada). Si VmSize >> VmRSS, es fragmentación, no fuga. `VmPeak`: máximo histórico de VmSize. Una fuga se ve como `VmRSS` creciente sin límite. `FDSize`: file descriptors abiertos (fuga de archivos o sockets se vería como FDSize creciente). `Threads`: cantidad de hilos (spike indebido señala paralización descontrolada).
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** shell, variable de entorno, pipe, proceso padre, daemon, servicio, log, socket, puerto, healthcheck, CPU, memoria y runbook.
 
 Operar Linux no significa encadenar comandos desconocidos. Formula una pregunta y conserva evidencia. `pwd` responde dónde estás; `id`, con qué identidad; `ps`, qué procesos existen; `ss -ltnp`, qué sockets TCP escuchan; `df -h`, cuánto almacenamiento queda; `free -h`, el estado de memoria; `top`, actividad dinámica.
@@ -343,7 +334,6 @@ Entregá el contenedor corriendo como usuario no root del Paso 4, el root innece
 [SOLUCIÓN PLEGADA]
 > `limits: memory: 256M` es OOMKill hard. `reservations: memory: 256M` es solicitud al scheduler, no hard. Docker-compose usa ambas: reservations para scheduling, limits para evitar OOM. Si se pasa límite, proceso recibe SIGKILL (crash). Monitorear: `docker stats` muestra uso vivo. En Kubernetes, readiness/liveness probes detectan crash; agregar métricas: `RSS / limit` a Prometheus y alertar si > 90%.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** máquina virtual, contenedor, imagen, capa, registro, namespace, cgroup, volumen, red, puerto, usuario no root, build reproducible y cadena de suministro.
 
 Una máquina virtual incluye un sistema operativo invitado. Un contenedor es un conjunto de procesos aislados que **comparte el kernel del host**. Los namespaces separan vistas como procesos, red y mounts; los cgroups limitan o contabilizan recursos. Una imagen es una plantilla inmutable por capas; un contenedor es su ejecución con una capa escribible efímera.
@@ -507,7 +497,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** protege con un orden fijo de bloqueos la asignación de dos recursos (persona y vehículo) a una tarea.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** tomar los locks en el orden "natural" de cada hilo (izquierda, derecha) en vez de un orden global por número, lo que crea una espera circular y bloquea todo el programa (el fallo deliberado); y usar la versión de lectores-escritores que favorece lectores sin medir que, bajo lectura constante, un escritor puede quedar esperando indefinidamente (inanición).
 
 ## Construcción guiada del capítulo
 

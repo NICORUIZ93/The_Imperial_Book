@@ -306,7 +306,7 @@ Una prueba **E2E de sistema** levanta el backend real (con su base de datos real
 **Analogía:** las pruebas unitarias comprueban que cada pieza del coche funciona en el banco; la prueba E2E es la vuelta de prueba con el coche armado en la pista. Solo ahí descubres que el pedal encaja con el motor.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Crea** el archivo `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` con la clase que ves más abajo, y guárdalo antes de ejecutarlo con `./mvnw test -Dtest=FlujoEntregaE2ETest`.
 
 Levanta el backend real con Docker Compose y ejecuta una prueba que recorra el flujo contra él:
 
@@ -362,7 +362,7 @@ Entrega la prueba E2E en verde, el fallo por contrato roto y la prueba desde Flu
 **Cuándo no usarlo:** no uses E2E para lo que una prueba unitaria o de componente cubre mejor (lógica interna): son lentas y frágiles. Resérvalas para los flujos de negocio críticos que cruzan el sistema completo.
 
 **Transferencia al proyecto integrador «RutaFlow»:** automatiza la prueba E2E del flujo "entrega asignada y confirmada" en el pipeline de CI, levantando backend y base de datos con Docker antes de ejecutarla.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** renombrar un campo del payload en la prueba (como `guia` por `tracking`) y, al ver que el backend responde `400`, asumir que el test en sí está mal escrito en vez de leer el cuerpo de la respuesta — ese `400` es la prueba E2E funcionando correctamente: detectó un desajuste de contrato que ninguna prueba de un solo lado vería.
 **Fuente oficial:** [documentación de RutaFlow](https://docs.flutter.dev/).
 ### Tema 4: Continuidad, costes y proyecto final
 
@@ -416,9 +416,6 @@ flowchart LR
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
-
-**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 
 Trabaja en una base local de laboratorio con las tablas `envios` y `envio_eventos` del módulo 1 y al menos un envío. Detén las escrituras durante la comparación; en un sistema activo necesitas coordinar una instantánea consistente. Instala los clientes PostgreSQL y configura `DATABASE_URL` para el origen y `PGHOST`, `PGPORT`, `PGUSER` para el servidor local de restauración, donde necesitas permiso para crear bases.
 

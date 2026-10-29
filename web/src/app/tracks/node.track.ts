@@ -30,7 +30,7 @@ export const NODE_MODULES: CourseModule[] = [
     'Monorepo con dos paquetes propios enlazados vía workspaces.'),
   m(2, 'Sistema de archivos y streams', 'FS y streams', 'Fundamentos', '2 h 30 min', '#3c873a',
     'Procesa archivos grandes sin cargarlos completos en memoria: el patrón que usa Node por dentro para todo.',
-    ['fs/promises vs callbacks', 'Streams básicos: Readable, Writable y Transform', 'Streams legibles, escribibles y transform', 'Backpressure: write() y el evento drain', 'Backpressure', 'pipeline() básico para componer streams', 'pipeline() para componer streams de forma segura'],
+    ['fs/promises vs callbacks', 'Streams básicos: Readable, Writable y Transform', 'Backpressure: write() y el evento drain', 'pipeline() para componer streams de forma segura', 'Separar líneas correctamente entre chunks con un Transform propio', 'Medir pausas y memoria bajo backpressure'],
     [
       'Lee un archivo con fs.readFileSync, luego con fs/promises y luego con el callback clásico fs.readFile — compara las tres formas',
       'Genera un archivo CSV de 500k líneas con un script y mide cuánta memoria usa leerlo completo con readFileSync',

@@ -8,10 +8,10 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 97 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 80 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 77 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 80 | 47 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 80 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 84 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 57 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -706,7 +706,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22)](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
 | java / 8 | [Tema 1: pom.xml vs build.gradle.kts](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 8 | [Tema 2: Ciclo de vida de build y scopes](../web/public/content/java/modulo-8.md) | clase-java-no-visible |
-| java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | clase-java-no-visible |
+| java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
 | java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
@@ -893,11 +893,8 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 2 | [Tema 1: fs/promises frente a callbacks](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 2: Streams básicos: Readable, Writable y Transform](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 3: Streams legibles, escribibles y transform](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 4: Backpressure: write() y el evento drain](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 5: Backpressure](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 6: pipeline() básico para componer streams](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 7: pipeline() para componer streams de forma segura](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 3: Backpressure: write() y el evento drain](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 4: pipeline() para componer streams de forma segura](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 1: El modelo request/response](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 2: Routing manual](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 3: Parsing de body y headers](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

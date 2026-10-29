@@ -20,8 +20,6 @@ Un criterio de aceptación convierte una intención vaga en ejemplos con entrada
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```text
 Como conductor de RutaFlow
 quiero confirmar la entrega de un envío
@@ -51,7 +49,6 @@ Escribe 5 criterios TUYOS que sean verificables, directamente del CLI del proyec
 #### Paso 7 · Cierre y evidencia
 Entregá los tres criterios verificables del Paso 4, el criterio vago corregido del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuentes oficiales: https://www.iso.org/standard/72089.html.
 **¿Por qué es importante?** Porque `confirmDelivery()` ya fue programado correctamente contra una regla de 6 dígitos — el riesgo real en este Tema nunca fue el código, sino quedarse con un requisito ambiguo antes de escribirlo.
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** stakeholder, necesidad, requisito funcional, atributo de calidad, restricción, historia, criterio de aceptación, supuesto y trazabilidad.
 
 Software exitoso no es el que contiene más funciones, sino el que satisface necesidades relevantes bajo restricciones explícitas. Un stakeholder puede ser usuario, operador, negocio, auditor o equipo de soporte; sus objetivos pueden entrar en tensión.
@@ -154,7 +151,6 @@ Entregá el escenario de durabilidad del Paso 4, la restricción removida y su c
 [SOLUCIÓN PLEGADA]
 > Fitness function en Python: `for line in open('src/domain.py'): if 'import sqlite' in line: raise Exception()`. Se ejecuta en CI after build, bloqueante. Alternativa softer: escanear dependencias con `pipdeptree` y comparar contra whitelist, reportando en logs sin fallar. Estricta si es arquitectura de seguridad (dominio nunca confía). Suave si es estilo (permitir excepciones documentadas con `# noqa: dependency-check`).
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** arquitectura, componente, conector, límite, dependencia, atributo de calidad, escenario, trade-off, C4 y fitness function.
 
 Arquitectura son decisiones estructurales difíciles de cambiar: responsabilidades, límites, comunicación y dependencias. No es únicamente un diagrama. Se evalúa contra atributos como mantenibilidad, disponibilidad, rendimiento, seguridad, portabilidad y operabilidad.
@@ -214,8 +210,6 @@ Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del r
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```bash
 grep -n "interface DeliveryRepository" -A 3 examples/rutaflow/node/confirm-delivery.ts
 ```
@@ -249,7 +243,6 @@ Entregá la interfaz real leída del Paso 4, el adaptador en memoria probado del
 [SOLUCIÓN PLEGADA]
 > Interfaz es sobre-ingeniería si: (1) no hay alternativa real en vista, (2) solo se usa en un lugar. Justificable si: (1) hay pruebas que necesitan fake/stub, (2) la alternativa es probable (múltiples proveedores, migraciones planeadas). Detectar fantasma: grep por implementaciones — una interfaz con solo una clase la implementa es candidata a eliminar. Regla práctica: introduce interfaz cuando aparece la SEGUNDA implementación, no antes.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, patrón, code smell, refactoring y prueba caracterizadora.
 
 Alta cohesión significa que un módulo reúne responsabilidades relacionadas. Bajo acoplamiento significa que conoce poco de detalles externos. Encapsulación protege invariantes; abstracción presenta un contrato relevante y oculta detalles que pueden cambiar.
@@ -310,8 +303,6 @@ Un ADR es la bitácora de navegación: no vende la decisión, registra el contex
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```markdown
 # ADR-004: DynamoDB para ShipmentEvents
 
@@ -359,7 +350,6 @@ Entregá el ADR completo del Paso 4, la consecuencia faltante y su riesgo del Pa
 [SOLUCIÓN PLEGADA]
 > ADR para decisiones "difíciles de cambiar" (BD, arquitectura, licencia, framework). No para detalles tácticos (variable naming, loop vs map). Genera deuda si usa recursos sin límite — un ADR por cada línea costaría más que desarrollar. Mínimo: (1) estado (aceptada/derogada), (2) contexto (restricciones, alternativas), (3) decisión (qué y por qué), (4) consecuencias (costos, riesgos, alternativa futura). Sin esto, es solo una nota.
 
-**Evidencia de aprendizaje:** entrega modelo, ejemplo, fallo, corrección, comparación y conclusión.
 **¿Por qué es importante?** El código cambia; registrar contexto, consecuencias y deuda permite evolucionarlo sin repetir decisiones ni romper contratos silenciosamente.
 
 **Conceptos clave:** ADR, documentación viva, deuda técnica, mantenimiento correctivo/adaptativo/perfectivo/preventivo, compatibilidad, deprecación, migración y observabilidad.

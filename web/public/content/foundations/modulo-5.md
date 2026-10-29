@@ -73,10 +73,13 @@ Print vs pdb: _________ (¿cuál usas?)
 Logs en producción: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Prints en dev para ritmo rápido. pdb para inspeccionar estado. Logging permanente en producción, no prints.
+
+</details>
 
 **Conceptos clave:** síntoma, causa, reproducción, hipótesis, experimento, debugger, breakpoint, stack trace, log y regresión.
 
@@ -207,10 +210,13 @@ E2E (CLI completo): _________
 Proporción y por qué: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Unit: función retorna objeto parsed. Integ: tarea guardada en BD. E2E: comando imprime confirmación. 70/20/10 porque units son rápidos, E2E es lento.
+
+</details>
 
 **Conceptos clave:** prueba unitaria, integración, end-to-end, arrange-act-assert, fixture, fake, stub, mock, determinismo, cobertura y regresión.
 
@@ -324,10 +330,13 @@ Ver cambios entre commits: _________
 Cuándo usas reset vs revert: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > `git log -- archivo.py`, `git diff A B -- archivo.py`, revert sí (seguro en rama compartida), reset solo local.
+
+</details>
 
 **Evidencia de aprendizaje:** entrega historial, prueba, fallo corregido y checklist de revisión.
 **Conceptos clave:** repositorio, commit, diff, branch, merge, conflicto, remoto, pull request, revisión y trazabilidad.
@@ -467,10 +476,13 @@ Tool para cobertura: _________
 Código no ejecutado por tests: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Cambias en pasos: 1) escribe test con `status`, 2) refactoriza BD, 3) actualiza código. Pytest-cov mide cobertura. Código no cubierto aparece rojo en reporte.
+
+</details>
 
 **Evidencia de aprendizaje:** entrega historial, prueba, fallo corregido y checklist de revisión.
 **Conceptos clave:** formatter, linter, análisis estático, type checking, pipeline, job, step, artefacto, CI, feedback y calidad continua.

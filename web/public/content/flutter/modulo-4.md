@@ -645,7 +645,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** inyecta el repositorio de entregas de la app y escribe sus pruebas con una implementación falsa.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** olvidar pasar `overrides` al crear el `ProviderContainer` (o al `ProviderScope` en un widget test) y asumir que alcanza con declarar `RepositorioEnviosFalso` — sin la lista `overrides`, el contenedor sigue construyendo `RepositorioEnviosHttp` a través del proveedor original, y la prueba termina llamando a la implementación real que debía evitar.
 
 ## Referencia: RutaFlow Flutter
 

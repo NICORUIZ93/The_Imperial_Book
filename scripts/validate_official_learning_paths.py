@@ -12,7 +12,7 @@ UI = ROOT / "web/src/app/official-learning-paths.ts"
 TRACK_DIR = ROOT / "web/src/app/tracks"
 
 expected = {"foundations", "rutaflow", "javascript", "node", "angular", "react", "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "devops", "cloud"}
-required_stages = {"Preparar", "Comprender", "Construir", "Asegurar calidad", "Llevar a producción"}
+valid_levels = {"Fundamentos", "Aplicación", "Integración", "Experto"}
 errors: list[str] = []
 
 data = json.loads(GUIDES.read_text(encoding="utf-8"))
@@ -27,15 +27,14 @@ for track in data.get("tracks", []):
         errors.append(f"{track_id}: URL oficial inválida")
     marker = f"trackId: '{track_id}'"
     start = ui.find(marker)
-    end = ui.find("trackId: '", start + len(marker))
+    end = ui.find("{ trackId: '", start + len(marker))
     block = ui[start:end if end >= 0 else len(ui)] if start >= 0 else ""
     if not block:
-        errors.append(f"{track_id}: no tiene ruta visible")
+        errors.append(f"{track_id}: no tiene cita a guía oficial en official-learning-paths.ts")
         continue
-    labels = set(re.findall(r"\['([^']+)',", block))
-    missing_stages = required_stages - labels
-    if missing_stages:
-        errors.append(f"{track_id}: faltan etapas {sorted(missing_stages)}")
+    source_match = re.search(r"sourceUrl: '(https://[^']+)'", block)
+    if not source_match:
+        errors.append(f"{track_id}: falta sourceUrl válida en official-learning-paths.ts")
 
     if track_id == "cloud":
         module_text = (ROOT / "web/src/app/course-data.ts").read_text(encoding="utf-8")
@@ -43,11 +42,23 @@ for track in data.get("tracks", []):
     else:
         module_text = (TRACK_DIR / f"{track_id}.track.ts").read_text(encoding="utf-8")
     real_modules = {int(value) for value in re.findall(r"\bm\((\d+),", module_text)}
-    referenced = {int(value) for group in re.findall(r"\[([\d, ]+)\]\]", block) for value in re.findall(r"\d+", group)}
-    if referenced != real_modules:
-        errors.append(f"{track_id}: módulos sin etapa={sorted(real_modules-referenced)}, referencias inválidas={sorted(referenced-real_modules)}")
+    # id + level son el 1er y 4to argumento posicional de createModule(id, title, shortTitle, level, ...).
+    # title/shortTitle son strings de comilla simple sin comillas simples sin escapar en su interior.
+    leveled = {
+        int(module_id): level
+        for module_id, level in re.findall(
+            r"\bm\((\d+),\s*'(?:[^'\\]|\\.)*',\s*'(?:[^'\\]|\\.)*',\s*'(Fundamentos|Aplicación|Integración|Experto)'",
+            module_text,
+        )
+    }
+    missing_level = real_modules - leveled.keys()
+    if missing_level:
+        errors.append(f"{track_id}: módulos sin nivel (Fundamentos/Aplicación/Integración/Experto) asignado={sorted(missing_level)}")
+    invalid_level = {mid: lvl for mid, lvl in leveled.items() if lvl not in valid_levels}
+    if invalid_level:
+        errors.append(f"{track_id}: módulos con nivel inválido={invalid_level}")
 
 if errors:
     raise SystemExit("Validación de rutas oficiales falló:\n- " + "\n- ".join(errors))
 
-print(f"Validación OK: {len(expected)} tracks trazados desde guía oficial hasta preparación, práctica, calidad y producción.")
+print(f"Validación OK: {len(expected)} tracks trazados desde guía oficial hasta nivel (Fundamentos/Aplicación/Integración/Experto) de cada módulo real.")

@@ -112,11 +112,8 @@ Construye y verifica el ejemplo.
       secondTopicToggle?.click();
       expect(secondTopicToggle?.getAttribute('aria-expanded')).toBe('true');
       expect(text).toContain('Guía oficial');
-      expect(text).toContain('Preparar');
-      expect(text).toContain('Llevar a producción');
-      expect(page.querySelectorAll('.official-path li')).toHaveLength(5);
-      expect(page.querySelector('.lesson-toc')?.textContent).not.toContain('Abrir tema');
-      expect(page.querySelector('.lesson-toc')?.textContent).not.toContain('Ocultar tema');
+      expect(page.querySelector('.official-source a')).toBeTruthy();
+      expect(page.querySelector('.lesson-toc')).toBeFalsy();
       expect(page.querySelector('.module-checkpoint')).toBeFalsy();
       expect(page.querySelector('.module-lab-link')).toBeFalsy();
       expect(page.querySelector('.code-example .window-controls')).toBeTruthy();
