@@ -249,6 +249,8 @@ El CLI que vas a construir en este track se invoca como `tarea add "comprar pan"
 Un comando típico tiene hasta cuatro partes: el **programa** (`git`), un **subcomando** opcional (`status`), **opciones** que modifican el comportamiento (`--short`) y **argumentos** sobre los que actúa. Al terminar, todo programa devuelve un **código de salida**: `0` significa éxito, cualquier otro valor indica algún tipo de fallo — consultable con `echo $?` en Bash/zsh o `$LASTEXITCODE` en PowerShell. La analogía: un comando es una frase imperativa — "copia rápidamente informe.txt" tiene un verbo (copiar), un modificador (rápidamente) y un objeto (informe.txt); leer el comando completo antes de ejecutarlo es leer la frase completa antes de obedecerla.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 mkdir -p academia-fundamentos/proyecto-cero
 cd academia-fundamentos/proyecto-cero

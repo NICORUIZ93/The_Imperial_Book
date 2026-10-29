@@ -16,7 +16,7 @@ No confundas seguridad SQL con consistencia: parametrizar evita que el valor se 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+ y Maven. Crea un proyecto Java con JDBC y H2 como dependencias.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 Un proceso importa referencias de envíos que contienen caracteres introducidos por usuarios. Concatenar la referencia dentro del SQL puede alterar la consulta; además, repetir SQL y mapeo en servicios distintos produce lógica inconsistente.
@@ -26,7 +26,7 @@ Un proceso importa referencias de envíos que contienen caracteres introducidos 
 JDBC es la API estándar para ejecutar SQL desde Java. `DataSource` abstrae la obtención de conexiones y normalmente usa un pool; `PreparedStatement` separa el SQL de sus valores y permite enlazarlos como parámetros. El DAO encapsula SQL y mapeo para que el servicio no conozca `ResultSet`.
 
 Un parámetro preparado protege valores, no nombres dinámicos de tabla u ordenamiento. Para ordenar por una columna elegida por el usuario, usa una lista permitida explícita.
-
+**Analogía:** un `PreparedStatement` es como un formulario con casillas fijas donde solo rellenas los huecos: nadie puede "reescribir" las preguntas (por eso frena la inyección SQL). El DAO es la ventanilla única que sabe rellenar ese formulario, de modo que el resto de la app no toca SQL directamente.
 #### Paso 4 · Demostración guiada
 
 En `src/main/java/academia/envios/EnvioDao.java`:
@@ -75,7 +75,7 @@ Inicializa H2 con `create table envio(referencia varchar(40) primary key, estado
 #### Paso 5 · Práctica guiada
 
 Agrega `crear(referencia, estado)` con `executeUpdate()` y comprueba el número de filas afectadas. Extrae el mapeo de filas a un método privado solo cuando haya más de una consulta que realmente lo comparta.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Implementa un DAO con búsqueda paginada y ordenamiento por `fecha_creacion`. El tamaño de página debe tener límite y la columna de orden debe salir de una allowlist (`fecha_creacion`, `referencia`), no del SQL proporcionado por el usuario.
@@ -94,7 +94,7 @@ Entrega el DAO, el `DataSource` de test y casos para hallado, ausente e input ho
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás hacer que dos escrituras relacionadas se confirmen juntas o se reviertan juntas. Necesitas el DAO anterior y una base de datos H2 o PostgreSQL.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 Al liquidar un envío se registra un cobro y se actualiza su estado. Si el proceso cae después del cobro pero antes del cambio de estado, el sistema queda inconsistente.
@@ -104,7 +104,7 @@ Al liquidar un envío se registra un cobro y se actualiza su estado. Si el proce
 Una transacción agrupa operaciones bajo propiedades ACID: atomicidad, consistencia, aislamiento y durabilidad. JDBC comienza en autocommit normalmente; `setAutoCommit(false)`, `commit()` y `rollback()` permiten delimitar el trabajo. El aislamiento define qué cambios concurrentes se pueden observar; no asumas que `SERIALIZABLE` es siempre necesario ni gratuito.
 
 La transacción es como una sola operación de caja: o se registran todas las líneas del recibo o se cancela el recibo entero.
-
+**Analogía:** una transacción es como una transferencia bancaria: o se descuenta de una cuenta y se suma en la otra, o no pasa nada; nunca queda a medias. El aislamiento es la cortina que impide que otro cajero vea el saldo mientras la transferencia está a mitad de camino.
 #### Paso 4 · Demostración guiada
 
 Implementa en `src/main/java/academia/envios/LiquidacionDao.java` una operación que inserta un cobro y actualiza el envío usando **la misma conexión**:
@@ -138,7 +138,7 @@ Ejecuta `./mvnw test -Dtest=LiquidacionDaoTest`. **Resultado esperado:** cobro y
 #### Paso 5 · Práctica guiada
 
 Prueba dos operaciones concurrentes que actualizan el mismo saldo. Reproduce una actualización perdida y corrígela con bloqueo optimista (`version`) o con una operación atómica SQL. Compara `READ_COMMITTED` con el aislamiento predeterminado de tu base.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Construye un caso de transferencia entre dos cuentas: valida importe positivo, descuenta una y acredita la otra de forma atómica. Añade pruebas para saldo insuficiente, cuenta inexistente y fallo entre las dos escrituras. Documenta qué invariantes protege la transacción.
@@ -151,3 +151,4 @@ Entrega la prueba del rollback, el test concurrente y una explicación del aisla
 **Conceptos clave:** ACID, `setAutoCommit(false)`, `commit`/`rollback`, nivel de aislamiento, bloqueo optimista.
 
 **Cuándo no usarlo:** no mantengas una transacción abierta mientras haces llamadas HTTP; coordinar una transacción local con otros servicios requiere patrones como outbox o saga.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

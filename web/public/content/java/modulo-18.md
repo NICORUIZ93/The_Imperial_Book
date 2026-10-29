@@ -16,7 +16,7 @@ La prueba real debe incluir timeout, límite de intentos, respuesta inválida y 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 El servicio de envíos consulta una API externa para validar una dirección. Si esa API no responde, los hilos pueden quedar ocupados y acumular solicitudes.
@@ -26,7 +26,7 @@ El servicio de envíos consulta una API externa para validar una dirección. Si 
 `HttpClient` reutilizable administra conexiones; `HttpRequest` define destino, método, headers y timeout; `HttpResponse` contiene estado y cuerpo. Un timeout limita la espera, pero no crea un retry seguro. Reintenta solo fallos transitorios y operaciones idempotentes, con límite, espera creciente y jitter. No reintentes automáticamente un POST que podría haber sido aplicado aunque la respuesta se perdiera.
 
 Piensa en el timeout como el tiempo máximo que mantienes abierta una llamada telefónica, no como una garantía de que el otro sistema no haya recibido el mensaje.
-
+**Analogía:** llamar a un servicio remoto es como pedir algo por teléfono a otra oficina: a veces no contestan (timeout), a veces contestan tarde o con un "no" (fallo). El `HttpClient` es tu teléfono; poner un timeout es colgar si nadie responde en vez de esperar para siempre con el auricular en la oreja.
 #### Paso 4 · Demostración guiada
 
 En `src/main/java/academia/http/ConsultaDireccion.java`:
@@ -77,7 +77,7 @@ Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://loca
 #### Paso 5 · Práctica guiada
 
 Agrega manejo distinto para 4xx, 5xx y timeout. Implementa un retry de máximo dos intentos únicamente para GET ante 502/503/504, con backoff. El test debe verificar el máximo de intentos y que un 400 no se reintenta.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Consume un endpoint de RutaFlow con un DTO validado. Añade correlación de request, límite de tamaño de respuesta y una allowlist de hosts configurada por el servicio. No aceptes URLs arbitrarias del usuario.
@@ -96,7 +96,7 @@ Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado p
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 El cliente móvil envía el token de un usuario junto a una solicitud de consulta. Un token válido confirma una identidad, pero no demuestra que ese usuario pueda leer cualquier envío.
@@ -106,7 +106,7 @@ El cliente móvil envía el token de un usuario junto a una solicitud de consult
 JWT es un formato de claims firmado, no necesariamente cifrado: quien lo obtiene puede leer sus claims. OAuth 2.0 es un marco de autorización; OpenID Connect añade una capa de identidad. Un cliente Java normalmente obtiene un token de un proveedor confiable y lo envía por HTTPS como `Authorization: Bearer ...`; el servidor valida firma, emisor, audiencia, expiración y permisos. No registres tokens ni los guardes en el código fuente.
 
 Valida longitud, formato, rangos y reglas de negocio en cada frontera. Las consultas parametrizadas evitan inyección SQL, pero no reemplazan autorización por objeto. Para SSRF, valida esquema/host, resuelve DNS y bloquea rangos privados/no enrutable también en la conexión; una comprobación textual de URL no es suficiente.
-
+**Analogía:** un token es como la pulsera de un festival: demuestra que pagaste la entrada sin tener que mostrar el DNI en cada puesto. Validarlo es revisar que la pulsera sea auténtica y no haya caducado; el límite de seguridad es que la pulsera de la zona general no te abre el backstage.
 #### Paso 4 · Demostración guiada
 
 En el cliente del tema anterior, añade una credencial cargada desde una variable de entorno y evita imprimirla:
@@ -141,7 +141,7 @@ Ejecuta con `ACADEMIA_API_TOKEN=token-de-prueba ./mvnw test` (en PowerShell, con
 #### Paso 5 · Práctica guiada
 
 Prueba valores vacíos, excesivamente largos y con formato inválido antes de construir el request. A continuación intenta consultar una IP privada con una URL configurada externamente: debe rechazarse por política, no por una expresión regular improvisada.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Diseña una matriz de autorización para `envio:leer`, `envio:asignar` y `envio:liquidar`. Escribe pruebas de acceso permitido/denegado y agrega expiración corta al token de test. Explica por qué TLS, expiración, audience y autorización de propiedad resuelven problemas diferentes.
@@ -154,3 +154,4 @@ Entrega pruebas del header, validación y denegación, sin incluir credenciales 
 **Conceptos clave:** JWT, OAuth 2.0, OpenID Connect, autenticación frente a autorización, SSRF.
 
 **Cuándo no usarlo:** no guardes contraseñas dentro de JWT ni uses JWT como sustituto automático de sesiones; el servidor debe poder revocar o limitar tokens según el diseño.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

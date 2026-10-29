@@ -160,7 +160,7 @@ Cambiá `invalidateQueries({ queryKey: ['envios'] })` a `invalidateQueries({ que
 
 **Fallo deliberado #3 (olvidar `await` en cancelación):**
 Remové el `await queryClient.cancelQueries(...)` del `onMutate` en un optimistic update — ahora el `getQueryData` obtiene datos desactualizados porque la query aún se estaba refetcheando.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día.
 

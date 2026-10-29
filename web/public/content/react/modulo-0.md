@@ -185,7 +185,7 @@ Cambiá ahora a `key={Math.random()}` — cada render genera una key nueva, así
 
 **Fallo deliberado #3 (key duplicada):**
 Crea una lista donde dos envíos tienen el mismo `id` accidentalmente y usa `key={envio.id}`. React renderiza ambos elementos en el DOM pero solo puede trackear uno correctamente, causando comportamientos impredecibles cuando filtras o reordenas.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `key={envio.id}`, y agregá un botón "mover al principio" que reordene el array — confirmá que el texto escrito en el input de nota de cualquier fila sigue esa fila específica, sin importar a qué posición se mueva.
 
@@ -296,7 +296,7 @@ Reemplazá `<>...</>` por `<React.Fragment>...</React.Fragment>` — funciona ig
 
 **Fallo deliberado #3 (children no es automático):**
 Crea una versión incorrecta de `Tarjeta` que no use `children`: `function Tarjeta() { return <div>contenido fijo</div>; }`. Ahora usa `<Tarjeta><p>Esto se ignora</p></Tarjeta>` — el `<p>` simplemente desaparece, no se renderiza. Luego corrige a `function Tarjeta({ children })` para demostrar que `children` es un prop como cualquier otro, que debe ser recibido explícitamente.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el Fragment, y creá una segunda tarjeta (`ConductorCard`) que también use `Tarjeta` con contenido completamente distinto (nombre y vehículo del conductor) — confirmá que `Tarjeta` no necesitó ningún cambio para soportar este nuevo caso.
 
@@ -410,7 +410,7 @@ Intenta renderizar directamente:
 
 **Fallo deliberado #3 (olvidar el return en expresiones condicionales):**
 Escribe: `function Card() { if (loading) { <Spinner /> } return <div>...</div>; }` — el `<Spinner />` nunca se renderiza porque no está en un return. El if debe devolver algo que React pueda procesar.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `{cargando && <Spinner />}`, y agregá estilos con CSS Modules o Tailwind a la tarjeta para que el estado de carga tenga una apariencia visualmente distinta al estado con datos.
 

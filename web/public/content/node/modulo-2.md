@@ -161,7 +161,7 @@ await pipeline(createReadStream("entrada.txt"), aMayusculas, createWriteStream("
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás leer, transformar y escribir datos por fragmentos sin cargar todo el archivo. Necesitas Node LTS y reconocer una función callback; el ejemplo inicia en una carpeta vacía.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 En una situación real, una exportación CSV puede ocupar gigabytes. Un stream permite convertir cada línea mientras llega, con memoria acotada y un error localizable.
@@ -413,7 +413,7 @@ if (!puedeContinuar) await new Promise((resolve) => destino.once("drain", resolv
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás detectar backpressure y respetar el valor booleano de `write()`. Necesitas Node LTS; el laboratorio es un ejemplo independiente desde carpeta vacía.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 En producción un lector de red puede entregar datos mucho más rápido que una base de datos. Sin backpressure, el búfer crece hasta presionar la memoria del proceso.
@@ -614,7 +614,7 @@ try {
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás componer lectura, transformación y escritura con `pipeline`, propagando errores y cancelación. Necesitas Node LTS; el ejemplo es independiente.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 Una importación profesional no debe dejar un archivo parcial si una fila es inválida o el usuario cancela. `pipeline` centraliza cierre y propagación de errores.
@@ -663,7 +663,7 @@ Ejecuta `node src/importar.js`. **Resultado esperado:** `salida.txt` contiene el
 #### Paso 5 · Práctica guiada
 
 Añade un `AbortController` y cancela después de 10 ms. **Pista:** pasa `{ signal: controller.signal }` como cuarta opción de `pipeline`.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 
 Haz que la salida se escriba primero en `salida.tmp` y se publique solo tras éxito. Entrega qué archivo queda después de una fila inválida y por qué evita publicar datos parciales.
@@ -677,7 +677,7 @@ Ya puedes construir cadenas que fallan de forma segura con el caso más simple. 
 **Fuentes oficiales:** [`stream.pipeline`](https://nodejs.org/api/stream.html#streampipelinestreams-options) y [AbortSignal](https://nodejs.org/api/globals.html#class-abortcontroller).
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Compón lectura, transformación y escritura del export mediante pipeline. Haz fallar la transformación y comprueba que se cierran ambos extremos y el proceso devuelve un error observable.
-
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 7: pipeline() para componer streams de forma segura
 
 **Conceptos clave:** composición segura, propagación de errores, cierre correcto de recursos.

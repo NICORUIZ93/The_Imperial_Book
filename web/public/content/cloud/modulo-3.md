@@ -60,7 +60,8 @@ flowchart LR
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Publica una confirmación de entrega y procésala con un consumidor de prueba. Repite la recepción y demuestra que la clave de idempotencia impide confirmar dos veces aunque el mensaje se vuelva a entregar.
 
 **Límites y decisión de uso:** Una cola no convierte por sí sola un efecto en exactamente una vez. La entrega puede repetirse o demorarse; usa identidad estable del mensaje y una operación de negocio idempotente, y distingue recepción de confirmación del procesamiento.
-
+**Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 2: Ciclo de vida de un mensaje
 
 #### Paso 1 · Objetivo y preparación
@@ -73,6 +74,11 @@ en `ShipmentEvents`) antes de poder decir "ya terminé con este mensaje".
 El visibility timeout es el cartel de "en proceso"; el ReceiptHandle es el recibo que prueba
 que tenés ese mensaje en este momento.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].ReceiptHandle' --output text)
 aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
@@ -84,6 +90,7 @@ está en la cola.
 Pista: recibí el mensaje restante (el del Paso 6 del Tema 1) pero NO lo borres, y volvé a
 hacer `receive-message` antes de que pase el visibility timeout (30s por defecto) — vas a ver
 que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
 repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al
@@ -154,6 +161,8 @@ Resultado esperado: la respuesta de la DLQ contiene el mensaje con `shipmentId` 
 
 Ese es el fallo real provocado a propósito: el mensaje migró solo a la DLQ al superar
 `maxReceiveCount`, sin que nadie lo moviera a mano.
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Confirmá con
 `aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`

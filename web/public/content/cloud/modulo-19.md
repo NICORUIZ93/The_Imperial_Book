@@ -141,6 +141,11 @@ RutaFlow acumula pings de ubicación de todos los días desde que arrancó Fireh
 #### Paso 3 · Teoría, modelo mental y analogía
 Particionar por fecha es como ordenar un archivo físico por año y abrir solo el cajón del año que te interesa, en vez de revisar el archivo completo cada vez.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws athena start-query-execution --query-string "SELECT conductorId FROM rutaflow_analytics.ubicaciones WHERE anio=2026 AND mes=10 AND dia=5" \
   --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/

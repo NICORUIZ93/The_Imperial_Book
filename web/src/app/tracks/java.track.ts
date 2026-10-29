@@ -253,4 +253,11 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué aporta un JWT sobre una sesión tradicional en una API stateless?', '¿Por qué no basta con validar la URL del cliente contra SSRF?', '¿Qué problema resuelve un timeout y un retry controlado en llamadas externas?'],
     ['Java', 'HttpClient', 'JWT', 'HTTPS', 'OWASP'],
     'Backend Java seguro y resiliente con HTTP, tokens, validación de entrada y trazabilidad real.'),
+  m(19, 'Java del día a día: reflexión, regex, dinero, contratos, plugins e i18n', 'Java del día a día', 'Integración', '10 h', '#6d5dfc',
+    'Cubre las APIs que los libros de referencia (Core Java, Java a fondo) tratan como capítulo propio y que todo backend usa: reflexión y anotaciones, expresiones regulares, BigDecimal, assertions, ServiceLoader, proxies dinámicos e internacionalización.',
+    ['Reflexión y anotaciones RUNTIME', 'Pattern y Matcher', 'BigDecimal, escala y redondeo', 'Assertions y diseño por contrato', 'ServiceLoader y META-INF/services', 'Proxies dinámicos', 'Locale, Collator y MessageFormat'],
+    ['Valida campos obligatorios con anotaciones propias', 'Extrae y enmascara guías con grupos con nombre', 'Reparte un total en cuotas que cuadren al peso', 'Detecta una invariante rota con -ea', 'Agrega una transportadora sin modificar el cotizador', 'Intercepta llamadas sin cambiar el contrato de errores'],
+    ['¿Por qué una anotación propia puede no ser visible por reflexión?', '¿Por qué no se usa double para dinero?', '¿Por qué @Transactional no aplica en una auto-invocación?'],
+    ['JDK 25', 'java.lang.reflect', 'java.util.regex', 'java.math', 'java.text'],
+    'Librería de utilidades de producción para el motor de asignación con validación por anotaciones, regex, dinero exacto, invariantes, plugins, proxy de registro y formatos localizados.'),
 ];

@@ -260,6 +260,11 @@ En un pico de pedidos, RutaFlow necesita que `demo-asg` reaccione subiendo de 1 
 #### Paso 3 · Teoría, modelo mental y analogía
 El reconciliador compara, cada 10 segundos, cuántas instancias hay contra cuántas debería haber — como un encargado de turno que cuenta meseros y llama a alguien de guardia si faltan.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws autoscaling set-desired-capacity --auto-scaling-group-name demo-asg --desired-capacity 3
 sleep 12
@@ -357,7 +362,9 @@ Entrega la VPC con sus subredes, el security group restrictivo y el análisis de
 **Cuándo no usarlo:** para un experimento local efímero no necesitas diseñar subredes; pero en cuanto hay datos reales o producción, la segmentación de red no es opcional.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** coloca la base de datos de RutaFlow en la subred privada y el balanceador en la pública, y demuestra que la base no acepta conexiones desde fuera de la VPC.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

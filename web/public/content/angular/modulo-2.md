@@ -587,6 +587,11 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/carrito/cantidad.ts` dentro.
+```bash
+ng new ejemplo
+```
+
 
 Crea `src/app/carrito/cantidad.ts`:
 
@@ -673,6 +678,13 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+```bash
+ng new ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 ```ts
 conductorId = signal('c-1');

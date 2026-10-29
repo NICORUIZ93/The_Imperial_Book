@@ -276,6 +276,8 @@ Una API puede estar vulnerable aunque su código propio parezca correcto: depend
 OWASP es una lista de clases de fallos, no un certificado. `npm audit` detecta avisos conocidos, pero no reemplaza threat modeling. Es una inspección de extintores, no una garantía de que el edificio sea seguro.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `audit.json` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 ```bash
 mkdir ejemplo-auditoria-api
@@ -331,6 +333,104 @@ npm audit fix       # aplica actualizaciones automáticas seguras cuando es posi
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Revisa una operación sensible frente a autorización por recurso y consumo de recursos. Añade una prueba negativa con otra identidad y registra la política de actualización de dependencias que protege ese endpoint.
+
+### Tema 5: CVE, CWE y npm audit en el pipeline
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás leer un reporte de `npm audit`, distinguir CVE, CWE y avisos GHSA, clasificar hallazgos por severidad y hacer fallar un pipeline cuando superan un umbral. Prerrequisitos: Tema 4 de este módulo y Módulo 7, Tema 3 (CI).
+
+#### Paso 2 · Contexto y caso real
+Una dependencia vieja de RutaFlow (lodash 4.17.20) tenía vulnerabilidades conocidas de inyección de código y contaminación de prototipos. Nadie lo notó porque el pipeline no revisaba dependencias. Es un caso real: la mayoría de las brechas en aplicaciones Node entran por paquetes de terceros, no por el código propio.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **CVE** identifica una vulnerabilidad concreta en un producto concreto (CVE-AAAA-NNNN). Un **CWE** clasifica el **tipo de debilidad** (CWE-94: inyección de código; CWE-1321: contaminación de prototipos; CWE-1333: regex ineficiente). GitHub publica avisos **GHSA** que enlazan ambos. **OWASP Top 10** agrupa los riesgos más frecuentes y cada categoría se mapea a varios CWE. `npm audit` compara tu árbol de dependencias con la base de avisos y **sale con código 1** si encuentra algo.
+
+**Analogía:** el CWE es el tipo de falla ("cerradura que se abre con una tarjeta"); el CVE es el aviso de que el modelo X de esa marca tiene esa falla.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    D[package-lock.json] --> A[npm audit --json]
+    B[(base de avisos GHSA)] --> A
+    A --> R[auditar.js]
+    R --> T[tabla por CWE]
+    R --> X{high o critical}
+    X -- sí --> F[exit 1: el pipeline falla]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir auditoria && cd auditoria && npm init -y && npm install lodash@4.17.20
+```
+
+Crea `auditar.js`:
+
+```javascript
+// Resume el reporte de npm audit por CWE y falla el pipeline si hay severidad alta o crítica
+const { spawnSync } = require('node:child_process');
+
+const UMBRAL = ['high', 'critical'];
+// spawnSync no lanza excepción cuando npm audit sale con código 1 (hay hallazgos)
+const resultado = spawnSync('npm', ['audit', '--json'], { encoding: 'utf8' });
+const reporte = JSON.parse(resultado.stdout);
+
+const filas = [];
+for (const [paquete, info] of Object.entries(reporte.vulnerabilities)) {
+  for (const aviso of info.via.filter((v) => typeof v === 'object')) {
+    filas.push({ paquete, severidad: aviso.severity, cwe: aviso.cwe.join(', '), aviso: aviso.url.split('/').pop() });
+  }
+}
+console.table(filas);
+
+const graves = filas.filter((f) => UMBRAL.includes(f.severidad));
+console.log(`Hallazgos: ${filas.length}, graves: ${graves.length}`);
+process.exitCode = graves.length > 0 ? 1 : 0;
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+node auditar.js; echo "código de salida: $?"
+```
+
+**Resultado esperado:**
+
+```text
+┌─────────┬──────────┬────────────┬─────────────────────┬───────────────────────┐
+│ (index) │ paquete  │ severidad  │ cwe                 │ aviso                 │
+├─────────┼──────────┼────────────┼─────────────────────┼───────────────────────┤
+│ 0       │ 'lodash' │ 'high'     │ 'CWE-77, CWE-94'    │ 'GHSA-35jh-r3h4-6jhm' │
+│ 1       │ 'lodash' │ 'moderate' │ 'CWE-400, CWE-1333' │ 'GHSA-29mw-wpgm-hmr9' │
+│ 2       │ 'lodash' │ 'high'     │ 'CWE-94'            │ 'GHSA-r5fr-rjxr-66jc' │
+│ 3       │ 'lodash' │ 'moderate' │ 'CWE-1321'          │ 'GHSA-f23m-r3pf-42rh' │
+│ 4       │ 'lodash' │ 'moderate' │ 'CWE-1321'          │ 'GHSA-xxjr-mmjv-4gpg' │
+└─────────┴──────────┴────────────┴─────────────────────┴───────────────────────┘
+Hallazgos: 5, graves: 2
+código de salida: 1
+```
+
+Los avisos cambian con el tiempo: al repetirlo quizá veas más o menos filas, pero la versión 4.17.20 siempre tendrá hallazgos. El código de salida 1 es lo que detiene el pipeline.
+
+**Fallo deliberado:** Cambia `spawnSync` por `execSync("npm audit --json")`, como se ve en muchos tutoriales. El script se cae con `Error: Command failed: npm audit --json` antes de imprimir nada: `npm audit` sale con código 1 cuando hay hallazgos y `execSync` convierte eso en una excepción. Por eso hay que leer el código de salida, no tratarlo como error del script.
+
+#### Paso 5 · Práctica guiada
+Ejecuta `npm audit fix`, vuelve a correr `auditar.js` y documenta qué versión de lodash quedó y si el código de salida cambió. **Pista:** revisa `package.json` y `npm ls lodash` antes y después; si queda algún aviso, lee si se corrige con una versión *major*.
+
+#### Paso 6 · Práctica independiente
+Agrega `auditar.js` como paso de GitHub Actions y haz que solo bloquee con severidad `critical` en ramas de funcionalidad y con `high` en `main`. Justifica el umbral.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque la cadena de suministro es hoy una de las principales vías de ataque, y saber leer CVE y CWE te permite priorizar en vez de ignorar cientos de avisos.
+**Fuente oficial:** [npm Docs: npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [MITRE CWE](https://cwe.mitre.org/), [Node.js Security Best Practices](https://nodejs.org/en/learn/getting-started/security-best-practices).
+**Conceptos clave:** CVE, CWE, GHSA, OWASP Top 10, severidad, `npm audit`, código de salida, umbral en CI.
+**Cuándo no usarlo:** no trates cada aviso como urgente: evalúa si el código vulnerable se usa realmente (alcanzabilidad) y documenta las excepciones aceptadas con fecha de revisión.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** agrega la auditoría de dependencias al pipeline de la API con un umbral documentado.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
 
 ## Laboratorio práctico
 

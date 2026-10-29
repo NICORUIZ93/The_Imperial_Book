@@ -12,6 +12,11 @@ RutaFlow quiere estimar, mientras desarrolla, cuánto costaría en AWS real la i
 #### Paso 3 · Teoría, modelo mental y analogía
 Cost Explorer es un libro contable que agrupa el consumo real por dimensiones (servicio, tag, fecha) — un contador que revisa qué tenés encendido ahora mismo, no una factura ficticia desconectada de tu estado real.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws s3 mb s3://demo-costo-antes
 aws ce get-cost-and-usage --time-period Start=2026-01-01,End=2026-02-01 \
@@ -64,6 +69,11 @@ Antes de decidir si el nodo de reparto (Módulo 21) corre en `t3.micro` o en alg
 #### Paso 3 · Teoría, modelo mental y analogía
 La API de Pricing es un catálogo con filtros: elegís servicio, tipo y región, y te devuelve la tarifa vigente — no una base de datos exhaustiva de cada variante posible.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws pricing describe-services --service-code AmazonEC2
 aws pricing get-products --service-code AmazonEC2 \
@@ -172,6 +182,11 @@ RutaFlow tiene recursos repartidos entre S3, DynamoDB, SQS y más — auditar "t
 #### Paso 3 · Teoría, modelo mental y analogía
 Un tag es una etiqueta contable que conecta un recurso con su responsable o proyecto; Resource Groups Tagging API es la búsqueda universal que cruza todos los servicios a la vez.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws resourcegroupstaggingapi tag-resources \
   --resource-arn-list arn:aws:s3:::demo-facturacion --tags Proyecto=rutaflow
@@ -226,6 +241,11 @@ Antes de que un pipeline de CI despliegue cambios de RutaFlow, necesita confirma
 #### Paso 3 · Teoría, modelo mental y analogía
 `GetCallerIdentity` es mostrar tu credencial actual; `AssumeRole` es cambiar de pase temporalmente, con un alcance distinto al tuyo.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws sts get-caller-identity
 AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \

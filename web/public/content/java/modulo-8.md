@@ -102,7 +102,7 @@ mvn clean compile test package
 
 #### Paso 5 · Práctica guiada
 Pista: cambia deliberadamente el scope de JUnit de `test` a la ausencia de scope (compile por defecto) y reempaqueta; ahora las clases de JUnit sí aparecen en el jar. Resultado esperado: comparar ambos listados de `jar tf` te muestra en la práctica qué hace el scope.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Agrega una segunda dependencia real (por ejemplo `jackson-databind`) sin scope, verifica que sí queda en el jar por ser necesaria en runtime, y documenta la diferencia frente a una dependencia de test.
 
@@ -142,6 +142,8 @@ Un proyecto de un solo módulo crece hasta que cualquier cambio en la lógica de
 Un proyecto multi-módulo agrupa subproyectos bajo un POM padre; cada módulo declara explícitamente sus propias dependencias, incluidas las dependencias hacia otros módulos del mismo proyecto. La analogía: departamentos con presupuesto propio que deben solicitar formalmente los recursos de otro departamento, en vez de compartirlo todo automáticamente.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 Parte de una carpeta vacía:
 ```bash
 mkdir ejemplo-multimodulo && cd ejemplo-multimodulo
@@ -152,7 +154,7 @@ Crea un `pom.xml` raíz con `<modules><module>core</module><module>api</module><
 
 #### Paso 5 · Práctica guiada
 Pista: elimina deliberadamente la dependencia de `api` hacia `core` en su pom.xml y compila `api` referenciando una clase de `core`; provocarás un fallo de compilación por símbolo no encontrado. Resultado esperado: restaurar la dependencia explícita corrige el fallo.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Agrega un tercer módulo `infra` que dependa de `api`, y documenta por qué `core` no debería depender nunca de `infra` ni de `api`.
 

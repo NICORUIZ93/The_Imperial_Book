@@ -17,6 +17,13 @@ El equipo de RutaFlow discute si la API "está estable" basándose en impresione
 Un SLI es una proporción medible de eventos buenos sobre válidos; un SLO fija el objetivo durante una ventana; el presupuesto de error es el margen restante antes de incumplir ese objetivo — combustible para cambiar con velocidad controlada, no permiso para ignorar fallos.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
+**Crea** el archivo `src/ejemplo.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Ejecuta `docker` para levantar Prometheus y ejecuta `npm` para instrumentar tu aplicación Node. La consulta PromQL calcula tu SLI:
 
@@ -34,7 +41,10 @@ bash ejemplo.sh
 Verifica la salida y el estado de los recursos creados.
 
 Resultado esperado: esta consulta devuelve la proporción real de peticiones exitosas a `/envios` en los últimos 5 minutos; comparada contra un SLO de 99.9% mensual, permite calcular cuánto del presupuesto de error ya se consumió en lo que va del mes.
-
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
 #### Paso 5 · Práctica guiada
 Pista: definí el SLO de disponibilidad para `/envios` como "100% — nunca debería fallar" — ese es el fallo deliberado: con ese objetivo, cualquier error consume presupuesto y dispara alertas constantes, y un objetivo de 100% suele ser económicamente imposible además de frenar cualquier cambio que introduzca el más mínimo riesgo, incluso mejoras reales al producto.
 
@@ -92,6 +102,13 @@ El equipo de RutaFlow tiene una alerta que se dispara varias veces por semana si
 Una página debe despertar a una persona solo si exige acción inmediata; los labels participan en enrutamiento y agrupación, las annotations transportan contexto humano. La analogía es una alarma de incendio útil que indica zona y procedimiento, no una sirena constante que termina ignorada.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
+**Crea** el archivo `src/ejemplo.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Configura tu Prometheus con el YAML de alertas y ejecuta `kubectl` para aplicar el AlertManager:
 
@@ -113,7 +130,10 @@ bash ejemplo.sh
 Verifica la salida y el estado de los recursos creados.
 
 Resultado esperado: esta alerta se dispara únicamente cuando la tasa de consumo de presupuesto es lo bastante rápida como para agotarlo en horas, señalando urgencia genuina; quien la recibe abre directamente el runbook vinculado en `annotations.runbook` y sabe qué verificar primero.
-
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
 #### Paso 5 · Práctica guiada
 Pista: agregá el `request_id` de la última petición fallida como un label adicional "para tener más contexto" — ese es el fallo deliberado: como cada petición tiene un `request_id` distinto, Prometheus trata cada valor único como una serie temporal completamente nueva, multiplicando sin límite la cardinalidad de series activas.
 
@@ -171,6 +191,11 @@ Cualquiera con acceso al registry de RutaFlow podría, en teoría, subir una ima
 Un SBOM inventaría componentes, una firma vincula identidad con digest; ninguno por sí solo prueba ausencia de vulnerabilidad, pero juntos permiten rechazar lo que no proviene del builder confiable. La analogía: el SBOM es la lista de ingredientes; la firma sella el paquete; la procedencia registra la cocina.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
 
 Ejecuta `syft` para generar SBOM y `cosign` para verificar firmas de tu imagen:
 
@@ -258,6 +283,11 @@ Un desarrollador nuevo en el equipo de RutaFlow tardó tres días en lograr su p
 Policy as code aplica límites antes y durante el despliegue como software verificable; un golden path provee plantilla, pipeline y soporte para el caso común, permitiendo escape consciente cuando el dominio lo requiere. La analogía: una carretera bien señalizada con barreras, no una que obligue a todos los vehículos a ser iguales.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
 ```rego
 package kubernetes.admission
 

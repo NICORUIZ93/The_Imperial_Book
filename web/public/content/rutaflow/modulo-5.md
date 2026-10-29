@@ -416,3 +416,4 @@ Entrega `eta.py`, las dos salidas (ETA correcto y el ingenuo) con la diferencia 
 **Errores comunes:** usar el orden de llegada como si fuera el orden de ocurrencia; sobrescribir estado sin comparar `evento_time`; ignorar reintentos de red como fuente de eventos tardíos o duplicados; calcular el ETA sin registrar de qué evento salió; no definir una regla explícita para eventos con el mismo timestamp.
 
 **Transferencia al proyecto integrador «RutaFlow»:** Calcula ETA con datos de antigüedad conocida y comunica un rango. Simula una interrupción de posiciones y verifica que el rango o advertencia cambia sin presentar certeza falsa.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

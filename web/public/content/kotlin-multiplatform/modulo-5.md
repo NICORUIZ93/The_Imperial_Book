@@ -630,7 +630,9 @@ Entrega la (de)serialización, el mapeo con `@SerialName` y el fallo por falta d
 **Cuándo no usarlo:** para formatos binarios muy específicos o rendimiento extremo puedes necesitar otra estrategia, pero para JSON (el 99% de las APIs) kotlinx.serialization es la opción estándar en KMP.
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** define los modelos de la API de RutaFlow como `data class @Serializable` en commonMain y úsalos sin cambios desde Android e iOS.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html).
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un cliente HTTP compartido que consume una API real desde Android e iOS, con manejo de errores, autenticación centralizada y reintentos.

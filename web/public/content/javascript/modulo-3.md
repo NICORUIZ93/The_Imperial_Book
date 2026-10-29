@@ -386,6 +386,128 @@ Completaste objetos y clases con invariantes impuestas por el motor. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Protege el controlador de peticiones pendientes con un campo privado. Prueba su interfaz pública y confirma que consultar una nueva guía cancela la anterior sin exponer el mecanismo interno.
 
+### Tema 5: Symbol y objetos iterables propios
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás crear claves únicas con `Symbol`, implementar el protocolo de iteración con `Symbol.iterator` y con generadores, y lograr que tus objetos funcionen con `for...of`, spread y desestructuración. Prerrequisitos: Tema 2 de este módulo (clases) y Módulo 6, Tema 5 (generadores).
+
+#### Paso 2 · Contexto y caso real
+El seguimiento de RutaFlow muestra las paradas de una ruta. Si la clase `Ruta` es iterable, cualquier parte del código la recorre con `for...of` sin conocer cómo guarda sus datos. Así funcionan en la realidad `Map`, `Set`, los `NodeList` del DOM y los streams.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un `Symbol` es un valor primitivo único: dos `Symbol('a')` nunca son iguales, y como clave de objeto no aparece en `Object.keys` ni en `JSON.stringify`. `Symbol.for` usa un registro global compartido. JavaScript define **símbolos bien conocidos** que activan comportamientos: si un objeto tiene un método `[Symbol.iterator]` que devuelve un **iterador** (un objeto con `next()` que retorna `{ value, done }`), el objeto es **iterable**. Un generador (`function*`) crea ese iterador automáticamente.
+
+**Analogía:** `Symbol.iterator` es el enchufe estándar que `for...of`, el spread y la desestructuración saben usar.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+    participant F as for...of
+    participant R as Ruta
+    participant I as iterador
+    F->>R: [Symbol.iterator]()
+    R-->>F: iterador
+    F->>I: next()
+    I-->>F: value y done false
+    F->>I: next()
+    I-->>F: done true
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir iterables && cd iterables
+```
+
+Crea `iterables.js`:
+
+```javascript
+// Una ruta de reparto que se puede recorrer con for...of, spread y desestructuración
+class Ruta {
+  #paradas = [];
+  agregar(...paradas) {
+    this.#paradas.push(...paradas);
+    return this;
+  }
+  // Protocolo de iteración: un método con la clave Symbol.iterator que devuelve un iterador
+  [Symbol.iterator]() {
+    let i = 0;
+    const paradas = this.#paradas;
+    return {
+      next() {
+        return i < paradas.length
+          ? { value: `${i + 1}. ${paradas[i++]}`, done: false }
+          : { value: undefined, done: true };
+      },
+    };
+  }
+  // Un generador produce un iterador sin escribir next() a mano
+  *pendientesDesde(indice) {
+    for (let i = indice; i < this.#paradas.length; i++) yield this.#paradas[i];
+  }
+  get [Symbol.toStringTag]() {
+    return 'Ruta';
+  }
+}
+
+const ruta = new Ruta().agregar('Depósito', 'Chapinero', 'Usaquén', 'Suba');
+for (const parada of ruta) console.log(parada);
+console.log([...ruta].length, 'paradas');
+const [origen, siguiente] = ruta;
+console.log('Desestructurada:', origen, '|', siguiente);
+console.log('Pendientes:', [...ruta.pendientesDesde(2)]);
+console.log(Object.prototype.toString.call(ruta));
+
+// Symbol: claves únicas que no chocan con otras propiedades
+const ID_INTERNO = Symbol('idInterno');
+const envio = { guia: 'G-1', [ID_INTERNO]: 98765 };
+console.log(Object.keys(envio), JSON.stringify(envio), envio[ID_INTERNO]);
+console.log(Symbol('a') === Symbol('a'), Symbol.for('a') === Symbol.for('a'));
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+node iterables.js
+```
+
+**Resultado esperado:**
+
+```text
+1. Depósito
+2. Chapinero
+3. Usaquén
+4. Suba
+4 paradas
+Desestructurada: 1. Depósito | 2. Chapinero
+Pendientes: [ 'Usaquén', 'Suba' ]
+[object Ruta]
+[ 'guia' ] {"guia":"G-1"} 98765
+false true
+```
+
+El mismo objeto se recorrió con `for...of`, con spread (`[...ruta]`) y con desestructuración. El símbolo `ID_INTERNO` no apareció en `Object.keys` ni en el JSON.
+
+**Fallo deliberado:** Renombra el método `[Symbol.iterator]()` a `iterator()`. Obtienes `TypeError: ruta is not iterable`: el nombre debe ser exactamente el símbolo bien conocido, no un texto parecido.
+
+#### Paso 5 · Práctica guiada
+Agrega a `Ruta` un generador `*conDistancia(km)` que entregue pares `[parada, kmAcumulados]`, sumando `km` en cada parada. **Pista:** usa `yield [parada, acumulado]` dentro de un `for` y recórrelo con `for (const [parada, km] of ruta.conDistancia(3))`.
+
+#### Paso 6 · Práctica independiente
+Crea un iterable infinito de números de guía (`BO-000001`, `BO-000002`, …) y toma solo los primeros 5 con desestructuración, explicando por qué no se cuelga.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque el protocolo de iteración es la base de `for...of`, `Array.from`, `Promise.all` con iterables y los iteradores asíncronos de streams.
+**Fuente oficial:** [MDN: Iteration protocols](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Iteration_protocols), [MDN: Symbol](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Symbol).
+**Conceptos clave:** `Symbol`, `Symbol.for`, símbolos bien conocidos, protocolo de iteración, iterador, `next()`, generador, `Symbol.toStringTag`.
+**Cuándo no usarlo:** si tu clase solo envuelve un array, devolver `this.#paradas[Symbol.iterator]()` o exponer una copia es más simple que escribir `next()` a mano.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** haz iterable el historial de eventos de un envío para mostrarlo en la línea de tiempo pública.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir una jerarquía de clases con herencia real y encapsulación mediante campos privados, comparándola explícitamente con el modelo de prototipos subyacente.

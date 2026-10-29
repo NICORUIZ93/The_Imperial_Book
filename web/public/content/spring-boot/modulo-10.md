@@ -903,7 +903,7 @@ Ya exponés y consumís un servicio interno con Spring gRPC (Boot 4.1), confirma
 **Cuándo no usarlo:** para comunicación con un cliente de navegador (gRPC-Web requiere un proxy adicional) o con un tercero externo que espera JSON/REST estándar, gRPC agrega fricción de integración sin beneficio frente a HTTP Interfaces (Tema 5).
 
 El contrato gRPC de este tema es el que usará la comunicación interna de alta frecuencia del proyecto integrador de este track (microservicio productivo, Módulo 12).
-
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 7: DDD para decidir límites y propiedad de datos
 
 #### Paso 1 · Objetivo y preparación

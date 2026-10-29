@@ -185,6 +185,11 @@ RutaFlow necesita desactivar automáticamente las notificaciones a una direcció
 #### Paso 3 · Teoría, modelo mental y analogía
 El simulador es un maniquí de entrenamiento: reacciona de forma predecible a cada procedimiento que practiques, en vez de esperar una emergencia real para entrenar la respuesta correcta.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws ses send-email --from notificaciones@demo.example.com \
   --destination ToAddresses=bounce@simulator.amazonses.com \

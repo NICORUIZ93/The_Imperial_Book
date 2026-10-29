@@ -27,10 +27,10 @@ describe('App', () => {
     harness.detectChanges();
     const text = harness.routeNativeElement?.textContent ?? '';
     expect(text).toContain('The Imperial Book');
-    expect(text).toContain('Biblioteca de cursos');
+    expect(text).toContain('Academia técnica en español');
     expect(TRACKS).toHaveLength(14);
-    expect(harness.routeNativeElement?.querySelectorAll('.track-card').length).toBeGreaterThanOrEqual(14);
-    expect(harness.routeNativeElement?.querySelectorAll('.track-card-icon img').length).toBeGreaterThanOrEqual(12);
+    expect(harness.routeNativeElement?.querySelectorAll('.card').length).toBeGreaterThanOrEqual(14);
+    expect(harness.routeNativeElement?.querySelectorAll('.card-icon img').length).toBeGreaterThanOrEqual(12);
     expect(text).toContain('Fundamentos de Ingeniería de Software');
     expect(text).toContain('Cloud Local — AWS, Azure y GCP');
     expect(text).toContain('RutaFlow — Plataforma profesional de entregas');

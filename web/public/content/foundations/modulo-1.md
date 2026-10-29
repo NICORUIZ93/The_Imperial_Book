@@ -564,6 +564,11 @@ La computadora solo almacena **bits** (0 o 1). Un número entero se guarda en **
 **Analogía:** el binario es como un ábaco donde cada cuenta vale el doble que la anterior (1, 2, 4, 8...); el punto flotante es como escribir `1/3` en decimal: por más dígitos que pongas (`0.3333...`), nunca es exacto, así que la máquina corta en algún punto.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `representacion.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Crea `representacion.py`:
 
 ```python
@@ -604,7 +609,9 @@ Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo 
 **Cuándo no usarlo:** no necesitas convertir binario a mano en el día a día, pero sí entender por qué los decimales fallan: para dinero usa enteros (centavos) o `Decimal`, nunca `float`.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor maneja importes o presupuestos, guárdalos en centavos (enteros) y demuestra con una prueba que sumar `0.1 + 0.2` como `float` produce un total incorrecto frente a la versión en centavos.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ## Construcción guiada del capítulo
 
 ### Proyecto 1: calculadora de presupuesto desde carpeta vacía

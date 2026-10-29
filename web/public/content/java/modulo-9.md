@@ -153,7 +153,7 @@ Crea `src/test/java/academia/entregas/FibonacciTest.java` con `@ParameterizedTes
 
 #### Paso 5 · Práctica guiada
 Pista: quita deliberadamente el valor `8` de `@ValueSource` para reducir la cobertura de un caso límite, y observa en el reporte de JaCoCo qué rama del método `esFibonacci` deja de ejecutarse. Resultado esperado: restaurar el valor recupera la cobertura de esa rama.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Convierte el test a `@MethodSource` con un método que genere los mismos casos programáticamente, y agrega un caso inválido (un número negativo) para verificar el manejo de error.
 

@@ -16,7 +16,7 @@ No arregles N+1 poniendo todas las asociaciones en `EAGER`: eso desplaza el cost
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás persistir `Cliente` y `Pedido` con Spring Data JPA y definir quién controla la clave foránea. Necesitas JDK 25+, Maven y PostgreSQL local o H2 para el test. Genera el proyecto con `web`, `data-jpa` y `h2`.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 La API de entregas necesita consultar los pedidos de un cliente, pero el pedido debe conservar la referencia al cliente sin duplicar sus datos.
@@ -28,8 +28,15 @@ La API de entregas necesita consultar los pedidos de un cliente, pero el pedido 
 `@ManyToOne` suele ser el lado propietario porque contiene la clave foránea; `mappedBy` declara el lado inverso. Mantén ambos lados sincronizados mediante métodos del dominio. `CascadeType` expresa propagación del ciclo de vida; no lo actives por inercia: eliminar el cliente no necesariamente debe eliminar pedidos históricos.
 
 JPA define el contrato y Hibernate lo implementa. `@Transactional` delimita el trabajo y permite que el contexto de persistencia gestione cambios; no hace que cada método de Java sea automáticamente atómico.
-
+**Analogía:** el lado propietario es como el titular de un contrato de alquiler: su firma es la que vale ante el registro (la clave foránea). El lado inverso es el inquilino que tiene una copia para consultar. Las cascadas son la cláusula que decide si, al cancelar el contrato del titular, se cancelan también los servicios asociados.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/Cliente.java` dentro.
+```bash
+curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+```
+
+**Crea** el archivo `src/main/java/academia/envios/Cliente.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 En `src/main/java/academia/envios/Cliente.java`:
 
@@ -69,7 +76,8 @@ En `Pedido.java`, declara `@ManyToOne(fetch = FetchType.LAZY, optional = false)`
 #### Paso 5 · Práctica guiada
 
 Agrega `LineaPedido` y un método de agregado que mantenga ambos lados. Prueba `CascadeType.PERSIST`, luego quítalo y explica qué operación explícita reemplaza la cascada. Intenta eliminar un cliente con pedidos y decide el comportamiento de integridad esperado.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Modela `Envio` y `Parada` para RutaFlow. Define propietario, nulabilidad, cascadas y regla de borrado. Escribe tests para inserción, actualización y borrado; usa migraciones Flyway en vez de `ddl-auto=update` para un esquema persistente.
@@ -77,13 +85,16 @@ Modela `Envio` y `Parada` para RutaFlow. Define propietario, nulabilidad, cascad
 #### Paso 7 · Cierre y evidencia
 
 Entrega entidades, migración y tests de integridad referencial como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** evita asociaciones bidireccionales si ningún caso de uso las necesita y no uses `CascadeType.REMOVE` sobre datos que deban conservar historial. **Evidencia:** test verde y esquema versionado.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso
 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás reproducir N+1, elegir una carga apropiada para una pantalla y verificar el plan mediante SQL medido. Continúa con las entidades del tema anterior.
-
+**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
 Una pantalla lista veinte clientes y cuenta sus pedidos. Una consulta inicial más veinte consultas por asociación es N+1; una relación EAGER indiscriminada puede sustituirlo por joins enormes o selects secundarios.
@@ -95,8 +106,15 @@ Una pantalla lista veinte clientes y cuenta sus pedidos. Una consulta inicial m�
 `LAZY` pospone la lectura hasta acceder a la asociación; `EAGER` obliga al proveedor a entregar la asociación disponible, pero no garantiza un JOIN ni una única consulta. Defaults JPA: `ManyToOne` y `OneToOne` son EAGER; `OneToMany` y `ManyToMany` son LAZY. Configura explícitamente las relaciones y carga datos por caso de uso.
 
 Hibernate puede representar asociaciones LAZY mediante proxies; acceder después de cerrar el contexto puede producir `LazyInitializationException`. No lo soluciones activando `Open Session in View` o haciendo todo EAGER: devuelve DTOs construidos dentro de una transacción con la consulta necesaria.
-
+**Analogía:** `LAZY` es traer cada dato solo al pedirlo; `EAGER`, traerlo todo por adelantado. El N+1 es llamar al almacén una vez por la lista de pedidos y después una llamada extra por cada pedido para saber su cliente: veinte pedidos, veintiuna llamadas. La consulta por caso de uso es pedir exactamente lo que la pantalla muestra, en un solo viaje.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/test/java/academia/envios/ConsultaClienteTest.java` dentro.
+```bash
+curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
+```
+
+**Crea** el archivo `src/test/java/academia/envios/ConsultaClienteTest.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 En `src/test/java/academia/envios/ConsultaClienteTest.java`, persiste veinte clientes con uno o dos pedidos cada uno. Activa `hibernate.generate_statistics=true`. En el test, ejecuta `flush()`, `clear()` y `getStatistics().clear()` antes de contar:
 
@@ -121,7 +139,8 @@ Ejecuta `./mvnw test -Dtest=ConsultaClienteTest`. **Resultado esperado:** observ
 #### Paso 5 · Práctica guiada
 
 Agrega una consulta dedicada con `@EntityGraph(attributePaths = "pedidos")` o JPQL `left join fetch c.pedidos`. Repite la medición. Prueba paginación: un fetch join de colección duplica filas y puede impedir paginación SQL eficiente. Compara una proyección DTO y registra consulta, filas y memoria.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 
 Implementa endpoint de resumen de cliente que solo devuelve nombre y número de pedidos, y endpoint de detalle que devuelve pedidos. No serialices entidades JPA directamente. Diseña pruebas que consulten ambos endpoints y midan cantidad de SQL sin fijar un número frágil si Hibernate puede emitir consultas equivalentes.
@@ -129,3 +148,7 @@ Implementa endpoint de resumen de cliente que solo devuelve nombre y número de 
 #### Paso 7 · Cierre y evidencia
 
 Entrega reproducción del N+1, versión optimizada, SQL registrado y decisión de carga para resumen/detalle del proyecto integrador de RutaFlow. **Cuándo no usarlo:** `EAGER` no es sinónimo de JOIN ni solución general; `JOIN FETCH` en colecciones grandes puede multiplicar filas. **Evidencia:** tests y comparación reproducible. Referencia: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.

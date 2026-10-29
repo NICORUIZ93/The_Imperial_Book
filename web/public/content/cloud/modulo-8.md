@@ -12,6 +12,11 @@ Si RutaFlow tuviera que migrar a Azure, la foto que el conductor sube al cerrar 
 #### Paso 3 · Teoría, modelo mental y analogía
 Blob Storage es la misma herramienta que S3 con otro nombre: contenedor en vez de bucket, blob en vez de objeto.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 az storage container create --name pruebas-entrega --connection-string "$AZURE_CONN_LOCAL"
 az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg --name envio-4471/entrega-001.jpg --connection-string "$AZURE_CONN_LOCAL"
@@ -75,6 +80,11 @@ Si RutaFlow corriera en GCP, el worker que confirma entregas no tendría una col
 #### Paso 3 · Teoría, modelo mental y analogía
 Un topic es un altavoz: cualquier suscripción sintonizada recibe su propia copia del mensaje, a diferencia de una cola SQS donde un mensaje se consume una sola vez.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 gcloud pubsub topics create delivery-commands --project mi-proyecto-local
 gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --project mi-proyecto-local
@@ -139,6 +149,11 @@ RutaFlow necesita que los eventos de un mismo envío se procesen en el orden en 
 #### Paso 3 · Teoría, modelo mental y analogía
 La equivalencia funcional entre proveedores no implica la misma garantía de comportamiento: dos herramientas pueden resolver "lo mismo" con reglas distintas por debajo.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project mi-proyecto-local
 ```

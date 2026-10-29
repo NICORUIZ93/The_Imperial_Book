@@ -79,6 +79,11 @@ Si RutaFlow agregara un tercer servicio en contenedor (por ejemplo, un worker de
 #### Paso 3 · Teoría, modelo mental y analogía
 Un service mesh es una red de carteros privados entre tus propios servicios: cada uno habla con un sidecar local, y el sidecar se encarga de cifrar, reintentar y medir sin que el código de la aplicación sepa que existe.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws ecs describe-services --cluster rutaflow-cluster --services demo-planificador-service \
   --query 'services[0].{Lanzamiento:launchType,Deployment:deploymentController}'

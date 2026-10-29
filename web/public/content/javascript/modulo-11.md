@@ -420,6 +420,260 @@ Ya puedes separar garantías estáticas de validación externa y mantener strict
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Activa comprobaciones estrictas y corrige un acceso a una entrega potencialmente ausente. El build debe rechazar ese acceso hasta que exista una rama explícita para respuesta vacía.
 
+### Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás declarar sobrecargas de funciones, derivar tipos con `Omit`, `Pick` y tipos mapeados, filtrar propiedades con tipos condicionales, construir nombres con tipos de plantilla y validar objetos con `satisfies` sin perder sus tipos literales. Prerrequisitos: Temas 1 a 4 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En el seguimiento público de RutaFlow existía `Envio` y una copia manual `EnvioPublico` sin el costo interno; al agregar un campo se actualizó una y no la otra. El libro *TypeScript, curso práctico* de la biblioteca dedica capítulos a tipos avanzados porque son el caso real que evita duplicar definiciones en proyectos grandes.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una **sobrecarga** declara varias firmas públicas para una implementación, de modo que el tipo de retorno depende de cómo se llama. Un **tipo mapeado** (`{ [K in keyof T]: ... }`) recorre las claves de otro tipo; `Omit` y `Pick` son tipos mapeados de la librería estándar. Un **tipo condicional** (`T extends U ? X : Y`) elige según una condición, y con `as` puede filtrar claves. Un **tipo de plantilla** (`` `al${Capitalize<Evento>}` ``) genera uniones de textos. `satisfies` comprueba que un valor cumple un tipo **sin ampliar** su tipo inferido, a diferencia de una anotación (`: Record<string, number>`), que pierde las claves concretas.
+
+**Analogía:** los tipos mapeados son una plantilla de formulario que se genera sola a partir del original: si el original cambia, el formulario también.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    E[Envio] --> O[Omit costoInterno: EnvioPublico]
+    E --> F[Formulario de Pick guia y kilos]
+    E --> S[SoloTexto: guia y destino]
+    T[tarifas satisfies Record] --> K[keyof: Bogotá o Medellín]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir ts-avanzado && cd ts-avanzado
+npm init -y && npm install -D typescript@5
+mkdir src
+```
+
+Crea `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  }
+}
+```
+
+Crea `src/tipos-avanzados.ts`:
+
+```typescript
+// 1) Sobrecargas: varias firmas públicas, una implementación
+function buscar(guia: string): string;
+function buscar(guias: string[]): string[];
+function buscar(entrada: string | string[]): string | string[] {
+  const estado = (g: string) => `${g}: en ruta`;
+  return Array.isArray(entrada) ? entrada.map(estado) : estado(entrada);
+}
+const uno: string = buscar('BO-1');            // el tipo de retorno depende de la firma usada
+const varios: string[] = buscar(['BO-2', 'BO-3']);
+
+// 2) Tipos mapeados: derivar tipos de otros en lugar de copiarlos
+interface Envio { guia: string; kilos: number; destino: string; costoInterno: number }
+type EnvioPublico = Omit<Envio, 'costoInterno'>;
+type Formulario<T> = { [K in keyof T]: { valor: T[K]; error?: string } };
+const formulario: Formulario<Pick<Envio, 'guia' | 'kilos'>> = {
+  guia: { valor: 'BO-4' },
+  kilos: { valor: 0, error: 'debe ser positivo' },
+};
+
+// 3) Tipos condicionales y de plantilla
+type Evento = 'creado' | 'despachado' | 'entregado';
+type Manejador = `al${Capitalize<Evento>}`;            // 'alCreado' | 'alDespachado' | 'alEntregado'
+type SoloTexto<T> = { [K in keyof T as T[K] extends string ? K : never]: T[K] };
+const textos: SoloTexto<Envio> = { guia: 'BO-5', destino: 'Cali' };
+
+// 4) satisfies: valida la forma sin perder el tipo literal más preciso
+const tarifas = {
+  Bogotá: 5000,
+  Medellín: 7000,
+} satisfies Record<string, number>;
+type CiudadConTarifa = keyof typeof tarifas;           // 'Bogotá' | 'Medellín', no string
+const ciudad: CiudadConTarifa = 'Medellín';
+
+const publico: EnvioPublico = { guia: 'BO-6', kilos: 2, destino: 'Bogotá' };
+const manejadores: Record<Manejador, () => string> = {
+  alCreado: () => 'notificar a bodega',
+  alDespachado: () => 'notificar al cliente',
+  alEntregado: () => 'cerrar la guía',
+};
+console.log(uno, varios);
+console.log(formulario.kilos.error, Object.keys(textos), tarifas[ciudad]);
+console.log(Object.keys(publico), manejadores.alEntregado());
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+npx tsc && node dist/tipos-avanzados.js
+```
+
+**Resultado esperado:**
+
+```text
+BO-1: en ruta [ 'BO-2: en ruta', 'BO-3: en ruta' ]
+debe ser positivo [ 'guia', 'destino' ] 7000
+[ 'guia', 'kilos', 'destino' ] cerrar la guía
+```
+
+Los tipos desaparecen al compilar: lo que imprime `node` son los valores. El valor de los tipos está en los errores que el compilador evita.
+
+**Fallo deliberado:** Cambia `const ciudad: CiudadConTarifa = 'Medellín';` por `'Cali'`. `npx tsc` responde `error TS2322: Type '"Cali"' is not assignable to type '"Bogotá" | "Medellín"'.` Si en vez de `satisfies` anotas `const tarifas: Record<string, number>`, el error desaparece: la anotación amplió las claves a `string` y perdiste la comprobación.
+
+#### Paso 5 · Práctica guiada
+Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `number` de `T` y úsalo con `Envio`. **Pista:** combina un tipo mapeado con `as` y una intersección: `{ [K in keyof T as T[K] extends number ? K : never]?: T[K] } & { [K in keyof T as T[K] extends number ? never : K]: T[K] }`.
+
+#### Paso 6 · Práctica independiente
+Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
+**Fuente oficial:** [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [TypeScript 4.9: satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html).
+**Conceptos clave:** sobrecarga, tipo mapeado, `keyof`, `Omit` y `Pick`, tipo condicional, remapeo con `as`, tipo de plantilla, `satisfies`.
+**Cuándo no usarlo:** no conviertas el código en un rompecabezas de tipos: si un tipo necesita varios niveles de condicionales para entenderse, probablemente una interfaz explícita es mejor.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** deriva el tipo público del envío del tipo interno con `Omit` para que nunca se exponga el costo.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+### Tema 6: Decoradores estándar de TypeScript 5
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar de TypeScript 5, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow se quería registrar cada cotización y validar configuraciones sin repetir código en cada clase. Angular y NestJS usan decoradores todo el tiempo (`@Component`, `@Injectable`), y el capítulo de estructura de proyecto del libro de TypeScript los presenta como herramienta de productividad: un caso real de cualquier framework.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **decorador** es una función que recibe la clase, el método o el campo que decora y un **objeto de contexto** (`ClassMethodDecoratorContext`, `ClassFieldDecoratorContext`…) con su nombre y tipo. Un decorador de método puede devolver una función que reemplaza al método; uno de campo puede devolver un inicializador que transforma el valor inicial; uno de clase puede registrar o reemplazar la clase. TypeScript 5 implementa la **propuesta estándar de TC39**. Los frameworks que usan `"experimentalDecorators": true` siguen la versión antigua, con otra firma y metadatos de reflexión: no se mezclan.
+
+**Analogía:** un decorador es un sello que se estampa en un documento: el documento es el mismo, pero el sello agrega una regla ("revisado", "registrar en el archivo").
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    S[@servicio] --> CL[clase Cotizador]
+    P[@positivo] --> CA[campo precioKilo]
+    R[@registrar] --> ME[método cotizar]
+    ME --> L[log de cada llamada]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir ts-decoradores && cd ts-decoradores
+npm init -y && npm install -D typescript@5
+mkdir src
+```
+
+Crea `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  }
+}
+```
+
+Crea `src/decoradores.ts`:
+
+```typescript
+// Decoradores estándar de TypeScript 5 (propuesta TC39), sin experimentalDecorators
+
+// Decorador de método: mide y registra cada llamada
+function registrar<This, Args extends unknown[], R>(
+  metodo: (this: This, ...args: Args) => R,
+  contexto: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => R>,
+) {
+  const nombre = String(contexto.name);
+  return function (this: This, ...args: Args): R {
+    const resultado = metodo.call(this, ...args);
+    console.log(`[log] ${nombre}(${args.join(', ')}) -> ${resultado}`);
+    return resultado;
+  };
+}
+
+// Decorador de campo: valida el valor inicial
+function positivo(_valor: undefined, contexto: ClassFieldDecoratorContext) {
+  return (inicial: number) => {
+    if (inicial <= 0) throw new RangeError(`${String(contexto.name)} debe ser positivo`);
+    return inicial;
+  };
+}
+
+// Decorador de clase: registra la clase en un catálogo de servicios
+const catalogo: string[] = [];
+function servicio(clase: Function, contexto: ClassDecoratorContext) {
+  catalogo.push(String(contexto.name));
+}
+
+@servicio
+class Cotizador {
+  @positivo precioKilo = 1200;
+
+  @registrar
+  cotizar(ciudad: string, kilos: number): number {
+    return (ciudad === 'Bogotá' ? 5000 : 9000) + kilos * this.precioKilo;
+  }
+}
+
+const cotizador = new Cotizador();
+cotizador.cotizar('Bogotá', 2);
+cotizador.cotizar('Cali', 1);
+console.log('Servicios registrados:', catalogo);
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+npx tsc && node dist/decoradores.js
+```
+
+**Resultado esperado:**
+
+```text
+[log] cotizar(Bogotá, 2) -> 7400
+[log] cotizar(Cali, 1) -> 10200
+Servicios registrados: [ 'Cotizador' ]
+```
+
+Los decoradores se ejecutan al definir la clase; por eso `Cotizador` ya está en el catálogo antes de usarlo.
+
+**Fallo deliberado:** Cambia `@positivo precioKilo = 1200;` por `@positivo precioKilo = 0;`. Compila sin errores, pero al ejecutar `new Cotizador()` lanza `RangeError: precioKilo debe ser positivo`. El decorador de campo valida en tiempo de ejecución, al crear cada instancia, no al compilar.
+
+#### Paso 5 · Práctica guiada
+Crea el decorador de método `@reintentar(3)` que repita la llamada si lanza un error. **Pista:** un decorador con parámetros es una función que devuelve el decorador: `function reintentar(veces: number) { return function (metodo, contexto) { ... } }`.
+
+#### Paso 6 · Práctica independiente
+Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y explica los errores que aparecen. Luego investiga qué modo usa la versión de Angular del track.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
+**Fuente oficial:** [TypeScript 5.0: Decorators](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), [TC39: Decorators proposal](https://github.com/tc39/proposal-decorators).
+**Conceptos clave:** decorador de clase, método y campo, objeto de contexto, inicializador, propuesta TC39, `experimentalDecorators`.
+**Cuándo no usarlo:** no uses decoradores para lógica de negocio central: esconden comportamiento. Úsalos para preocupaciones transversales como registro, validación o registro de servicios.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** migrar un módulo JavaScript existente (la biblioteca de funciones del Módulo 1) a TypeScript estricto, sin usar `any` en ningún punto.

@@ -17,6 +17,13 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 Un programa es el archivo `domain.py`; un proceso es ese programa corriendo de verdad, con PID, memoria y descriptores propios — el kernel es el bibliotecario que presta esos recursos, nunca el programa accediendo directo al hardware.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 python3 -c "
 import time
@@ -83,8 +90,7 @@ flowchart LR
     KERNEL --> DISK["disco"]
     KERNEL --> NET["red"]
 ```
-
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 #### Profundización · Dos instancias del CLI, dos procesos distintos
 
 Lanzá el gestor de tareas del proyecto integrador dos veces en paralelo (`python3 cli.py list &` repetido dos veces) e inspeccioná ambas con `ps -o pid,ppid,etime,command | grep cli.py`.
@@ -107,6 +113,13 @@ Si dos procesos de asignación intentaran reservar un lugar en el mismo vehícul
 `capacidad = capacidad - 1` no es una operación atómica: es leer, calcular y escribir — dos hilos pueden leer el mismo valor antes de que ninguno escriba, perdiendo una actualización, igual que dos agentes vendiendo el mismo último asiento desde copias separadas.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 from threading import Thread
 
@@ -201,7 +214,7 @@ sequenceDiagram
 El proyecto integrador Fundamentos tiene la misma sección crítica escondida en `almacenamiento.py`: si dos invocaciones de `python3 cli.py add` corrieran en paralelo, ambas podrían leer la misma lista de tareas antes de que ninguna la reescriba, y una de las dos tareas agregadas se perdería silenciosamente — el mismo patrón de leer-calcular-escribir sin lock que este Tema demuestra con `capacidad["disponible"]`.
 
 **Límites y decisión de uso:** Más concurrencia no implica más velocidad y puede introducir carreras o presión de memoria. Identifica estado compartido y trabajo independiente antes de añadir tareas; compara resultados y recursos con la versión secuencial.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 3: Linux como entorno observable
 
 #### Paso 1 · Objetivo y preparación
@@ -214,6 +227,13 @@ Si el servicio que calcula rutas para RutaFlow dejara de responder, un operador 
 Operar un servicio es como la medicina clínica: observás signos (CPU, puertos, logs) antes de intervenir, en vez de "reiniciar y ver si se arregla".
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 python3 -m http.server 8000 --directory /tmp &
 sleep 1
@@ -275,7 +295,7 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Identifica proceso, puerto y logs del gestor en Linux. Detén únicamente el proceso de laboratorio y conserva el diagnóstico que diferencia aplicación detenida de error en sus datos.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 4: Contenedores: aislamiento reproducible
 
 #### Paso 1 · Objetivo y preparación
@@ -364,6 +384,130 @@ flowchart TB
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Empaqueta el gestor y ejecuta su prueba de humo desde un contenedor limpio. Recrea el proceso y comprueba qué datos persisten mediante el volumen, sin depender de archivos de tu equipo.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás reproducir un interbloqueo (deadlock) con la cena de los filósofos, evitarlo imponiendo un orden global de recursos y permitir lecturas concurrentes con exclusión de escritores. Prerrequisito: Tema 2 de este módulo (memoria y concurrencia).
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, cinco despachadores comparten cinco radios y cada uno necesita dos para coordinar una entrega. Un día el sistema se congeló sin errores: cada uno tenía una radio y esperaba la otra. El mismo caso real aparece con bloqueos de base de datos y con locks en servicios. Los libros de *Clean Code* y de sistemas operativos lo enseñan como los problemas clásicos de concurrencia.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **interbloqueo** requiere cuatro condiciones a la vez (Coffman): exclusión mutua, retener y esperar, no expropiación y **espera circular**. Romper cualquiera lo evita; la forma más práctica es un **orden global de recursos**: todos toman primero el de menor número, así no puede formarse un ciclo. El problema de **lectores y escritores** permite muchos lectores a la vez pero un solo escritor: el primer lector bloquea a los escritores y el último los libera (esta versión favorece a los lectores y puede dejar esperando a un escritor).
+
+**Analogía:** cinco personas en una mesa redonda con un palillo entre cada par; si todas toman el de su izquierda al mismo tiempo, nadie come nunca.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    M0[mensajero 0] -- tiene --> R0[radio 0]
+    M0 -. espera .-> R1[radio 1]
+    M1[mensajero 1] -- tiene --> R1
+    M1 -. espera .-> R2[radio 2]
+    M4[mensajero 4] -- tiene --> R4[radio 4]
+    M4 -. espera .-> R0
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir concurrencia && cd concurrencia
+```
+
+Crea `concurrencia_clasica.py`:
+
+```python
+import threading, time
+
+# --- Cena de los filósofos: 5 mensajeros comparten 5 radios; cada uno necesita 2 para coordinar
+N = 5
+radios = [threading.Lock() for _ in range(N)]
+comidas = [0] * N
+
+def mensajero(i, rondas=50):
+    izquierda, derecha = i, (i + 1) % N
+    # Orden global de recursos: siempre tomar primero el de menor número rompe la espera circular
+    primero, segundo = min(izquierda, derecha), max(izquierda, derecha)
+    for _ in range(rondas):
+        with radios[primero]:
+            time.sleep(0.001)                  # tiene una radio en la mano y espera la otra
+            with radios[segundo]:
+                comidas[i] += 1
+
+hilos = [threading.Thread(target=mensajero, args=(i,)) for i in range(N)]
+inicio = time.perf_counter()
+for h in hilos: h.start()
+for h in hilos: h.join(timeout=3)
+vivos = sum(h.is_alive() for h in hilos)
+print(f"Filósofos: rondas por mensajero={comidas}, hilos bloqueados={vivos}")
+
+# --- Lectores y escritores: muchos leen el tablero a la vez, uno solo escribe
+class Tablero:
+    def __init__(self):
+        self.datos = {"BO-1": "en ruta"}
+        self.lectores = 0
+        self.mutex = threading.Lock()          # protege el contador de lectores
+        self.escritura = threading.Lock()      # exclusión para escritores
+        self.max_simultaneos = 0
+    def leer(self, guia):
+        with self.mutex:
+            self.lectores += 1
+            if self.lectores == 1: self.escritura.acquire()   # el primer lector bloquea escritores
+            self.max_simultaneos = max(self.max_simultaneos, self.lectores)
+        time.sleep(0.01)
+        valor = self.datos.get(guia)
+        with self.mutex:
+            self.lectores -= 1
+            if self.lectores == 0: self.escritura.release()   # el último lector libera
+        return valor
+    def escribir(self, guia, estado):
+        with self.escritura:
+            self.datos[guia] = estado
+
+tablero = Tablero()
+lectores = [threading.Thread(target=tablero.leer, args=("BO-1",)) for _ in range(8)]
+for h in lectores: h.start()
+for h in lectores: h.join()
+tablero.escribir("BO-1", "entregado")
+print(f"Lectores simultáneos máximos: {tablero.max_simultaneos}, estado final: {tablero.leer('BO-1')}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 concurrencia_clasica.py
+```
+
+**Resultado esperado:**
+
+```text
+Filósofos: rondas por mensajero=[50, 50, 50, 50, 50], hilos bloqueados=0
+Lectores simultáneos máximos: 8, estado final: entregado
+```
+
+Todos completaron sus 50 rondas sin bloquearse. Los 8 lectores leyeron a la vez porque la lectura no excluye a otros lectores.
+
+**Fallo deliberado:** Cambia `primero, segundo = min(izquierda, derecha), max(izquierda, derecha)` por `primero, segundo = izquierda, derecha`. Ahora imprime `Filósofos: rondas por mensajero=[0, 0, 0, 0, 0], hilos bloqueados=5` y el programa **no termina**: cada hilo tiene una radio y espera la del vecino, formando un ciclo. Detenlo con Ctrl+C. El `sleep` dentro del primer bloqueo hace visible un error que, sin él, aparecería solo de vez en cuando.
+
+#### Paso 5 · Práctica guiada
+Cuenta cuánto tiempo espera cada mensajero para obtener sus dos radios y muestra el mayor tiempo de espera. **Pista:** mide con `time.perf_counter()` antes del primer `with` y justo dentro del segundo, y guarda el máximo por mensajero.
+
+#### Paso 6 · Práctica independiente
+Escribe una versión de lectores-escritores que dé prioridad a los escritores y demuestra con un experimento que un escritor ya no espera indefinidamente.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los interbloqueos no lanzan errores: congelan sistemas en producción, y reconocer la espera circular es la clave para diagnosticarlos.
+**Fuente oficial:** [threading (docs.python.org)](https://docs.python.org/3/library/threading.html), [Dining philosophers problem (Wikipedia)](https://en.wikipedia.org/wiki/Dining_philosophers_problem); Robert C. Martin, *Código limpio*, cap. 13.
+**Conceptos clave:** interbloqueo, condiciones de Coffman, espera circular, orden global de recursos, inanición, lectores-escritores, `threading.Lock`.
+**Cuándo no usarlo:** si puedes evitar compartir estado (colas, mensajes, datos inmutables), hazlo: es más simple que coordinar locks.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** protege con un orden fijo de bloqueos la asignación de dos recursos (persona y vehículo) a una tarea.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
 
 ## Construcción guiada del capítulo
 
