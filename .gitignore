@@ -46,3 +46,6 @@ web/public/visuals/**/*.delivery.json
 
 # Flutter build artifacts
 **/.dart_tool/
+
+# pubspec.lock de paquetes Flutter (no se versiona)
+examples/flutter-testing/pubspec.lock
