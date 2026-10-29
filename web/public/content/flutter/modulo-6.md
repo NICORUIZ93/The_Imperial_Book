@@ -283,3 +283,92 @@ En el proyecto integrador RutaFlow, este patrón vive en `lib/features/offline/p
 - **Hacer que la UI dependa directamente de la API en vez de la caché local.** Rompe offline-first; la UI debe leer siempre del caché.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar conservarás un campo transitorio durante una restauración del framework y lo verificarás con una prueba de widget. **Prerrequisitos:** StatefulWidget, controladores y dispose. Flutter instalado y `flutter doctor` revisado. Ejemplo independiente desde una carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+El proyecto integrador permite escribir una dirección antes de confirmar la entrega. **¿Por qué es importante?** Un rebuild no prueba recuperación de estado y un hot reload puede ocultar que se perdería al reconstruir la sesión.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un scope identifica el árbol restaurable. `RestorationMixin` registra propiedades con identificadores estables. `RestorableTextEditingController` conserva el valor del campo y permite recuperar su controlador. **Analogía:** un guardarropa devuelve cada objeto usando su número de ficha; si cambias o repites identificadores, rompes la relación. El límite es que restauración de UI no sustituye almacenamiento duradero ni sincronización con el servidor.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+flutter create restauracion_demo
+cd restauracion_demo
+```
+Reemplaza `lib/main.dart`:
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const DraftApp());
+class DraftApp extends StatelessWidget {
+  const DraftApp({super.key});
+  @override
+  Widget build(BuildContext context) => const MaterialApp(
+    restorationScopeId: 'entregas', home: DraftPage());
+}
+class DraftPage extends StatefulWidget {
+  const DraftPage({super.key});
+  @override
+  State<DraftPage> createState() => _DraftState();
+}
+class _DraftState extends State<DraftPage> with RestorationMixin {
+  final address = RestorableTextEditingController();
+  @override
+  String get restorationId => 'borrador';
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(address, 'direccion');
+  }
+  @override
+  void dispose() {
+    address.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Borrador')),
+    body: Padding(padding: const EdgeInsets.all(24), child: TextField(
+      controller: address.value,
+      decoration: const InputDecoration(labelText: 'Dirección'))));
+}
+```
+Reemplaza `test/widget_test.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:restauracion_demo/main.dart';
+
+void main() {
+  testWidgets('restaura el texto transitorio', (tester) async {
+    await tester.pumpWidget(const DraftApp());
+    await tester.enterText(find.byType(TextField), 'Calle 42');
+    await tester.pump(); // Serializa el cambio antes de simular la restauración.
+    await tester.restartAndRestore();
+    expect(find.text('Calle 42'), findsOneWidget);
+  });
+}
+```
+```bash
+flutter test
+flutter run
+```
+**Resultado esperado:** prueba correcta y un campo de dirección en el destino elegido. Explica cada bloque: scope del app, registro de propiedad, conexión del controlador y limpieza. La prueba reconstruye y restaura el estado del framework; no mata realmente un proceso Android.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** retira `restorationScopeId` de MaterialApp. La prueba deja de conservar el texto. **Pista:** registrar una propiedad no basta si no hay un árbol de restauración. Repón el scope y verifica de nuevo.
+
+#### Paso 6 · Práctica independiente
+Añade un segundo campo restaurable con otro identificador y prueba dos valores distintos después de `restartAndRestore`. Explica qué parte de un formulario debe persistirse en una base de datos si se requiere recuperación tras cierre explícito.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** archivos, salida de prueba, fallo deliberado y corrección. El siguiente paso es ensayar recuperación en dispositivo y persistencia duradera con la política del producto. **Errores comunes:** reutilizar IDs, no disponer controladores y creer que hot reload valida restauración. **Límites y decisión de uso:** no almacenes fotografías, listas grandes ni secretos como estado transitorio; tampoco prometas recuperación tras desinstalar.
+
+**Fuente oficial:** [Flutter: restaurar estado](https://docs.flutter.dev/platform-integration/android/restore-state-android).

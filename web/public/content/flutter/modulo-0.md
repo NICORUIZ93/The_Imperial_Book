@@ -461,7 +461,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** agrega el análisis estático estricto al repositorio de la app del repartidor y hazlo obligatorio en CI.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** subir la severidad de una regla a `error` en `analysis_options.yaml` y confiar en que ya está aplicada sin correr `dart analyze` localmente — el editor puede seguir mostrando el código en verde si no recargó la configuración, y el equipo recién descubre el `error` cuando el pipeline de CI lo bloquea.
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

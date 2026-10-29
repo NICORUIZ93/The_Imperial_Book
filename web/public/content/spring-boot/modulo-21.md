@@ -167,7 +167,7 @@ Publica un evento desde una prueba o un endpoint de laboratorio y confirma que e
 2. Levanta dos instancias con el mismo `group-id`; observa el reparto de particiones. Levanta otra instancia con `group-id=rutaflow-notificaciones`; comprueba que ese grupo recibe los eventos por separado.
 3. Cambia la key de `envioId` a `eventId`; predice qué orden deja de estar garantizado y verifica el resultado.
 4. Añade un campo opcional al evento y prueba compatibilidad productor/consumidor antes de cambiar un campo existente. Mantén la evolución aditiva o versiona el contrato.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** cambia la key de `envioId` a `eventId` en el productor y publica varios eventos del mismo envío; revisa en qué partición cae cada uno — si ya no caen todos en la misma partición, perdiste el orden garantizado entre eventos del mismo envío que `envioId` como key te daba.
 #### Paso 6 · Práctica independiente
 
 En el proyecto integrador de RutaFlow, publica eventos de asignación con `envioId` como key y separa los grupos `rutaflow-ruteo` y `rutaflow-notificaciones`. Entrega una prueba de contrato JSON, una prueba con dos instancias y evidencia de asignación por partición. Define qué ocurre con un evento antiguo cuando se despliega una nueva versión del consumidor.
@@ -176,9 +176,9 @@ En el proyecto integrador de RutaFlow, publica eventos de asignación con `envio
 
 Entrega configuración local, contrato, productor, consumidor, test y tabla con tópico/key/particiones/grupo. **Cuándo no usarlo:** no introduzcas Kafka para una llamada interna sencilla que requiere respuesta inmediata; una API síncrona puede ser más clara. **Evidencia:** test sin pausas arbitrarias y registro de key, partición y offset.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** asumir que Kafka garantiza orden global entre tópicos o entre particiones distintas (solo lo garantiza dentro de una misma partición), y agregar más instancias consumidoras que particiones esperando más paralelismo, cuando las instancias sobrantes del mismo `group-id` simplemente quedan sin partición asignada.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega el log del consumidor mostrando partición, offset y key de cada evento recibido, el resultado de publicar con `envioId` como key frente a `eventId` (qué orden se mantiene o se pierde), y la evidencia de que dos `group-id` distintos reciben cada uno su propia copia del evento.
 ### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia
 
 #### Paso 1 · Objetivo y preparación
@@ -267,7 +267,7 @@ Solo si la inserción afecta una fila, actualiza la proyección de ruteo, y amba
 #### Paso 5 · Práctica guiada
 
 Inyecta tres clases de fallo en tests: timeout simulado de base (retryable), payload inválido (no retryable) y excepción tras marcar el inbox pero antes de actualizar la proyección. Comprueba número de intentos, rollback y destino final. Construye un procedimiento de replay de DLT que conserve `eventId`, registre operador/motivo y tenga límite de mensajes.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** inyecta la excepción justo después del `insert ... on conflict do nothing` del inbox pero antes del `update` de la proyección, dentro de la misma transacción, y repite la entrega del evento; si la transacción no revierte ambas escrituras juntas, verás la fila en `evento_procesado` marcada como procesada sin que la proyección se haya actualizado nunca.
 #### Paso 6 · Práctica independiente
 
 Para el proyecto integrador de RutaFlow, define un panel de mensajes en DLT y métricas de consumer lag, tasa de reintentos y edad del mensaje más antiguo. Diseña un replay desde DLT en tópico temporal hacia el tópico original. Verifica que el inbox vuelve a evitar el efecto duplicado y que los eventos incompatibles no se reinyectan automáticamente.
@@ -276,7 +276,7 @@ Para el proyecto integrador de RutaFlow, define un panel de mensajes en DLT y m�
 
 Entrega prueba de reintento, DLT, duplicado e inbox transaccional. **Cuándo no usarlo:** no afirmes “exactly once” para Kafka + base relacional sin un diseño que incluya ambos sistemas; no descartes silenciosamente mensajes fallidos. **Evidencia:** conteo de intentos, fila DLT y una sola mutación persistida.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** confirmar el offset de Kafka antes de que termine la transacción SQL del consumidor (o fuera de esa transacción), perdiendo el evento si el proceso cae justo después, y tratar cualquier excepción como retryable sin separar un fallo transitorio de un payload inválido, lo que convierte un mensaje malformado en reintentos infinitos en vez de enviarlo a la DLT.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
 ### Tema 3: Outbox transaccional y flujo de negocio
 
@@ -347,8 +347,7 @@ Ejecuta `./mvnw test -Dtest=OutboxIntegrationTest`.
 #### Paso 5 · Práctica guiada
 
 Implementa primero un dispatcher de una instancia y pruebas de los tres puntos de caída. Luego considera múltiples instancias: reclama filas con lease o bloqueo `FOR UPDATE SKIP LOCKED` dentro de una transacción corta, libera/vence el lease tras crash y evita mantener bloqueos SQL mientras esperas Kafka. El diseño debe aceptar duplicados aun con reclamo distribuido.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** levanta dos instancias del dispatcher sin `FOR UPDATE SKIP LOCKED` y haz que ambas corran `publicarPendientes()` al mismo tiempo sobre el mismo lote; si el mismo `event_id` se publica dos veces a Kafka desde instancias distintas, te falta el bloqueo de reclamo de filas — con `SKIP LOCKED` cada instancia se queda solo con las filas que la otra no tomó.
 #### Paso 6 · Práctica independiente
 
 Construye en el proyecto integrador de RutaFlow la secuencia `API -> PostgreSQL (envio + outbox) -> dispatcher -> Kafka -> consumer group de ruteo -> PostgreSQL (inbox + proyección)`. Prueba que una caída de Kafka no pierde el evento, que el restart del dispatcher lo publica y que un replay no duplica el estado. Agrega alerta por edad de outbox pendiente y runbook para mensajes en DLT.
@@ -358,5 +357,5 @@ Construye en el proyecto integrador de RutaFlow la secuencia `API -> PostgreSQL 
 Entrega diagrama de secuencia, esquema outbox/inbox, pruebas de caída, métricas y runbook. **Cuándo no usarlo:** para un proceso local sin integración duradera, un evento Spring local puede ser suficiente; outbox añade tablas, dispatcher, limpieza y operación. **Evidencia:** cada ventana de fallo probada y conciliación entre envíos, outbox y proyección.
 
 Referencia: [Spring for Apache Kafka](https://docs.spring.io/spring-kafka/reference/), [Apache Kafka Documentation](https://kafka.apache.org/documentation/).
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** envolver la espera de `kafka.send(...).get(...)` dentro de la misma transacción SQL que consulta el lote pendiente, manteniendo bloqueos de base de datos mientras se espera al broker, y marcar `published_at` antes de recibir el ack de Kafka, perdiendo la garantía de que el evento realmente salió si el proceso cae justo después.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).

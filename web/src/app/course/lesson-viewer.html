@@ -13,18 +13,24 @@
             {{ focusMode() ? 'Salir de concentración' : 'Modo concentración' }}
           </button>
         </div>
-        <div class="scale" *ngIf="levelIndex() >= 0" aria-label="Nivel de este capítulo, de cero a master">
-          <div class="scale-label"><span>Progresión del track — de cero a master</span><strong>{{ m.level }}</strong></div>
+        <details class="course-guide" *ngIf="moduleId() === 0 && courseGuide() as guide">
+          <summary>Antes de empezar esta ruta <span>Requisitos y resultado</span></summary>
+          <p>{{ guide.entry }}</p>
+          <ul><li *ngFor="let skill of guide.skills">{{ skill }}</li></ul>
+          <p><strong>Tu evidencia de trabajo:</strong> {{ guide.evidence }}</p>
+        </details>
+        <div class="scale" *ngIf="levelIndex() >= 0" aria-label="Etapa de este capítulo en el recorrido">
+          <div class="scale-label"><span>Etapa del recorrido</span><strong>{{ m.level }}</strong></div>
           <div class="scale-track"><div class="scale-fill" [style.width.%]="levelFillPercent()"></div></div>
           <div class="scale-ticks">
             <span *ngFor="let stage of levelStages; let i = index" [class.reached]="i <= levelIndex()" [class.current]="i === levelIndex()">{{ stage }}</span>
           </div>
         </div>
         <details class="chapter-map">
-          <summary><span>Mapa del capítulo</span><small>Prerrequisito, conceptos y resultado</small></summary>
+          <summary><span>Mapa del capítulo</span><small>Orden de lectura, conceptos y resultado</small></summary>
           <div class="chapter-map-grid">
             <section>
-              <small>Antes de empezar</small>
+              <small>Capítulo anterior en el orden de lectura</small>
               <strong *ngIf="chapterPrerequisite() as prerequisite; else firstChapter">{{ prerequisite.shortTitle }}</strong>
               <ng-template #firstChapter><strong>Sin capítulos previos</strong></ng-template>
             </section>
@@ -41,7 +47,8 @@
       </header>
       <p class="sr-only" aria-live="polite">{{ chapterAnnouncement() }}</p>
 
-      <section class="project-progress-card" *ngIf="trackProject() as project" aria-labelledby="project-progress-title">
+      <details class="project-progress-card" *ngIf="trackProject() as project" aria-labelledby="project-progress-title">
+        <summary>Proyecto de esta ruta <span>Ver hitos y progreso</span></summary>
         <div class="project-progress-heading">
           <div><small>Hilo conductor</small><h2 id="project-progress-title">{{ project.title }}</h2></div>
           <strong>{{ projectProgress() }}%</strong>
@@ -52,7 +59,7 @@
           <li *ngFor="let milestone of project.milestones; let i = index" [class.current]="i + 1 === projectStep()" [class.reached]="i + 1 < projectStep()"><span>{{ i + 1 }}</span><small>{{ milestone }}</small></li>
         </ol>
         <p class="project-current-step"><strong>Hoy:</strong> trabaja el hito {{ projectStep() }} de {{ project.milestones.length }}. Marca el capítulo al finalizar para conservar tu progreso.</p>
-      </section>
+      </details>
 
       <section class="floci-overview" *ngIf="isCloudIntroduction()" aria-labelledby="floci-overview-title">
         <div class="floci-overview-intro">
@@ -82,22 +89,6 @@
           <li><span>5</span><strong>Transfiere</strong><small>Define qué validarás en cloud real.</small></li>
         </ol>
       </section>
-
-      <details class="project-bootstrap" *ngIf="showProjectBootstrap() && projectBootstrap() as starter" [open]="moduleId() === 0">
-        <summary>
-          <span><lucide-icon [img]="icons.Code2" /></span>
-          <div><small>Desde una carpeta vacía</small><strong>Prepara el proyecto para {{ m.title }}</strong><p>Sigue los pasos en orden si llegaste directamente o todavía no tienes un proyecto ejecutable.</p></div>
-        </summary>
-        <div class="project-bootstrap-body">
-          <section><h3>1. Comprueba requisitos</h3><ul><li *ngFor="let item of starter.prerequisites">{{ item }}</li></ul></section>
-          <section><h3>2. Crea el espacio de trabajo</h3><pre><code><ng-container *ngFor="let command of starter.createCommands">{{ command }}
-</ng-container></code></pre></section>
-          <section><h3>3. Reconoce la estructura</h3><p><code>{{ starter.workspace }}/</code></p><ul class="file-tree"><li *ngFor="let path of starter.structure"><code>{{ path }}</code></li></ul></section>
-          <section><h3>4. Ejecuta y comprueba</h3><pre><code>{{ starter.runCommand }}</code></pre><p><strong>Resultado esperado:</strong> {{ starter.expected }}</p></section>
-          <section class="bootstrap-recovery"><h3>Si algo falla</h3><ul><li *ngFor="let item of starter.recovery">{{ item }}</li></ul></section>
-          <p class="bootstrap-deliverable"><strong>Incremento de este capítulo:</strong> {{ m.deliverable }}</p>
-        </div>
-      </details>
 
       <section class="lesson-panel">
         <div *ngIf="lessonLoading()" class="lesson-skeleton" role="status" aria-live="polite">Cargando lección…</div>

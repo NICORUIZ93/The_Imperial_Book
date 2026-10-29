@@ -666,7 +666,7 @@ Espacio=0.20 mm; cumple=False
 **Pista específica:** Aumenta centros a 0.60 mm y reproduce la restricción en KiCad con ERC/DRC y captura de resultados. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. Fuente específica: https://docs.kicad.org/
+Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. **Próximamente:** proyecto real de KiCad (esquemático + layout) con ERC/DRC ejecutados y capturados. Fuente específica: https://docs.kicad.org/
 
 #### Paso 7 · Cierre y evidencia
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
@@ -694,10 +694,32 @@ Al finalizar podrás estimar utilización de tareas y separar ese cálculo de ga
 Crea `examples/electronics/embebidos.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
 
 ```python
+def simular_rms(tareas, horizonte_ms):
+    """Planificación por prioridad fija Rate Monotonic (menor periodo = mayor
+    prioridad), con preempción real tick a tick (resolución 1 ms). Un deadline
+    incumplido se detecta observando la ejecución -- no sumando utilización --:
+    ocurre cuando llega una nueva instancia de una tarea y la anterior todavía
+    tiene trabajo pendiente."""
+    orden = sorted(tareas, key=lambda t: t[2])  # menor periodo primero
+    restante = {nombre: 0 for nombre, _, _ in tareas}
+    fallos = []
+    for tick in range(horizonte_ms):
+        for nombre, coste, periodo in tareas:
+            if tick % periodo == 0:
+                if restante[nombre] > 0:
+                    fallos.append((tick, nombre, restante[nombre]))
+                restante[nombre] = coste
+        activa = next((nombre for nombre, _, _ in orden if restante[nombre] > 0), None)
+        if activa:
+            restante[activa] -= 1
+    return fallos
+
+
 tareas = [("sensor", 2, 20), ("publicar", 5, 100)]
-# Utilización necesaria; no es prueba suficiente de planificabilidad.
-utilizacion = sum(coste / periodo for _, coste, periodo in tareas)
-print(f"Utilización: {utilizacion:.2%}")
+fallos = simular_rms(tareas, horizonte_ms=200)
+print(f"Deadlines incumplidos en 200 ms simulados: {len(fallos)}")
+for tick, nombre, pendiente in fallos:
+    print(f"  t={tick}ms tarea={nombre}: quedan {pendiente}ms de la instancia anterior")
 ```
 
 ```bash
@@ -708,15 +730,15 @@ python3 examples/electronics/embebidos.py
 **Salida esperada:**
 
 ```text
-Utilización: 15.00%
+Deadlines incumplidos en 200 ms simulados: 0
 ```
 
-**Explicación por bloques:** Las tuplas declaran nombre, coste y periodo, ambos en milisegundos. El sensor requiere 2/20=10% y publicar 5/100=5%; su suma es 15%. Que quede 85% de CPU no acota automáticamente bloqueos ni deadlines. El coste debe ser peor caso medido o analizado, no solo promedio de una ejecución.
+**Explicación por bloques:** `simular_rms` avanza un reloj discreto de 1 ms. En cada tick, si una tarea cumple su periodo, libera una nueva instancia: si la anterior no terminó (`restante > 0`), eso es un deadline incumplido real, no una cuenta de utilización. Luego la CPU ejecuta un ms de la tarea de mayor prioridad (menor periodo, Rate Monotonic) que tenga trabajo pendiente -- hay preempción real: `sensor` (periodo 20) interrumpe a `publicar` (periodo 100) cuando ambas compiten. Con sensor=2/20 y publicar=5/100 (15% de utilización combinada) la simulación no registra ningún incumplimiento en 200 ms.
 
-**Fallo deliberado y diagnóstico:** Añade una tarea de 100 ms cada 100 ms: utilización supera 100%; diagnostica sobrecarga antes de ajustar prioridades. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
+**Fallo deliberado y diagnóstico:** agrega una tercera tarea `("reportes", 100, 100)` a la lista (cuesta 100 ms y se repite cada 100 ms: sola ya ocupa el 100% de la CPU). Al volver a ejecutar, la simulación real -- no una fórmula -- reporta `Deadlines incumplidos en 200 ms simulados: 1` con `t=100ms tarea=reportes: quedan 15ms de la instancia anterior`: la sobrecarga se ve en la ejecución, con el tick y la tarea exactos que fallaron. Conserva ambas salidas y corrige la entrada o condición responsable (quitar `reportes` o bajarle el coste) antes de continuar.
 
 #### Paso 5 · Práctica guiada
-**Pista específica:** Incluye bloqueo máximo del bus y registra latencia peor caso; explica por qué promedio no basta. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
+**Pista específica:** agregá un parámetro `bloqueo_bus_ms` que, cuando `sensor` necesita el bus, le reste tiempo de CPU a `publicar` aunque `sensor` no esté listo todavía (inversión de prioridad simplificada), y contá cuántos deadlines se incumplen con distintos valores; explicá por qué el promedio de utilización no avisa de este caso. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
 
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo ignora jitter, inversión de prioridad y WCET real. La validación de tiempo exige mediciones y análisis de planificación.
@@ -972,4 +994,4 @@ python3 examples/electronics/diodos-pdf.py
 
 **Salida esperada:** D1 directa 0.500 mA; D2 directa 2.000 mA; D3 ruptura Zener 2.000 mA inversos; D4 bloqueado 0.000 mA. El archivo usa fracciones exactas para comprobar KCL y condiciones de estado. **Fallo deliberado:** cambia la referencia derecha a +10 V sin actualizar los nodos: las aserciones de polarización fallan y te obligan a reconstruir el modelo. **Práctica:** calcula potencia en R1 y R2 y demuestra que son no negativas.
 
-**Límite profesional:** esto valida el modelo de umbral y las polaridades interpretadas del dibujo, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware.
+**Límite profesional:** esto valida el modelo de umbral y las polaridades interpretadas del dibujo, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware. **Próximamente:** netlist real de `ngspice` del mismo circuito, comparando sus corrientes de nodo contra las calculadas aquí a mano.

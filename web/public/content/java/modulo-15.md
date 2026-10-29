@@ -16,7 +16,7 @@ Dos módulos de un mismo proyecto multi-módulo declaran versiones distintas de 
 `dependencyManagement` fija la versión que usarán los módulos sin añadir la dependencia por sí solo; un BOM coordina familias compatibles; Maven Enforcer puede exigir versión de JDK y prohibir dependencias divergentes, deteniendo el build antes de producir un artefacto aparentemente correcto. La analogía: un catálogo de compras corporativo que fija qué versión exacta de cada proveedor está autorizada, en vez de que cada departamento negocie la suya por separado.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Crea** `app/src/main/java/academia/App.java` con un método `main` que imprime `ObjectMapper.class.getPackage().getImplementationVersion()`, para confirmar en tiempo de ejecución cuál versión de Jackson ganó la resolución transitiva antes de que Enforcer la bloquee.
 
 Desde la raíz del repositorio copia el ejemplo independiente con sus tres POM completos:
 ```bash
@@ -97,7 +97,6 @@ tasks.withType<Jar>().configureEach {
 
 #### Paso 5 · Práctica guiada
 Pista: agrega deliberadamente la hora actual (`System.currentTimeMillis()`) al manifest del JAR para provocar hashes distintos entre builds sucesivos; compara los `sha256sum`. Resultado esperado: quitar la hora del manifest (o usar un valor de versión estable) hace que ambos hashes coincidan.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Ejecuta `./gradlew --write-verification-metadata sha256 help` para fijar checksums de dependencias, y `./gradlew build --configuration-cache`; si aparece una advertencia de lectura no declarada, identifica la tarea responsable y corrígela.
 
@@ -162,7 +161,6 @@ En `settings.gradle.kts` incluye los cuatro módulos. Crea `architecture-tests/s
 
 #### Paso 5 · Práctica guiada
 Pista: importa deliberadamente una clase de `infrastructure` desde `domain` para provocar que la prueba ArchUnit falle con un mensaje que señala exactamente la clase y el paquete infractor. Resultado esperado: eliminar el import prohibido hace que la prueba de arquitectura vuelva a pasar.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Ejecuta `./gradlew projects` y `./gradlew build`, confirma que el grafo de dependencias coincide con el diagrama esperado, y agrega una segunda regla ArchUnit que impida un ciclo entre `application` e `infrastructure`.
 

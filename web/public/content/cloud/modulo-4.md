@@ -140,7 +140,8 @@ Justificación en 2 líneas: ________
 Unidades de lectura Scan vs Query: ________ vs ________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -158,6 +159,8 @@ Unidades de lectura Scan vs Query: ________ vs ________
 > - **Query con GSI:** ~50,000 items pendientes × 1 = 50k unidades (20x más barato)
 >
 > **En producción:** RutaFlow consulta esta operación decenas de veces por minuto. Scan sería inaceptable (~30 segundos, $100/mes). Query es ~50ms, $0.20/mes.
+
+</details>
 
 **Conceptos clave:** tabla, item, atributo, capacidad, sin límite de items por tabla.
 
@@ -248,7 +251,8 @@ Hoy guardás un `L` de strings con rutas (`fotos: ["envio-4471/entrega-001.jpg",
 }
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta:**
 >
@@ -262,6 +266,8 @@ Hoy guardás un `L` de strings con rutas (`fotos: ["envio-4471/entrega-001.jpg",
 > - **Ventaja de `M` anidado:** Modela perfectamente "una foto con sus metadatos". Fácil de procesar en código.
 > - **Desventaja:** No puedes hacer Query `timestamp > :hora` sobre el mapa anidado. Necesitarías un índice adicional o procesamiento en aplicación.
 > - **Solución en producción:** Si necesitás filtrar por timestamp, considera una tabla separada `FotoMetadata` con `shipmentId` (HASH) + `timestamp` (RANGE).
+
+</details>
 
 ### Fallo Deliberado: Números guardados como strings en DynamoDB
 
@@ -601,7 +607,8 @@ Justificación: ________
 Costo estimado Scan vs Query: ________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -618,6 +625,9 @@ Costo estimado Scan vs Query: ________
 > - **Query con GSI:** ~5,000 items examinados (si el promedio de entregas por bodega/día es 5k) = 5,000 unidades de lectura (250x más barato)
 >
 > **En producción:** La diferencia entre Scan y Query bien diseñado es la diferencia entre una consulta que tarda 30 segundos y cuesta $100/mes vs una que tarda 50ms y cuesta $0.40/mes.
+
+</details>
+
 **Conceptos clave:** Query, Scan, coste de lectura, eficiencia de acceso, filtro posterior vs filtro de clave.
 
 Query es la operación de lectura eficiente de DynamoDB: requiere especificar un valor exacto de clave de partición (y, opcionalmente, una condición sobre la clave de ordenación, como un rango o una comparación), y DynamoDB usa internamente su conocimiento de cómo están particionados los datos para ir directamente a la partición correcta y devolver únicamente los items que coinciden, sin necesidad de examinar el resto de la tabla. El coste de una Query (en unidades de capacidad de lectura, y por tanto en tiempo y en dinero en una cuenta real) es proporcional a la cantidad de datos que realmente coinciden con la condición, no al tamaño total de la tabla.

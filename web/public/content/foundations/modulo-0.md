@@ -1,521 +1,281 @@
 # Módulo 0: Cómo funciona tu entorno de desarrollo
 
+## Antes de comenzar: prepara tu primera sesión
 
-## Antes de comenzar: instalación guiada
+Hoy vas a crear un archivo, ejecutar un programa y corregir un error. Puedes trabajar por temas y volver después: el objetivo es poder repetir el procedimiento y explicar lo que observaste.
 
-No se presupone experiencia previa. Instala Visual Studio Code y Git desde sus sitios oficiales. Para el primer programa usaremos Python porque su sintaxis mínima permite concentrarnos en el proceso; los demás tracks instalarán después sus herramientas específicas.
+Una **carpeta** reúne archivos. Un **archivo** guarda contenido con un nombre, como `saludo.py`. El **editor** permite escribir ese contenido; la **terminal** permite pedirle acciones al computador escribiendo comandos. No pegues comandos en el archivo Python ni código Python directamente en la terminal.
 
-- **Windows:** instala Python desde `python.org` marcando **Add Python to PATH**. Abre PowerShell en VS Code y comprueba `python --version`; si no funciona, prueba `py --version`.
-- **macOS:** abre Terminal y comprueba `python3 --version`. Si no está disponible, instala Homebrew desde `brew.sh` y ejecuta `brew install python git`.
-- **Ubuntu/Debian:** ejecuta `sudo apt update && sudo apt install -y python3 git`. Comprueba `python3 --version` y `git --version`.
+### Instala y comprueba
 
-Un comando que muestra una versión demuestra dos cosas: el programa está instalado y la shell sabe localizarlo mediante `PATH`. No continúes si obtienes “comando no encontrado”; corrige primero la instalación.
+1. Instala [Visual Studio Code](https://code.visualstudio.com/) y [Python 3](https://www.python.org/downloads/) desde sus sitios oficiales. En Windows, sigue las indicaciones del instalador para habilitar los comandos de Python. Git se usará más adelante; no hace falta para esta práctica.
+2. Abre VS Code. Elige **File → Open Folder** (Archivo → Abrir carpeta), crea una carpeta llamada `primera-sesion` dentro de Documentos y ábrela. Si VS Code pregunta por la confianza, confirma solo si es la carpeta que acabas de crear.
+3. Abre **Terminal → New Terminal** (Terminal → Nueva terminal). El panel inferior es donde escribirás los comandos. Pulsa Enter después de cada uno.
+4. Comprueba Python con el comando de tu sistema:
+
+| Sistema | Comando de comprobación | Comando para ejecutar un archivo |
+|---|---|---|
+| Windows / PowerShell | `py --version` | `py saludo.py` |
+| macOS / Terminal | `python3 --version` | `python3 saludo.py` |
+| Linux / terminal | `python3 --version` | `python3 saludo.py` |
+
+**Resultado esperado:** una línea que empieza por `Python 3.`. Los ejemplos usan funciones básicas de Python 3 y no necesitan instalar paquetes. En Ubuntu/Debian, si Python falta, puedes instalarlo con `sudo apt update` y después `sudo apt install python3`; son comandos del sistema y pueden pedir la contraseña de administrador.
+
+Si aparece «comando no encontrado» o «no se reconoce», cierra y vuelve a abrir la terminal después de instalar. En Windows prueba `python --version` si `py` no está disponible; si funciona, usa `python` en lugar de `py` durante el capítulo. Si aparece `>>>`, abriste Python en modo interactivo: escribe `exit()` y pulsa Enter para volver a la terminal. No avances hasta ver la versión.
+
+**Al terminar conservarás:** `saludo.py`, `presentacion.py` y un `README.md` con tus comandos, resultados y diagnóstico. Serán el primer registro de trabajo de tu futuro gestor de tareas por terminal. No necesitas construir ese gestor todavía.
 
 ## Aprende construyendo
 
 ### Tema 1: Del hardware al programa en ejecución
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a ejecutar un programa Python que pide un nombre y saluda, observar su ciclo entrada→proceso→salida, y comprobar qué parte de su trabajo sobrevive si el proceso se interrumpe a mitad de una escritura. **Prerrequisitos:** Python instalado; comprueba `python3 --version` (o `py --version` en Windows).
+
+Al finalizar podrás guardar `saludo.py`, ejecutarlo dos veces y explicar qué diferencia hay entre el archivo y su ejecución. **Prerrequisitos:** Python responde con su versión y tienes abierta una carpeta vacía en VS Code. Si entraste directamente, sigue la preparación anterior.
 
 #### Paso 2 · Contexto y caso real
-El proyecto integrador Fundamentos (un gestor de tareas por terminal) va a guardar cada tarea en un archivo. Si el proceso se cierra justo mientras escribe ese archivo —por ejemplo, al cerrar la terminal de golpe—, el resultado depende de si esos datos ya llegaron a almacenamiento o todavía estaban solo en la memoria RAM del proceso.
+
+**¿Por qué es importante?** Poder ejecutar un cambio pequeño te permite comprobar que estás trabajando sobre el archivo correcto.
+
+El primer paso de cualquier herramienta, incluido nuestro proyecto integrador de gestor de tareas, es conseguir que el computador ejecute una instrucción que escribiste. Vamos a mostrar un mensaje; después añadiremos entrada de datos. Cada cambio tendrá un resultado visible.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un archivo guardado en disco es código fuente inerte; recién se convierte en un **proceso** —con su propia memoria y tiempo de CPU asignado por el sistema operativo— cuando lo ejecutás. Mientras el proceso corre, sus variables viven en RAM (rápida, pero se pierde si el proceso termina abruptamente); solo lo que explícitamente se escribió a disco con una operación de archivo persiste. La analogía: la receta guardada en papel (código fuente) no alimenta a nadie hasta que alguien la cocina (el proceso) — y si la cocina se incendia a mitad de la receta, lo que ya sirvió en el plato (datos en disco) sobrevive, lo que seguía en la olla (datos en RAM) no.
+
+Un **programa** es un conjunto de instrucciones. Aquí lo guardarás en un archivo de texto terminado en `.py`. Python es el **intérprete**: lee esas instrucciones y las ejecuta. `print` es una función de Python que muestra un valor en la terminal.
+
+**Analogía:** el archivo se parece a una receta y ejecutarlo se parece a cocinarla. Puedes conservar la receta y usarla varias veces. El límite de la analogía es que Python necesita instrucciones con una sintaxis precisa: una persona puede entender una receta mal escrita; el intérprete puede rechazarla.
+
+El sistema operativo coordina la ejecución. La CPU realiza operaciones, la RAM mantiene datos del trabajo activo y el almacenamiento conserva el archivo guardado. Llamamos **proceso** al programa mientras se ejecuta. Por ahora basta con distinguir el archivo que queda guardado de la ejecución que empieza y termina; estudiarás memoria y persistencia más adelante.
 
 #### Paso 4 · Demostración guiada desde cero
-```bash
-mkdir -p academia-fundamentos/proyecto-cero
-cd academia-fundamentos/proyecto-cero
-```
-Crea `saludo.py`:
+
+Si todavía no tienes carpeta de trabajo, puedes crearla desde la terminal con `mkdir primera-sesion` y entrar con `cd primera-sesion`; abre esa carpeta en VS Code. Si ya la creaste en la preparación, no la crees de nuevo.
+
+En la carpeta vacía `primera-sesion`, pulsa **New File** (Nuevo archivo) en el explorador de VS Code. Crea `saludo.py` con este contenido completo y guárdalo con **File → Save**:
+
 ```python
-nombre = input("¿Cómo te llamas? ")
-with open("evidencia.txt", "w") as f:
-    f.write(f"Hola, {nombre}. Tu primer proceso recibió una entrada y produjo una salida.\n")
-print("Guardado en evidencia.txt")
+# Muestra un mensaje en la terminal.
+print("Hola, mundo")
 ```
+
+Explicación de cada línea: la primera empieza por `#` y es un comentario para quien lee; no produce una salida. La segunda llama a `print`. Los paréntesis contienen lo que se mostrará y las comillas delimitan el texto. Las comillas no forman parte del mensaje final.
+
+En la terminal de VS Code, situada en `primera-sesion`, ejecuta **solo el comando de tu sistema**:
+
 ```bash
 python3 saludo.py
-cat evidencia.txt
 ```
-**Resultado esperado:** la terminal pregunta tu nombre, y `evidencia.txt` contiene el saludo completo — confirmando que el archivo cerrado puede leerse desde otro proceso. El cierre vacía los buffers de Python al sistema operativo; no demuestra persistencia física ante un corte de energía.
 
-**Fallo deliberado:** coloca un bucle `while True: pass` **fuera del `with` y después de él**. Ejecuta e interrumpe con Ctrl+C: el archivo ya fue cerrado y su contenido puede leerse. Mueve después el bucle antes de `with open(...)` y usa un nombre de archivo nuevo para esa prueba: no se crea porque la ejecución no alcanzó `open`. Si reutilizas un archivo anterior, seguirá existiendo; su existencia por sí sola no demuestra que esta ejecución lo escribió. Ctrl+C genera normalmente `KeyboardInterrupt` y puede ejecutar la limpieza del `with`; no equivale a matar el proceso sin limpieza ni a un corte de energía.
+En Windows / PowerShell:
+
+```bash
+py saludo.py
+```
+
+**Salida esperada:**
+
+```text
+Hola, mundo
+```
+
+El comando termina y vuelve a aparecer el indicador de la terminal. Ejecuta otra vez: aparece una nueva línea con el mismo mensaje. No se crea otro archivo; se vuelve a ejecutar el que ya guardaste.
 
 #### Paso 5 · Práctica guiada
-Pista: el momento exacto en el que interrumpís el proceso (antes o después del `write()`) es lo que determina si los datos sobrevivieron — una escritura puede ser parcial y pasar por varios buffers; observa cuánto contenido resulta visible y distingue visibilidad, cierre del archivo y durabilidad ante fallos.
+
+Antes de tocar el código, predice qué aparecerá si cambias `Hola, mundo` por `Mi primera práctica funciona`. **Pista:** cambia solo el contenido entre comillas; guarda y repite el mismo comando. Debe aparecer el mensaje nuevo.
+
+**Fallo deliberado:** ejecuta `python3 saludo-inexistente.py` (`py saludo-inexistente.py` en Windows). El error indica que no puede abrir ese archivo. Comprueba el nombre en el explorador: existe `saludo.py`, no el nombre pedido. Corrige el argumento del comando y ejecútalo otra vez. No reinstales Python: ya arrancó y te informó del archivo que falta.
 
 #### Paso 6 · Práctica independiente
-Agrega una segunda línea dentro del `with` y una pausa con `time.sleep(15)` antes de salir. Durante la pausa lee el archivo desde **otra terminal**, primero sin `flush()` y después añadiendo `f.flush()` antes de dormir. Compara visibilidad sin prometer que los buffers se comporten igual con cualquier tamaño o sistema. `flush()` entrega datos al sistema operativo; `os.fsync(f.fileno())`, después de `flush()`, solicita sincronización del descriptor con el almacenamiento, limitada por el sistema y dispositivo. No cierres la primera terminal antes de hacer la lectura: una salida normal o `KeyboardInterrupt` puede vaciar buffers y cambiar lo observado.
+
+Crea `presentacion.py` en la misma carpeta, sin copiar el archivo completo anterior. Debe mostrar dos líneas: tu nombre y `Estoy aprendiendo a ejecutar programas`. Usa dos llamadas a `print`; ejecuta `python3 presentacion.py` o `py presentacion.py`. **Resultado esperado:** las dos líneas aparecen en ese orden. Cambiar este archivo no debe cambiar la salida de `saludo.py`.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la ejecución normal del Paso 4, los dos casos de interrupción del Paso 5 (antes y después del `write()`), y la prueba de las dos escrituras del Paso 6; explica la diferencia entre ejecutar `write()`, ver bytes desde otro proceso y garantizar durabilidad ante un fallo de energía. Como siguiente paso, en el Tema 2 vas a trabajar con rutas absolutas y relativas para que tu programa encuentre ese mismo archivo sin perderse. Errores comunes: asumir que una variable en RAM sobrevive si el proceso termina mal; no cerrar explícitamente un archivo abierto fuera de un bloque `with`. Fuentes oficiales: https://docs.python.org/es/3/tutorial/inputoutput.html y https://docs.python.org/es/3/reference/datamodel.html.
 
-**¿Por qué es importante?** Depurar exige saber si el problema pertenece al archivo, al proceso en ejecución o al momento exacto de una interrupción; "mi código no funciona" es demasiado ambiguo, pero "el proceso murió antes del write()" ya es un diagnóstico verificable.
+Crea `README.md` en `primera-sesion`. Registra el sistema operativo, el comando que funcionó, la salida de ambos programas y el error de nombre con su corrección. **Evidencia de aprendizaje:** explica por qué guardar el archivo no muestra el mensaje hasta ejecutarlo y demuestra que puedes volver a ejecutarlo tras cerrar y abrir la terminal.
 
-**Evidencia de aprendizaje:** entrega la ejecución normal, los dos casos de interrupción (antes/después del write) y la prueba con dos escrituras independientes.
+**Errores comunes:** guardar como `saludo.py.txt` (comprueba el nombre completo), ejecutar sin guardar (usa File → Save) o pegar el comando dentro del archivo (el comando va en la terminal). **Límites y decisión de uso:** `print` sirve para observar un valor; mostrarlo no lo guarda en un archivo de datos. En el siguiente tema localizarás tus archivos sin depender de que el editor haya abierto la carpeta correcta.
 
-**Conceptos clave:** CPU, memoria RAM, almacenamiento, proceso, entrada y salida, persistencia.
-
-Un computador combina componentes físicos y software. La **CPU** ejecuta instrucciones y realiza operaciones. La **memoria RAM** mantiene temporalmente instrucciones y datos que se están usando; es rápida, pero su contenido ordinario se pierde al apagar el equipo. El **almacenamiento** —SSD o disco— conserva archivos incluso sin energía. El **sistema operativo** coordina estos recursos y ofrece servicios para que los programas puedan abrir archivos, usar red, mostrar ventanas o crear procesos sin controlar directamente cada pieza de hardware.
-
-Un archivo `hola.py` guardado en el SSD contiene texto: es **código fuente**. Todavía no está haciendo nada. `python` es el comando que ejecuta el intérprete de Python sobre un archivo (`python hola.py`); al correrlo, el sistema operativo crea un **proceso**, le asigna memoria y tiempo de CPU, y conecta sus canales de entrada y salida. El intérprete de Python lee el archivo, comprende sus instrucciones y las ejecuta. Cuando termina, el proceso desaparece, pero el archivo continúa almacenado.
-
-Esta distinción evita confusiones comunes. Guardar un archivo no equivale a ejecutarlo; cerrar la terminal no elimina el código; abrir dos veces una aplicación suele crear dos procesos que proceden del mismo programa. Más adelante, un servidor será simplemente un proceso que permanece activo esperando peticiones.
-
-```python
-nombre = input("¿Cómo te llamas? ")
-print(f"Hola, {nombre}. Tu primer proceso recibió una entrada y produjo una salida.")
-```
-
-La primera línea pide una entrada y guarda el texto en `nombre`. La segunda construye otro texto y lo envía a la salida estándar. No memorices la sintaxis todavía: observa el ciclo **entrada → procesamiento → salida**, presente en casi todo sistema informático.
-
-**Analogía:** el código fuente es una receta guardada; el proceso es una persona preparando esa receta en una cocina. La receta puede existir años sin cocinarse y varias personas pueden usar copias de la misma receta simultáneamente.
-
-**¿Por qué es importante?** Depurar exige saber si el problema pertenece al archivo, al programa que lo interpreta, al proceso en ejecución o al entorno. “Mi código no funciona” es demasiado ambiguo; “Python no encuentra el archivo” o “el proceso termina con un error en la línea 2” ya son diagnósticos útiles.
-
-```mermaid
-flowchart LR
-  File[“hola.py en almacenamiento”] --> Interpreter[“Intérprete Python”]
-  Interpreter --> Process[“Proceso en memoria RAM”]
-  Process --> CPU[“CPU ejecuta instrucciones”]
-  Process --> Output[“Salida en la terminal”]
-```
-
-**Construcción guiada:** crea `academia-fundamentos/proyecto-cero/saludo.py`, copia el ejemplo y cambia la salida para mostrar `Operador <nombre> inició el proyecto`. Desde `proyecto-cero/` ejecuta `python3 saludo.py` (`py saludo.py` en Windows). Debes observar primero la pregunta y luego el mensaje con el nombre ingresado. Elimina una comilla, predice el tipo de error y restáurala después de localizar archivo y línea.
-
-**Conceptos clave:** CPU, memoria RAM, almacenamiento, sistema operativo, programa, proceso, entrada y salida.
-
-#### Profundización · Diseño: Diagrama CPU/RAM/Almacenamiento para tu programa
-
-**Escenario real:** El gestor de tareas CLI (proyecto integrador Fundamentos) ejecuta un script `saludo.py` que pide nombre, guarda datos y luego los carga. Necesitas entender dónde vive cada cosa mientras se ejecuta.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Dibuja:** Cuando ejecutas `python saludo.py`, ¿dónde reside el archivo, el intérprete, el proceso y la salida?
-2. **Identifica:** ¿Cuál se pierde al apagar la computadora?, ¿cuál permanece?, ¿cuál es más rápido?
-3. **Traza:** Un dato ingresado en `input()` ¿pasa por CPU, RAM y almacenamiento en qué orden?
-4. **Diseña:** Si el programa falla a los 2 segundos, ¿qué información ya se guardó?
-
-**Escribe tu respuesta:**
-```
-CPU: _________ (¿Qué ejecuta aquí?)
-RAM: _________ (¿Qué vive aquí temporalmente?)
-Almacenamiento: _________ (¿Qué persiste?)
-Tiempo de acceso: RAM vs Almacenamiento _________ más rápido
-Si falla a los 2 seg: ¿Se guardó el archivo? _________ ¿Por qué?
-```
-
-[SOLUCIÓN — Lee solo después de intentar]
-
-> **Respuesta esperada:**
->
-> **CPU:** Ejecuta instrucciones del intérprete Python línea por línea.
->
-> **RAM:** Guarda variables (`nombre`, estado de ejecución), el intérprete Python, datos del proceso.
->
-> **Almacenamiento:** `saludo.py` (código fuente), archivo de tareas (con la parte efectivamente escrita y visible según el buffering y el cierre).
->
-> **Velocidad:** el acceso a RAM suele tener menor latencia que el almacenamiento; la relación concreta depende del dispositivo, caché, tamaño y patrón de acceso. Mide antes de asignar una proporción fija.
->
-> **Si falla a los 2 seg:**
-> - Sí se guardó si `close()` o el `with` ya terminaron.
-> - No se guardó si aún estaba en buffer de RAM.
-> - El intérprete jamás tocó almacenamiento para esa variable.
-
-**Límites y decisión de uso:** El modelo CPU, memoria y almacenamiento ayuda a razonar, pero no predice tiempos por sí solo. Cachés, sistema operativo y carga cambian la ejecución; mide el programa real antes de atribuir lentitud exclusivamente al hardware.
+**Fuentes oficiales:** [Ejecución con el intérprete Python](https://docs.python.org/3/tutorial/interpreter.html) y [ejecutar Python en VS Code](https://code.visualstudio.com/docs/python/run).
 
 ### Tema 2: Archivos, carpetas y rutas sin perderse
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a confirmar, con comandos, la diferencia entre una ruta absoluta y una relativa, y vas a reproducir el error más común de principiante: ejecutar un comando correcto desde la carpeta equivocada. **Prerrequisitos:** Tema 1 de este módulo.
+
+Al finalizar podrás ejecutar el mismo archivo desde dos carpetas usando la ruta adecuada y diagnosticar un archivo no encontrado. **Prerrequisitos:** distinguir editor y terminal; disponer del comando de Python comprobado al inicio. El ejemplo es independiente y puede hacerse desde cero.
 
 #### Paso 2 · Contexto y caso real
-El gestor de tareas CLI (proyecto integrador Fundamentos) va a guardar sus tareas en un archivo relativo a donde se ejecuta el programa. Si ejecutás `python3 tareas.py` desde una carpeta distinta a la que esperás, el programa busca (o crea) ese archivo en un lugar completamente distinto, sin ningún mensaje de error que diga "estás en la carpeta equivocada".
+
+**¿Por qué es importante?** Comprobar tu ubicación evita confundir una ruta equivocada con un archivo perdido.
+
+Una herramienta necesita encontrar sus archivos. Un comando puede estar bien escrito y fallar porque la terminal está en otra carpeta. Vamos a cambiar de lugar de forma controlada para observar ese caso real antes de trabajar con datos del gestor de tareas.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una **ruta absoluta** empieza en la raíz del sistema de archivos y señala exactamente el mismo lugar sin importar desde dónde la escribas; una **ruta relativa** se interpreta siempre respecto a la carpeta de trabajo actual (`pwd`), así que el mismo texto (`datos/tareas.txt`) apunta a un archivo distinto según desde dónde ejecutes el comando. La analogía: una ruta absoluta es una dirección postal completa (país, ciudad, calle, número); una ruta relativa es "dos puertas a la derecha" — solo tiene sentido si ya sabés dónde estás parado.
+
+La **carpeta de trabajo** es el lugar desde el que la terminal interpreta una ruta. Una **ruta relativa**, como `ejemplo-rutas/ubicacion.py`, describe cómo llegar desde ese lugar. Una **ruta absoluta** incluye el recorrido completo desde la raíz; en Windows normalmente incluye una unidad, como `C:\Users\Ana\Documents\primera-sesion`.
+
+**Analogía:** una dirección completa se parece a una ruta absoluta; «entra en la siguiente puerta» se parece a una relativa. La analogía deja de servir si ignoras la sintaxis: debes respetar nombres, separadores y comillas cuando hay espacios. `cd` cambia de carpeta; `..` significa la carpeta superior.
 
 #### Paso 4 · Demostración guiada desde cero
+
+Abre una carpeta vacía en VS Code. En su terminal ejecuta estos comandos, uno por uno; funcionan en PowerShell y en la terminal de macOS/Linux:
+
 ```bash
-mkdir -p academia-fundamentos/proyecto-cero
-cd academia-fundamentos/proyecto-cero
+mkdir ejemplo-rutas
+cd ejemplo-rutas
 pwd
-printf "tarea-001\n" > tareas.txt
-cat tareas.txt
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+`mkdir` crea la carpeta; `cd` entra en ella; `pwd` muestra dónde estás. En el explorador, crea `ejemplo-rutas/ubicacion.py` con este contenido completo:
+
+```python
+# Este mensaje permite comprobar qué archivo ejecutamos.
+print("Encontraste ubicacion.py")
+```
+
+Explica cada línea: el comentario identifica el propósito; `print` muestra el mensaje. Guarda y ejecuta desde `ejemplo-rutas`:
 
 ```bash
-python3 ejemplo.py
+python3 ubicacion.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-**Resultado esperado:** `pwd` muestra la ruta absoluta completa de `proyecto-cero`, y `tareas.txt` existe exactamente ahí porque lo creaste con una ruta relativa evaluada respecto a esa carpeta.
-
-**Fallo deliberado:** sin moverte de carpeta, subí un nivel con `cd ..` y ejecutá de nuevo `cat tareas.txt`. Falla con `No such file or directory` — no porque el archivo se haya borrado, sino porque la ruta relativa `tareas.txt` ahora se evalúa respecto a una carpeta distinta (`academia-fundamentos`), donde ese archivo nunca existió.
+En Windows usa `py ubicacion.py`. **Resultado esperado:** `Encontraste ubicacion.py`. Ahora ejecuta `cd ..` y repite el mismo comando. **Fallo deliberado:** Python informa que no encuentra el archivo porque ahora buscas en la carpeta superior. Comprueba la ubicación con `pwd` y confirma en el explorador que el archivo sigue dentro de `ejemplo-rutas`.
 
 #### Paso 5 · Práctica guiada
-Pista: antes de ejecutar `cat tareas.txt` después de cada `cd`, corré `pwd` primero — el error de "archivo no encontrado" tiene sentido inmediatamente si ya sabés en qué carpeta estás parado.
+
+Sin cambiar de carpeta otra vez, ejecuta `python3 ejemplo-rutas/ubicacion.py` o `py ejemplo-rutas/ubicacion.py`. **Pista:** el primer tramo de la ruta indica la carpeta por la que debes pasar. La salida debe ser idéntica a la anterior; cambia el camino, no el contenido del archivo.
 
 #### Paso 6 · Práctica independiente
-Desde `academia-fundamentos/` (un nivel arriba de `proyecto-cero`), escribí la ruta RELATIVA correcta para leer `tareas.txt` sin moverte de carpeta (pista: necesitás bajar un nivel en la ruta, no solo el nombre del archivo), y confirmá que `cat` esa ruta relativa funciona exactamente igual que una ruta absoluta completa al mismo archivo.
+
+Desde esa carpeta superior, ejecuta el archivo usando una ruta absoluta. En VS Code, haz clic derecho en `ubicacion.py` y elige **Copy Path** (Copiar ruta); úsala como argumento entre comillas después de `python3` o `py`. **Resultado esperado:** el mismo mensaje. Guarda ambos comandos en `README.md` y explica cuál depende de la carpeta actual.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la lectura exitosa del Paso 4, el error de "archivo no encontrado" del Paso 5 explicado por la carpeta equivocada (no por un archivo borrado), y las dos rutas equivalentes (relativa y absoluta) del Paso 6; explicá por qué el mismo texto de ruta relativa puede ser correcto o incorrecto dependiendo solo de dónde estés parado. Como siguiente paso, en el Tema 3 vas a aprender a leer un comando completo (programa, subcomando, opciones) antes de ejecutarlo. Errores comunes: ejecutar un comando correcto desde la carpeta equivocada; confundir "el archivo no existe" con "estoy en el lugar equivocado". Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn/Getting_started_with_the_web y https://www.gnu.org/software/bash/manual/.
 
-**¿Por qué es importante?** La mayoría de los errores de "archivo no encontrado" de un principiante no son bugs del programa: son la carpeta de trabajo equivocada — y `pwd` resuelve esa ambigüedad en un segundo, antes de sospechar del código.
+**Evidencia de aprendizaje:** registra la salida de `pwd` antes y después de `cd ..`, el error y las dos ejecuciones correctas. En el proyecto integrador revisarás primero la carpeta y la ruta cuando falte un archivo. **Errores comunes:** omitir un tramo de la ruta o no entrecomillar una ruta con espacios. **Límites y decisión de uso:** una ruta absoluta de tu equipo no es portable a otro computador; una relativa requiere conocer su punto de partida. El siguiente tema te ayudará a separar el programa, sus opciones y sus argumentos.
 
-**Evidencia de aprendizaje:** entrega la lectura exitosa, el error de archivo-no-encontrado explicado por la carpeta equivocada, y las dos rutas equivalentes del Paso 6.
-
-**Conceptos clave:** ruta absoluta, ruta relativa, carpeta de trabajo actual (`pwd`), raíz del sistema de archivos.
-
-#### Profundización · Diseño: Estructura de permisos para /tmp compartido
-
-**Escenario real:** El proyecto Fundamentos guarda datos en `~/.fundamentos/tareas.txt`. Si varios usuarios trabajan en la misma máquina, necesitas entender permisos para evitar sobreescrituras accidentales.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Diagrama:** ¿Cómo organizaías carpetas en `/tmp` si 5 usuarios ejecutan el mismo programa simultáneamente?
-2. **Permisos:** Archivo `tareas.txt` ¿debería ser `644` (rw-r--r--) o `600` (rw-------)? ¿Por qué?
-3. **Aislamiento:** ¿Qué sucede si dos instancias escriben el archivo a la vez?
-4. **Recuperación:** Un usuario borró su `tareas.txt` accidentalmente. ¿Puede recuperarlo desde `/tmp/.backup`?
-
-**Escribe tu respuesta:**
-```
-Estructura de carpetas: /tmp/usuario_/tareas.txt o /tmp/tareas_usuario_.txt? _________
-Permisos recomendados: _________ (644 vs 600)
-Justificación: _________
-Si dos escriben a la vez: _________ (¿qué pasa?)
-Recuperación: ¿Posible? _________ (¿Dónde se guardaría backup?)
-```
-
-[SOLUCIÓN — Lee solo después de intentar]
-
-> **Respuesta esperada:**
->
-> **Estructura:** `/tmp/fundamentos_<usuario>/tareas.txt` (aísla por usuario, evita conflictos).
->
-> **Permisos:** `600` (rw-------). Tu archivo no debe ser legible por otros usuarios en el mismo equipo.
->
-> **Justificación:** Datos de tareas son privados; otro usuario no debería ver tu lista ni sobrescribirla.
->
-> **Si dos escriben a la vez:** Corrupción de datos (lectura incompleta, sobreescritura parcial). Necesitarías un lock.
->
-> **Recuperación:** Posible solo si un backup automático como `rsync` o `.git` la guarda. `/tmp` se limpia en reboots.
-
-El sistema de archivos organiza información como una jerarquía. Una carpeta puede contener archivos y otras carpetas. Cada elemento tiene una ruta que indica dónde se encuentra. Una **ruta absoluta** comienza en la raíz del sistema y no depende de dónde estás; una **ruta relativa** parte de la carpeta de trabajo actual.
-
-En Windows una ruta absoluta puede ser `C:\Users\Ana\academia\hola.py`. En macOS o Linux puede ser `/home/ana/academia/hola.py` o `/Users/Ana/academia/hola.py`. Aunque los separadores cambian, la idea es idéntica. La ruta relativa `proyectos/hola.py` solo tiene sentido si conocemos la carpeta actual.
-
-```bash
-pwd
-mkdir academia
-cd academia
-mkdir primer-programa
-cd primer-programa
-```
-
-`pwd` muestra dónde estás. `mkdir` crea una carpeta. `cd` cambia la carpeta de trabajo. En PowerShell, `pwd` también funciona; `Get-Location` es su nombre completo. Después de cada `cd`, ejecuta `pwd` y explica cómo cambió la ruta. Para volver a la carpeta padre usa `cd ..`.
-
-Las extensiones como `.py`, `.java`, `.js` o `.md` son parte del nombre y ayudan a herramientas y personas a reconocer el formato. No convierten mágicamente el contenido: renombrar una imagen como `.py` no la transforma en programa.
-
-**Analogía:** una ruta es una dirección postal. La ruta absoluta incluye país, ciudad, calle y número; una relativa dice “dos puertas a la derecha” y solo funciona si conocemos el punto de partida.
-
-**¿Por qué es importante?** Gran parte de los errores iniciales no son de programación: la terminal está en otra carpeta, el archivo fue guardado con doble extensión o el comando usa una ruta equivocada. Orientarse evita ejecutar instalaciones o eliminaciones en el lugar incorrecto.
-
-```mermaid
-flowchart TB
-  Academia["academia-fundamentos/"] --> Project["proyecto-cero/"]
-  Project --> Source["saludo.py"]
-  Project --> Readme["README.md"]
-  Project --> Evidence["evidencias/"]
-```
-
-**Construcción guiada:** crea exactamente la estructura del diagrama con `mkdir -p academia-fundamentos/proyecto-cero/evidencias` en macOS/Linux. En PowerShell usa `New-Item -ItemType Directory -Force academia-fundamentos/proyecto-cero/evidencias`. Entra en `proyecto-cero`, ejecuta `pwd` y lista el contenido. La evidencia es una captura textual de la ruta y el árbol; desde una carpeta equivocada, `python3 saludo.py` debe fallar y enseñarte a verificar ubicación antes de editar código.
+**Fuentes oficiales:** [Python: línea de comandos](https://docs.python.org/3/using/cmdline.html) y [terminal integrada de VS Code](https://code.visualstudio.com/docs/terminal/basics).
 
 ### Tema 3: Cómo leer un comando antes de ejecutarlo
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a descomponer un comando real en programa, subcomando, opciones y argumentos ANTES de ejecutarlo, y vas a provocar y leer un error con un código de salida distinto de cero. **Prerrequisitos:** Tema 2 de este módulo.
+
+Al finalizar podrás identificar qué programa ejecuta un comando y qué archivo recibe. **Prerrequisitos:** comprobar Python y localizar la carpeta de trabajo. Trabajarás en un ejemplo independiente desde una carpeta vacía, sin necesitar archivos de los temas anteriores.
 
 #### Paso 2 · Contexto y caso real
-El CLI que vas a construir en este track se invoca como `tarea add "comprar pan"` o `tarea list --pendientes`. Copiar y pegar un comando de internet sin entender cada parte (programa, subcomando, opción) es la forma más común de ejecutar algo distinto de lo que creías, incluyendo comandos destructivos.
+
+**¿Por qué es importante?** Distinguir las partes de un comando permite cambiar una sola cosa y diagnosticar su efecto.
+
+En el futuro gestor de tareas usarás comandos para ejecutar programas y herramientas. Copiarlos sin distinguir sus partes dificulta saber qué corregir. Vamos a comparar una opción que consulta información con un argumento que selecciona un archivo.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un comando típico tiene hasta cuatro partes: el **programa** (`git`), un **subcomando** opcional (`status`), **opciones** que modifican el comportamiento (`--short`) y **argumentos** sobre los que actúa. Al terminar, todo programa devuelve un **código de salida**: `0` significa éxito, cualquier otro valor indica algún tipo de fallo — consultable con `echo $?` en Bash/zsh o `$LASTEXITCODE` en PowerShell. La analogía: un comando es una frase imperativa — "copia rápidamente informe.txt" tiene un verbo (copiar), un modificador (rápidamente) y un objeto (informe.txt); leer el comando completo antes de ejecutarlo es leer la frase completa antes de obedecerla.
+
+En `python3 --version`, `python3` elige el programa y `--version` es una **opción** que pide su versión. En `python3 mensaje.py`, `mensaje.py` es un **argumento** que indica qué archivo ejecutar. Las opciones no son universales: cada herramienta define las suyas.
+
+**Analogía:** el programa es la persona a quien haces un pedido; los argumentos son los detalles. El límite es que una terminal no interpreta una intención ambigua: un carácter distinto puede cambiar el pedido. No copies el indicador `$` ni las marcas de formato de una guía; escribe solo el comando.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
+En una carpeta vacía abierta en VS Code, usa la terminal:
 
 ```bash
-mkdir -p academia-fundamentos/proyecto-cero
-cd academia-fundamentos/proyecto-cero
-git init
-git status --short
-echo $?
+mkdir ejemplo-comandos
+cd ejemplo-comandos
+python3 --version
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+En Windows reemplaza la última línea por `py --version`. Crea `ejemplo-comandos/mensaje.py` y guarda:
+
+```python
+# El argumento del comando seleccionará este archivo.
+print("Ejecutaste mensaje.py")
+```
+
+Explicación de cada línea: el comentario documenta la selección del archivo; `print` escribe el mensaje. Ejecuta:
 
 ```bash
-python3 ejemplo.py
+python3 mensaje.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-**Resultado esperado:** `git status --short` no muestra nada (repo vacío) y `echo $?` imprime `0` — el comando se ejecutó sin error, aunque no haya nada que mostrar todavía.
-
-**Fallo deliberado:** ejecutá `git status --opcion-inexistente`. Git responde con `error: unknown option` y, al revisar `echo $?` inmediatamente después, el código ya NO es `0` (es `129` en git) — confirmando que el código de salida distingue "el comando corrió pero no encontró nada" (Paso 4, código `0`) de "el comando ni siquiera pudo interpretarse" (código distinto de cero), aunque ambos casos muestren algo en pantalla.
+En Windows: `py mensaje.py`. **Resultado esperado:** la primera consulta mostró la versión; la segunda ejecución muestra `Ejecutaste mensaje.py`. El archivo no se ejecuta cuando solo consultas la versión.
 
 #### Paso 5 · Práctica guiada
-Pista: revisá `echo $?` INMEDIATAMENTE después de cada comando — si ejecutás otro comando en el medio (incluso `ls`), `$?` ya se sobreescribió con el código de ESE comando, no del que querías diagnosticar.
+
+**Fallo deliberado:** ejecuta `python3 --opcion-inexistente` o `py --opcion-inexistente`. Observa el error de opción desconocida; el texto exacto puede variar según el lanzador. **Pista:** el problema está en el pedido, no en `mensaje.py`. Consulta `python3 --help` o `py --help`, busca `--version` y repite la consulta válida.
 
 #### Paso 6 · Práctica independiente
-Creá un archivo `README.md` vacío con `touch` y ejecutá `git status --short` de nuevo: ahora debería aparecer `?? README.md`. Descomponé ese comando (`git` programa, `status` subcomando, `--short` opción) en un comentario, y confirmá con `echo $?` que seguir corriendo sin error (código `0`) es compatible con mostrar un archivo sin seguimiento.
+
+Crea `segundo.py` en `ejemplo-comandos` con una instrucción que muestre `Elegiste otro archivo`. Antes de ejecutar predice qué parte de `python3 mensaje.py` debes sustituir. **Resultado esperado:** el nuevo mensaje aparece al ejecutar `python3 segundo.py` o `py segundo.py`; la versión del intérprete no cambia.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el `git status` sin errores del Paso 4, el código de salida distinto de cero con la opción inválida del Paso 5, y la descomposición del comando con `README.md` del Paso 6; explicá por qué el código de salida es una señal más confiable que "se imprimió algo en pantalla" para saber si un comando realmente falló. Como siguiente paso, en el Tema 4 vas a escribir y depurar tu primer programa completo. Errores comunes: pegar un comando sin identificar programa/subcomando/opción; revisar `$?` después de ejecutar otro comando en el medio. Fuentes oficiales: https://git-scm.com/docs/git-status y https://www.gnu.org/software/bash/manual/.
 
-**¿Por qué es importante?** Un profesional no evalúa un comando por si "parece funcionar" sino por su código de salida; esta disciplina es esencial en automatización y CI/CD, donde nadie observa manualmente la pantalla.
+**Evidencia de aprendizaje:** en `README.md`, separa programa y argumento en los dos comandos, y registra el error de opción con su corrección. Esto te prepara para leer las instrucciones del proyecto integrador sin ejecutarlas a ciegas. **Errores comunes:** confundir una opción con el nombre de archivo, pegar varias líneas como un solo comando o asumir que todas las herramientas comparten opciones. **Límites y decisión de uso:** antes de usar comandos que modifican archivos, consulta su ayuda y el directorio donde operan. El siguiente tema diagnosticará un error dentro del propio programa.
 
-**Evidencia de aprendizaje:** entrega el `git status` exitoso, el código de salida distinto de cero con la opción inválida, y la descomposición del comando del Paso 6.
-**Conceptos clave:** terminal, shell, prompt, comando, opción, argumento, salida estándar, salida de error y código de salida.
-
-#### Profundización · Diseño: Análisis de man pages para comandos desconocidos
-
-**Escenario real:** Necesitas automatizar tareas (proyecto Fundamentos), pero encuentras comandos complejos como `find`, `tar`, `sed` en ejemplos. Ejecutar a ciegas es arriesgado.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Lee:** Abre `man ls` (o `ls --help`). ¿Cuál sección explica opciones?, ¿cuál ejemplos?
-2. **Identifica:** `tar -cvf archivo.tar src/` ¿qué hace cada opción? (c, v, f)
-3. **Anticipa:** Antes de ejecutar `rm -rf /tmp/test`, ¿qué verificarías para no destruir archivos importantes?
-4. **Documenta:** Escribe un comando `find` para listar solo archivos `.py` modificados en las últimas 24 horas. Explica cada opción.
-
-**Escribe tu respuesta:**
-```
-Sección de man donde aprendes opciones: _________
-tar -cvf: c=_________, v=_________, f=_________
-Antes de rm -rf: Verificaría _________ (¿cómo?)
-Comando find: find _________ -name "*.py" -mtime _________
-```
-
-[SOLUCIÓN — Lee solo después de intentar]
-
-> **Respuesta esperada:**
->
-> **Sección:** NAME, DESCRIPTION, OPTIONS, EXAMPLES (varía por comando).
->
-> **tar opciones:**
-> - c = **c**reate (crea archivo)
-> - v = **v**erbose (muestra cada archivo)
-> - f = **f**ile (especifica nombre de archivo)
->
-> **Antes de rm -rf:** 
-> - `pwd` (confirma carpeta actual)
-> - `ls -la` (lista archivos a borrar)
-> - Backup: `cp -r /tmp/test /tmp/test.backup`
->
-> **find:** `find . -name "*.py" -mtime -1` (modificado hace menos de 1 día)
-
-La **terminal** es la interfaz de texto. La **shell** es el programa que interpreta lo escrito: PowerShell en Windows, zsh en macOS o Bash en muchas distribuciones Linux. El prompt indica que la shell espera instrucciones. Un comando suele contener el nombre del programa, opciones que modifican su comportamiento y argumentos que indican sobre qué trabajar.
-
-```bash
-python3 hola.py
-```
-
-Aquí `python3` es el programa y `hola.py` es el argumento. En Windows puede ser `python hola.py` o `py hola.py`. Otro ejemplo:
-
-```bash
-git status --short
-```
-
-`git` es el programa, `status` es un subcomando y `--short` es una opción. Antes de pegar algo, identifica cada parte. Si aparece `sudo`, detente: solicita privilegios administrativos y debes comprender por qué son necesarios.
-
-Los programas pueden escribir en salida estándar y salida de error. También devuelven un número al terminar: por convenio, `0` significa éxito y otro valor indica algún tipo de fallo. En Bash/zsh puedes consultar el último código con `echo $?`; en PowerShell puedes revisar `$LASTEXITCODE`.
-
-```bash
-python3 archivo-que-no-existe.py
-echo $?
-```
-
-El error no es un castigo: contiene el nombre buscado y explica que no existe. El procedimiento correcto es leerlo completo, verificar `pwd`, listar archivos con `ls` (`dir` también funciona en PowerShell) y corregir ruta o nombre.
-
-**Analogía:** un comando es una frase imperativa: verbo, modificadores y objeto. En “copia rápidamente informe.txt”, copiar es la acción, rápidamente modifica cómo se realiza e informe.txt es el objeto.
-
-**¿Por qué es importante?** Un profesional no evalúa un comando por si “parece funcionar”, sino por su intención, salida y código de terminación. Esta disciplina es esencial en automatización y CI/CD, donde nadie observa manualmente la pantalla.
-
-```mermaid
-flowchart LR
-  Program["git: programa"] --> Subcommand["status: subcomando"]
-  Subcommand --> Option["--short: opción"]
-  Option --> Result["salida + código de terminación"]
-```
-
-**Construcción guiada:** dentro de `academia-fundamentos/proyecto-cero/`, ejecuta `git init`, `git status --short` y consulta el código de salida. Crea `README.md` y repite el estado: ahora debe aparecer `?? README.md`. Predice qué ocurrirá con `git status --opcion-inexistente`, ejecútalo y registra mensaje y código en `evidencias/comandos.md`. No continúes hasta explicar programa, subcomando, opción y resultado.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Escribe en el README del gestor qué hace cada parte del comando de ejecución. Prueba primero una ruta equivocada y explica el diagnóstico sin sustituirlo por una cadena de comandos copiada a ciegas.
-
-**Límites y decisión de uso:** La apariencia de un comando no garantiza que sea inocuo: importan argumentos, expansión de variables, directorio y permisos. Usa la ayuda de la herramienta y datos de laboratorio antes de repetir una operación que borra o sobrescribe.
+**Fuente oficial:** [Opciones del intérprete Python](https://docs.python.org/3/using/cmdline.html).
 
 ### Tema 4: Primer programa, primer error y primera evidencia
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a provocar deliberadamente un `SyntaxError`, diagnosticarlo leyendo el mensaje completo (no adivinando), corregirlo con un único cambio, y documentar todo el proceso en un `README.md` reproducible. **Prerrequisitos:** Tema 3 de este módulo.
+
+Al finalizar podrás pedir un nombre, mostrar un saludo y localizar un error de sintaxis usando el archivo y la línea informados por Python. **Prerrequisitos:** guardar un `.py`, ejecutarlo y encontrar la carpeta de trabajo. El ejemplo independiente comienza desde una carpeta vacía.
 
 #### Paso 2 · Contexto y caso real
-Cuando tu primer programa falle —y va a fallar—, la reacción instintiva es cambiar varias cosas a la vez "a ver si ahora funciona". Si eso funciona, no vas a saber cuál cambio lo arregló; si no funciona, vas a tener aún más variables mezcladas que al principio.
+
+**¿Por qué es importante?** Leer el error antes de cambiar código te permite corregir su causa y comprobar la recuperación.
+
+El proyecto integrador de gestor de tareas necesitará recibir información, procesarla y mostrar un resultado. Antes de gestionar listas, vamos a recorrer ese ciclo con un nombre: una entrada pequeña que puedes comprobar sin herramientas adicionales.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Depurar se parece al método científico: observás el error completo, formulás una hipótesis concreta de la causa, hacés UN SOLO cambio controlado, y volvés a ejecutar para confirmar o descartar esa hipótesis. Un mensaje de error de Python no es un castigo — nombra el archivo, la línea y el tipo exacto de problema. La analogía: cambiar diez líneas a la vez para "arreglar" un error es como mezclar diez ingredientes distintos en un experimento fallido — si el resultado cambia, no vas a saber cuál de los diez fue la causa.
+
+`input` muestra una pregunta y espera texto hasta que pulses Enter. Una **variable** es un nombre asociado a un valor; aquí `nombre` permite reutilizar el texto recibido. Una cadena con prefijo `f` inserta el valor de una variable donde hay llaves. **Analogía:** una etiqueta permite encontrar lo que guardaste; el límite es que una variable pertenece a la ejecución y no guarda por sí sola un archivo para la próxima sesión.
+
+El mecanismo será entrada → valor asociado a `nombre` → saludo en la salida. La terminal seguirá esperando mientras no respondas; eso es parte del programa, no un fallo.
 
 #### Paso 4 · Demostración guiada desde cero
-```bash
-cd academia-fundamentos/proyecto-cero
-```
-Editá `saludo.py` (del Tema 1) y quitá a propósito el paréntesis de cierre de `print(...)`:
-```python
-nombre = input("¿Cómo te llamas? ")
-print(f"Hola, {nombre}."
-```
-```bash
-python3 saludo.py
-```
-**Resultado esperado:** Python responde con `SyntaxError: '(' was never closed`, señalando el archivo y la línea exacta donde empezó el paréntesis sin cerrar.
 
-**Fallo deliberado:** antes de corregirlo, formulá tu hipótesis por escrito en una línea ("falta un paréntesis de cierre en la línea del print") y SOLO DESPUÉS agregá el paréntesis que falta. Ejecutá de nuevo: si todavía falla, tu hipótesis era incompleta o había un segundo problema — nunca asumas que "ya debería estar arreglado" sin volver a ejecutar y confirmar.
+En una carpeta vacía abierta en VS Code, ejecuta:
+
+```bash
+mkdir ejemplo-entrada
+cd ejemplo-entrada
+```
+
+Crea `ejemplo-entrada/entrada.py` con este contenido completo:
+
+```python
+# Recibe texto y lo asocia al nombre de variable.
+nombre = input("¿Cómo te llamas? ")
+# Inserta ese texto en el saludo.
+print(f"Hola, {nombre}")
+```
+
+Explicación de cada línea ejecutable: primero `input` espera tu respuesta y `=` la asocia a `nombre`; después la cadena `f` sustituye `{nombre}` por esa respuesta y `print` muestra el resultado.
+
+```bash
+python3 entrada.py
+```
+
+En Windows: `py entrada.py`. **Salida esperada** al escribir `Ana` y pulsar Enter:
+
+```text
+¿Cómo te llamas? Ana
+Hola, Ana
+```
 
 #### Paso 5 · Práctica guiada
-Pista: leé el mensaje de error de punta a punta antes de tocar el código — Python ya te dice el archivo, la línea y qué esperaba encontrar; adivinar sin leer esa información completa es la forma más lenta de depurar.
+
+**Fallo deliberado:** quita la comilla de cierre del saludo, guarda y ejecuta. Python informa de un `SyntaxError` y señala el archivo y una línea; según la versión puede mencionar una cadena sin terminar. **Pista:** revisa esa línea y compara las comillas de apertura y cierre. Repón la comilla, guarda y repite: vuelve a aparecer el saludo. No necesitas reinstalar ni borrar la carpeta.
 
 #### Paso 6 · Práctica independiente
-Provocá un segundo error distinto (por ejemplo, escribí `imput` en vez de `input`) y repetí exactamente el mismo método: leer el error completo, formular una hipótesis en una línea, hacer un solo cambio, confirmar. Documentá ambos errores (el `SyntaxError` del Paso 4 y este nuevo) en un `README.md` con las secciones "Cómo ejecutarlo", "Resultado esperado" y "Error investigado".
+
+Crea `destino.py` en la misma carpeta. Pide una ciudad y muestra `Destino registrado: <ciudad>` con el texto recibido. Comprueba dos entradas, `Bogotá` y `Cali`. **Resultado esperado:** cada ejecución incluye su ciudad correspondiente; no debe mostrar siempre la primera. Esta será una primera entrada de datos para un caso de entregas de RutaFlow.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el `SyntaxError` reproducido y corregido del Paso 4, la hipótesis escrita antes de corregir, el segundo error distinto del Paso 6, y el `README.md` completo; explicá por qué formular la hipótesis ANTES de cambiar el código es lo que distingue depurar de ensayar al azar. Con esto cerrás el Módulo 0; como siguiente paso, instalá el lenguaje específico de tu track para seguir construyendo sobre esta misma base. Errores comunes: cambiar varias líneas a la vez sin aislar la causa; no leer el mensaje de error completo antes de actuar; no volver a ejecutar después de "corregir" para confirmar que realmente se arregló. Fuentes oficiales: https://docs.python.org/es/3/tutorial/errors.html y https://www.gnu.org/software/bash/manual/.
 
-**¿Por qué es importante?** La programación profesional consiste tanto en comprender fallos como en escribir código correcto; documentar el error, la hipótesis y la corrección transforma una demostración personal en evidencia que otra persona puede reproducir.
+**Evidencia de aprendizaje:** conserva ambos archivos y añade a `README.md` las dos entradas, sus salidas, el error deliberado y la corrección. Explica qué línea espera información y cuál muestra el resultado. **Errores comunes:** olvidar guardar, escribir `Nombre` cuando definiste `nombre` (son distintos), o dejar fuera la `f` y ver `{nombre}` literalmente. **Límites y decisión de uso:** `input` devuelve texto; aquí no convertimos números ni validamos datos. Eso llegará en el siguiente módulo, Pensamiento computacional y programación.
 
-**Evidencia de aprendizaje:** entrega el SyntaxError reproducido y corregido con su hipótesis escrita, el segundo error distinto del Paso 6, y el README completo.
+Para cerrar la sesión, vuelve a ejecutar uno de los archivos sin consultar la demostración. Guarda tu carpeta en un lugar que reconozcas. La marca de capítulo conserva tu recorrido en el navegador; no guarda tus programas ni acredita comprensión. Desde el catálogo puedes descargar una copia del progreso, que es distinta de una copia de tus archivos.
 
-**Conceptos clave:** mensaje de error, hipótesis, corrección de un solo cambio, reproducibilidad, README.
-
-#### Profundización · Diseño: Herramientas de debugging para diagnóstico de errores
-
-**Escenario real:** Tu script `saludo.py` falla con `TypeError: unsupported operand type(s) for +: 'int' and 'str'` en la línea 15. El mensaje cita línea incorrecta o inexistente.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Analiza:** ¿Qué información proporciona el stack trace?, ¿qué deduce el programador de cada parte?
-2. **Reproduce:** Escribe un script que falle deliberadamente. Captura el stack trace completo.
-3. **Aísla:** Si el error está "en algún lugar", ¿cómo añadirías `print()` o un debugger sin cambiar lógica?
-4. **Documenta:** El error ocurre cuando `input()` recibe 1e10 en vez de un número pequeño. ¿Cómo lo capturarías?
-
-**Escribe tu respuesta:**
-```
-Stack trace muestra: archivo, línea, _________, tipo de error, contexto.
-Cómo reproducir: mkdir _________, script con error, ejecutar, guardar output.
-Debugging sin romper: print(...) o pdb.set_trace() después de línea _________
-Captura de 1e10: int(input()) → falla, pero _________ lo manejaria.
-```
-
-[SOLUCIÓN — Lee solo después de intentar]
-
-> **Respuesta esperada:**
->
-> **Stack trace muestra:** archivo, línea, **función**, tipo de error, contexto de ejecución.
->
-> **Reproducciones:**
-> ```bash
-> mkdir debug-test && cd debug-test && python script.py > error.log 2>&1
-> ```
->
-> **Debugging:** `print()` antes/después de cada línea o `import pdb; pdb.set_trace()` en la línea sospechosa.
->
-> **Captura de 1e10:**
-> ```python
-> try:
->     numero = int(input("Número: "))
-> except ValueError:
->     print("Entrada inválida")
-> ```
-
-Abre la carpeta `primer-programa` en Visual Studio Code. Crea `hola.py` y escribe el ejemplo del Tema 1 manualmente. Guardar con `Ctrl+S` o `Cmd+S` garantiza que la terminal lea la versión actual. Ejecuta el archivo desde la terminal integrada.
-
-```bash
-python3 hola.py
-```
-
-Introduce tu nombre y observa la salida. Después elimina deliberadamente el paréntesis final de `print(...)` y vuelve a ejecutar. Python mostrará un `SyntaxError` y señalará una ubicación. Sigue este método:
-
-1. Lee el error completo.
-2. Identifica tipo, archivo y línea.
-3. Formula una hipótesis en una frase.
-4. Cambia una sola cosa.
-5. Ejecuta de nuevo.
-6. Conserva evidencia del antes y después.
-
-No cambies diez líneas al azar. Si el programa vuelve a funcionar no sabrás cuál cambio resolvió el problema. Restaurado el paréntesis, crea `README.md`:
-
-```markdown
-# Mi primer programa
-
-## Cómo ejecutarlo
-python3 hola.py
-
-## Resultado esperado
-Pregunta el nombre y muestra un saludo.
-
-## Error investigado
-Eliminé un paréntesis, obtuve SyntaxError y lo corregí en la línea indicada.
-```
-
-Un README permite que otra persona reproduzca el resultado. Esta es la primera forma de comunicación técnica y será obligatoria en los proyectos posteriores.
-
-**Analogía:** depurar se parece al método científico: observas, propones una hipótesis, haces un cambio controlado y vuelves a medir. Cambiar cosas al azar equivale a mezclar varios experimentos y perder la posibilidad de aprender.
-
-**¿Por qué es importante?** La programación profesional consiste tanto en comprender fallos como en escribir código correcto. Documentar comandos, entorno y resultados transforma una demostración personal en evidencia reproducible.
-
-```mermaid
-flowchart LR
-  Observe["Observar el error"] --> Locate["Localizar archivo y línea"]
-  Locate --> Hypothesis["Formular una hipótesis"]
-  Hypothesis --> Change["Cambiar una sola cosa"]
-  Change --> Run["Ejecutar de nuevo"]
-  Run -->|"todavía falla"| Observe
-  Run -->|"funciona"| Evidence["Guardar evidencia"]
-```
-
-**Construcción guiada:** guarda la versión correcta de `saludo.py`, una versión rota temporal y la explicación del diagnóstico en `evidencias/primer-error.md`. Ejecuta desde una terminal nueva siguiendo únicamente el README. El capítulo queda terminado cuando otra persona reproduce el saludo, provoca el mismo `SyntaxError` y lo corrige sin preguntarte qué carpeta abrir.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Haz que el programa muestre una tarea conocida y conserva su salida. Introduce un error de sintaxis, localiza archivo y línea, y repite la ejecución corregida como primera evidencia reproducible.
-
-**Límites y decisión de uso:** Obtener una salida correcta para una entrada solo demuestra ese caso. Añade una entrada límite y otra inválida; distingue fallos de sintaxis, ejecución y lógica antes de concluir que el programa funciona de forma general.
-
-## Construcción guiada del capítulo
-
-**Proyecto cero: evidencia reproducible desde una carpeta vacía**
-
-1. Abre una terminal y registra `pwd`.
-2. Crea `academia/primer-programa` exclusivamente con comandos.
-3. Abre esa carpeta en VS Code.
-4. Crea `hola.py`, ejecútalo y guarda la salida.
-5. Provoca dos errores distintos: archivo inexistente y error de sintaxis.
-6. Para cada error registra mensaje, hipótesis, corrección y nueva salida.
-7. Crea un README que permita repetir todo desde cero.
-8. Inicializa Git con `git init`, agrega archivos con `git add .` y crea el primer commit con `git commit -m "Crear primer programa reproducible"`.
-
-**Verificación:** otra persona debe poder seguir el README en una carpeta nueva y obtener el mismo resultado sin preguntarte pasos omitidos. `git status` debe mostrar un árbol limpio después del commit.
-
-**Errores comunes y soluciones**
-
-- **“python no se reconoce”.** La instalación o `PATH` no está listo; abre una terminal nueva y prueba el comando específico de tu sistema.
-- **“No such file or directory”.** Comprueba `pwd`, lista archivos y revisa mayúsculas, extensión y ruta.
-- **Editar sin guardar.** Activa Auto Save o guarda antes de ejecutar.
-- **Pegar comandos administrativos.** Detente y comprende cada parte antes de aceptar privilegios.
+**Fuentes oficiales:** [Funciones `input` y `print`](https://docs.python.org/3/library/functions.html) y [formato de cadenas](https://docs.python.org/3/tutorial/inputoutput.html).
 
 
 ## Ampliación de la página 50 del PDF

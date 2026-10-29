@@ -123,7 +123,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** agrega en el detalle de cada entrega los botones de compartir seguimiento, navegar y llamar al destinatario.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** lanzar un Intent implícito sin envolver `startActivity` en `try/catch`, asumiendo que siempre habrá una app que lo resuelva —en un emulador AOSP sin Google Play ese error cierra la app igual que en el Paso 4—, y usar `ACTION_CALL` en vez de `ACTION_DIAL` olvidando que el primero exige el permiso `CALL_PHONE` en tiempo de ejecución.
 
 ### Tema 2: BroadcastReceiver: reaccionar a eventos del sistema
 
@@ -243,7 +243,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** reduce la frecuencia del GPS y sincroniza pendientes cuando la batería esté baja.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** registrar el receiver con `context.registerReceiver(receiver, filtro)` sin indicar `RECEIVER_EXPORTED`/`RECEIVER_NOT_EXPORTED` en Android 14+ —un error de seguridad que tira la app al arrancar, como en el Paso 4—, u olvidar `unregisterReceiver` en `onDispose`, dejando el receptor vivo después de salir de la pantalla.
 
 ### Tema 3: Foreground Service de ubicación con FusedLocationProvider
 
@@ -404,7 +404,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** activa el seguimiento solo mientras la ruta del día está iniciada y detenlo al cerrar la última entrega.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** olvidar declarar `android:foregroundServiceType="location"` en el manifiesto antes de llamar a `startForeground` en Android 14+, o subir la prioridad a `PRIORITY_HIGH_ACCURACY` con un intervalo corto sin medir antes el consumo real de batería en el emulador.
 
 ### Tema 4: Compartir archivos con FileProvider y content://
 
@@ -531,7 +531,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** envía el comprobante de cada entrega al cliente con FileProvider y borra de la caché los comprobantes de días anteriores.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** compartir una URI `file://` en vez de `content://` esperando que funcione igual en todos los Android —en Android 7+ ese error termina en `FileUriExposedException`, como en el Paso 4—, u olvidar declarar la carpeta en `rutas_compartidas.xml`, lo que hace que `getUriForFile` lance `IllegalArgumentException`.
 
 ## Construcción guiada del capítulo
 

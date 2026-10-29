@@ -12,7 +12,7 @@ El tono será accesible para una persona principiante y mantendrá precisión pr
 
 ## Ruta de 30 pasos (página 21)
 
-Genera exactamente 30 pasos, agrupados en fundamentos, aplicación, integración y decisiones profesionales. Cada paso declara prerrequisito, objetivo medible, ejemplo básico, caso real, práctica y evidencia. No se promete nivel experto por completar una lista ni en un número fijo de días. Los roadmaps existentes del proyecto siguen disponibles en `docs/roadmaps/README.md`.
+Genera exactamente 30 pasos, agrupados en fundamentos, aplicación, integración y decisiones profesionales. Cada paso declara prerrequisito, objetivo medible, ejemplo básico, caso real, práctica y evidencia. No se promete nivel experto por completar una lista ni en un número fijo de días.
 
 ## Revisión profesional (página 55)
 

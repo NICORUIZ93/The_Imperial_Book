@@ -131,7 +131,6 @@ Primero escribe un benchmark "ingenuo" en `src/main/java/academia/bench/Cronomet
 
 #### Paso 5 · Práctica guiada
 Pista: en el benchmark JMH, elimina deliberadamente el parámetro `Blackhole blackhole` y el `blackhole.consume(result)` para provocar que el JIT elimine el cálculo entero por dead-code elimination (el benchmark reporta un tiempo sospechosamente cercano a cero); compara contra el cronómetro ingenuo del paso anterior. Resultado esperado: restaurar `Blackhole.consume(...)` produce una medición realista y estable.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Agrega un segundo método `@Benchmark` que use `Collections.binarySearch` en vez de `indexOf`, compara ambos con `@Param({"100", "10000", "1000000"})` y documenta a partir de qué tamaño la diferencia se vuelve significativa.
 
@@ -223,7 +222,6 @@ Crea `academia.dto.ImportBatch implements Serializable` con un campo `List<Strin
 
 #### Paso 5 · Práctica guiada
 Pista: modifica deliberadamente los bytes serializados (o construye un flujo con una clase distinta a `ImportBatch`) para provocar que la deserialización sin filtro acepte un tipo inesperado; observa que `ObjectInputStream` no rechaza nada por sí solo. Resultado esperado: agregar `input.setObjectInputFilter(...)` con una allowlist (`academia.dto.*;java.base/java.lang.*;!*`) hace que el flujo con tipo inesperado sea rechazado con `InvalidClassException`.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Agrega límites de `maxdepth`, `maxrefs` y `maxbytes` al filtro, y prueba deliberadamente con un `ImportBatch` que contenga una lista anormalmente grande para confirmar que el filtro la rechaza antes de terminar de construir el objeto.
 

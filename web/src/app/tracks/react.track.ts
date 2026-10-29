@@ -28,7 +28,8 @@ export const REACT_MODULES: CourseModule[] = [
     'Formulario controlado con validación en tiempo real basada en useState.'),
   m(2, 'Hooks esenciales', 'Hooks', 'Fundamentos', '3 h', '#149eca',
     'Los hooks son el mecanismo para "engancharse" al ciclo de vida y memoria de un componente de función.',
-    ['useEffect: dependencias y limpieza', 'useRef para valores mutables sin re-render', 'useMemo y useCallback: cuándo realmente ayudan', 'Reglas de los hooks', 'useReducer: reducers, dispatch y action types', 'useImperativeHandle y forwardRef', 'Error Boundaries: contener errores de render'],
+    [
+      'Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual','useEffect: dependencias y limpieza', 'useRef para valores mutables sin re-render', 'useMemo y useCallback: cuándo realmente ayudan', 'Reglas de los hooks', 'useReducer: reducers, dispatch y action types', 'useImperativeHandle y forwardRef', 'Error Boundaries: contener errores de render'],
     [
       'Crea un useEffect que se suscriba a un evento de window (resize) y verifica que se limpia correctamente al desmontar el componente',
       'Usa useRef para guardar el valor anterior de una prop sin causar un re-render adicional',

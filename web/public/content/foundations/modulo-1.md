@@ -127,7 +127,8 @@ Función validadora: redondea_a_centavos(resultado) _________
 99.99 * 0.90 imprime: _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -145,6 +146,8 @@ Función validadora: redondea_a_centavos(resultado) _________
 > ```
 >
 > **`99.99 * 0.90` imprime exactamente `89.991`** en Python — este caso puntual NO muestra residuo visible (la imprecisión interna existe en binario, pero redondea limpio al convertir a texto). Esa es precisamente la trampa: no podés predecir de antemano cuál cálculo con decimales se va a ver "limpio" y cuál no con solo mirarlo, por eso `Decimal` (o trabajar en centavos como enteros) es la única forma confiable de garantizar precisión exacta en dinero, en vez de confiar en que "este número en particular no tuvo problemas".
+
+</details>
 
 ### Tema 2: Variables, tipos, expresiones y cambios de estado
 
@@ -253,7 +256,8 @@ Ruta segura: float() o Decimal() antes de int()? _________
 "3,14" vs "3.14": El mismo número? _________ (¿por qué?)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -269,6 +273,8 @@ Ruta segura: float() o Decimal() antes de int()? _________
 > ```
 >
 > **"3,14" vs "3.14":** Distinto en Python (es error). Locales usan coma, pero `int()` espera punto.
+
+</details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Representa título, prioridad y estado de una tarea con tipos coherentes. Traza sus valores antes y después de completarla y prueba que un texto vacío no se interpreta como una tarea válida.
 
@@ -379,7 +385,8 @@ Mejor opción: _________ (¿por qué?)
 for i in range(0): entra _________ vez(ces)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -402,6 +409,8 @@ for i in range(0): entra _________ vez(ces)
 > else:
 >     print("Sin tareas pendientes")
 > ```
+
+</details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Recorre tareas y selecciona las pendientes de prioridad alta. Construye una tabla de casos con lista vacía, ninguna coincidencia y varias coincidencias, prediciendo el resultado antes de ejecutar.
 
@@ -528,7 +537,8 @@ Responsabilidad de editar_tarea(): _________ (¿guarda disco?)
 Función más fácil de testear: _________ (¿por qué?)
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -545,6 +555,8 @@ Función más fácil de testear: _________ (¿por qué?)
 > **Más fácil de testear:** Funciones puras sin I/O:
 > - `validar_titulo("abc")` → True/False
 > - Vs. `guardar_tareas()` que toca disco
+
+</details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Separa validar, almacenar y presentar una tarea en funciones pequeñas. Prueba cada contrato y demuestra que cambiar la presentación no modifica el conteo de pendientes.
 
@@ -610,7 +622,7 @@ Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo 
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor maneja importes o presupuestos, guárdalos en centavos (enteros) y demuestra con una prueba que sumar `0.1 + 0.2` como `float` produce un total incorrecto frente a la versión en centavos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** comparar decimales con `==` (como `if precio == 0.3:`) en vez de usar una tolerancia o el tipo `Decimal`; y confundir `len("ñandú")` (cantidad de caracteres) con la cantidad real de bytes UTF-8 que ocupa ese mismo texto al guardarlo en un archivo o enviarlo por red.
 **Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ## Construcción guiada del capítulo
 

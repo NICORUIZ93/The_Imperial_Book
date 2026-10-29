@@ -74,8 +74,8 @@ memento=Calle 1
 visitor=zona:NORTE,demora:15
 ```
 
-Las hojas de ruta del [bloque 16](../../../docs/roadmaps/16-patrones-arquitectura.md)
-amplían principios SOLID, patrones de arquitectura, principios y antipatrones.
+El [Módulo 12 de Java](../../../web/public/content/java/modulo-12.md) amplía
+principios SOLID, patrones de arquitectura, principios y antipatrones.
 Estos ejemplos de patrones GoF son educativos y en memoria: no implementan
 persistencia, concurrencia de producción, Saga, Outbox ni entrega de eventos
 entre procesos. La lección `web/public/content/java/modulo-12.md` desarrolla

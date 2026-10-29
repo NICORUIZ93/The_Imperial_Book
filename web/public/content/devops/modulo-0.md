@@ -916,7 +916,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** define el usuario no root con el que corre el agente de despliegue y el comando exacto que puede ejecutar con sudo.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** usar `usermod -G despacho caro` en vez de `-aG` — sin la `-a`, `-G` reemplaza TODOS los grupos secundarios de `caro`, sacándolo de cualquier otro grupo al que ya perteneciera en vez de solo sumarle `despacho`.
 
 ### Tema 11: systemd: servicios, timers y logs con journalctl
 
@@ -1041,7 +1041,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** ejecuta el agente de despliegue como servicio de systemd con usuario propio y revisa sus logs con journalctl.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** copiar un `.service` o `.timer` editado a `/etc/systemd/system/` y pasar directo a `systemctl enable --now` sin `daemon-reload` — systemd sigue usando su caché interna de la unidad vieja hasta que recargás, así que el cambio recién editado no se aplica aunque el archivo en disco ya esté actualizado.
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

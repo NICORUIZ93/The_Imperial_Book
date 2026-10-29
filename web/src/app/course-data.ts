@@ -618,7 +618,8 @@ export const COURSE_MODULES: CourseModule[] = [
     'Config, AppConfig y Backup',
     'Experto', '3 h', '#4f7a5d',
     'Gestiona reglas de cumplimiento con AWS Config, despliega configuración dinámica sin redeployar código con AppConfig, y centraliza tu política de respaldo con AWS Backup.',
-    ['Reglas, grabadores y paquetes de conformidad de Config', 'Aplicaciones, entornos y perfiles de AppConfig', 'Sesiones de configuración en AppConfigData', 'Bóvedas, planes y selecciones de Backup', 'El ciclo de vida CREATED → RUNNING → COMPLETED de un trabajo de respaldo'],
+    [
+      'Simulacro de restauración: comprobar contenido, no solo la existencia del backup','Reglas, grabadores y paquetes de conformidad de Config', 'Aplicaciones, entornos y perfiles de AppConfig', 'Sesiones de configuración en AppConfigData', 'Bóvedas, planes y selecciones de Backup', 'El ciclo de vida CREATED → RUNNING → COMPLETED de un trabajo de respaldo'],
     [
       'Laboratorio 25.1: despliega un cambio de configuración con AppConfig y recupéralo desde AppConfigData',
       'Crea una regla de Config y consulta su estado de cumplimiento con describe-compliance-by-config-rule',

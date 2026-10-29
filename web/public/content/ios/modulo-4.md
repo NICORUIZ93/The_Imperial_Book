@@ -279,3 +279,65 @@ En el proyecto integrador RutaFlow, `DetalleEnvioViewModel` vive en `examples/ru
 
 * Proyecto: proyecto integrador RutaFlow
 * Visualización: concepto mostrado en diagrama
+
+
+## Laboratorio de transferencia
+
+### Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar cancelarás una tarea Swift y comprobarás que no publica un resultado obsoleto. **Prerrequisitos:** funciones async, Task y errores. macOS con Swift 6 o el toolchain de Xcode; comprueba `swift --version`. Ejemplo independiente desde carpeta vacía, sin necesitar una app previa.
+
+#### Paso 2 · Contexto y caso real
+Al abandonar el detalle de un envío, el proyecto integrador deja de necesitar su consulta. **¿Por qué es importante?** Si la tarea publica después de salir, puede actualizar una selección que ya cambió o mostrar un error falso.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La cancelación marca una tarea; el trabajo debe observarla. Las operaciones suspendidas cancelables pueden lanzar `CancellationError`. Debe tratarse por separado de un fallo de negocio. **Analogía:** retirar un turno evita que una respuesta se entregue a la persona siguiente; no borra una transacción remota ya confirmada.
+
+Una comprobación explícita antes de publicar impide continuar con una tarea marcada. Este ejercicio usa una tarea sin UI para aislar el mecanismo; SwiftUI añade su propio ciclo de vida con `.task`.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir cancelacion-swift
+cd cancelacion-swift
+```
+Crea `Cancelacion.swift` completo:
+```swift
+import Foundation
+
+@main struct Demo {
+    static func main() async {
+        let consulta = Task { () throws -> String in
+            try await Task.sleep(for: .seconds(5))
+            try Task.checkCancellation()
+            return "ENV-42 recibido"
+        }
+        // Marcamos la tarea antes de aceptar su resultado.
+        consulta.cancel()
+        do {
+            let resultado = try await consulta.value
+            print(resultado)
+        } catch is CancellationError {
+            print("Consulta cancelada; no se publica resultado")
+        } catch {
+            print("Fallo real: \(error)")
+        }
+    }
+}
+```
+```bash
+swiftc -parse-as-library Cancelacion.swift -o cancelacion
+./cancelacion
+```
+**Resultado esperado:** `Consulta cancelada; no se publica resultado`. Explica cada bloque: se crea trabajo suspendible, se cancela y se espera su resultado mediante `value`. El catch específico evita anunciar cancelación como error de conexión.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia `try await Task.sleep` por `try? await Task.sleep` y quita `checkCancellation`. Al ignorar la excepción puedes terminar publicando el resultado. **Pista:** no conviertas todo error en un valor opcional sin decidir qué significa. Restaura ambas comprobaciones.
+
+#### Paso 6 · Práctica independiente
+Crea una variante sin `cancel` y con una espera de 50 ms: muestra el envío. Añade un error de dominio y demuestra que usa el catch de fallo real. Después describe cómo vincularías una consulta al identificador del detalle visible.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** tres casos separados: éxito, cancelación y fallo real. El siguiente paso es integrar el mecanismo con URLSession y `.task(id:)`. **Errores comunes:** usar `try?` para esconder cancelación, suponer que cancelar mata el hilo y reutilizar estado de un detalle antiguo. **Límites y decisión de uso:** el programa de consola valida el mecanismo, no la UI, el simulador ni el comportamiento de una red real.
+
+**Fuentes oficiales:** [Swift concurrency](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/) y [Task.checkCancellation](https://developer.apple.com/documentation/swift/task/checkcancellation()).

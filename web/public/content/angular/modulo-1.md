@@ -650,9 +650,6 @@ sequenceDiagram
 ng new ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
 Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tracking --standalone --skip-git --defaults`), crea la carpeta de la feature `tracking` con sus archivos relacionados:
 
 ```text
@@ -779,9 +776,6 @@ Un **pipe** (`|`) transforma un valor solo para mostrarlo, sin cambiar el dato (
 ng new ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
 ```typescript
 // distancia.pipe.ts — transforma metros en texto legible
 import { Pipe, PipeTransform } from '@angular/core';
@@ -832,9 +826,9 @@ Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-n
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** crea el pipe `distancia` y la directiva `appResaltar` y úsalos en la tabla de envíos para mostrar distancias legibles y marcar los urgentes.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** olvidar añadir el pipe o la directiva a los `imports` del componente standalone, produciendo el error real "The pipe 'distancia' could not be found"; usar `HostListener`/`HostBinding` para un cambio de estilo que una clase condicional en la plantilla ya resolvería de forma más simple.
 **Fuente oficial:** [documentación de Angular](https://angular.dev/).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega el pipe `distancia` y la directiva `appResaltar` funcionando sobre la tabla de envíos, el error real "could not be found" provocado al quitar el pipe de los `imports`, y la directiva `appSoloNumeros` del Paso 6 verificada con un input que rechaza letras.
 ### Tema 7: Pipes puros e impuros, AsyncPipe y signals
 
 #### Paso 1 · Objetivo y preparación
@@ -1002,7 +996,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** muestra el total de kilos del tablero con un pipe puro alimentado por un signal que se actualiza de forma inmutable.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** marcar un pipe como `pure: false` para "arreglar" un valor desactualizado en vez de corregir la mutación que lo causa; olvidar que `AsyncPipe` se desuscribe solo al destruir el componente, y volver a suscribirse manualmente al mismo Observable por duplicado.
 
 ## Laboratorio práctico
 

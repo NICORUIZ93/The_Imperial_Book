@@ -17,13 +17,13 @@
       "page": 2,
       "title": "QuickRef: referencias rápidas",
       "status": "recurso",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 3,
       "title": "Exercism: práctica y mentoría",
       "status": "recurso",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 4,
@@ -35,13 +35,13 @@
       "page": 5,
       "title": "QuickRef: captura parcial repetida",
       "status": "duplicado",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 6,
       "title": "Open Design y diseño con agentes",
       "status": "recurso",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 7,
@@ -95,13 +95,13 @@
       "page": 15,
       "title": "Progresión de Java a sistemas distribuidos",
       "status": "existente",
-      "destination": "docs/roadmaps/02-java.md"
+      "destination": "web/src/app/tracks/java.track.ts"
     },
     {
       "page": 16,
       "title": "Progresión Java: captura repetida",
       "status": "duplicado",
-      "destination": "docs/roadmaps/02-java.md"
+      "destination": "web/src/app/tracks/java.track.ts"
     },
     {
       "page": 17,
@@ -113,7 +113,7 @@
       "page": 18,
       "title": "Dory y alternativas de runtime Docker",
       "status": "recurso",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 19,
@@ -125,7 +125,7 @@
       "page": 20,
       "title": "Java antes de Spring: prerrequisitos",
       "status": "existente",
-      "destination": "docs/roadmaps/03-spring.md"
+      "destination": "web/src/app/tracks/java.track.ts"
     },
     {
       "page": 21,
@@ -149,7 +149,7 @@
       "page": 24,
       "title": "Publicidad de máster Java y microservicios",
       "status": "recurso",
-      "destination": "docs/roadmaps/03-spring.md"
+      "destination": null
     },
     {
       "page": 25,
@@ -167,7 +167,7 @@
       "page": 27,
       "title": "QuickRef: captura repetida",
       "status": "duplicado",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 28,
@@ -179,7 +179,7 @@
       "page": 29,
       "title": "Open Design: captura repetida",
       "status": "duplicado",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 30,
@@ -209,7 +209,7 @@
       "page": 34,
       "title": "Pispeo: recomendación de utilidad sin detalle curricular",
       "status": "recurso",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 35,
@@ -239,7 +239,7 @@
       "page": 39,
       "title": "Plan Java en 30 días",
       "status": "existente",
-      "destination": "docs/roadmaps/02-java.md"
+      "destination": "web/src/app/tracks/java.track.ts"
     },
     {
       "page": 40,
@@ -347,7 +347,7 @@
       "page": 57,
       "title": "Spring Boot en nueve capas",
       "status": "existente",
-      "destination": "docs/roadmaps/03-spring.md"
+      "destination": "web/src/app/tracks/spring-boot.track.ts"
     },
     {
       "page": 58,
@@ -359,13 +359,13 @@
       "page": 59,
       "title": "WinUtil: ajustes Windows",
       "status": "recurso",
-      "destination": "docs/roadmaps/18-herramientas.md"
+      "destination": null
     },
     {
       "page": 60,
       "title": "Diez patrones de arquitectura y sus costes",
       "status": "existente",
-      "destination": "docs/roadmaps/16-patrones-arquitectura.md"
+      "destination": "web/public/content/java/modulo-12.md"
     },
     {
       "page": 61,
@@ -383,7 +383,7 @@
       "page": 63,
       "title": "Bundle: Jenkins, Spring, Selenium y algoritmos",
       "status": "recurso",
-      "destination": "docs/roadmaps/15-testing.md"
+      "destination": null
     },
     {
       "page": 64,
@@ -413,7 +413,7 @@
       "page": 68,
       "title": "Roadmap Java: fundamentos a proyectos",
       "status": "existente",
-      "destination": "docs/roadmaps/02-java.md"
+      "destination": "web/src/app/tracks/java.track.ts"
     },
     {
       "page": 69,

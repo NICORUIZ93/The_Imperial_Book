@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CloudCog, LucideAngularModule, LucideIconData, Moon, Sun } from 'lucide-angular';
+import { CloudCog, Search, BookOpen, ArrowUpRight, LucideAngularModule, LucideIconData, Moon, Sun } from 'lucide-angular';
 import { TRACKS } from '../course-data';
+import { TRACK_GUIDES } from '../track-guides';
+import { CommandPaletteService } from '../command-palette.service';
 import { TRACK_ICONS, TRACK_MARKS } from '../icon-registry';
 import { OFFICIAL_UPDATES } from '../official-updates';
 import { ProgressService } from '../progress.service';
@@ -24,6 +26,10 @@ interface TrackCard {
   levels: string;
   modules: string[];
   outcome: string;
+  category: string;
+  topicCount: number;
+  nextModuleId: number;
+  guide: typeof TRACK_GUIDES[string];
 }
 
 /** Biblioteca de cursos: cada track es un libro con capítulos (módulos). */
@@ -35,7 +41,16 @@ interface TrackCard {
 })
 export class CourseCatalogComponent {
   readonly brandIcon = CloudCog;
-  readonly icons = { Sun, Moon };
+  readonly icons = { Sun, Moon, Search, BookOpen, ArrowUpRight };
+  readonly palette = inject(CommandPaletteService);
+  readonly query = signal('');
+  readonly category = signal('all');
+  readonly categories = [
+    { id: 'all', label: 'Todos los cursos' }, { id: 'base', label: 'Desde cero' },
+    { id: 'web', label: 'Desarrollo web' }, { id: 'backend', label: 'Backend' },
+    { id: 'mobile', label: 'Aplicaciones móviles' }, { id: 'platform', label: 'Cloud y DevOps' },
+    { id: 'project', label: 'Proyecto RutaFlow' },
+  ];
   readonly themeService = inject(ThemeService);
   readonly topicIndex = inject(TopicIndexService);
   readonly officialUpdates = OFFICIAL_UPDATES;
@@ -44,7 +59,7 @@ export class CourseCatalogComponent {
   constructor(private readonly progressService: ProgressService) {}
 
   readonly cards = computed<TrackCard[]>(() =>
-    TRACKS.map(track => ({
+    [...TRACKS].sort((a, b) => ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(a.id) - ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow'].indexOf(b.id)).map(track => ({
       id: track.id,
       name: track.name,
       shortName: track.shortName,
@@ -59,6 +74,10 @@ export class CourseCatalogComponent {
       levels: [...new Set(track.modules.map(module => module.level))].join(' → '),
       modules: track.modules.map(module => module.shortTitle),
       outcome: track.modules.at(-1)?.deliverable ?? 'Proyecto final de la ruta.',
+      category: TRACK_GUIDES[track.id].category,
+      topicCount: Object.values(this.topicIndex.data()[track.id] ?? {}).reduce((n, topics) => n + topics.length, 0),
+      nextModuleId: this.progressService.nextPendingModuleId(track.id, track.modules.length),
+      guide: TRACK_GUIDES[track.id],
     }))
   );
 
@@ -66,13 +85,30 @@ export class CourseCatalogComponent {
   readonly foundationTracks = computed(() => this.cards().filter(card => ['foundations', 'javascript', 'java', 'node', 'angular', 'react', 'spring-boot'].includes(card.id)));
   readonly mobileTracks = computed(() => this.cards().filter(card => ['flutter', 'android', 'ios', 'kotlin-multiplatform'].includes(card.id)));
 
+  readonly filteredCards = computed(() => {
+    const query = this.normalize(this.query());
+    return this.cards().filter(card =>
+      (this.category() === 'all' || card.category === this.category()) &&
+      (!query || this.normalize([card.name, card.tagline, ...card.modules, ...card.guide.skills].join(' ')).includes(query) ||
+        this.topicIndex.allTopics().some(topic => topic.trackId === card.id && this.normalize(topic.title).includes(query)))
+    );
+  });
+
   trackGroups() {
-    return [
-      { title: 'Recomendados', cards: this.featuredTracks() },
-      { title: 'Lenguajes y frameworks', cards: this.foundationTracks() },
-      { title: 'Móvil', cards: this.mobileTracks() },
-    ];
+    return [{ title: this.categories.find(category => category.id === this.category())?.label ?? 'Cursos', cards: this.filteredCards() }];
   }
+
+  categoryCount(id: string): number { return this.cards().filter(card => id === 'all' || card.category === id).length; }
+  updateQuery(event: Event): void { this.query.set((event.target as HTMLInputElement).value); }
+  clearFilters(): void { this.query.set(''); this.category.set('all'); }
+  private normalize(value: string): string { return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim(); }
+
+  readonly resumableTracks = computed(() => TRACKS.flatMap(track => {
+    const completed = this.progressService.trackProgress(track.id).completedModules;
+    if (!completed.length) return [];
+    const module = track.modules.find(module => !completed.includes(module.id));
+    return module ? [{ trackId: track.id, name: track.shortName, module }] : [];
+  }));
 
   readonly totalModules = computed(() => this.cards().reduce((sum, card) => sum + card.moduleCount, 0));
 

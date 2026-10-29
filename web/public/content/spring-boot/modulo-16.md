@@ -76,8 +76,7 @@ En `Pedido.java`, declara `@ManyToOne(fetch = FetchType.LAZY, optional = false)`
 #### Paso 5 · Práctica guiada
 
 Agrega `LineaPedido` y un método de agregado que mantenga ambos lados. Prueba `CascadeType.PERSIST`, luego quítalo y explica qué operación explícita reemplaza la cascada. Intenta eliminar un cliente con pedidos y decide el comportamiento de integridad esperado.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** quita `CascadeType.PERSIST` de `pedidos` en `Cliente` y vuelve a ejecutar el test que guarda cliente y pedido juntos; si falla porque el pedido no aparece en la base, la cascada era la que lo persistía automáticamente — ahora necesitas guardar `Pedido` explícitamente con su propio repositorio antes de guardar `Cliente`.
 #### Paso 6 · Práctica independiente
 
 Modela `Envio` y `Parada` para RutaFlow. Define propietario, nulabilidad, cascadas y regla de borrado. Escribe tests para inserción, actualización y borrado; usa migraciones Flyway en vez de `ddl-auto=update` para un esquema persistente.
@@ -86,9 +85,9 @@ Modela `Envio` y `Parada` para RutaFlow. Define propietario, nulabilidad, cascad
 
 Entrega entidades, migración y tests de integridad referencial como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** evita asociaciones bidireccionales si ningún caso de uso las necesita y no uses `CascadeType.REMOVE` sobre datos que deban conservar historial. **Evidencia:** test verde y esquema versionado.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** actualizar solo la colección `pedidos` de `Cliente` sin llamar `pedido.asignarCliente(this)` (la fila de `pedido` queda con `cliente_id` nulo aunque la colección en memoria se vea correcta), y asumir que `CascadeType.PERSIST` también cubre el borrado — un `cliente.getPedidos().remove(pedido)` no elimina la fila sin `orphanRemoval = true` o un borrado explícito por repositorio.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega el log de `./mvnw test` mostrando el fallo cuando falta `pedido.asignarCliente(this)` (clave foránea nula), la corrección que lo deja en verde, y el resultado de intentar eliminar un `Cliente` con pedidos asociados explicando qué regla de integridad referencial aplicaste.
 ### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso
 
 #### Paso 1 · Objetivo y preparación
@@ -139,8 +138,7 @@ Ejecuta `./mvnw test -Dtest=ConsultaClienteTest`. **Resultado esperado:** observ
 #### Paso 5 · Práctica guiada
 
 Agrega una consulta dedicada con `@EntityGraph(attributePaths = "pedidos")` o JPQL `left join fetch c.pedidos`. Repite la medición. Prueba paginación: un fetch join de colección duplica filas y puede impedir paginación SQL eficiente. Compara una proyección DTO y registra consulta, filas y memoria.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** combina el `left join fetch c.pedidos` con un parámetro `Pageable` en el mismo método de repositorio y ejecuta el test de paginación; si Hibernate responde con una advertencia de tipo "firstResult/maxResults specified with collection fetch; applying in memory" o ves filas de cliente repetidas, esa es la señal de que el fetch join de colección no combina con paginación SQL.
 #### Paso 6 · Práctica independiente
 
 Implementa endpoint de resumen de cliente que solo devuelve nombre y número de pedidos, y endpoint de detalle que devuelve pedidos. No serialices entidades JPA directamente. Diseña pruebas que consulten ambos endpoints y midan cantidad de SQL sin fijar un número frágil si Hibernate puede emitir consultas equivalentes.
@@ -149,6 +147,6 @@ Implementa endpoint de resumen de cliente que solo devuelve nombre y número de 
 
 Entrega reproducción del N+1, versión optimizada, SQL registrado y decisión de carga para resumen/detalle del proyecto integrador de RutaFlow. **Cuándo no usarlo:** `EAGER` no es sinónimo de JOIN ni solución general; `JOIN FETCH` en colecciones grandes puede multiplicar filas. **Evidencia:** tests y comparación reproducible. Referencia: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** fijar en el test un número exacto de consultas SQL sin considerar que el caché de segundo nivel o una versión distinta de Hibernate puede cambiar el conteo, y combinar `@EntityGraph` sobre una colección con un `Pageable` esperando que la paginación siga resolviéndose en SQL en vez de en memoria.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega el conteo de consultas SQL antes y después de agregar `@EntityGraph` o `left join fetch`, la advertencia de Hibernate al paginar sobre una colección, y la explicación de por qué elegiste proyección DTO o fetch join para el endpoint de resumen/detalle.

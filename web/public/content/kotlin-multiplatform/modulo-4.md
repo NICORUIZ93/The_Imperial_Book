@@ -584,3 +584,60 @@ Ya modelas el resultado de una operación que puede fallar con un tipo explícit
 - **Seguir lanzando excepciones no documentadas para errores esperables del dominio.** Modélalos con un tipo Resultado explícito visible en la firma.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible. **Prerrequisitos:** interfaces, lambdas, Long y funciones de Kotlin. Kotlin/JVM y JDK para el ejemplo independiente; en KMP puedes colocar el contrato en commonMain y sus pruebas en commonTest.
+
+#### Paso 2 · Contexto y caso real
+Una oferta del proyecto integrador caduca a los 30 segundos. Una prueba que espera 30 segundos es lenta y puede fallar por el planificador. **¿Por qué es importante?** El tiempo forma parte de las entradas del caso de uso y debe controlarse en la prueba.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Inyectar una función de reloj separa la política «cuándo vence» del origen «qué hora es». Elegimos milisegundos y una frontera explícita: al alcanzar el vencimiento ya está caducada. **Analogía:** para probar una alarma, mueves las agujas de un reloj de prueba en lugar de esperar. El límite es que simular tiempo no prueba sincronización entre dispositivos ni un reloj de pared que retrocede.
+
+El ejemplo usa una función `() -> Long` sin depender de una versión concreta de una API de reloj. En una librería multiplataforma, documenta unidades, origen y si necesitas tiempo monotónico o un instante civil.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir reloj-kotlin
+cd reloj-kotlin
+```
+Crea `Vencimiento.kt`:
+```kotlin
+class Oferta(private val venceEnMs: Long, private val ahoraMs: () -> Long) {
+    fun vencida(): Boolean = ahoraMs() >= venceEnMs
+}
+
+fun main() {
+    var reloj = 1_000L
+    val oferta = Oferta(31_000L) { reloj }
+    check(!oferta.vencida())
+    reloj = 30_999L
+    check(!oferta.vencida())
+    reloj = 31_000L
+    check(oferta.vencida()) // El límite también pertenece al contrato.
+    reloj = 31_001L
+    check(oferta.vencida())
+    println("Antes, límite y después: correctos")
+}
+```
+```bash
+kotlinc Vencimiento.kt -include-runtime -d vencimiento.jar
+java -jar vencimiento.jar
+```
+**Resultado esperado:** `Antes, límite y después: correctos`, sin esperas reales. Explica cada bloque: la clase recibe tiempo como dependencia y la prueba controla la variable capturada por la lambda. Si no tienes `kotlinc`, instala el compilador oficial; no confundas una ausencia de herramienta con un fallo del contrato.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia `>=` por `>`. Falla la comprobación del instante exacto. **Pista:** revisa qué prometiste que ocurría «al alcanzar» el plazo. Restaura y vuelve a ejecutar.
+
+#### Paso 6 · Práctica independiente
+Añade una función `restanteMs` que nunca devuelva valores negativos y comprueba antes, justo en y después del vencimiento. Conserva los casos en commonTest cuando lo lleves al proyecto KMP, sin introducir APIs de JVM en commonMain.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** casos frontera, error deliberado y corrección. El siguiente paso es adaptar el origen de tiempo en cada plataforma y mantener la política común. **Errores comunes:** mezclar segundos y milisegundos, consultar el reloj global dentro de cada regla y usar sleep para pruebas de lógica. **Límites y decisión de uso:** el servidor debe decidir vencimientos con autoridad cuando haya dinero o asignación compartida; el reloj del cliente es una ayuda de UI.
+
+**Fuentes oficiales:** [Kotlin interfaces](https://kotlinlang.org/docs/interfaces.html) y [recomendación de inyectar Clock](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-clock/).

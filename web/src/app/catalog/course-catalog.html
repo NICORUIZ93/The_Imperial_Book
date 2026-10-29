@@ -1,155 +1,34 @@
 <div class="catalog-page">
   <header class="topbar">
-    <a class="brand" routerLink="/">
-      <span class="brand-mark"><lucide-icon [img]="brandIcon" /></span>
-      <span class="brand-text">
-        <strong>The Imperial Book</strong>
-        <small>Academia técnica en español</small>
-      </span>
-    </a>
-    <button
-      class="theme-toggle"
-      (click)="themeService.toggle()"
-      [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
-      [title]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
-    >
-      <lucide-icon [img]="themeService.isDark() ? icons.Sun : icons.Moon" />
-    </button>
+    <a class="brand" routerLink="/"><span class="brand-mark"><lucide-icon [img]="icons.BookOpen" /></span><span class="brand-text"><strong>The Imperial Book<span class="brand-dot">.</span></strong><small>Academia técnica en español</small></span></a>
+    <nav class="top-links" aria-label="Navegación principal"><a href="#tracks-title">Cursos</a><a href="#beginner-title">Cómo estudiar</a></nav>
+    <div class="top-actions"><button class="global-search" (click)="palette.open()" aria-label="Buscar cursos, módulos y temas"><lucide-icon [img]="icons.Search" /><span>Buscar un tema</span><kbd>⌘K</kbd></button><button class="theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"><lucide-icon [img]="themeService.isDark() ? icons.Sun : icons.Moon" /></button></div>
   </header>
-
-  <main id="main-content" tabindex="-1">
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="catalog-title">
-      <p class="eyebrow">The Imperial Book · Edición en español · Aprende construyendo, de cero a profesional</p>
-      <h1 id="catalog-title">De cero a master<br /><span class="grad">Elige una ruta y construye un producto real</span></h1>
-      <p class="hero-copy">
-        Lecciones guiadas, código explicado, prácticas verificables y un proyecto de entregas que
-        conecta frontend, backend, móvil, datos, cloud y operaciones.
-      </p>
-
-      <div class="hero-actions">
-        <a class="btn btn-primary" routerLink="/curso/foundations/0">Empezar desde cero</a>
-        <a class="btn btn-ghost" routerLink="/roadmaps">Ver roadmaps <span aria-hidden="true">→</span></a>
-      </div>
-
-      <dl class="hero-stats" aria-label="Contenido de la academia">
-        <div><dt>rutas</dt><dd>{{ cards().length }}</dd></div>
-        <div><dt>módulos</dt><dd>{{ totalModules() }}</dd></div>
-        <div><dt>temas reales</dt><dd>{{ topicIndex.totalTopics() || '—' }}</dd></div>
-      </dl>
-
-      <p *ngIf="topicIndex.loadError()" class="inline-error" role="alert">
-        No se pudo cargar el índice de temas: {{ topicIndex.loadError() }}
-        <button type="button" (click)="topicIndex.retry()">Reintentar</button>
-      </p>
-    </section>
-
-    <!-- CÓMO EMPEZAR -->
-    <section class="starter" aria-labelledby="beginner-title">
-      <div class="starter-intro">
-        <h2 id="beginner-title">¿Nunca has programado? Empieza aquí.</h2>
-        <p>
-          Tu primera sesión explica qué es un archivo, cómo encontrarlo y cómo ejecutar un programa.
-          Después avanzas con ejemplos, prácticas y un proyecto propio.
-        </p>
-        <a class="link-arrow" href="/visuals/recorrido-estudio.html" target="_blank" rel="noopener noreferrer">
-          Ver el mapa de estudio <span aria-hidden="true">↗</span>
-        </a>
-      </div>
-      <ol class="starter-steps">
-        <li><span>1</span> Lee qué vas a construir y revisa los conocimientos y herramientas que necesitas.</li>
-        <li><span>2</span> Crea el archivo indicado, guárdalo y ejecuta el comando desde la carpeta de trabajo.</li>
-        <li><span>3</span> Compara la salida, provoca el fallo propuesto y resuelve la práctica cambiando una cosa a la vez.</li>
-        <li><span>4</span> Explica el resultado con tus palabras y conserva los archivos antes de continuar.</li>
-      </ol>
-    </section>
-
-    <!-- RUTAS -->
-    <section class="tracks" aria-labelledby="tracks-title">
-      <div class="section-heading">
-        <h2 id="tracks-title">Rutas de aprendizaje</h2>
-        <p>
-          Empieza por Fundamentos si nunca has programado. Elige RutaFlow para conectar todas las
-          especialidades en un proyecto profesional.
-        </p>
-      </div>
-
-      <div class="track-group" *ngFor="let group of trackGroups()">
-        <h3 class="group-title">{{ group.title }}</h3>
-        <div class="grid">
-          <article class="card" *ngFor="let card of group.cards" [style.--track-color]="card.color">
-            <a class="card-head" [routerLink]="['/curso', card.id]" [attr.aria-label]="'Abrir ' + card.name">
-              <span class="card-icon" aria-hidden="true">
-                <img *ngIf="card.logo; else trackMark" [src]="card.logo" alt="" width="24" height="24" />
-                <ng-template #trackMark><span class="mark">{{ card.mark }}</span></ng-template>
-              </span>
-              <span class="card-titles">
-                <span class="card-kicker">{{ card.shortName }}</span>
-                <span class="card-name">{{ card.name }}</span>
-              </span>
-            </a>
-
-            <p class="card-tagline">{{ card.tagline }}</p>
-
-            <div class="card-progress" role="progressbar" [attr.aria-label]="'Progreso de ' + card.shortName" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="card.percent">
-              <span [style.width.%]="card.percent"></span>
-            </div>
-            <ul class="card-meta">
-              <li>{{ card.moduleCount }} módulos</li>
-              <li>{{ card.totalHours }}</li>
-              <li>{{ card.percent }}% completado</li>
-            </ul>
-
-            <details class="card-topics">
-              <summary>Explorar módulos</summary>
-              <ol><li *ngFor="let module of card.modules">{{ module }}</li></ol>
-            </details>
-
-            <a class="card-cta" [routerLink]="['/curso', card.id]">
-              {{ card.percent ? 'Continuar ruta' : 'Comenzar ruta' }} <span aria-hidden="true">→</span>
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROGRESO -->
-    <section class="backup" aria-labelledby="backup-title">
-      <div class="backup-intro">
-        <h2 id="backup-title">Tu progreso, bajo tu control</h2>
-        <p>
-          Descarga una copia para guardarla o trasladarla a otro navegador. Restaurar una copia
-          reemplaza el progreso guardado en este navegador.
-        </p>
-      </div>
-      <div class="backup-actions">
-        <button type="button" class="btn btn-ghost" (click)="downloadProgressBackup()">Descargar copia</button>
-        <button type="button" class="btn btn-ghost" (click)="progressFileInput.click()">Restaurar copia</button>
-        <input #progressFileInput type="file" accept="application/json,.json" aria-label="Seleccionar copia de progreso JSON" (change)="restoreProgress(progressFileInput)" />
-      </div>
-      <p class="backup-status" role="status" aria-live="polite">{{ backupStatus() }}</p>
-    </section>
-
-    <!-- FUENTES OFICIALES -->
-    <section class="official" aria-labelledby="official-title">
-      <div class="section-heading">
-        <h2 id="official-title">Versiones y fuentes oficiales</h2>
-        <p>
-          Cada ruta enlaza documentación del mantenedor, notas de versión, migraciones y seguridad;
-          una validación mensual detecta enlaces rotos o revisiones vencidas.
-        </p>
-      </div>
-      <div class="official-grid">
-        <a *ngFor="let update of officialUpdates" [href]="update.url" target="_blank" rel="noopener noreferrer">
-          <strong>{{ update.stack }}</strong>
-          <span>{{ update.baseline }}</span>
-          <small>Documentación oficial ↗</small>
-        </a>
-      </div>
-      <p class="official-note">
-        <strong>Política:</strong> una novedad no entra solo por ser reciente. Se evalúan estabilidad,
-        migración, seguridad, compatibilidad y utilidad para el proyecto RutaFlow.
-      </p>
-    </section>
-  </main>
+  <div class="workspace">
+    <aside class="catalog-sidebar" aria-label="Áreas de aprendizaje">
+      <p class="nav-label">TU BIBLIOTECA</p>
+      <button *ngFor="let item of categories" [class.selected]="category() === item.id" [attr.aria-pressed]="category() === item.id" (click)="category.set(item.id)"><span>{{ item.label }}</span><small>{{ categoryCount(item.id) }}</small></button>
+      <div class="sidebar-note"><span class="nav-label">PRIMER PASO</span><strong>No tienes que aprenderlo todo a la vez.</strong><p>Empieza por la base y elige después una especialidad.</p><a routerLink="/curso/foundations/0">Abrir Fundamentos →</a></div>
+      <a class="sidebar-backup" href="#backup-title">Copias de tu progreso ↗</a>
+    </aside>
+    <main id="main-content" tabindex="-1">
+      <section class="hero" aria-labelledby="catalog-title">
+        <div class="hero-intro"><p class="eyebrow"><span></span> Aprende con un propósito</p><h1 id="catalog-title">De la primera línea<br />a tu próximo <span>proyecto.</span></h1><p class="hero-copy">Elige una ruta, comprende cómo funciona y llévalo a la práctica. Programación, web, backend, móvil y cloud, en un solo espacio.</p><div class="hero-actions"><a class="btn btn-primary" routerLink="/curso/foundations/0">Empezar desde cero <lucide-icon [img]="icons.ArrowUpRight" /></a><a class="hero-secondary" href="#tracks-title">Explorar cursos →</a></div></div>
+        <aside class="first-session" aria-labelledby="first-session-title"><div class="session-label"><span>EL PUNTO DE PARTIDA</span><span>01</span></div><h2 id="first-session-title">Algo pequeño.<br />Que funciona de verdad.</h2><p>Tu primer programa, desde un archivo vacío hasta ver el resultado.</p><div class="session-example"><span>saludo.py</span><pre><code><span class="code-fn">print</span>("Hola, mundo")</code></pre><small><span>↳</span> Hola, mundo</small></div><a routerLink="/curso/foundations/0">Ver la primera práctica <span>→</span></a></aside>
+        <dl class="hero-stats" aria-label="Contenido disponible"><div><dd>{{ cards().length }}</dd><dt>rutas de aprendizaje</dt></div><div><dd>{{ totalModules() }}</dd><dt>módulos</dt></div><div><dd>{{ topicIndex.totalTopics() || '—' }}</dd><dt>temas disponibles</dt></div></dl>
+        <p *ngIf="topicIndex.loadError()" class="inline-error" role="alert">No se pudo cargar el índice de temas: {{ topicIndex.loadError() }} <button (click)="topicIndex.retry()">Reintentar</button></p>
+      </section>
+      <section class="continue-study" *ngIf="resumableTracks().length" aria-labelledby="continue-title"><div class="section-heading"><div><p class="eyebrow">TU RECORRIDO</p><h2 id="continue-title">Continúa donde ibas</h2></div><small>Capítulos marcados en este navegador</small></div><div class="resume-list"><a *ngFor="let item of resumableTracks()" [routerLink]="['/curso', item.trackId, item.module.id]"><span>{{ item.name }}</span><strong>{{ item.module.shortTitle }} →</strong><small>Siguiente capítulo sin marcar</small></a></div></section>
+      <section class="tracks" aria-labelledby="tracks-title">
+        <div class="section-heading"><div><p class="eyebrow">ENCUENTRA TU CAMINO</p><h2 id="tracks-title" tabindex="-1">Explora la biblioteca</h2></div><span class="result-count" aria-live="polite">{{ filteredCards().length }} cursos</span></div>
+        <div class="catalog-tools"><label class="course-search"><lucide-icon [img]="icons.Search" /><span class="sr-only">Filtrar cursos y temas</span><input type="search" placeholder="Busca un curso, una habilidad o un tema…" [value]="query()" (input)="updateQuery($event)" /></label><div class="category-tabs" aria-label="Filtrar por área"><button *ngFor="let item of categories" [class.active]="category() === item.id" [attr.aria-pressed]="category() === item.id" (click)="category.set(item.id)">{{ item.label }}</button></div></div>
+        <div class="track-group" *ngFor="let group of trackGroups()"><h3 class="group-title">{{ group.title }}</h3><div class="grid"><article class="card" *ngFor="let card of group.cards" [style.--track-color]="card.color"><div class="card-top"><span class="card-icon" aria-hidden="true"><img *ngIf="card.logo; else mark" [src]="card.logo" alt="" width="26" height="26" /><ng-template #mark>{{ card.mark }}</ng-template></span><span class="card-type">{{ card.category === 'base' ? 'Punto de partida' : card.category === 'project' ? 'Proyecto integrador' : 'Especialidad' }}</span></div><a class="card-head" [routerLink]="['/curso', card.id, card.nextModuleId]" [attr.aria-label]="'Abrir ' + card.name"><span class="card-name">{{ card.shortName }}</span><span class="card-full-name">{{ card.name }}</span></a><p class="card-tagline">{{ card.tagline }}</p><ul class="skill-list"><li *ngFor="let skill of card.guide.skills.slice(0, 3)">{{ skill }}</li></ul><ul class="card-meta"><li>{{ card.moduleCount }} módulos</li><li>{{ card.topicCount || '—' }} temas</li><li>{{ card.totalHours }}</li></ul><div class="card-progress" role="progressbar" [attr.aria-label]="'Progreso de ' + card.shortName" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="card.percent"><span [style.width.%]="card.percent"></span></div><div class="card-bottom"><small>{{ card.percent }}% marcado</small><a class="card-cta" [routerLink]="['/curso', card.id, card.nextModuleId]">{{ card.percent ? 'Continuar ruta' : 'Comenzar ruta' }} ↗</a></div><details class="card-topics"><summary>Requisitos y contenido</summary><p><strong>Antes de empezar:</strong> {{ card.guide.entry }}</p><p><strong>Evidencia de trabajo:</strong> {{ card.guide.evidence }}</p><ol><li *ngFor="let module of card.modules">{{ module }}</li></ol></details></article></div></div>
+        <div class="no-results" *ngIf="!filteredCards().length"><h3>No encontramos ese contenido</h3><p>Prueba otro término o explora todas las áreas.</p><button class="btn btn-ghost" (click)="clearFilters()">Mostrar todos los cursos</button></div>
+      </section>
+      <section class="starter" aria-labelledby="beginner-title"><div class="starter-intro"><p class="eyebrow">APRENDER HACIENDO</p><h2 id="beginner-title">Una práctica vale más<br />cuando puedes explicarla.</h2><a class="link-arrow" href="/visuals/recorrido-estudio.html" target="_blank" rel="noopener noreferrer">Ver el mapa de estudio ↗</a></div><ol class="starter-steps"><li><span>01</span><div><strong>Entiende la idea</strong><p>Lee el objetivo y comprueba lo que necesitas.</p></div></li><li><span>02</span><div><strong>Hazlo funcionar</strong><p>Crea el archivo indicado, ejecuta y compara el resultado.</p></div></li><li><span>03</span><div><strong>Prueba tus decisiones</strong><p>Cambia un caso, diagnostica el fallo y explica tu solución.</p></div></li></ol></section>
+      <section class="backup" aria-labelledby="backup-title"><div class="backup-intro"><h2 id="backup-title" tabindex="-1">Tu trabajo sigue contigo</h2><p>Guarda una copia de las marcas de progreso. Tus programas se conservan en tu computador. Restaurar una copia reemplaza el progreso de este navegador.</p></div><div class="backup-actions"><button class="btn btn-ghost" (click)="downloadProgressBackup()">Descargar copia</button><button class="btn btn-ghost" (click)="progressFileInput.click()">Restaurar copia</button><input #progressFileInput type="file" accept="application/json,.json" aria-label="Seleccionar copia de progreso JSON" (change)="restoreProgress(progressFileInput)" /></div><p class="backup-status" role="status" aria-live="polite">{{ backupStatus() }}</p></section>
+      <details class="official"><summary>Documentación y versiones de referencia</summary><div class="official-grid"><a *ngFor="let update of officialUpdates" [href]="update.url" target="_blank" rel="noopener noreferrer"><strong>{{ update.stack }}</strong><span>{{ update.baseline }}</span><small>Documentación oficial ↗</small></a></div></details>
+      <footer class="catalog-footer"><span>The Imperial Book</span><span>Construye. Comprueba. Comparte lo que aprendiste.</span></footer>
+    </main>
+  </div>
 </div>

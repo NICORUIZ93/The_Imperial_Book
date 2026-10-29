@@ -111,7 +111,6 @@ Construye y verifica el ejemplo.
       expect(secondTopicToggle?.getAttribute('aria-expanded')).toBe('false');
       secondTopicToggle?.click();
       expect(secondTopicToggle?.getAttribute('aria-expanded')).toBe('true');
-      expect(text).toContain('Resultado esperado');
       expect(text).toContain('Guía oficial');
       expect(text).toContain('Preparar');
       expect(text).toContain('Llevar a producción');
@@ -148,10 +147,8 @@ Construye y verifica el ejemplo.
       expect(page.querySelectorAll('.topic-step-navigation')).toHaveLength(2);
       expect(page.querySelector('.topic-step-navigation')?.textContent).toContain('Tema 1 de 2');
       expect(text).toContain('Errores comunes y cómo diagnosticarlos');
-      expect(text).toContain('Desde una carpeta vacía');
-      expect(text).toContain('Prepara el proyecto para Cómo funciona tu entorno de desarrollo');
-      expect(page.querySelector('.project-bootstrap')).toBeTruthy();
-      expect(page.querySelector<HTMLDetailsElement>('.project-bootstrap')?.open).toBe(true);
+      // Fundamentos enseña su preparación en el Markdown, sin anteponer otro entorno.
+      expect(page.querySelector('.project-bootstrap')).toBeFalsy();
       expect(page.querySelector('.lesson-resources')).toBeFalsy();
     } finally {
       fetchSpy.mockRestore();

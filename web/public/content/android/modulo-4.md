@@ -366,3 +366,72 @@ Ya modelas eventos de un solo uso con `SharedFlow`, evitando que se repitan inco
 - **Modificar el estado directamente desde la UI en vez de notificar una intención al `ViewModel`.** Rompe UDF; toda mutación de estado debe pasar por el `ViewModel`.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo. **Prerrequisitos:** Kotlin, estado Compose y ciclo de vida. Android Studio y emulador con rotación habilitada. El ejemplo independiente parte de un proyecto nuevo Empty Activity con Compose y Material 3.
+
+#### Paso 2 · Contexto y caso real
+En el proyecto integrador, una persona redacta una observación de entrega antes de enviarla. **¿Por qué es importante?** Mantener un dato durante recomposición no demuestra que vuelva al recrear la pantalla ni al recuperar un proceso eliminado por el sistema.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`remember` conserva un valor mientras permanece su composición. `rememberSaveable` añade guardado/restauración para valores compatibles con el mecanismo de estado guardado. Un ViewModel sobrevive a cambios de configuración, pero no a cualquier muerte de proceso. Para datos duraderos necesitas persistencia apropiada, por ejemplo una base de datos.
+
+**Analogía:** remember es una nota sobre la mesa; saveable es una ficha breve para reconstruir el contexto. El límite es el tamaño y la naturaleza del estado guardado: no guardes listas enormes, fotos ni secretos en él. Este campo es estado transitorio, no una entrega enviada al servidor.
+
+#### Paso 4 · Demostración guiada desde cero
+En Android Studio, crea **New Project → Empty Activity**, nombre `Restauracion`, paquete `com.example.restauracion`, Kotlin. Usa las dependencias de Compose/Material 3 que genera la plantilla y conserva sus versiones. Abre la terminal en la raíz del proyecto. Crea o reemplaza `app/src/main/java/com/example/restauracion/MainActivity.kt`:
+```kotlin
+package com.example.restauracion
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                var nota by rememberSaveable { mutableStateOf("") }
+                Column(Modifier.padding(24.dp)) {
+                    Text("Borrador de entrega")
+                    OutlinedTextField(value = nota, onValueChange = { nota = it },
+                        label = { Text("Observación") })
+                    Text("Texto transitorio; aún no enviado")
+                }
+            }
+        }
+    }
+}
+```
+```bash
+./gradlew assembleDebug
+```
+En Windows usa `gradlew.bat assembleDebug`. Instala y ejecuta con Run de Android Studio. **Resultado esperado:** escribe `Puerta azul`, rota el emulador y verifica que el texto sigue. Explica cada bloque: Activity instala la composición, el estado guardable recibe los cambios y el campo representa ese estado.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** sustituye `rememberSaveable` por `remember` y ajusta su import. Rota tras escribir: si la Activity se recrea, el texto se pierde. **Pista:** deshabilitar la recreación para esconder el fallo no enseña restauración; repón el estado guardable. Verifica la configuración del emulador si no se produce recreación.
+
+#### Paso 6 · Práctica independiente
+Ensaya muerte de proceso del sistema: con la app en segundo plano y un dispositivo ADB seleccionado ejecuta `adb shell am kill com.example.restauracion`, y vuelve desde recientes. Registra si se restaura el texto y las condiciones del dispositivo. No uses force-stop ni borres datos para afirmar que probaste el mismo escenario. Diseña además dónde guardarías una observación que debe sobrevivir al cierre explícito del usuario.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** captura antes/después de rotación y registro del ensayo de proceso, diferenciando resultados observados de esperados. El siguiente paso es SavedStateHandle y persistencia de borradores. **Errores comunes:** confundir recomposición con recreación, guardar objetos grandes y esperar que ViewModel sobreviva a cualquier terminación. **Límites y decisión de uso:** este ejemplo no promete conservación tras force-stop, desinstalación o borrado de datos.
+
+**Fuente oficial:** [Android: guardar estado Compose](https://developer.android.com/develop/ui/compose/state-saving).

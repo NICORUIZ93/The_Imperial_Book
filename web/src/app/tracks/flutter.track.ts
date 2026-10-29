@@ -80,7 +80,8 @@ export const FLUTTER_MODULES: CourseModule[] = [
     'App que consume una API real con estados loading/error/success explícitos.'),
   m(6, 'Persistencia local', 'Persistencia', 'Integración', '2 h 30 min', '#02569b',
     'Guarda datos localmente según la necesidad: clave-valor simple o base de datos estructurada.',
-    ['shared_preferences para configuración simple', 'sqflite para datos relacionales', 'Hive como base NoSQL ligera embebida', 'Estrategia offline-first', 'Firebase: Authentication, Firestore, Cloud Functions y FCM'],
+    [
+      'Restauración de formularios con RestorationMixin y una prueba de recreación','shared_preferences para configuración simple', 'sqflite para datos relacionales', 'Hive como base NoSQL ligera embebida', 'Estrategia offline-first', 'Firebase: Authentication, Firestore, Cloud Functions y FCM'],
     [
       'Guarda una preferencia simple (ej. tema oscuro activado) con shared_preferences y recupérala al iniciar la app',
       'Define una tabla con sqflite y realiza operaciones CRUD básicas',

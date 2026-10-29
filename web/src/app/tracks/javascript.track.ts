@@ -115,7 +115,8 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     'Proyecto multi-módulo construido con Vite con bundle final auditado.'),
   m(8, 'El DOM y eventos del navegador', 'DOM y eventos', 'Aplicación', '2 h 30 min', '#e9b400',
     'Antes de cualquier framework, entiende cómo JavaScript manipula la página real.',
-    ['Selección y manipulación del DOM', 'Delegación de eventos', 'Formularios y validación nativa', 'Web APIs: localStorage, IntersectionObserver', 'ResizeObserver y MutationObserver', 'requestAnimationFrame y requestIdleCallback'],
+    [
+      'Formularios accesibles: validar, anunciar y conservar la entrada','Selección y manipulación del DOM', 'Delegación de eventos', 'Formularios y validación nativa', 'Web APIs: localStorage, IntersectionObserver', 'ResizeObserver y MutationObserver', 'requestAnimationFrame y requestIdleCallback'],
     [
       'Crea una lista <ul> vacía y agrégale 20 <li> dinámicamente desde un array con createElement y appendChild',
       'En vez de agregar un listener a cada <li>, agrega uno solo al <ul> padre y usa event.target para delegación de eventos',

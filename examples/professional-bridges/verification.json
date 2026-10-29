@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-29",
+  "scope": "Verificación técnica delimitada; no certifica aprendizaje, producción ni todos los ejemplos históricos.",
+  "laboratories": [
+    {
+      "track": "foundations",
+      "lesson": "web/public/content/foundations/modulo-3.md",
+      "status": "checked-with-limits",
+      "evidence": "Chrome a 375 px: label enfoca input y no hay desborde horizontal."
+    },
+    {
+      "track": "javascript",
+      "lesson": "web/public/content/javascript/modulo-8.md",
+      "status": "checked-with-limits",
+      "evidence": "Chrome: Enter envía, formato inválido conserva entrada y aria-invalid cambia correctamente."
+    },
+    {
+      "track": "node",
+      "lesson": "web/public/content/node/modulo-3.md",
+      "status": "checked-with-limits",
+      "evidence": "node --test: recorrido de páginas y rechazo de límites; dos pruebas correctas."
+    },
+    {
+      "track": "cloud",
+      "lesson": "web/public/content/cloud/modulo-25.md",
+      "status": "checked-with-limits",
+      "evidence": "Python 3: restauración y detección de corrupción con salida documentada."
+    },
+    {
+      "track": "devops",
+      "lesson": "web/public/content/devops/modulo-5.md",
+      "status": "checked-with-limits",
+      "evidence": "Python 3: candidata rechazada; v1.py permanece activa y verificada."
+    },
+    {
+      "track": "rutaflow",
+      "lesson": "web/public/content/rutaflow/modulo-2.md",
+      "status": "checked-with-limits",
+      "evidence": "node --test: compatibilidad v1/v2 y rechazo de datos inválidos; dos pruebas correctas."
+    },
+    {
+      "track": "angular",
+      "lesson": "web/public/content/angular/modulo-4.md",
+      "status": "checked-with-limits",
+      "evidence": "Build Angular 21 correcto; Chrome cancela una salida conservando la nota y acepta la siguiente."
+    },
+    {
+      "track": "react",
+      "lesson": "web/public/content/react/modulo-2.md",
+      "status": "checked-with-limits",
+      "evidence": "Chrome: cambiar de norte a sur mantiene sur después de finalizar la espera antigua."
+    },
+    {
+      "track": "java",
+      "lesson": "web/public/content/java/modulo-5.md",
+      "status": "checked-with-limits",
+      "evidence": "javac/java JDK 25: plazo agotado y executor terminado; también se compiló y ejecutó el ejemplo reparado de tarifas (total 26000)."
+    },
+    {
+      "track": "ios",
+      "lesson": "web/public/content/ios/modulo-4.md",
+      "status": "checked-with-limits",
+      "evidence": "swiftc Swift 6.4 y ejecutable: cancelación sin publicar el resultado."
+    },
+    {
+      "track": "kotlin-multiplatform",
+      "lesson": "web/public/content/kotlin-multiplatform/modulo-4.md",
+      "status": "checked-with-limits",
+      "evidence": "Kotlin 2.2.21 compilado mediante Maven para JVM: antes, límite y después correctos; no se ejecutaron Native/iOS."
+    },
+    {
+      "track": "android",
+      "lesson": "web/public/content/android/modulo-4.md",
+      "status": "pending",
+      "evidence": "Pendiente: no se compiló la app ni se ensayó recreación/muerte de proceso en dispositivo durante esta entrega."
+    },
+    {
+      "track": "flutter",
+      "lesson": "web/public/content/flutter/modulo-6.md",
+      "status": "checked-with-limits",
+      "evidence": "Flutter 3.50 pre / Dart 3.13 dev locales: flutter test correcto después de añadir pump previo a la restauración; pendiente contrastar también con canal estable."
+    },
+    {
+      "track": "spring-boot",
+      "lesson": "web/public/content/spring-boot/modulo-2.md",
+      "status": "checked-with-limits",
+      "evidence": "Proyecto Initializr Spring Boot 4.0.9 con JDK25: Maven package correcto; HTTP devuelve IDs 3 y 4 para segunda página y 400 para size=1000000."
+    }
+  ],
+  "additionalRepair": {
+    "reactQuery": "Vite8 + React19 + TanStack Query5: Chrome mostró ENV-42 y ENV-99 en ambos paneles; se observaron dos peticiones, una por zona."
+  }
+}

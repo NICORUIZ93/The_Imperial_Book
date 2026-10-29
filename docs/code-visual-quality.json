@@ -1,189 +1,175 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 96,
-      "code": 96,
-      "commentedCode": 66,
-      "mermaid": 73,
+      "topics": 97,
+      "code": 97,
+      "commentedCode": 67,
+      "mermaid": 69,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 96,
-      "runCommand": 96,
+      "filePath": 97,
+      "runCommand": 97,
       "officialSource": 11
     },
     "cloud": {
-      "topics": 155,
-      "code": 155,
-      "commentedCode": 70,
+      "topics": 156,
+      "code": 156,
+      "commentedCode": 71,
       "mermaid": 80,
       "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
-      "filePath": 155,
-      "runCommand": 155,
-      "officialSource": 139
+      "filePath": 156,
+      "runCommand": 156,
+      "officialSource": 140
     },
     "devops": {
-      "topics": 103,
-      "code": 103,
-      "commentedCode": 50,
+      "topics": 104,
+      "code": 104,
+      "commentedCode": 51,
       "mermaid": 54,
       "archifyVisual": 1,
       "asciiVisual": 43,
       "misleadingDiagramLabel": 0,
-      "filePath": 103,
-      "runCommand": 102,
+      "filePath": 104,
+      "runCommand": 103,
       "officialSource": 34
     },
     "javascript": {
-      "topics": 87,
-      "code": 87,
+      "topics": 88,
+      "code": 88,
       "commentedCode": 76,
       "mermaid": 58,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 87,
-      "runCommand": 87,
-      "officialSource": 67
+      "filePath": 88,
+      "runCommand": 88,
+      "officialSource": 68
     },
     "node": {
-      "topics": 79,
-      "code": 79,
+      "topics": 80,
+      "code": 80,
       "commentedCode": 38,
       "mermaid": 23,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
-      "filePath": 79,
-      "runCommand": 79,
-      "officialSource": 48
+      "filePath": 80,
+      "runCommand": 80,
+      "officialSource": 49
     },
     "angular": {
-      "topics": 70,
-      "code": 70,
+      "topics": 71,
+      "code": 71,
       "commentedCode": 69,
       "mermaid": 30,
       "archifyVisual": 0,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 70,
-      "runCommand": 69,
-      "officialSource": 58
+      "filePath": 71,
+      "runCommand": 70,
+      "officialSource": 59
     },
     "react": {
-      "topics": 57,
-      "code": 57,
+      "topics": 58,
+      "code": 58,
       "commentedCode": 36,
       "mermaid": 37,
       "archifyVisual": 0,
       "asciiVisual": 9,
       "misleadingDiagramLabel": 0,
-      "filePath": 57,
-      "runCommand": 57,
-      "officialSource": 38
+      "filePath": 58,
+      "runCommand": 58,
+      "officialSource": 39
     },
     "java": {
-      "topics": 79,
-      "code": 79,
+      "topics": 80,
+      "code": 80,
       "commentedCode": 56,
       "mermaid": 22,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 79,
-      "runCommand": 79,
-      "officialSource": 42
+      "filePath": 80,
+      "runCommand": 80,
+      "officialSource": 41
     },
     "spring-boot": {
-      "topics": 83,
-      "code": 83,
-      "commentedCode": 67,
+      "topics": 84,
+      "code": 84,
+      "commentedCode": 68,
       "mermaid": 44,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 83,
-      "runCommand": 83,
-      "officialSource": 61
+      "filePath": 84,
+      "runCommand": 84,
+      "officialSource": 62
     },
     "kotlin-multiplatform": {
-      "topics": 55,
-      "code": 55,
+      "topics": 56,
+      "code": 56,
       "commentedCode": 36,
       "mermaid": 31,
       "archifyVisual": 0,
       "asciiVisual": 22,
       "misleadingDiagramLabel": 0,
-      "filePath": 55,
-      "runCommand": 55,
-      "officialSource": 41
+      "filePath": 56,
+      "runCommand": 56,
+      "officialSource": 42
     },
     "android": {
-      "topics": 56,
-      "code": 56,
+      "topics": 57,
+      "code": 57,
       "commentedCode": 52,
       "mermaid": 14,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 56,
-      "runCommand": 56,
-      "officialSource": 53
+      "filePath": 57,
+      "runCommand": 57,
+      "officialSource": 54
     },
     "ios": {
-      "topics": 55,
-      "code": 55,
-      "commentedCode": 25,
+      "topics": 56,
+      "code": 56,
+      "commentedCode": 26,
       "mermaid": 30,
       "archifyVisual": 0,
       "asciiVisual": 16,
       "misleadingDiagramLabel": 0,
-      "filePath": 55,
-      "runCommand": 55,
-      "officialSource": 55
+      "filePath": 56,
+      "runCommand": 56,
+      "officialSource": 56
     },
     "flutter": {
-      "topics": 62,
-      "code": 62,
+      "topics": 63,
+      "code": 63,
       "commentedCode": 23,
       "mermaid": 51,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 62,
-      "runCommand": 62,
-      "officialSource": 51
+      "filePath": 63,
+      "runCommand": 63,
+      "officialSource": 52
     },
     "rutaflow": {
-      "topics": 25,
-      "code": 25,
+      "topics": 26,
+      "code": 26,
       "commentedCode": 25,
       "mermaid": 24,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 25,
-      "runCommand": 23,
-      "officialSource": 6
+      "filePath": 26,
+      "runCommand": 24,
+      "officialSource": 7
     }
   },
   "priorityDebt": [
-    {
-      "track": "foundations",
-      "module": 0,
-      "topic": "Tema 2: Archivos, carpetas y rutas sin perderse",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 0,
-      "topic": "Tema 3: Cómo leer un comando antes de ejecutarlo",
-      "missingCode": false,
-      "missingComments": true
-    },
     {
       "track": "foundations",
       "module": 10,
@@ -249,8 +235,22 @@
     },
     {
       "track": "foundations",
+      "module": 12,
+      "topic": "Tema 13: Sistemas embebidos: RTOS, buses y firmware",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "foundations",
       "module": 2,
       "topic": "Tema 6: Tablas hash — búsqueda en tiempo constante",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "foundations",
+      "module": 3,
+      "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
       "missingCode": false,
       "missingComments": true
     },
@@ -1418,6 +1418,13 @@
     },
     {
       "track": "javascript",
+      "module": 8,
+      "topic": "Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "javascript",
       "module": 9,
       "topic": "Tema 4: ESLint, Prettier y cobertura de código",
       "missingCode": false,
@@ -1600,6 +1607,13 @@
     },
     {
       "track": "node",
+      "module": 3,
+      "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "node",
       "module": 4,
       "topic": "Tema 1: Middleware — orden de ejecución y next()",
       "missingCode": false,
@@ -1718,6 +1732,13 @@
       "missingComments": true
     },
     {
+      "track": "angular",
+      "module": 4,
+      "topic": "Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
       "track": "react",
       "module": 10,
       "topic": "Tema 2: use client para interactividad",
@@ -1784,6 +1805,13 @@
       "track": "react",
       "module": 2,
       "topic": "Tema 4: Reglas de los hooks, useReducer y useImperativeHandle",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "react",
+      "module": 2,
+      "topic": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
       "missingCode": false,
       "missingComments": true
     },
@@ -1966,6 +1994,13 @@
       "track": "java",
       "module": 5,
       "topic": "Tema 4: Condiciones de carrera y sincronización",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "missingCode": false,
       "missingComments": true
     },
@@ -2237,6 +2272,13 @@
     },
     {
       "track": "kotlin-multiplatform",
+      "module": 4,
+      "topic": "Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "kotlin-multiplatform",
       "module": 5,
       "topic": "Tema 5: kotlinx.serialization — JSON compartido entre plataformas",
       "missingCode": false,
@@ -2295,6 +2337,13 @@
       "track": "android",
       "module": 11,
       "topic": "Tema 3: Versionado, tracks y políticas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 4,
+      "topic": "Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable",
       "missingCode": false,
       "missingComments": true
     },
@@ -2727,6 +2776,13 @@
     },
     {
       "track": "flutter",
+      "module": 6,
+      "topic": "Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
       "module": 7,
       "topic": "Tema 2: Plugins federados",
       "missingCode": false,
@@ -2778,6 +2834,13 @@
       "track": "flutter",
       "module": 9,
       "topic": "Tema 3: Integration tests",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "rutaflow",
+      "module": 2,
+      "topic": "Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
       "missingCode": false,
       "missingComments": true
     }

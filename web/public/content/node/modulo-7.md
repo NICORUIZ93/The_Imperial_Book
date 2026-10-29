@@ -557,7 +557,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** desarrolla con TDD la regla de reasignación de entregas fallidas de la API.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** escribir el código de producción antes que la prueba y luego justificarla a posteriori, perdiendo la evidencia de que realmente falló primero; probar solo el caso feliz del límite (10 envíos) sin cubrir el borde exacto (9 y 10) que originó el bug real.
 
 ## Laboratorio práctico
 

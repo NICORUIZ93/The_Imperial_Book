@@ -254,6 +254,17 @@
       ]
     },
     {
+      "id": "foundations:3:5",
+      "track": "foundations",
+      "module": 3,
+      "position": 5,
+      "title": "HTML semántico y CSS responsive desde un archivo vacío",
+      "file": "web/public/content/foundations/modulo-3.md",
+      "requires": [
+        "foundations:3:4"
+      ]
+    },
+    {
       "id": "foundations:4:1",
       "track": "foundations",
       "module": 4,
@@ -261,7 +272,7 @@
       "title": "Del mundo real al modelo relacional",
       "file": "web/public/content/foundations/modulo-4.md",
       "requires": [
-        "foundations:3:4"
+        "foundations:3:5"
       ]
     },
     {
@@ -1616,6 +1627,17 @@
       ]
     },
     {
+      "id": "javascript:8:7",
+      "track": "javascript",
+      "module": 8,
+      "position": 7,
+      "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
+      "file": "web/public/content/javascript/modulo-8.md",
+      "requires": [
+        "javascript:8:6"
+      ]
+    },
+    {
       "id": "javascript:9:1",
       "track": "javascript",
       "module": 9,
@@ -1623,7 +1645,7 @@
       "title": "Unit testing con Vitest",
       "file": "web/public/content/javascript/modulo-9.md",
       "requires": [
-        "javascript:8:6"
+        "javascript:8:7"
       ]
     },
     {
@@ -2329,6 +2351,17 @@
       ]
     },
     {
+      "id": "java:5:7",
+      "track": "java",
+      "module": 5,
+      "position": 7,
+      "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
+      "file": "web/public/content/java/modulo-5.md",
+      "requires": [
+        "java:5:6"
+      ]
+    },
+    {
       "id": "java:6:1",
       "track": "java",
       "module": 6,
@@ -2336,7 +2369,7 @@
       "title": "NIO.2 — Path y Files",
       "file": "web/public/content/java/modulo-6.md",
       "requires": [
-        "java:5:6"
+        "java:5:7"
       ]
     },
     {
@@ -3121,6 +3154,17 @@
       ]
     },
     {
+      "id": "node:3:5",
+      "track": "node",
+      "module": 3,
+      "position": 5,
+      "title": "Paginación por cursor y límites de entrada comprobables",
+      "file": "web/public/content/node/modulo-3.md",
+      "requires": [
+        "node:3:4"
+      ]
+    },
+    {
       "id": "node:4:1",
       "track": "node",
       "module": 4,
@@ -3128,7 +3172,7 @@
       "title": "Middleware — orden de ejecución y next()",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
-        "node:3:4"
+        "node:3:5"
       ]
     },
     {
@@ -3880,6 +3924,17 @@
       ]
     },
     {
+      "id": "spring-boot:2:6",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 6,
+      "title": "Paginación HTTP con validación y un límite de recursos explícito",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:5"
+      ]
+    },
+    {
       "id": "spring-boot:3:1",
       "track": "spring-boot",
       "module": 3,
@@ -3887,7 +3942,7 @@
       "title": "Entidades y repositorios derivados",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "requires": [
-        "spring-boot:2:5"
+        "spring-boot:2:6"
       ]
     },
     {
@@ -4947,6 +5002,17 @@
       ]
     },
     {
+      "id": "angular:4:5",
+      "track": "angular",
+      "module": 4,
+      "position": 5,
+      "title": "CanDeactivate: proteger un borrador sin confundir navegación con autorización",
+      "file": "web/public/content/angular/modulo-4.md",
+      "requires": [
+        "angular:4:4"
+      ]
+    },
+    {
       "id": "angular:5:1",
       "track": "angular",
       "module": 5,
@@ -4954,7 +5020,7 @@
       "title": "Reactive Forms — FormGroup y FormControl",
       "file": "web/public/content/angular/modulo-5.md",
       "requires": [
-        "angular:4:4"
+        "angular:4:5"
       ]
     },
     {
@@ -5585,6 +5651,17 @@
       ]
     },
     {
+      "id": "react:2:6",
+      "track": "react",
+      "module": 2,
+      "position": 6,
+      "title": "Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
+      "file": "web/public/content/react/modulo-2.md",
+      "requires": [
+        "react:2:5"
+      ]
+    },
+    {
       "id": "react:3:1",
       "track": "react",
       "module": 3,
@@ -5592,7 +5669,7 @@
       "title": "React Hook Form y el problema del re-render por tecla",
       "file": "web/public/content/react/modulo-3.md",
       "requires": [
-        "react:2:5"
+        "react:2:6"
       ]
     },
     {
@@ -6289,6 +6366,17 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:4:5",
+      "track": "kotlin-multiplatform",
+      "module": 4,
+      "position": 5,
+      "title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+      "file": "web/public/content/kotlin-multiplatform/modulo-4.md",
+      "requires": [
+        "kotlin-multiplatform:4:4"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:5:1",
       "track": "kotlin-multiplatform",
       "module": 5,
@@ -6296,7 +6384,7 @@
       "title": "Ktor Client multiplataforma",
       "file": "web/public/content/kotlin-multiplatform/modulo-5.md",
       "requires": [
-        "kotlin-multiplatform:4:4"
+        "kotlin-multiplatform:4:5"
       ]
     },
     {
@@ -6872,6 +6960,17 @@
       ]
     },
     {
+      "id": "android:4:4",
+      "track": "android",
+      "module": 4,
+      "position": 4,
+      "title": "Restaurar un borrador tras recreación: remember no equivale a rememberSaveable",
+      "file": "web/public/content/android/modulo-4.md",
+      "requires": [
+        "android:4:3"
+      ]
+    },
+    {
       "id": "android:5:1",
       "track": "android",
       "module": 5,
@@ -6879,7 +6978,7 @@
       "title": "Retrofit con coroutines",
       "file": "web/public/content/android/modulo-5.md",
       "requires": [
-        "android:4:3"
+        "android:4:4"
       ]
     },
     {
@@ -7464,6 +7563,17 @@
       ]
     },
     {
+      "id": "ios:4:4",
+      "track": "ios",
+      "module": 4,
+      "position": 4,
+      "title": "Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
+      "file": "web/public/content/ios/modulo-4.md",
+      "requires": [
+        "ios:4:3"
+      ]
+    },
+    {
       "id": "ios:5:1",
       "track": "ios",
       "module": 5,
@@ -7471,7 +7581,7 @@
       "title": "URLSession con async/await y Codable",
       "file": "web/public/content/ios/modulo-5.md",
       "requires": [
-        "ios:4:3"
+        "ios:4:4"
       ]
     },
     {
@@ -8155,6 +8265,17 @@
       ]
     },
     {
+      "id": "flutter:6:4",
+      "track": "flutter",
+      "module": 6,
+      "position": 4,
+      "title": "Restauración de formularios con RestorationMixin y una prueba de recreación",
+      "file": "web/public/content/flutter/modulo-6.md",
+      "requires": [
+        "flutter:6:3"
+      ]
+    },
+    {
       "id": "flutter:7:1",
       "track": "flutter",
       "module": 7,
@@ -8162,7 +8283,7 @@
       "title": "MethodChannel",
       "file": "web/public/content/flutter/modulo-7.md",
       "requires": [
-        "flutter:6:3"
+        "flutter:6:4"
       ]
     },
     {
@@ -8991,6 +9112,17 @@
       ]
     },
     {
+      "id": "devops:5:6",
+      "track": "devops",
+      "module": 5,
+      "position": 6,
+      "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+      "file": "web/public/content/devops/modulo-5.md",
+      "requires": [
+        "devops:5:5"
+      ]
+    },
+    {
       "id": "devops:6:1",
       "track": "devops",
       "module": 6,
@@ -8998,7 +9130,7 @@
       "title": "Pod, ReplicaSet, Deployment",
       "file": "web/public/content/devops/modulo-6.md",
       "requires": [
-        "devops:5:5"
+        "devops:5:6"
       ]
     },
     {
@@ -10905,6 +11037,17 @@
       ]
     },
     {
+      "id": "cloud:25:6",
+      "track": "cloud",
+      "module": 25,
+      "position": 6,
+      "title": "Simulacro de restauración: comprobar contenido, no solo la existencia del backup",
+      "file": "web/public/content/cloud/modulo-25.md",
+      "requires": [
+        "cloud:25:5"
+      ]
+    },
+    {
       "id": "cloud:26:1",
       "track": "cloud",
       "module": 26,
@@ -10912,7 +11055,7 @@
       "title": "Amazon Data Firehose — entrega gestionada sin consumidores propios",
       "file": "web/public/content/cloud/modulo-26.md",
       "requires": [
-        "cloud:25:5"
+        "cloud:25:6"
       ]
     },
     {
@@ -11510,6 +11653,17 @@
       ]
     },
     {
+      "id": "rutaflow:2:4",
+      "track": "rutaflow",
+      "module": 2,
+      "position": 4,
+      "title": "Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
+      "file": "web/public/content/rutaflow/modulo-2.md",
+      "requires": [
+        "rutaflow:2:3"
+      ]
+    },
+    {
       "id": "rutaflow:3:1",
       "track": "rutaflow",
       "module": 3,
@@ -11517,7 +11671,7 @@
       "title": "Estados explícitos y arquitectura de interfaz",
       "file": "web/public/content/rutaflow/modulo-3.md",
       "requires": [
-        "rutaflow:2:3"
+        "rutaflow:2:4"
       ]
     },
     {

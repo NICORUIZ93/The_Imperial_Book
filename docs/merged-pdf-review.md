@@ -19,11 +19,11 @@ El destino señala dónde estudiar el tema. `existente` significa contenido loca
 | Página | Tema identificado | Tratamiento | Destino |
 |---|---|---|---|
 | 1 | Explicación sencilla, analogía y práctica | prompts | [docs/PROMPTS-FORMACION.md](PROMPTS-FORMACION.md) |
-| 2 | QuickRef: referencias rápidas | recurso | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
-| 3 | Exercism: práctica y mentoría | recurso | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
+| 2 | QuickRef: referencias rápidas | recurso | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
+| 3 | Exercism: práctica y mentoría | recurso | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
 | 4 | 16 áreas de ingeniería electrónica | ampliado | [web/public/content/foundations/modulo-12.md](../web/public/content/foundations/modulo-12.md) |
-| 5 | QuickRef: captura parcial repetida | duplicado | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
-| 6 | Open Design y diseño con agentes | recurso | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
+| 5 | QuickRef: captura parcial repetida | duplicado | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
+| 6 | Open Design y diseño con agentes | recurso | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
 | 7 | Observer en Java | existente | [web/public/content/java/modulo-12.md](../web/public/content/java/modulo-12.md) |
 | 8 | JWT, claims, firma y autorización | existente | [web/public/content/spring-boot/modulo-18.md](../web/public/content/spring-boot/modulo-18.md) |
 | 9 | QA con Postman, Newman y Jenkins | existente | [web/public/content/devops/modulo-16.md](../web/public/content/devops/modulo-16.md) |
@@ -32,31 +32,31 @@ El destino señala dónde estudiar el tema. `existente` significa contenido loca
 | 12 | Arquitectura empresarial, dominio y capas | existente | [web/public/content/spring-boot/modulo-15.md](../web/public/content/spring-boot/modulo-15.md) |
 | 13 | Integración y entrega continua | existente | [web/public/content/devops/modulo-4.md](../web/public/content/devops/modulo-4.md) |
 | 14 | Angular httpResource y estados HTTP | existente | [web/public/content/angular/modulo-2.md](../web/public/content/angular/modulo-2.md) |
-| 15 | Progresión de Java a sistemas distribuidos | existente | [docs/roadmaps/02-java.md](roadmaps/02-java.md) |
-| 16 | Progresión Java: captura repetida | duplicado | [docs/roadmaps/02-java.md](roadmaps/02-java.md) |
+| 15 | Progresión de Java a sistemas distribuidos | existente | [web/src/app/tracks/java.track.ts](../web/src/app/tracks/java.track.ts) |
+| 16 | Progresión Java: captura repetida | duplicado | [web/src/app/tracks/java.track.ts](../web/src/app/tracks/java.track.ts) |
 | 17 | OpenTofu e infraestructura como código | ampliado | [web/public/content/devops/modulo-8.md](../web/public/content/devops/modulo-8.md) |
-| 18 | Dory y alternativas de runtime Docker | recurso | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
+| 18 | Dory y alternativas de runtime Docker | recurso | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
 | 19 | Angular OnPush y Signals | existente | [web/public/content/angular/modulo-11.md](../web/public/content/angular/modulo-11.md) |
-| 20 | Java antes de Spring: prerrequisitos | existente | [docs/roadmaps/03-spring.md](roadmaps/03-spring.md) |
+| 20 | Java antes de Spring: prerrequisitos | existente | [web/src/app/tracks/spring-boot.track.ts](../web/src/app/tracks/spring-boot.track.ts) |
 | 21 | Prompt de ruta en 30 pasos | prompts | [docs/PROMPTS-FORMACION.md](PROMPTS-FORMACION.md) |
 | 22 | Dijkstra y caminos mínimos en Python | existente | [web/public/content/rutaflow/modulo-5.md](../web/public/content/rutaflow/modulo-5.md) |
 | 23 | Flutter, Riverpod, mapas, GPS, Dio, Spring y MySQL espacial | existente | [web/public/content/flutter/modulo-14.md](../web/public/content/flutter/modulo-14.md) |
-| 24 | Publicidad de máster Java y microservicios | recurso | [docs/roadmaps/03-spring.md](roadmaps/03-spring.md) |
+| 24 | Publicidad de máster Java y microservicios | recurso | [web/src/app/tracks/spring-boot.track.ts](../web/src/app/tracks/spring-boot.track.ts) |
 | 25 | Kafka: retry topics, backoff y DLT | existente | [web/public/content/spring-boot/modulo-21.md](../web/public/content/spring-boot/modulo-21.md) |
 | 26 | Evolución Java, LTS, lambdas y virtual threads | existente | [web/public/content/java/modulo-7.md](../web/public/content/java/modulo-7.md) |
-| 27 | QuickRef: captura repetida | duplicado | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
+| 27 | QuickRef: captura repetida | duplicado | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
 | 28 | Integraciones empresariales Java: REST, SOAP, SFTP y SMTP | ampliado | [web/public/content/spring-boot/modulo-20.md](../web/public/content/spring-boot/modulo-20.md) |
-| 29 | Open Design: captura repetida | duplicado | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
+| 29 | Open Design: captura repetida | duplicado | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
 | 30 | SQL y recuperación de datos | existente | [web/public/content/foundations/modulo-4.md](../web/public/content/foundations/modulo-4.md) |
 | 31 | Lista de servicios gratuitos y de pago | sin-temario | Sin contenido curricular |
 | 32 | Docker: variables de entorno y secretos | existente | [web/public/content/devops/modulo-2.md](../web/public/content/devops/modulo-2.md) |
 | 33 | Libro de C++: portada y descarga promocional | recurso | [web/public/content/foundations/modulo-12.md](../web/public/content/foundations/modulo-12.md) |
-| 34 | Pispeo: recomendación de utilidad sin detalle curricular | recurso | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
+| 34 | Pispeo: recomendación de utilidad sin detalle curricular | recurso | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
 | 35 | JPA: LAZY, EAGER y N+1 | existente | [web/public/content/java/modulo-16.md](../web/public/content/java/modulo-16.md) |
 | 36 | Concurrencia Java: locks, executors y futures | existente | [web/public/content/java/modulo-5.md](../web/public/content/java/modulo-5.md) |
 | 37 | Java Collections y estructuras de datos | existente | [web/public/content/java/modulo-2.md](../web/public/content/java/modulo-2.md) |
 | 38 | Kafka: productores, particiones, grupos y offsets | existente | [web/public/content/spring-boot/modulo-21.md](../web/public/content/spring-boot/modulo-21.md) |
-| 39 | Plan Java en 30 días | existente | [docs/roadmaps/02-java.md](roadmaps/02-java.md) |
+| 39 | Plan Java en 30 días | existente | [web/src/app/tracks/java.track.ts](../web/src/app/tracks/java.track.ts) |
 | 40 | Maven: lifecycle y fases | existente | [web/public/content/java/modulo-8.md](../web/public/content/java/modulo-8.md) |
 | 41 | Bruno frente a Postman | ampliado | [web/public/content/devops/modulo-16.md](../web/public/content/devops/modulo-16.md) |
 | 42 | PLC, IEC 61131-3, HMI y buses | ampliado | [web/public/content/foundations/modulo-12.md](../web/public/content/foundations/modulo-12.md) |
@@ -74,18 +74,18 @@ El destino señala dónde estudiar el tema. `existente` significa contenido loca
 | 54 | Prompt de tesis con historia y errores simulados | adaptado | [docs/PROMPTS-FORMACION.md](PROMPTS-FORMACION.md) |
 | 55 | Prompt de redacción natural | adaptado | [docs/PROMPTS-FORMACION.md](PROMPTS-FORMACION.md) |
 | 56 | Spring Cloud y API Gateway | existente | [web/public/content/spring-boot/modulo-10.md](../web/public/content/spring-boot/modulo-10.md) |
-| 57 | Spring Boot en nueve capas | existente | [docs/roadmaps/03-spring.md](roadmaps/03-spring.md) |
+| 57 | Spring Boot en nueve capas | existente | [web/src/app/tracks/spring-boot.track.ts](../web/src/app/tracks/spring-boot.track.ts) |
 | 58 | Angular Native, Fabric y Expo | existente | [web/public/content/angular/modulo-16.md](../web/public/content/angular/modulo-16.md) |
-| 59 | WinUtil: ajustes Windows | recurso | [docs/roadmaps/18-herramientas.md](roadmaps/18-herramientas.md) |
-| 60 | Diez patrones de arquitectura y sus costes | existente | [docs/roadmaps/16-patrones-arquitectura.md](roadmaps/16-patrones-arquitectura.md) |
+| 59 | WinUtil: ajustes Windows | recurso | sin destino curricular (recurso/duplicado, no se convierte en capítulo) |
+| 60 | Diez patrones de arquitectura y sus costes | existente | [web/public/content/java/modulo-12.md](../web/public/content/java/modulo-12.md) |
 | 61 | Spring: anuncios milestone | referencia-version | [web/public/content/spring-boot/modulo-0.md](../web/public/content/spring-boot/modulo-0.md) |
 | 62 | Keycloak, OAuth2, OIDC y SAML | existente | [web/public/content/spring-boot/modulo-10.md](../web/public/content/spring-boot/modulo-10.md) |
-| 63 | Bundle: Jenkins, Spring, Selenium y algoritmos | recurso | [docs/roadmaps/15-testing.md](roadmaps/15-testing.md) |
+| 63 | Bundle: Jenkins, Spring, Selenium y algoritmos | recurso | sin destino curricular (recurso, no se convierte en capítulo) |
 | 64 | ManimGX y animaciones técnicas | recurso | [examples/manim/README.md](../examples/manim/README.md) |
 | 65 | Circuito de cuatro diodos | resuelto-modelo | [web/public/content/foundations/modulo-12.md](../web/public/content/foundations/modulo-12.md) |
 | 66 | Strategy en Java | existente | [web/public/content/java/modulo-12.md](../web/public/content/java/modulo-12.md) |
 | 67 | Ejercicio de Thévenin: Vab en carga de 6 ohm | resuelto | [web/public/content/foundations/modulo-12.md](../web/public/content/foundations/modulo-12.md) |
-| 68 | Roadmap Java: fundamentos a proyectos | existente | [docs/roadmaps/02-java.md](roadmaps/02-java.md) |
+| 68 | Roadmap Java: fundamentos a proyectos | existente | [web/src/app/tracks/java.track.ts](../web/src/app/tracks/java.track.ts) |
 | 69 | Singleton en Java y concurrencia | existente | [web/public/content/java/modulo-12.md](../web/public/content/java/modulo-12.md) |
 
 ## Correcciones y límites técnicos

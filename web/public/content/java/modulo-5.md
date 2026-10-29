@@ -6,58 +6,64 @@
 ### Tema 1: ExecutorService y gestión de hilos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reemplazar la creación manual de un `Thread` por tarea con un `ExecutorService` de pool fijo, cerrado correctamente. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar enviarás ocho cálculos a un executor de cuatro hilos, recogerás sus resultados y comprobarás su terminación. **Prerrequisitos:** clases, excepciones, lambdas y JDK 25. Comprueba `java --version` y `javac --version`. No necesitas Maven para este ejemplo independiente desde carpeta vacía.
 
 #### Paso 2 · Contexto y caso real
-Procesar 200 solicitudes de cálculo de tarifa creando un `Thread` nuevo para cada una agota rápidamente la memoria disponible; limitar el trabajo concurrente a un pool fijo de tamaño conocido evita ese problema.
+El proyecto integrador calcula tarifas para varias entregas. **¿Por qué es importante?** Un executor permite limitar hilos activos y centralizar su ciclo de vida. No afirmamos que crear exactamente 200 hilos agote cualquier máquina ni que un pool siempre sea más rápido: depende del trabajo y de los recursos disponibles.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un pool de hilos reutiliza un número fijo de hilos ya creados, en vez de crear y destruir uno por tarea. La analogía: contratar y despedir un trabajador nuevo para cada tarea breve, frente a mantener un equipo fijo ya entrenado que toma la siguiente tarea disponible.
+`submit` entrega una tarea y devuelve un Future; `get` espera su resultado y propaga fallos. `shutdown` deja de aceptar trabajo nuevo y permite terminar el pendiente. `awaitTermination` comprueba si acabó en un plazo. **Analogía:** un equipo fijo recoge encargos de una cola en lugar de contratar una persona nueva por cada encargo. El límite es que una cola sin límite también puede consumir memoria: limitar hilos no equivale a limitar trabajo pendiente.
 
 #### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
 ```bash
-mkdir ejemplo-executor-pool
-cd ejemplo-executor-pool
-mkdir -p src/main/java/academia/concurrencia
+mkdir ejemplo-executor
+cd ejemplo-executor
 ```
-Crea `ProcesadorTarifas.java` que mida, con `Thread` crudo primero y con `Executors.newFixedThreadPool(4)` después, el tiempo de procesar 200 tareas breves. Compila y ejecuta, cerrando el pool en un bloque `finally`:
+Crea `ProcesadorTarifas.java` completo:
+```java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
+public class ProcesadorTarifas {
+    public static void main(String[] args) throws Exception {
+        ExecutorService pool = Executors.newFixedThreadPool(4);
+        try {
+            List<Future<Integer>> pendientes = new ArrayList<>();
+            for (int km = 1; km <= 8; km++) {
+                final int distancia = km;
+                pendientes.add(pool.submit(() -> 1000 + distancia * 500));
+            }
+            int total = 0;
+            for (Future<Integer> pendiente : pendientes) total += pendiente.get();
+            System.out.println("Total: " + total);
+        } finally {
+            pool.shutdown(); // Rechaza nuevos encargos y conserva los ya aceptados.
+            if (!pool.awaitTermination(5, TimeUnit.SECONDS)) {
+                pool.shutdownNow();
+                throw new IllegalStateException("No terminó en el plazo");
+            }
+        }
+        System.out.println("Pool cerrado");
+    }
+}
+```
 ```bash
-javac -d out src/main/java/academia/concurrencia/ProcesadorTarifas.java
-java -cp out academia.concurrencia.ProcesadorTarifas
+javac ProcesadorTarifas.java
+java ProcesadorTarifas
 ```
+**Resultado esperado:** `Total: 26000` y `Pool cerrado`. Explica cada bloque: la copia final de distancia identifica el encargo, los Futures conservan sus resultados y finally cierra el recurso incluso si un cálculo falla. Recoger Futures en orden no fuerza que las tareas se ejecuten en ese mismo orden.
 
 #### Paso 5 · Práctica guiada
-Pista: omite deliberadamente `pool.shutdown()` en el `finally` para provocar un fallo diagnosticable; el proceso de la JVM no termina porque el pool sigue esperando tareas. Resultado esperado: restaurar el `shutdown()` correcto en `finally` hace que el proceso termine normalmente.
+**Fallo deliberado:** elimina `pool.shutdown()`. Al vencer la espera, el cierre forzado sigue evitando dejar la JVM colgada, pero se lanza el error de terminación. **Pista:** terminar tareas no ordena al executor dejar de esperar trabajo nuevo. Repón shutdown y comprueba el cierre normal.
 
 #### Paso 6 · Práctica independiente
-Reemplaza `submit()` individual por `invokeAll()` para enviar las 200 tareas de una vez y esperar a que todas terminen antes de continuar; compara el código resultante con el de `submit()` uno por uno.
+Representa los ocho cálculos como `List<Callable<Integer>>` y usa `invokeAll`. Comprueba que el total sigue siendo 26000. Añade un cálculo que lanza una excepción y localiza cómo llega a quien llama; no conviertas un fallo en una tarifa cero sin una regla de negocio.
 
 #### Paso 7 · Cierre y evidencia
-Guarda ambas versiones (Thread crudo y pool), el bug del pool sin cerrar y la corrección; como siguiente paso estudia CompletableFuture. Errores comunes: crear un `Thread` nuevo por cada tarea sin ningún límite de concurrencia, olvidar `pool.shutdown()` dejando el proceso colgado indefinidamente, y usar `shutdown()` sin esperar (`awaitTermination`) cuando el código posterior asume que todas las tareas ya terminaron. Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**¿Por qué es importante?** Porque crear un `Thread` nuevo por cada tarea agota la memoria disponible con suficiente volumen, mientras que un pool de tamaño fijo reutiliza un número conocido de hilos sin ese costo de creación y destrucción repetida.
-**Evidencia de aprendizaje:** entrega ambas versiones (`Thread` crudo y `ExecutorService`), el bug del pool sin cerrar reproducido, y la corrección con `shutdown()` en el `finally`.
-**Conceptos clave:** pool de hilos, reutilización, `submit`/`shutdown`.
+**Evidencia de aprendizaje:** código completo, salida, fallo de cierre y corrección. El siguiente tema compone dependencias con CompletableFuture; el laboratorio posterior separa timeout y cancelación. **Errores comunes:** olvidar shutdown, asumir que shutdown espera y medir rendimiento con una sola ejecución diminuta. **Límites y decisión de uso:** este pool usa una cola no acotada; para carga variable en producción define capacidad y política de rechazo, y mide tareas CPU frente a I/O.
 
-Cada operación concurrente del proyecto integrador de este track (procesar un lote de tareas, consultar varias fuentes a la vez) usará un `ExecutorService` con un tamaño de pool medido, nunca un `Thread` por tarea sin límite.
-
-**Cuándo no usarlo:** para un puñado de tareas ocasionales (menos de una decena, sin repetirse con frecuencia), crear un `ExecutorService` y gestionarlo correctamente es más ceremonia que simplemente esperar secuencialmente o lanzar un par de `Thread` directos.
-
-Crear un `Thread` manualmente por cada tarea concurrente es costoso (cada thread de plataforma tradicional consume aproximadamente 1 MB de memoria para su stack, y el sistema operativo impone límites prácticos de miles, no millones, de threads de plataforma simultáneos) y no reutiliza recursos entre tareas sucesivas; `ExecutorService pool = Executors.newFixedThreadPool(4); pool.submit(() -> procesarTarea());` gestiona un conjunto fijo de hilos reutilizables (un "pool"), donde cada tarea enviada con `submit()` se ejecuta en uno de esos hilos ya existentes tan pronto como quede disponible, en vez de crear un hilo completamente nuevo para cada tarea individual, reduciendo significativamente el overhead de creación y destrucción repetida de hilos para cargas de trabajo con muchas tareas concurrentes.
-
-`pool.shutdown()` inicia un cierre ordenado del pool, permitiendo que las tareas ya en curso completen normalmente, pero rechazando cualquier tarea nueva enviada después de esa llamada; `invokeAll()` envía un conjunto de tareas simultáneamente y bloquea hasta que todas completen, devolviendo sus resultados combinados, apropiado cuando se necesita esperar explícitamente a que un lote completo de tareas termine antes de continuar. `ScheduledExecutorService` extiende esta misma idea para tareas que deben ejecutarse después de un retraso específico, o repetidamente a intervalos regulares, sin necesidad de gestionar manualmente temporizadores.
-
-**Analogía:** crear un `Thread` por tarea es como contratar y despedir a un trabajador completamente nuevo para cada tarea individual, incluso si esas tareas son breves y frecuentes; un `ExecutorService` es como mantener un equipo fijo de trabajadores ya entrenados, asignándoles nuevas tareas conforme quedan disponibles, sin el costo repetido de contratar y despedir para cada tarea individual.
-
-**¿Por qué es importante?** `ExecutorService` reutiliza un pool de hilos existente en vez de crear y destruir hilos individuales por cada tarea, reduciendo significativamente el overhead para cargas con muchas tareas concurrentes.
-
-**Código del ejemplo:**
-
-```java
-ExecutorService pool = Executors.newFixedThreadPool(4);
-pool.submit(() -> procesarTarea());
-pool.shutdown();
-```
+**Fuentes oficiales:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Executors](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html).
 
 ### Tema 2: CompletableFuture
 
@@ -429,3 +435,75 @@ ScopedValue.where(ID_CORRELACION, generarId()).run(() -> {
 - **Usar `ThreadLocal` heredable para propagar contexto a virtual threads masivos.** Cada hilo retiene su copia heredada; `ScopedValue` libera el valor automáticamente al salir del scope.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar limitarás una espera y comprobarás que una tarea acepta la interrupción antes de cerrar su executor. **Prerrequisitos:** excepciones, try/finally y Future. JDK 25; comprueba `java --version` y `javac --version`. Ejemplo independiente desde carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+El proyecto integrador consulta un proveedor que puede tardar demasiado. Dejar de esperar no significa que ese trabajo se haya detenido. **¿Por qué es importante?** Tareas abandonadas siguen consumiendo conexiones, CPU o memoria.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`get` con timeout limita cuánto espera quien llama. `cancel(true)` solicita interrupción; no mata un hilo de forma segura. La tarea debe responder a esa señal. Las esperas interrumpibles, como `sleep`, lanzan `InterruptedException`; si la capturas y finalizas, puedes restaurar la marca de interrupción.
+
+**Analogía:** un plazo vence en recepción, pero hay que avisar también a quien ejecuta el encargo. El límite es que el aviso requiere cooperación; una tarea que ignora interrupciones puede seguir activa.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir timeout-java
+cd timeout-java
+```
+Crea `Plazo.java` completo:
+```java
+import java.util.concurrent.*;
+
+public class Plazo {
+    public static void main(String[] args) throws Exception {
+        ExecutorService pool = Executors.newSingleThreadExecutor();
+        CountDownLatch started = new CountDownLatch(1);
+        Future<String> result = pool.submit(() -> {
+            started.countDown();
+            try {
+                Thread.sleep(10_000);
+                return "Respuesta";
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                return "Cancelada";
+            }
+        });
+        try {
+            started.await();
+            System.out.println(result.get(50, TimeUnit.MILLISECONDS));
+        } catch (TimeoutException error) {
+            result.cancel(true); // Solicita la interrupción de la tarea.
+            System.out.println("Plazo agotado");
+        } finally {
+            pool.shutdownNow();
+            if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("La tarea no cooperó");
+            }
+        }
+        System.out.println("Executor terminado");
+    }
+}
+```
+```bash
+javac Plazo.java
+java Plazo
+```
+**Resultado esperado:** `Plazo agotado` y `Executor terminado`, sin esperar diez segundos. Explica cada bloque: el latch confirma que empezó la tarea, `get` limita la espera y `finally` comprueba terminación. Un timeout no afirma que un servicio remoto haya deshecho nada.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** elimina el catch del timeout y conserva `finally`. El programa informa `TimeoutException`; comprueba que el executor sigue cerrándose. **Pista:** el manejo del resultado y la limpieza son responsabilidades distintas. Repón el catch y el mensaje de negocio.
+
+#### Paso 6 · Práctica independiente
+Haz una variante rápida con espera de 10 ms y timeout de 2 segundos. Debe mostrar `Respuesta` y terminar. Escribe qué harías si el proveedor no coopera y qué límite pondrías al número de peticiones simultáneas.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** ambas salidas, duración aproximada y explicación de timeout frente a cancelación. El siguiente paso es propagar un presupuesto de tiempo entre llamadas. **Errores comunes:** asumir que `cancel` garantiza terminación, tragarse interrupciones y cerrar un pool sin comprobar tareas pendientes. **Límites y decisión de uso:** tiempos exactos dependen del planificador; verifica resultados y terminación, no una duración exacta al milisegundo.
+
+**Fuentes oficiales:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Future](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html).

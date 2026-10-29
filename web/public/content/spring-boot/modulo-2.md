@@ -503,7 +503,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Backend profesional de entregas»:** mapea las entidades de entregas a DTOs con MapStruct y política de error, y excluye de `toString` los datos personales.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** usar `@Data` en una entidad JPA en vez de `@Getter`/`@Setter` explícitos (genera `equals`/`hashCode` sobre todos los campos, incluidas relaciones, y puede producir `StackOverflowError`), y dejar la política de MapStruct en `WARN` en vez de `unmappedTargetPolicy = ERROR`, de modo que un campo nuevo del DTO queda sin mapear y llega como `null` a producción sin que la compilación avise.
 
 ### Tema 5: OpenAPI con springdoc: el contrato como prueba
 
@@ -662,7 +662,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Backend profesional de entregas»:** publica el contrato del backend de entregas y agrega la prueba de contrato al pipeline.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** borrar o cambiar una anotación `@ApiResponse`/`@Operation` sin volver a correr `ContratoOpenApiTest`, dejando que el contrato publicado describa una respuesta que el endpoint ya no documenta, y versionar `openapi.json` sin una prueba que lo compare contra el contrato real, lo que permite que la API cambie sin que nadie lo note en la revisión de código.
 
 ## Laboratorio práctico
 
@@ -687,3 +687,74 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 - **Repetir try/catch en cada controller para el mismo tipo de error.** Centraliza ese manejo en un `@ControllerAdvice`.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 6: Paginación HTTP con validación y un límite de recursos explícito
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar expondrás una colección paginada y rechazarás parámetros que exceden el contrato. **Prerrequisitos:** Java, Maven, REST y Bean Validation. JDK 25 y curl; comprueba `java --version`. Ejemplo independiente desde proyecto nuevo con Spring Initializr.
+
+#### Paso 2 · Contexto y caso real
+El proyecto integrador muestra envíos en un panel. Devolver toda la colección carga el servidor y el navegador. **¿Por qué es importante?** El cliente no debería poder pedir un millón de elementos porque cambió un parámetro.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una página tiene posición y tamaño. La validación restringe el trabajo solicitado antes de ejecutar la lógica. Un orden estable requiere desempate único. **Analogía:** entregar carpetas en lotes permite controlar cuánto trabajo se hace en cada turno. El límite es que paginación por offset puede desplazarse cuando cambian datos; para recorridos grandes considera cursor y consistencia explícita.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea el proyecto desde una carpeta vacía:
+```bash
+curl -fsSL 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.9&baseDir=pagina-demo&groupId=com.example&artifactId=pagina-demo&packageName=com.example.pagina&javaVersion=25&dependencies=web,validation' -o pagina-demo.zip
+unzip pagina-demo.zip
+cd pagina-demo
+```
+Si Initializr ya no ofrece esa versión estable, selecciona una estable compatible con Java 25 en su UI, conserva Web y Validation y registra la versión elegida; no uses una milestone sin declarar el cambio. Crea `src/main/java/com/example/pagina/EnviosController.java`:
+```java
+package com.example.pagina;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.stream.IntStream;
+
+@RestController
+public class EnviosController {
+    record Envio(int id, String estado) {}
+    record Pagina(List<Envio> items, int page, int size, boolean hasNext) {}
+    private final List<Envio> data = IntStream.rangeClosed(1, 5)
+        .mapToObj(id -> new Envio(id, "creado")).toList();
+
+    @GetMapping("/envios")
+    public Pagina listar(@RequestParam(defaultValue = "0") @Min(0) @Max(1000) int page,
+                         @RequestParam(defaultValue = "2") @Min(1) @Max(100) int size) {
+        // El tamaño se valida antes de calcular el corte.
+        long offset = (long) page * size;
+        var items = data.stream().skip(offset).limit(size).toList();
+        return new Pagina(items, page, size, offset + items.size() < data.size());
+    }
+}
+```
+Conserva la clase Application generada. Ejecuta:
+```bash
+./mvnw spring-boot:run
+```
+En Windows usa `mvnw.cmd spring-boot:run`. En otra terminal:
+```bash
+curl -i 'http://localhost:8080/envios?page=0&size=2'
+curl -i 'http://localhost:8080/envios?page=1&size=2'
+curl -i 'http://localhost:8080/envios?size=1000000'
+```
+**Resultado esperado:** primera página IDs 1 y 2, segunda 3 y 4; tamaño excesivo produce 400 por validación de método del controlador. Explica cada bloque: DTOs, datos de muestra, parámetros validados y selección. No se presenta como consulta JPA: la colección es en memoria para aislar el contrato HTTP.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia la llamada a `size=0`. El servidor debe rechazarla. **Pista:** no transformes un tamaño inválido en respuesta vacía con estado 200; revisa validación y que esté instalado el starter Validation. Corrige el parámetro y recupera los datos.
+
+#### Paso 6 · Práctica independiente
+Comprueba última página, página posterior al final, valor negativo y texto en `size`. Después adapta el contrato a un repositorio con Pageable y orden por ID. Comprueba que la base de datos aplica límite y orden antes de cargar resultados.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** comandos con estados HTTP y cuerpos de las páginas, fallo/corrección y decisión de límite. El siguiente paso es observar la consulta SQL, índice y coste del recuento. **Errores comunes:** cargar todo antes de paginar, aceptar tamaño ilimitado y mezclar resultados sin orden determinista. **Límites y decisión de uso:** la lista estática no demuestra escalabilidad, concurrencia ni autorización por recurso.
+
+**Fuentes oficiales:** [Spring Data: consultas y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html) y [Spring MVC validación](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).

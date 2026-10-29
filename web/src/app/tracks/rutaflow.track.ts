@@ -15,7 +15,8 @@ export const RUTAFLOW_MODULES: CourseModule[] = [
     ['PostgreSQL', 'PostGIS', 'SQL'], 'Base RutaFlow migrable con integridad, pruebas SQL, datos semilla y conciliación balanceada.'),
   m(2, 'Backend: envíos, asignación e idempotencia', 'Backend y eventos', 'Integración', '12 h', '#f97316',
     'Implementa una API modular para cotizar, crear, asignar y confirmar entregas con autorización, transacciones, outbox y consumidores idempotentes.',
-    ['REST y OpenAPI', 'Autenticación y autorización', 'Transacciones y optimistic locking', 'Outbox, colas y deduplicación'],
+    [
+      'Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores','REST y OpenAPI', 'Autenticación y autorización', 'Transacciones y optimistic locking', 'Outbox, colas y deduplicación'],
     ['Implementa casos de uso', 'Prueba comandos duplicados', 'Publica eventos recuperables', 'Instrumenta trazas y métricas'],
     ['¿Qué ocurre si el commit sucede pero la respuesta se pierde?', '¿Dónde debe validarse una transición?'],
     ['Node.js', 'Spring Boot', 'PostgreSQL', 'OpenTelemetry'], 'API de envíos con contratos, seguridad, persistencia, outbox y pruebas de fallos.'),

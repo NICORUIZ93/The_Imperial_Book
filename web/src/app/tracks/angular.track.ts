@@ -57,7 +57,8 @@ export const ANGULAR_MODULES: CourseModule[] = [
     'Servicio compartido de estado consumido por al menos tres componentes distintos.'),
   m(4, 'Routing y navegación', 'Routing', 'Aplicación', '2 h 30 min', '#dd0031',
     'Estructura una aplicación con múltiples vistas, carga perezosa y rutas protegidas.',
-    ['Router config con rutas standalone', 'Guards funcionales (CanActivate)', 'Lazy loading con loadComponent', 'Parámetros de ruta y query params', 'CanDeactivateFn, CanMatchFn, canActivateChild y ResolveFn', 'ActivatedRouteSnapshot, RouterStateSnapshot y fragment'],
+    [
+      'CanDeactivate: proteger un borrador sin confundir navegación con autorización','Router config con rutas standalone', 'Guards funcionales (CanActivate)', 'Lazy loading con loadComponent', 'Parámetros de ruta y query params', 'CanDeactivateFn, CanMatchFn, canActivateChild y ResolveFn', 'ActivatedRouteSnapshot, RouterStateSnapshot y fragment'],
     [
       'Define al menos 4 rutas en app.routes.ts: home, lista, detalle/:id y una 404 con redirectTo',
       'Carga una de las rutas de forma perezosa con loadComponent y verifica en la pestaña Network que solo se descarga al navegar',

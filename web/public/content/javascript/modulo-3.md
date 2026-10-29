@@ -506,7 +506,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** haz iterable el historial de eventos de un envío para mostrarlo en la línea de tiempo pública.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** nombrar el método `iterator()` en vez de usar la clave `[Symbol.iterator]`, lo que produce `TypeError: ... is not iterable` porque ningún texto parecido activa el protocolo; escribir `next()` a mano cuando un generador (`function*`) ya produce ese iterador sin ese código repetitivo.
 
 ## Construcción guiada del capítulo
 

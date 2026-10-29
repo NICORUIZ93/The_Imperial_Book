@@ -8,35 +8,35 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1062 | 0 |
-| Código | 1062 | 0 |
-| Ruta | 1062 | 0 |
-| Ejecución | 1062 | 0 |
-| Resultado | 1062 | 0 |
-| Modificación | 1062 | 0 |
-| Conexión con un proyecto | 1062 | 0 |
-| Modelo mental | 1062 | 0 |
-| Límites | 1062 | 0 |
-| **Perfil de criterios detectado** | **1062** | **0** |
+| Explicación | 1076 | 0 |
+| Código | 1076 | 0 |
+| Ruta | 1076 | 0 |
+| Ejecución | 1076 | 0 |
+| Resultado | 1076 | 0 |
+| Modificación | 1076 | 0 |
+| Conexión con un proyecto | 1076 | 0 |
+| Modelo mental | 1076 | 0 |
+| Límites | 1076 | 0 |
+| **Perfil de criterios detectado** | **1076** | **0** |
 
 ## Prioridad por track
 
 | Track | Temas | Sin código | Sin ruta | Sin ejecución | Sin resultado | Sin modificación | Sin proyecto | Sin límites |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| angular | 70 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| cloud | 155 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| devops | 103 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| flutter | 62 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| foundations | 96 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ios | 55 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 79 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| javascript | 87 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| kotlin-multiplatform | 55 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| node | 79 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| react | 57 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| rutaflow | 25 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| android | 57 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| devops | 104 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| flutter | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| foundations | 97 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| java | 80 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| node | 80 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| rutaflow | 26 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| spring-boot | 84 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 

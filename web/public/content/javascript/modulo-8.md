@@ -664,3 +664,72 @@ Ya puedes cooperar con el ciclo visual y asignar prioridad según impacto para e
 - **Olvidar desconectar un `IntersectionObserver`/`MutationObserver`/`ResizeObserver` cuando el elemento observado se elimina.** Llama a `.disconnect()` explícitamente para evitar overhead innecesario acumulado.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar implementarás un formulario que muestra un estado comprensible sin borrar lo escrito cuando hay un error. **Prerrequisitos:** HTML semántico, funciones, eventos y propiedades del DOM. Usa una carpeta vacía; es un ejemplo independiente que funciona sin paquetes.
+
+#### Paso 2 · Contexto y caso real
+En el proyecto integrador de entregas, un código mal escrito no debe obligar al cliente a empezar otra vez. **¿Por qué es importante?** Un error que solo cambia el color de un borde no explica qué corregir ni necesariamente se anuncia a quien usa un lector de pantalla.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El evento `submit` representa la intención de enviar tanto al pulsar Enter como al activar el botón. `preventDefault` evita navegar mientras validamos localmente. `textContent` inserta texto, sin interpretar HTML enviado por una persona. `role="status"` comunica cambios no urgentes; `aria-describedby` relaciona el campo con su explicación.
+
+**Analogía:** el formulario es una ventanilla que devuelve el documento con una nota legible, no una que lo destruye al encontrar una errata. El límite es que la validación local no demuestra que el código exista ni autoriza a leer una entrega; eso pertenece al servidor.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir formulario-accesible
+cd formulario-accesible
+```
+Crea `index.html`:
+```html
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<title>Validar código</title>
+<form id="consulta" novalidate>
+  <label for="codigo">Código de envío</label>
+  <input id="codigo" aria-describedby="ayuda estado" required>
+  <p id="ayuda">Usa ENV- seguido de dígitos, por ejemplo ENV-42.</p>
+  <button>Comprobar formato</button>
+  <p id="estado" role="status"></p>
+</form>
+<script type="module" src="formulario.js"></script>
+</html>
+```
+Crea `formulario.js`:
+```javascript
+const form = document.querySelector('#consulta');
+const input = document.querySelector('#codigo');
+const status = document.querySelector('#estado');
+form.addEventListener('submit', event => {
+  event.preventDefault(); // Conserva la página y el texto recibido.
+  const code = input.value.trim();
+  const valid = /^ENV-\d+$/.test(code);
+  input.setAttribute('aria-invalid', String(!valid));
+  status.textContent = valid
+    ? `Formato válido: ${code}. Aún no se consultó una entrega.`
+    : 'Corrige el código: debe empezar por ENV- y terminar en dígitos.';
+  if (!valid) input.focus();
+});
+```
+```bash
+python3 -m http.server 8000
+```
+Abre `http://localhost:8000`. **Resultado esperado:** `ENV-42` confirma el formato; `42` muestra corrección, conserva el texto y devuelve foco al campo. Explica cada bloque: selección de elementos, manejo del envío, comprobación del patrón y actualización del mensaje. Windows puede usar `py` para el servidor.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** elimina `preventDefault`. Envía el formulario y observa que la navegación interrumpe el mensaje. **Pista:** el problema está en el comportamiento predeterminado de enviar, no en la expresión regular. Repón la línea y prueba también Enter.
+
+#### Paso 6 · Práctica independiente
+Distingue código vacío de código con formato incorrecto usando mensajes distintos. Comprueba vacío, espacios, `ENV-42`, `ENV-` y texto con etiquetas HTML: todo se muestra como texto y nunca como contenido ejecutable.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** tabla de entradas, mensajes, foco y atributo `aria-invalid`. Conserva los dos archivos. El siguiente tema puede conectar esta intención con Fetch y un servidor real. **Errores comunes:** validar solo con click, borrar el campo tras un error y utilizar `innerHTML` para mensajes de usuario. **Límites y decisión de uso:** el patrón define el formato de este ejemplo, no una regla universal ni un control de acceso.
+
+**Fuentes oficiales:** [MDN submit](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) y [status](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role).

@@ -266,6 +266,14 @@
       ]
     },
     {
+      "path": "docs/app-flow-inspection.json",
+      "lines": 13830,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/auditoria-profundidad-cobertura.md",
       "lines": 213,
       "kind": "documentation",
@@ -523,8 +531,16 @@
       ]
     },
     {
+      "path": "docs/browser-course-review.json",
+      "lines": 2660,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/code-visual-quality.json",
-      "lines": 2786,
+      "lines": 2849,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -539,6 +555,25 @@
       "headings": [
         "# Auditor\u00eda de c\u00f3digo y visuales",
         "## Regla editorial"
+      ]
+    },
+    {
+      "path": "docs/course-depth-review.json",
+      "lines": 12218,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/course-depth-review.md",
+      "lines": 1106,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n de profundidad de todos los cursos",
+        "## Registro tema por tema"
       ]
     },
     {
@@ -718,7 +753,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 11690,
+      "lines": 11844,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -737,6 +772,34 @@
       ]
     },
     {
+      "path": "docs/renovacion-cursos-2026-10-29.md",
+      "lines": 27,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Renovaci\u00f3n de cursos y experiencia de estudio",
+        "## Cambios entregados",
+        "## Cobertura de revisi\u00f3n",
+        "## Trabajo pendiente"
+      ]
+    },
+    {
+      "path": "docs/renovacion-primera-entrega.md",
+      "lines": 53,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Renovaci\u00f3n: portada y primera sesi\u00f3n",
+        "## Alcance entregado",
+        "## Alineaci\u00f3n de aprendizaje",
+        "## Verificaci\u00f3n realizada",
+        "## Fuentes primarias consultadas",
+        "## Siguientes lotes"
+      ]
+    },
+    {
       "path": "docs/requested-master-topics.json",
       "lines": 189,
       "kind": "project-file",
@@ -745,364 +808,8 @@
       "headings": []
     },
     {
-      "path": "docs/roadmaps/01-fundamentos-programacion.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 1: Fundamentos de programaci\u00f3n",
-        "## Tema 1: Fundamentos de programaci\u00f3n",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/02-java.md",
-      "lines": 363,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 2: Java",
-        "## Tema 2: Java \u2014 Fundamentos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 3: Java \u2014 POO",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 4: Java \u2014 Colecciones y estructuras de datos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/03-spring.md",
-      "lines": 618,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 3: Spring y arquitectura de backend",
-        "## Tema 9: Spring \u2014 Fundamentos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 10: Spring \u2014 Estructura enterprise",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 11: Spring \u2014 APIs REST",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/04-qa-automation.md",
-      "lines": 312,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 4: QA Automation",
-        "## Tema 21: Introducci\u00f3n al API Testing",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 22: Postman desde cero",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 23: Automatizaci\u00f3n en Postman",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/05-bases-datos.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 5: Bases de datos",
-        "## Tema 27: Bases de datos: SQL, PostgreSQL, MySQL espacial y MongoDB",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/06-docker.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 6: Docker y runtimes locales",
-        "## Tema 28: Docker y alternativas",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/07-cicd.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 7: CI/CD",
-        "## Tema 29: CI/CD",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/08-kubernetes.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 8: Kubernetes",
-        "## Tema 30: Kubernetes",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/09-iac.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 9: Infraestructura como c\u00f3digo",
-        "## Tema 31: Terraform y OpenTofu",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/10-cloud-local.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 10: Cloud local",
-        "## Tema 32: Cloud local con LocalStack y Floci",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/11-frontend-angular.md",
-      "lines": 108,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 11: Frontend Angular",
-        "## Tema 33: Angular moderno y Angular 22",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 34: Angular Native",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/12-frontend-react.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 12: Frontend React",
-        "## Tema 35: React y Next.js",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/13-movil.md",
-      "lines": 210,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 13: Desarrollo m\u00f3vil",
-        "## Tema 36: Android con Kotlin y Jetpack Compose",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 37: Kotlin Multiplatform",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 38: iOS con SwiftUI",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/14-git.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 14: Git y control de versiones",
-        "## Tema 40: Git y control de versiones",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/15-testing.md",
-      "lines": 108,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 15: Testing y clientes API",
-        "## Tema 41: Testing de software",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 42: Postman vs Bruno",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/16-patrones-arquitectura.md",
-      "lines": 363,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 16: Patrones de dise\u00f1o y arquitectura",
-        "## Tema 43: SOLID",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 44: Patrones creacionales",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 45: Patrones estructurales",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/17-algoritmos.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 17: Algoritmos y estructuras de datos",
-        "## Tema 50: Algoritmos y estructuras de datos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/18-herramientas.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 18: Herramientas de desarrollo",
-        "## Tema 51: Herramientas de desarrollo",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/19-ia-aplicada.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 19: IA aplicada al estudio",
-        "## Tema 52: IA aplicada al estudio",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/20-proyecto-integrador.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 20: Proyecto integrador RutaFlow",
-        "## Tema 53: RutaFlow: plataforma log\u00edstica IoT",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/README.md",
-      "lines": 47,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Roadmaps de 30 pasos: de principiante a avanzado",
-        "## Uso recomendado",
-        "## Modo intensivo sin saltarse la pr\u00e1ctica"
-      ]
-    },
-    {
-      "path": "docs/roadmaps/evaluaciones.md",
-      "lines": 525,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Ex\u00e1menes integradores y proyecto final",
-        "## R\u00fabrica por tema",
-        "## Bloque 1: Fundamentos de programaci\u00f3n",
-        "### Reto 1.1: Fundamentos de programaci\u00f3n",
-        "## Bloque 2: Java",
-        "### Reto 2.1: Java \u2014 Fundamentos",
-        "### Reto 2.2: Java \u2014 POO",
-        "### Reto 2.3: Java \u2014 Colecciones y estructuras de datos",
-        "### Reto 2.4: Java \u2014 Excepciones y APIs modernas",
-        "### Reto 2.5: Java \u2014 Multithreading y concurrencia",
-        "### Reto 2.6: Java \u2014 Generics y programaci\u00f3n funcional",
-        "### Reto 2.7: Java \u2014 Build y proyectos"
-      ]
-    },
-    {
       "path": "docs/seven-step-methodology.json",
-      "lines": 27927,
+      "lines": 28291,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1137,7 +844,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 23635,
+      "lines": 23943,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1577,9 +1284,11 @@
     },
     {
       "path": "examples/electronics/embebidos.py",
-      "lines": 5,
+      "lines": 27,
       "kind": "example",
-      "symbols": [],
+      "symbols": [
+        "simular_rms"
+      ],
       "imports": [],
       "headings": []
     },
@@ -2651,7 +2360,7 @@
     },
     {
       "path": "examples/manim/build_curriculum_scenes.py",
-      "lines": 299,
+      "lines": 396,
       "kind": "example",
       "symbols": [
         "scene_source",
@@ -2667,8 +2376,7 @@
         "re",
         "sys",
         "unicodedata",
-        "pathlib",
-        "build_30_step_roadmaps"
+        "pathlib"
       ],
       "headings": []
     },
@@ -3838,6 +3546,204 @@
         "graphql-tag",
         "node:url"
       ],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/README.md",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorios de transferencia profesional"
+      ]
+    },
+    {
+      "path": "examples/professional-bridges/android/MainActivity.kt",
+      "lines": 34,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/angular/main.ts",
+      "lines": 30,
+      "kind": "example",
+      "symbols": [
+        "text",
+        "saved"
+      ],
+      "imports": [
+        "@angular/core",
+        "@angular/platform-browser",
+        "@angular/router"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/cloud/restaurar.py",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "pathlib",
+        "hashlib",
+        "json",
+        "shutil"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/devops/release.py",
+      "lines": 20,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "pathlib",
+        "subprocess",
+        "sys"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/flutter/main.dart",
+      "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/flutter/widget_test.dart",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/foundations/index.html",
+      "lines": 37,
+      "kind": "example",
+      "symbols": [
+        "codigo",
+        "ayuda"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/ios/Cancelacion.swift",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/java/Plazo.java",
+      "lines": 32,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/javascript/formulario.js",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/javascript/index.html",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [
+        "consulta",
+        "codigo",
+        "ayuda",
+        "estado"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/kotlin-multiplatform/Vencimiento.kt",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/node/pagina.mjs",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [
+        "pagina"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/node/pagina.test.mjs",
+      "lines": 16,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:test",
+        "node:assert/strict",
+        "./pagina.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/react/App.jsx",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/rutaflow/contrato.mjs",
+      "lines": 13,
+      "kind": "example",
+      "symbols": [
+        "adaptar"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/rutaflow/contrato.test.mjs",
+      "lines": 13,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:test",
+        "node:assert/strict",
+        "./contrato.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/spring-boot/EnviosController.java",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/verification.json",
+      "lines": 94,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
       "headings": []
     },
     {
@@ -5289,6 +5195,27 @@
       "headings": []
     },
     {
+      "path": "scripts/audit_course_depth.py",
+      "lines": 101,
+      "kind": "automation-script",
+      "symbols": [
+        "signals",
+        "build",
+        "markdown",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "collections",
+        "json",
+        "pathlib",
+        "re",
+        "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/audit_seven_step_methodology.py",
       "lines": 181,
       "kind": "automation-script",
@@ -5333,35 +5260,6 @@
         "json",
         "re",
         "collections",
-        "pathlib"
-      ],
-      "headings": []
-    },
-    {
-      "path": "scripts/build_30_step_roadmaps.py",
-      "lines": 1042,
-      "kind": "automation-script",
-      "symbols": [
-        "Topic",
-        "Block",
-        "t",
-        "combine",
-        "render_steps",
-        "render_block",
-        "render_index",
-        "render_web_index",
-        "render_assessments",
-        "expected_content",
-        "validate",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "argparse",
-        "json",
-        "re",
-        "sys",
-        "dataclasses",
         "pathlib"
       ],
       "headings": []
@@ -5546,19 +5444,19 @@
       "headings": []
     },
     {
-      "path": "scripts/tests/test_curriculum_roadmaps.py",
-      "lines": 97,
+      "path": "scripts/tests/test_course_depth.py",
+      "lines": 25,
       "kind": "automation-script",
       "symbols": [
-        "RevisedCurriculumTests"
+        "DepthSignalsTests"
       ],
       "imports": [
         "sys",
-        "shutil",
-        "subprocess",
-        "unittest",
         "pathlib",
-        "build_30_step_roadmaps"
+        "unittest",
+        "audit_course_depth",
+        "audit_seven_step_methodology",
+        "audit_topic_learning_quality"
       ],
       "headings": []
     },
@@ -5591,7 +5489,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 132,
+      "lines": 134,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -5736,6 +5634,18 @@
       "headings": []
     },
     {
+      "path": "scripts/verify_professional_bridges.py",
+      "lines": 23,
+      "kind": "automation-script",
+      "symbols": [],
+      "imports": [
+        "json",
+        "pathlib",
+        "re"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/README.md",
       "lines": 39,
       "kind": "documentation",
@@ -5759,7 +5669,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 293,
+      "lines": 308,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -5816,7 +5726,7 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 553,
+      "lines": 550,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6026,7 +5936,7 @@
     },
     {
       "path": "web/public/content/android/modulo-4.md",
-      "lines": 369,
+      "lines": 438,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6173,7 +6083,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-1.md",
-      "lines": 1034,
+      "lines": 1028,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6341,7 +6251,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-2.md",
-      "lines": 771,
+      "lines": 768,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6383,7 +6293,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-4.md",
-      "lines": 625,
+      "lines": 692,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6719,7 +6629,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-18.md",
-      "lines": 228,
+      "lines": 226,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6887,7 +6797,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-25.md",
-      "lines": 340,
+      "lines": 402,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7118,7 +7028,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-4.md",
-      "lines": 711,
+      "lines": 721,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7370,7 +7280,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 407,
+      "lines": 401,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7391,7 +7301,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-15.md",
-      "lines": 462,
+      "lines": 458,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7496,7 +7406,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-5.md",
-      "lines": 487,
+      "lines": 546,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7873,7 +7783,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-6.md",
-      "lines": 286,
+      "lines": 375,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7957,28 +7867,28 @@
     },
     {
       "path": "web/public/content/foundations/modulo-0.md",
-      "lines": 559,
+      "lines": 319,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: C\u00f3mo funciona tu entorno de desarrollo",
-        "## Antes de comenzar: instalaci\u00f3n guiada",
+        "## Antes de comenzar: prepara tu primera sesi\u00f3n",
+        "### Instala y comprueba",
         "## Aprende construyendo",
         "### Tema 1: Del hardware al programa en ejecuci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# Muestra un mensaje en la terminal.",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Diagrama CPU/RAM/Almacenamiento para tu programa"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-1.md",
-      "lines": 638,
+      "lines": 650,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7999,7 +7909,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 649,
+      "lines": 653,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8041,7 +7951,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-12.md",
-      "lines": 976,
+      "lines": 998,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8125,7 +8035,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-2.md",
-      "lines": 922,
+      "lines": 925,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8146,7 +8056,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-3.md",
-      "lines": 625,
+      "lines": 702,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8188,7 +8098,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-5.md",
-      "lines": 554,
+      "lines": 549,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8209,7 +8119,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-6.md",
-      "lines": 536,
+      "lines": 537,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8482,7 +8392,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 282,
+      "lines": 344,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8671,7 +8581,7 @@
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 310,
+      "lines": 309,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8734,7 +8644,7 @@
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 427,
+      "lines": 425,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8755,7 +8665,7 @@
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 406,
+      "lines": 404,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8923,7 +8833,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 432,
+      "lines": 510,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9301,7 +9211,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-8.md",
-      "lines": 667,
+      "lines": 736,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9511,7 +9421,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-4.md",
-      "lines": 587,
+      "lines": 644,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9805,7 +9715,7 @@
     },
     {
       "path": "web/public/content/node/modulo-3.md",
-      "lines": 534,
+      "lines": 602,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9826,7 +9736,7 @@
     },
     {
       "path": "web/public/content/node/modulo-4.md",
-      "lines": 692,
+      "lines": 691,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10078,7 +9988,7 @@
     },
     {
       "path": "web/public/content/react/modulo-14.md",
-      "lines": 498,
+      "lines": 489,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10099,7 +10009,7 @@
     },
     {
       "path": "web/public/content/react/modulo-2.md",
-      "lines": 473,
+      "lines": 540,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10183,7 +10093,7 @@
     },
     {
       "path": "web/public/content/react/modulo-6.md",
-      "lines": 327,
+      "lines": 360,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10309,7 +10219,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-2.md",
-      "lines": 454,
+      "lines": 521,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10603,7 +10513,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-16.md",
-      "lines": 155,
+      "lines": 153,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10624,7 +10534,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 184,
+      "lines": 183,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10687,7 +10597,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 690,
+      "lines": 761,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10708,7 +10618,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 517,
+      "lines": 515,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10729,7 +10639,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 363,
+      "lines": 362,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10897,7 +10807,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4761,
+      "lines": 4817,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10917,337 +10827,6 @@
         "herramientas",
         "licencia"
       ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/public/roadmap-data/01-fundamentos-programacion.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 1: Fundamentos de programaci\u00f3n",
-        "## Tema 1: Fundamentos de programaci\u00f3n",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/02-java.md",
-      "lines": 363,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 2: Java",
-        "## Tema 2: Java \u2014 Fundamentos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 3: Java \u2014 POO",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 4: Java \u2014 Colecciones y estructuras de datos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/03-spring.md",
-      "lines": 618,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 3: Spring y arquitectura de backend",
-        "## Tema 9: Spring \u2014 Fundamentos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 10: Spring \u2014 Estructura enterprise",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 11: Spring \u2014 APIs REST",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/04-qa-automation.md",
-      "lines": 312,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 4: QA Automation",
-        "## Tema 21: Introducci\u00f3n al API Testing",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 22: Postman desde cero",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 23: Automatizaci\u00f3n en Postman",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/05-bases-datos.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 5: Bases de datos",
-        "## Tema 27: Bases de datos: SQL, PostgreSQL, MySQL espacial y MongoDB",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/06-docker.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 6: Docker y runtimes locales",
-        "## Tema 28: Docker y alternativas",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/07-cicd.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 7: CI/CD",
-        "## Tema 29: CI/CD",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/08-kubernetes.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 8: Kubernetes",
-        "## Tema 30: Kubernetes",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/09-iac.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 9: Infraestructura como c\u00f3digo",
-        "## Tema 31: Terraform y OpenTofu",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/10-cloud-local.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 10: Cloud local",
-        "## Tema 32: Cloud local con LocalStack y Floci",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/11-frontend-angular.md",
-      "lines": 108,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 11: Frontend Angular",
-        "## Tema 33: Angular moderno y Angular 22",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 34: Angular Native",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/12-frontend-react.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 12: Frontend React",
-        "## Tema 35: React y Next.js",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/13-movil.md",
-      "lines": 210,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 13: Desarrollo m\u00f3vil",
-        "## Tema 36: Android con Kotlin y Jetpack Compose",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 37: Kotlin Multiplatform",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 38: iOS con SwiftUI",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/14-git.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 14: Git y control de versiones",
-        "## Tema 40: Git y control de versiones",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/15-testing.md",
-      "lines": 108,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 15: Testing y clientes API",
-        "## Tema 41: Testing de software",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 42: Postman vs Bruno",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/16-patrones-arquitectura.md",
-      "lines": 363,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 16: Patrones de dise\u00f1o y arquitectura",
-        "## Tema 43: SOLID",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 44: Patrones creacionales",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado",
-        "## Tema 45: Patrones estructurales",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/17-algoritmos.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 17: Algoritmos y estructuras de datos",
-        "## Tema 50: Algoritmos y estructuras de datos",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/18-herramientas.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 18: Herramientas de desarrollo",
-        "## Tema 51: Herramientas de desarrollo",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/19-ia-aplicada.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 19: IA aplicada al estudio",
-        "## Tema 52: IA aplicada al estudio",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/20-proyecto-integrador.md",
-      "lines": 57,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Bloque 20: Proyecto integrador RutaFlow",
-        "## Tema 53: RutaFlow: plataforma log\u00edstica IoT",
-        "### Pasos 1\u201310: nivel Principiante",
-        "### Pasos 11\u201320: nivel Intermedio",
-        "### Pasos 21\u201330: nivel Avanzado"
-      ]
-    },
-    {
-      "path": "web/public/roadmap-data/index.json",
-      "lines": 359,
-      "kind": "project-file",
-      "symbols": [],
       "imports": [],
       "headings": []
     },
@@ -11999,13 +11578,12 @@
     },
     {
       "path": "web/src/app/app.routes.ts",
-      "lines": 31,
+      "lines": 27,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
         "@angular/router",
         "./catalog/course-catalog",
-        "./roadmaps/roadmaps",
         "./course/course-shell",
         "./course/lesson-viewer"
       ],
@@ -12013,7 +11591,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 188,
+      "lines": 185,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12044,22 +11622,23 @@
     },
     {
       "path": "web/src/app/catalog/course-catalog.html",
-      "lines": 156,
+      "lines": 35,
       "kind": "angular-app",
       "symbols": [
         "main-content",
         "catalog-title",
-        "beginner-title",
+        "first-session-title",
+        "continue-title",
         "tracks-title",
-        "backup-title",
-        "official-title"
+        "beginner-title",
+        "backup-title"
       ],
       "imports": [],
       "headings": []
     },
     {
       "path": "web/src/app/catalog/course-catalog.scss",
-      "lines": 419,
+      "lines": 133,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12067,15 +11646,19 @@
     },
     {
       "path": "web/src/app/catalog/course-catalog.ts",
-      "lines": 122,
+      "lines": 158,
       "kind": "angular-app",
       "symbols": [
         "CourseCatalogComponent",
+        "query",
+        "category",
         "backupStatus",
         "cards",
         "featuredTracks",
         "foundationTracks",
         "mobileTracks",
+        "filteredCards",
+        "resumableTracks",
         "totalModules"
       ],
       "imports": [
@@ -12084,6 +11667,8 @@
         "@angular/router",
         "lucide-angular",
         "../course-data",
+        "../track-guides",
+        "../command-palette.service",
         "../icon-registry",
         "../official-updates",
         "../progress.service",
@@ -12174,7 +11759,7 @@
     },
     {
       "path": "web/src/app/course/course-shell.scss",
-      "lines": 86,
+      "lines": 100,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12220,7 +11805,7 @@
     },
     {
       "path": "web/src/app/course/lesson-index.scss",
-      "lines": 50,
+      "lines": 57,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12251,7 +11836,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.html",
-      "lines": 157,
+      "lines": 148,
       "kind": "angular-app",
       "symbols": [
         "project-progress-title",
@@ -12262,7 +11847,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 615,
+      "lines": 545,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12270,7 +11855,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1082,
+      "lines": 1081,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12278,11 +11863,10 @@
         "track",
         "module",
         "officialSource",
-        "projectBootstrap",
+        "courseGuide",
         "trackProject",
         "projectStep",
         "projectProgress",
-        "showProjectBootstrap",
         "showTrackProject",
         "moduleIndex",
         "levelIndex",
@@ -12296,7 +11880,8 @@
         "lessonLoading",
         "lessonError",
         "diagramError",
-        "tocItems"
+        "tocItems",
+        "activeTocId"
       ],
       "imports": [
         "@angular/common",
@@ -12311,7 +11896,7 @@
         "../content.service",
         "../progress.service",
         "../theme.service",
-        "../project-bootstrap",
+        "../track-guides",
         "../learning-activities",
         "../technical-glossary",
         "../learning-prompts",
@@ -12321,7 +11906,7 @@
     },
     {
       "path": "web/src/app/course-data.ts",
-      "lines": 886,
+      "lines": 887,
       "kind": "angular-app",
       "symbols": [
         "ServiceGroup",
@@ -12479,52 +12064,6 @@
       "headings": []
     },
     {
-      "path": "web/src/app/roadmaps/roadmaps.html",
-      "lines": 69,
-      "kind": "angular-app",
-      "symbols": [
-        "main-content",
-        "roadmaps-title"
-      ],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/src/app/roadmaps/roadmaps.scss",
-      "lines": 74,
-      "kind": "angular-app",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "web/src/app/roadmaps/roadmaps.ts",
-      "lines": 232,
-      "kind": "angular-app",
-      "symbols": [
-        "RoadmapsComponent",
-        "index",
-        "selectedBlockNumber",
-        "renderedMarkdown",
-        "loadedBlockSlug",
-        "loading",
-        "blockLoading",
-        "error",
-        "progressMessage",
-        "completedSteps",
-        "selectedBlock",
-        "completedCount"
-      ],
-      "imports": [
-        "@angular/common",
-        "@angular/core",
-        "@angular/router",
-        "../theme.service",
-        "marked"
-      ],
-      "headings": []
-    },
-    {
       "path": "web/src/app/technical-glossary.ts",
       "lines": 84,
       "kind": "angular-app",
@@ -12566,8 +12105,18 @@
       "headings": []
     },
     {
+      "path": "web/src/app/track-guides.ts",
+      "lines": 25,
+      "kind": "angular-app",
+      "symbols": [
+        "TrackGuide"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/src/app/tracks/android.track.ts",
-      "lines": 205,
+      "lines": 206,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12577,7 +12126,7 @@
     },
     {
       "path": "web/src/app/tracks/angular.track.ts",
-      "lines": 227,
+      "lines": 228,
       "kind": "angular-app",
       "symbols": [
         "contador"
@@ -12589,7 +12138,7 @@
     },
     {
       "path": "web/src/app/tracks/devops.track.ts",
-      "lines": 210,
+      "lines": 211,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12599,7 +12148,7 @@
     },
     {
       "path": "web/src/app/tracks/flutter.track.ts",
-      "lines": 187,
+      "lines": 188,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12609,7 +12158,7 @@
     },
     {
       "path": "web/src/app/tracks/foundations.track.ts",
-      "lines": 293,
+      "lines": 294,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12619,7 +12168,7 @@
     },
     {
       "path": "web/src/app/tracks/ios.track.ts",
-      "lines": 185,
+      "lines": 186,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12629,7 +12178,7 @@
     },
     {
       "path": "web/src/app/tracks/java.track.ts",
-      "lines": 264,
+      "lines": 265,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12639,7 +12188,7 @@
     },
     {
       "path": "web/src/app/tracks/javascript.track.ts",
-      "lines": 213,
+      "lines": 214,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12649,26 +12198,6 @@
     },
     {
       "path": "web/src/app/tracks/kotlin-multiplatform.track.ts",
-      "lines": 190,
-      "kind": "angular-app",
-      "symbols": [],
-      "imports": [
-        "../course-module.model"
-      ],
-      "headings": []
-    },
-    {
-      "path": "web/src/app/tracks/node.track.ts",
-      "lines": 213,
-      "kind": "angular-app",
-      "symbols": [],
-      "imports": [
-        "../course-module.model"
-      ],
-      "headings": []
-    },
-    {
-      "path": "web/src/app/tracks/react.track.ts",
       "lines": 191,
       "kind": "angular-app",
       "symbols": [],
@@ -12678,8 +12207,28 @@
       "headings": []
     },
     {
+      "path": "web/src/app/tracks/node.track.ts",
+      "lines": 214,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "../course-module.model"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/tracks/react.track.ts",
+      "lines": 192,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "../course-module.model"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/tracks/rutaflow.track.ts",
-      "lines": 53,
+      "lines": 54,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12689,7 +12238,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 289,
+      "lines": 290,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12727,7 +12276,7 @@
     },
     {
       "path": "web/src/styles.scss",
-      "lines": 134,
+      "lines": 125,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12812,16 +12361,20 @@
       "target": "examples/node-federation/server.mjs"
     },
     {
+      "source": "examples/professional-bridges/node/pagina.test.mjs",
+      "target": "examples/professional-bridges/node/pagina.mjs"
+    },
+    {
+      "source": "examples/professional-bridges/rutaflow/contrato.test.mjs",
+      "target": "examples/professional-bridges/rutaflow/contrato.mjs"
+    },
+    {
       "source": "web/src/app/app.config.ts",
       "target": "web/src/app/app.routes.ts"
     },
     {
       "source": "web/src/app/app.routes.ts",
       "target": "web/src/app/catalog/course-catalog.ts"
-    },
-    {
-      "source": "web/src/app/app.routes.ts",
-      "target": "web/src/app/roadmaps/roadmaps.ts"
     },
     {
       "source": "web/src/app/app.routes.ts",

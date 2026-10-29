@@ -77,7 +77,7 @@ Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://loca
 #### Paso 5 · Práctica guiada
 
 Agrega manejo distinto para 4xx, 5xx y timeout. Implementa un retry de máximo dos intentos únicamente para GET ante 502/503/504, con backoff. El test debe verificar el máximo de intentos y que un 400 no se reintenta.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** si el test cuenta más de dos llamadas para un 503, o ve que un 400 también se reintentó, la condición del retry está mal acotada: debe comprobar el código de estado (502/503/504) Y el método (solo GET) antes de reintentar, no solo uno de los dos.
 #### Paso 6 · Práctica independiente
 
 Consume un endpoint de RutaFlow con un DTO validado. Añade correlación de request, límite de tamaño de respuesta y una allowlist de hosts configurada por el servicio. No aceptes URLs arbitrarias del usuario.
@@ -141,7 +141,7 @@ Ejecuta con `ACADEMIA_API_TOKEN=token-de-prueba ./mvnw test` (en PowerShell, con
 #### Paso 5 · Práctica guiada
 
 Prueba valores vacíos, excesivamente largos y con formato inválido antes de construir el request. A continuación intenta consultar una IP privada con una URL configurada externamente: debe rechazarse por política, no por una expresión regular improvisada.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** si tu validación solo revisa el texto de la URL (por ejemplo, rechazar "localhost" con una expresión regular), una URL que resuelve por DNS a `127.0.0.1` la esquiva igual; resuelve el host primero y bloquea el rango de IP resultante, no solo el string original.
 #### Paso 6 · Práctica independiente
 
 Diseña una matriz de autorización para `envio:leer`, `envio:asignar` y `envio:liquidar`. Escribe pruebas de acceso permitido/denegado y agrega expiración corta al token de test. Explica por qué TLS, expiración, audience y autorización de propiedad resuelven problemas diferentes.

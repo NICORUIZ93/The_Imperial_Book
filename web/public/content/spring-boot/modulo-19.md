@@ -111,7 +111,7 @@ Define `Job` con `new JobBuilder("importPedidos", jobRepository).start(importarP
 #### Paso 5 · Práctica guiada
 
 Implementa dos steps: validar archivo y luego importar. Compara `Tasklet` para registrar el resumen final con un step chunk para procesar cada fila. Añade un reader JDBC paginado (`JdbcPagingItemReader`) para leer desde una tabla sin materializar todos los resultados.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** cambia temporalmente el `chunkSize` de 2 a un valor mayor que el total de filas válidas y vuelve a correr el test; si el número de confirmaciones en el log baja a una sola, confirmas que es el tamaño del chunk —y no el `Tasklet`— lo que define cuántas filas se confirman juntas en cada transacción.
 #### Paso 6 · Práctica independiente
 
 Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processor que normalice códigos y writer persistente con `JdbcBatchItemWriter`. Agrega conteos leídos, filtrados, escritos y fallidos. Verifica que la memoria usada no crece linealmente con el total de filas.
@@ -120,9 +120,9 @@ Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processo
 
 Entrega job, archivo fixture, test del step y conteos del lote como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no elijas Batch para una petición HTTP inmediata y pequeña; una cola/eventos o una operación síncrona pueden ser más apropiadas. **Evidencia:** tests con más de un chunk y SQL o logs que demuestren límites transaccionales.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** usar `chunk(1, ...)` en producción pensando que así se evitan problemas, cuando en realidad multiplica el número de transacciones y el costo por fila, y confundir un `ItemProcessor` que retorna `null` (filtra el registro) con una fila que falló: sin un listener que cuente los filtrados, el reporte de "filas escritas" no explica por qué hay menos que las leídas.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` mostrando que `RF-1002` (importe cero) fue filtrado por el `ItemProcessor`, el log comparado de `chunk(1, ...)` contra `chunk(2, ...)` con sus confirmaciones, y la explicación de qué chunk se revirtió al forzar el error de parseo.
 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
 #### Paso 1 · Objetivo y preparación
@@ -178,7 +178,7 @@ Ejecuta el job con `JobParameters` que incluyan `inputFile=pedidos.csv` y `runDa
 #### Paso 5 · Práctica guiada
 
 Añade retry acotado para un error temporal de base y skip para una fila con campo inválido; registra referencia y causa sin almacenar datos sensibles. Falla una escritura después de un efecto externo y demuestra por qué un envío de email o evento necesita outbox/idempotencia.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** simula el efecto externo (marca como "enviado" un email o publica un evento) y luego fuerza que la escritura del chunk falle justo después; al reanudar el job, si el email se reenvía o el evento se publica otra vez, ese es el caso exacto que necesita outbox o una clave de idempotencia en el efecto externo, no solo una transacción de base de datos.
 #### Paso 6 · Práctica independiente
 
 Diseña un plan para un lote de un millón de filas: chunk size, paginación, restart, deduplicación, archivo de errores y métricas. Como extensión, particiona por rangos disjuntos y programa el job con un scheduler; verifica que dos workers no reclamen el mismo rango.
@@ -187,5 +187,5 @@ Diseña un plan para un lote de un millón de filas: chunk size, paginación, re
 
 Entrega test de fallo y reinicio, parámetros exactos, conteos y política documentada de retry/skip para el proyecto integrador de RutaFlow: el lote de liquidación debe poder reanudarse sin duplicar pagos. **Cuándo no usarlo:** no llames `skip` a errores de infraestructura ni configures retry infinito; no ejecutes jobs simultáneos con parámetros que colisionan. **Evidencia:** log del primer fallo, reanudación y resultado final conciliado. Referencia: [Spring Batch Reference](https://docs.spring.io/spring-batch/reference/).
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** generar un `run.id` o parámetro distinto en cada reintento pensando que "empezar limpio" es más seguro, cuando en realidad eso crea una nueva instancia de job que vuelve a procesar el archivo desde cero, y marcar con `skip` errores de infraestructura (como una pérdida de conectividad) que en realidad necesitan `retry`, descartando filas que sí eran recuperables.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).

@@ -337,3 +337,65 @@ aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'Number
 - **El estado de cumplimiento en Config siempre es `INSUFFICIENT_DATA`.** Es el comportamiento documentado de Floci: la evaluación real de cumplimiento no está implementada; usa este servicio para practicar el flujo de gestión de reglas, no para validar cumplimiento real.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. **Prerrequisitos:** archivos, JSON, terminal y Python 3. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.
+
+#### Paso 2 · Contexto y caso real
+El proyecto integrador de cloud guarda entregas, pero ver una copia en un listado no demuestra que pueda recuperarse. **¿Por qué es importante?** Una restauración debe comprobar datos, permisos, dependencias y tiempo de recuperación; empezaremos comprobando contenido sin tocar el original.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+RPO expresa cuántos datos puedes perder por antigüedad de la copia; RTO expresa cuánto tiempo puedes tardar en recuperar el servicio. Un hash SHA-256 permite comparar bytes, pero no prueba por sí solo que el contenido sea válido para el negocio. La recuperación necesita además abrir el archivo, validar estructura y ensayar el consumidor.
+
+**Analogía:** tener una llave de repuesto sirve si abre la puerta. El límite es que una llave no recupera todo un edificio: este ejercicio no restaura red, identidad, configuración ni una base de datos administrada.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir simulacro-backup
+cd simulacro-backup
+```
+Crea `restaurar.py`:
+```python
+from pathlib import Path
+import hashlib
+import json
+import shutil
+
+original = Path('envios.json')
+backup = Path('envios.backup.json')
+restored = Path('restaurado.json')
+original.write_text('[{"id": "ENV-42", "estado": "creado"}]', encoding='utf-8')
+shutil.copy2(original, backup)
+expected = hashlib.sha256(original.read_bytes()).hexdigest()
+# El destino separado evita sobrescribir datos activos.
+shutil.copy2(backup, restored)
+assert hashlib.sha256(restored.read_bytes()).hexdigest() == expected
+rows = json.loads(restored.read_text(encoding='utf-8'))
+assert rows[0]['id'] == 'ENV-42'
+assert rows[0]['estado'] == 'creado'
+print('Contenido y estructura recuperados: ENV-42')
+# También comprobamos que una copia alterada se detecta.
+backup.write_text('[]', encoding='utf-8')
+assert hashlib.sha256(backup.read_bytes()).hexdigest() != expected
+print('Corrupción detectada')
+```
+```bash
+python3 restaurar.py
+```
+Windows puede usar `py restaurar.py`. **Resultado esperado:** `Contenido y estructura recuperados: ENV-42` y `Corrupción detectada`. Explica cada bloque: creación del dato, copia, restauración aislada, comparación y validación del caso de negocio. La última escritura altera solo el backup del laboratorio.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** mueve `backup.write_text('[]', encoding='utf-8')` antes de copiar a `restored`. La comparación dispara un error antes de aceptar una recuperación vacía. **Pista:** no recalcules `expected` desde la copia sospechosa; conserva una referencia independiente.
+
+#### Paso 6 · Práctica independiente
+Añade un campo de versión y rechaza una copia que no lo incluya, aunque sea JSON válido. Mide cuánto tardas en restaurar y verificar. Define un RPO y un RTO para un caso pequeño y explica qué datos y pasos faltaría medir en cloud real.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** resultado de restauración, archivo recuperado, hash y error de corrupción y procedimiento con tiempo observado. El siguiente paso es ensayar la exportación/restauración del servicio concreto en un entorno aislado. **Errores comunes:** restaurar encima del origen, confundir JSON válido con datos completos y guardar referencia y copia sin protección independiente. **Límites y decisión de uso:** el ejercicio valida archivos locales, no AWS Backup, snapshots consistentes, cifrado ni recuperación regional.
+
+**Fuentes oficiales:** [AWS recuperación y continuidad](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html) y [Python hashlib](https://docs.python.org/3/library/hashlib.html).

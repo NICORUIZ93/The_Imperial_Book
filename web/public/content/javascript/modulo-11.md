@@ -545,7 +545,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** deriva el tipo público del envío del tipo interno con `Omit` para que nunca se exponga el costo.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** anotar un objeto literal con un tipo amplio (`Record<string, number>`) cuando `satisfies` conservaría sus claves literales, perdiendo así la comprobación en tiempo de compilación; apilar varios niveles de tipos condicionales anidados donde una interfaz explícita se leería mejor.
 ### Tema 6: Decoradores estándar de TypeScript 5
 
 #### Paso 1 · Objetivo y preparación
@@ -563,9 +563,9 @@ Un **decorador** es una función que recibe la clase, el método o el campo que 
 
 ```mermaid
 flowchart LR
-    S[@servicio] --> CL[clase Cotizador]
-    P[@positivo] --> CA[campo precioKilo]
-    R[@registrar] --> ME[método cotizar]
+    S["@servicio"] --> CL[clase Cotizador]
+    P["@positivo"] --> CA[campo precioKilo]
+    R["@registrar"] --> ME[método cotizar]
     ME --> L[log de cada llamada]
 ```
 
@@ -672,7 +672,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar de TypeScript 5, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
 
 ## Construcción guiada del capítulo
 

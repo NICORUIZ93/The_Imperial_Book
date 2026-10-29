@@ -683,9 +683,6 @@ sequenceDiagram
 ng new ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
 ```ts
 conductorId = signal('c-1');
 conductor = resource({

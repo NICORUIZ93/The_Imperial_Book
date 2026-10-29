@@ -134,7 +134,7 @@ Un proyecto sin build reproducible obliga a cada nueva persona del equipo a segu
 Configurar el build con Gradle o Maven (Módulo 8) para que `./gradlew run` (o `mvn compile exec:java`) ejecute la aplicación completa garantiza el mismo resultado sin importar en qué máquina se ejecute, siempre que se use la misma versión declarada de cada dependencia. La analogía: entregar un electrodoméstico completamente ensamblado y listo para enchufar, en vez de una caja de piezas sueltas con instrucciones ambiguas.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Agrega** en `build.gradle.kts` el bloque `tasks.withType<Jar> { isReproducibleFileOrder = true; isPreserveFileTimestamps = false }`, que fija el orden y quita las marcas de tiempo de las entradas del JAR para que dos builds del mismo commit produzcan bytes idénticos.
 
 Parte de una carpeta vacía:
 ```bash

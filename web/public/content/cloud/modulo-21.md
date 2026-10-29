@@ -363,7 +363,7 @@ Entrega la VPC con sus subredes, el security group restrictivo y el análisis de
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** coloca la base de datos de RutaFlow en la subred privada y el balanceador en la pública, y demuestra que la base no acepta conexiones desde fuera de la VPC.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** copiar la regla `--cidr 0.0.0.0/0` del security group del balanceador (Paso 5) como plantilla para el security group de la base de datos, sin revisar que esta última nunca debe aceptar tráfico fuera de la VPC — es la misma línea de comando, pero correcta en un recurso y una filtración de datos en el otro.
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
 ## Laboratorio práctico
 

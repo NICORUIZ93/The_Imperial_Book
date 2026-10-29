@@ -39,22 +39,6 @@ test('catalogo: informa si el índice de temas no está disponible', async ({ pa
   await expect(page.locator('.hero-stats dd').nth(2)).toHaveText(String(total));
 });
 
-test('roadmaps: navega los 53 temas y conserva pasos completados', async ({ page }) => {
-  await page.goto('/roadmaps');
-  await expect(page.getByRole('heading', { name: 'De principiante a avanzado, paso a paso' })).toBeVisible();
-  await expect(page.locator('.roadmap-stats')).toContainText('53');
-
-  await page.getByRole('button', { name: /3\. Spring y arquitectura de backend/ }).click();
-  await page.getByRole('link', { name: '20. Apache Kafka' }).click();
-  const firstStep = page.getByRole('checkbox', { name: 'Completar paso 1: Apache Kafka' });
-  await firstStep.check();
-  await expect(page.getByRole('status')).toContainText('1 de 30 pasos completados');
-
-  await page.reload();
-  await page.getByRole('button', { name: /3\. Spring y arquitectura de backend/ }).click();
-  await expect(page.getByRole('checkbox', { name: 'Completar paso 1: Apache Kafka' })).toBeChecked();
-});
-
 test('diagramas: el módulo final de Angular no genera geometría SVG inválida', async ({ page }) => {
   await page.goto('/curso/angular/16');
   await expect(page.locator('.visual-diagram svg')).toHaveCount(4);
@@ -129,7 +113,7 @@ test('accesibilidad y respaldo: exporta y restaura progreso desde controles etiq
   const javaCard = page.locator('.card').filter({
     has: page.locator('.card-head[aria-label="Abrir Java de cero a avanzado"]'),
   });
-  await expect(javaCard.locator('.card-meta')).toContainText('5% completado');
+  await expect(javaCard.locator('.card-bottom')).toContainText('5% marcado');
 });
 
 test('curso cloud: abre el lector por capítulos con el contenido base de Floci', async ({ page }) => {
@@ -289,4 +273,35 @@ test('inicio desde cero: mapa Archify y lectura responsive sin errores', async (
   await popup.screenshot({ path: `/tmp/academia-archify-mobile-${test.info().project.name}.png` });
   expect(errors).toEqual([]);
   await popup.close();
+});
+
+test('renovación: retoma el siguiente capítulo y conserva el progreso al recargar', async ({ page }) => {
+  await page.getByRole('link', { name: 'Empezar desde cero', exact: true }).click();
+  await expect(page.locator('.topic-card').first()).toContainText('Hola, mundo');
+  await expect(page.locator('.project-bootstrap')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Marcar capítulo como completado', exact: true }).click();
+  await page.getByRole('link', { name: 'Catálogo', exact: true }).click();
+  const resume = page.locator('.resume-list').getByRole('link').filter({ hasText: 'Fundamentos' });
+  await expect(resume).toHaveAttribute('href', '/curso/foundations/1');
+  await page.reload();
+  await expect(resume).toHaveAttribute('href', '/curso/foundations/1');
+  await resume.click();
+  await expect(page).toHaveURL(/\/curso\/foundations\/1$/);
+  await expect(page.locator('.lesson h1')).toContainText('Pensamiento computacional');
+});
+
+test('biblioteca: filtra por área y encuentra temas reales sin perder accesos', async ({ page }) => {
+  await page.locator('.category-tabs').getByRole('button', { name: 'Aplicaciones móviles', exact: true }).click();
+  await expect(page.locator('.card')).toHaveCount(4);
+  const query = page.getByRole('searchbox', { name: 'Filtrar cursos y temas' });
+  await query.fill('no-existe-este-curso');
+  await expect(page.locator('.no-results')).toBeVisible();
+  await page.getByRole('button', { name: 'Mostrar todos los cursos', exact: true }).click();
+  await expect(page.locator('.card')).toHaveCount(14);
+  await query.fill('Tiempo determinista');
+  await expect(page.locator('.card')).toHaveCount(1);
+  await expect(page.locator('.card')).toContainText('Kotlin MP');
+  await page.locator('.card-topics summary').click();
+  await expect(page.locator('.card-topics')).toContainText('Antes de empezar');
+  await expect(page.locator('.card-topics')).toContainText('Evidencia de trabajo');
 });

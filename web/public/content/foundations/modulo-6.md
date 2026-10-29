@@ -213,6 +213,7 @@ Un MAC (HMAC) usa un secreto compartido para producir una "huella" ligada al con
 mkdir ejemplo && cd ejemplo
 ```
 
+Crea `ejemplo.py` con el siguiente código completo y guárdalo en la carpeta del laboratorio:
 ```python
 import hmac, hashlib, json
 
@@ -306,6 +307,7 @@ Validar decide qué entra; el encoding contextual decide cómo se interpreta al 
 mkdir ejemplo && cd ejemplo
 ```
 
+Crea `index.html` con el contenido siguiente y guárdalo en la carpeta del laboratorio:
 ```html
 <div id="nota"></div>
 <script>
@@ -314,12 +316,11 @@ mkdir ejemplo && cd ejemplo
 </script>
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
+**Ejecuta el servidor de archivos desde esa carpeta:**
 ```bash
-python3 ejemplo.py
+python3 -m http.server 8000
 ```
-Observa la salida impresa y compárala con el resultado esperado.
+Abre `http://localhost:8000/index.html`. Observa el texto y revisa el DOM con DevTools; el navegador interpreta HTML, no el intérprete Python. Detén el servidor con Ctrl+C.
 
 Resultado esperado: el `div` muestra literalmente el texto "dejado con el portero" — `textContent` nunca interpreta el contenido como HTML, sin importar qué caracteres incluya.
 

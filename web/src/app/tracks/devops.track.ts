@@ -68,7 +68,8 @@ export const DEVOPS_MODULES: CourseModule[] = [
     'Pipeline CI que corre lint, tests y build en cada pull request.'),
   m(5, 'CD: estrategias de despliegue', 'CD', 'Aplicación', '3 h', '#475569',
     'Despliega sin downtime y con capacidad de revertir en segundos cuando algo sale mal.',
-    ['Blue-green deployment', 'Canary releases', 'Rolling updates', 'Feature flags vs branches por entorno', 'Rollback automático por métricas'],
+    [
+      'Rollback ensayado y compatibilidad del artefacto anterior','Blue-green deployment', 'Canary releases', 'Rolling updates', 'Feature flags vs branches por entorno', 'Rollback automático por métricas'],
     [
       'Documenta con un diagrama la diferencia entre blue-green, canary y rolling update',
       'Configura un pipeline de CD que despliegue automáticamente a un entorno de staging tras pasar CI',

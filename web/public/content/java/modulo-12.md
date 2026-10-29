@@ -204,7 +204,7 @@ cd app && mvn test
 
 #### Paso 5 · Práctica guiada
 Provoca una incompatibilidad creando a mano `new InternacionalFactory().crearEtiqueta()` y combinándola con `new LocalFactory().crearGuia()`. Aunque Java no lo impide porque ambos objetos cumplen sus interfaces, el resultado contradice la regla del dominio. Corrígelo inyectando una sola `TransportistaFactory` al servicio y pide a esa misma instancia ambos productos. La consistencia depende de conservar la familia como una unidad; las interfaces por sí solas no pueden validar una pareja creada desde fábricas diferentes.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** si la salida mezcla `INT-` con `entrega-hoy` (o `LOCAL-` con `aduana-y-seguimiento`), estás combinando fábricas distintas; pide ambos productos a la MISMA instancia de `TransportistaFactory` para que la familia quede coherente.
 #### Paso 6 · Práctica independiente
 Agrega una familia `ExpressFactory` con etiqueta y guía propias, sin cambiar el servicio consumidor. Añade una prueba o demostración que compruebe que la configuración express crea ambos productos de esa familia; registra además qué política debe rechazar una modalidad desconocida y dónde se comunica el error.
 
@@ -270,7 +270,7 @@ Crea `src/main/java/academia/pedidos/Pedido.java` mezclando deliberadamente tres
 
 #### Paso 5 · Práctica guiada
 Pista: cambia únicamente el formato del PDF y registra qué responsabilidades ajenas quedan acopladas a `Pedido`; ese acoplamiento es el síntoma deliberado. En `Cotizador`, reemplaza `Tarifa` por una clase concreta y añade un `if` para `Normal`/`Express`; al agregar `Recogida`, debes editar el consumidor. Resultado esperado: extraer `EmailService` y `PdfGenerator` aísla razones de cambio, y restaurar el contrato `Tarifa` permite agregar políticas sin cambiar `Cotizador`.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
+**Fallo deliberado:** cambia la firma de `Cotizador` para que reciba la clase concreta `Normal` en vez del contrato `Tarifa` y quita el `import` de `Tarifa`. Al intentar inyectar `Express` el compilador falla con `incompatible types: Express cannot be converted to Normal`, el error exacto que provoca el acoplamiento a una implementación en vez de a un contrato.
 #### Paso 6 · Práctica independiente
 Completa la extracción y divide la interfaz de persistencia en `ConsultaEntrega` y `ActualizaEntrega` si algún consumidor solo necesita leer. Documenta cómo un adaptador de base de datos podría implementar esos contratos y por qué una subclase que rechaza operaciones prometidas rompería la sustitución (LSP).
 

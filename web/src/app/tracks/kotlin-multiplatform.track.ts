@@ -61,7 +61,8 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     'Proyecto KMP con un módulo compartido que compila para Android e iOS.'),
   m(4, 'Lógica de negocio compartida', 'Lógica compartida', 'Integración', '3 h', '#7f52ff',
     'El valor real de KMP: escribe la lógica una vez, úsala en ambas plataformas nativas.',
-    ['Modelos de dominio compartidos', 'Casos de uso (use cases) independientes de plataforma', 'Repositorios con interfaces comunes', 'Inyección de dependencias multiplataforma (Koin)', 'Modelado de errores de dominio con Result explícito'],
+    [
+      'Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global','Modelos de dominio compartidos', 'Casos de uso (use cases) independientes de plataforma', 'Repositorios con interfaces comunes', 'Inyección de dependencias multiplataforma (Koin)', 'Modelado de errores de dominio con Result explícito'],
     [
       'Define modelos de dominio (data classes) en commonMain que representen las entidades centrales de tu app',
       'Implementa un caso de uso (ej. ObtenerTareasPendientesUseCase) que dependa de una interfaz de repositorio, no de su implementación concreta',

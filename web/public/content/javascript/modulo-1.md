@@ -555,7 +555,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** desestructura la respuesta del API de seguimiento y muestra solo los campos públicos, dejando fuera los internos con rest.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** desestructurar un parámetro de opciones sin el `= {}` final, provocando `TypeError: Cannot destructure property ... of 'undefined'` en la primera llamada sin argumentos; confundir el valor por defecto con una validación: solo se activa cuando el valor es exactamente `undefined`, nunca con `null` o cadena vacía.
 
 ## Construcción guiada del capítulo
 

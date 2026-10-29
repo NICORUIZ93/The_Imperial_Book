@@ -122,7 +122,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** valida con anotaciones los campos obligatorios de las solicitudes de asignación antes de procesarlas.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** crear una anotación propia sin `@Retention(RetentionPolicy.RUNTIME)` y no entender por qué `isAnnotationPresent` siempre devuelve `false` en tiempo de ejecución (la retención por defecto es `CLASS`), y llamar `setAccessible(true)` sobre un campo de un paquete no abierto (`opens`) esperando que siempre funcione.
 
 ### Tema 2: Expresiones regulares con Pattern y Matcher
 
@@ -222,7 +222,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** extrae y valida los códigos de guía de las solicitudes de asignación antes de procesarlas.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** escribir `\d{6}` con una sola barra en un literal de Java en vez de `\\d{6}` (Java lo interpreta como escape de string y falla con `illegal escape character`), y confundir `find()` con `matches()`, validando solo un fragmento del texto cuando se necesitaba que coincidiera entero, o al revés.
 
 ### Tema 3: Dinero exacto con BigDecimal
 
@@ -320,7 +320,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** calcula con `BigDecimal` la tarifa y el IVA de cada asignación y verifica que el total del día cuadre al peso.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** crear un `BigDecimal` desde un `double` (`new BigDecimal(0.1)`) en vez de desde `String`, arrastrando la imprecisión binaria original, y usar `equals` para comparar montos en vez de `compareTo` (`2.0` y `2.00` no son `equals` aunque representen la misma cantidad).
 
 ### Tema 4: Assertions y diseño por contrato
 
@@ -445,7 +445,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** protege con una invariante que un mensajero nunca tenga más entregas asignadas que su capacidad.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** validar una precondición pública (datos de quien llama) con `assert` en vez de una excepción, confiando en que siempre esté activa; en producción las assertions vienen desactivadas por defecto y ese control desaparece sin avisar. También: ejecutar la suite de pruebas sin `-ea`, dejando que una invariante rota pase en silencio.
 
 ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones
 
@@ -581,7 +581,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** carga las estrategias de asignación (por cercanía, por carga) como proveedores intercambiables.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** olvidar copiar la carpeta `META-INF/services` al mismo classpath que las clases compiladas (el proveedor existe pero `ServiceLoader` reporta cero implementaciones sin lanzar ningún error), y escribir mal el nombre completo de la interfaz en el archivo de servicios en vez del nombre calificado con su paquete.
 
 ### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks
 
@@ -707,7 +707,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** registra con un proxy cada decisión del motor de asignación sin modificar sus clases.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** relanzar `e` en vez de `e.getCause()` dentro del `catch (InvocationTargetException e)`, dejando que el llamador reciba un `UndeclaredThrowableException` en vez de la excepción original, y suponer que una llamada de un método a otro método propio de la misma clase pasa por el proxy (la auto-invocación nunca lo atraviesa).
 
 ### Tema 7: Internacionalización: números, monedas, fechas y orden de texto
 
@@ -813,7 +813,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** muestra el resumen de asignaciones en el idioma y la moneda del cliente sin cambiar los datos internos.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** usar `new Locale("es-CO")` (constructor obsoleto) en vez de `Locale.forLanguageTag("es-CO")`, lo que produce un `Locale` indefinido (`und`) y formatos genéricos sin más aviso que un `warning: [deprecation]`, y ordenar texto en español con `String.compareTo`/`Collections.sort` en vez de `Collator`, dejando "Álamos" y "Ñuñoa" fuera de su posición alfabética real.
 
 ## Construcción guiada del capítulo
 

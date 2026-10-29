@@ -681,7 +681,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un escaneo de los puertos que expone el entorno de pruebas y falla si aparece uno no declarado.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** confundir un puerto "cerrado" con uno "filtrado" porque ninguno devuelve banner — el cerrado responde casi al instante con `ConnectionRefusedError` (RST), mientras que el filtrado tarda hasta agotar el `timeout` de `create_connection` sin respuesta alguna; medí cuánto demora cada resultado antes de concluir si hay un firewall descartando los paquetes en silencio.
 
 ## Laboratorio práctico
 

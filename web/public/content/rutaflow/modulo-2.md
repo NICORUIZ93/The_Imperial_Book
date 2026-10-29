@@ -451,3 +451,70 @@ Entrega `src/outbox.js`, la salida del flujo correcto, la salida del fallo sin o
 **Transferencia al proyecto integrador «RutaFlow»:** Persiste el evento en outbox antes de publicarlo y deduplica en el consumidor. Interrumpe el proceso después de publicar y demuestra que el reintento no vuelve a aplicar el efecto.
 
 **Límites y decisión de uso:** La outbox evita perder la intención de publicar, pero puede emitir el mismo evento más de una vez. Exige deduplicación en consumidores y retención suficiente; borrar filas demasiado pronto puede impedir reconciliar una entrega no aplicada.
+
+
+## Laboratorio de transferencia
+
+### Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar definirás una frontera compatible entre dos versiones de un comando de creación de envío y rechazarás datos ambiguos. **Prerrequisitos:** objetos JavaScript, módulos, pruebas y el dominio de envíos. Node 24 o superior. Ejemplo independiente desde una carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+La app de un conductor puede actualizarse después del backend. El proyecto integrador debe soportar ese periodo sin interpretar silenciosamente unidades distintas. **¿Por qué es importante?** Que el JSON se pueda parsear no implica que conserve el significado del contrato.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una frontera de adaptación convierte versiones externas a un modelo interno único. En v1 la distancia es entera en metros; en v2 sigue en metros pero añade una referencia opcional. Una versión desconocida se rechaza. Validar tipos, rangos y unidades antes de ejecutar el caso de uso mantiene los errores en la frontera.
+
+**Analogía:** un adaptador permite conectar dos enchufes compatibles, pero no cambia voltajes por adivinación. El límite es que esta función no autentica al cliente ni garantiza idempotencia, transacciones o autorización.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir contrato-envio
+cd contrato-envio
+```
+Crea `contrato.mjs`:
+```javascript
+export function adaptar(body) {
+  if (!body || ![1, 2].includes(body.version)) throw new Error('Versión no soportada');
+  if (!Number.isSafeInteger(body.distanciaMetros) || body.distanciaMetros <= 0) {
+    throw new Error('distanciaMetros debe ser un entero positivo');
+  }
+  if (body.version === 2 && body.referencia !== undefined &&
+      (typeof body.referencia !== 'string' || body.referencia.length > 80)) {
+    throw new Error('Referencia inválida');
+  }
+  return { distanciaMetros: body.distanciaMetros,
+    referencia: body.version === 2 ? (body.referencia ?? '') : '' };
+}
+```
+Crea `contrato.test.mjs`:
+```javascript
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { adaptar } from './contrato.mjs';
+test('v1 y v2 conservan unidades y significado', () => {
+  assert.deepEqual(adaptar({ version: 1, distanciaMetros: 1200 }),
+    adaptar({ version: 2, distanciaMetros: 1200 }));
+});
+test('no adivina valores ni versiones', () => {
+  assert.throws(() => adaptar({ version: 3, distanciaMetros: 1200 }));
+  assert.throws(() => adaptar({ version: 1, distanciaMetros: '1.2 km' }));
+  assert.throws(() => adaptar({ version: 2, distanciaMetros: 0 }));
+});
+```
+```bash
+node --test contrato.test.mjs
+```
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: versión explícita, validación y modelo común. Estos fixtures representan un cliente antiguo y uno nuevo; no necesitan un servidor para detectar una ruptura semántica.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** en v2 multiplica `distanciaMetros` por 1000 dentro del adaptador. La prueba de compatibilidad falla. **Pista:** el nombre ya expresa metros; no cambies unidades sin cambiar contrato y migración.
+
+#### Paso 6 · Práctica independiente
+Añade una prioridad opcional con valor predeterminado `normal` y valores permitidos `normal`/`urgente`. Mantén el comportamiento de v1 y prueba una prioridad desconocida. Escribe una política de retirada de v1 con evidencia de uso, comunicación y fecha revisable.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** fixtures de ambas versiones, fallo semántico y corrección. El siguiente paso conecta esta frontera con la API y sus respuestas 400/422, conservando validación en servidor. **Errores comunes:** renombrar campos sin migrar, aceptar texto numérico por coerción y eliminar clientes antiguos sin observar uso. **Límites y decisión de uso:** compatibilidad de este comando no prueba la del sistema completo; hay que ensayar también base de datos, eventos y clientes reales.
+
+**Fuentes oficiales:** [Node test runner](https://nodejs.org/api/test.html) y [compatibilidad de diseño de APIs de Google](https://google.aip.dev/180).

@@ -1,0 +1,132 @@
+[
+  {
+    "track": "foundations",
+    "module": 3,
+    "title": "HTML semántico y CSS responsive desde un archivo vacío",
+    "path": "web/public/content/foundations/modulo-3.md",
+    "examples": [
+      "examples/professional-bridges/foundations/index.html"
+    ]
+  },
+  {
+    "track": "javascript",
+    "module": 8,
+    "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
+    "path": "web/public/content/javascript/modulo-8.md",
+    "examples": [
+      "examples/professional-bridges/javascript/index.html",
+      "examples/professional-bridges/javascript/formulario.js"
+    ]
+  },
+  {
+    "track": "node",
+    "module": 3,
+    "title": "Paginación por cursor y límites de entrada comprobables",
+    "path": "web/public/content/node/modulo-3.md",
+    "examples": [
+      "examples/professional-bridges/node/pagina.mjs",
+      "examples/professional-bridges/node/pagina.test.mjs"
+    ]
+  },
+  {
+    "track": "cloud",
+    "module": 25,
+    "title": "Simulacro de restauración: comprobar contenido, no solo la existencia del backup",
+    "path": "web/public/content/cloud/modulo-25.md",
+    "examples": [
+      "examples/professional-bridges/cloud/restaurar.py"
+    ]
+  },
+  {
+    "track": "devops",
+    "module": 5,
+    "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+    "path": "web/public/content/devops/modulo-5.md",
+    "examples": [
+      "examples/professional-bridges/devops/release.py"
+    ]
+  },
+  {
+    "track": "rutaflow",
+    "module": 2,
+    "title": "Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
+    "path": "web/public/content/rutaflow/modulo-2.md",
+    "examples": [
+      "examples/professional-bridges/rutaflow/contrato.mjs",
+      "examples/professional-bridges/rutaflow/contrato.test.mjs"
+    ]
+  },
+  {
+    "track": "angular",
+    "module": 4,
+    "title": "CanDeactivate: proteger un borrador sin confundir navegación con autorización",
+    "path": "web/public/content/angular/modulo-4.md",
+    "examples": [
+      "examples/professional-bridges/angular/main.ts"
+    ]
+  },
+  {
+    "track": "react",
+    "module": 2,
+    "title": "Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
+    "path": "web/public/content/react/modulo-2.md",
+    "examples": [
+      "examples/professional-bridges/react/App.jsx"
+    ]
+  },
+  {
+    "track": "java",
+    "module": 5,
+    "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
+    "path": "web/public/content/java/modulo-5.md",
+    "examples": [
+      "examples/professional-bridges/java/Plazo.java"
+    ]
+  },
+  {
+    "track": "ios",
+    "module": 4,
+    "title": "Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
+    "path": "web/public/content/ios/modulo-4.md",
+    "examples": [
+      "examples/professional-bridges/ios/Cancelacion.swift"
+    ]
+  },
+  {
+    "track": "kotlin-multiplatform",
+    "module": 4,
+    "title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+    "path": "web/public/content/kotlin-multiplatform/modulo-4.md",
+    "examples": [
+      "examples/professional-bridges/kotlin-multiplatform/Vencimiento.kt"
+    ]
+  },
+  {
+    "track": "android",
+    "module": 4,
+    "title": "Restaurar un borrador tras recreación: remember no equivale a rememberSaveable",
+    "path": "web/public/content/android/modulo-4.md",
+    "examples": [
+      "examples/professional-bridges/android/MainActivity.kt"
+    ]
+  },
+  {
+    "track": "flutter",
+    "module": 6,
+    "title": "Restauración de formularios con RestorationMixin y una prueba de recreación",
+    "path": "web/public/content/flutter/modulo-6.md",
+    "examples": [
+      "examples/professional-bridges/flutter/main.dart",
+      "examples/professional-bridges/flutter/widget_test.dart"
+    ]
+  },
+  {
+    "track": "spring-boot",
+    "module": 2,
+    "title": "Paginación HTTP con validación y un límite de recursos explícito",
+    "path": "web/public/content/spring-boot/modulo-2.md",
+    "examples": [
+      "examples/professional-bridges/spring-boot/EnviosController.java"
+    ]
+  }
+]

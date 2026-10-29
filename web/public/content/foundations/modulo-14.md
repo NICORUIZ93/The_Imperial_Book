@@ -108,7 +108,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega a las tareas un decorador que registre en un log cada cambio de estado sin modificar la clase `Tarea`.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** olvidar `@functools.wraps` al escribir un decorador de función, con lo que `calcular_tarifa.__name__` pasa a ser `envoltura` y rompe logs y pruebas que dependen del nombre real; y apilar los decoradores en el orden equivocado (por ejemplo `EnMayusculas(ConFirma(...))` en vez de `ConFirma(EnMayusculas(...))`), cambiando sin darse cuenta cuál transformación se aplica primero.
 
 ### Tema 2: State: un objeto que cambia de comportamiento según su estado
 
@@ -212,7 +212,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela los estados de una tarea (pendiente, en progreso, bloqueada, terminada) y rechaza las transiciones imposibles.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** agregar una acción nueva (como `pagar`) sin declararla primero en la clase base `Estado` con su error por defecto, lo que produce un `AttributeError` críptico en vez de un rechazo claro; y redefinir una transición en la subclase equivocada, dejando que un estado permita una acción que debería rechazar.
 
 ### Tema 3: Template Method: un algoritmo fijo con pasos variables
 
@@ -327,7 +327,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un exportador de tareas con el mismo esqueleto y dos formatos (texto y CSV).
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** olvidar implementar el paso abstracto (`formatear`) en una subclase nueva, lo que lanza `TypeError: Can't instantiate abstract class` recién al crear el objeto; y sobrescribir el método plantilla `generar` en una subclase para "ajustarlo", rompiendo el orden fijo de pasos que el patrón existe para proteger.
 
 ### Tema 4: Chain of Responsibility: una cadena de validadores
 
@@ -433,7 +433,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** valida las tareas nuevas (título, fecha límite, responsable) con una cadena de validadores.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** armar la cadena olvidando un eslabón (como `Direccion(Peso())` sin `Cobertura`), lo que acepta pedidos inválidos sin ningún error visible; y asumir que el orden de los eslabones no afecta el resultado, cuando en realidad decide cuál validación corta la cadena primero.
 
 ### Tema 5: Mediator: coordinar objetos sin que se conozcan
 
@@ -536,7 +536,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un coordinador que, al terminar una tarea, desbloquee automáticamente las que dependían de ella.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** crear un participante y usarlo sin registrarlo antes en el mediador (como `Mensajero("Dani")` sin pasar por `central.registrar(dani)`), lo que produce `AttributeError: 'NoneType' object has no attribute 'notificar'`; y acumular cada vez más reglas de negocio dentro del mediador hasta que se vuelve una clase dios difícil de mantener.
 
 ### Tema 6: Memento: guardar y restaurar estado para deshacer
 
@@ -644,7 +644,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** permite deshacer el último cambio de estado de una tarea con un historial de mementos.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** guardar el memento con una referencia directa a la lista interna (`Memento(self._paradas)`) en vez de una copia (`Memento(tuple(self._paradas))`), con lo que `deshacer` no recupera nada porque el historial apunta al mismo objeto que la ruta sigue modificando; y dejar que el cuidador (`Historial`) inspeccione o modifique el contenido del memento en vez de tratarlo como opaco.
 
 ### Tema 7: Visitor: operaciones nuevas sin tocar las clases
 
@@ -739,7 +739,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un visitante que calcule horas estimadas de tareas simples y de tareas compuestas por subtareas.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** agregar un tipo de elemento nuevo (como `Bolsa`) sin agregar el método correspondiente (`visitar_bolsa`) en cada visitante existente, lo que produce `AttributeError` recién al ejecutar y no al escribir el código; y usar Visitor sobre una jerarquía que cambia seguido, multiplicando el costo de mantener cada visitante sincronizado.
 
 ### Tema 8: Flyweight: compartir estado para ahorrar memoria
 
@@ -840,7 +840,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** comparte las etiquetas de categoría entre todas las tareas en lugar de crear una cadena por tarea.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** dejar mutable el estado intrínseco del flyweight (como asignar `marcador.tipo.color = "negro"` directamente), lo que afecta a todos los marcadores que comparten ese mismo objeto compartido; y guardar estado extrínseco propio de cada marcador (como `lat`/`lon`) dentro del flyweight compartido en vez de en `Marcador`.
 
 ## Construcción guiada del capítulo
 

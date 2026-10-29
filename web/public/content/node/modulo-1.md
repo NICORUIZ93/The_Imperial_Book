@@ -545,7 +545,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** extrae a un paquete `@rutaflow/contratos` los esquemas de validación que comparten la API y los consumidores.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** importar una ruta interna del paquete en vez de lo declarado en `exports`, provocando `ERR_PACKAGE_PATH_NOT_EXPORTED`; olvidar `files` en `package.json` y publicar por accidente notas internas o carpetas de prueba junto al código fuente.
 
 ### Tema 6: ESM y CommonJS en el mismo proyecto
 
@@ -677,7 +677,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** migra un módulo CommonJS de la API a ESM y deja el anterior funcionando hasta retirarlo.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** usar `__dirname` o `require` directamente dentro de un archivo `.js`/`.mjs` que ya es ESM, provocando `ReferenceError: __dirname is not defined`; renombrar un archivo `.cjs` a `.js` sin revisar el `"type"` del `package.json`, cambiando silenciosamente su sistema de módulos.
 
 ## Construcción guiada del capítulo
 

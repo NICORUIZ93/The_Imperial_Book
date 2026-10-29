@@ -440,7 +440,7 @@ Entrega la app con el mapa contenido, el reintento y la versión con `react-erro
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** esperar que un Error Boundary atrape errores de un manejador de eventos o de un `fetch` asíncrono, cuando solo captura errores lanzados durante el render; envolver toda la app en un único boundary en vez de uno por sección, perdiendo el aislamiento que evita que un widget derribe a los demás.
 **Fuente oficial:** [documentación de React](https://react.dev/reference/react).
 ## Laboratorio práctico
 
@@ -470,3 +470,70 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 * Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
 * Proyecto: proyecto integrador RutaFlow
 * Visualización: concepto mostrado en diagrama
+
+
+## Laboratorio de transferencia
+
+### Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar reproducirás una carrera entre dos solicitudes y evitarás mostrar datos de una selección anterior. **Prerrequisitos:** props, estado, efectos, promesas y cleanup. Node y npm compatibles con Vite 8. Ejemplo independiente desde carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+En el proyecto integrador, el operador cambia de norte a sur antes de que termine la primera consulta. Si la respuesta de norte llega después, puede pisar los datos de sur. **¿Por qué es importante?** El orden de inicio no garantiza el orden de llegada.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Cada efecto captura la selección de su render. Su cleanup debe retirar el trabajo anterior cuando cambia esa selección. `AbortController` comunica cancelación; la función llamada debe cooperar. **Analogía:** al cambiar un pedido, cancelas el anterior para no servirlo en la mesa equivocada. El límite es que cancelar en el cliente no revierte necesariamente una operación ya realizada por un servidor.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+npm create vite@8 carrera-react -- --template react
+cd carrera-react
+npm install
+```
+Reemplaza `src/App.jsx` por:
+```jsx
+import { useEffect, useState } from 'react';
+
+function consultar(zona, signal) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => resolve(`Envíos de ${zona}`), zona === 'norte' ? 900 : 100);
+    signal.addEventListener('abort', () => {
+      clearTimeout(timer);
+      reject(new DOMException('Cancelado', 'AbortError'));
+    }, { once: true });
+  });
+}
+export default function App() {
+  const [zona, setZona] = useState('norte');
+  const [estado, setEstado] = useState('Cargando');
+  useEffect(() => {
+    const controller = new AbortController();
+    setEstado('Cargando');
+    consultar(zona, controller.signal).then(setEstado).catch(error => {
+      if (error.name !== 'AbortError') setEstado('No se pudo cargar');
+    });
+    return () => controller.abort(); // Retira el trabajo del render anterior.
+  }, [zona]);
+  return <main><h1>Consulta por zona</h1>
+    <label htmlFor="zona">Zona</label>
+    <select id="zona" value={zona} onChange={e => setZona(e.target.value)}>
+      <option value="norte">Norte</option><option value="sur">Sur</option>
+    </select><p role="status">{estado}</p></main>;
+}
+```
+```bash
+npm run dev
+```
+Abre la URL que imprime Vite, normalmente `http://localhost:5173`. **Resultado esperado:** cambia inmediatamente a sur; aparece `Envíos de sur` y sigue siendo sur después de un segundo. Explica cada bloque: demora local controlada, selección, inicio del efecto y cancelación. No hay API oculta: el temporizador simula latencia para reproducir la carrera.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** retira la función de cleanup. Recarga, cambia a sur rápidamente y espera: norte puede sobrescribir el resultado. **Pista:** añadir más estado no ordena respuestas; retira el trabajo de la selección obsoleta. Restaura cleanup.
+
+#### Paso 6 · Práctica independiente
+Añade una zona que rechace con un error distinto de `AbortError`. Comprueba que el fallo real se muestra y que la cancelación normal no se presenta como error. Anota por qué no debes esconder indiscriminadamente todas las excepciones.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** reproducción de la carrera, corrección y caso fallido. El siguiente paso es aplicar la señal a `fetch` y luego comparar con una librería de estado remoto. **Errores comunes:** ignorar dependencias, tratar toda cancelación como fallo y asumir que detener una UI revierte una escritura. **Límites y decisión de uso:** el ejemplo no implementa caché ni deduplicación; esas responsabilidades se estudian en el módulo de datos remotos.
+
+**Fuentes oficiales:** [React useEffect](https://react.dev/reference/react/useEffect) y [MDN AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).

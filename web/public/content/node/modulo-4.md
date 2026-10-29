@@ -540,7 +540,7 @@ HTTP es petición→respuesta: el cliente pregunta, el servidor contesta, se cie
 **Analogía:** HTTP es como enviar cartas (una pregunta, una respuesta, cerrar sobre); WebSocket es como una llamada telefónica abierta donde cualquiera de los dos habla cuando quiere.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Crea** los archivos `server.js` y `cliente.js` dentro de una carpeta nueva, pega en ellos el código mostrado a continuación, y guárdalos antes de ejecutarlos.
 
 Crea el servidor con la librería `ws`:
 
@@ -593,9 +593,9 @@ Entrega el servidor empujando posiciones, el mensaje cliente→servidor y las sa
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** expón la posición del repartidor por un canal en tiempo real y comprueba que el panel recibe actualizaciones sin hacer polling.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** asumir que un mensaje de WebSocket llegó completo u ordenado sin verificar realmente su contenido; cerrar el socket sin limpiar el `setInterval`/los listeners asociados, dejando temporizadores corriendo tras la desconexión.
 **Fuente oficial:** [documentación de Node.js](https://nodejs.org/docs/latest/api/).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la captura de los mensajes push recibidos sin pedirlos, el polling comparado y descartado en el Paso 4, y las salas con dos guías distintas verificadas en el Paso 6.
 ### Tema 6: Subida de archivos — multipart y validación segura
 
 #### Paso 1 · Objetivo y preparación
@@ -610,8 +610,7 @@ Los formularios con archivos usan la codificación `multipart/form-data` (distin
 **Analogía:** recibir una subida sin validar es como aceptar cualquier paquete en recepción sin revisar remitente, tamaño ni contenido. `multer` + validación es el control de seguridad que pesa, escanea y rechaza lo que no cumple antes de dejarlo entrar al edificio.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
+**Crea** el archivo `server.js` dentro de una carpeta nueva y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 ```js
 // server.js
@@ -662,9 +661,9 @@ Entrega la subida válida, el rechazo por tamaño/tipo y la metadata consultable
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** recibe la foto de evidencia de entrega validando tipo y tamaño, y guarda solo la referencia, dejando el binario en almacenamiento de objetos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** confiar en la extensión del nombre de archivo en vez de validar `file.mimetype` real; omitir `limits.fileSize`, dejando que un archivo arbitrariamente grande agote disco o memoria antes de que `fileFilter` pueda rechazarlo.
 **Fuente oficial:** [documentación de Node.js](https://nodejs.org/docs/latest/api/).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la subida válida guardada en `uploads/`, el rechazo real por tamaño o tipo reproducido en el Paso 4, y la metadata consultable del Paso 6 verificada con una petición `GET`.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API REST con Express que incluya middleware de logging, validación con Zod y manejo de errores centralizado, y repetir el ejercicio con Fastify para comparar.

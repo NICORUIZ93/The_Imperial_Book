@@ -107,9 +107,6 @@ Una Server Action marcada `'use server'` queda expuesta como un endpoint invocab
 npx create-next-app@latest ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.tsx` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
 
 ```bash
@@ -289,9 +286,6 @@ La foto de evidencia de entrega en la página de detalle de un envío no tenía 
 npx create-next-app@latest ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.tsx` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
 
 ```bash
@@ -356,9 +350,6 @@ Un `<div>` no tiene ninguna semántica ARIA implícita: un lector de pantalla no
 ```bash
 npx create-next-app@latest ejemplo
 ```
-
-**Crea** el archivo `src/ejemplo.tsx` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
 

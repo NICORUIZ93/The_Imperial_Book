@@ -78,8 +78,6 @@ Son tres pases distintos: el Access Token es la credencial que abre la puerta de
 mkdir ejemplo && cd ejemplo && floci start
 ```
 
-**Crea** el archivo `src/ejemplo.tf` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```bash
 aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow USER_PASSWORD_AUTH \
   --auth-parameters USERNAME=conductor-c891@rutaflow.com,PASSWORD="Segura123!" \
@@ -88,7 +86,7 @@ aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow USER_PASSWORD
 Resultado esperado: tres JWT distintos — decodificá el `IdToken` (solo la parte del medio, separada por puntos, en base64) y vas a ver `email: conductor-c891@rutaflow.com`; decodificá el `AccessToken` y vas a ver `scope`, pero nunca el email. Ese es exactamente el token que `POST /entregas` debería exigir en su cabecera `Authorization`.
 #### Paso 5 · Práctica guiada
 Pista: ese es el error real que advierte este Tema — si `POST /entregas` validara el `IdToken` en vez del `AccessToken` (un error de integración común), estaría usando un token diseñado para comunicar identidad al cliente, no para autorizar acceso a una API; documentá por escrito qué información le faltaría a un autorizador que solo revisa `scope` si le llega un `IdToken` en su lugar.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
+**Fallo deliberado:** en el `--query` del comando del Paso 4, cambiá `Access:AccessToken` por `Access:IdToken` y usá ese valor como `Authorization: Bearer <token>` contra un autorizador que solo revisa `scope` — provoca un error de autorización, porque el `IdToken` nunca trae ese claim; diagnosticalo decodificando el token rechazado y confirmando que trae `email` pero ningún `scope`.
 #### Paso 6 · Práctica independiente
 Guardá el `RefreshToken`, esperá a que el `AccessToken` esté cerca de expirar (o simulá la espera), y corré `aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow REFRESH_TOKEN_AUTH --auth-parameters REFRESH_TOKEN=<refresh-token>` para confirmar que el conductor obtiene un `AccessToken` nuevo sin volver a escribir su contraseña.
 #### Paso 7 · Cierre y evidencia

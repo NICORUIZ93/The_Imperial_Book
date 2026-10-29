@@ -106,7 +106,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** renombra y divide la función que calcula el progreso de las tareas hasta que cada función quepa en la pantalla.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** repetir una regla de negocio como número suelto en más de un lugar (como la tarifa `5000` de Bogotá dentro de `calc`) en vez de una sola constante con nombre, lo que lleva a actualizarla en un sitio y olvidarla en otro; y mantener un argumento bandera (como `f=True`) que hace que la misma función calcule dos cosas distintas según su valor.
 
 ### Tema 2: Comentarios honestos y excepciones en lugar de códigos de error
 
@@ -208,7 +208,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reemplaza los valores especiales que devuelven las funciones de tareas por excepciones con nombre.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** devolver un código de error (como `-2`) que el llamador olvida revisar y trata como si fuera el valor real, provocando un `AttributeError` lejos de la causa (como en el fallo deliberado); y mantener comentarios que explican *qué* hace la línea en vez de *por qué*, que quedan desactualizados en cuanto el código cambia.
 
 ### Tema 3: Objetos frente a estructuras de datos y la ley de Demeter
 
@@ -230,7 +230,7 @@ flowchart LR
     L[llamador] -- ciudad_destino --> P[Pedido]
     P --> C[Cliente]
     C --> D[Direccion]
-    L -. evitar: pedido.cliente.direccion.ciudad .-> D
+    L -. "evitar: pedido.cliente.direccion.ciudad" .-> D
 ```
 
 #### Paso 4 · Demostración guiada desde cero
@@ -310,7 +310,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** mueve dentro de la clase `Tarea` las decisiones sobre su responsable y su fecha límite en lugar de consultarlas desde fuera.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** navegar directamente la cadena interna de otro objeto (como `pedido._cliente.direccion.ciudad`) en vez de pedirle al objeto que decida (`pedido.ciudad_destino()`), lo que rompe con `AttributeError` apenas un eslabón intermedio es `None`; y duplicar en cada llamador la lógica de qué hacer cuando falta la dirección, en vez de resolverla una sola vez dentro de `Pedido`.
 
 ### Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba
 
@@ -408,7 +408,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reescribe las pruebas del gestor de tareas para que cumplan F.I.R.S.T. y ejecútalas en orden aleatorio.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** escribir una prueba que depende de datos aleatorios o de la hora sin fijar una semilla, lo que rompe la `R` de Repeatable (pasa o falla según la ejecución, como en el fallo deliberado); y dejar que una prueba dependa del estado que dejó otra o del orden en que corren, lo que rompe la `I` de Independent.
 
 ## Construcción guiada del capítulo
 

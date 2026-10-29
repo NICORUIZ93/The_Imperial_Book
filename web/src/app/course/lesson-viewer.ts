@@ -10,7 +10,7 @@ import type { CourseModule } from '../course-module.model';
 import { ANATOMY_SLUG_CLASS_PREFIX, ContentService } from '../content.service';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
-import { findProjectBootstrap } from '../project-bootstrap';
+import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { glossaryFor } from '../technical-glossary';
 import { learningPrompt, LearningPromptMode } from '../learning-prompts';
@@ -135,7 +135,7 @@ export class LessonViewerComponent implements OnDestroy {
       ? (CLOUD_MODULE_SOURCES[this.moduleId()] ?? TRACK_OFFICIAL_SOURCES['cloud'])
       : TRACK_OFFICIAL_SOURCES[this.trackId()];
   });
-  readonly projectBootstrap = computed(() => findProjectBootstrap(this.trackId()));
+  readonly courseGuide = computed(() => TRACK_GUIDES[this.trackId()]);
   readonly trackProject = computed(() => projectFor(this.trackId()));
   readonly projectStep = computed(() => {
     const project = this.trackProject();
@@ -149,7 +149,6 @@ export class LessonViewerComponent implements OnDestroy {
     const completed = track.modules.filter(module => this.progressService.isModuleComplete(this.trackId(), module.id)).length;
     return Math.round(completed / Math.max(1, track.modules.length) * 100);
   });
-  readonly showProjectBootstrap = computed(() => this.moduleId() === 0 && Boolean(this.projectBootstrap()));
   readonly showTrackProject = computed(() => {
     const track = this.track();
     return Boolean(this.trackProject()) && this.moduleIndex() === (track?.modules.length ?? 0) - 1;
@@ -312,12 +311,12 @@ export class LessonViewerComponent implements OnDestroy {
           themeVariables: {
             // Diagramas a tinta, como los del libro: cajas blancas con trazo
             // oscuro, flechas finas y el rojo solo como acento secundario.
-            primaryColor: this.themeService.isDark() ? '#262626' : '#ffffff',
-            primaryTextColor: this.themeService.isDark() ? '#ebe9e4' : '#2d2d2d',
-            primaryBorderColor: this.themeService.isDark() ? '#b3b0a9' : '#2d2d2d',
-            lineColor: this.themeService.isDark() ? '#b3b0a9' : '#5f5f5f',
-            secondaryColor: this.themeService.isDark() ? '#3a2323' : '#fbeaea',
-            tertiaryColor: this.themeService.isDark() ? '#1f1f1f' : '#f6f6f4',
+            primaryColor: this.themeService.isDark() ? '#192940' : '#ffffff',
+            primaryTextColor: this.themeService.isDark() ? '#e6edf8' : '#17253b',
+            primaryBorderColor: this.themeService.isDark() ? '#b5c3d8' : '#17253b',
+            lineColor: this.themeService.isDark() ? '#b5c3d8' : '#52627a',
+            secondaryColor: this.themeService.isDark() ? '#1f3655' : '#e9f0ff',
+            tertiaryColor: this.themeService.isDark() ? '#121f32' : '#edf2f8',
             fontSize: '12px',
           },
         });
@@ -686,7 +685,7 @@ export class LessonViewerComponent implements OnDestroy {
     const map = document.createElement('nav');
     map.className = 'topic-map';
     map.setAttribute('aria-label', 'Mapa de temas de este capítulo');
-    map.innerHTML = `<div class="topic-map-heading"><strong>Elegí un tema</strong><span>Sin orden obligatorio: abrí primero el que te interese.</span></div><div class="topic-map-grid">${items}</div>`;
+    map.innerHTML = `<div class="topic-map-heading"><strong>En este capítulo</strong><span>Empieza por el primer tema si estás aprendiendo desde cero.</span></div><div class="topic-map-grid">${items}</div>`;
     firstCard.parentNode?.insertBefore(map, firstCard);
   }
 

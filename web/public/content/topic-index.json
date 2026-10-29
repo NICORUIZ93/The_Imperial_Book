@@ -184,6 +184,10 @@
       {
         "title": "SharedFlow para eventos de un solo uso",
         "fragment": "tema-3-sharedflow-para-eventos-de-un-solo-uso"
+      },
+      {
+        "title": "Restaurar un borrador tras recreación: remember no equivale a rememberSaveable",
+        "fragment": "tema-4-restaurar-un-borrador-tras-recreacion-remember-no-equivale-a-remembersaveable"
       }
     ],
     "5": [
@@ -492,6 +496,10 @@
       {
         "title": "Parámetros de ruta, query params y capacidades avanzadas de routing",
         "fragment": "tema-4-parametros-de-ruta-query-params-y-capacidades-avanzadas-de-routing"
+      },
+      {
+        "title": "CanDeactivate: proteger un borrador sin confundir navegación con autorización",
+        "fragment": "tema-5-candeactivate-proteger-un-borrador-sin-confundir-navegacion-con-autorizacion"
       }
     ],
     "5": [
@@ -910,6 +918,10 @@
       {
         "title": "El ciclo de vida de un trabajo de respaldo",
         "fragment": "tema-5-el-ciclo-de-vida-de-un-trabajo-de-respaldo"
+      },
+      {
+        "title": "Simulacro de restauración: comprobar contenido, no solo la existencia del backup",
+        "fragment": "tema-6-simulacro-de-restauracion-comprobar-contenido-no-solo-la-existencia-del-backup"
       }
     ],
     "26": [
@@ -1586,6 +1598,10 @@
       {
         "title": "Rollback automático por métricas",
         "fragment": "tema-5-rollback-automatico-por-metricas"
+      },
+      {
+        "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+        "fragment": "tema-6-rollback-ensayado-y-compatibilidad-del-artefacto-anterior"
       }
     ],
     "6": [
@@ -1938,6 +1954,10 @@
       {
         "title": "Offline-first y Firebase",
         "fragment": "tema-3-offline-first-y-firebase"
+      },
+      {
+        "title": "Restauración de formularios con RestorationMixin y una prueba de recreación",
+        "fragment": "tema-4-restauracion-de-formularios-con-restorationmixin-y-una-prueba-de-recreacion"
       }
     ],
     "7": [
@@ -2282,6 +2302,10 @@
       {
         "title": "CSS, layout responsive y accesibilidad verificable",
         "fragment": "tema-4-css-layout-responsive-y-accesibilidad-verificable"
+      },
+      {
+        "title": "HTML semántico y CSS responsive desde un archivo vacío",
+        "fragment": "tema-5-html-semantico-y-css-responsive-desde-un-archivo-vacio"
       }
     ],
     "4": [
@@ -2592,6 +2616,10 @@
       {
         "title": "TaskGroup y MainActor",
         "fragment": "tema-3-taskgroup-y-mainactor"
+      },
+      {
+        "title": "Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
+        "fragment": "tema-4-cancelacion-cooperativa-distinguir-una-tarea-cancelada-de-un-fallo-de-red"
       }
     ],
     "5": [
@@ -2956,6 +2984,10 @@
       {
         "title": "Scoped Values frente a ThreadLocal (Java 25)",
         "fragment": "tema-6-scoped-values-frente-a-threadlocal-java-25"
+      },
+      {
+        "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
+        "fragment": "tema-7-timeouts-y-cancelacion-cooperativa-sin-abandonar-recursos"
       }
     ],
     "6": [
@@ -3382,6 +3414,10 @@
       {
         "title": "requestAnimationFrame y requestIdleCallback",
         "fragment": "tema-6-requestanimationframe-y-requestidlecallback"
+      },
+      {
+        "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
+        "fragment": "tema-7-formularios-accesibles-validar-anunciar-y-conservar-la-entrada"
       }
     ],
     "9": [
@@ -3564,6 +3600,10 @@
       {
         "title": "Modelado de errores de dominio con un tipo Result explícito",
         "fragment": "tema-4-modelado-de-errores-de-dominio-con-un-tipo-result-explicito"
+      },
+      {
+        "title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+        "fragment": "tema-5-tiempo-determinista-probar-vencimientos-sin-dormir-ni-consultar-el-reloj-global"
       }
     ],
     "5": [
@@ -3858,6 +3898,10 @@
       {
         "title": "Códigos de estado y content negotiation",
         "fragment": "tema-4-codigos-de-estado-y-content-negotiation"
+      },
+      {
+        "title": "Paginación por cursor y límites de entrada comprobables",
+        "fragment": "tema-5-paginacion-por-cursor-y-limites-de-entrada-comprobables"
       }
     ],
     "4": [
@@ -4148,6 +4192,10 @@
       {
         "title": "Error Boundaries — contener errores de render sin romper toda la app",
         "fragment": "tema-5-error-boundaries-contener-errores-de-render-sin-romper-toda-la-app"
+      },
+      {
+        "title": "Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
+        "fragment": "tema-6-efectos-cancelables-impedir-que-una-respuesta-antigua-sobrescriba-la-seleccion-actual"
       }
     ],
     "3": [
@@ -4302,6 +4350,10 @@
       {
         "title": "Outbox, colas y observabilidad",
         "fragment": "tema-3-outbox-colas-y-observabilidad"
+      },
+      {
+        "title": "Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
+        "fragment": "tema-4-evolucion-de-contratos-aceptar-una-version-nueva-sin-romper-clientes-anteriores"
       }
     ],
     "3": [
@@ -4600,6 +4652,10 @@
       {
         "title": "OpenAPI con springdoc: el contrato como prueba",
         "fragment": "tema-5-openapi-con-springdoc-el-contrato-como-prueba"
+      },
+      {
+        "title": "Paginación HTTP con validación y un límite de recursos explícito",
+        "fragment": "tema-6-paginacion-http-con-validacion-y-un-limite-de-recursos-explicito"
       }
     ],
     "20": [

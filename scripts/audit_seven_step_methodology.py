@@ -29,7 +29,7 @@ def evaluate(block: str) -> dict[str, bool]:
         "theoryAnalogy": matches(r"paso 3.{0,50}teoría", block) and matches(r"analogía", block),
         "guidedDemo": matches(r"paso 4.{0,60}demostración guiada", block) and matches(r"^```(?!mermaid)", block) and (
             matches(
-                r"(crea|cre[aá]|guarda|actualiza|implementa|pega|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json|html|css|scss|sql|sh))",
+                r"(crea|cre[aá]|guarda|actualiza|implementa|pega|reemplaza|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:mjs|cjs|js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json|html|css|scss|sql|sh))",
                 block,
             )
             # Un tema de infraestructura/CLI demuestra operando recursos
@@ -38,7 +38,7 @@ def evaluate(block: str) -> dict[str, bool]:
             or matches(r"\b(aws|az|gcloud|kubectl|terraform|tofu|sam|helm|ansible(?:-\w+)?)\b[\s\S]{0,120}\b(create|apply|deploy|put[\w-]*|run|publish|invoke|new|add|init|get[\w-]*|list[\w-]*|describe[\w-]*|query|update[\w-]*|send[\w-]*|encrypt|cp|mb|tag-resources|restore[\w-]*)\b", block)
             # Un tema de KMP/Gradle demuestra compilando o ejecutando la suite
             # de pruebas del módulo compartido (artefacto = build/test).
-            or matches(r"\./gradlew\s+[\w:]*(test|build|allTests|publish)", block)
+            or matches(r"\./gradlew\s+[\w:]*(test|build|assembleDebug|allTests|publish)", block)
             or matches(r"xcodebuild\s+(-scheme|-create-xcframework)", block)
             # Un tema de iOS/SwiftUI demuestra creando un proyecto en Xcode y
             # compilándolo (su artefacto es el proyecto, no un archivo suelto).
@@ -66,7 +66,7 @@ def evaluate(block: str) -> dict[str, bool]:
             # o la copia de una plantilla del laboratorio a una carpeta propia.
             matches(r"(ejemplo independiente|carpeta vac[ií]a|proyecto nuevo|desde cero|copia independiente)", block)
             and matches(
-                r"(mkdir|New-Item|npm init|npm create|npx create|create-next-app|ng new|flutter create|dart create|gradle init|mvn|cargo new|swift package init|terraform init|New . Project|File . New . Project|cp\s+-R\s+examples/[\w./-]+\s+ejemplo)",
+                r"(mkdir|New-Item|npm init|npm create|npx create|npx @angular/cli@[^ ]+ new|create-next-app|ng new|flutter create|dart create|gradle init|mvn|cargo new|swift package init|terraform init|New . Project|File . New . Project|cp\s+-R\s+examples/[\w./-]+\s+ejemplo)",
                 block,
             )
         ) or (
@@ -80,7 +80,7 @@ def evaluate(block: str) -> dict[str, bool]:
             # módulo (Gradle/KMP). El artefacto verificable es el build/test,
             # autocontenido y reproducible sin arrastrar estado de otro tema.
             matches(r"xcodebuild\s+(-scheme|-create-xcframework)", block)
-            or matches(r"\./gradlew\s+[\w:]*(test|build|allTests|publish)", block)
+            or matches(r"\./gradlew\s+[\w:]*(test|build|assembleDebug|allTests|publish)", block)
         ),
         "learningEvidence": matches(r"(demuestra|evidencia|entrega|entreg[aá]).{0,220}(salida|fallo|resultado|explica|bug|correcci[oó]n|detect|verific)", block)
         # Evidencia concreta: entregar un artefacto producido en un paso

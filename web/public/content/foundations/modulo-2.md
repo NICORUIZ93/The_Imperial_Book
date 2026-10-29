@@ -110,7 +110,8 @@ Elegida para Fundamentos: _________ (¿por qué?)
 Si inserción = 50/seg: cambiarías a _________
 ```
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 >
@@ -121,6 +122,8 @@ Si inserción = 50/seg: cambiarías a _________
 > **Fundamentos:** Diccionario `{id: tarea}` porque búsqueda es frecuente y O(1) es crítica.
 >
 > **Si 50 inserciones/seg:** Seguiría con diccionario (ambas O(1)). Solo si necesitas orden, usaría árbol.
+
+</details>
 
 ### Tema 2: Pilas, colas y abstracciones de comportamiento
 
@@ -654,7 +657,7 @@ Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliber
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** indexa las tareas por fecha de vencimiento en un BST y compara el número de comparaciones de una búsqueda contra el recorrido lineal de la lista, con 100 y 10.000 tareas.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** insertar datos ya ordenados en un BST sin balancear (como `[20, 30, 40, 50, 60, 70, 80]`), lo que lo degenera en una lista enlazada y hace que `buscar` cueste O(n) en vez de O(log n); y asumir que "es un BST" garantiza O(log n) sin verificar si quedó equilibrado.
 **Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 6: Tablas hash — búsqueda en tiempo constante
 
@@ -729,7 +732,7 @@ Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado 
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** guarda las tareas en una tabla hash indexada por ID y mide el factor de carga a medida que crece el inventario, confirmando que la búsqueda por ID se mantiene constante.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** usar una capacidad demasiado chica para la tabla (como `capacidad=1`), lo que fuerza a todas las claves a la misma cubeta y degrada `obtener` a O(n); y confundir el O(1) *promedio* con una garantía absoluta, ignorando que un factor de carga alto o una mala función hash lo rompen.
 **Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 7: Grafos y recorridos BFS/DFS
 
@@ -820,7 +823,7 @@ Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del f
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela las dependencias entre tareas (una tarea que debe hacerse antes que otra) como un grafo y usa un recorrido para detectar si hay un ciclo de dependencias imposible de resolver.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** recorrer un grafo con ciclos sin marcar los nodos visitados (como en el fallo deliberado), lo que produce un bucle infinito porque, a diferencia de un árbol, un grafo puede volver al mismo nodo; y usar DFS cuando el problema necesita el camino más corto, que es exactamente lo que garantiza BFS por niveles.
 **Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 8: Programación dinámica — resolver una vez, recordar el resultado
 
@@ -890,7 +893,7 @@ Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y 
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor calcula alguna métrica acumulada sobre rangos de fechas repetidos, memoiza el resultado por rango y demuestra con un contador que evitas recalcular los mismos rangos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** no reconocer que un problema tiene subproblemas solapados y resolverlo con recursión simple (como `fib_ingenuo`), lo que vuelve exponencial algo que debería ser lineal y cuelga el programa con entradas apenas más grandes; y aplicar memoización a un problema cuyos subproblemas no se repiten, agregando complejidad sin ningún beneficio.
 **Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ## Construcción guiada del capítulo
 

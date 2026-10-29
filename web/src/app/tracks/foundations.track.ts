@@ -72,6 +72,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
   m(3, 'Fundamentos de web, redes y accesibilidad', 'Web y redes', 'Fundamentos', '8 h', '#6d5dfc',
     'Comprende qué ocurre al abrir una URL y construye una web semántica, responsive y accesible antes de utilizar frameworks de frontend o backend.',
     [
+      'HTML semántico y CSS responsive desde un archivo vacío',
       'Cliente, servidor, IP, puerto, DNS, URL y TCP',
       'HTTP: métodos, headers, estados, cuerpo, caché y HTTPS',
       'HTML semántico, formularios, DOM y validación',

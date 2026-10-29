@@ -447,7 +447,7 @@ Entrega el modelo `Tarea`, el `when`, el manejo de null y el filtrado funcional.
 **Cuándo no usarlo:** no fuerces una `data class` para objetos con identidad y ciclo de vida (como una Activity); las data class son para contenedores de datos inmutables, no para entidades con comportamiento mutable.
 
 **Transferencia al proyecto integrador «RutaFlow»:** define el modelo `Tarea`/`Envio` del proyecto como `data class` con null safety, y úsalo sin cambios en los ViewModels de los módulos siguientes.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** asumir que `tarea.copy(completada = true)` modifica `tarea` en memoria —no lo hace, crea una instancia nueva— y seguir leyendo la variable original esperando el cambio; o declarar un campo como `String?` "por si acaso" sin necesitarlo, lo que obliga a propagar `?.`/`?:` por todo el archivo sin un motivo real.
 **Fuente oficial:** [documentación de Android](https://developer.android.com/docs).
 ### Tema 5: Coroutines — asincronía sin bloquear la UI
 
@@ -467,9 +467,6 @@ Una función `suspend` puede pausarse y reanudarse sin bloquear el hilo. `launch
 ```bash
 gradle init --type kotlin-application
 ```
-
-**Crea** el archivo `src/ejemplo.kt` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -510,9 +507,9 @@ Entrega la carga asíncrona, las dos cargas en paralelo y el manejo de error. **
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** llamar código bloqueante (`Thread.sleep`, una lectura de archivo síncrona) dentro de una corrutina creyendo que "suspender" la protege, o copiar `runBlocking` a un ViewModel real en vez de `viewModelScope.launch`, lo que bloquea el hilo principal igual que si no hubiera corrutinas.
 **Fuente oficial:** [documentación de Android](https://developer.android.com/docs).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega el log con "Cargando…" y "Recibidos: [RF-4471, RF-5002]", el tiempo medido de las dos cargas en paralelo (~1 segundo, no 2) y la explicación de por qué `delay` libera el hilo mientras `Thread.sleep` lo bloquea.
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con crea una carpeta vacía `academia-android`, abre Android Studio y genera allí un proyecto **Empty Activity**; luego ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

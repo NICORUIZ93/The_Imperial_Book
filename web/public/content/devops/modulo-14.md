@@ -22,9 +22,6 @@ Un SLI es una proporción medible de eventos buenos sobre válidos; un SLO fija 
 mkdir ejemplo && cd ejemplo && terraform init
 ```
 
-**Crea** el archivo `src/ejemplo.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
 Ejecuta `docker` para levantar Prometheus y ejecuta `npm` para instrumentar tu aplicación Node. La consulta PromQL calcula tu SLI:
 
 ```promql
@@ -106,9 +103,6 @@ Una página debe despertar a una persona solo si exige acción inmediata; los la
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
-
-**Crea** el archivo `src/ejemplo.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 
 Configura tu Prometheus con el YAML de alertas y ejecuta `kubectl` para aplicar el AlertManager:
 

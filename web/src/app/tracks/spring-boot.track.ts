@@ -29,7 +29,8 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Proyecto Spring Boot con perfiles dev/prod y configuración externalizada.'),
   m(2, 'REST APIs con Spring Web', 'Spring Web', 'Aplicación', '3 h', '#6db33f',
     'Expón endpoints HTTP con validación y manejo de errores consistente.',
-    ['@RestController y mapeo de rutas', 'DTOs y validación con Bean Validation', 'ResponseEntity y códigos de estado', '@ControllerAdvice para errores centralizados'],
+    [
+      'Paginación HTTP con validación y un límite de recursos explícito','@RestController y mapeo de rutas', 'DTOs y validación con Bean Validation', 'ResponseEntity y códigos de estado', '@ControllerAdvice para errores centralizados'],
     [
       'Crea un @RestController con GET /tareas y POST /tareas que devuelvan/reciban un DTO, no la entidad directamente',
       'Agrega validación con @Valid y anotaciones de Bean Validation (@NotBlank, @Min) en el DTO de entrada',

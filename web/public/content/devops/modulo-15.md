@@ -111,8 +111,6 @@ Los hooks de Helm (`pre-upgrade`, `post-upgrade`) ejecutan recursos en una fase 
 mkdir ejemplo && cd ejemplo && terraform init
 ```
 
-**Crea** el archivo `src/ejemplo.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```yaml
 apiVersion: batch/v1
 kind: Job
@@ -271,8 +269,6 @@ GitOps trata el repositorio como la única fuente de verdad; un operador en modo
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
-
-**Crea** el archivo `src/ejemplo.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1

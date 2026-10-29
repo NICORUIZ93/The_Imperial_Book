@@ -531,3 +531,71 @@ Elegir el código de estado correcto para cada situación es el mismo criterio q
 - **Olvidar manejar el caso de ruta no reconocida.** Sin un `else` final explícito, una petición a una ruta inexistente podría quedar sin ninguna respuesta.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 5: Paginación por cursor y límites de entrada comprobables
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar diseñarás un corte estable de resultados con cursor y rechazarás tamaños inválidos antes de consultar datos. **Prerrequisitos:** arrays, módulos ESM, HTTP y `node:test`. Usa Node 24 o superior; comprueba `node --version`. Es un ejemplo independiente desde carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+El proyecto integrador no debe cargar todos los envíos en una petición ni devolver resultados repetidos por ordenar solo por una fecha no única. **¿Por qué es importante?** El contrato de paginación afecta memoria, latencia y la posibilidad de retomar una lectura.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un cursor representa una posición en un orden estable. Aquí es un identificador entero ascendente y único: la página incluye los IDs mayores al cursor. Pedimos un elemento adicional para determinar si existe otra página. En una base de datos, el filtro y el límite deben ejecutarse en la consulta, con un índice apropiado.
+
+**Analogía:** el cursor es un separador que indica después de qué ficha seguir. El límite es que esta implementación no representa una foto inmutable de datos concurrentes: eliminaciones o inserciones pueden cambiar lo visible. Un cursor real también debe conservar filtros y orden, y no debe servir para eludir autorización.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir cursor-envios
+cd cursor-envios
+```
+Crea `pagina.mjs`:
+```javascript
+export function pagina(rows, after = 0, size = 2) {
+  if (!Number.isSafeInteger(after) || after < 0 ||
+      !Number.isSafeInteger(size) || size < 1 || size > 100) {
+    throw new RangeError('Cursor o tamaño inválido');
+  }
+  const selected = rows.filter(row => row.id > after)
+    .sort((a, b) => a.id - b.id).slice(0, size + 1);
+  const items = selected.slice(0, size);
+  return { items, next: selected.length > size ? items.at(-1).id : null };
+}
+```
+Crea `pagina.test.mjs`:
+```javascript
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { pagina } from './pagina.mjs';
+const rows = [1, 2, 3, 4, 5].map(id => ({ id }));
+test('recorre sin repetir y termina', () => {
+  const first = pagina(rows);
+  const second = pagina(rows, first.next);
+  assert.deepEqual(first.items.map(x => x.id), [1, 2]);
+  assert.deepEqual(second.items.map(x => x.id), [3, 4]);
+  assert.equal(pagina(rows, second.next).next, null);
+});
+test('rechaza límites y cursor inválidos', () => {
+  assert.throws(() => pagina(rows, 0, 1000), RangeError);
+  assert.throws(() => pagina(rows, -1, 2), RangeError);
+});
+```
+```bash
+node --test pagina.test.mjs
+```
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: validación del contrato, orden, selección de un elemento extra y cursor de continuación. No hay servidor ni dependencia externa ocultos.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia `row.id > after` por `>=`. La prueba del segundo corte falla porque repite el último elemento de la página anterior. **Pista:** compara la definición «después de» con la condición. Corrige y repite.
+
+#### Paso 6 · Práctica independiente
+Añade casos de lista vacía, tamaño 1 y cursor mayor que el último ID. Después diseña el contrato HTTP: parámetro `after`, `size` y respuesta 400 para valores inválidos. Justifica por qué no convertir texto inválido silenciosamente a cero.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** pruebas, fallo/corrección y contrato escrito. El siguiente paso es llevar el filtro a SQL con orden único e índice, y medirlo con datos representativos. **Errores comunes:** ordenar por un campo no único, aceptar tamaños sin límite y paginar después de cargar todo en memoria. **Límites y decisión de uso:** aquí los datos están en memoria para aislar el algoritmo; eso no valida escalabilidad ni consistencia bajo concurrencia.
+
+**Fuente oficial:** [Node test runner](https://nodejs.org/api/test.html).

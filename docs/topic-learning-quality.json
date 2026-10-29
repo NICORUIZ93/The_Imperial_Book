@@ -13,186 +13,10 @@
   ],
   "summary": {
     "android": {
-      "topics": 56,
-      "explanation": 56,
-      "code": 56,
-      "visual": 54,
-      "filePath": 56,
-      "runCommand": 56,
-      "expectedResult": 56,
-      "practice": 56,
-      "project": 56,
-      "modelMental": 56,
-      "limitsDecision": 56,
-      "practicable": 56,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "angular": {
-      "topics": 70,
-      "explanation": 70,
-      "code": 70,
-      "visual": 68,
-      "filePath": 70,
-      "runCommand": 70,
-      "expectedResult": 70,
-      "practice": 70,
-      "project": 70,
-      "modelMental": 70,
-      "limitsDecision": 70,
-      "practicable": 70,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "cloud": {
-      "topics": 155,
-      "explanation": 155,
-      "code": 155,
-      "visual": 99,
-      "filePath": 155,
-      "runCommand": 155,
-      "expectedResult": 155,
-      "practice": 155,
-      "project": 155,
-      "modelMental": 155,
-      "limitsDecision": 155,
-      "practicable": 155,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "devops": {
-      "topics": 103,
-      "explanation": 103,
-      "code": 103,
-      "visual": 96,
-      "filePath": 103,
-      "runCommand": 103,
-      "expectedResult": 103,
-      "practice": 103,
-      "project": 103,
-      "modelMental": 103,
-      "limitsDecision": 103,
-      "practicable": 103,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "flutter": {
-      "topics": 62,
-      "explanation": 62,
-      "code": 62,
-      "visual": 52,
-      "filePath": 62,
-      "runCommand": 62,
-      "expectedResult": 62,
-      "practice": 62,
-      "project": 62,
-      "modelMental": 62,
-      "limitsDecision": 62,
-      "practicable": 62,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "foundations": {
-      "topics": 96,
-      "explanation": 96,
-      "code": 96,
-      "visual": 77,
-      "filePath": 96,
-      "runCommand": 96,
-      "expectedResult": 96,
-      "practice": 96,
-      "project": 96,
-      "modelMental": 96,
-      "limitsDecision": 96,
-      "practicable": 96,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "ios": {
-      "topics": 55,
-      "explanation": 55,
-      "code": 55,
-      "visual": 31,
-      "filePath": 55,
-      "runCommand": 55,
-      "expectedResult": 55,
-      "practice": 55,
-      "project": 55,
-      "modelMental": 55,
-      "limitsDecision": 55,
-      "practicable": 55,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "java": {
-      "topics": 79,
-      "explanation": 79,
-      "code": 79,
-      "visual": 25,
-      "filePath": 79,
-      "runCommand": 79,
-      "expectedResult": 79,
-      "practice": 79,
-      "project": 79,
-      "modelMental": 79,
-      "limitsDecision": 79,
-      "practicable": 79,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "javascript": {
-      "topics": 87,
-      "explanation": 87,
-      "code": 87,
-      "visual": 58,
-      "filePath": 87,
-      "runCommand": 87,
-      "expectedResult": 87,
-      "practice": 87,
-      "project": 87,
-      "modelMental": 87,
-      "limitsDecision": 87,
-      "practicable": 87,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "kotlin-multiplatform": {
-      "topics": 55,
-      "explanation": 55,
-      "code": 55,
-      "visual": 46,
-      "filePath": 55,
-      "runCommand": 55,
-      "expectedResult": 55,
-      "practice": 55,
-      "project": 55,
-      "modelMental": 55,
-      "limitsDecision": 55,
-      "practicable": 55,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "node": {
-      "topics": 79,
-      "explanation": 79,
-      "code": 79,
-      "visual": 27,
-      "filePath": 79,
-      "runCommand": 79,
-      "expectedResult": 79,
-      "practice": 79,
-      "project": 79,
-      "modelMental": 79,
-      "limitsDecision": 79,
-      "practicable": 79,
-      "genericScaffold": 0,
-      "repeatedDemo": 0
-    },
-    "react": {
       "topics": 57,
       "explanation": 57,
       "code": 57,
-      "visual": 37,
+      "visual": 54,
       "filePath": 57,
       "runCommand": 57,
       "expectedResult": 57,
@@ -204,35 +28,211 @@
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
+    "angular": {
+      "topics": 71,
+      "explanation": 71,
+      "code": 71,
+      "visual": 68,
+      "filePath": 71,
+      "runCommand": 71,
+      "expectedResult": 71,
+      "practice": 71,
+      "project": 71,
+      "modelMental": 71,
+      "limitsDecision": 71,
+      "practicable": 71,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "cloud": {
+      "topics": 156,
+      "explanation": 156,
+      "code": 156,
+      "visual": 99,
+      "filePath": 156,
+      "runCommand": 156,
+      "expectedResult": 156,
+      "practice": 156,
+      "project": 156,
+      "modelMental": 156,
+      "limitsDecision": 156,
+      "practicable": 156,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "devops": {
+      "topics": 104,
+      "explanation": 104,
+      "code": 104,
+      "visual": 96,
+      "filePath": 104,
+      "runCommand": 104,
+      "expectedResult": 104,
+      "practice": 104,
+      "project": 104,
+      "modelMental": 104,
+      "limitsDecision": 104,
+      "practicable": 104,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "flutter": {
+      "topics": 63,
+      "explanation": 63,
+      "code": 63,
+      "visual": 52,
+      "filePath": 63,
+      "runCommand": 63,
+      "expectedResult": 63,
+      "practice": 63,
+      "project": 63,
+      "modelMental": 63,
+      "limitsDecision": 63,
+      "practicable": 63,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "foundations": {
+      "topics": 97,
+      "explanation": 97,
+      "code": 97,
+      "visual": 73,
+      "filePath": 97,
+      "runCommand": 97,
+      "expectedResult": 97,
+      "practice": 97,
+      "project": 97,
+      "modelMental": 97,
+      "limitsDecision": 97,
+      "practicable": 97,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "ios": {
+      "topics": 56,
+      "explanation": 56,
+      "code": 56,
+      "visual": 31,
+      "filePath": 56,
+      "runCommand": 56,
+      "expectedResult": 56,
+      "practice": 56,
+      "project": 56,
+      "modelMental": 56,
+      "limitsDecision": 56,
+      "practicable": 56,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "java": {
+      "topics": 80,
+      "explanation": 80,
+      "code": 80,
+      "visual": 25,
+      "filePath": 80,
+      "runCommand": 80,
+      "expectedResult": 80,
+      "practice": 80,
+      "project": 80,
+      "modelMental": 80,
+      "limitsDecision": 80,
+      "practicable": 80,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "javascript": {
+      "topics": 88,
+      "explanation": 88,
+      "code": 88,
+      "visual": 58,
+      "filePath": 88,
+      "runCommand": 88,
+      "expectedResult": 88,
+      "practice": 88,
+      "project": 88,
+      "modelMental": 88,
+      "limitsDecision": 88,
+      "practicable": 88,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "kotlin-multiplatform": {
+      "topics": 56,
+      "explanation": 56,
+      "code": 56,
+      "visual": 46,
+      "filePath": 56,
+      "runCommand": 56,
+      "expectedResult": 56,
+      "practice": 56,
+      "project": 56,
+      "modelMental": 56,
+      "limitsDecision": 56,
+      "practicable": 56,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "node": {
+      "topics": 80,
+      "explanation": 80,
+      "code": 80,
+      "visual": 27,
+      "filePath": 80,
+      "runCommand": 80,
+      "expectedResult": 80,
+      "practice": 80,
+      "project": 80,
+      "modelMental": 80,
+      "limitsDecision": 80,
+      "practicable": 80,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
+    "react": {
+      "topics": 58,
+      "explanation": 58,
+      "code": 58,
+      "visual": 37,
+      "filePath": 58,
+      "runCommand": 58,
+      "expectedResult": 58,
+      "practice": 58,
+      "project": 58,
+      "modelMental": 58,
+      "limitsDecision": 58,
+      "practicable": 58,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
     "rutaflow": {
-      "topics": 25,
-      "explanation": 25,
-      "code": 25,
+      "topics": 26,
+      "explanation": 26,
+      "code": 26,
       "visual": 24,
-      "filePath": 25,
-      "runCommand": 25,
-      "expectedResult": 25,
-      "practice": 25,
-      "project": 25,
-      "modelMental": 25,
-      "limitsDecision": 25,
-      "practicable": 25,
+      "filePath": 26,
+      "runCommand": 26,
+      "expectedResult": 26,
+      "practice": 26,
+      "project": 26,
+      "modelMental": 26,
+      "limitsDecision": 26,
+      "practicable": 26,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 83,
-      "explanation": 83,
-      "code": 83,
+      "topics": 84,
+      "explanation": 84,
+      "code": 84,
       "visual": 66,
-      "filePath": 83,
-      "runCommand": 83,
-      "expectedResult": 83,
-      "practice": 83,
-      "project": 83,
-      "modelMental": 83,
-      "limitsDecision": 83,
-      "practicable": 83,
+      "filePath": 84,
+      "runCommand": 84,
+      "expectedResult": 84,
+      "practice": 84,
+      "project": 84,
+      "modelMental": 84,
+      "limitsDecision": 84,
+      "practicable": 84,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -1136,6 +1136,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -2634,6 +2656,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -4646,6 +4690,28 @@
       {
         "module": 25,
         "topic": "Tema 5: El ciclo de vida de un trabajo de respaldo",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 25,
+        "topic": "Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -8056,6 +8122,28 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Pod, ReplicaSet, Deployment",
         "criteria": {
@@ -9796,6 +9884,28 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: MethodChannel",
         "criteria": {
@@ -10067,7 +10177,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -10077,7 +10187,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -10089,7 +10199,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -10099,7 +10209,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -10111,7 +10221,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -10121,7 +10231,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -10133,7 +10243,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -10143,7 +10253,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -11530,6 +11640,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 5: HTML semántico y CSS responsive desde un archivo vacío",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -13050,6 +13182,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -14812,6 +14966,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -16954,6 +17130,28 @@
         }
       },
       {
+        "module": 8,
+        "topic": "Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 9,
         "topic": "Tema 1: Unit testing con Vitest",
         "criteria": {
@@ -17830,6 +18028,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -19290,6 +19510,28 @@
         }
       },
       {
+        "module": 3,
+        "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 4,
         "topic": "Tema 1: Middleware — orden de ejecución y next()",
         "criteria": {
@@ -20722,6 +20964,28 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 3,
         "topic": "Tema 1: React Hook Form y el problema del re-render por tecla",
         "criteria": {
@@ -21444,6 +21708,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -22876,6 +23162,28 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 6: Paginación HTTP con validación y un límite de recursos explícito",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

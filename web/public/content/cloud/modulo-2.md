@@ -128,7 +128,7 @@ aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001-sin-
 ```
 Ese es el fallo deliberado: vas a ver `"ContentType": "binary/octet-stream"` aunque el archivo
 se llame `.jpg` — la CLI no siempre infiere el tipo. Un `<img>` que apunte a ese objeto fallaría.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+Pista: compará los dos `head-object` (con y sin `--content-type`) campo por campo — `"Metadata"` sigue idéntico en ambos, así que el único responsable del `ContentType` roto es la bandera que faltó, no el contenido del archivo ni sus metadatos personalizados.
 #### Paso 6 · Práctica independiente
 Corregí el objeto sin volver a subir el archivo: usá `aws s3 cp` del objeto a sí mismo con
 `--metadata-directive REPLACE` y el `--content-type image/jpeg` correcto.
@@ -195,8 +195,8 @@ aws s3api get-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg \
   --version-id <VersionId-de-la-correcta> recuperada.jpg
 cat recuperada.jpg
 ```
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Fallo deliberado:** en el `get-object` de arriba, truncá el `--version-id` a solo los primeros caracteres del `VersionId` real antes de ejecutarlo — provoca un error `NoSuchVersion`, porque S3 valida el ID completo contra las versiones reales de esa clave, no un prefijo.
+Pista: diagnosticalo comparando el ID roto contra la salida completa de `list-object-versions` del Paso 4 — el `VersionId` verdadero es más largo que lo que pegaste.
 #### Paso 6 · Práctica independiente
 Restaurá la versión correcta como versión actual subiéndola de nuevo con `aws s3 cp`, y
 confirmá con `list-object-versions` que ahora hay 3 versiones — ninguna se borró.
@@ -295,7 +295,7 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Propón una política de ciclo de vida para evidencias antiguas. Registra edad, coste de acceso y retención requerida; diferencia lo que valida el emulador de la transición y facturación que exigirán una prueba real.
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de `get-bucket-lifecycle-configuration` del Paso 4, el fallo de `StorageClass` inválida del Paso 5, y la configuración ya corregida con `GLACIER` del Paso 6.
 ### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas
 
 #### Paso 1 · Objetivo y preparación
@@ -358,7 +358,7 @@ evento escrito en `ShipmentEvents`, para que el cliente vea su prueba de entrega
 
 ---
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de la URL firmada funcionando dentro de los 120 segundos del Paso 4, el fallo de firma vencida del Paso 5, y la URL nueva con `--expires-in 900` todavía funcionando después de ese plazo.
 ## Construcción guiada: almacena y recupera un archivo
 
 > Esta construcción asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

@@ -622,3 +622,80 @@ Fases:
 - Usar div como botón: emplea semántica nativa.
 - Eliminar focus outline: crea un estilo visible.
 - Diseñar con tamaños fijos: usa restricciones y prueba extremos.
+
+
+## Laboratorio de transferencia
+
+### Tema 5: HTML semántico y CSS responsive desde un archivo vacío
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar construirás una página de seguimiento con un formulario etiquetado y dos columnas que se adaptan al espacio. **Prerrequisitos:** guardar archivos y ejecutar Python; no necesitas JavaScript ni un framework. Es un ejemplo independiente desde una carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+El cliente de RutaFlow necesita consultar una entrega desde un teléfono y desde un computador. **¿Por qué es importante?** Antes de aprender componentes hay que saber qué estructura entiende el navegador y cómo se distribuye sin esconder información.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+HTML describe la función del contenido: `main` identifica el contenido principal, `label` nombra un campo y `button` ofrece una acción. CSS controla su presentación. En el modelo de caja, ancho, relleno y borde contribuyen al espacio ocupado; `border-box` los incluye dentro del ancho declarado. Grid reparte el espacio entre columnas y una media query cambia la regla cuando deja de caber.
+
+**Analogía:** HTML es la distribución de habitaciones y CSS el mobiliario. El límite es que la semántica tiene efectos operativos, no solo visuales: un botón nativo tiene interacción de teclado. El formulario de esta práctica no consulta un backend; solo entrega sus parámetros al servidor de archivos.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir seguimiento-html
+cd seguimiento-html
+```
+Crea `index.html` con este contenido completo:
+```html
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consulta una entrega</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 1rem/1.6 system-ui; color: #17253b; }
+    main { max-width: 60rem; margin: auto; padding: 1.5rem; }
+    .panel { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    label { display: block; }
+    input, button { font: inherit; padding: .7rem; max-width: 100%; }
+    input { width: 100%; }
+    button { margin-top: 1rem; }
+    :focus-visible { outline: 3px solid #315bcc; outline-offset: 3px; }
+    @media (max-width: 40rem) { .panel { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Consulta una entrega</h1>
+    <div class="panel">
+      <form action="/" method="get">
+        <label for="codigo">Código de envío</label>
+        <input id="codigo" name="codigo" required maxlength="30">
+        <button type="submit">Consultar</button>
+      </form>
+      <section aria-labelledby="ayuda">
+        <h2 id="ayuda">¿Dónde encuentro el código?</h2>
+        <p>Está en el comprobante de tu entrega. Ejemplo: ENV-42.</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
+```
+Ejecuta desde esa carpeta:
+```bash
+python3 -m http.server 8000
+```
+En Windows puedes usar `py -m http.server 8000`. Abre `http://localhost:8000`. **Resultado esperado:** dos columnas en una ventana amplia y una en 375 px. Explica cada bloque: metadatos preparan el documento, el formulario nombra sus datos y CSS distribuye la interfaz. Tab enfoca el campo y el botón; pulsar el label enfoca el campo. La consulta vacía activa la validación del navegador.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia `for="codigo"` por `for="otro"`. El label deja de enfocar el campo. **Pista:** compara `for` con el `id`; no lo arregles con un evento JavaScript. Restaura la relación y repite con teclado.
+
+#### Paso 6 · Práctica independiente
+Añade una sección «Horario de atención» con encabezado propio. Comprueba 320 y 768 px y zoom de 200 %. No debe aparecer scroll horizontal de toda la página ni perderse el botón. Explica qué regla controla las columnas y por qué `width: 900px` rompería el teléfono.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** conserva `index.html`, capturas de ambos anchos y el fallo/corrección del label. Este es el primer cliente estático del proyecto integrador; el siguiente paso es añadir comportamiento con JavaScript. **Errores comunes:** usar un `div` como botón, quitar el foco y confundir GET con guardar datos. **Límites y decisión de uso:** la validación del navegador mejora el uso; el servidor debe volver a validar cualquier dato cuando exista un backend.
+
+**Fuentes oficiales:** [MDN estructura HTML](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content) y [CSS layout](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout).

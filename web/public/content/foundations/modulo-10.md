@@ -22,8 +22,6 @@ La red es una carretera con retrasos, pérdidas y duplicados — un timeout es u
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 import socket
 
@@ -81,10 +79,13 @@ Entregá el timeout real devolviendo estado desconocido del Paso 4, el duplicado
 3. ¿Cómo detectas inconsistencia?
 4. ¿Apps que toleran inconsistencia temporal?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Probablemente veas valor viejo momentáneamente. Replicación típicamente: 10ms-1s. Detección: compara timestamp primaria vs replica. Analítica, historial de posiciones toleran delay; pagos/saldos no.
+
+</details>
 
 Un sistema distribuido contiene componentes que cooperan mediante mensajes y no comparten una memoria ni un reloj perfecto. Un proceso puede continuar mientras otro está caído, lento o aislado. Esto produce **fallos parciales**: desde un nodo no siempre es posible distinguir si el receptor falló, la red está lenta o solo se perdió la respuesta.
 
@@ -147,8 +148,6 @@ Las réplicas son copias con reglas de coordinación propias; leer una réplica 
 mkdir ejemplo && cd ejemplo
 ```
 
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
 ```python
 primaria = {"env-4471": "entregado"}
 replica = {"env-4471": "en_ruta"}  # todavía no recibió la replicación
@@ -205,10 +204,13 @@ Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturació
 3. ¿Cuántos reintentos antes de fallar?
 4. ¿Usuario ve errores o retry silencioso?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Transitorio: timeout, conexión rechazada. Permanente: 403, 404. Estrategia: espera exponencial (1s, 2s, 4s). 3-5 reintentos máximo. Usuario: éxito rápido o error claro después de reintentos.
+
+</details>
 
 Replicar datos mejora tolerancia a fallos y capacidad de lectura, pero exige decidir qué valor observar cuando las copias difieren. En replicación con líder, las escrituras pasan por una autoridad y seguidores aplican cambios después. Leer un seguidor puede devolver estado anterior. En multi-líder o peer-to-peer aparecen conflictos que requieren reglas de resolución compatibles con el dominio.
 
@@ -259,8 +261,6 @@ Un broker es una bandeja numerada; la deduplicación por `commandId` hace que re
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
-
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 ```typescript
 import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from "./confirm-delivery";
@@ -325,10 +325,13 @@ Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID disti
 3. ¿Clave de deduplicación? (command_id)
 4. ¿Trade-offs vs 'al menos una vez'?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Garantiza procesamiento único incluso con fallos. Usa `idempotency_key` global (único por evento). Servicio marca evento como 'procesado' antes de completar. Si reintentos: recupera marcador, no repite. Trade-off: costo de almacenar marcadores.
+
+</details>
 
 Los brokers desacoplan tiempo y capacidad: el productor publica y el consumidor procesa después. Pero el acknowledgement puede perderse y el broker reenviar. “Al menos una vez” implica posibles duplicados; “como máximo una vez” puede perder trabajo. Muchos sistemas que anuncian exactly-once limitan la garantía a una frontera. El efecto de negocio requiere diseño idempotente de extremo a extremo.
 
@@ -383,8 +386,6 @@ Un SLI mide lo que importa (proporción de confirmaciones completadas bajo 300ms
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
-
-**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 ```python
 def sli_confirmaciones(eventos):
@@ -445,10 +446,13 @@ Entregá el SLI real calculado del Paso 4, el promedio engañoso del Paso 5, y l
 3. ¿Cuántos reintentos antes de fallback?
 4. ¿Cómo informar al usuario?
 
-[SOLUCIÓN — Lee solo después de intentar]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
 
 > **Respuesta esperada:**
 > Timeout: 5-10s máximo. Fallback: caché antiguo si disponible, sino null. 1-2 reintentos antes de fallback. Usuario: ubicación precisa (éxito), aproximada (caché), o 'sin ubicación' (fallback).
+
+</details>
 
 Resiliencia es mantener una función aceptable y recuperarse; no fingir que nada falla. Timeouts limitan espera; bulkheads aíslan recursos; circuit breakers evitan insistir sobre una dependencia que falla; load shedding rechaza temprano cuando aceptar empeoraría todo. Cada patrón tiene coste y estado propio. Un circuit breaker mal configurado puede ocultar recuperación o amplificar oscilaciones.
 
@@ -615,7 +619,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** registra cada cambio de estado de una tarea con una marca de Lamport y ordena el historial con ella.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** aplicar `max(self.reloj, marca) + 1` solo al enviar y olvidarlo al recibir (el fallo deliberado del Paso 4), lo que rompe la causalidad entre nodos; y asumir que dos eventos con la misma marca de Lamport ocurrieron "al mismo tiempo" en sentido real, cuando una marca igual solo significa que no hay relación causal establecida entre ellos.
 
 ## Construcción guiada del capítulo
 

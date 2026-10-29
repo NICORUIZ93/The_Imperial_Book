@@ -44,7 +44,8 @@ export const NODE_MODULES: CourseModule[] = [
     'Script que transforma un archivo CSV grande a JSON usando streams, sin cargarlo completo en RAM.'),
   m(3, 'Servidores HTTP nativos', 'HTTP nativo', 'Aplicación', '2 h', '#3c873a',
     'Antes de Express, entiende qué hace un framework por debajo construyendo un servidor con el módulo http puro.',
-    ['Modelo request/response', 'Routing manual', 'Parsing de body y headers', 'Códigos de estado y content negotiation'],
+    [
+      'Paginación por cursor y límites de entrada comprobables','Modelo request/response', 'Routing manual', 'Parsing de body y headers', 'Códigos de estado y content negotiation'],
     [
       'Crea un servidor con node:http que responda "Hola Node" en GET / y arráncalo con node servidor.js',
       'Agrega routing manual: GET /tareas devuelve un array JSON, POST /tareas agrega un elemento al array en memoria',

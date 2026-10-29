@@ -53,7 +53,8 @@ export const IOS_MODULES: CourseModule[] = [
     'App con navegación tipo stack, una tab bar y al menos un sheet modal.'),
   m(4, 'Concurrencia moderna: async/await', 'Concurrencia', 'Aplicación', '3 h', '#0a84ff',
     'Swift Concurrency reemplaza GCD y callbacks con un modelo estructurado y seguro ante data races.',
-    ['async/await y Task', 'Actors para aislar estado mutable', 'Structured concurrency (TaskGroup)', 'MainActor y actualización segura de UI'],
+    [
+      'Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red','async/await y Task', 'Actors para aislar estado mutable', 'Structured concurrency (TaskGroup)', 'MainActor y actualización segura de UI'],
     [
       'Escribe una función async que simule una llamada de red con Task.sleep',
       'Lánzala desde una vista con .task { } y muestra el resultado cuando llega',

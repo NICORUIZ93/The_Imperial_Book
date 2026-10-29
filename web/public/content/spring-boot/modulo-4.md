@@ -640,7 +640,7 @@ Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechaz
 ---
 
 La configuración de CORS, CSRF e InetAddressFilter de este tema es la que necesitará el frontend y los webhooks que consuma el proyecto integrador de este track (microservicio productivo, Módulo 12).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de `mvn test` con `SafeClientTest` en verde (bloqueo por `FilteredHostException` y el control positivo recibiendo 200), y la explicación de por qué cambiar `externalAddresses()` por `all()` en el Paso 5 hace que la petición al servidor local deje de bloquearse.
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 #### Paso 1 · Objetivo y preparación

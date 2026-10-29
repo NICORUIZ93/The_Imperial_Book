@@ -585,7 +585,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un respaldo verificado del volumen de la base de datos de pruebas antes de cada despliegue.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** correr `docker volume prune` confiando en que "no hay nada corriendo" sin revisar antes con `docker ps -a --filter volume=datos-rutaflow` qué contenedores, incluso detenidos, todavía referencian ese volumen — `prune` solo borra los que ningún contenedor usa, y un contenedor detenido sigue contando como uso.
 
 ## Laboratorio práctico
 

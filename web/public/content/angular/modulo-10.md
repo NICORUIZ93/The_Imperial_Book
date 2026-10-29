@@ -620,7 +620,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** reemplaza la tabla de envíos del centro de control por `mat-table` y cubre sus acciones con harnesses.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** probar un `mat-table` consultando clases CSS internas de Material en vez de un harness (`MatTableHarness`), lo que rompe la prueba en cada actualización de versión; omitir `LiveAnnouncer` al anunciar un cambio de estado y asumir que el rol ARIA del componente ya lo cubre.
 
 ## Laboratorio práctico
 

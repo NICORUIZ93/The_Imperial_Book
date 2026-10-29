@@ -84,7 +84,7 @@ def evaluate(block: str) -> dict[str, bool]:
         # positivo que hacía pasar temas sin ningún comando ejecutable.
         "runCommand": bool(re.search(
             r"^(?:\s*(?:\$|>|#)\s*)?(?:[\w./-]+\s*&&\s*)*"
-            r"(npm|npx|pnpm|yarn|node|deno|bun|python3?|pip3?|java|javac|\./gradlew|gradle|mvn|\./mvnw"
+            r"(swiftc|kotlinc|npm|npx|pnpm|yarn|node|deno|bun|python3?|pip3?|java|javac|\./gradlew|gradle|mvn|\./mvnw"
             r"|flutter|dart|swift|xcodebuild|docker|docker-compose|kubectl|helm|terraform|tofu|ansible"
             r"|aws|az|gcloud|curl|git|psql|pg_dump|sqlite3|cargo|dotnet|go|bash|sh|make|floci|ng|adb|pod|xcrun)\b",
             block, re.MULTILINE | re.IGNORECASE)),

@@ -10,10 +10,6 @@ export const routes: Routes = [
     loadComponent: () => import('./catalog/course-catalog').then(m => m.CourseCatalogComponent),
   },
   {
-    path: 'roadmaps',
-    loadComponent: () => import('./roadmaps/roadmaps').then(m => m.RoadmapsComponent),
-  },
-  {
     path: 'laboratorio/cloud-local',
     redirectTo: '',
     pathMatch: 'full',

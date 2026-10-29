@@ -75,7 +75,7 @@ Inicializa H2 con `create table envio(referencia varchar(40) primary key, estado
 #### Paso 5 · Práctica guiada
 
 Agrega `crear(referencia, estado)` con `executeUpdate()` y comprueba el número de filas afectadas. Extrae el mapeo de filas a un método privado solo cuando haya más de una consulta que realmente lo comparta.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** si `executeUpdate()` devuelve `0`, la fila no se insertó (clave duplicada o `DataSource` equivocado); compara ese conteo contra el `1` esperado antes de asumir que `crear` funcionó.
 #### Paso 6 · Práctica independiente
 
 Implementa un DAO con búsqueda paginada y ordenamiento por `fecha_creacion`. El tamaño de página debe tener límite y la columna de orden debe salir de una allowlist (`fecha_creacion`, `referencia`), no del SQL proporcionado por el usuario.
@@ -138,7 +138,7 @@ Ejecuta `./mvnw test -Dtest=LiquidacionDaoTest`. **Resultado esperado:** cobro y
 #### Paso 5 · Práctica guiada
 
 Prueba dos operaciones concurrentes que actualizan el mismo saldo. Reproduce una actualización perdida y corrígela con bloqueo optimista (`version`) o con una operación atómica SQL. Compara `READ_COMMITTED` con el aislamiento predeterminado de tu base.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** si ambas transacciones leen el saldo antes de que la otra confirme su escritura, la segunda sobrescribe silenciosamente el cambio de la primera (actualización perdida); agrega una columna `version` y compara su valor en el `UPDATE ... WHERE version = ?` para detectar el conflicto.
 #### Paso 6 · Práctica independiente
 
 Construye un caso de transferencia entre dos cuentas: valida importe positivo, descuenta una y acredita la otra de forma atómica. Añade pruebas para saldo insuficiente, cuenta inexistente y fallo entre las dos escrituras. Documenta qué invariantes protege la transacción.

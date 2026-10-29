@@ -91,7 +91,7 @@ El equipo de Pedidos y el equipo de Conductores mantienen cada uno su propio ser
 Apollo Federation permite que cada subgrafo declare una entidad con una clave (`@key`) y que OTRO subgrafo extienda esa entidad agregando campos propios, sin acceso directo a la base de datos del otro; un gateway compone ambos esquemas en un supergrafo único, resolviendo cada campo contra el subgrafo que lo declaró. La analogía: dos oficinas distintas que comparten únicamente un número de legajo común, cada una completando su propia parte del expediente sin acceso a los archivos internos de la otra.
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/ejemplo.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Monta** el laboratorio completo en una carpeta nueva y revisá `server.mjs`, que orquesta los subgrafos `src/conductores/index.js` y `src/pedidos/index.js` junto con el gateway, antes de ejecutarlo.
 
 Desde la raíz del repositorio prepara una copia independiente del laboratorio completo:
 ```bash

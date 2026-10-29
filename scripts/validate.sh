@@ -118,7 +118,6 @@ python3 scripts/validate_floci_official_curriculum.py
 python3 scripts/validate_code_quality.py
 python3 scripts/validate_rutaflow.py
 python3 scripts/validate_requested_master_topics.py
-python3 scripts/build_30_step_roadmaps.py --check
 python3 examples/manim/build_curriculum_scenes.py --check
 python3 scripts/validate_markdown_fences.py
 python3 scripts/audit_topic_learning_quality.py --check --require-practicable --min-practicable 1062
@@ -129,3 +128,6 @@ python3 scripts/validate_learning_priorities.py
 python3 scripts/build_web_topic_index.py --check
 python3 scripts/build_prerequisite_graph.py --check
 python3 scripts/build_repo_graph.py --check
+
+python3 scripts/audit_course_depth.py --check
+python3 scripts/verify_professional_bridges.py

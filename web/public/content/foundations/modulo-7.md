@@ -116,6 +116,7 @@ Un escenario de calidad tiene fuente, estímulo, artefacto, entorno, respuesta y
 mkdir ejemplo && cd ejemplo
 ```
 
+Crea `escenario.txt` y guarda este escenario de calidad completo:
 ```text
 Fuente: red inestable del conductor
 Estímulo: el mismo comando "confirmar entrega" se reenvía dos veces (reintento automático)
@@ -125,12 +126,11 @@ Respuesta: la segunda llamada devuelve el resultado ya guardado, sin volver a co
 Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
+**Comprueba el artefacto de diseño desde la carpeta donde lo guardaste:**
 ```bash
-python3 ejemplo.py
+python3 -c "from pathlib import Path; print(Path('escenario.txt').read_text(encoding='utf-8'))"
 ```
-Observa la salida impresa y compárala con el resultado esperado.
+Debes observar las partes del escenario que acabas de escribir. Esta lectura verifica el archivo, no demuestra que una base de datos cumpla la durabilidad prometida; esa evidencia requiere un ensayo separado.
 
 Resultado esperado: un escenario completo que explica por qué el código ya revisado en el Tema 1 necesita esa restricción — no es un detalle de implementación arbitrario, responde a un escenario de red real.
 

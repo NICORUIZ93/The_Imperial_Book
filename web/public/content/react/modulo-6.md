@@ -39,23 +39,56 @@ graph TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-```jsx
-const { data: envios, isLoading, error } = useQuery({
-  queryKey: ['envios', zona],
-  queryFn: () => fetch(`/api/envios?zona=${zona}`).then(r => r.json()),
-});
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
+Ejemplo independiente con React, Vite 8 y TanStack Query 5. Comprueba que tu Node es compatible con Vite y crea el proyecto desde una carpeta vacía:
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm create vite@8 consulta-envios -- --template react
+cd consulta-envios
+npm install
+npm install @tanstack/react-query@5
+```
+Crea `public/envios-norte.json` con `[{"id":"ENV-42"}]` y `public/envios-sur.json` con `[{"id":"ENV-99"}]`. Son archivos estáticos servidos por Vite: no necesitas una API no incluida en el ejemplo.
+
+Reemplaza `src/App.jsx` con el archivo completo:
+```jsx
+import { useState } from 'react';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+
+const client = new QueryClient(); // Una caché compartida, fuera del render.
+function Panel({ zona, titulo }) {
+  const query = useQuery({
+    queryKey: ['envios', zona],
+    staleTime: 60_000,
+    retry: false,
+    queryFn: async () => {
+      const response = await fetch(`/envios-${zona}.json`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    },
+  });
+  if (query.isPending) return <p role="status">Cargando {titulo}</p>;
+  if (query.isError) return <p role="alert">{query.error.message}</p>;
+  return <section><h2>{titulo}</h2>
+    <ul>{query.data.map(envio => <li key={envio.id}>{envio.id}</li>)}</ul>
+  </section>;
+}
+export default function App() {
+  const [zona, setZona] = useState('norte');
+  return <QueryClientProvider client={client}><main>
+    <h1>Envíos por zona</h1><label htmlFor="zona">Zona</label>
+    <select id="zona" value={zona} onChange={e => setZona(e.target.value)}>
+      <option value="norte">Norte</option><option value="sur">Sur</option>
+    </select>
+    <Panel zona={zona} titulo="Panel de envíos" />
+    <Panel zona={zona} titulo="Resumen de zona" />
+  </main></QueryClientProvider>;
+}
+```
+```bash
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+Abre la dirección indicada por Vite, normalmente `http://localhost:5173`. **Resultado esperado:** ambos paneles muestran `ENV-42`; al cambiar a sur, ambos muestran `ENV-99`. En Network filtra `envios-`: los dos paneles comparten la consulta de cada zona. `staleTime` evita revalidaciones por obsolescencia durante un minuto; no es una promesa de una única petición durante toda la vida de la aplicación.
 
-Resultado esperado: si `PanelEnvios` y `ResumenZona` usan ambos `useQuery` con la misma `queryKey: ['envios', zona]`, la pestaña Network muestra una única petición de red, no dos — TanStack Query deduplica y comparte el resultado cacheado entre ambos componentes.
+Explica cada bloque: QueryClientProvider hace disponible la caché, queryKey identifica los datos, queryFn valida HTTP y los paneles representan carga, error o resultado. El template de Vite no trae un comando `npm test`: aquí la comprobación es explícitamente de navegador. Si borras `public/envios-sur.json`, comprueba el estado de error; algunos servidores dev devuelven HTML con 200 para rutas inexistentes y entonces falla el parseo JSON.
 
 #### Paso 5 · Práctica guiada
 Pista: usá `queryKey: ['envios']` (sin incluir `zona`) en ambos componentes, pero seguí pasando `zona` dentro de `queryFn` — ese es el fallo deliberado: cambiar de zona no dispara una nueva petición, porque TanStack Query identifica la query por su `queryKey`, y como esa key no cambió, sigue devolviendo el resultado cacheado de la zona anterior aunque `queryFn` internamente apunte a la zona nueva.
@@ -160,7 +193,7 @@ Cambiá `invalidateQueries({ queryKey: ['envios'] })` a `invalidateQueries({ que
 
 **Fallo deliberado #3 (olvidar `await` en cancelación):**
 Remové el `await queryClient.cancelQueries(...)` del `onMutate` en un optimistic update — ahora el `getQueryData` obtiene datos desactualizados porque la query aún se estaba refetcheando.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** restaurá cada fallo antes de probar el siguiente — el Fallo #1 y el #2 se notan de inmediato en `PanelEnvios`, pero el Fallo #3 solo aparece bajo una carrera real entre el refetch en curso y la cancelación faltante.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día.
 

@@ -622,3 +622,70 @@ Ya confirmas, navegando con `RouterTestingHarness` hacia una URL con parámetro 
 - **Confundir parámetros de ruta con query params.** Los parámetros de ruta identifican qué recurso se muestra; los query params modifican cómo se muestra, sin cambiar qué componente se activa.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida. **Prerrequisitos:** componentes standalone, signals, eventos y Router. Node compatible con Angular 21 y npm. Es un ejemplo independiente desde un proyecto nuevo.
+
+#### Paso 2 · Contexto y caso real
+En el proyecto integrador, un operador escribe una observación sobre una entrega. Un clic accidental en otra ruta no debe borrar el trabajo sin permitirle decidir. **¿Por qué es importante?** El guard de salida resuelve una necesidad de continuidad; no es un mecanismo de seguridad del backend.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`CanDeactivate` recibe el componente que está a punto de abandonarse. Puede permitir o cancelar la navegación. Un estado «sucio» indica que el texto actual difiere de la última versión guardada. **Analogía:** antes de retirar una hoja de la mesa, preguntas si hay cambios pendientes. El límite es que una ruta no es una copia de seguridad: cerrar la pestaña o terminar el proceso requiere otra estrategia.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+npx @angular/cli@21 new borrador-demo --standalone --routing --style=css --skip-tests --skip-git --defaults
+cd borrador-demo
+```
+Reemplaza `src/main.ts` por este archivo completo:
+```typescript
+import { Component, signal } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { CanDeactivateFn, provideRouter, RouterLink, RouterOutlet } from '@angular/router';
+
+@Component({ selector: 'app-editor', standalone: true, imports: [RouterLink], template: `
+  <h1>Observación de la entrega</h1>
+  <label for="nota">Nota</label>
+  <textarea id="nota" [value]="text()" (input)="edit($event)"></textarea>
+  <button (click)="saved.set(text())">Guardar en esta sesión</button>
+  <p>{{ text() !== saved() ? 'Cambios sin guardar' : 'Sin cambios pendientes' }}</p>
+  <a routerLink="/salir">Ir al listado</a>` })
+class Editor {
+  text = signal('');
+  saved = signal('');
+  edit(event: Event) { this.text.set((event.target as HTMLTextAreaElement).value); }
+}
+const confirmExit: CanDeactivateFn<Editor> = editor =>
+  editor.text() === editor.saved() || confirm('Hay cambios sin guardar. ¿Salir?');
+
+@Component({ selector: 'app-listado', standalone: true, imports: [RouterLink],
+  template: '<h1>Listado</h1><a routerLink="/">Volver al editor</a>' })
+class Listado {}
+@Component({ selector: 'app-root', standalone: true, imports: [RouterOutlet],
+  template: '<main><router-outlet /></main>' })
+class App {}
+bootstrapApplication(App, { providers: [provideRouter([
+  { path: '', component: Editor, canDeactivate: [confirmExit] },
+  { path: 'salir', component: Listado }
+])] }).catch(console.error);
+```
+```bash
+npm start
+```
+Abre `http://localhost:4200`. **Resultado esperado:** escribe una nota, pulsa «Ir al listado» y cancela: sigues en el editor con el texto. Acepta la siguiente salida: llegas al listado. Explica cada bloque: el componente mantiene dos snapshots, el guard compara y el router consulta la decisión. El botón guarda solo en memoria de esta sesión, sin fingir persistencia remota.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia la condición por `true`. Navega con cambios: no aparece la pregunta. **Pista:** la autorización de salida depende de comparar texto actual y guardado, no de que el componente exista. Restaura y prueba guardar antes de salir: ya no pregunta.
+
+#### Paso 6 · Práctica independiente
+Añade un botón «Descartar cambios» que restaure `text` desde `saved`. Comprueba escribir, guardar, volver a editar, descartar y salir. No debe mostrar aviso después de descartar.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** matriz de acciones y estado de la ruta, con el caso cancelado y aceptado. El siguiente paso es persistir borradores y gestionar errores del guardado real. **Errores comunes:** llamar «guardado» a texto no confirmado por el servidor, usar el guard como autorización y suponer que cubre cierre de pestaña. **Límites y decisión de uso:** este diálogo nativo es una demostración mínima; una UI personalizada necesita foco, teclado y semántica correctos.
+
+**Fuente oficial:** [Angular route guards](https://angular.dev/guide/routing/route-guards).

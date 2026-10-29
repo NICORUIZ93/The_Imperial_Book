@@ -375,9 +375,9 @@ Entrega la analítica diferida, la comparación de bundles y el boundary sobre e
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** usar `lazy()` sobre un componente que se muestra de inmediato al cargar la página, agregando una espera de red donde antes no había ninguna; no envolver el `<Suspense>` en un Error Boundary, dejando que un chunk que falla al descargarse rompa toda la pantalla en vez de mostrar un mensaje de recuperación.
 **Fuente oficial:** [documentación de React](https://react.dev/reference/react).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la captura de Network mostrando que el chunk de `PanelAnalitica` no se descarga hasta pulsar el botón, el bundle inicial comparado con y sin `lazy` del Paso 4, y el boundary verificado sobre una descarga fallida en el Paso 5.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** medir con el Profiler, aplicar `React.memo` con criterio, y virtualizar una lista larga.

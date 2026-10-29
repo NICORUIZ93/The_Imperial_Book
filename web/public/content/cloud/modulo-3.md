@@ -61,7 +61,7 @@ flowchart LR
 
 **Límites y decisión de uso:** Una cola no convierte por sí sola un efecto en exactamente una vez. La entrega puede repetirse o demorarse; usa identidad estable del mensaje y una operación de negocio idempotente, y distingue recepción de confirmación del procesamiento.
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de `send-message` y `receive-message` del Paso 4, y el fallo `NonExistentQueue` que provocaste a propósito en el Paso 5.
 ### Tema 2: Ciclo de vida de un mensaje
 
 #### Paso 1 · Objetivo y preparación
@@ -90,7 +90,7 @@ está en la cola.
 Pista: recibí el mensaje restante (el del Paso 6 del Tema 1) pero NO lo borres, y volvé a
 hacer `receive-message` antes de que pase el visibility timeout (30s por defecto) — vas a ver
 que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
+**Fallo deliberado:** guardá el `ReceiptHandle` de esta recepción, dejá pasar el visibility timeout sin borrar el mensaje, y usá ESE handle viejo en un `delete-message` después de que el mensaje ya volvió a estar visible — provoca un error (`ReceiptHandle` inválido), porque cada recepción emite un handle distinto y el anterior queda obsoleto; diagnosticalo comparándolo con el `ReceiptHandle` nuevo que te devuelve el siguiente `receive-message`.
 #### Paso 6 · Práctica independiente
 Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
 repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al
@@ -161,8 +161,8 @@ Resultado esperado: la respuesta de la DLQ contiene el mensaje con `shipmentId` 
 
 Ese es el fallo real provocado a propósito: el mensaje migró solo a la DLQ al superar
 `maxReceiveCount`, sin que nadie lo moviera a mano.
-**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Fallo deliberado:** en el `set-queue-attributes` del Paso 4, poné `maxReceiveCount` en `0` en vez de `2` antes de ejecutarlo — provoca un error de validación (`InvalidParameterValue`), porque SQS exige que `maxReceiveCount` sea al menos 1; diagnosticalo leyendo el mensaje completo de la excepción antes de corregir el valor.
+Pista: contá cuántas veces recibiste el mensaje antes de que apareciera en la DLQ — tiene que coincidir exactamente con el `maxReceiveCount` configurado, ni una recepción más ni menos.
 #### Paso 6 · Práctica independiente
 Confirmá con
 `aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`

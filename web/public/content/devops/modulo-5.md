@@ -484,3 +484,62 @@ Ya diseñas y simulas un rollback que actúa más rápido que cualquier supervis
 - **No sabes qué métrica usar para el rollback automático.** Empieza con la tasa de error HTTP 5xx como señal de partida razonable.
 
 ---
+
+
+## Laboratorio de transferencia
+
+### Tema 6: Rollback ensayado y compatibilidad del artefacto anterior
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla. **Prerrequisitos:** procesos, códigos de salida, archivos y Python 3. Ejemplo independiente desde una carpeta vacía; no requiere Kubernetes.
+
+#### Paso 2 · Contexto y caso real
+Un pipeline del proyecto integrador no termina al copiar archivos: necesita saber si la versión candidata funciona y qué hacer si no. **¿Por qué es importante?** La recuperación que nunca se ensayó puede fallar durante el incidente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una promoción cambia qué artefacto se considera activo. El criterio de salud debe evaluar una capacidad útil, no solo que el proceso existe. El rollback devuelve una versión anterior compatible; si una migración destruyó datos, revertir el binario puede ser insuficiente.
+
+**Analogía:** antes de cambiar de puente, comprueba que el nuevo soporta el paso y conserva una vía de regreso. El límite es que este simulacro usa archivos locales: no representa despliegue atómico entre nodos ni tráfico real.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir ensayo-release
+cd ensayo-release
+```
+Crea `release.py`:
+```python
+from pathlib import Path
+import subprocess
+import sys
+
+Path('v1.py').write_text('print("ENV-42 listo")\n', encoding='utf-8')
+Path('v2.py').write_text('raise RuntimeError("configuración inválida")\n', encoding='utf-8')
+active = Path('active.txt')
+active.write_text('v1.py', encoding='utf-8')
+previous = active.read_text(encoding='utf-8')
+candidate = 'v2.py'
+# La verificación observa salida, código y tiempo límite.
+probe = subprocess.run([sys.executable, candidate], capture_output=True,
+                       text=True, timeout=5)
+healthy = probe.returncode == 0 and 'ENV-42 listo' in probe.stdout
+active.write_text(candidate if healthy else previous, encoding='utf-8')
+result = subprocess.run([sys.executable, active.read_text(encoding='utf-8')],
+                        capture_output=True, text=True, timeout=5, check=True)
+assert result.stdout.strip() == 'ENV-42 listo'
+print('Candidato rechazado; activa:', active.read_text(encoding='utf-8'))
+```
+```bash
+python3 release.py
+```
+**Resultado esperado:** `Candidato rechazado; activa: v1.py`. Windows puede usar `py`. Explica cada bloque: preparar artefactos, recordar versión, evaluar candidato y volver a comprobar la capacidad activa. La versión rota no se considera válida solo por existir.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** sustituye el contenido de `v2.py` generado por `print("pantalla vacía")`. El proceso termina con cero, pero el criterio de capacidad sigue rechazándolo. **Pista:** no reduzcas salud a `returncode == 0`.
+
+#### Paso 6 · Práctica independiente
+Haz una candidata válida que conserve la salida requerida y registre una versión. Comprueba promoción y rechazo en dos ejecuciones. Añade un manejo explícito del timeout que conserve la versión anterior y registre el motivo.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** salida de promoción y rechazo, versión activa y tiempo observado. El siguiente paso es repetir el procedimiento con el orquestador y una migración expand/contract. **Errores comunes:** sobrescribir el artefacto anterior, no comprobar la recuperación y suponer que rollback restaura datos. **Límites y decisión de uso:** `active.txt` no es un mecanismo de producción; sirve para comprender la decisión antes de automatizarla en CI/CD.
+
+**Fuente oficial:** [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).

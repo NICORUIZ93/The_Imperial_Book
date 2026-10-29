@@ -107,7 +107,7 @@ Un test `@DataJpaTest` debe crear un `Cliente`, llamar dos veces a `agregar(new 
 1. Agrega `EstadoPedido` como enum persistido con `@Enumerated(EnumType.STRING)`.
 2. Escribe un método de repositorio que busque los pedidos de un cliente.
 3. Prueba borrar un cliente con pedidos sin `CascadeType.REMOVE`; decide y documenta la regla de negocio antes de añadir cascada.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** sin `CascadeType.REMOVE`, borrar un `Cliente` con `Pedido` asociados falla por la restricción de clave foránea (`cliente_id` no puede quedar huérfano); decide explícitamente si la regla correcta es cascada, bloqueo o reasignación antes de agregarla.
 #### Paso 6 · Práctica independiente
 
 Modela `Pedido` y `LineaPedido` con una asociación uno-a-muchos. Agrega una línea mediante un método del agregado que actualice ambos lados. Escribe un test que compruebe la clave foránea y el total de líneas. No expongas setters públicos que permitan dejar el agregado inconsistente.
@@ -178,7 +178,7 @@ left join fetch c.pedidos
 ```
 
 Mide otra vez. Luego intenta paginar esa consulta con una colección fetch-join: Hibernate puede advertir o paginar en memoria porque un join de colección multiplica las filas. Para una pantalla paginada, prueba cargar primero IDs paginados y luego los datos necesarios, o usa `@EntityGraph` con una estrategia evaluada.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** si ves la advertencia "firstResult/maxResults specified with collection fetch; applying in memory", el join de colección ya multiplicó las filas antes de paginar; separa la consulta en dos pasos (IDs paginados primero, datos después) para evitar que Hibernate pagine en memoria.
 #### Paso 6 · Práctica independiente
 
 Implementa tres variantes: consulta base + acceso a relaciones, `JOIN FETCH` y proyección DTO. Registra el conteo de SQL, el número de filas duplicadas y si permite paginación segura. Responde: ¿cuándo es útil LAZY? ¿Cuándo se justifica EAGER? ¿Qué alternativa evita serializar accidentalmente la entidad completa?

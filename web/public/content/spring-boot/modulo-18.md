@@ -87,7 +87,7 @@ Prueba además `.with(jwt())` sin autoridad admin (403) y una petición sin `jwt
 #### Paso 5 · Práctica guiada
 
 Añade `@PreAuthorize` a una operación de negocio. Escribe pruebas para cada rol y revisa el mapeo claim→authority del issuer real. No dupliques en controller y servicio reglas incompatibles.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** anota con `@PreAuthorize("hasRole('ADMIN')")` un método de servicio y llámalo en un test con `jwt().authorities(new SimpleGrantedAuthority("ROLE_USER"))`; si el método se ejecuta igual, revisa que `@EnableMethodSecurity` esté presente en la configuración y que el prefijo de la autoridad coincida con el que realmente mapeas desde el claim del issuer.
 #### Paso 6 · Práctica independiente
 
 Protege `GET /api/envios/{id}` comprobando también que el recurso pertenece al usuario o tenant. Un rol general no autoriza automáticamente cualquier objeto. Diseña tests para owner, otro usuario y operador.
@@ -96,9 +96,9 @@ Protege `GET /api/envios/{id}` comprobando también que el recurso pertenece al 
 
 Entrega configuración, matriz de permisos y tests para 401/403/permitido como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no deshabilites CSRF en una app que autentica con cookies solo porque es HTTP; en APIs stateless con bearer explícito la decisión es distinta. CORS no es autenticación. **Evidencia:** suite de seguridad verde y configuración de issuer externa.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** cambiar la regla general a `.anyRequest().permitAll()` "para probar más rápido" y olvidar restaurar la denegación por defecto, y duplicar la misma regla de autorización en `@PreAuthorize` del controller y en `SecurityFilterChain`, terminando con dos políticas que se contradicen.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` con los cuatro casos (200 público, 401 sin credencial, 403 sin autoridad admin, 200 con autoridad admin), el fallo observado al cambiar la regla a `permitAll()`, y la explicación de por qué restauraste la denegación por defecto.
 ### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
 
 #### Paso 1 · Objetivo y preparación
@@ -149,7 +149,7 @@ El controlador recibe `@Valid @RequestBody CrearEnvioRequest request`. Ejecuta `
 #### Paso 5 · Práctica guiada
 
 Implementa cliente HTTP de servicio a servicio con timeout y host allowlisted. Trata 4xx como fallo funcional, 5xx como potencialmente transitorio y reintenta solo operación idempotente. Añade una prueba de intento de acceder a `169.254.169.254`; debe ser bloqueado por política de red y aplicación.
-**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
+**Pista:** apunta el cliente HTTP directamente a `http://169.254.169.254/` en el test y ejecútalo; si la petición sale sin que tu allowlist de hosts la rechace, el control de SSRF no está aplicado en el código del cliente — debe bloquear el destino antes de abrir la conexión, no solo estar documentado como riesgo.
 #### Paso 6 · Práctica independiente
 
 Entrega una API con Problem Details para errores, validación de campos, límites de payload configurados y CORS específico. Escribe tabla con riesgo, control y prueba para token expirado, payload inválido, usuario ajeno, SSRF y repetición de request.
@@ -158,6 +158,6 @@ Entrega una API con Problem Details para errores, validación de campos, límite
 
 En el proyecto integrador de RutaFlow, estos controles protegen creación de envíos y llamadas a proveedores de geocodificación. **Cuándo no usarlo:** no agregues retry a escrituras sin idempotency key; no uses validación de URL basada solo en regex. **Evidencia:** tests de validación, autorización, timeout y rechazo de destino no permitido. Referencia: [Spring Security Reference](https://docs.spring.io/spring-security/reference/).
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Errores comunes:** quitar `@Valid` del parámetro del controlador "para simplificar" y dejar que una entrada inválida llegue al servicio, y configurar CORS con origen `*` junto con credenciales habilitadas, algo que el navegador rechaza y que además expondría la API a cualquier origen.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` con el caso de peso negativo devolviendo 400, el fallo observado al quitar `@Valid` (la entrada inválida llega al servicio), y el resultado de la prueba que bloquea el acceso a `169.254.169.254` desde el cliente HTTP.

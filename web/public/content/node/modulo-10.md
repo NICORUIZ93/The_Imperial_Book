@@ -430,7 +430,7 @@ Entrega como evidencia la salida real del Paso 4 y la explicación del fallo del
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** agrega la auditoría de dependencias al pipeline de la API con un umbral documentado.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+**Errores comunes:** usar `execSync('npm audit --json')` en vez de `spawnSync`, dejando que el código de salida 1 se convierta en una excepción no capturada antes de poder leer el reporte; tratar todas las severidades por igual sin fijar un umbral documentado por rama.
 
 ## Laboratorio práctico
 

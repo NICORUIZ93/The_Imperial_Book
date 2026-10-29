@@ -55,7 +55,8 @@ export const ANDROID_MODULES: CourseModule[] = [
     'App con al menos 4 pantallas, navegación con argumentos, un bottom navigation y gesto de retroceso predictivo coherente.'),
   m(4, 'Estado con StateFlow y Compose', 'Gestión de estado', 'Aplicación', '2 h 30 min', '#3ddc84',
     'Conecta tu capa de datos con la UI de forma reactiva y testeable.',
-    ['StateFlow en el ViewModel', 'collectAsStateWithLifecycle', 'UDF (Unidirectional Data Flow)', 'Eventos de un solo uso (SharedFlow)'],
+    [
+      'Restaurar un borrador tras recreación: remember no equivale a rememberSaveable','StateFlow en el ViewModel', 'collectAsStateWithLifecycle', 'UDF (Unidirectional Data Flow)', 'Eventos de un solo uso (SharedFlow)'],
     [
       'Expón un StateFlow<EstadoUI> desde un ViewModel y obsérvalo en Compose con collectAsStateWithLifecycle',
       'Implementa el flujo UDF completo: el usuario hace click → el composable llama a una función del ViewModel → el ViewModel actualiza el StateFlow → la UI se recompone',

@@ -69,7 +69,8 @@ export const JAVA_MODULES: CourseModule[] = [
     'Pipeline de procesamiento de datos con Streams y Gatherers que reemplaza loops manuales.'),
   m(5, 'Concurrencia: hilos, virtual threads y structured concurrency', 'Concurrencia', 'Aplicación', '4 h 30 min', '#5382a1',
     'Java moderno (21-25) cambia el juego de la concurrencia con virtual threads de bajo costo, structured concurrency y scoped values.',
-    ['Thread, Runnable y ExecutorService', 'CompletableFuture', 'Virtual threads (Project Loom, Java 21)', 'Condiciones de carrera y sincronización', 'ReentrantLock, Semaphore, CountDownLatch y CyclicBarrier', 'ScheduledExecutorService e invokeAll()', 'StructuredTaskScope: cancelación conjunta de subtareas relacionadas (Java 25)', 'ScopedValue frente a ThreadLocal heredable (Java 25)'],
+    [
+      'Timeouts y cancelación cooperativa sin abandonar recursos','Thread, Runnable y ExecutorService', 'CompletableFuture', 'Virtual threads (Project Loom, Java 21)', 'Condiciones de carrera y sincronización', 'ReentrantLock, Semaphore, CountDownLatch y CyclicBarrier', 'ScheduledExecutorService e invokeAll()', 'StructuredTaskScope: cancelación conjunta de subtareas relacionadas (Java 25)', 'ScopedValue frente a ThreadLocal heredable (Java 25)'],
     [
       'Crea y lanza un Thread manualmente, luego repite lo mismo con un ExecutorService de un pool fijo',
       'Provoca intencionalmente una condición de carrera (dos hilos incrementando un contador sin sincronizar) y corrígela con synchronized',
