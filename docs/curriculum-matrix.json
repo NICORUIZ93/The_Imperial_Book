@@ -323,6 +323,71 @@
         "derivación nodal del circuito de Thévenin",
         "registro de fallos, límites y especificación del sensor"
       ]
+    },
+    {
+      "id": 13,
+      "title": "Algoritmos clásicos",
+      "cs2023": [
+        "AL"
+      ],
+      "swebok": [
+        "Computing Foundations",
+        "Software Construction"
+      ],
+      "outcomes": [
+        "Implementar y medir ordenamientos, algoritmos codiciosos, Dijkstra y KMP justificando su complejidad.",
+        "Refutar una estrategia con un contraejemplo y elegir entre exactitud y heurística con evidencia.",
+        "Reconocer problemas NP-completos y negociar requisitos de calidad y tiempo."
+      ],
+      "evidence": [
+        "tabla de comparaciones y tiempos de tres ordenamientos",
+        "contraejemplo del cambio codicioso y MST con Kruskal/Prim",
+        "planificador de entregas con ruta heurística medida contra la exacta"
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Catálogo de patrones de diseño",
+      "cs2023": [
+        "SE",
+        "FPL"
+      ],
+      "swebok": [
+        "Software Design",
+        "Software Construction"
+      ],
+      "outcomes": [
+        "Seleccionar un patrón a partir de un requisito y compararlo con la alternativa más simple.",
+        "Implementar Decorator, State, Template Method, Chain of Responsibility, Mediator, Memento, Visitor y Flyweight con pruebas de su comportamiento.",
+        "Diagnosticar fallas silenciosas por estado compartido o cadenas incompletas."
+      ],
+      "evidence": [
+        "ocho programas con salida verificada",
+        "fallos deliberados documentados",
+        "núcleo de envíos con README de decisiones"
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Código limpio",
+      "cs2023": [
+        "SE",
+        "SDF"
+      ],
+      "swebok": [
+        "Software Construction",
+        "Software Maintenance"
+      ],
+      "outcomes": [
+        "Refactorizar código sin cambiar su comportamiento usando una red de seguridad.",
+        "Aplicar nombres, funciones pequeñas, excepciones y la ley de Demeter para reducir acoplamiento.",
+        "Escribir pruebas F.I.R.S.T. con un concepto por prueba."
+      ],
+      "evidence": [
+        "prueba de caracterización",
+        "historial de commits por tipo de cambio",
+        "suite en orden aleatorio"
+      ]
     }
   ]
 }

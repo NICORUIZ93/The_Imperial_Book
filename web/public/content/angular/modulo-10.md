@@ -459,6 +459,169 @@ Ya confirmas, con `HttpTestingController` real, tanto una respuesta exitosa como
 ---
 
 
+### Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás construir una tabla con Angular Material, anunciar cambios a lectores de pantalla con el CDK y probar el componente con *component harnesses* en lugar de selectores de CSS. Prerrequisitos: Temas 1 y 2 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+El tablero de envíos del centro de control se construyó con HTML propio: cada pantalla tenía tablas distintas, sin soporte de teclado ni anuncios para lectores de pantalla, y las pruebas se rompían con cada cambio de clase CSS. Es el caso real que resuelve una librería de componentes como Angular Material, que casi todo proyecto Angular empresarial usa.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Angular Material** ofrece componentes que siguen Material Design y las pautas de accesibilidad (roles ARIA, foco, teclado). Debajo está el **CDK** (Component Dev Kit): utilidades sin estilo como `LiveAnnouncer` (anuncia texto a lectores de pantalla), `FocusTrap` u *overlays*, que sirven aunque uses otro diseño. Los **harnesses** (`MatTableHarness`, `MatButtonHarness`) son APIs de prueba que interactúan con el componente como lo haría una persona, sin depender de su HTML interno.
+
+**Analogía:** Material es una cocina modular que ya viene con enchufes e instalaciones en regla; el harness es el inspector que prueba que los interruptores funcionan sin abrir las paredes.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    T[Tablero] --> MT[mat-table]
+    T --> MB[mat-flat-button]
+    T --> LA[LiveAnnouncer del CDK]
+    S[spec] --> H[harnesses]
+    H --> MT
+    H --> MB
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir angular-material && cd angular-material
+npx -y @angular/cli@22 new tablero-material --defaults --skip-git --style=css --ssr=false
+cd tablero-material
+npm install @angular/material@22 @angular/cdk@22
+```
+
+Crea `src/app/tablero.ts`:
+
+```typescript
+import { Component, computed, inject, signal } from '@angular/core';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+
+interface Envio { guia: string; barrio: string; estado: 'en ruta' | 'entregado'; }
+
+@Component({
+  selector: 'app-tablero',
+  imports: [MatTableModule, MatButtonModule, MatChipsModule],
+  template: `
+    <h2 id="titulo">Envíos de hoy</h2>
+    <mat-chip-set aria-label="Resumen">
+      <mat-chip>{{ pendientes() }} en ruta</mat-chip>
+    </mat-chip-set>
+
+    <table mat-table [dataSource]="envios()" aria-labelledby="titulo">
+      <ng-container matColumnDef="guia">
+        <th mat-header-cell *matHeaderCellDef>Guía</th>
+        <td mat-cell *matCellDef="let e">{{ e.guia }}</td>
+      </ng-container>
+      <ng-container matColumnDef="barrio">
+        <th mat-header-cell *matHeaderCellDef>Barrio</th>
+        <td mat-cell *matCellDef="let e">{{ e.barrio }}</td>
+      </ng-container>
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let e">{{ e.estado }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+    </table>
+
+    <button mat-flat-button (click)="entregarPrimero()" [disabled]="pendientes() === 0">
+      Marcar primera entrega
+    </button>
+  `,
+})
+export class Tablero {
+  private anunciador = inject(LiveAnnouncer);   // CDK: avisa a lectores de pantalla
+  columnas = ['guia', 'barrio', 'estado'];
+  envios = signal<Envio[]>([
+    { guia: 'BO-1', barrio: 'Chapinero', estado: 'en ruta' },
+    { guia: 'BO-2', barrio: 'Suba', estado: 'en ruta' },
+    { guia: 'BO-3', barrio: 'Bosa', estado: 'entregado' },
+  ]);
+  pendientes = computed(() => this.envios().filter((e) => e.estado === 'en ruta').length);
+
+  entregarPrimero() {
+    const indice = this.envios().findIndex((e) => e.estado === 'en ruta');
+    if (indice < 0) return;
+    this.envios.update((lista) => lista.map((e, i) => (i === indice ? { ...e, estado: 'entregado' } : e)));
+    this.anunciador.announce(`Envío ${this.envios()[indice].guia} entregado. Quedan ${this.pendientes()} en ruta`);
+  }
+}
+```
+
+Crea `src/app/tablero.spec.ts`:
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatTableHarness } from '@angular/material/table/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatChipHarness } from '@angular/material/chips/testing';
+import { Tablero } from './tablero';
+
+describe('Tablero con Angular Material', () => {
+  it('marca entregas y deshabilita el botón al terminar', async () => {
+    const fixture = TestBed.createComponent(Tablero);
+    // Los harnesses prueban el componente como lo usa una persona, sin depender del HTML interno
+    const loader = TestbedHarnessEnvironment.loader(fixture);
+    const tabla = await loader.getHarness(MatTableHarness);
+    const boton = await loader.getHarness(MatButtonHarness.with({ text: /Marcar primera/ }));
+    const chip = await loader.getHarness(MatChipHarness);
+
+    expect((await tabla.getRows()).length).toBe(3);
+    expect(await chip.getText()).toBe('2 en ruta');
+
+    await boton.click();
+    await boton.click();
+
+    const estados = await tabla.getCellTextByColumnName();
+    expect(estados['estado'].text).toEqual(['entregado', 'entregado', 'entregado']);
+    expect(await chip.getText()).toBe('0 en ruta');
+    expect(await boton.isDisabled()).toBe(true);
+  });
+});
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+rm src/app/app.spec.ts
+npx ng test --watch=false
+```
+
+**Resultado esperado:**
+
+```text
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+```
+
+La prueba no usa ningún selector de CSS: lee filas, celdas, el chip y el estado del botón a través de los harnesses. Con `ng add @angular/material` también se configuran el tema y la tipografía; aquí se instala lo mínimo para que el ejemplo sea reproducible.
+
+**Fallo deliberado:** Quita `MatTableModule` de los `imports` del componente. La compilación falla con `NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'.`: sin el módulo, Angular no sabe que `<table mat-table>` es un componente y trata `dataSource` como un atributo HTML desconocido.
+
+#### Paso 5 · Práctica guiada
+Agrega ordenamiento por barrio con `MatSortModule` y una prueba con `MatSortHarness` que verifique el orden. **Pista:** envuelve los datos en `MatTableDataSource`, conecta `dataSource.sort` con `viewChild(MatSort)` y agrega `mat-sort-header` a la columna.
+
+#### Paso 6 · Práctica independiente
+Activa un lector de pantalla (VoiceOver o NVDA), pulsa el botón y verifica que se lee el anuncio. Documenta qué pasaría sin `LiveAnnouncer`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque usar bien una librería de componentes ahorra semanas de trabajo, mejora la accesibilidad y hace que las pruebas sobrevivan a los cambios visuales.
+**Fuente oficial:** [Angular Material: Table](https://material.angular.dev/components/table/overview), [Angular CDK: Component Harnesses](https://material.angular.dev/cdk/test-harnesses/overview).
+**Conceptos clave:** Angular Material, CDK, `LiveAnnouncer`, `mat-table`, component harness, `TestbedHarnessEnvironment`, accesibilidad.
+**Cuándo no usarlo:** si el producto tiene un sistema de diseño propio muy distinto de Material, usa solo el CDK y tus estilos, en lugar de pelear con los estilos de Material.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** reemplaza la tabla de envíos del centro de control por `mat-table` y cubre sus acciones con harnesses.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** escribir una suite de pruebas completa para un componente con input signal y un servicio que consume HTTP.

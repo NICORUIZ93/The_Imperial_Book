@@ -531,6 +531,122 @@ stateDiagram-v2
 
 **Límites y decisión de uso:** Validar en el formulario mejora la interacción, pero el servidor debe repetir reglas y autorización. No descartes el borrador ante un error recuperable y evita que estado válido se interprete como permiso para confirmar una entrega.
 
+### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con `overrides`, sin red ni servidores. Prerrequisitos: Temas 2 y 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Las pruebas de la app del repartidor llamaban a la API real: fallaban sin internet y dejaban datos basura en QA. El caso real de la inyección de dependencias es poder cambiar la implementación (HTTP real, falsa, caché) sin tocar el código que la usa.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La **inyección de dependencias** (DI) consiste en que un componente **reciba** lo que necesita en lugar de crearlo. En Flutter con Riverpod, cada proveedor es un punto de inyección: `repositorioEnviosProvider` entrega la implementación y quien lo lee solo conoce la interfaz. En pruebas, `ProviderContainer(overrides: [...])` o `ProviderScope(overrides: [...])` reemplaza la implementación. Otras opciones son pasar dependencias por constructor o un localizador de servicios como `get_it`, que es más simple pero esconde las dependencias.
+
+**Analogía:** es el enchufe de la pared: la lámpara no sabe si la electricidad viene de la red o de una batería, solo que llega por el enchufe.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    C[pendientesProvider] --> R[repositorioEnviosProvider]
+    R -- app --> H[RepositorioEnviosHttp]
+    R -- prueba con override --> F[RepositorioEnviosFalso]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir inyeccion && cd inyeccion
+flutter create repartidor_di
+cd repartidor_di
+flutter pub add flutter_riverpod
+```
+
+Crea `test/envios_test.dart`:
+
+```dart
+// test/envios_test.dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:repartidor_di/envios.dart';
+
+class RepositorioEnviosFalso implements RepositorioEnvios {
+  @override
+  Future<List<String>> pendientes(String repartidor) async => ['BO-1', 'BO-2', 'BO-3'];
+}
+
+void main() {
+  test('cuenta los pendientes usando un repositorio falso inyectado', () async {
+    final contenedor = ProviderContainer(
+      overrides: [repositorioEnviosProvider.overrideWithValue(RepositorioEnviosFalso())],
+    );
+    addTearDown(contenedor.dispose);
+
+    expect(await contenedor.read(pendientesProvider('ana').future), 3);
+  });
+}
+```
+
+Crea `lib/envios.dart`:
+
+```dart
+// lib/envios.dart — una abstracción, dos implementaciones y un proveedor
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+abstract interface class RepositorioEnvios {
+  Future<List<String>> pendientes(String repartidor);
+}
+
+class RepositorioEnviosHttp implements RepositorioEnvios {
+  @override
+  Future<List<String>> pendientes(String repartidor) =>
+      throw UnimplementedError('requiere red: no debe llamarse en pruebas');
+}
+
+// El proveedor es el punto de inyección: la app usa la implementación real
+final repositorioEnviosProvider = Provider<RepositorioEnvios>((ref) => RepositorioEnviosHttp());
+
+// Quien consume no sabe qué implementación recibe
+final pendientesProvider = FutureProvider.family<int, String>((ref, repartidor) async {
+  final envios = await ref.watch(repositorioEnviosProvider).pendientes(repartidor);
+  return envios.length;
+});
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+rm test/widget_test.dart
+flutter test
+```
+
+**Resultado esperado:**
+
+```text
+00:02 +1: All tests passed!
+```
+
+La prueba no necesitó red: el override cambió la implementación solo para ese contenedor. La versión de `flutter_riverpod` la elige `flutter pub add`; si usas una versión anterior a la 3, la sintaxis de `overrides` es la misma.
+
+**Fallo deliberado:** Quita la lista `overrides` del `ProviderContainer`. La prueba falla con `UnimplementedError: requiere red: no debe llamarse en pruebas`: se usó la implementación real. Así se detecta una prueba que, sin querer, sale a la red.
+
+#### Paso 5 · Práctica guiada
+Agrega `RepositorioEnviosCache` que envuelva a otro repositorio y guarde la última respuesta, e inyéctalo en la app sin cambiar `pendientesProvider`. **Pista:** crea un proveedor que lea el repositorio HTTP y devuelva el de caché envolviéndolo; `pendientesProvider` solo depende de la interfaz.
+
+#### Paso 6 · Práctica independiente
+Implementa el mismo ejemplo con `get_it` y compara cómo se reemplaza la dependencia en pruebas y qué tan visibles quedan las dependencias de cada clase.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque sin DI las pruebas son lentas y frágiles, y cambiar de backend obliga a tocar toda la app.
+**Fuente oficial:** [Riverpod: Testing](https://riverpod.dev/docs/how_to/testing), [Flutter: App architecture](https://docs.flutter.dev/app-architecture).
+**Conceptos clave:** inyección de dependencias, interfaz, proveedor, `ProviderContainer`, `overrides`, `overrideWithValue`, localizador de servicios.
+**Cuándo no usarlo:** en un widget pequeño que no tiene dependencias externas no hace falta un proveedor: pasa los datos por constructor.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** inyecta el repositorio de entregas de la app y escribe sus pruebas con una implementación falsa.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Referencia: RutaFlow Flutter
 
 **App completa que demuestra Temas 2-4 de este módulo:**

@@ -298,6 +298,39 @@
       ]
     },
     {
+      "id": "foundations:4:5",
+      "track": "foundations",
+      "module": 4,
+      "position": 5,
+      "title": "SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
+      "file": "web/public/content/foundations/modulo-4.md",
+      "requires": [
+        "foundations:4:4"
+      ]
+    },
+    {
+      "id": "foundations:4:6",
+      "track": "foundations",
+      "module": 4,
+      "position": 6,
+      "title": "Procedimientos almacenados, funciones y cursores con PL/pgSQL",
+      "file": "web/public/content/foundations/modulo-4.md",
+      "requires": [
+        "foundations:4:5"
+      ]
+    },
+    {
+      "id": "foundations:4:7",
+      "track": "foundations",
+      "module": 4,
+      "position": 7,
+      "title": "De SQL a Excel: reportes con tablas y fórmulas vivas",
+      "file": "web/public/content/foundations/modulo-4.md",
+      "requires": [
+        "foundations:4:6"
+      ]
+    },
+    {
       "id": "foundations:5:1",
       "track": "foundations",
       "module": 5,
@@ -305,7 +338,7 @@
       "title": "Depurar con evidencia, no con cambios aleatorios",
       "file": "web/public/content/foundations/modulo-5.md",
       "requires": [
-        "foundations:4:4"
+        "foundations:4:7"
       ]
     },
     {
@@ -386,6 +419,17 @@
       ]
     },
     {
+      "id": "foundations:6:5",
+      "track": "foundations",
+      "module": 6,
+      "position": 5,
+      "title": "Ingeniería social y phishing: detectar señales en enlaces y remitentes",
+      "file": "web/public/content/foundations/modulo-6.md",
+      "requires": [
+        "foundations:6:4"
+      ]
+    },
+    {
       "id": "foundations:7:1",
       "track": "foundations",
       "module": 7,
@@ -393,7 +437,7 @@
       "title": "Requisitos, stakeholders y criterios verificables",
       "file": "web/public/content/foundations/modulo-7.md",
       "requires": [
-        "foundations:6:4"
+        "foundations:6:5"
       ]
     },
     {
@@ -474,6 +518,17 @@
       ]
     },
     {
+      "id": "foundations:8:5",
+      "track": "foundations",
+      "module": 8,
+      "position": 5,
+      "title": "Problemas clásicos de concurrencia: filósofos y lectores-escritores",
+      "file": "web/public/content/foundations/modulo-8.md",
+      "requires": [
+        "foundations:8:4"
+      ]
+    },
+    {
       "id": "foundations:9:1",
       "track": "foundations",
       "module": 9,
@@ -481,7 +536,7 @@
       "title": "Lógica para especificar antes de programar",
       "file": "web/public/content/foundations/modulo-9.md",
       "requires": [
-        "foundations:8:4"
+        "foundations:8:5"
       ]
     },
     {
@@ -562,6 +617,17 @@
       ]
     },
     {
+      "id": "foundations:10:5",
+      "track": "foundations",
+      "module": 10,
+      "position": 5,
+      "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
+      "file": "web/public/content/foundations/modulo-10.md",
+      "requires": [
+        "foundations:10:4"
+      ]
+    },
+    {
       "id": "foundations:11:1",
       "track": "foundations",
       "module": 11,
@@ -569,7 +635,7 @@
       "title": "Sistemas, arquitectura y sistemas operativos",
       "file": "web/public/content/foundations/modulo-11.md",
       "requires": [
-        "foundations:10:4"
+        "foundations:10:5"
       ]
     },
     {
@@ -815,6 +881,193 @@
       ]
     },
     {
+      "id": "foundations:13:1",
+      "track": "foundations",
+      "module": 13,
+      "position": 1,
+      "title": "Ordenamientos: insertion, merge y quick sort",
+      "file": "web/public/content/foundations/modulo-13.md",
+      "requires": [
+        "foundations:12:17"
+      ]
+    },
+    {
+      "id": "foundations:13:2",
+      "track": "foundations",
+      "module": 13,
+      "position": 2,
+      "title": "Algoritmos codiciosos y árbol de expansión mínima",
+      "file": "web/public/content/foundations/modulo-13.md",
+      "requires": [
+        "foundations:13:1"
+      ]
+    },
+    {
+      "id": "foundations:13:3",
+      "track": "foundations",
+      "module": 13,
+      "position": 3,
+      "title": "Caminos más cortos con Dijkstra",
+      "file": "web/public/content/foundations/modulo-13.md",
+      "requires": [
+        "foundations:13:2"
+      ]
+    },
+    {
+      "id": "foundations:13:4",
+      "track": "foundations",
+      "module": 13,
+      "position": 4,
+      "title": "Búsqueda en cadenas: de la fuerza bruta a KMP",
+      "file": "web/public/content/foundations/modulo-13.md",
+      "requires": [
+        "foundations:13:3"
+      ]
+    },
+    {
+      "id": "foundations:13:5",
+      "track": "foundations",
+      "module": 13,
+      "position": 5,
+      "title": "Problemas intratables: P, NP y heurísticas",
+      "file": "web/public/content/foundations/modulo-13.md",
+      "requires": [
+        "foundations:13:4"
+      ]
+    },
+    {
+      "id": "foundations:14:1",
+      "track": "foundations",
+      "module": 14,
+      "position": 1,
+      "title": "Decorator: agregar comportamiento sin heredar",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:13:5"
+      ]
+    },
+    {
+      "id": "foundations:14:2",
+      "track": "foundations",
+      "module": 14,
+      "position": 2,
+      "title": "State: un objeto que cambia de comportamiento según su estado",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:1"
+      ]
+    },
+    {
+      "id": "foundations:14:3",
+      "track": "foundations",
+      "module": 14,
+      "position": 3,
+      "title": "Template Method: un algoritmo fijo con pasos variables",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:2"
+      ]
+    },
+    {
+      "id": "foundations:14:4",
+      "track": "foundations",
+      "module": 14,
+      "position": 4,
+      "title": "Chain of Responsibility: una cadena de validadores",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:3"
+      ]
+    },
+    {
+      "id": "foundations:14:5",
+      "track": "foundations",
+      "module": 14,
+      "position": 5,
+      "title": "Mediator: coordinar objetos sin que se conozcan",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:4"
+      ]
+    },
+    {
+      "id": "foundations:14:6",
+      "track": "foundations",
+      "module": 14,
+      "position": 6,
+      "title": "Memento: guardar y restaurar estado para deshacer",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:5"
+      ]
+    },
+    {
+      "id": "foundations:14:7",
+      "track": "foundations",
+      "module": 14,
+      "position": 7,
+      "title": "Visitor: operaciones nuevas sin tocar las clases",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:6"
+      ]
+    },
+    {
+      "id": "foundations:14:8",
+      "track": "foundations",
+      "module": 14,
+      "position": 8,
+      "title": "Flyweight: compartir estado para ahorrar memoria",
+      "file": "web/public/content/foundations/modulo-14.md",
+      "requires": [
+        "foundations:14:7"
+      ]
+    },
+    {
+      "id": "foundations:15:1",
+      "track": "foundations",
+      "module": 15,
+      "position": 1,
+      "title": "Nombres que revelan intención y funciones pequeñas",
+      "file": "web/public/content/foundations/modulo-15.md",
+      "requires": [
+        "foundations:14:8"
+      ]
+    },
+    {
+      "id": "foundations:15:2",
+      "track": "foundations",
+      "module": 15,
+      "position": 2,
+      "title": "Comentarios honestos y excepciones en lugar de códigos de error",
+      "file": "web/public/content/foundations/modulo-15.md",
+      "requires": [
+        "foundations:15:1"
+      ]
+    },
+    {
+      "id": "foundations:15:3",
+      "track": "foundations",
+      "module": 15,
+      "position": 3,
+      "title": "Objetos frente a estructuras de datos y la ley de Demeter",
+      "file": "web/public/content/foundations/modulo-15.md",
+      "requires": [
+        "foundations:15:2"
+      ]
+    },
+    {
+      "id": "foundations:15:4",
+      "track": "foundations",
+      "module": 15,
+      "position": 4,
+      "title": "Pruebas limpias: F.I.R.S.T. y un concepto por prueba",
+      "file": "web/public/content/foundations/modulo-15.md",
+      "requires": [
+        "foundations:15:3"
+      ]
+    },
+    {
       "id": "javascript:0:1",
       "track": "javascript",
       "module": 0,
@@ -923,6 +1176,17 @@
       ]
     },
     {
+      "id": "javascript:1:6",
+      "track": "javascript",
+      "module": 1,
+      "position": 6,
+      "title": "Desestructuración, valores por defecto y rest",
+      "file": "web/public/content/javascript/modulo-1.md",
+      "requires": [
+        "javascript:1:5"
+      ]
+    },
+    {
       "id": "javascript:2:1",
       "track": "javascript",
       "module": 2,
@@ -930,7 +1194,7 @@
       "title": "Scope léxico y closures",
       "file": "web/public/content/javascript/modulo-2.md",
       "requires": [
-        "javascript:1:5"
+        "javascript:1:6"
       ]
     },
     {
@@ -1033,6 +1297,17 @@
       ]
     },
     {
+      "id": "javascript:3:5",
+      "track": "javascript",
+      "module": 3,
+      "position": 5,
+      "title": "Symbol y objetos iterables propios",
+      "file": "web/public/content/javascript/modulo-3.md",
+      "requires": [
+        "javascript:3:4"
+      ]
+    },
+    {
       "id": "javascript:4:1",
       "track": "javascript",
       "module": 4,
@@ -1040,7 +1315,7 @@
       "title": "map, filter, reduce, find, some/every",
       "file": "web/public/content/javascript/modulo-4.md",
       "requires": [
-        "javascript:3:4"
+        "javascript:3:5"
       ]
     },
     {
@@ -1484,6 +1759,28 @@
       ]
     },
     {
+      "id": "javascript:11:5",
+      "track": "javascript",
+      "module": 11,
+      "position": 5,
+      "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+      "file": "web/public/content/javascript/modulo-11.md",
+      "requires": [
+        "javascript:11:4"
+      ]
+    },
+    {
+      "id": "javascript:11:6",
+      "track": "javascript",
+      "module": 11,
+      "position": 6,
+      "title": "Decoradores estándar de TypeScript 5",
+      "file": "web/public/content/javascript/modulo-11.md",
+      "requires": [
+        "javascript:11:5"
+      ]
+    },
+    {
       "id": "javascript:12:1",
       "track": "javascript",
       "module": 12,
@@ -1491,7 +1788,7 @@
       "title": "Routing manual con History API",
       "file": "web/public/content/javascript/modulo-12.md",
       "requires": [
-        "javascript:11:4"
+        "javascript:11:6"
       ]
     },
     {
@@ -2516,6 +2813,83 @@
       ]
     },
     {
+      "id": "java:19:1",
+      "track": "java",
+      "module": 19,
+      "position": 1,
+      "title": "Reflexión y anotaciones en tiempo de ejecución",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:18:2"
+      ]
+    },
+    {
+      "id": "java:19:2",
+      "track": "java",
+      "module": 19,
+      "position": 2,
+      "title": "Expresiones regulares con Pattern y Matcher",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:1"
+      ]
+    },
+    {
+      "id": "java:19:3",
+      "track": "java",
+      "module": 19,
+      "position": 3,
+      "title": "Dinero exacto con BigDecimal",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:2"
+      ]
+    },
+    {
+      "id": "java:19:4",
+      "track": "java",
+      "module": 19,
+      "position": 4,
+      "title": "Assertions y diseño por contrato",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:3"
+      ]
+    },
+    {
+      "id": "java:19:5",
+      "track": "java",
+      "module": 19,
+      "position": 5,
+      "title": "ServiceLoader: plugins sin acoplar implementaciones",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:4"
+      ]
+    },
+    {
+      "id": "java:19:6",
+      "track": "java",
+      "module": 19,
+      "position": 6,
+      "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:5"
+      ]
+    },
+    {
+      "id": "java:19:7",
+      "track": "java",
+      "module": 19,
+      "position": 7,
+      "title": "Internacionalización: números, monedas, fechas y orden de texto",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:6"
+      ]
+    },
+    {
       "id": "node:0:1",
       "track": "node",
       "module": 0,
@@ -2604,6 +2978,28 @@
       ]
     },
     {
+      "id": "node:1:5",
+      "track": "node",
+      "module": 1,
+      "position": 5,
+      "title": "Publicar y versionar un paquete npm (público o privado)",
+      "file": "web/public/content/node/modulo-1.md",
+      "requires": [
+        "node:1:4"
+      ]
+    },
+    {
+      "id": "node:1:6",
+      "track": "node",
+      "module": 1,
+      "position": 6,
+      "title": "ESM y CommonJS en el mismo proyecto",
+      "file": "web/public/content/node/modulo-1.md",
+      "requires": [
+        "node:1:5"
+      ]
+    },
+    {
       "id": "node:2:1",
       "track": "node",
       "module": 2,
@@ -2611,7 +3007,7 @@
       "title": "fs/promises frente a callbacks",
       "file": "web/public/content/node/modulo-2.md",
       "requires": [
-        "node:1:4"
+        "node:1:6"
       ]
     },
     {
@@ -2956,6 +3352,17 @@
       ]
     },
     {
+      "id": "node:7:6",
+      "track": "node",
+      "module": 7,
+      "position": 6,
+      "title": "TDD práctico: rojo, verde y refactor con node:test",
+      "file": "web/public/content/node/modulo-7.md",
+      "requires": [
+        "node:7:5"
+      ]
+    },
+    {
       "id": "node:8:1",
       "track": "node",
       "module": 8,
@@ -2963,7 +3370,7 @@
       "title": "Worker Threads para trabajo CPU-bound",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
-        "node:7:5"
+        "node:7:6"
       ]
     },
     {
@@ -3110,6 +3517,17 @@
       ]
     },
     {
+      "id": "node:10:5",
+      "track": "node",
+      "module": 10,
+      "position": 5,
+      "title": "CVE, CWE y npm audit en el pipeline",
+      "file": "web/public/content/node/modulo-10.md",
+      "requires": [
+        "node:10:4"
+      ]
+    },
+    {
       "id": "node:11:1",
       "track": "node",
       "module": 11,
@@ -3117,7 +3535,7 @@
       "title": "Dockerfile multi-stage para Node",
       "file": "web/public/content/node/modulo-11.md",
       "requires": [
-        "node:10:4"
+        "node:10:5"
       ]
     },
     {
@@ -3348,7 +3766,7 @@
       "title": "Inversión de control y el contenedor de Spring",
       "file": "web/public/content/spring-boot/modulo-0.md",
       "requires": [
-        "java:18:2"
+        "java:19:7"
       ]
     },
     {
@@ -3440,6 +3858,28 @@
       ]
     },
     {
+      "id": "spring-boot:2:4",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 4,
+      "title": "Lombok y MapStruct sin exponer datos internos",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:3"
+      ]
+    },
+    {
+      "id": "spring-boot:2:5",
+      "track": "spring-boot",
+      "module": 2,
+      "position": 5,
+      "title": "OpenAPI con springdoc: el contrato como prueba",
+      "file": "web/public/content/spring-boot/modulo-2.md",
+      "requires": [
+        "spring-boot:2:4"
+      ]
+    },
+    {
       "id": "spring-boot:3:1",
       "track": "spring-boot",
       "module": 3,
@@ -3447,7 +3887,7 @@
       "title": "Entidades y repositorios derivados",
       "file": "web/public/content/spring-boot/modulo-3.md",
       "requires": [
-        "spring-boot:2:3"
+        "spring-boot:2:5"
       ]
     },
     {
@@ -4181,10 +4621,21 @@
       "track": "spring-boot",
       "module": 20,
       "position": 5,
-      "title": "Integraciones empresariales, SOAP y fronteras de protocolo",
+      "title": "@Async y ejecutores: trabajo en segundo plano con límites",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:4"
+      ]
+    },
+    {
+      "id": "spring-boot:20:6",
+      "track": "spring-boot",
+      "module": 20,
+      "position": 6,
+      "title": "Integraciones empresariales, SOAP y fronteras de protocolo",
+      "file": "web/public/content/spring-boot/modulo-20.md",
+      "requires": [
+        "spring-boot:20:5"
       ]
     },
     {
@@ -4195,7 +4646,7 @@
       "title": "Productor, tópico, key y consumidor",
       "file": "web/public/content/spring-boot/modulo-21.md",
       "requires": [
-        "spring-boot:20:5"
+        "spring-boot:20:6"
       ]
     },
     {
@@ -4331,6 +4782,17 @@
       ]
     },
     {
+      "id": "angular:1:7",
+      "track": "angular",
+      "module": 1,
+      "position": 7,
+      "title": "Pipes puros e impuros, AsyncPipe y signals",
+      "file": "web/public/content/angular/modulo-1.md",
+      "requires": [
+        "angular:1:6"
+      ]
+    },
+    {
       "id": "angular:2:1",
       "track": "angular",
       "module": 2,
@@ -4338,7 +4800,7 @@
       "title": "signal(), computed() y effect()",
       "file": "web/public/content/angular/modulo-2.md",
       "requires": [
-        "angular:1:6"
+        "angular:1:7"
       ]
     },
     {
@@ -4705,6 +5167,17 @@
       ]
     },
     {
+      "id": "angular:10:4",
+      "track": "angular",
+      "module": 10,
+      "position": 4,
+      "title": "Angular Material y CDK: componentes accesibles probados con harnesses",
+      "file": "web/public/content/angular/modulo-10.md",
+      "requires": [
+        "angular:10:3"
+      ]
+    },
+    {
       "id": "angular:11:1",
       "track": "angular",
       "module": 11,
@@ -4712,7 +5185,7 @@
       "title": "Server-Side Rendering",
       "file": "web/public/content/angular/modulo-11.md",
       "requires": [
-        "angular:10:3"
+        "angular:10:4"
       ]
     },
     {
@@ -5603,7 +6076,7 @@
       "title": "Null safety real",
       "file": "web/public/content/kotlin-multiplatform/modulo-0.md",
       "requires": [
-        "java:18:2"
+        "java:19:7"
       ]
     },
     {
@@ -6208,7 +6681,7 @@
       "title": "Estructura de un proyecto Android Studio",
       "file": "web/public/content/android/modulo-0.md",
       "requires": [
-        "java:18:2"
+        "java:19:7"
       ]
     },
     {
@@ -6770,6 +7243,50 @@
       "file": "web/public/content/android/modulo-14.md",
       "requires": [
         "android:14:5"
+      ]
+    },
+    {
+      "id": "android:15:1",
+      "track": "android",
+      "module": 15,
+      "position": 1,
+      "title": "Intents implícitos y Activity Result API",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:14:6"
+      ]
+    },
+    {
+      "id": "android:15:2",
+      "track": "android",
+      "module": 15,
+      "position": 2,
+      "title": "BroadcastReceiver: reaccionar a eventos del sistema",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:1"
+      ]
+    },
+    {
+      "id": "android:15:3",
+      "track": "android",
+      "module": 15,
+      "position": 3,
+      "title": "Foreground Service de ubicación con FusedLocationProvider",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:2"
+      ]
+    },
+    {
+      "id": "android:15:4",
+      "track": "android",
+      "module": 15,
+      "position": 4,
+      "title": "Compartir archivos con FileProvider y content://",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:3"
       ]
     },
     {
@@ -7407,6 +7924,17 @@
       ]
     },
     {
+      "id": "flutter:0:4",
+      "track": "flutter",
+      "module": 0,
+      "position": 4,
+      "title": "Lints y estilo con analysis_options.yaml",
+      "file": "web/public/content/flutter/modulo-0.md",
+      "requires": [
+        "flutter:0:3"
+      ]
+    },
+    {
       "id": "flutter:1:1",
       "track": "flutter",
       "module": 1,
@@ -7414,7 +7942,7 @@
       "title": "StatelessWidget vs StatefulWidget",
       "file": "web/public/content/flutter/modulo-1.md",
       "requires": [
-        "flutter:0:3"
+        "flutter:0:4"
       ]
     },
     {
@@ -7550,6 +8078,17 @@
       ]
     },
     {
+      "id": "flutter:4:5",
+      "track": "flutter",
+      "module": 4,
+      "position": 5,
+      "title": "Inyección de dependencias con Riverpod: reemplazar implementaciones",
+      "file": "web/public/content/flutter/modulo-4.md",
+      "requires": [
+        "flutter:4:4"
+      ]
+    },
+    {
       "id": "flutter:5:1",
       "track": "flutter",
       "module": 5,
@@ -7557,7 +8096,7 @@
       "title": "http vs dio",
       "file": "web/public/content/flutter/modulo-5.md",
       "requires": [
-        "flutter:4:4"
+        "flutter:4:5"
       ]
     },
     {
@@ -7704,6 +8243,17 @@
       ]
     },
     {
+      "id": "flutter:8:5",
+      "track": "flutter",
+      "module": 8,
+      "position": 5,
+      "title": "CustomPainter: dibujar con Canvas sin repintar de más",
+      "file": "web/public/content/flutter/modulo-8.md",
+      "requires": [
+        "flutter:8:4"
+      ]
+    },
+    {
       "id": "flutter:9:1",
       "track": "flutter",
       "module": 9,
@@ -7711,7 +8261,7 @@
       "title": "Unit tests y widget tests",
       "file": "web/public/content/flutter/modulo-9.md",
       "requires": [
-        "flutter:8:4"
+        "flutter:8:5"
       ]
     },
     {
@@ -7803,6 +8353,17 @@
       ]
     },
     {
+      "id": "flutter:11:4",
+      "track": "flutter",
+      "module": 11,
+      "position": 4,
+      "title": "Entornos y flavors con --dart-define-from-file",
+      "file": "web/public/content/flutter/modulo-11.md",
+      "requires": [
+        "flutter:11:3"
+      ]
+    },
+    {
       "id": "flutter:12:1",
       "track": "flutter",
       "module": 12,
@@ -7810,7 +8371,7 @@
       "title": "Arquitectura por features y Clean Architecture",
       "file": "web/public/content/flutter/modulo-12.md",
       "requires": [
-        "flutter:11:3"
+        "flutter:11:4"
       ]
     },
     {
@@ -8019,7 +8580,7 @@
       "title": "Sistema de archivos y permisos (chmod/chown)",
       "file": "web/public/content/devops/modulo-0.md",
       "requires": [
-        "foundations:12:17"
+        "foundations:15:4"
       ]
     },
     {
@@ -8111,6 +8672,28 @@
       ]
     },
     {
+      "id": "devops:0:10",
+      "track": "devops",
+      "module": 0,
+      "position": 10,
+      "title": "Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
+      "file": "web/public/content/devops/modulo-0.md",
+      "requires": [
+        "devops:0:9"
+      ]
+    },
+    {
+      "id": "devops:0:11",
+      "track": "devops",
+      "module": 0,
+      "position": 11,
+      "title": "systemd: servicios, timers y logs con journalctl",
+      "file": "web/public/content/devops/modulo-0.md",
+      "requires": [
+        "devops:0:10"
+      ]
+    },
+    {
       "id": "devops:1:1",
       "track": "devops",
       "module": 1,
@@ -8118,7 +8701,7 @@
       "title": "Trunk-based development vs GitFlow",
       "file": "web/public/content/devops/modulo-1.md",
       "requires": [
-        "devops:0:9"
+        "devops:0:11"
       ]
     },
     {
@@ -8254,6 +8837,17 @@
       ]
     },
     {
+      "id": "devops:2:7",
+      "track": "devops",
+      "module": 2,
+      "position": 7,
+      "title": "Operación diaria: inspect, stats, events y respaldo de volúmenes",
+      "file": "web/public/content/devops/modulo-2.md",
+      "requires": [
+        "devops:2:6"
+      ]
+    },
+    {
       "id": "devops:3:1",
       "track": "devops",
       "module": 3,
@@ -8261,7 +8855,7 @@
       "title": "Servicios, dependencias y healthchecks",
       "file": "web/public/content/devops/modulo-3.md",
       "requires": [
-        "devops:2:6"
+        "devops:2:7"
       ]
     },
     {
@@ -8826,6 +9420,17 @@
       ]
     },
     {
+      "id": "devops:11:7",
+      "track": "devops",
+      "module": 11,
+      "position": 7,
+      "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
+      "file": "web/public/content/devops/modulo-11.md",
+      "requires": [
+        "devops:11:6"
+      ]
+    },
+    {
       "id": "devops:12:1",
       "track": "devops",
       "module": 12,
@@ -8833,7 +9438,7 @@
       "title": "De cloud local a un proveedor cloud real",
       "file": "web/public/content/devops/modulo-12.md",
       "requires": [
-        "devops:11:6"
+        "devops:11:7"
       ]
     },
     {

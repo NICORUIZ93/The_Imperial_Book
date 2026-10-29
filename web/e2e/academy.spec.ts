@@ -70,11 +70,11 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
     { track: 'devops', module: 7, diagrams: 6 },
     { track: 'devops', module: 8, diagrams: 5 },
     { track: 'flutter', module: 5, diagrams: 3 },
-    { track: 'foundations', module: 8, diagrams: 4 },
+    { track: 'foundations', module: 8, diagrams: 5 },
     { track: 'ios', module: 12, diagrams: 3 },
     { track: 'ios', module: 14, diagrams: 7 },
     { track: 'react', module: 6, diagrams: 3 },
-    { track: 'spring-boot', module: 2, diagrams: 3 },
+    { track: 'spring-boot', module: 2, diagrams: 5 },
   ];
 
   for (const { track, module, diagrams } of chapters) {
@@ -216,10 +216,11 @@ test('lector: muestra la transferencia al proyecto y los límites editoriales', 
 
 test('estructura: cada Tema se muestra como una tarjeta separada, no anidado en otro', async ({ page }) => {
   // foundations/4 tuvo un bloque ``` desbalanceado que atrapaba los temas 2-4
-  // dentro del tema 1. Este caso fija que los cuatro temas vuelven a verse como
+  // dentro del tema 1. Este caso fija que sus siete temas (incluidos SQL avanzado,
+  // PL/pgSQL y Excel) se ven como
   // topic-card independientes y que ninguna anida a otra.
   await page.goto('/curso/foundations/4');
-  await expect(page.locator('.topic-card')).toHaveCount(4);
+  await expect(page.locator('.topic-card')).toHaveCount(7);
   await expect(page.locator('.topic-card .topic-card')).toHaveCount(0);
   await expect(page.locator('.topic-card.expanded')).toHaveCount(1);
   await expect(page.locator('.lesson-error')).toHaveCount(0);

@@ -429,6 +429,256 @@ Automatizaste sin ocultar efectos. El siguiente módulo aplicará streams a arch
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Revisa qué scripts se ejecutan durante instalación y empaquetado. Instala la API en un entorno sin credenciales de despliegue y confirma que preparar dependencias no publica ni modifica servicios externos.
 
+### Tema 5: Publicar y versionar un paquete npm (público o privado)
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás preparar un paquete npm con `exports`, `files` y `engines`, revisar exactamente qué se publicaría con `npm pack --dry-run`, instalarlo desde el tarball y entender cómo se publica en npm o en un registro privado. Prerrequisitos: Temas 1 y 2 de este módulo (package.json, semver y lockfiles).
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow varios servicios calculan tarifas y cada uno tenía su copia del código. La solución de un caso real de cualquier empresa con microservicios es una **librería compartida** publicada como paquete, a menudo en un registro privado (Azure Artifacts, GitHub Packages, Verdaccio) para que no sea pública.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`npm publish` sube un **tarball** con los archivos del paquete. El campo `files` define qué entra (lista blanca) y `exports` define qué rutas pueden importar los consumidores: todo lo demás queda privado. `npm pack --dry-run` muestra el contenido sin crear nada, y `npm pack` crea el `.tgz` que puedes instalar como si viniera del registro. Las versiones siguen **semver**: `npm version patch|minor|major` sube el número y crea el commit y la etiqueta. Para un registro privado se configura el *scope* en `.npmrc` (`@rutaflow:registry=https://...`) con un token que nunca se sube al repositorio.
+
+**Analogía:** el tarball es una caja sellada: `files` decide qué metes en la caja y `exports` decide qué puertas tiene; lo que no tiene puerta no se puede tocar desde afuera.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    S[tarifas/src] --> P[npm pack]
+    J[package.json files y exports] --> P
+    P --> T[rutaflow-tarifas-1.0.0.tgz]
+    T --> R[(registro npm o privado)]
+    T --> A[app: npm install]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir paquete-npm && cd paquete-npm && mkdir -p tarifas/src app
+```
+
+Crea `tarifas/package.json`:
+
+```json
+{
+  "name": "@rutaflow/tarifas",
+  "version": "1.0.0",
+  "description": "Cálculo de tarifas de envío de RutaFlow",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "engines": { "node": ">=20" },
+  "license": "MIT"
+}
+```
+
+Crea `app/package.json`:
+
+```json
+{"name":"app-cotizador","version":"0.0.0","private":true,"type":"module","dependencies":{"@rutaflow/tarifas":"file:../tarifas/rutaflow-tarifas-1.0.0.tgz"}}
+```
+
+Crea `app/index.js`:
+
+```javascript
+import { cotizar } from '@rutaflow/tarifas';
+
+console.log('Bogotá 2.5 kg =', cotizar('Bogotá', 2.5));
+console.log('Medellín 1 kg =', cotizar('Medellín', 1));
+```
+
+Crea `tarifas/src/index.js`:
+
+```javascript
+const BASE = { Bogotá: 5000, Medellín: 7000 };
+
+export function cotizar(ciudad, kilos) {
+  if (!(ciudad in BASE)) throw new Error(`Sin cobertura en ${ciudad}`);
+  if (kilos <= 0) throw new RangeError('kilos debe ser positivo');
+  return BASE[ciudad] + Math.ceil(kilos) * 1200;
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+cd tarifas && npm pack --dry-run && npm pack
+cd ../app && npm install ../tarifas/rutaflow-tarifas-1.0.0.tgz
+node index.js
+```
+
+**Resultado esperado:**
+
+```text
+npm notice 📦  @rutaflow/tarifas@1.0.0
+npm notice Tarball Contents
+npm notice 257B package.json
+npm notice 281B src/index.js
+npm notice total files: 2
+...
+rutaflow-tarifas-1.0.0.tgz
+added 1 package
+Bogotá 2.5 kg = 8600
+Medellín 1 kg = 8200
+```
+
+Solo entra al tarball lo que nombra `files`, más `package.json` (y README o LICENSE si existen): crea un `tarifas/NOTAS-PRIVADAS.md`, repite el `--dry-run` y comprueba que no aparece. El tamaño y el hash del paquete pueden variar. Para publicar de verdad se usa `npm publish --access public` (o el registro privado configurado en `.npmrc`); antes, `npm publish --dry-run` hace un ensayo sin subir nada.
+
+**Fallo deliberado:** En `app/index.js` importa la ruta interna: `import { cotizar } from '@rutaflow/tarifas/src/index.js';`. Node responde `Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: Package subpath './src/index.js' is not defined by "exports"`. `exports` protege la estructura interna: los consumidores solo pueden usar lo que el paquete declara como público.
+
+#### Paso 5 · Práctica guiada
+Publica la versión 1.1.0 con una función nueva `cotizarExpress` sin romper a los consumidores de 1.0.0. **Pista:** agrega la función, ejecuta `npm version minor` dentro de `tarifas`, vuelve a empaquetar e instala el nuevo `.tgz` en `app`; una función nueva es un cambio *minor* según semver.
+
+#### Paso 6 · Práctica independiente
+Monta un registro local con Verdaccio (`npx verdaccio`), configura `.npmrc` con `@rutaflow:registry=http://localhost:4873` y publica el paquete allí. Documenta dónde queda el token y por qué no va en Git.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque compartir código entre servicios mediante paquetes versionados es práctica diaria, y un `files` mal configurado puede publicar secretos o notas internas.
+**Fuente oficial:** [npm Docs: Creating and publishing scoped public packages](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages), [Node.js: Package entry points (exports)](https://nodejs.org/api/packages.html#package-entry-points).
+**Conceptos clave:** tarball, `files`, `exports`, `npm pack --dry-run`, semver, `npm version`, scope, `.npmrc`, registro privado.
+**Cuándo no usarlo:** si el código solo lo usa un servicio, o si varios paquetes viven en el mismo repositorio, los workspaces (Tema 3) evitan publicar en cada cambio.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** extrae a un paquete `@rutaflow/contratos` los esquemas de validación que comparten la API y los consumidores.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
+### Tema 6: ESM y CommonJS en el mismo proyecto
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás decidir si un archivo es ESM o CommonJS, importar CommonJS desde ESM, usar `require` dentro de ESM con `createRequire`, cargar ESM desde CommonJS y reemplazar `__dirname`. Prerrequisito: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+La API de RutaFlow migró a ESM, pero conserva módulos CommonJS antiguos y librerías que solo exportan con `module.exports`. Mezclar ambos sistemas sin entender las reglas produce errores como `require is not defined` o `__dirname is not defined`, muy comunes en proyectos reales en migración.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Node decide el sistema por archivo: `.mjs` siempre es ESM, `.cjs` siempre es CommonJS, y `.js` depende del campo `"type"` del `package.json` más cercano. ESM usa `import`/`export`, se carga de forma asíncrona y no tiene `require`, `module` ni `__dirname`. Desde ESM, un módulo CommonJS se importa y su `module.exports` llega como `default`. `createRequire(import.meta.url)` crea un `require` cuando lo necesitas (por ejemplo, para JSON). Desde Node 22.12, CommonJS puede hacer `require()` de un módulo ESM síncrono.
+
+**Analogía:** son dos enchufes distintos en la misma casa: `.mjs` y `.cjs` traen la clavija marcada, y para `.js` decide el cuadro eléctrico (`"type"`).
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    A{extensión} -- .mjs --> E[ESM]
+    A -- .cjs --> C[CommonJS]
+    A -- .js --> T{type en package.json}
+    T -- module --> E
+    T -- commonjs o ausente --> C
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir esm-y-cjs && cd esm-y-cjs
+```
+
+Crea `package.json`:
+
+```json
+{ "name": "mezcla-modulos", "version": "1.0.0", "type": "module" }
+```
+
+Crea `legado.cjs`:
+
+```javascript
+// Módulo CommonJS antiguo: usa require y module.exports
+const path = require('node:path');
+
+function nombreReporte(fecha) {
+  return path.join(__dirname, `reporte-${fecha}.csv`);
+}
+
+module.exports = { nombreReporte, version: '1.4.0' };
+```
+
+Crea `moderno.mjs`:
+
+```javascript
+// Módulo ESM moderno: usa export
+export const zonas = ['Norte', 'Sur', 'Centro'];
+export default function saludo(nombre) {
+  return `Hola ${nombre}, tienes ${zonas.length} zonas`;
+}
+```
+
+Crea `config.json`:
+
+```json
+{ "ciudad": "Bogotá" }
+```
+
+Crea `desde-cjs.cjs`:
+
+```javascript
+// CommonJS cargando un módulo ESM: Node 22.12+ permite require() de ESM síncrono
+const moderno = require('./moderno.mjs');
+console.log('ESM desde CJS:', moderno.default('Beto'), moderno.zonas.length);
+```
+
+Crea `main.js`:
+
+```javascript
+// package.json tiene "type": "module", así que este .js es ESM
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import legado from './legado.cjs';                 // ESM importa CJS: module.exports llega como default
+import saludo, { zonas } from './moderno.mjs';
+
+const require = createRequire(import.meta.url);    // require disponible dentro de ESM
+const config = require('./config.json');
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));   // ESM no define __dirname
+
+console.log('CJS desde ESM:', legado.version, path.basename(legado.nombreReporte('2026-10-28')));
+console.log('ESM:', saludo('Ana'), zonas);
+console.log('JSON con createRequire:', config.ciudad);
+console.log('Carpeta actual:', path.basename(__dirname));
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+node main.js
+node desde-cjs.cjs
+```
+
+**Resultado esperado:**
+
+```text
+CJS desde ESM: 1.4.0 reporte-2026-10-28.csv
+ESM: Hola Ana, tienes 3 zonas [ 'Norte', 'Sur', 'Centro' ]
+JSON con createRequire: Bogotá
+Carpeta actual: esm-y-cjs
+ESM desde CJS: Hola Beto, tienes 3 zonas 3
+```
+
+`legado.cjs` sigue usando `__dirname` porque es CommonJS; `main.js` lo reconstruye con `import.meta.url`. El `require` de ESM desde CommonJS necesita Node 22.12 o superior.
+
+**Fallo deliberado:** Borra de `main.js` la línea `const __dirname = path.dirname(fileURLToPath(import.meta.url));`. Al ejecutar obtienes `ReferenceError: __dirname is not defined in ES module scope`: en ESM esa variable no existe. Corrígelo con `import.meta.dirname` (Node 20.11+) o con `fileURLToPath`.
+
+#### Paso 5 · Práctica guiada
+Renombra `legado.cjs` a `legado.js` sin cambiar su código y explica el error que aparece. **Pista:** con `"type": "module"` el archivo pasa a ser ESM, así que `require` y `module.exports` ya no existen; la solución es mantener `.cjs` o reescribirlo con `export`.
+
+#### Paso 6 · Práctica independiente
+Crea un paquete *dual* que exponga una versión ESM y otra CommonJS con `exports` condicionales (`"import"` y `"require"`) e impórtalo desde ambos tipos de archivo.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque casi todo proyecto Node real está a mitad de camino entre los dos sistemas, y estos errores bloquean despliegues.
+**Fuente oficial:** [Node.js: Modules: ECMAScript modules](https://nodejs.org/api/esm.html), [Node.js: Loading ECMAScript modules using require()](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
+**Conceptos clave:** ESM, CommonJS, campo `type`, `.mjs` y `.cjs`, `createRequire`, `import.meta.url`, `require(esm)`, exports condicionales.
+**Cuándo no usarlo:** en un proyecto nuevo no mezcles: usa solo ESM. La mezcla es una herramienta de migración, no un diseño.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** migra un módulo CommonJS de la API a ESM y deja el anterior funcionando hasta retirarlo.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir un monorepo mínimo con dos paquetes propios enlazados vía workspaces, y experimentar con semver, lockfiles y scripts de ciclo de vida.

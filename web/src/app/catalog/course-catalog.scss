@@ -352,3 +352,67 @@ main { @extend %container; padding-block: 0 110px; }
   .backup-actions { flex-wrap: wrap; }
   .official-grid { grid-template-columns: 1fr; }
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// CAPA EDITORIAL «LIBRO DE PATRONES» para el catálogo
+// La portada se maqueta como el inicio de un libro técnico: titular condensado
+// en mayúsculas, subtítulo en cursiva, tarjetas de ruta como las fichas del
+// catálogo de patrones (borde fino, icono, nombre grande y una frase), y el
+// rojo como único acento. Va al final para prevalecer sin !important.
+// ════════════════════════════════════════════════════════════════════════════
+.topbar { background:color-mix(in srgb, #{$wh} 88%, transparent); }
+.brand-mark { border-radius:4px; color:#fff; background:$ink; box-shadow:none; }
+.brand-text strong { font:600 17px/1.1 $display; letter-spacing:.01em; text-transform:uppercase; }
+.brand-text small { font:400 12px $sans; letter-spacing:0; }
+.theme-toggle { border-radius:4px; }
+.theme-toggle:hover { border-color:$ink; color:$ink; box-shadow:none; }
+
+.btn { border-radius:4px; font:500 15px $sans; letter-spacing:0; }
+.btn-primary { color:#fff; background:var(--accent); }
+.btn-primary:hover { background:var(--accent-hover); box-shadow:none; }
+.btn-ghost:hover { border-color:$ink; color:$ink; }
+
+.hero { padding-block:clamp(64px, 9vw, 110px) clamp(44px, 6vw, 72px); }
+.eyebrow { padding:0; border:0; border-radius:0; color:var(--text-faint); background:transparent; font:400 13px $sans; letter-spacing:.02em; text-transform:none; }
+.hero h1 { max-width:980px; color:$ink; font:700 clamp(44px, 7.4vw, 92px)/.98 $display; letter-spacing:.005em; text-transform:uppercase; }
+.hero h1 .grad { display:inline-block; margin-top:.18em; color:var(--accent); -webkit-text-fill-color:var(--accent); background:none; font-weight:500; font-size:.5em; text-transform:none; font-style:italic; }
+.hero-copy { font:300 clamp(17px, 2vw, 20px)/1.65 $sans; }
+.hero-stats { border-radius:4px; background:$wh; backdrop-filter:none; }
+.hero-stats dd { font:600 clamp(30px, 4vw, 42px) $display; letter-spacing:0; }
+.hero-stats dt { font:400 12px $sans; letter-spacing:.04em; }
+.inline-error, .inline-error button { font-family:$sans; border-radius:4px; }
+
+.starter { border-radius:4px; background:$wh; }
+.starter-intro h2, .section-heading h2, .backup-intro h2 { font-family:$display; font-weight:600; letter-spacing:0; }
+.starter-intro h2 { font-size:clamp(26px, 3vw, 32px); }
+.section-heading h2 { font-size:clamp(32px, 4.4vw, 46px); text-transform:uppercase; }
+.starter-intro p, .section-heading p, .backup-intro p { font-weight:300; }
+.link-arrow { color:var(--accent); font:500 15px $sans; }
+.starter-steps li { color:$ink; font:300 16px/1.6 $sans; }
+.starter-steps li span { border:0; border-radius:3px; color:#fff; background:$ink; font:500 13px $mono; }
+
+.group-title { color:$ink; font:600 15px $display; letter-spacing:.04em; }
+.group-title::after { background:$ink; height:1px; opacity:.25; }
+
+// Fichas de ruta: como las tarjetas Builder / Prototype / Singleton del libro.
+.card { gap:12px; padding:22px 22px 18px; border-radius:4px; box-shadow:none; }
+.card::before { display:none; }
+.card:hover { transform:none; border-color:$ink; box-shadow:$shm; }
+.card-icon { width:52px; height:52px; border-radius:4px; color:#fff; }
+.card-icon .mark { font:700 18px/1 $display; letter-spacing:0; }
+.card-kicker { color:var(--text-faint); font:400 11px $sans; letter-spacing:.06em; }
+.card-name { font:600 25px/1.1 $display; letter-spacing:0; }
+.card-tagline { color:$i3; font:300 14.5px/1.6 $sans; }
+.card-progress { height:3px; border-radius:0; }
+.card-meta li { font:400 12px $sans; }
+.card-topics summary { color:$ink; font:500 13px $sans; }
+.card-topics summary:hover { color:var(--accent); }
+.card-topics ol { font:300 14px/1.6 $sans; }
+.card-cta { color:var(--accent); font:500 14px $sans; letter-spacing:0; }
+
+.backup { border-radius:4px; }
+.official-grid a { border-radius:4px; }
+.official-grid a:hover { border-color:$ink; transform:none; box-shadow:none; }
+.official-grid strong { font:600 17px $display; }
+.official-grid small { color:var(--accent); font:500 11px $sans; letter-spacing:0; }
+.official-note strong { font-family:$display; font-size:15px; }

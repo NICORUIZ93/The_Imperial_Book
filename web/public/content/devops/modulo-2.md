@@ -480,6 +480,113 @@ Ya publicas y recuperas imágenes desde un registry propio, y entiendes qué cam
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Publica el artefacto probado en un registry y registra el digest en el despliegue. Descárgalo en un entorno limpio y demuestra que es la misma imagen que pasó la prueba de humo.
 
+### Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás inspeccionar un contenedor y sus montajes, medir su consumo, revisar los eventos del motor de Docker y respaldar y restaurar un volumen con un contenedor auxiliar. Prerrequisito: Tema 4 de este módulo (volúmenes).
+
+#### Paso 2 · Contexto y caso real
+Un desarrollador de RutaFlow ejecutó `docker volume prune` en el servidor de pruebas y borró la base de datos del equipo de QA: no había respaldo. Los dos libros de Docker de la biblioteca (*Docker, guía práctica* y el tutorial básico) dedican secciones a copia de seguridad, restauración, estadísticas y eventos porque son el caso real del día a día de quien opera contenedores.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`docker inspect` muestra la configuración real (imagen, variables, montajes) con plantillas Go (`--format`). `docker stats --no-stream` da una foto del consumo de CPU y memoria. `docker events` es el registro de lo que hizo el motor (crear, iniciar, detener, borrar) y responde "¿quién apagó esto?". Un volumen no se respalda copiando `/var/lib/docker`: se monta en un **contenedor auxiliar** (por ejemplo `alpine`) junto a una carpeta del host y se empaqueta con `tar`. Para una base de datos, el respaldo consistente se hace con el servicio detenido o con su herramienta propia (`pg_dump`).
+
+**Analogía:** el volumen es una caja fuerte dentro del edificio; para sacar una copia no rompes la pared: traes un ayudante con llave, copias el contenido y lo guardas fuera.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    V[(volumen datos-rutaflow)] --> A[alpine tar czf]
+    A --> T[datos-rutaflow.tgz en el host]
+    T --> B[alpine tar xzf]
+    B --> N[(volumen nuevo)]
+    N --> P[postgres:17 restaurado]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir respaldo-volumenes && cd respaldo-volumenes
+```
+
+Crea `respaldo.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Operación diaria de un contenedor con volumen: inspeccionar, medir, respaldar y restaurar
+set -euo pipefail
+
+docker volume create datos-rutaflow >/dev/null
+docker run -d --name bd-rutaflow -e POSTGRES_PASSWORD=dev -v datos-rutaflow:/var/lib/postgresql/data postgres:17 >/dev/null
+until docker exec bd-rutaflow pg_isready -U postgres >/dev/null 2>&1; do sleep 1; done
+docker exec bd-rutaflow psql -U postgres -qc "CREATE TABLE entrega(guia text); INSERT INTO entrega VALUES ('BO-1'),('BO-2');"
+
+echo "--- inspección: dónde vive el volumen y con qué imagen corre"
+docker inspect bd-rutaflow --format '{{.Config.Image}} {{range .Mounts}}{{.Name}} -> {{.Destination}}{{end}}'
+echo "--- consumo instantáneo"
+docker stats --no-stream --format '{{.Name}} CPU={{.CPUPerc}} MEM={{.MemUsage}}' bd-rutaflow
+
+echo "--- respaldo del volumen con un contenedor auxiliar (la BD se detiene para un respaldo consistente)"
+docker stop bd-rutaflow >/dev/null
+docker run --rm -v datos-rutaflow:/origen:ro -v "$(pwd)":/respaldo alpine tar czf /respaldo/datos-rutaflow.tgz -C /origen .
+ls -lh datos-rutaflow.tgz | awk '{print $5, $9}'
+
+echo "--- desastre: se borran el contenedor y el volumen"
+docker rm bd-rutaflow >/dev/null && docker volume rm datos-rutaflow >/dev/null
+
+echo "--- restauración en un volumen nuevo"
+docker volume create datos-rutaflow >/dev/null
+docker run --rm -v datos-rutaflow:/destino -v "$(pwd)":/respaldo alpine tar xzf /respaldo/datos-rutaflow.tgz -C /destino
+docker run -d --name bd-rutaflow -e POSTGRES_PASSWORD=dev -v datos-rutaflow:/var/lib/postgresql/data postgres:17 >/dev/null
+until docker exec bd-rutaflow pg_isready -U postgres >/dev/null 2>&1; do sleep 1; done
+docker exec bd-rutaflow psql -U postgres -Atc "SELECT count(*) || ' entregas restauradas' FROM entrega;"
+
+docker rm -f bd-rutaflow >/dev/null && docker volume rm datos-rutaflow >/dev/null
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+bash respaldo.sh
+docker events --since 10m --filter type=container --format '{{.Action}} {{.Actor.Attributes.name}}' --until "$(date +%s)"
+```
+
+**Resultado esperado:**
+
+```text
+--- inspección: dónde vive el volumen y con qué imagen corre
+postgres:17 datos-rutaflow -> /var/lib/postgresql/data
+--- consumo instantáneo
+bd-rutaflow CPU=0.05% MEM=38.2MiB / 7.6GiB
+--- respaldo del volumen con un contenedor auxiliar (la BD se detiene para un respaldo consistente)
+6.5M datos-rutaflow.tgz
+--- desastre: se borran el contenedor y el volumen
+--- restauración en un volumen nuevo
+2 entregas restauradas
+```
+
+Los valores de CPU, memoria y tamaño del respaldo dependen de tu equipo. La línea final confirma que las 2 entregas sobrevivieron al borrado del volumen. `docker events` lista las acciones de los últimos 10 minutos (`create`, `start`, `stop`, `destroy`…).
+
+**Fallo deliberado:** En el respaldo quita `:ro` y cambia `-C /origen .` por `-C /origen/no-existe .`. El contenedor auxiliar falla con un mensaje de `tar` indicando que no encuentra el directorio, y como el script usa `set -euo pipefail` se detiene **antes** de borrar el volumen. Sin `set -e`, el script habría seguido y borrado los datos sin respaldo válido: verifica siempre el respaldo antes de destruir el original.
+
+#### Paso 5 · Práctica guiada
+Agrega al script una verificación de que el archivo `.tgz` no está vacío antes de borrar el volumen. **Pista:** usa `test -s datos-rutaflow.tgz` y además `tar tzf datos-rutaflow.tgz | head` para comprobar que se puede listar.
+
+#### Paso 6 · Práctica independiente
+Reemplaza el respaldo en frío por un `pg_dump` en caliente (`docker exec bd-rutaflow pg_dump -U postgres > respaldo.sql`) y compara tiempos, tamaño y en qué casos usarías cada uno.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque un respaldo que nunca se restauró no es un respaldo, y saber inspeccionar y auditar contenedores acorta cualquier incidente.
+**Fuente oficial:** [Docker Docs: Back up, restore, or migrate data volumes](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes), [docker events](https://docs.docker.com/reference/cli/docker/system/events/).
+**Conceptos clave:** `docker inspect --format`, `docker stats`, `docker events`, contenedor auxiliar, respaldo en frío, restauración verificada, `set -euo pipefail`.
+**Cuándo no usarlo:** en la nube, usa los respaldos administrados del proveedor (snapshots de volúmenes, RDS) en lugar de scripts propios; el script sirve para entornos locales y de pruebas.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un respaldo verificado del volumen de la base de datos de pruebas antes de cada despliegue.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir la imagen de una API propia en una sola etapa, medir su tamaño, reescribirla como multi-stage con una imagen base optimizada, y comparar ambos resultados.

@@ -295,6 +295,168 @@ Entrega tests de hit/miss/invalidation, métrica y tabla de decisión Caffeine v
 Referencia: [Spring Boot — Task Execution and Scheduling](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html), [Spring Framework — Cache Abstraction](https://docs.spring.io/spring-framework/reference/integration/cache.html), [Spring Framework — Email](https://docs.spring.io/spring-framework/reference/integration/email.html).
 **Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
+### Tema 5: @Async y ejecutores: trabajo en segundo plano con límites
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás ejecutar métodos en segundo plano con `@Async`, definir un ejecutor con límites explícitos, devolver `CompletableFuture` y diagnosticar por qué `@Async` a veces "no hace nada". Prerrequisitos: Temas 1 y 2 de este módulo y el módulo de concurrencia del track Java.
+
+#### Paso 2 · Contexto y caso real
+Al registrar un envío, el backend de RutaFlow enviaba un SMS al destinatario y la petición tardaba lo que tardara el proveedor. Mover esa tarea a segundo plano es el caso real más común de `@Async`; hacerlo con un pool sin límites es la forma más común de tumbar el servidor en un pico de tráfico.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Con `@EnableAsync`, Spring envuelve los beans que tienen métodos `@Async` en un **proxy**: la llamada se entrega a un `Executor` y regresa de inmediato. Si el método devuelve `CompletableFuture`, quien llama puede esperar o combinar resultados. Un `ThreadPoolTaskExecutor` con tamaño y cola definidos pone límites. Como funciona con proxies, una llamada **desde la misma clase** (`this.enviarSms()`) no pasa por el proxy y se ejecuta de forma síncrona. Las excepciones de métodos `void` no llegan a quien llama.
+
+**Analogía:** `@Async` es dejar la carta en el buzón en vez de llevarla tú; el ejecutor es el número de carteros: si hay infinitos, la oficina colapsa.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+    participant T as Prueba
+    participant P as Proxy de NotificacionService
+    participant E as Ejecutor notif-
+    T->>P: enviarSms(G-1..G-4)
+    P->>E: encola 4 tareas
+    P-->>T: 4 CompletableFuture
+    E-->>T: completan en paralelo
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir spring-async && cd spring-async
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+unzip -q app.zip
+```
+
+Crea `src/main/java/com/example/demo/AsyncConfig.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
+
+@Configuration
+@EnableAsync
+public class AsyncConfig {
+    // Pool acotado y con nombre: límites explícitos en vez de hilos ilimitados
+    @Bean("notificaciones")
+    public Executor notificaciones() {
+        ThreadPoolTaskExecutor ejecutor = new ThreadPoolTaskExecutor();
+        ejecutor.setCorePoolSize(4);
+        ejecutor.setMaxPoolSize(4);
+        ejecutor.setQueueCapacity(100);
+        ejecutor.setThreadNamePrefix("notif-");
+        ejecutor.initialize();
+        return ejecutor;
+    }
+}
+```
+
+Crea `src/main/java/com/example/demo/NotificacionService.java`:
+
+```java
+package com.example.demo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
+
+@Service
+public class NotificacionService {
+    private static final Logger log = LoggerFactory.getLogger(NotificacionService.class);
+
+    // Se ejecuta en un hilo del pool "notificaciones", no en el hilo de la petición
+    @Async("notificaciones")
+    public CompletableFuture<String> enviarSms(String guia) throws InterruptedException {
+        Thread.sleep(300);                          // simula la latencia del proveedor de SMS
+        log.info("SMS de {} enviado en {}", guia, Thread.currentThread().getName());
+        return CompletableFuture.completedFuture(guia);
+    }
+}
+```
+
+Crea `src/test/java/com/example/demo/NotificacionServiceTest.java`:
+
+```java
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+class NotificacionServiceTest {
+
+    @Autowired
+    NotificacionService servicio;
+
+    @Test
+    void cuatroSmsEnParaleloTardanComoUno() throws Exception {
+        Instant inicio = Instant.now();
+        List<CompletableFuture<String>> envios = List.of(
+                servicio.enviarSms("G-1"), servicio.enviarSms("G-2"),
+                servicio.enviarSms("G-3"), servicio.enviarSms("G-4"));
+        CompletableFuture.allOf(envios.toArray(CompletableFuture[]::new)).join();
+        long ms = Duration.between(inicio, Instant.now()).toMillis();
+
+        System.out.println("4 SMS en " + ms + " ms");
+        assertThat(ms).isLessThan(1000);          // en serie serían unos 1200 ms
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:**
+
+```text
+4 SMS en 312 ms
+...
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+El tiempo exacto varía, pero queda cerca de 300 ms porque las cuatro tareas corren en paralelo en hilos llamados `notif-1` a `notif-4` (míralos en el log). En serie serían unos 1 200 ms.
+
+**Fallo deliberado:** Quita `@EnableAsync` de `AsyncConfig`. No hay error de compilación ni de arranque, pero la prueba falla: los cuatro SMS se ejecutan uno tras otro en el hilo de la prueba y tardan más de 1 000 ms. Sin `@EnableAsync` la anotación `@Async` se ignora en silencio.
+
+#### Paso 5 · Práctica guiada
+Llama `enviarSms` desde otro método de la misma clase `NotificacionService` y demuestra con el nombre del hilo en el log que esa llamada no fue asíncrona. **Pista:** agrega `enviarLote(List<String> guias)` en el mismo servicio, llama desde ahí a `enviarSms` y compara `Thread.currentThread().getName()`.
+
+#### Paso 6 · Práctica independiente
+Configura un `AsyncUncaughtExceptionHandler` para los métodos `@Async` que devuelven `void` y una política de rechazo para cuando la cola de 100 se llene. Prueba ambos casos.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque el trabajo en segundo plano mejora la latencia, pero sin límites ni manejo de errores provoca pérdidas silenciosas y caídas.
+**Fuente oficial:** [Spring Framework: Task Execution and Scheduling](https://docs.spring.io/spring-framework/reference/integration/scheduling.html), [Spring Boot: Task Execution](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html).
+**Conceptos clave:** `@EnableAsync`, `@Async`, proxy, `ThreadPoolTaskExecutor`, cola acotada, `CompletableFuture`, auto-invocación, excepciones no capturadas.
+**Cuándo no usarlo:** si la tarea debe sobrevivir a un reinicio o reintentarse, usa una cola de mensajes (Kafka, RabbitMQ) o un outbox: `@Async` vive en la memoria del proceso y se pierde si cae. Con Java 21+ también puedes evaluar hilos virtuales (`spring.threads.virtual.enabled`).
+
+**Transferencia al proyecto integrador «Backend profesional de entregas»:** envía las notificaciones push de entregas con `@Async` y un ejecutor acotado, y registra las fallas.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Ampliación de la página 28 del PDF
 
 ### Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo

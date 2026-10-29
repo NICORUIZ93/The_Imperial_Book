@@ -122,6 +122,24 @@
         "fragment": "tema-6-animatedcontent-y-animationspec-especifican-transiciones-completas"
       }
     ],
+    "15": [
+      {
+        "title": "Intents implícitos y Activity Result API",
+        "fragment": "tema-1-intents-implicitos-y-activity-result-api"
+      },
+      {
+        "title": "BroadcastReceiver: reaccionar a eventos del sistema",
+        "fragment": "tema-2-broadcastreceiver-reaccionar-a-eventos-del-sistema"
+      },
+      {
+        "title": "Foreground Service de ubicación con FusedLocationProvider",
+        "fragment": "tema-3-foreground-service-de-ubicacion-con-fusedlocationprovider"
+      },
+      {
+        "title": "Compartir archivos con FileProvider y content://",
+        "fragment": "tema-4-compartir-archivos-con-fileprovider-y-content"
+      }
+    ],
     "2": [
       {
         "title": "Composables y recomposición",
@@ -282,6 +300,10 @@
       {
         "title": "Directivas y pipes personalizados",
         "fragment": "tema-6-directivas-y-pipes-personalizados"
+      },
+      {
+        "title": "Pipes puros e impuros, AsyncPipe y signals",
+        "fragment": "tema-7-pipes-puros-e-impuros-asyncpipe-y-signals"
       }
     ],
     "10": [
@@ -296,6 +318,10 @@
       {
         "title": "Mockear HttpClient y el nuevo builder basado en Vitest",
         "fragment": "tema-3-mockear-httpclient-y-el-nuevo-builder-basado-en-vitest"
+      },
+      {
+        "title": "Angular Material y CDK: componentes accesibles probados con harnesses",
+        "fragment": "tema-4-angular-material-y-cdk-componentes-accesibles-probados-con-harnesses"
       }
     ],
     "11": [
@@ -1276,6 +1302,14 @@
       {
         "title": "NGINX y proxies desde cero",
         "fragment": "tema-9-nginx-y-proxies-desde-cero"
+      },
+      {
+        "title": "Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
+        "fragment": "tema-10-usuarios-grupos-permisos-compartidos-y-sudo-con-minimo-privilegio"
+      },
+      {
+        "title": "systemd: servicios, timers y logs con journalctl",
+        "fragment": "tema-11-systemd-servicios-timers-y-logs-con-journalctl"
       }
     ],
     "1": [
@@ -1350,6 +1384,10 @@
       {
         "title": "SAST, DAST y SCA — diferencias y herramientas",
         "fragment": "tema-6-sast-dast-y-sca-diferencias-y-herramientas"
+      },
+      {
+        "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
+        "fragment": "tema-7-reconocimiento-de-tu-propio-laboratorio-escaneo-de-puertos-y-banners"
       }
     ],
     "12": [
@@ -1486,6 +1524,10 @@
       {
         "title": "Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor",
         "fragment": "tema-6-registries-docker-hub-aws-ecr-azure-container-registry-harbor"
+      },
+      {
+        "title": "Operación diaria: inspect, stats, events y respaldo de volúmenes",
+        "fragment": "tema-7-operacion-diaria-inspect-stats-events-y-respaldo-de-volumenes"
       }
     ],
     "3": [
@@ -1684,6 +1726,10 @@
       {
         "title": "Futures, async/await y colecciones funcionales",
         "fragment": "tema-3-futures-async-await-y-colecciones-funcionales"
+      },
+      {
+        "title": "Lints y estilo con analysis_options.yaml",
+        "fragment": "tema-4-lints-y-estilo-con-analysis-options-yaml"
       }
     ],
     "1": [
@@ -1726,6 +1772,10 @@
       {
         "title": "CI/CD con Codemagic o Fastlane",
         "fragment": "tema-3-ci-cd-con-codemagic-o-fastlane"
+      },
+      {
+        "title": "Entornos y flavors con --dart-define-from-file",
+        "fragment": "tema-4-entornos-y-flavors-con-dart-define-from-file"
       }
     ],
     "12": [
@@ -1856,6 +1906,10 @@
       {
         "title": "Formularios profesionales con Formz y Riverpod",
         "fragment": "tema-4-formularios-profesionales-con-formz-y-riverpod"
+      },
+      {
+        "title": "Inyección de dependencias con Riverpod: reemplazar implementaciones",
+        "fragment": "tema-5-inyeccion-de-dependencias-con-riverpod-reemplazar-implementaciones"
       }
     ],
     "5": [
@@ -1920,6 +1974,10 @@
       {
         "title": "Isolates — trabajo pesado sin congelar la interfaz",
         "fragment": "tema-4-isolates-trabajo-pesado-sin-congelar-la-interfaz"
+      },
+      {
+        "title": "CustomPainter: dibujar con Canvas sin repintar de más",
+        "fragment": "tema-5-custompainter-dibujar-con-canvas-sin-repintar-de-mas"
       }
     ],
     "9": [
@@ -1998,6 +2056,10 @@
       {
         "title": "Resiliencia y observabilidad orientadas a objetivos",
         "fragment": "tema-4-resiliencia-y-observabilidad-orientadas-a-objetivos"
+      },
+      {
+        "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
+        "fragment": "tema-5-tiempo-coordinacion-y-acuerdo-lamport-eleccion-de-lider-y-commit-en-dos-fases"
       }
     ],
     "11": [
@@ -2096,6 +2158,80 @@
         "fragment": "tema-17-plc-y-control-industrial-ciclo-de-scan-e-iec-61131-3"
       }
     ],
+    "13": [
+      {
+        "title": "Ordenamientos: insertion, merge y quick sort",
+        "fragment": "tema-1-ordenamientos-insertion-merge-y-quick-sort"
+      },
+      {
+        "title": "Algoritmos codiciosos y árbol de expansión mínima",
+        "fragment": "tema-2-algoritmos-codiciosos-y-arbol-de-expansion-minima"
+      },
+      {
+        "title": "Caminos más cortos con Dijkstra",
+        "fragment": "tema-3-caminos-mas-cortos-con-dijkstra"
+      },
+      {
+        "title": "Búsqueda en cadenas: de la fuerza bruta a KMP",
+        "fragment": "tema-4-busqueda-en-cadenas-de-la-fuerza-bruta-a-kmp"
+      },
+      {
+        "title": "Problemas intratables: P, NP y heurísticas",
+        "fragment": "tema-5-problemas-intratables-p-np-y-heuristicas"
+      }
+    ],
+    "14": [
+      {
+        "title": "Decorator: agregar comportamiento sin heredar",
+        "fragment": "tema-1-decorator-agregar-comportamiento-sin-heredar"
+      },
+      {
+        "title": "State: un objeto que cambia de comportamiento según su estado",
+        "fragment": "tema-2-state-un-objeto-que-cambia-de-comportamiento-segun-su-estado"
+      },
+      {
+        "title": "Template Method: un algoritmo fijo con pasos variables",
+        "fragment": "tema-3-template-method-un-algoritmo-fijo-con-pasos-variables"
+      },
+      {
+        "title": "Chain of Responsibility: una cadena de validadores",
+        "fragment": "tema-4-chain-of-responsibility-una-cadena-de-validadores"
+      },
+      {
+        "title": "Mediator: coordinar objetos sin que se conozcan",
+        "fragment": "tema-5-mediator-coordinar-objetos-sin-que-se-conozcan"
+      },
+      {
+        "title": "Memento: guardar y restaurar estado para deshacer",
+        "fragment": "tema-6-memento-guardar-y-restaurar-estado-para-deshacer"
+      },
+      {
+        "title": "Visitor: operaciones nuevas sin tocar las clases",
+        "fragment": "tema-7-visitor-operaciones-nuevas-sin-tocar-las-clases"
+      },
+      {
+        "title": "Flyweight: compartir estado para ahorrar memoria",
+        "fragment": "tema-8-flyweight-compartir-estado-para-ahorrar-memoria"
+      }
+    ],
+    "15": [
+      {
+        "title": "Nombres que revelan intención y funciones pequeñas",
+        "fragment": "tema-1-nombres-que-revelan-intencion-y-funciones-pequenas"
+      },
+      {
+        "title": "Comentarios honestos y excepciones en lugar de códigos de error",
+        "fragment": "tema-2-comentarios-honestos-y-excepciones-en-lugar-de-codigos-de-error"
+      },
+      {
+        "title": "Objetos frente a estructuras de datos y la ley de Demeter",
+        "fragment": "tema-3-objetos-frente-a-estructuras-de-datos-y-la-ley-de-demeter"
+      },
+      {
+        "title": "Pruebas limpias: F.I.R.S.T. y un concepto por prueba",
+        "fragment": "tema-4-pruebas-limpias-f-i-r-s-t-y-un-concepto-por-prueba"
+      }
+    ],
     "2": [
       {
         "title": "Elegir estructuras según las operaciones",
@@ -2164,6 +2300,18 @@
       {
         "title": "Transacciones, concurrencia y elección SQL/NoSQL",
         "fragment": "tema-4-transacciones-concurrencia-y-eleccion-sql-nosql"
+      },
+      {
+        "title": "SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
+        "fragment": "tema-5-sql-avanzado-subconsultas-vistas-triggers-y-funciones-de-ventana"
+      },
+      {
+        "title": "Procedimientos almacenados, funciones y cursores con PL/pgSQL",
+        "fragment": "tema-6-procedimientos-almacenados-funciones-y-cursores-con-pl-pgsql"
+      },
+      {
+        "title": "De SQL a Excel: reportes con tablas y fórmulas vivas",
+        "fragment": "tema-7-de-sql-a-excel-reportes-con-tablas-y-formulas-vivas"
       }
     ],
     "5": [
@@ -2200,6 +2348,10 @@
       {
         "title": "Validación, vulnerabilidades web, privacidad y respuesta",
         "fragment": "tema-4-validacion-vulnerabilidades-web-privacidad-y-respuesta"
+      },
+      {
+        "title": "Ingeniería social y phishing: detectar señales en enlaces y remitentes",
+        "fragment": "tema-5-ingenieria-social-y-phishing-detectar-senales-en-enlaces-y-remitentes"
       }
     ],
     "7": [
@@ -2236,6 +2388,10 @@
       {
         "title": "Contenedores: aislamiento reproducible",
         "fragment": "tema-4-contenedores-aislamiento-reproducible"
+      },
+      {
+        "title": "Problemas clásicos de concurrencia: filósofos y lectores-escritores",
+        "fragment": "tema-5-problemas-clasicos-de-concurrencia-filosofos-y-lectores-escritores"
       }
     ],
     "9": [
@@ -2700,6 +2856,36 @@
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
       }
     ],
+    "19": [
+      {
+        "title": "Reflexión y anotaciones en tiempo de ejecución",
+        "fragment": "tema-1-reflexion-y-anotaciones-en-tiempo-de-ejecucion"
+      },
+      {
+        "title": "Expresiones regulares con Pattern y Matcher",
+        "fragment": "tema-2-expresiones-regulares-con-pattern-y-matcher"
+      },
+      {
+        "title": "Dinero exacto con BigDecimal",
+        "fragment": "tema-3-dinero-exacto-con-bigdecimal"
+      },
+      {
+        "title": "Assertions y diseño por contrato",
+        "fragment": "tema-4-assertions-y-diseno-por-contrato"
+      },
+      {
+        "title": "ServiceLoader: plugins sin acoplar implementaciones",
+        "fragment": "tema-5-serviceloader-plugins-sin-acoplar-implementaciones"
+      },
+      {
+        "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
+        "fragment": "tema-6-proxies-dinamicos-asi-funcionan-transactional-y-los-mocks"
+      },
+      {
+        "title": "Internacionalización: números, monedas, fechas y orden de texto",
+        "fragment": "tema-7-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
+      }
+    ],
     "2": [
       {
         "title": "List, Set, Map y sus implementaciones",
@@ -2880,6 +3066,10 @@
       {
         "title": "IIFE y el objeto arguments",
         "fragment": "tema-5-iife-y-el-objeto-arguments"
+      },
+      {
+        "title": "Desestructuración, valores por defecto y rest",
+        "fragment": "tema-6-desestructuracion-valores-por-defecto-y-rest"
       }
     ],
     "10": [
@@ -2920,6 +3110,14 @@
       {
         "title": "tsconfig esencial y modo strict",
         "fragment": "tema-4-tsconfig-esencial-y-modo-strict"
+      },
+      {
+        "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+        "fragment": "tema-5-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
+      },
+      {
+        "title": "Decoradores estándar de TypeScript 5",
+        "fragment": "tema-6-decoradores-estandar-de-typescript-5"
       }
     ],
     "12": [
@@ -3058,6 +3256,10 @@
       {
         "title": "Encapsulación con campos privados (#campo)",
         "fragment": "tema-4-encapsulacion-con-campos-privados-campo"
+      },
+      {
+        "title": "Symbol y objetos iterables propios",
+        "fragment": "tema-5-symbol-y-objetos-iterables-propios"
       }
     ],
     "4": [
@@ -3486,6 +3688,14 @@
       {
         "title": "Scripts de ciclo de vida",
         "fragment": "tema-4-scripts-de-ciclo-de-vida"
+      },
+      {
+        "title": "Publicar y versionar un paquete npm (público o privado)",
+        "fragment": "tema-5-publicar-y-versionar-un-paquete-npm-publico-o-privado"
+      },
+      {
+        "title": "ESM y CommonJS en el mismo proyecto",
+        "fragment": "tema-6-esm-y-commonjs-en-el-mismo-proyecto"
       }
     ],
     "10": [
@@ -3504,6 +3714,10 @@
       {
         "title": "OWASP API Security Top 10 y auditoría de dependencias",
         "fragment": "tema-4-owasp-api-security-top-10-y-auditoria-de-dependencias"
+      },
+      {
+        "title": "CVE, CWE y npm audit en el pipeline",
+        "fragment": "tema-5-cve-cwe-y-npm-audit-en-el-pipeline"
       }
     ],
     "11": [
@@ -3736,6 +3950,10 @@
       {
         "title": "node:test — test runner nativo sin dependencias",
         "fragment": "tema-5-node-test-test-runner-nativo-sin-dependencias"
+      },
+      {
+        "title": "TDD práctico: rojo, verde y refactor con node:test",
+        "fragment": "tema-6-tdd-practico-rojo-verde-y-refactor-con-node-test"
       }
     ],
     "8": [
@@ -4374,6 +4592,14 @@
       {
         "title": "Manejo centralizado de errores con @ControllerAdvice",
         "fragment": "tema-3-manejo-centralizado-de-errores-con-controlleradvice"
+      },
+      {
+        "title": "Lombok y MapStruct sin exponer datos internos",
+        "fragment": "tema-4-lombok-y-mapstruct-sin-exponer-datos-internos"
+      },
+      {
+        "title": "OpenAPI con springdoc: el contrato como prueba",
+        "fragment": "tema-5-openapi-con-springdoc-el-contrato-como-prueba"
       }
     ],
     "20": [
@@ -4392,6 +4618,10 @@
       {
         "title": "Caché con Spring Cache, Caffeine y Redis",
         "fragment": "tema-4-cache-con-spring-cache-caffeine-y-redis"
+      },
+      {
+        "title": "@Async y ejecutores: trabajo en segundo plano con límites",
+        "fragment": "tema-5-async-y-ejecutores-trabajo-en-segundo-plano-con-limites"
       },
       {
         "title": "Integraciones empresariales, SOAP y fronteras de protocolo",

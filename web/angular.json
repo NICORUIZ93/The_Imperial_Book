@@ -31,6 +31,17 @@
               }
             ],
             "styles": [
+              "node_modules/@fontsource/fira-sans/latin-300.css",
+              "node_modules/@fontsource/fira-sans/latin-400.css",
+              "node_modules/@fontsource/fira-sans/latin-400-italic.css",
+              "node_modules/@fontsource/fira-sans/latin-500.css",
+              "node_modules/@fontsource/fira-sans/latin-600.css",
+              "node_modules/@fontsource/fira-sans/latin-700.css",
+              "node_modules/@fontsource/fira-sans-condensed/latin-500.css",
+              "node_modules/@fontsource/fira-sans-condensed/latin-600.css",
+              "node_modules/@fontsource/fira-sans-condensed/latin-700.css",
+              "node_modules/@fontsource/fira-mono/latin-400.css",
+              "node_modules/@fontsource/fira-mono/latin-500.css",
               "src/styles.scss"
             ],
             "allowedCommonJsDependencies": [

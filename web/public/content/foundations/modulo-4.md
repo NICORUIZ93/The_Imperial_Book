@@ -559,6 +559,411 @@ flowchart LR
     ADD -. "fallo" .-> ROLLBACK
 ```
 
+### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás escribir subconsultas en WHERE, SELECT y FROM, guardar consultas como vistas, automatizar reglas con triggers y ordenar dentro de grupos con funciones de ventana. Prerrequisitos: Temas 2 y 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+RutaFlow necesita un tablero por mensajero, la efectividad por zona y una auditoría de cada cambio de estado que nadie pueda olvidar registrar. Es el caso real de casi todo sistema con base de datos: la lógica que debe cumplirse siempre, sin importar qué aplicación escriba en la tabla, vive cerca de los datos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una **subconsulta** es un `SELECT` dentro de otro: en `WHERE` filtra contra un valor calculado, en `SELECT` calcula una columna (si depende de la fila exterior es **correlacionada**) y en `FROM` actúa como tabla temporal. Una **vista** es una consulta guardada con nombre. Un **trigger** se ejecuta solo, antes o después de un `INSERT`, `UPDATE` o `DELETE`. Una **función de ventana** (`RANK() OVER (PARTITION BY ...)`) calcula sobre un grupo sin colapsar las filas como hace `GROUP BY`.
+
+Los **procedimientos almacenados** son programas guardados en el motor (`CREATE PROCEDURE` en PostgreSQL, MySQL u Oracle con PL/SQL). SQLite no los tiene; allí esa lógica vive en la aplicación o en triggers.
+
+**Analogía:** una vista es un atajo guardado en el escritorio; un trigger es la alarma de una puerta, que suena sin que nadie tenga que acordarse de activarla.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    U[UPDATE estado] --> B{trigger BEFORE no_revertir}
+    B -- entregada --> X[ABORT]
+    B -- ok --> W[se escribe la fila]
+    W --> A[trigger AFTER auditar_estado]
+    A --> T[(auditoria)]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir sql-avanzado && cd sql-avanzado
+```
+
+Crea `sql_avanzado.py`:
+
+```python
+import sqlite3
+
+db = sqlite3.connect(":memory:")
+db.executescript("""
+CREATE TABLE mensajero (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, zona TEXT NOT NULL);
+CREATE TABLE entrega (
+  id INTEGER PRIMARY KEY,
+  mensajero_id INTEGER NOT NULL REFERENCES mensajero(id),
+  kilos REAL NOT NULL,
+  estado TEXT NOT NULL CHECK (estado IN ('pendiente', 'entregada', 'fallida'))
+);
+CREATE TABLE auditoria (entrega_id INTEGER, antes TEXT, despues TEXT);
+
+INSERT INTO mensajero VALUES (1, 'Ana', 'Norte'), (2, 'Beto', 'Sur'), (3, 'Caro', 'Norte');
+INSERT INTO entrega VALUES
+  (10, 1, 2.0, 'entregada'), (11, 1, 8.5, 'entregada'), (12, 2, 1.0, 'fallida'),
+  (13, 2, 3.0, 'entregada'), (14, 3, 12.0, 'pendiente'), (15, 3, 4.0, 'entregada');
+
+-- Vista: una consulta guardada con nombre, se consulta como si fuera una tabla
+CREATE VIEW resumen_mensajero AS
+SELECT m.nombre, m.zona, COUNT(e.id) AS total,
+       SUM(e.estado = 'entregada') AS entregadas
+FROM mensajero m LEFT JOIN entrega e ON e.mensajero_id = m.id
+GROUP BY m.id;
+
+-- Trigger de auditoría: se ejecuta solo, después de cada cambio de estado
+CREATE TRIGGER auditar_estado AFTER UPDATE OF estado ON entrega
+BEGIN
+  INSERT INTO auditoria VALUES (OLD.id, OLD.estado, NEW.estado);
+END;
+
+-- Trigger de regla de negocio: una entrega entregada no vuelve atrás
+CREATE TRIGGER no_revertir BEFORE UPDATE OF estado ON entrega
+WHEN OLD.estado = 'entregada'
+BEGIN
+  SELECT RAISE(ABORT, 'una entrega entregada no puede cambiar de estado');
+END;
+""")
+
+def mostrar(titulo, sql):
+    print(f"-- {titulo}")
+    for fila in db.execute(sql):
+        print("  ", fila)
+
+mostrar("Subconsulta en WHERE: entregas más pesadas que el promedio",
+        "SELECT id, kilos FROM entrega WHERE kilos > (SELECT AVG(kilos) FROM entrega)")
+mostrar("Subconsulta correlacionada en SELECT: entregas por mensajero",
+        "SELECT nombre, (SELECT COUNT(*) FROM entrega e WHERE e.mensajero_id = m.id) FROM mensajero m")
+mostrar("Subconsulta en FROM: zonas con efectividad",
+        """SELECT zona, ROUND(100.0 * SUM(entregadas) / SUM(total)) AS efectividad
+           FROM (SELECT * FROM resumen_mensajero) GROUP BY zona""")
+mostrar("Función de ventana: ranking de kilos dentro de cada mensajero",
+        """SELECT mensajero_id, id, kilos,
+                  RANK() OVER (PARTITION BY mensajero_id ORDER BY kilos DESC) AS puesto
+           FROM entrega""")
+
+db.execute("UPDATE entrega SET estado = 'entregada' WHERE id = 14")
+mostrar("Auditoría generada por el trigger", "SELECT * FROM auditoria")
+try:
+    db.execute("UPDATE entrega SET estado = 'fallida' WHERE id = 10")
+except sqlite3.IntegrityError as error:
+    print("Rechazado por trigger:", error)
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 sql_avanzado.py
+```
+
+**Resultado esperado:**
+
+```text
+-- Subconsulta en WHERE: entregas más pesadas que el promedio
+   (11, 8.5)
+   (14, 12.0)
+-- Subconsulta correlacionada en SELECT: entregas por mensajero
+   ('Ana', 2)
+   ('Beto', 2)
+   ('Caro', 2)
+-- Subconsulta en FROM: zonas con efectividad
+   ('Norte', 75.0)
+   ('Sur', 50.0)
+-- Función de ventana: ranking de kilos dentro de cada mensajero
+   (1, 11, 8.5, 1)
+   (1, 10, 2.0, 2)
+   (2, 13, 3.0, 1)
+   (2, 12, 1.0, 2)
+   (3, 14, 12.0, 1)
+   (3, 15, 4.0, 2)
+-- Auditoría generada por el trigger
+   (14, 'pendiente', 'entregada')
+Rechazado por trigger: una entrega entregada no puede cambiar de estado
+```
+
+El `UPDATE` de la entrega 14 pasó y quedó auditado sin que el programa insertara nada en `auditoria`. El segundo `UPDATE` lo detuvo el trigger `no_revertir`.
+
+**Fallo deliberado:** Borra la línea `WHEN OLD.estado = 'entregada'` del trigger `no_revertir`. Ahora **todo** cambio de estado se rechaza y el programa termina con `sqlite3.IntegrityError: una entrega entregada no puede cambiar de estado` en el `UPDATE` de la entrega 14, que era válido. Un trigger sin condición aplica a todas las filas: lee la condición antes de crearlo.
+
+#### Paso 5 · Práctica guiada
+Crea la vista `entregas_fallidas` con el nombre del mensajero y consúltala. **Pista:** es un `CREATE VIEW ... AS SELECT` con un `JOIN` entre `entrega` y `mensajero` y un `WHERE estado = 'fallida'`.
+
+#### Paso 6 · Práctica independiente
+Escribe la misma consulta de efectividad por zona sin subconsulta (solo con `JOIN` y `GROUP BY`) y compara el plan con `EXPLAIN QUERY PLAN`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque reportes, auditorías y reglas de integridad son trabajo diario de backend, y las funciones de ventana aparecen en casi toda entrevista de SQL.
+**Fuente oficial:** [SQLite: CREATE TRIGGER](https://www.sqlite.org/lang_createtrigger.html), [SQLite: Window Functions](https://www.sqlite.org/windowfunctions.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
+**Conceptos clave:** subconsulta, subconsulta correlacionada, vista, trigger BEFORE y AFTER, RAISE, función de ventana, procedimiento almacenado.
+**Cuándo no usarlo:** no metas toda la lógica de negocio en triggers: son invisibles para quien lee el código de la aplicación y difíciles de probar. Úsalos para auditoría e invariantes que deben cumplirse siempre.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una tabla de auditoría de tareas alimentada por un trigger y una vista con las tareas vencidas por responsable.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
+### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás escribir funciones y procedimientos almacenados en PL/pgSQL, recorrer resultados con un cursor, lanzar y capturar excepciones, y distinguir cuándo usar `SELECT` (funciones) y `CALL` (procedimientos). Prerrequisito: Tema 5 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+El cierre diario de RutaFlow resume las entregas por mensajero. Hacerlo desde la aplicación significaba traer miles de filas por la red. Los libros de Oracle PL/SQL de la biblioteca enseñan el caso real de los bancos y operadores logísticos: procesos por lotes que viven en la base de datos, junto a los datos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**PL/pgSQL** (equivalente de PL/SQL de Oracle) agrega variables, condiciones, bucles y manejo de errores a SQL. Una **función** (`CREATE FUNCTION ... RETURNS`) devuelve un valor y se usa dentro de consultas. Un **procedimiento** (`CREATE PROCEDURE`, PostgreSQL 11+) no devuelve valor, se invoca con `CALL` y puede controlar transacciones. Un **cursor** recorre un resultado fila a fila; el `FOR fila IN cursor LOOP` lo abre y lo cierra solo. `RAISE EXCEPTION` aborta con un mensaje y `EXCEPTION WHEN ...` lo captura. En Oracle, además, los subprogramas se agrupan en **paquetes** (especificación y cuerpo).
+
+**Analogía:** el procedimiento es una receta guardada en la cocina del restaurante: el mesero no trae los ingredientes a la mesa, pide el plato por su nombre.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    S[SELECT tarifa kilos] --> F[función: devuelve valor]
+    C[CALL cerrar_dia] --> P[procedimiento]
+    P --> K[cursor por mensajero]
+    K --> I[INSERT en cierre_diario]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir plpgsql && cd plpgsql
+```
+
+Crea `plpgsql.sql`:
+
+```sql
+-- Esquema mínimo de RutaFlow
+DROP TABLE IF EXISTS entrega, cierre_diario;
+CREATE TABLE entrega (
+  id serial PRIMARY KEY,
+  guia text UNIQUE NOT NULL,
+  mensajero text NOT NULL,
+  kilos numeric(6,2) NOT NULL CHECK (kilos > 0),
+  estado text NOT NULL DEFAULT 'pendiente'
+);
+CREATE TABLE cierre_diario (mensajero text PRIMARY KEY, entregadas int, kilos numeric(8,2));
+INSERT INTO entrega (guia, mensajero, kilos, estado) VALUES
+  ('BO-1', 'ana', 2.5, 'entregada'), ('BO-2', 'ana', 4, 'pendiente'),
+  ('BO-3', 'beto', 1, 'entregada'), ('BO-4', 'beto', 7.25, 'entregada');
+
+-- FUNCIÓN: devuelve un valor y se usa dentro de un SELECT
+CREATE OR REPLACE FUNCTION tarifa(p_kilos numeric) RETURNS integer
+LANGUAGE plpgsql IMMUTABLE AS $$
+BEGIN
+  IF p_kilos <= 0 THEN
+    RAISE EXCEPTION 'kilos debe ser positivo: %', p_kilos;
+  END IF;
+  RETURN 5000 + ceil(p_kilos) * 1200;
+END $$;
+
+-- PROCEDIMIENTO: ejecuta un proceso con un CURSOR y maneja errores por fila
+CREATE OR REPLACE PROCEDURE cerrar_dia()
+LANGUAGE plpgsql AS $$
+DECLARE
+  fila record;
+  c_mensajeros CURSOR FOR
+    SELECT mensajero, count(*) AS n, sum(kilos) AS k
+    FROM entrega WHERE estado = 'entregada' GROUP BY mensajero ORDER BY mensajero;
+BEGIN
+  DELETE FROM cierre_diario;
+  FOR fila IN c_mensajeros LOOP                       -- el FOR abre, recorre y cierra el cursor
+    INSERT INTO cierre_diario VALUES (fila.mensajero, fila.n, fila.k);
+    RAISE NOTICE 'cierre de %: % entregas, % kg', fila.mensajero, fila.n, fila.k;
+  END LOOP;
+END $$;
+
+SELECT guia, kilos, tarifa(kilos) AS tarifa FROM entrega ORDER BY guia;
+CALL cerrar_dia();
+SELECT * FROM cierre_diario ORDER BY mensajero;
+
+-- Manejo de excepciones dentro de un bloque anónimo
+DO $$
+BEGIN
+  PERFORM tarifa(0);
+EXCEPTION WHEN raise_exception THEN
+  RAISE NOTICE 'error controlado: %', SQLERRM;
+END $$;
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+docker run -d --name pg-academia -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres:17
+docker cp plpgsql.sql pg-academia:/tmp/
+docker exec pg-academia psql -U postgres -q -X -f /tmp/plpgsql.sql
+```
+
+**Resultado esperado:**
+
+```text
+psql:plpgsql.sql:2: NOTICE:  table "entrega" does not exist, skipping
+psql:plpgsql.sql:2: NOTICE:  table "cierre_diario" does not exist, skipping
+ guia | kilos | tarifa 
+------+-------+--------
+ BO-1 |  2.50 |   8600
+ BO-2 |  4.00 |   9800
+ BO-3 |  1.00 |   6200
+ BO-4 |  7.25 |  14600
+(4 rows)
+
+psql:plpgsql.sql:42: NOTICE:  cierre de ana: 1 entregas, 2.50 kg
+psql:plpgsql.sql:42: NOTICE:  cierre de beto: 2 entregas, 8.25 kg
+ mensajero | entregadas | kilos 
+-----------+------------+-------
+ ana       |          1 |  2.50
+ beto      |          2 |  8.25
+(2 rows)
+
+psql:plpgsql.sql:51: NOTICE:  error controlado: kilos debe ser positivo: 0
+```
+
+Los dos primeros avisos solo aparecen la primera vez, porque las tablas aún no existían. Con `docker rm -f pg-academia` borras el contenedor al terminar.
+
+**Fallo deliberado:** Ejecuta `docker exec pg-academia psql -U postgres -c "SELECT cerrar_dia();"`. PostgreSQL responde `ERROR:  cerrar_dia() is a procedure` con la pista de usar `CALL`. Funciones y procedimientos no son intercambiables: elige según si necesitas un valor o ejecutar un proceso.
+
+#### Paso 5 · Práctica guiada
+Crea la función `efectividad(p_mensajero text) RETURNS numeric` que devuelva el porcentaje de entregas exitosas y úsala en un `SELECT` por mensajero. **Pista:** usa `SELECT count(*) FILTER (WHERE estado = 'entregada') * 100.0 / count(*) INTO resultado FROM entrega WHERE mensajero = p_mensajero;` y protege la división cuando no haya entregas.
+
+#### Paso 6 · Práctica independiente
+Reescribe `cerrar_dia` sin cursor, con un solo `INSERT ... SELECT`, y compara legibilidad y rendimiento con `EXPLAIN ANALYZE` sobre 100 000 filas generadas con `generate_series`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque muchos sistemas empresariales (bancos, ERP, Oracle) concentran su lógica en procedimientos, y vas a mantenerlos o migrarlos.
+**Fuente oficial:** [PostgreSQL: PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
+**Conceptos clave:** PL/pgSQL, PL/SQL, función, procedimiento, `CALL`, cursor, `RAISE`, `EXCEPTION WHEN`, paquete de Oracle.
+**Cuándo no usarlo:** no pongas reglas de negocio complejas que cambian a menudo en la base de datos: son difíciles de versionar, probar y desplegar. Úsalos para procesos cercanos a los datos y por lotes.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** calcula el cierre diario de tareas por responsable con un procedimiento y compáralo con la versión en Python.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás generar desde una consulta SQL un archivo Excel con encabezados, una tabla con filtros, fórmulas que Excel recalcula y formato de porcentaje, y verificar el archivo leyéndolo de nuevo. Prerrequisitos: Temas 2 y 5 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Las áreas de operación y finanzas de RutaFlow viven en Excel: piden cada lunes el resumen por zona y lo copiaban a mano desde la base de datos. El libro *Excel y SQL de la mano* de la biblioteca trata este caso real: SQL agrupa y filtra, y Excel presenta y permite seguir analizando.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La regla es **dividir el trabajo**: la base de datos agrega (`GROUP BY`) y la hoja de cálculo presenta. `openpyxl` escribe archivos `.xlsx`: cada celda puede tener un valor o una **fórmula** (texto que empieza con `=`) que Excel calcula al abrir; una **tabla de Excel** (`Table`) agrega filtros y estilo y se puede referenciar por nombre. `openpyxl` **no calcula** fórmulas: al leer con `data_only=True` solo verás valores que Excel haya guardado.
+
+**Analogía:** SQL es la cocina que prepara el plato; Excel es el plato servido en la mesa, donde cada comensal puede agregar sal a su gusto.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    D[(SQLite)] --> Q[consulta GROUP BY]
+    Q --> W[openpyxl]
+    W --> X[reporte-entregas.xlsx]
+    X --> F[fórmulas y filtros en Excel]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir sql-excel && cd sql-excel
+```
+
+Crea `reporte_excel.py`:
+
+```python
+import sqlite3
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Font
+from openpyxl.worksheet.table import Table, TableStyleInfo
+
+db = sqlite3.connect(":memory:")
+db.executescript("""
+CREATE TABLE entrega (guia TEXT, zona TEXT, mensajero TEXT, kilos REAL, estado TEXT);
+INSERT INTO entrega VALUES
+ ('BO-1','Norte','Ana',2.5,'entregada'), ('BO-2','Norte','Ana',4,'fallida'),
+ ('BO-3','Sur','Beto',1,'entregada'),    ('BO-4','Sur','Beto',7.25,'entregada'),
+ ('BO-5','Norte','Caro',3,'entregada');
+""")
+
+# SQL hace el trabajo pesado (agrupar); Excel presenta, filtra y calcula sobre el resultado
+consulta = """
+SELECT zona, COUNT(*) AS envios,
+       SUM(estado = 'entregada') AS entregadas,
+       ROUND(SUM(kilos), 2) AS kilos
+FROM entrega GROUP BY zona ORDER BY zona
+"""
+cursor = db.execute(consulta)
+columnas = [c[0] for c in cursor.description]
+filas = cursor.fetchall()
+
+libro = Workbook()
+hoja = libro.active
+hoja.title = "Resumen por zona"
+hoja.append(columnas + ["efectividad"])
+for i, fila in enumerate(filas, start=2):
+    hoja.append(list(fila) + [f"=C{i}/B{i}"])        # fórmula viva: Excel la recalcula
+    hoja[f"E{i}"].number_format = "0%"
+for celda in hoja[1]:
+    celda.font = Font(bold=True)
+total = len(filas) + 2
+hoja[f"A{total}"] = "Total"
+hoja[f"B{total}"] = f"=SUM(B2:B{total - 1})"
+tabla = Table(displayName="ResumenZonas", ref=f"A1:E{total - 1}")
+tabla.tableStyleInfo = TableStyleInfo(name="TableStyleMedium9", showRowStripes=True)
+hoja.add_table(tabla)                                # tabla de Excel: filtros y estilo
+libro.save("reporte-entregas.xlsx")
+
+# Verificación: volver a leer el archivo generado
+leido = load_workbook("reporte-entregas.xlsx")["Resumen por zona"]
+for fila in leido.iter_rows(values_only=True):
+    print(fila)
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+pip install openpyxl
+python3 reporte_excel.py
+```
+
+**Resultado esperado:**
+
+```text
+('zona', 'envios', 'entregadas', 'kilos', 'efectividad')
+('Norte', 3, 2, 9.5, '=C2/B2')
+('Sur', 2, 2, 8.25, '=C3/B3')
+('Total', '=SUM(B2:B3)', None, None, None)
+```
+
+Las celdas de efectividad y total muestran la fórmula porque `openpyxl` no la calcula; al abrir el archivo en Excel o LibreOffice verás 67 %, 100 % y el total 5.
+
+**Fallo deliberado:** Cambia `displayName="ResumenZonas"` por `displayName="Resumen Zonas"`. El programa termina con `ValueError: Table names cannot have spaces`: los nombres de tabla de Excel siguen reglas de identificadores. Otra trampa frecuente: leer con `load_workbook(..., data_only=True)` devuelve `None` en las celdas con fórmula si el archivo nunca se abrió en Excel.
+
+#### Paso 5 · Práctica guiada
+Agrega una segunda hoja `Detalle` con todas las entregas, una fila por guía, y congela la fila de encabezados. **Pista:** crea la hoja con `libro.create_sheet("Detalle")`, vuelca `SELECT * FROM entrega` y usa `hoja.freeze_panes = "A2"`.
+
+#### Paso 6 · Práctica independiente
+Haz el camino inverso: lee un Excel de pedidos con columnas `guia`, `zona` y `kilos`, valida cada fila e insértala en SQLite, reportando las filas rechazadas.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque conectar datos con las herramientas que usa el negocio ahorra horas de trabajo manual y elimina errores de copiado.
+**Fuente oficial:** [openpyxl documentation](https://openpyxl.readthedocs.io/en/stable/), [openpyxl: Worksheet Tables](https://openpyxl.readthedocs.io/en/stable/worksheet_tables.html).
+**Conceptos clave:** agregar en SQL y presentar en Excel, `openpyxl`, fórmula, tabla de Excel, `number_format`, `data_only`.
+**Cuándo no usarlo:** si el reporte necesita actualizarse solo cada hora o lo usan muchas personas, un tablero conectado a la base de datos es mejor que archivos que se envían por correo.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** exporta cada semana las tareas por responsable a un Excel con filtros y porcentaje de cumplimiento.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Construcción guiada del capítulo
 
 ### Proyecto 4: migrar el inventario JSON a SQLite

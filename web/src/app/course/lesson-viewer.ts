@@ -305,17 +305,19 @@ export class LessonViewerComponent implements OnDestroy {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: 'strict',
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: '"Fira Sans", "Helvetica Neue", Arial, sans-serif',
           flowchart: { htmlLabels: true, curve: 'basis', padding: 10, nodeSpacing: 28, rankSpacing: 34 },
           sequence: { diagramMarginX: 24, diagramMarginY: 18, actorMargin: 48 },
           theme: 'base',
           themeVariables: {
-            primaryColor: this.themeService.isDark() ? '#173238' : '#dcedee',
-            primaryTextColor: this.themeService.isDark() ? '#e7eeee' : '#141b1f',
-            primaryBorderColor: this.themeService.isDark() ? '#4fc4bd' : '#0e6b74',
-            lineColor: this.themeService.isDark() ? '#4fc4bd' : '#0e6b74',
-            secondaryColor: this.themeService.isDark() ? '#2c2312' : '#f3e6d1',
-            tertiaryColor: this.themeService.isDark() ? '#161e22' : '#ffffff',
+            // Diagramas a tinta, como los del libro: cajas blancas con trazo
+            // oscuro, flechas finas y el rojo solo como acento secundario.
+            primaryColor: this.themeService.isDark() ? '#262626' : '#ffffff',
+            primaryTextColor: this.themeService.isDark() ? '#ebe9e4' : '#2d2d2d',
+            primaryBorderColor: this.themeService.isDark() ? '#b3b0a9' : '#2d2d2d',
+            lineColor: this.themeService.isDark() ? '#b3b0a9' : '#5f5f5f',
+            secondaryColor: this.themeService.isDark() ? '#3a2323' : '#fbeaea',
+            tertiaryColor: this.themeService.isDark() ? '#1f1f1f' : '#f6f6f4',
             fontSize: '12px',
           },
         });
@@ -564,9 +566,13 @@ export class LessonViewerComponent implements OnDestroy {
       list.className = 'session-steps';
       steps.forEach(step => {
         const li = document.createElement('li');
+        // data-step permite que la hoja de estilos dibuje el icono de línea de
+        // cada paso (objetivo, problema, solución, código...), como las
+        // secciones con icono del libro de patrones.
+        li.dataset['step'] = step.number;
         const stepHead = document.createElement('div');
         stepHead.className = 'step-head';
-        stepHead.innerHTML = `<b>${step.number.padStart(2, '0')}</b><em>${escapeHtml(step.label || `Paso ${step.number}`)}</em>`;
+        stepHead.innerHTML = `<i class="step-icon" aria-hidden="true"></i><b>${step.number.padStart(2, '0')}</b><em>${escapeHtml(step.label || `Paso ${step.number}`)}</em>`;
         const body = document.createElement('div');
         body.className = 'step-body';
         step.bodyNodes.forEach(bodyNode => body.appendChild(bodyNode));
