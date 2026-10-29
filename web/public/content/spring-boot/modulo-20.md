@@ -512,3 +512,164 @@ Dibuja adaptador SOAP → caso de uso → repositorio del proyecto integrador Sp
 
 #### Paso 7 · Cierre y evidencia
 Entrega archivo, salida, fallo y tabla REST/SOAP/SFTP/SMTP con contratos y garantías. **Errores comunes:** confundir prefijo con namespace, tratar HTTP 200 como éxito de negocio, presentar un archivo enviado como proceso completado. El siguiente paso es integrar un WSDL autorizado y verificar contrato real. **Fuente oficial:** [SOAP 1.2, W3C](https://www.w3.org/TR/soap12-part1/).
+
+
+## Aplicación del material de referencia
+
+### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar ejecutarás ChatClient contra un modelo controlado y un callback real de herramienta que rechaza un envío ajeno. **Prerrequisitos:** Java, interfaces, Maven, JUnit y autorización por recurso. JDK 25 y Maven. Ejemplo independiente desde carpeta vacía, con Spring AI 2.0.2 y Spring Boot 4.0.9; no usa claves, pagos ni llamadas a un modelo externo.
+
+#### Paso 2 · Contexto y caso real
+El asistente del proyecto integrador podría consultar el estado de una entrega. **¿Por qué es importante?** Un modelo puede proponer una llamada, pero la aplicación decide si está autorizada. Añadir la instrucción «consulta solo mis envíos» al prompt no sustituye ese control.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+ChatClient construye mensajes para un ChatModel sustituible. Una herramienta es una función con contrato y argumentos; el callback traduce la petición en ejecución de código de la aplicación. La salida del modelo no es una instrucción privilegiada ni una identidad. En una integración real, la identidad viene de la sesión del servidor y se aplica en el servicio que ejecuta la herramienta.
+
+**Analogía:** el modelo es quien propone una consulta al mostrador; el personal autorizado conserva las llaves. El límite es que la calidad del texto o la descripción de una herramienta no garantiza una decisión segura. Aquí probamos fronteras de software, no la precisión ni el comportamiento de un LLM.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/spring-ai ejemplo-spring-ai
+cd ejemplo-spring-ai
+mvn test -Dtest=ChatToolsTest
+```
+También puedes crear manualmente los archivos siguientes en una carpeta vacía. En ese caso, las rutas parten de esa carpeta: coloca el contenido de `spring-ai/pom.xml` en `pom.xml` y conserva `src/test/java/academia/ChatToolsTest.java`.
+
+Crea `spring-ai/pom.xml` con este contenido completo:
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.0.9</version><relativePath/></parent>
+  <groupId>academia</groupId><artifactId>spring-ai-lab</artifactId><version>1</version>
+  <properties><java.version>25</java.version></properties>
+  <dependencyManagement><dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-bom</artifactId><version>2.0.2</version><type>pom</type><scope>import</scope></dependency></dependencies></dependencyManagement>
+  <dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-client-chat</artifactId></dependency><dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency></dependencies>
+</project>
+```
+
+Crea `spring-ai/src/test/java/academia/ChatToolsTest.java` con este contenido completo:
+```java
+package academia;
+import org.junit.jupiter.api.Test;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ChatToolsTest {
+    static class Consulta {
+        @Tool(description = "Consulta el estado del envío autorizado de esta sesión")
+        public String estado(String envioId) {
+            if (!"ENV-42".equals(envioId)) throw new IllegalArgumentException("Sin permiso");
+            return "creado";
+        }
+    }
+    @Test void chatClientUsaElModeloSustituible() {
+        ChatModel modeloControlado = prompt -> {
+            assertTrue(prompt.getInstructions().stream().anyMatch(m -> m.getText().contains("ENV-42")));
+            return new ChatResponse(List.of(new Generation(new AssistantMessage("Estado: creado"))));
+        };
+        var client = ChatClient.builder(modeloControlado).build();
+        assertEquals("Estado: creado", client.prompt().user("Consulta ENV-42").call().content());
+    }
+    @Test void callbackRealRespetaLaFronteraDeAutorizacion() {
+        var callbacks = MethodToolCallbackProvider.builder().toolObjects(new Consulta()).build().getToolCallbacks();
+        assertEquals(1, callbacks.length);
+        assertTrue(callbacks[0].call("{\"envioId\":\"ENV-42\"}").contains("creado"));
+        assertThrows(RuntimeException.class, () -> callbacks[0].call("{\"envioId\":\"ENV-ajeno\"}"));
+    }
+}
+```
+
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: el modelo controlado comprueba que recibió ENV-42, ChatClient adapta la respuesta, @Tool expone una operación de lectura y el callback real rechaza ENV-ajeno. No se ha probado que un modelo real elija correctamente la herramienta: eso exige un proveedor, modelo y evaluación adicionales.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** quita la comprobación `ENV-42` dentro de `estado`. La prueba que exige excepción para ENV-ajeno falla. **Pista:** la descripción de @Tool no ejecuta autorización; restaura el control en el código de negocio.
+
+#### Paso 6 · Práctica independiente
+Sustituye el ID fijo por un conjunto de permisos inyectado desde una sesión de prueba. Comprueba dos identidades con permisos distintos sin aceptar la identidad como argumento propuesto por el modelo. Añade un límite de llamadas y un timeout para una herramienta remota.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** resultado de ambas pruebas, acceso ajeno rechazado y corrección. El siguiente tema estudia qué documentos puede recibir el modelo para construir su contexto. **Errores comunes:** conceder herramientas de escritura sin confirmación de negocio, confiar en argumentos como identidad y registrar prompts con datos sensibles. **Límites y decisión de uso:** no se han instalado agentes externos ni probado facturación, latencia, streaming o recuperación del proveedor; son controles distintos del adaptador y del callback.
+
+**Fuentes oficiales:** [ChatClient](https://docs.spring.io/spring-ai/reference/api/chatclient.html), [herramientas](https://docs.spring.io/spring-ai/reference/api/tools.html) y [compatibilidad de versiones](https://docs.spring.io/spring-ai/reference/getting-started.html).
+
+
+## Aplicación del material de referencia
+
+### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar comprobarás que el contexto recuperado no contiene documentación de otra empresa y que una consulta sin evidencia devuelve una colección vacía. **Prerrequisitos:** colecciones Java, metadatos, pruebas y el proyecto Spring AI del tema anterior. Para un ejemplo independiente copia `examples/rutaflow-material/spring-ai` a una carpeta vacía y usa su pom completo.
+
+#### Paso 2 · Contexto y caso real
+En el proyecto integrador dos empresas consultan políticas de reembolso. Una búsqueda relevante pero de la empresa equivocada sigue siendo una fuga. **¿Por qué es importante?** La autorización se debe aplicar antes de enviar documentos al modelo, no después de ver su respuesta.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un flujo RAG ingiere documentos, los divide con una política de tamaño/solapamiento, crea un índice, recupera fragmentos y construye contexto con referencias. Los embeddings representan contenido como vectores; un vector store busca por similitud y debe aplicar filtros de acceso. Relevancia semántica no significa autorización ni verdad.
+
+**Analogía:** consultar una biblioteca exige tanto encontrar una sección relevante como tener permiso para abrir el expediente. El límite es que un texto que contiene una palabra puede ser irrelevante, contradictorio o malicioso. Por eso este primer ejercicio usa recuperación léxica explícita, sin llamarla búsqueda vectorial ni fingir que un stub equivale a embeddings reales.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/spring-ai ejemplo-rag
+cd ejemplo-rag
+mvn test -Dtest=RagScopeTest
+```
+Crea el archivo siguiente bajo `src/test/java/academia/` del proyecto que contiene el pom del tema anterior:
+
+Crea `spring-ai/src/test/java/academia/RagScopeTest.java` con este contenido completo:
+```java
+package academia;
+import org.junit.jupiter.api.Test;
+import org.springframework.ai.document.Document;
+import java.util.List;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
+
+class RagScopeTest {
+    // Recuperador léxico didáctico: no simula embeddings ni búsqueda vectorial.
+    List<Document> recuperar(String empresaAutorizada, String termino, List<Document> corpus) {
+        if (termino.isBlank()) return List.of();
+        return corpus.stream()
+            .filter(d -> empresaAutorizada.equals(d.getMetadata().get("empresa")))
+            .filter(d -> d.getText().toLowerCase(java.util.Locale.ROOT)
+                .contains(termino.toLowerCase(java.util.Locale.ROOT)))
+            .limit(2).toList();
+    }
+    @Test void filtraAntesDeConstruirContexto() {
+        var corpus = List.of(
+            new Document("Reembolso: revisar comprobante", Map.of("empresa", "A")),
+            new Document("Reembolso secreto de B", Map.of("empresa", "B")));
+        var docs = recuperar("A", "reembolso", corpus);
+        assertEquals(1, docs.size());
+        assertFalse(docs.getFirst().getText().contains("secreto"));
+        assertEquals("A", docs.getFirst().getMetadata().get("empresa"));
+    }
+    @Test void sinEvidenciaNoSeInventaContexto() {
+        assertTrue(recuperar("A", "", List.of()).isEmpty());
+        assertTrue(recuperar("A", "factura", List.of(new Document("GPS", Map.of("empresa", "A")))).isEmpty());
+    }
+}
+```
+
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: Document conserva texto y metadatos, el tenant autorizado es una entrada confiable del servidor, se filtra antes de seleccionar contexto y se limita el número de resultados. El segundo test comprueba ausencia de evidencia; en la aplicación ese caso debe producir una respuesta explícita de insuficiencia, no inventar documentos.
+
+Para una segunda fase con embeddings y proveedor reales, conserva este mismo contrato de aislamiento y usa un VectorStore y QuestionAnswerAdvisor de Spring AI. Registra modelo de embeddings, dimensiones, versión del corpus, topK, umbral, IDs recuperados y coste. Construye un conjunto de preguntas con documentos relevantes conocidos; mide recuperación por separado de fidelidad de respuesta. Cambiar de modelo o de particionado puede exigir reindexar y volver a evaluar.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** elimina el filtro por empresa. El primer test recibe también el documento secreto y falla. **Pista:** no lo compenses añadiendo «ignora la empresa B» al prompt; restaura el filtro antes de construir contexto.
+
+#### Paso 6 · Práctica independiente
+Añade un documento autorizado que incluya una instrucción maliciosa y marca su contenido como dato no confiable. Diseña una prueba que impida que ese texto cambie permisos o herramientas. Añade preguntas sin respuesta y documentos contradictorios: define cuándo abstenerse o pedir revisión.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** contexto seleccionado, exclusión de otra empresa y vacío sin evidencia, con fallo/corrección. El siguiente paso exige ejecutar el índice vectorial real y evaluar el modelo; todavía no se acredita esa fase. **Errores comunes:** dar acceso al corpus entero, usar similitud como control de acceso y evaluar solo si la respuesta suena convincente. **Límites y decisión de uso:** estos tests validan contratos locales; no validan calidad semántica, resistencia completa a prompt injection ni cumplimiento regulatorio.
+
+**Fuente oficial:** [Spring AI RAG y QuestionAnswerAdvisor](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).

@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-29 19:15 UTC
+Generated: 2026-10-29 20:50 UTC
 Root: `The_Imperial_Book`
-Indexed files: 879
-Import edges: 51
+Indexed files: 900
+Import edges: 54
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -16,28 +16,28 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 56 files
-- `automation-script`: 30 files
+- `automation-script`: 31 files
 - `course-content`: 247 files
-- `documentation`: 49 files
-- `example`: 445 files
+- `documentation`: 51 files
+- `example`: 462 files
 - `local-infra`: 1 files
-- `project-file`: 51 files
+- `project-file`: 52 files
 
 ## File Types
 
-- `.md`: 302
-- `.py`: 152
+- `.md`: 305
+- `.py`: 157
 - `.ts`: 65
-- `.json`: 60
+- `.json`: 64
 - `.js`: 54
-- `.java`: 51
+- `.java`: 53
 - `.html`: 37
 - `.rs`: 25
 - `.go`: 24
-- `.dart`: 21
+- `.dart`: 22
 - `.swift`: 20
+- `.mjs`: 15
 - `.kt`: 13
-- `.mjs`: 9
 - `.yaml`: 9
 - `.scss`: 7
 - `.sh`: 6
@@ -51,9 +51,9 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (306 lines, documentation)
+- `README.md` (307 lines, documentation)
   - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
-- `scripts/validate.sh` (134 lines, automation-script)
+- `scripts/validate.sh` (135 lines, automation-script)
 - `scripts/build_repo_graph.py` (468 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -84,6 +84,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/node-federation/federation.test.mjs` -> `examples/node-federation/server.mjs`
 - `examples/professional-bridges/node/pagina.test.mjs` -> `examples/professional-bridges/node/pagina.mjs`
 - `examples/professional-bridges/rutaflow/contrato.test.mjs` -> `examples/professional-bridges/rutaflow/contrato.mjs`
+- `examples/rutaflow-material/payments/contrato.test.mjs` -> `examples/rutaflow-material/payments/contrato.mjs`
+- `examples/rutaflow-material/socketio/gateway.test.mjs` -> `examples/rutaflow-material/socketio/gateway.mjs`
+- `examples/rutaflow-material/socketio/serve.mjs` -> `examples/rutaflow-material/socketio/gateway.mjs`
 - `web/src/app/app.config.ts` -> `web/src/app/app.routes.ts`
 - `web/src/app/app.routes.ts` -> `web/src/app/catalog/course-catalog.ts`
 - `web/src/app/app.routes.ts` -> `web/src/app/course/course-shell.ts`
@@ -131,6 +134,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/command-palette.ts`: in=1, out=3
 - `web/src/app/app.ts`: in=2, out=1
 - `web/src/app/catalog/course-catalog.ts`: in=2, out=0
+- `examples/rutaflow-material/socketio/gateway.mjs`: in=2, out=0
 - `examples/javascript-master/src/ui/delivery-button.ts`: in=2, out=0
 - `examples/javascript-master/src/domain/delivery-status.ts`: in=2, out=0
 - `web/src/app/progress.service.ts`: in=1, out=1
@@ -142,7 +146,6 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/tracks/rutaflow.track.ts`: in=1, out=0
 - `web/src/app/tracks/react.track.ts`: in=1, out=0
 - `web/src/app/tracks/node.track.ts`: in=1, out=0
-- `web/src/app/tracks/kotlin-multiplatform.track.ts`: in=1, out=0
 
 ## Files By Area
 
@@ -172,7 +175,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ### automation-script
 
 - `scripts/audit_code_visual_quality.py` (138 lines) - symbols: student_visible_content, structural_text, blocks, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
-- `scripts/audit_course_depth.py` (101 lines) - symbols: signals, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
+- `scripts/audit_course_depth.py` (103 lines) - symbols: signals, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
 - `scripts/audit_seven_step_methodology.py` (181 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
@@ -188,8 +191,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/tests/test_editorial_validation.py` (90 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, fix_lessons
 - `scripts/validate-floci.sh` (43 lines)
-- `scripts/validate.sh` (134 lines)
-- ... 12 more files
+- `scripts/validate.sh` (135 lines)
+- ... 13 more files
 
 ### course-content
 
@@ -201,7 +204,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-10.md` (408 lines) - headings: # Módulo 10: Performance, Material 3 y accesibilidad, ## Aprende construyendo, ### Tema 1: Detectar y corregir recomposición innecesaria, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-11.md` (343 lines) - headings: # Módulo 11: Publicación en Google Play, ## Aprende construyendo, ### Tema 1: Firma de la app, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-12.md` (336 lines) - headings: # Módulo 12: Proyecto integrador: app Android completa, ## Aprende construyendo, ### Tema 1: Arquitectura MVVM completa con UDF, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-13.md` (567 lines) - headings: # Módulo 13: Android en producción — seguridad, sincronización y calidad, ## Aprende construyendo, ### Tema 1: El sistema operativo conecta tu app con entradas externas, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-13.md` (612 lines) - headings: # Módulo 13: Android en producción — seguridad, sincronización y calidad, ## Aprende construyendo, ### Tema 1: El sistema operativo conecta tu app con entradas externas, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-14.md` (813 lines) - headings: # Módulo 14: Compose Master — pruebas, accesibilidad y animación, ## Aprende construyendo, ### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-15.md` (556 lines) - headings: # Módulo 15: Android como plataforma — Intents, broadcasts, servicios y content providers, ## Aprende construyendo, ### Tema 1: Intents implícitos y Activity Result API, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-2.md` (366 lines) - headings: # Módulo 2: Jetpack Compose: UI declarativa, ## Aprende construyendo, ### Tema 1: Composables y recomposición, #### Paso 1 · Objetivo y preparación
@@ -220,7 +223,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (306 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `README.md` (307 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (98 lines) - headings: # Continuación: completar la metodología de siete pasos, ## Qué ya se hizo (no repetir), ## Regla de oro para continuar, ## Plan priorizado (mayor retorno primero)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -233,7 +236,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
 - `docs/biblioteca-externa-gaps-angular.md` (27 lines) - headings: # Huecos del track Angular frente a la biblioteca externa, ## Estado (2026-10-28), ## Libro cotejado, ## Veredicto
-- ... 31 more files
+- ... 33 more files
 
 ### example
 
@@ -255,7 +258,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 427 more files
+- ... 444 more files
 
 ### local-infra
 
@@ -269,16 +272,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2828 lines)
-- `docs/course-depth-review.json` (12183 lines)
+- `docs/code-visual-quality.json` (2863 lines)
+- `docs/course-depth-review.json` (12282 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (11811 lines)
+- `docs/prerequisite-graph.json` (11910 lines)
 - `docs/requested-master-topics.json` (189 lines)
-- `docs/seven-step-methodology.json` (28213 lines)
-- `docs/skills-visual-learning.json` (120 lines)
-- ... 33 more files
+- `docs/rutaflow-source-index.json` (364 lines)
+- `docs/seven-step-methodology.json` (28447 lines)
+- ... 34 more files

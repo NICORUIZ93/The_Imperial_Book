@@ -13,17 +13,17 @@
   ],
   "summary": {
     "android": {
-      "topics": 57,
-      "explanation": 57,
-      "code": 57,
+      "topics": 58,
+      "explanation": 58,
+      "code": 58,
       "visual": 54,
       "filePath": 57,
-      "runCommand": 57,
-      "expectedResult": 57,
-      "practice": 57,
+      "runCommand": 58,
+      "expectedResult": 58,
+      "practice": 58,
       "project": 57,
-      "modelMental": 57,
-      "limitsDecision": 57,
+      "modelMental": 58,
+      "limitsDecision": 58,
       "practicable": 57,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -93,17 +93,17 @@
       "repeatedDemo": 0
     },
     "foundations": {
-      "topics": 97,
-      "explanation": 97,
-      "code": 97,
+      "topics": 99,
+      "explanation": 99,
+      "code": 99,
       "visual": 73,
-      "filePath": 97,
-      "runCommand": 97,
-      "expectedResult": 97,
-      "practice": 97,
-      "project": 97,
-      "modelMental": 97,
-      "limitsDecision": 97,
+      "filePath": 98,
+      "runCommand": 99,
+      "expectedResult": 99,
+      "practice": 99,
+      "project": 98,
+      "modelMental": 99,
+      "limitsDecision": 99,
       "practicable": 97,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -205,34 +205,34 @@
       "repeatedDemo": 0
     },
     "rutaflow": {
-      "topics": 26,
-      "explanation": 26,
-      "code": 26,
+      "topics": 29,
+      "explanation": 29,
+      "code": 29,
       "visual": 24,
-      "filePath": 26,
-      "runCommand": 26,
-      "expectedResult": 26,
-      "practice": 26,
-      "project": 26,
-      "modelMental": 26,
-      "limitsDecision": 26,
-      "practicable": 26,
+      "filePath": 28,
+      "runCommand": 29,
+      "expectedResult": 29,
+      "practice": 29,
+      "project": 28,
+      "modelMental": 29,
+      "limitsDecision": 29,
+      "practicable": 27,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 84,
-      "explanation": 84,
-      "code": 84,
+      "topics": 87,
+      "explanation": 87,
+      "code": 87,
       "visual": 66,
-      "filePath": 84,
-      "runCommand": 84,
-      "expectedResult": 84,
-      "practice": 84,
-      "project": 84,
-      "modelMental": 84,
-      "limitsDecision": 84,
-      "practicable": 84,
+      "filePath": 87,
+      "runCommand": 87,
+      "expectedResult": 87,
+      "practice": 87,
+      "project": 87,
+      "modelMental": 87,
+      "limitsDecision": 87,
+      "practicable": 87,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -697,6 +697,28 @@
         "classification": {
           "rubricScore": 16,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": false,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 10,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -10502,6 +10524,28 @@
         }
       },
       {
+        "module": 10,
+        "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 11,
         "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
         "criteria": {
@@ -12103,6 +12147,28 @@
         "classification": {
           "rubricScore": 16,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": false,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -21868,6 +21934,50 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Cotización y facturación reproducible",
         "criteria": {
@@ -21929,6 +22039,28 @@
         "classification": {
           "rubricScore": 16,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": false,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -22816,6 +22948,28 @@
         }
       },
       {
+        "module": 15,
+        "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 16,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
         "criteria": {
@@ -23236,6 +23390,50 @@
       {
         "module": 20,
         "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "criteria": {
           "explanation": true,
           "code": true,

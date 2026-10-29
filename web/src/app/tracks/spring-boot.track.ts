@@ -201,7 +201,8 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Backend de paquetería con CRUD, consultas espaciales, auth Bearer, roles, tiempo real, archivos, push y pruebas de integración.'),
   m(15, 'Spring Master: hexagonal, reactivo y microservicios', 'Spring Master', 'Experto', '12 h', '#6db33f',
     'Integra WebFlux, testing avanzado, arquitectura hexagonal, Spring Cloud y patrones distribuidos sin mezclar modelos incompatibles.',
-    ['Mono, Flux, WebClient, Netty y R2DBC', '@SpringBootTest, slices, MockMvc y Testcontainers', 'Dominio, aplicación, puertos y adaptadores', 'Config Server, Bus y Resilience4j', 'Saga, CQRS, Event Sourcing y Outbox'],
+    [
+      'Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar','Mono, Flux, WebClient, Netty y R2DBC', '@SpringBootTest, slices, MockMvc y Testcontainers', 'Dominio, aplicación, puertos y adaptadores', 'Config Server, Bus y Resilience4j', 'Saga, CQRS, Event Sourcing y Outbox'],
     ['Detecta bloqueo reactivo', 'Prueba adapters reales', 'Invierte una dependencia', 'Simula config y circuit breaker', 'Deduplica evento outbox'],
     ['¿Cuándo WebFlux empeora el sistema?', '¿Por qué Event Sourcing no es auditoría gratuita?'], ['Spring WebFlux','Testcontainers','Spring Cloud','Resilience4j','Kafka'], 'Servicio hexagonal con flujo reactivo justificado, contratos, eventos y resiliencia probada.'),
   m(16, 'JPA de Spring Boot: Hibernate, Lazy vs Eager y N+1', 'JPA / Hibernate', 'Integración', '3 h 30 min', '#6db33f',
@@ -260,7 +261,9 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Job batch funcional con lectura, transformación, escritura y gestión de reintentos y reinicios.'),
   m(20, 'Integraciones Spring: scheduling, eventos, correo y caché', 'Integraciones Spring', 'Integración', '5 h', '#6db33f',
     'Integra trabajo en segundo plano, notificaciones y caché con límites de consistencia explícitos; distingue eventos locales de mensajería distribuida.',
-    ['@Scheduled, cron, zona horaria y concurrencia por instancia', 'Spring Application Events y @TransactionalEventListener', 'Spring Mail y entrega idempotente', '@Cacheable, @CacheEvict, TTL y cache stampede', 'Caffeine vs Redis y elección local/distribuida', 'Métricas, errores y pruebas con dependencias sustituidas'],
+    [
+      'RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar',
+      'Spring AI: ChatClient y herramientas con autorización fuera del modelo','@Scheduled, cron, zona horaria y concurrencia por instancia', 'Spring Application Events y @TransactionalEventListener', 'Spring Mail y entrega idempotente', '@Cacheable, @CacheEvict, TTL y cache stampede', 'Caffeine vs Redis y elección local/distribuida', 'Métricas, errores y pruebas con dependencias sustituidas'],
     [
       'Programa una tarea con @Scheduled y verifica zona horaria, duración y solapamiento bajo dos instancias',
       'Publica un evento local solo después del commit y prueba que no se notifica si la transacción hace rollback',

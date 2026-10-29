@@ -3,9 +3,9 @@
   "totals": {
     "tracks": 14,
     "modules": 241,
-    "topics": 1073,
+    "topics": 1082,
     "topicsWithSignals": 147,
-    "newLaboratories": 14
+    "newLaboratories": 23
   },
   "priorities": {
     "foundations": {
@@ -294,6 +294,17 @@
       "line": 386,
       "signals": [],
       "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "android",
+      "module": 13,
+      "title": "Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+      "file": "web/public/content/android/modulo-13.md",
+      "line": 571,
+      "signals": [],
+      "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
@@ -4617,7 +4628,7 @@
       "module": 14,
       "title": "Tema 4: Animaciones de localización",
       "file": "web/public/content/flutter/modulo-14.md",
-      "line": 283,
+      "line": 285,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -4628,7 +4639,7 @@
       "module": 14,
       "title": "Tema 5: Almacenamiento local, imágenes y offline",
       "file": "web/public/content/flutter/modulo-14.md",
-      "line": 342,
+      "line": 344,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -4639,7 +4650,7 @@
       "module": 14,
       "title": "Tema 6: Dio y notificaciones push",
       "file": "web/public/content/flutter/modulo-14.md",
-      "line": 403,
+      "line": 405,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -5221,6 +5232,17 @@
       "line": 490,
       "signals": [],
       "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "foundations",
+      "module": 10,
+      "title": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+      "file": "web/public/content/foundations/modulo-10.md",
+      "line": 657,
+      "signals": [],
+      "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
@@ -6030,6 +6052,17 @@
       "line": 289,
       "signals": [],
       "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "foundations",
+      "module": 7,
+      "title": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
+      "file": "web/public/content/foundations/modulo-7.md",
+      "line": 428,
+      "signals": [],
+      "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
@@ -11161,6 +11194,28 @@
     },
     {
       "track": "rutaflow",
+      "module": 5,
+      "title": "Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+      "file": "web/public/content/rutaflow/modulo-5.md",
+      "line": 424,
+      "signals": [],
+      "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "rutaflow",
+      "module": 5,
+      "title": "Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+      "file": "web/public/content/rutaflow/modulo-5.md",
+      "line": 567,
+      "signals": [],
+      "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "rutaflow",
       "module": 6,
       "title": "Tema 1: Cotización y facturación reproducible",
       "file": "web/public/content/rutaflow/modulo-6.md",
@@ -11189,6 +11244,17 @@
       "line": 300,
       "signals": [],
       "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "rutaflow",
+      "module": 6,
+      "title": "Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
+      "file": "web/public/content/rutaflow/modulo-6.md",
+      "line": 446,
+      "signals": [],
+      "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
@@ -11562,7 +11628,7 @@
       "module": 14,
       "title": "Tema 6: Archivos y notificaciones push",
       "file": "web/public/content/spring-boot/modulo-14.md",
-      "line": 803,
+      "line": 805,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -11631,6 +11697,17 @@
       "line": 723,
       "signals": [],
       "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "title": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+      "file": "web/public/content/spring-boot/modulo-15.md",
+      "line": 894,
+      "signals": [],
+      "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
@@ -11863,6 +11940,28 @@
       "line": 460,
       "signals": [],
       "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "title": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "file": "web/public/content/spring-boot/modulo-20.md",
+      "line": 519,
+      "signals": [],
+      "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "title": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+      "file": "web/public/content/spring-boot/modulo-20.md",
+      "line": 606,
+      "signals": [],
+      "newLaboratory": true,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },

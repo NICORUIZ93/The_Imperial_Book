@@ -417,3 +417,254 @@ Entrega `eta.py`, las dos salidas (ETA correcto y el ingenuo) con la diferencia 
 
 **Transferencia al proyecto integrador «RutaFlow»:** Calcula ETA con datos de antigüedad conocida y comunica un rango. Simula una interrupción de posiciones y verifica que el rango o advertencia cambia sin presentar certeza falsa.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+
+## Aplicación del material de referencia
+
+### Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas. **Prerrequisitos:** HTTP, JSON, eventos y Node 24 con npm. Para el cliente Dart, SDK Dart 3. El ejemplo es independiente desde una carpeta vacía; no necesitas Kafka ni una cuenta cloud.
+
+#### Paso 2 · Contexto y caso real
+El temario de RutaFlow pide Socket.IO en app y backend. El laboratorio Spring 14 enseña STOMP, que es otro protocolo. **¿Por qué es importante?** Compartir el transporte WebSocket no hace que esos clientes y servidores se entiendan. Aquí la variante elegida es Socket.IO 4 en ambos extremos. El backend Spring puede publicar por HTTP hacia este gateway después de confirmar su transacción; su laboratorio STOMP sigue siendo una variante separada.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Socket.IO añade handshake, eventos, acknowledgements y salas sobre sus transportes. Una sala agrupa conexiones; no acredita propiedad de un envío. La identidad autenticada debe autorizar cada suscripción en el servidor. En este laboratorio solo existe ENV-42 y una credencial de prueba; no fingimos que equivale a OAuth2/JWT ni a autorización multiusuario.
+
+**Analogía:** dos radios necesitan el mismo protocolo de conversación, no solo una antena. El límite es que reconectar la radio no reproduce mensajes perdidos. El número de secuencia evita aplicar un dato anterior; un producto también necesita snapshot o replay, persistencia, backpressure y límites por identidad.
+
+#### Paso 4 · Demostración guiada desde cero
+Desde una copia del repositorio prepara una carpeta propia:
+```bash
+cp -R examples/rutaflow-material/socketio ejemplo-socketio
+cd ejemplo-socketio
+npm ci
+npm test
+```
+Si trabajas sin una copia del repo, crea una carpeta `ejemplo-socketio`, guarda los archivos siguientes retirando el prefijo `socketio/` de cada ruta y ejecuta `npm install` en lugar de `npm ci` para crear el lockfile. No mezcles las versiones del protocolo con las de una librería STOMP.
+
+Crea `socketio/package.json` con este contenido completo:
+```json
+{"name":"rutaflow-socketio-lab","private":true,"type":"module","scripts":{"test":"node --test gateway.test.mjs"},"dependencies":{"express":"^5.1.0","socket.io":"^4.8.1","socket.io-client":"^4.8.1"}}
+```
+
+Crea `socketio/gateway.mjs` con este contenido completo:
+```javascript
+import express from 'express';
+import { createServer } from 'node:http';
+import { Server } from 'socket.io';
+
+// Laboratorio de un solo envío: no es un sistema de identidad de producción.
+export async function startGateway({ port = 0, token = 'solo-laboratorio' } = {}) {
+  const app = express();
+  app.use(express.json({ limit: '8kb' }));
+  const http = createServer(app);
+  const io = new Server(http, { transports: ['websocket'] });
+  let lastSequence = 0;
+  io.use((socket, next) => next(socket.handshake.auth.token === token
+    ? undefined : new Error('No autorizado')));
+  io.on('connection', socket => {
+    socket.on('seguir-envio', async (id, ack) => {
+      if (id !== 'ENV-42') return ack({ ok: false });
+      await socket.join(id);
+      ack({ ok: true });
+    });
+  });
+  app.post('/posiciones/ENV-42', (req, res) => {
+    if (req.headers.authorization !== `Bearer ${token}`) return res.sendStatus(401);
+    const { sequence, latitude, longitude } = req.body ?? {};
+    if (!Number.isSafeInteger(sequence) || sequence < 1 ||
+        !Number.isFinite(latitude) || Math.abs(latitude) > 90 ||
+        !Number.isFinite(longitude) || Math.abs(longitude) > 180) return res.sendStatus(400);
+    if (sequence <= lastSequence) return res.sendStatus(409);
+    lastSequence = sequence;
+    io.to('ENV-42').emit('posicion', { shipmentId: 'ENV-42', schemaVersion: 1,
+      sequence, latitude, longitude });
+    res.sendStatus(202);
+  });
+  await new Promise(resolve => http.listen(port, '127.0.0.1', resolve));
+  return { url: `http://127.0.0.1:${http.address().port}`,
+    close: () => new Promise(resolve => io.close(resolve)) };
+}
+```
+
+Crea `socketio/gateway.test.mjs` con este contenido completo:
+```javascript
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { io } from 'socket.io-client';
+import { startGateway } from './gateway.mjs';
+
+test('HTTP publica y un cliente Socket.IO compatible recibe; rechaza duplicado y token', { timeout: 5000 }, async t => {
+  const gateway = await startGateway();
+  const socket = io(gateway.url, { transports: ['websocket'], auth: { token: 'solo-laboratorio' } });
+  t.after(async () => { socket.disconnect(); await gateway.close(); });
+  await new Promise((resolve, reject) => {
+    socket.once('connect', resolve); socket.once('connect_error', reject);
+  });
+  assert.deepEqual(await socket.timeout(1000).emitWithAck('seguir-envio', 'ENV-ajeno'), { ok: false });
+  assert.deepEqual(await socket.timeout(1000).emitWithAck('seguir-envio', 'ENV-42'), { ok: true });
+  const received = new Promise(resolve => socket.once('posicion', resolve));
+  const send = auth => fetch(`${gateway.url}/posiciones/ENV-42`, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: auth },
+    body: JSON.stringify({ sequence: 1, latitude: 4.65, longitude: -74.08 }) });
+  assert.equal((await send('Bearer solo-laboratorio')).status, 202);
+  assert.deepEqual(await received, { shipmentId: 'ENV-42', schemaVersion: 1,
+    sequence: 1, latitude: 4.65, longitude: -74.08 });
+  assert.equal((await send('Bearer solo-laboratorio')).status, 409);
+  assert.equal((await send('Bearer incorrecto')).status, 401);
+});
+```
+
+Crea `socketio/serve.mjs` con este contenido completo:
+```javascript
+import { startGateway } from './gateway.mjs';
+const gateway = await startGateway({ port: 3100 });
+console.log(gateway.url);
+process.once('SIGINT', async () => { await gateway.close(); });
+```
+
+Crea `socketio/cliente.dart` con este contenido completo:
+```dart
+import 'package:socket_io_client/socket_io_client.dart' as io;
+
+void main() {
+  final socket = io.io('http://127.0.0.1:3100', io.OptionBuilder()
+      .setTransports(['websocket']).disableAutoConnect()
+      .setAuth({'token': 'solo-laboratorio'}).build());
+  socket.onConnect((_) {
+    socket.emitWithAck('seguir-envio', 'ENV-42', ack: (data) => print(data));
+  });
+  socket.on('posicion', (data) { print(data); socket.dispose(); });
+  socket.onConnectError((error) { print(error); socket.dispose(); });
+  socket.connect();
+}
+```
+
+**Resultado esperado:** la prueba de Node pasa; una petición HTTP produce un evento `posicion` real en el socket suscrito. La prueba también comprueba un ID ajeno rechazado, duplicado 409 y credencial inválida 401. Explica cada bloque: middleware limita tamaño de JSON, handshake verifica la credencial de laboratorio, la sala restringe el único envío de prueba y la secuencia impide publicar una versión anterior.
+
+Para probar el cliente Dart manualmente, ejecuta `node socketio/serve.mjs` si creaste las rutas mostradas, o `node serve.mjs` dentro de la copia del ejemplo. En otra carpeta crea un proyecto con `dart create -t console cliente_posiciones`, ejecuta `dart pub add socket_io_client:^3.1.6`, guarda el contenido de `cliente.dart` en `bin/cliente_posiciones.dart` y ejecuta `dart run`. Publica en otra terminal:
+```bash
+curl -i -X POST http://127.0.0.1:3100/posiciones/ENV-42 -H 'Content-Type: application/json' -H 'Authorization: Bearer solo-laboratorio' -d '{"sequence":1,"latitude":4.65,"longitude":-74.08}'
+```
+Debes ver 202 en HTTP y el evento en Dart. El servidor solo escucha loopback: el cliente mostrado corre en el mismo computador. Un teléfono físico requiere una dirección y una configuración de red explícitas; no uses localhost del teléfono para referirte a tu computador.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia la credencial del cliente por `incorrecta`. Se recibe `connect_error` y no hay suscripción. **Pista:** primero comprueba protocolo, dirección y handshake; cambiar Flutter por un cliente STOMP no arregla credenciales ni protocolo. Restáuralas y repite.
+
+#### Paso 6 · Práctica independiente
+Añade un segundo envío con un mapa de permisos por identidad de prueba, y demuestra que una identidad de A no se puede unir a B aunque conozca su ID. Añade una consulta de snapshot para recuperar la secuencia actual al reconectar. No deduzcas que «se conectó» significa «no perdió datos».
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** salida de prueba, 202/401/409, suscripción rechazada y evento recibido. El siguiente tema conecta las posiciones con una ruta calculada. **Errores comunes:** conectar socket_io_client al endpoint STOMP, confiar en IDs del cliente y registrar tokens completos. **Límites y decisión de uso:** el gateway usa memoria y credencial fija solo para aislar compatibilidad; no es una implementación lista para Internet ni una garantía de entrega durable.
+
+**Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/) y [compatibilidad Dart/servidor](https://pub.dev/packages/socket_io_client).
+
+
+## Aplicación del material de referencia
+
+### Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta. **Prerrequisitos:** coordenadas, HTTP, JSON y Python 3. Ejemplo independiente desde carpeta vacía; la primera fase usa una respuesta sintética declarada para aislar el contrato sin descargar mapas ni depender de Internet.
+
+#### Paso 2 · Contexto y caso real
+El proyecto integrador necesita una ruta por calles, no una línea recta entre dos puntos GPS. **¿Por qué es importante?** Un buen algoritmo sobre una matriz incorrecta sigue produciendo una planificación inútil. OSRM calcula sobre una red preparada con un perfil de circulación, no sobre distancia euclídea.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La API usa `longitud,latitud` y devuelve distancia en metros y duración en segundos. Route calcula un recorrido; Table calcula matrices de tiempos/distancias; Match ajusta trazas y Trip propone un recorrido bajo sus supuestos. No son llamadas intercambiables. **Analogía:** tener un mapa de carreteras permite encontrar caminos, pero no conocer tráfico actual si el perfil no lo incluye. El límite es que la duración estimada no promete hora de llegada ni incluye todas las restricciones operativas de una entrega.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/osrm ejemplo-osrm
+cd ejemplo-osrm
+python3 ruta.py --fixture respuesta.json
+python3 -m unittest test_ruta.py
+```
+Si creas los archivos manualmente, colócalos juntos en `ejemplo-osrm`, retirando el prefijo `osrm/` de las rutas mostradas:
+
+Crea `osrm/ruta.py` con este contenido completo:
+```python
+import argparse
+import json
+import math
+from pathlib import Path
+from urllib.request import urlopen
+
+
+def ruta_url(base, puntos):
+    if len(puntos) < 2:
+        raise ValueError('Se necesitan al menos dos puntos')
+    for lon, lat in puntos:
+        if not math.isfinite(lon) or not math.isfinite(lat) or not -180 <= lon <= 180 or not -90 <= lat <= 90:
+            raise ValueError('Coordenada inválida')
+    coordenadas = ';'.join(f'{lon},{lat}' for lon, lat in puntos)
+    return f'{base.rstrip("/")}/route/v1/driving/{coordenadas}?overview=full&geometries=geojson'
+
+
+def interpretar(payload):
+    if payload.get('code') != 'Ok' or not payload.get('routes'):
+        raise ValueError('No hay una ruta utilizable')
+    ruta = payload['routes'][0]
+    for key in ('distance', 'duration'):
+        if not isinstance(ruta.get(key), (int, float)) or not math.isfinite(ruta[key]) or ruta[key] < 0:
+            raise ValueError('Métrica inválida')
+    geometry = ruta.get('geometry', {})
+    if geometry.get('type') != 'LineString' or len(geometry.get('coordinates', [])) < 2:
+        raise ValueError('Geometría inválida')
+    return ruta['distance'], ruta['duration']
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--base-url')
+    parser.add_argument('--fixture', default='respuesta.json')
+    args = parser.parse_args()
+    if args.base_url:
+        url = ruta_url(args.base_url, [(13.38886, 52.517037), (13.397634, 52.529407)])
+        with urlopen(url, timeout=5) as response:
+            payload = json.load(response)
+    else:
+        payload = json.loads(Path(args.fixture).read_text())
+    metros, segundos = interpretar(payload)
+    print(f'{metros:g} metros; {segundos:g} segundos')
+```
+
+Crea `osrm/respuesta.json` con este contenido completo:
+```json
+{"code":"Ok","routes":[{"distance":1500,"duration":300,"geometry":{"type":"LineString","coordinates":[[13.38886,52.517037],[13.397634,52.529407]]}}]}
+```
+
+Crea `osrm/test_ruta.py` con este contenido completo:
+```python
+import unittest
+from ruta import ruta_url, interpretar
+
+class RutaTest(unittest.TestCase):
+    def test_orden_longitud_latitud_y_unidades(self):
+        self.assertIn('13.0,52.0;14.0,53.0', ruta_url('http://localhost:5000', [(13.0,52.0),(14.0,53.0)]))
+        payload={'code':'Ok','routes':[{'distance':1500,'duration':300,
+            'geometry':{'type':'LineString','coordinates':[[13,52],[14,53]]}}]}
+        self.assertEqual((1500,300), interpretar(payload))
+    def test_sin_ruta_no_es_distancia_cero(self):
+        with self.assertRaises(ValueError): interpretar({'code':'NoRoute','routes':[]})
+        with self.assertRaises(ValueError): ruta_url('http://localhost:5000',[(0,91),(0,0)])
+
+if __name__=='__main__':unittest.main()
+```
+
+**Resultado esperado:** la fixture muestra `1500 metros; 300 segundos` y dos pruebas correctas. Explica cada bloque: validación de coordenadas, construcción de URL, verificación de `code` y comprobación de geometría/métricas. La línea de dos puntos de la fixture es sintética; no es una ruta real ni evidencia de un motor OSRM ejecutado.
+
+Para probar el motor real, prepara un dataset y un perfil siguiendo el README oficial: descarga un extracto OSM autorizado, ejecuta `osrm-extract`, después `osrm-partition` y `osrm-customize` para MLD, y levanta `osrm-routed --algorithm mld`. Con el servicio accesible en el puerto 5000 ejecuta `python3 ruta.py --base-url http://localhost:5000`. Usa coordenadas dentro del extracto; las de ejemplo son de Berlín. Registra versión/digest de la imagen, fecha del mapa, perfil y comando. No publiques un servidor de laboratorio ni atribuyas tráfico en tiempo real a un perfil estático.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia `code` por `NoRoute` y vacía routes en una copia de la fixture. El programa debe rechazarla, no mostrar distancia cero. **Pista:** sin ruta no significa que origen y destino coincidan; maneja ese estado antes de calcular una tarifa.
+
+#### Paso 6 · Práctica independiente
+Añade un rechazo de métricas NaN y una prueba de coordenadas fuera de rango. Diseña cómo conservarías el último resultado si el proveedor falla, indicando antigüedad al usuario. Decide cuándo usar Table para construir una matriz y por qué eso todavía no resuelve ventanas horarias ni capacidad del vehículo.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** URL construida, fixture identificada como tal, pruebas y rechazo de NoRoute. El siguiente paso es registrar una respuesta obtenida de un dataset real. **Errores comunes:** invertir coordenadas, convertir segundos dos veces y confundir ajuste GPS con optimización de flota. **Límites y decisión de uso:** el laboratorio de contrato no acredita despliegue Docker ni calidad de los mapas; esas dos pruebas quedan separadas.
+
+**Fuentes oficiales:** [OSRM API](https://project-osrm.org/docs/v5.24.0/api/) y [preparación del motor](https://github.com/Project-OSRM/osrm-backend).

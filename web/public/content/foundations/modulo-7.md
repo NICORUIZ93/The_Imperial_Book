@@ -421,3 +421,64 @@ El proyecto integrador Fundamentos necesita exactamente este tipo de ADR para su
 - Aplicar todos los patrones: justifica fuerzas y coste.
 - Refactor grande sin tests: caracteriza y divide.
 - Documentar solo éxito: registra consecuencias y límites.
+
+
+## Aplicación del material de referencia
+
+### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar ejecutarás un record C#, crearás una copia con `with` y demostrarás qué ocurre con una lista compartida. **Prerrequisitos:** objetos, referencias y colecciones; es una comparación de diseño, no un curso completo de C#. Instala el SDK .NET 10 y comprueba `dotnet --version`. El ejemplo independiente parte de carpeta vacía.
+
+#### Paso 2 · Contexto y caso real
+La captura de referencia propone records para registros de auditoría. En el proyecto integrador, una copia del registro no debería alterar inesperadamente un historial anterior. **¿Por qué es importante?** Menos código generado no elimina la necesidad de decidir mutabilidad y propiedad de los datos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un `record class` de C# tiene semántica de igualdad por valor generada por el compilador; un record posicional genera propiedades con acceso `init`. `with` crea una copia superficial: no clona automáticamente los objetos a los que apuntan sus propiedades. También puedes definir records mutables. No es correcto afirmar que todos los records son profundamente inmutables ni que los records de Java y C# tienen exactamente el mismo contrato.
+
+**Analogía:** fotocopiar una ficha que contiene una dirección no duplica el almacén al que esa dirección apunta. El límite es que la igualdad de los miembros también depende de sus tipos: dos listas con elementos iguales no necesariamente comparan como iguales por contenido.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/records-csharp ejemplo-records
+cd ejemplo-records
+dotnet run --project Records.csproj
+```
+Si no usas una copia del repo, crea la carpeta `ejemplo-records` y coloca estos dos archivos dentro, sin la subcarpeta `records-csharp`:
+
+Crea `records-csharp/Records.csproj` con este contenido completo:
+```xml
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>
+```
+
+Crea `records-csharp/Program.cs` con este contenido completo:
+```csharp
+using System;
+using System.Collections.Generic;
+
+var original = new Registro(7, new List<string> { "creado" });
+var copia = original with { Id = 8 };
+copia.Estados.Add("asignado");
+if (original.Id != 7 || copia.Id != 8) throw new Exception("Copia escalar incorrecta");
+if (original.Estados.Count != 2) throw new Exception("Se esperaba referencia compartida");
+Console.WriteLine("IDs independientes; lista compartida");
+var a = new Punto(4, 5);
+var b = new Punto(4, 5);
+if (a != b) throw new Exception("Se esperaba igualdad por valor");
+Console.WriteLine("Records con valores iguales comparan igual");
+public record Registro(int Id, List<string> Estados);
+public record Punto(int X, int Y);
+```
+
+**Resultado esperado:** `IDs independientes; lista compartida` y `Records con valores iguales comparan igual`. Explica cada bloque: `var` deja que el compilador infiera el tipo, `new` crea objetos, `with` cambia un valor escalar y conserva la referencia de Estados. Añadir un estado desde la copia cambia la lista que también observa el original; los checks lanzan una excepción si el contrato deja de cumplirse.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambia la expectativa de `original.Estados.Count` a 1. El programa falla porque no se copió profundamente la lista. **Pista:** observa la referencia compartida; no atribuyas el comportamiento a un fallo del compilador.
+
+#### Paso 6 · Práctica independiente
+Crea la copia con `Estados = new List<string>(original.Estados)`, modifica la nueva lista y exige que la original conserve su longitud. Explica por qué eso sigue sin ser copia profunda si cada elemento fuera a su vez mutable. Compara el contrato con un record Java del módulo 7 de Java.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** ambas ejecuciones, fallo, corrección y explicación de copia superficial. El siguiente paso es decidir ownership de colecciones en tus DTOs. **Errores comunes:** equiparar record con seguridad, comparar lenguajes por nombre de característica y exponer colecciones mutables de un historial. **Límites y decisión de uso:** el ejemplo no demuestra concurrencia segura, persistencia ni equivalencia estructural arbitraria.
+
+**Fuente oficial:** [Microsoft: records de C#](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record).

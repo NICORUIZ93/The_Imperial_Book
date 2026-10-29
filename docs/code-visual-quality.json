@@ -1,16 +1,16 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 97,
-      "code": 97,
+      "topics": 99,
+      "code": 99,
       "commentedCode": 67,
       "mermaid": 69,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 97,
-      "runCommand": 97,
-      "officialSource": 11
+      "filePath": 98,
+      "runCommand": 99,
+      "officialSource": 13
     },
     "cloud": {
       "topics": 156,
@@ -97,16 +97,16 @@
       "officialSource": 41
     },
     "spring-boot": {
-      "topics": 84,
-      "code": 84,
-      "commentedCode": 68,
+      "topics": 87,
+      "code": 87,
+      "commentedCode": 70,
       "mermaid": 44,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 84,
-      "runCommand": 84,
-      "officialSource": 62
+      "filePath": 87,
+      "runCommand": 87,
+      "officialSource": 64
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -121,8 +121,8 @@
       "officialSource": 42
     },
     "android": {
-      "topics": 57,
-      "code": 57,
+      "topics": 58,
+      "code": 58,
       "commentedCode": 52,
       "mermaid": 14,
       "archifyVisual": 0,
@@ -130,7 +130,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 57,
       "runCommand": 57,
-      "officialSource": 54
+      "officialSource": 55
     },
     "ios": {
       "topics": 56,
@@ -157,15 +157,15 @@
       "officialSource": 52
     },
     "rutaflow": {
-      "topics": 26,
-      "code": 26,
-      "commentedCode": 25,
+      "topics": 29,
+      "code": 29,
+      "commentedCode": 27,
       "mermaid": 24,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 26,
-      "runCommand": 24,
+      "filePath": 28,
+      "runCommand": 27,
       "officialSource": 7
     }
   },
@@ -188,6 +188,13 @@
       "track": "foundations",
       "module": 10,
       "topic": "Tema 4: Resiliencia y observabilidad orientadas a objetivos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "foundations",
+      "module": 10,
+      "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
       "missingCode": false,
       "missingComments": true
     },
@@ -321,6 +328,13 @@
       "track": "foundations",
       "module": 7,
       "topic": "Tema 3: Diseño modular, principios, patrones y refactoring",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "foundations",
+      "module": 7,
+      "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
       "missingCode": false,
       "missingComments": true
     },
@@ -2132,6 +2146,13 @@
     },
     {
       "track": "spring-boot",
+      "module": 20,
+      "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
       "module": 21,
       "topic": "Tema 1: Productor, tópico, key y consumidor",
       "missingCode": false,
@@ -2316,6 +2337,13 @@
       "track": "android",
       "module": 11,
       "topic": "Tema 3: Versionado, tracks y políticas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 13,
+      "topic": "Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
       "missingCode": false,
       "missingComments": true
     },
@@ -2820,6 +2848,13 @@
       "track": "rutaflow",
       "module": 2,
       "topic": "Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "rutaflow",
+      "module": 5,
+      "topic": "Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
       "missingCode": false,
       "missingComments": true
     }

@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-29",
+  "scope": "Evidencia técnica por tema; no certifica aprendizaje ni producción.",
+  "results": [
+    {
+      "track": "rutaflow",
+      "module": 5,
+      "title": "Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+      "status": "checked",
+      "evidence": "Node: prueba de Socket.IO 4.8.x correcta; Dart 3.13 + socket_io_client 3.1.6 analizado sin incidencias y conectado a puerto 3100. Recibió shipmentId ENV-42, schemaVersion1, sequence1, latitude4.65 y longitude-74.08 tras HTTP202. No se probó UI Flutter ni red de teléfono físico."
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "status": "checked",
+      "evidence": "Maven con JDK25, Spring Boot4.0.9 y Spring AI2.0.2: dos pruebas ChatToolsTest correctas. ChatModel controlado, callback real; no proveedor remoto."
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+      "status": "checked",
+      "evidence": "Dos pruebas RagScopeTest correctas. Recuperación léxica y aislamiento de tenant; embeddings, vector store y evaluación de LLM pendientes."
+    },
+    {
+      "track": "foundations",
+      "module": 7,
+      "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
+      "status": "pending",
+      "evidence": ".NET SDK10 no está instalado. La descarga temporal se interrumpió por su duración. Código y contrato presentes; no se declara compilación."
+    },
+    {
+      "track": "rutaflow",
+      "module": 5,
+      "title": "OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+      "status": "checked-with-limits",
+      "evidence": "Dos pruebas Python correctas para URL, unidades, coordenadas y NoRoute. Fixture sintética; despliegue Docker, dataset y solicitud al motor pendientes."
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+      "status": "checked",
+      "evidence": "Una prueba Python/SQLite correcta: conserva PENDIENTE, reabre la base y aplica una compensación una sola vez. No prueba transacción distribuida ni concurrencia."
+    },
+    {
+      "track": "foundations",
+      "module": 10,
+      "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+      "status": "checked",
+      "evidence": "Node ejecutado: 12 respuestas por caso, concurrencia1 y4. Una observación local dio p95 31/23ms y44/180req/s; son medidas de esta ejecución, no umbrales esperados."
+    },
+    {
+      "track": "rutaflow",
+      "module": 6,
+      "title": "Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
+      "status": "checked",
+      "evidence": "Dos pruebas Node correctas de contrato e importe; no pagos ni tokenización real de tarjetas."
+    },
+    {
+      "track": "android",
+      "module": 13,
+      "title": "Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+      "status": "pending",
+      "evidence": "ADB no encontró dispositivos conectados. Diagnóstico físico, sensores y arranque pendientes; no se alteró configuración ni se afirmó atestación."
+    }
+  ],
+  "browser": {
+    "scope": "Los nueve temas nuevos abiertos por su encabezado; no ejecución de todos los ejercicios.",
+    "topicsVisible": 9,
+    "lessonErrors": 0,
+    "mobileWidth": 390,
+    "horizontalOverflow": false
+  }
+}

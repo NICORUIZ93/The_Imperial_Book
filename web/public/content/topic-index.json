@@ -94,6 +94,10 @@
       {
         "title": "La calidad se opera por dispositivo y versión",
         "fragment": "tema-4-la-calidad-se-opera-por-dispositivo-y-version"
+      },
+      {
+        "title": "Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+        "fragment": "tema-5-del-dispositivo-al-diagnostico-soc-memoria-limites-termicos-y-arranque-verificado"
       }
     ],
     "14": [
@@ -2080,6 +2084,10 @@
       {
         "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
         "fragment": "tema-5-tiempo-coordinacion-y-acuerdo-lamport-eleccion-de-lider-y-commit-en-dos-fases"
+      },
+      {
+        "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+        "fragment": "tema-6-latencia-y-throughput-medir-concurrencia-sin-confundirla-con-capacidad-ilimitada"
       }
     ],
     "11": [
@@ -2394,6 +2402,10 @@
       {
         "title": "Decisiones, documentación, deuda y evolución",
         "fragment": "tema-4-decisiones-documentacion-deuda-y-evolucion"
+      },
+      {
+        "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
+        "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
       }
     ],
     "8": [
@@ -4384,6 +4396,14 @@
       {
         "title": "Streaming y ETA con incertidumbre",
         "fragment": "tema-3-streaming-y-eta-con-incertidumbre"
+      },
+      {
+        "title": "Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+        "fragment": "tema-4-socket-io-extremo-a-extremo-un-gateway-compatible-con-el-cliente-movil"
+      },
+      {
+        "title": "OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+        "fragment": "tema-5-osrm-del-contrato-de-coordenadas-a-una-respuesta-de-ruta-verificable"
       }
     ],
     "6": [
@@ -4398,6 +4418,10 @@
       {
         "title": "Fraude responsable",
         "fragment": "tema-3-fraude-responsable"
+      },
+      {
+        "title": "Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
+        "fragment": "tema-4-tokenizacion-de-pagos-un-identificador-opaco-no-sustituye-autorizacion-ni-confirmacion"
       }
     ],
     "7": [
@@ -4578,6 +4602,10 @@
       {
         "title": "Event Sourcing con replay real",
         "fragment": "tema-6-event-sourcing-con-replay-real"
+      },
+      {
+        "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+        "fragment": "tema-7-compensacion-que-falla-conservar-trabajo-pendiente-y-reintentar-sin-duplicar"
       }
     ],
     "16": [
@@ -4670,6 +4698,14 @@
       {
         "title": "Integraciones empresariales, SOAP y fronteras de protocolo",
         "fragment": "tema-complementario-integraciones-empresariales-soap-y-fronteras-de-protocolo"
+      },
+      {
+        "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "fragment": "tema-6-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
+      },
+      {
+        "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+        "fragment": "tema-7-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
       }
     ],
     "21": [

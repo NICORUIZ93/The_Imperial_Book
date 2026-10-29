@@ -439,3 +439,69 @@ Entrega `DetectorSenalFraude.java`, el caso encolado real para RF-7788, la versi
 **Transferencia al proyecto integrador «RutaFlow»:** Genera una señal de revisión a partir de datos sintéticos y conserva su explicación. Evalúa falsos positivos y limita acceso a la información; una sospecha no debe cancelar automáticamente una entrega legítima.
 
 **Límites y decisión de uso:** Una puntuación de riesgo no prueba fraude y puede perjudicar a usuarios legítimos. Evalúa errores por grupos relevantes, conserva revisión humana y limita los datos usados; no conviertas una señal incierta en sanción automática.
+
+
+## Aplicación del material de referencia
+
+### Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar definirás una frontera de cobro que recibe un identificador de prueba y un importe entero, sin recoger datos de tarjeta. **Prerrequisitos:** contratos, validación, dinero en unidades menores e idempotencia; Node 24. Ejemplo independiente desde carpeta vacía. No se procesan pagos ni se llama a un proveedor.
+
+#### Paso 2 · Contexto y caso real
+Una captura afirma que un token robado no sirve para nada. Esa afirmación necesita contexto: hay tokens utilizables bajo determinadas credenciales y alcances. **¿Por qué es importante?** El proyecto integrador no debe inferir que poseer un identificador de pago autoriza a cobrar a cualquier cliente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La integración de bajo riesgo recoge datos sensibles mediante componentes del proveedor y devuelve referencias opacas. Un método de pago es distinto de un JWT de sesión y distinto del estado confirmado de una operación. El servidor verifica cliente, pedido, importe, moneda, idempotencia y resultado auténtico del proveedor.
+
+**Analogía:** una ficha de guardarropa apunta a un objeto, pero no reemplaza todas las comprobaciones para entregarlo. El límite es que el proveedor define alcance, reutilización y requisitos de cada referencia. Usar tokenización no certifica automáticamente cumplimiento ni elimina obligaciones de seguridad.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/payments ejemplo-pagos
+cd ejemplo-pagos
+node --test contrato.test.mjs
+```
+Para crear el ejemplo manualmente, guarda estos dos archivos juntos, sin `payments/`:
+
+Crea `payments/contrato.mjs` con este contenido completo:
+```javascript
+export function prepararCobro({ paymentMethodId, amountCents, currency }) {
+  if (typeof paymentMethodId !== 'string' || !/^pm_test_[a-z0-9]+$/.test(paymentMethodId)) {
+    throw new TypeError('Se requiere un identificador opaco del proveedor de prueba');
+  }
+  if (!Number.isSafeInteger(amountCents) || amountCents <= 0 || currency !== 'COP') {
+    throw new TypeError('Importe o moneda inválidos');
+  }
+  // Un ID de método de pago no autoriza por sí solo una operación.
+  return { paymentMethodId, amountCents, currency };
+}
+```
+
+Crea `payments/contrato.test.mjs` con este contenido completo:
+```javascript
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { prepararCobro } from './contrato.mjs';
+test('solo acepta un identificador de prueba, sin datos de tarjeta', () => {
+  const body = prepararCobro({ paymentMethodId: 'pm_test_abc', amountCents: 10000, currency: 'COP' });
+  assert.deepEqual(Object.keys(body).sort(), ['amountCents', 'currency', 'paymentMethodId']);
+  assert.throws(() => prepararCobro({ paymentMethodId: 'numero-de-tarjeta', amountCents: 10000, currency: 'COP' }));
+});
+test('no transforma silenciosamente el importe', () => {
+  assert.throws(() => prepararCobro({ paymentMethodId: 'pm_test_abc', amountCents: 10.5, currency: 'COP' }));
+});
+```
+
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: solo admitimos IDs ficticios `pm_test_...`, el importe es entero positivo y la salida no contiene PAN ni CVV. Este patrón es un contrato didáctico; no afirma que el prefijo sea una credencial real o que una expresión regular proteja pagos.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** sustituye `Number.isSafeInteger` por una comprobación que acepta cualquier número positivo. El test de 10.5 deja de ser rechazado y falla. **Pista:** las unidades son parte del contrato; convertir sin una regla de redondeo puede cambiar el importe.
+
+#### Paso 6 · Práctica independiente
+Añade ID de pedido y una clave de idempotencia vinculada a cliente, pedido, importe y moneda. Diseña pruebas de reintento y de acceso a un pedido ajeno. Describe cómo verificarías el webhook del proveedor sin usar el identificador opaco como prueba de pago confirmado.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** contrato validado, fallo/corrección y esquema de autorización. El siguiente paso requiere sandbox del proveedor y verificación de webhooks; no se presenta como ejecutado. **Errores comunes:** registrar datos de tarjeta, tratar token como autorización y confirmar el pedido solo por una respuesta del navegador. **Límites y decisión de uso:** el ejemplo no implementa tokenización criptográfica, vault, cobros reales ni certificación PCI.
+
+**Fuente oficial:** [guía de seguridad de integración de Stripe](https://docs.stripe.com/security/guide).

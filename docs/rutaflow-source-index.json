@@ -1,0 +1,363 @@
+{
+  "sourceFolder": "Downloads/Proyecto-RutaFlow",
+  "method": "Inventario por hash, OCR de las 33 imágenes y revisión visual de las seis capturas de raíz; cruce editorial con lecciones, sin asumir que un título acredita cobertura. No se copia contenido personal ni imágenes de terceros a la web.",
+  "files": [
+    {
+      "file": "Captura de pantalla 2026-10-29 a la(s) 10.46.40 a.m..png",
+      "sha256": "42b290c6b01a40308fda6f415b9f06aa41a0845d6034bf70348d74f3e9c71b0f",
+      "bytes": 1058226,
+      "kind": "tecnico",
+      "subject": "Sagas y compensación recuperable",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "file": "Captura de pantalla 2026-10-29 a la(s) 10.48.04 a.m..png",
+      "sha256": "3f1ca7b37d78050cfdd28e82ec4c3784e82382eccde03d3f9290c6cda64a38bb",
+      "bytes": 2654062,
+      "kind": "tecnico",
+      "subject": "Orquestación, coreografía, compensación y fallos de compensación",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "file": "Captura de pantalla 2026-10-29 a la(s) 10.50.49 a.m..png",
+      "sha256": "dad2049a1d70051fef69c45e8f7aeb2ecd61d5fc2dab5378708eaf9e22b10264",
+      "bytes": 942935,
+      "kind": "tecnico",
+      "subject": "Angular Native: condiciones de build y madurez alpha",
+      "destinations": [
+        "web/public/content/angular/modulo-16.md"
+      ]
+    },
+    {
+      "file": "Captura de pantalla 2026-10-29 a la(s) 10.53.15 a.m..png",
+      "sha256": "535f97a90c4b23538c70ed8417b781b23c19b0b5a742dd383d6e2dbf453c9e5b",
+      "bytes": 1264406,
+      "kind": "tecnico",
+      "subject": "Records de C#: igualdad y copia superficial",
+      "destinations": [
+        "web/public/content/foundations/modulo-7.md"
+      ]
+    },
+    {
+      "file": "Captura de pantalla 2026-10-29 a la(s) 10.54.49 a.m..png",
+      "sha256": "72c814a302871b89550d7438cf8f026cf8f6da06aee8206f4f485ecf50360387",
+      "bytes": 1518208,
+      "kind": "tecnico",
+      "subject": "Git: familias de comandos y estados de trabajo",
+      "destinations": [
+        "web/public/content/devops/modulo-1.md",
+        "web/public/content/foundations/modulo-5.md"
+      ]
+    },
+    {
+      "file": "Captura de pantalla 2026-10-29 a la(s) 11.00.14 a.m..png",
+      "sha256": "80406555ca85b665e8c40eeb759a8e8d379e94b91d095bd30289c6178d5d1478",
+      "bytes": 2354375,
+      "kind": "tecnico",
+      "subject": "Diseño de sistemas: fundamentos, distribución, operación y capacidad",
+      "destinations": [
+        "web/public/content/foundations/modulo-10.md",
+        "web/public/content/spring-boot/modulo-10.md",
+        "web/public/content/cloud/modulo-32.md",
+        "web/public/content/devops/modulo-14.md"
+      ]
+    },
+    {
+      "file": "Recopilacion capturas - prompts IA y recursos de programacion (69 pags).pdf",
+      "sha256": "550a96a489f85dcc1504d62ea892db8d62d9a1f8b0b6a93b89a6e07f6e3ba4af",
+      "bytes": 76288972,
+      "kind": "pdf-compilado",
+      "subject": "69 páginas: usar el índice por página existente",
+      "destinations": [],
+      "pageIndex": "docs/merged-pdf-index.json"
+    },
+    {
+      "file": "imagenes/07DB3F7B-13F7-4453-9C79-B2992EC36A40.PNG",
+      "sha256": "0c4921c0be9bac747274f34e9f205512667ce77408b9f74b1ab1cf84fe7a6978",
+      "bytes": 1699613,
+      "kind": "tecnico",
+      "subject": "C4 y decisiones ADR",
+      "destinations": [
+        "web/public/content/foundations/modulo-7.md",
+        "web/public/content/spring-boot/modulo-15.md"
+      ]
+    },
+    {
+      "file": "imagenes/095A28B9-D208-4942-B22A-AF562E2457FE.PNG",
+      "sha256": "c61a7055f01fff4dceab77a0b06462cc59186c835f294791494780870b78f15b",
+      "bytes": 886782,
+      "kind": "pausado",
+      "subject": "Electrónica: conservar la pausa del registro de trabajo",
+      "destinations": [
+        "web/public/content/foundations/modulo-12.md"
+      ]
+    },
+    {
+      "file": "imagenes/131607D4-2F83-4CF8-BC54-CFB2CFF588A7.PNG",
+      "sha256": "af4423442b3d0ddd78f08bbb89ef4bf5ec8a606a4f70f8c4886182ab617b7e59",
+      "bytes": 2184806,
+      "kind": "tecnico",
+      "subject": "Tokenización: alcance y límites de referencias de pago",
+      "destinations": [
+        "web/public/content/rutaflow/modulo-6.md"
+      ]
+    },
+    {
+      "file": "imagenes/1832B290-561D-4287-A11B-A051A72603E2.PNG",
+      "sha256": "5ef244eeac0e170ca03bbf7ed814fcd7d3846b95acadf520502b9724dc1bb083",
+      "bytes": 1756136,
+      "kind": "tecnico",
+      "subject": "Spring AI, herramientas, RAG y observabilidad",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-20.md"
+      ]
+    },
+    {
+      "file": "imagenes/2C4EC0D1-E591-4891-BFCD-F6ECDF6116F5.PNG",
+      "sha256": "41e1aad916a11bb3a1a28f02184d46f407f0c3436e843a36f46bbe5260798f92",
+      "bytes": 1202993,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/2DEB0ECE-6AE1-4EFA-BF5F-7A9B7FD2126D.PNG",
+      "sha256": "e168d73c12554e062a31a995056ed712b4422e7a5f61d00711e1b1036325a852",
+      "bytes": 1392547,
+      "kind": "recurso",
+      "subject": "Publicidad de formación; sin programa detallado legible",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/4620C2A8-FA33-45CB-9111-CBAD4D508AAD.PNG",
+      "sha256": "87a2635a1ded30f30e21b82a57ac9f62c7e28f8387e2db3b4a244d03950e5cd4",
+      "bytes": 344223,
+      "kind": "tecnico",
+      "subject": "Arquitectura hexagonal y dominio independiente",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-15.md",
+        "web/public/content/foundations/modulo-7.md"
+      ]
+    },
+    {
+      "file": "imagenes/796B5B34-84EC-4776-A94F-7CA78758F70B.PNG",
+      "sha256": "02663693295366dc0058692be2be8367c4cec29ce34eab4d6867e5d4fc15f2e0",
+      "bytes": 2407739,
+      "kind": "tecnico",
+      "subject": "Predicate, Function, Consumer y Supplier antes de Streams",
+      "destinations": [
+        "web/public/content/java/modulo-4.md"
+      ]
+    },
+    {
+      "file": "imagenes/7D30EBD9-94E2-478D-918C-D5269AB2F15E.PNG",
+      "sha256": "8ec90ef5d19488208b235bb343f3da3d4badc6a95f9c89ebc199ec758ddb4e68",
+      "bytes": 2033276,
+      "kind": "temario",
+      "subject": "Capas y fundamentos de Spring Boot",
+      "destinations": [
+        "web/public/content/java/modulo-0.md",
+        "web/public/content/spring-boot/modulo-0.md",
+        "web/public/content/spring-boot/modulo-2.md",
+        "web/public/content/spring-boot/modulo-3.md",
+        "web/public/content/spring-boot/modulo-4.md"
+      ]
+    },
+    {
+      "file": "imagenes/BDF66880-683C-4725-B4E5-B69406A606F8.PNG",
+      "sha256": "2aeb75e6ec5974a13fb69634f086a833c39c0f334c65dc5a4f59b0ab32c7e568",
+      "bytes": 5983440,
+      "kind": "recurso",
+      "subject": "Publicidad de curso VPS; conceptos de servidor, TLS y operación",
+      "destinations": [
+        "web/public/content/devops/modulo-0.md",
+        "web/public/content/devops/modulo-11.md",
+        "web/public/content/devops/modulo-12.md"
+      ]
+    },
+    {
+      "file": "imagenes/Captura de pantalla 2026-10-29 a la(s) 10.36.17 a.m..png",
+      "sha256": "4edf48fd580c31f141fee4d1a238eb0c24911ecab38d71213caabe0c097d0e8f",
+      "bytes": 1539162,
+      "kind": "versiones",
+      "subject": "Java: referencia temporal de versiones; contrastar con mantenedor",
+      "destinations": [
+        "web/public/content/java/modulo-0.md",
+        "web/public/content/java/modulo-7.md",
+        "web/public/content/java/modulo-19.md"
+      ]
+    },
+    {
+      "file": "imagenes/DA1606C0-14B3-4679-868E-3109B9C323B0.PNG",
+      "sha256": "f13bf7599e44c15d3856a2a6555b582c00a36b7aa0ee4234a521c018106958f2",
+      "bytes": 764183,
+      "kind": "tecnico",
+      "subject": "OSRM y distancias sobre red de calles",
+      "destinations": [
+        "web/public/content/rutaflow/modulo-5.md"
+      ]
+    },
+    {
+      "file": "imagenes/DF30F937-9D94-4774-8F1A-9D4395561860.PNG",
+      "sha256": "4f35058996870c3ddb5d86ab53b236e88adc17a752173bcd374efaa139f6ccee",
+      "bytes": 934381,
+      "kind": "recurso",
+      "subject": "Publicidad Kafka; mensajería desarrollada en curso propio",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-21.md"
+      ]
+    },
+    {
+      "file": "imagenes/E0931544-6A91-4E88-9F60-290FCB124816.PNG",
+      "sha256": "2c5e5b84473781fc9139d7331b7331be8949c18a8dc95b8a4999668c72566d6b",
+      "bytes": 1470335,
+      "kind": "tecnico",
+      "subject": "Dispositivo nativo: SoC, memoria, térmica y arranque",
+      "destinations": [
+        "web/public/content/android/modulo-13.md"
+      ]
+    },
+    {
+      "file": "imagenes/IMG_1030.PNG",
+      "sha256": "547a8063fdf50643e74f8686333003bca2507a1f31036a4edd05443dc7f956eb",
+      "bytes": 303664,
+      "kind": "temario",
+      "subject": "RutaFlow: app y backend",
+      "destinations": [
+        "web/public/content/flutter/modulo-14.md",
+        "web/public/content/spring-boot/modulo-14.md",
+        "web/public/content/rutaflow/modulo-5.md"
+      ]
+    },
+    {
+      "file": "imagenes/IMG_1046.PNG",
+      "sha256": "6dbae23a3e6da0a320184c8a90f8eb399a873516d7f8123aca181c6315e8b0a4",
+      "bytes": 2069312,
+      "kind": "recurso",
+      "subject": "Selector de lenguajes de una plataforma; no especifica lecciones",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1099.PNG",
+      "sha256": "0e74eb48e4167015708a4fcee8ba70215b22fcc809c8ff507bd81fdcb3d32408",
+      "bytes": 2508443,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1224.PNG",
+      "sha256": "0beaacc6518ab11913ba4131553a44b77cb078c913dde7c79c38f79022dfb1e1",
+      "bytes": 1577664,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1233.PNG",
+      "sha256": "c51c5f371742bb6017e9180c49102a17ab718e01442dc643bf057898a7ce57ac",
+      "bytes": 919257,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1292.PNG",
+      "sha256": "b63f6f063b147c146ab188124efebfb17d2c5bcba5d8fb3d719ebc8476373545",
+      "bytes": 1127525,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1293 2.PNG",
+      "sha256": "638c678e212f88424faeef9a9032264aeac0e10c332c0108a29653f147b57493",
+      "bytes": 660289,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1293.PNG",
+      "sha256": "638c678e212f88424faeef9a9032264aeac0e10c332c0108a29653f147b57493",
+      "bytes": 660289,
+      "kind": "no-curricular",
+      "subject": "Contenido ajeno al objetivo de la academia",
+      "destinations": [],
+      "duplicateOf": "imagenes/IMG_1293 2.PNG"
+    },
+    {
+      "file": "imagenes/IMG_1324.PNG",
+      "sha256": "7ac1c43877836050f128729e8abd9fc703b88c9aa9bc61de1735d4ffbf0ac528",
+      "bytes": 732317,
+      "kind": "versiones",
+      "subject": "Versiones milestone no se convierten automáticamente en baseline",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-0.md",
+        "web/public/content/angular/modulo-12.md"
+      ]
+    },
+    {
+      "file": "imagenes/IMG_1342.PNG",
+      "sha256": "1f97d51dd251b5ed59baea2f87a16d55cf34c81793e59990e14ba707f03828ba",
+      "bytes": 1091439,
+      "kind": "recurso",
+      "subject": "Publicidad de un paquete de cursos; no es un programa completo verificable",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/IMG_1353.PNG",
+      "sha256": "3efef4afc8186ea2351f26d90929d6beb8aa088ea1ca870af202889a4ccfb8f7",
+      "bytes": 92557,
+      "kind": "recurso",
+      "subject": "Archify: herramienta ya incorporada; no constituye un temario nuevo",
+      "destinations": [
+        "web/public/content/foundations/modulo-7.md"
+      ]
+    },
+    {
+      "file": "imagenes/IMG_1386.PNG",
+      "sha256": "ddc835e2582170b82fee5683cc3dd1bb7b9192c044c5998e6189bcc505dc8f42",
+      "bytes": 82042,
+      "kind": "recurso-no-verificado",
+      "subject": "Publicidad de agente local; rendimiento y licencia no verificados",
+      "destinations": []
+    },
+    {
+      "file": "imagenes/PHOTO-2026-10-20-10-29-12.jpg",
+      "sha256": "2d9720020dbffd850cd973176169623775e59ff7792347293e72ff41dbebb0cd",
+      "bytes": 125551,
+      "kind": "personal",
+      "subject": "Material personal: no se extrae ni publica su contenido",
+      "destinations": []
+    },
+    {
+      "file": "merged.pdf",
+      "sha256": "550a96a489f85dcc1504d62ea892db8d62d9a1f8b0b6a93b89a6e07f6e3ba4af",
+      "bytes": 76288972,
+      "kind": "pdf-compilado",
+      "subject": "69 páginas: usar el índice por página existente",
+      "destinations": [],
+      "duplicateOf": "Recopilacion capturas - prompts IA y recursos de programacion (69 pags).pdf",
+      "pageIndex": "docs/merged-pdf-index.json"
+    }
+  ],
+  "summary": {
+    "files": 35,
+    "uniqueFiles": 33,
+    "images": 33,
+    "pdfFiles": 2
+  },
+  "laboratoryManifest": "examples/rutaflow-material/manifest.json",
+  "pdfPageMapping": "docs/merged-pdf-index.json",
+  "limitations": [
+    "Los recursos promocionales sin índice no permiten reconstruir un libro o curso completo.",
+    "Los enlaces a temas existentes indican localización; no certifican profundidad ni ejecución.",
+    "RAG vectorial y proveedor real, despliegue OSRM con dataset, diagnóstico físico Android y compilación .NET requieren evidencias separadas.",
+    "Electrónica permanece en pausa según el registro de continuación."
+  ]
+}

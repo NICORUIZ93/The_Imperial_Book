@@ -197,6 +197,8 @@ flowchart LR
 
 ### Tema 3: Socket.IO y actualización de rutas
 
+Este cliente requiere un servidor **Socket.IO compatible**. No se conecta al endpoint STOMP del laboratorio Spring Boot 14: ese es un protocolo diferente. Prepara primero el gateway y la prueba de compatibilidad de [RutaFlow: seguimiento en tiempo real](/curso/rutaflow/5). `socket_io_client` 3.x corresponde a servidores Socket.IO 4.7 o superiores de la rama 4.x. El gateway local de ese laboratorio solo acepta ENV-42 con credencial ficticia; la autorización de producción requiere identidad y propiedad verificadas por el servidor.
+
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a aplicar un `JourneyEventReducer` que descarta eventos de posición duplicados o fuera de secuencia recibidos por Socket.IO. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.
 

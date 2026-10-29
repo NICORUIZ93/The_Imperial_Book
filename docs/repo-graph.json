@@ -82,7 +82,7 @@
     },
     {
       "path": "README.md",
-      "lines": 306,
+      "lines": 307,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -540,7 +540,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2828,
+      "lines": 2863,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -558,8 +558,21 @@
       ]
     },
     {
+      "path": "docs/continuacion-material-rutaflow.md",
+      "lines": 31,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Continuaci\u00f3n del material de Proyecto-RutaFlow",
+        "## Referencias examinadas",
+        "## Implementaci\u00f3n",
+        "## Evidencia y l\u00edmites"
+      ]
+    },
+    {
       "path": "docs/course-depth-review.json",
-      "lines": 12183,
+      "lines": 12282,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -567,7 +580,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1103,
+      "lines": 1112,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -578,7 +591,7 @@
     },
     {
       "path": "docs/cruce-rutaflow-vs-repo.md",
-      "lines": 102,
+      "lines": 104,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -600,7 +613,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 48,
+      "lines": 52,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -753,7 +766,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 11811,
+      "lines": 11910,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -808,8 +821,27 @@
       "headings": []
     },
     {
+      "path": "docs/rutaflow-source-index.json",
+      "lines": 364,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/rutaflow-source-index.md",
+      "lines": 53,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Material de Proyecto-RutaFlow y destinos curriculares",
+        "## L\u00edmites y pendientes"
+      ]
+    },
+    {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28213,
+      "lines": 28447,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -844,7 +876,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 23877,
+      "lines": 24075,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -4681,6 +4713,195 @@
       "headings": []
     },
     {
+      "path": "examples/rutaflow-material/README.md",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ejemplos derivados del material solicitado",
+        "## Ejecuci\u00f3n"
+      ]
+    },
+    {
+      "path": "examples/rutaflow-material/capacity/medir.mjs",
+      "lines": 31,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:http",
+        "node:perf_hooks",
+        "node:assert/strict"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/osrm/respuesta.json",
+      "lines": 2,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/osrm/ruta.py",
+      "lines": 44,
+      "kind": "example",
+      "symbols": [
+        "ruta_url",
+        "interpretar"
+      ],
+      "imports": [
+        "argparse",
+        "json",
+        "math",
+        "pathlib",
+        "urllib.request"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/osrm/test_ruta.py",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [
+        "RutaTest"
+      ],
+      "imports": [
+        "unittest",
+        "ruta"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/payments/contrato.mjs",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [
+        "prepararCobro"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/payments/contrato.test.mjs",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:test",
+        "node:assert/strict",
+        "./contrato.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/sagas/compensacion.py",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [
+        "iniciar",
+        "compensar"
+      ],
+      "imports": [
+        "sqlite3"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/sagas/test_compensacion.py",
+      "lines": 21,
+      "kind": "example",
+      "symbols": [
+        "CompensacionTest"
+      ],
+      "imports": [
+        "sqlite3",
+        "tempfile",
+        "pathlib",
+        "unittest",
+        "compensacion"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/socketio/cliente.dart",
+      "lines": 14,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/socketio/gateway.mjs",
+      "lines": 37,
+      "kind": "example",
+      "symbols": [
+        "startGateway"
+      ],
+      "imports": [
+        "express",
+        "node:http",
+        "socket.io"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/socketio/gateway.test.mjs",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:test",
+        "node:assert/strict",
+        "socket.io-client",
+        "./gateway.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/socketio/package.json",
+      "lines": 2,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/socketio/serve.mjs",
+      "lines": 5,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "./gateway.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/spring-ai/src/test/java/academia/ChatToolsTest.java",
+      "lines": 36,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/spring-ai/src/test/java/academia/RagScopeTest.java",
+      "lines": 32,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/verification.json",
+      "lines": 77,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/spring-kafka-rutaflow/compose.yaml",
       "lines": 21,
       "kind": "example",
@@ -5196,7 +5417,7 @@
     },
     {
       "path": "scripts/audit_course_depth.py",
-      "lines": 101,
+      "lines": 103,
       "kind": "automation-script",
       "symbols": [
         "signals",
@@ -5489,7 +5710,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 134,
+      "lines": 135,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -5630,6 +5851,18 @@
         "importlib.util",
         "subprocess",
         "sys"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/validate_rutaflow_material.py",
+      "lines": 26,
+      "kind": "automation-script",
+      "symbols": [],
+      "imports": [
+        "json",
+        "pathlib",
+        "re"
       ],
       "headings": []
     },
@@ -5831,7 +6064,7 @@
     },
     {
       "path": "web/public/content/android/modulo-13.md",
-      "lines": 567,
+      "lines": 612,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7657,7 +7890,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-14.md",
-      "lines": 463,
+      "lines": 465,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7909,7 +8142,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 653,
+      "lines": 724,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8140,7 +8373,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 424,
+      "lines": 485,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10282,7 +10515,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-5.md",
-      "lines": 420,
+      "lines": 671,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10303,7 +10536,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-6.md",
-      "lines": 442,
+      "lines": 508,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10471,7 +10704,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-14.md",
-      "lines": 927,
+      "lines": 929,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10492,7 +10725,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 890,
+      "lines": 988,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10618,7 +10851,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 515,
+      "lines": 676,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10807,7 +11040,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4805,
+      "lines": 4841,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12114,7 +12347,7 @@
     },
     {
       "path": "web/src/app/tracks/android.track.ts",
-      "lines": 206,
+      "lines": 207,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12156,7 +12389,7 @@
     },
     {
       "path": "web/src/app/tracks/foundations.track.ts",
-      "lines": 294,
+      "lines": 296,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12226,7 +12459,7 @@
     },
     {
       "path": "web/src/app/tracks/rutaflow.track.ts",
-      "lines": 54,
+      "lines": 57,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12236,7 +12469,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 290,
+      "lines": 293,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12365,6 +12598,18 @@
     {
       "source": "examples/professional-bridges/rutaflow/contrato.test.mjs",
       "target": "examples/professional-bridges/rutaflow/contrato.mjs"
+    },
+    {
+      "source": "examples/rutaflow-material/payments/contrato.test.mjs",
+      "target": "examples/rutaflow-material/payments/contrato.mjs"
+    },
+    {
+      "source": "examples/rutaflow-material/socketio/gateway.test.mjs",
+      "target": "examples/rutaflow-material/socketio/gateway.mjs"
+    },
+    {
+      "source": "examples/rutaflow-material/socketio/serve.mjs",
+      "target": "examples/rutaflow-material/socketio/gateway.mjs"
     },
     {
       "source": "web/src/app/app.config.ts",

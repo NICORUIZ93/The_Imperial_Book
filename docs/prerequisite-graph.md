@@ -21,19 +21,19 @@ flowchart LR
 
 | Track | Temas ordenados |
 |---|---:|
-| foundations | 97 |
+| foundations | 99 |
 | javascript | 88 |
 | java | 80 |
 | node | 77 |
-| spring-boot | 84 |
+| spring-boot | 87 |
 | angular | 71 |
 | react | 58 |
 | kotlin-multiplatform | 56 |
-| android | 57 |
+| android | 58 |
 | ios | 56 |
 | flutter | 63 |
 | devops | 104 |
 | cloud | 156 |
-| rutaflow | 26 |
+| rutaflow | 29 |
 
-**Total:** 1073 temas.
+**Total:** 1082 temas.

@@ -650,3 +650,74 @@ No dividas el sistema en muchos microservicios. Conserva el núcleo modular y a�
 - Crear una métrica por usuario: controla cardinalidad y privacidad.
 - SLO basado en CPU: vincúlalo con resultado y latencia percibidos por usuario.
 - Postmortem “el operador falló”: investiga por qué una acción humana podía causar impacto sin barreras.
+
+
+## Aplicación del material de referencia
+
+### Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar medirás latencia p95 y peticiones por segundo en dos niveles de concurrencia, conservando el número total de peticiones. **Prerrequisitos:** Node 24, HTTP, promesas y noción de percentil. Es un ejemplo independiente desde carpeta vacía, con servidor local y sin paquetes.
+
+#### Paso 2 · Contexto y caso real
+El panel de RutaFlow consulta entregas y alguien propone «hacer todo en paralelo» para acelerar. **¿Por qué es importante?** Reducir tiempo total de un lote no implica que cada petición sea más rápida ni que el sistema soporte cualquier carga. Capacidad necesita una carga, un objetivo y límites observados.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Latencia es tiempo por petición; throughput es cantidad completada por unidad de tiempo. Concurrencia es trabajo en vuelo. La cola puede aumentar latencia aunque el throughput deje de crecer. p95 no es promedio: aquí ordenamos las muestras y tomamos la posición del percentil empírico.
+
+**Analogía:** abrir más cajas puede despachar más personas por minuto, pero no elimina el tiempo de cada cobro ni la capacidad del almacén. El límite es que nuestra espera asíncrona representa I/O simulado: no es un benchmark de CPU, disco, base de datos ni red real de Internet.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/capacity ejemplo-capacidad
+cd ejemplo-capacidad
+node medir.mjs
+```
+Si creas los archivos manualmente, guarda `medir.mjs` en una carpeta vacía:
+
+Crea `capacity/medir.mjs` con este contenido completo:
+```javascript
+import { createServer } from 'node:http';
+import { performance } from 'node:perf_hooks';
+import assert from 'node:assert/strict';
+
+const server = createServer((_req, res) => setTimeout(() => res.end('ok'), 20));
+await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+const url = `http://127.0.0.1:${server.address().port}`;
+try {
+  for (const concurrency of [1, 4]) {
+    let next = 0;
+    const latencies = [];
+    const started = performance.now();
+    await Promise.all(Array.from({ length: concurrency }, async () => {
+      while (next++ < 12) {
+        const start = performance.now();
+        const response = await fetch(url);
+        assert.equal(await response.text(), 'ok');
+        latencies.push(performance.now() - start);
+      }
+    }));
+    const elapsed = performance.now() - started;
+    latencies.sort((a, b) => a - b);
+    assert.equal(latencies.length, 12);
+    console.log(JSON.stringify({ concurrency, requests: latencies.length,
+      p95Ms: Math.round(latencies[Math.ceil(.95 * latencies.length) - 1]),
+      requestsPerSecond: Math.round(12 / (elapsed / 1000)) }));
+  }
+} finally {
+  await new Promise(resolve => server.close(resolve));
+}
+```
+
+**Resultado esperado:** dos líneas JSON con concurrencia 1 y 4; cada una registra 12 peticiones, p95 y throughput. Los valores exactos varían. Explica cada bloque: el servidor introduce una espera, los workers comparten un contador, se mide hasta consumir el cuerpo y finally cierra el recurso. Verificar 12 respuestas correctas evita presentar errores rápidos como rendimiento.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** calcula peticiones por segundo dividiendo 12 por milisegundos sin convertir a segundos. El número queda mil veces menor. **Pista:** escribe las unidades de numerador y denominador antes de interpretar resultados.
+
+#### Paso 6 · Práctica independiente
+Compara concurrencias 1, 2 y 4 con varias repeticiones. Añade un estado HTTP de fallo y cuéntalo por separado. Explica por qué 12 muestras locales no bastan para fijar un SLO de producción y qué medirías al saturar una dependencia.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** salidas, unidades, errores y condiciones del equipo. El siguiente paso es un ensayo con carga representativa y un presupuesto de recursos. **Errores comunes:** comparar máquinas distintas sin contexto, confundir percentil con máximo y asumir escala lineal para tareas CPU-bound. **Límites y decisión de uso:** no extrapoles esta simulación a una flota real ni prometas una capacidad a partir de una sola ejecución.
+
+**Fuente oficial:** [Node performance hooks](https://nodejs.org/api/perf_hooks.html).

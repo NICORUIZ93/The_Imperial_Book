@@ -887,3 +887,101 @@ Ya reconstruyes el estado de un agregado reproduciendo su historial completo de 
 - **Arquitectura Hexagonal**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
 - **Microservicios Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
 - **Spring Cloud Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
+
+
+## Aplicación del material de referencia
+
+### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar recuperarás una compensación después de un fallo y un reinicio sin aplicar dos veces su efecto. **Prerrequisitos:** saga del tema anterior, transacciones locales, idempotencia y SQLite/Python 3. Es un ejemplo independiente desde carpeta vacía: aísla el participante antes de conectarlo a Kafka u otro coordinador.
+
+#### Paso 2 · Contexto y caso real
+Reservaste inventario y el pago fue rechazado. La liberación de inventario también puede fallar. **¿Por qué es importante?** Devolver «saga terminada» tras capturar la primera excepción oculta trabajo todavía pendiente. El proyecto integrador necesita un estado observable y una acción de recuperación.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Compensar es ejecutar una nueva acción de negocio; no retrocede el tiempo. Se necesita una identidad de operación estable para que un reintento no libere dos veces. En este participante local, el efecto y su marca se guardan en una transacción de SQLite. Un coordinador distribuido además debe persistir qué pidió, qué recibió y qué sigue pendiente.
+
+**Analogía:** devolver un paquete requiere registrar que la devolución ocurrió, no solo enviar una orden y olvidarla. El límite es que múltiples bases y un broker no comparten la transacción SQLite de este ejercicio. No se demuestra atomicidad entre Kafka y una base de datos.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+cp -R examples/rutaflow-material/sagas ejemplo-compensacion
+cd ejemplo-compensacion
+python3 -m unittest test_compensacion.py
+python3 compensacion.py
+```
+Para crear el ejemplo manualmente, guarda estos archivos juntos, sin el prefijo `sagas/`:
+
+Crea `sagas/compensacion.py` con este contenido completo:
+```python
+import sqlite3
+
+
+def iniciar(db):
+    db.executescript('''CREATE TABLE IF NOT EXISTS stock(id TEXT PRIMARY KEY, cantidad INTEGER);
+    CREATE TABLE IF NOT EXISTS compensaciones(id TEXT PRIMARY KEY, estado TEXT);
+    INSERT OR IGNORE INTO stock VALUES ('reserva-42', 9);
+    INSERT OR IGNORE INTO compensaciones VALUES ('liberar-42', 'PENDIENTE');''')
+
+
+def compensar(db, falla=False):
+    estado = db.execute("SELECT estado FROM compensaciones WHERE id='liberar-42'").fetchone()[0]
+    if estado == 'HECHA':
+        return
+    if falla:
+        raise ConnectionError('Inventario temporalmente no disponible')
+    # El efecto y su marcador son atómicos EN ESTA base local del participante.
+    with db:
+        db.execute("UPDATE stock SET cantidad=cantidad+1 WHERE id='reserva-42'")
+        db.execute("UPDATE compensaciones SET estado='HECHA' WHERE id='liberar-42'")
+
+
+if __name__ == '__main__':
+    with sqlite3.connect('saga.db') as db:
+        iniciar(db)
+        try:
+            compensar(db, falla=True)
+        except ConnectionError:
+            print('Compensación pendiente; requiere reintento')
+        compensar(db)
+        compensar(db)
+        print('Stock final:', db.execute('SELECT cantidad FROM stock').fetchone()[0])
+```
+
+Crea `sagas/test_compensacion.py` con este contenido completo:
+```python
+import sqlite3
+import tempfile
+from pathlib import Path
+import unittest
+from compensacion import iniciar, compensar
+
+class CompensacionTest(unittest.TestCase):
+    def test_reinicio_y_reintento_no_duplican_efecto(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'saga.db'
+            with sqlite3.connect(path) as db:
+                iniciar(db)
+                with self.assertRaises(ConnectionError): compensar(db, falla=True)
+                self.assertEqual('PENDIENTE', db.execute('SELECT estado FROM compensaciones').fetchone()[0])
+            with sqlite3.connect(path) as db:
+                compensar(db)
+                compensar(db)
+                self.assertEqual(10, db.execute('SELECT cantidad FROM stock').fetchone()[0])
+                self.assertEqual('HECHA', db.execute('SELECT estado FROM compensaciones').fetchone()[0])
+if __name__=='__main__':unittest.main()
+```
+
+**Resultado esperado:** una prueba correcta; al ejecutar el programa por primera vez aparece compensación pendiente y stock final 10. Explica cada bloque: el identificador `liberar-42` conserva la operación, el fallo mantiene PENDIENTE, el reinicio abre el mismo archivo y el segundo intento comprueba HECHA antes de repetir el efecto. La prueba utiliza una base temporal y verifica la cantidad final, no solo una lista de mensajes.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** elimina la salida temprana cuando el estado es HECHA. Repite la prueba: el stock sube otra vez y falla la expectativa 10. **Pista:** reintentar requiere reconocer el mismo comando; no generes un ID nuevo por cada intento.
+
+#### Paso 6 · Práctica independiente
+Añade contador de intentos, próximo instante permitido y estado de revisión manual tras un límite. Después diseña outbox/inbox para notificar la compensación confirmada sin perder el evento ni duplicar su efecto. No uses un sleep ilimitado dentro de una transacción.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** fallo, estado persistido antes del reinicio, recuperación y cantidad final. El siguiente paso es probar dos participantes y reentrega real de mensajes. **Errores comunes:** confundir compensación con rollback global, marcar HECHA antes del efecto y reintentar sin observabilidad ni límite. **Límites y decisión de uso:** esta muestra serial no prueba concurrencia entre múltiples consumidores; una variante concurrente necesita bloqueo o transición condicional y pruebas de carreras.
+
+**Fuente oficial:** [patrón Saga](https://microservices.io/patterns/data/saga.html).

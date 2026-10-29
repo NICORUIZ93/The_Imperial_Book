@@ -172,6 +172,7 @@ export const ANDROID_MODULES: CourseModule[] = [
   m(13, 'Android en producción: seguridad, sincronización y calidad', 'Producción Android', 'Experto', '8 h', '#3ddc84',
     'Endurece la app offline-first para dispositivos y redes hostiles: minimiza datos y permisos, protege claves y componentes, resuelve conflictos de sincronización, diagnostica ANR/crashes y despliega gradualmente con rollback y privacidad verificables.',
     [
+      'Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado',
       'Threat model móvil, permisos, componentes exportados, deep links y red segura',
       'Android Keystore, datos sensibles, backups, logs, screenshots y secretos',
       'Outbox local, idempotencia, versiones, conflictos, WorkManager y reconciliación',

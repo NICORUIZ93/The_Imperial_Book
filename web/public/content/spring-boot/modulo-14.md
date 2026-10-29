@@ -634,6 +634,8 @@ La autorización por roles con JWT Bearer de este tema es la que protegerá los 
 
 ### Tema 5: Tiempo real con STOMP
 
+Este laboratorio conserva la variante nativa de Spring con STOMP. Para seguir el temario original de Socket.IO junto al cliente Flutter, utiliza el gateway compatible de [RutaFlow 5](/curso/rutaflow/5). STOMP y Socket.IO no son intercambiables aunque ambos puedan transportar datos sobre WebSocket. Para identidad mediante Keycloak/OIDC consulta también [Spring Boot 10](/curso/spring-boot/10); un ID de envío recibido del cliente no sustituye autorización por recurso.
+
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás conectar un cliente STOMP real (`WebSocketStompClient`, el cliente de test oficial de Spring) contra un servidor embebido, y confirmar que un mensaje publicado en un topic llega realmente al suscriptor, con secuencia y deduplicación.

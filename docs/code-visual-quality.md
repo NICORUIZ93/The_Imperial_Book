@@ -4,7 +4,7 @@ Mide únicamente contenido dentro de cada tema. Las guías transversales no cuen
 
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Fuente oficial |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| foundations | 97 | 97 | 67 | 69 | 6 | 0 | 0 | 97 | 97 | 11 |
+| foundations | 99 | 99 | 67 | 69 | 6 | 0 | 0 | 98 | 99 | 13 |
 | cloud | 156 | 156 | 71 | 80 | 4 | 18 | 0 | 156 | 156 | 140 |
 | devops | 104 | 104 | 51 | 54 | 1 | 43 | 0 | 104 | 103 | 34 |
 | javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 68 |
@@ -12,13 +12,13 @@ Mide únicamente contenido dentro de cada tema. Las guías transversales no cuen
 | angular | 71 | 71 | 69 | 30 | 0 | 20 | 0 | 71 | 70 | 59 |
 | react | 58 | 58 | 36 | 37 | 0 | 9 | 0 | 58 | 58 | 39 |
 | java | 80 | 80 | 56 | 22 | 3 | 0 | 0 | 80 | 80 | 41 |
-| spring-boot | 84 | 84 | 68 | 44 | 4 | 20 | 0 | 84 | 84 | 62 |
+| spring-boot | 87 | 87 | 70 | 44 | 4 | 20 | 0 | 87 | 87 | 64 |
 | kotlin-multiplatform | 56 | 56 | 36 | 31 | 0 | 22 | 0 | 56 | 56 | 42 |
-| android | 57 | 57 | 52 | 14 | 0 | 40 | 0 | 57 | 57 | 54 |
+| android | 58 | 58 | 52 | 14 | 0 | 40 | 0 | 57 | 57 | 55 |
 | ios | 56 | 56 | 26 | 30 | 0 | 16 | 0 | 56 | 56 | 56 |
 | flutter | 63 | 63 | 23 | 51 | 0 | 15 | 0 | 63 | 63 | 52 |
-| rutaflow | 26 | 26 | 25 | 24 | 0 | 0 | 0 | 26 | 24 | 7 |
-| **Total** | **1073** | **1073** | **694** | **567** | **18** | **216** | **0** | **1073** | **1069** | **711** |
+| rutaflow | 29 | 29 | 27 | 24 | 0 | 0 | 0 | 28 | 27 | 7 |
+| **Total** | **1082** | **1082** | **698** | **567** | **18** | **216** | **0** | **1079** | **1077** | **716** |
 
 ## Regla editorial
 

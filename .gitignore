@@ -49,3 +49,8 @@ web/public/visuals/**/*.delivery.json
 
 # pubspec.lock de paquetes Flutter (no se versiona)
 examples/flutter-testing/pubspec.lock
+
+# Artefactos Maven de los laboratorios procedentes del material de referencia
+/examples/rutaflow-material/**/target/
+/examples/rutaflow-material/**/bin/
+/examples/rutaflow-material/**/obj/

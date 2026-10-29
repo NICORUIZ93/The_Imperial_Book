@@ -6,20 +6,20 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
-| foundations | 97 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
+| foundations | 99 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 77 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 80 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 84 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| android | 57 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
+| spring-boot | 87 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 104 | 2 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
-| rutaflow | 26 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
+| rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
 
@@ -48,6 +48,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | android / 13 | [Tema 2: Proteger datos exige conocer copias y ciclo de vida](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 3: Offline-first necesita un protocolo de cambios](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 4: La calidad se opera por dispositivo y versión](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 13 | [Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 14 | [Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 14 | [Tema 2: Finders, assertions y actions navegan el árbol semántico](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 14 | [Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
@@ -493,6 +494,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | foundations / 10 | [Tema 3: Mensajes que se procesan con efectos exactamente una vez](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 10 | [Tema 4: Resiliencia y observabilidad orientadas a objetivos](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 10 | [Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 10 | [Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 1: Sistemas, arquitectura y sistemas operativos](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 2: Algoritmos, autómatas, lenguajes y compiladores](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 3: Bases de datos, almacenes analíticos y minería de datos](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
@@ -566,6 +568,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | foundations / 7 | [Tema 2: Arquitectura guiada por atributos de calidad](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 3: Diseño modular, principios, patrones y refactoring](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 4: Decisiones, documentación, deuda y evolución](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 7 | [Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 1: El sistema operativo como administrador y frontera](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 2: Memoria y concurrencia sin magia](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 3: Linux como entorno observable](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1009,9 +1012,12 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | rutaflow / 5 | [Tema 1: Grafos y problema de rutas](../web/public/content/rutaflow/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 5 | [Tema 2: Geocoding y map matching](../web/public/content/rutaflow/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 5 | [Tema 3: Streaming y ETA con incertidumbre](../web/public/content/rutaflow/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| rutaflow / 5 | [Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil](../web/public/content/rutaflow/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| rutaflow / 5 | [Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable](../web/public/content/rutaflow/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 6 | [Tema 1: Cotización y facturación reproducible](../web/public/content/rutaflow/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 6 | [Tema 2: Recaudo, liquidación y conciliación](../web/public/content/rutaflow/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 6 | [Tema 3: Fraude responsable](../web/public/content/rutaflow/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| rutaflow / 6 | [Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación](../web/public/content/rutaflow/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 7 | [Tema 1: Infraestructura y entrega segura](../web/public/content/rutaflow/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 7 | [Tema 2: SLO y respuesta a incidentes](../web/public/content/rutaflow/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 7 | [Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend)](../web/public/content/rutaflow/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1052,6 +1058,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 15 | [Tema 4: Bulkhead y RateLimiter de Resilience4j](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 15 | [Tema 5: Saga con compensación real](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 15 | [Tema 6: Event Sourcing con replay real](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida](../web/public/content/spring-boot/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
 | spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1072,6 +1079,8 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 20 | [Tema 5: @Async y ejecutores: trabajo en segundo plano con límites](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 20 | [Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | clase-java-no-visible |

@@ -1,23 +1,23 @@
 {
   "summary": {
     "android": {
-      "topics": 57,
-      "objective": 57,
-      "prerequisites": 57,
-      "context": 57,
-      "theoryAnalogy": 57,
+      "topics": 58,
+      "objective": 58,
+      "prerequisites": 58,
+      "context": 58,
+      "theoryAnalogy": 58,
       "guidedDemo": 57,
-      "codeExplanation": 57,
-      "execution": 57,
-      "expectedResult": 57,
-      "deliberateFailure": 57,
-      "guidedPractice": 57,
-      "independentPractice": 57,
-      "closure": 57,
-      "commonErrors": 57,
-      "resources": 57,
-      "standaloneExample": 57,
-      "learningEvidence": 57,
+      "codeExplanation": 58,
+      "execution": 58,
+      "expectedResult": 58,
+      "deliberateFailure": 58,
+      "guidedPractice": 58,
+      "independentPractice": 58,
+      "closure": 58,
+      "commonErrors": 58,
+      "resources": 58,
+      "standaloneExample": 58,
+      "learningEvidence": 58,
       "complete": 57
     },
     "angular": {
@@ -101,24 +101,24 @@
       "complete": 63
     },
     "foundations": {
-      "topics": 97,
-      "objective": 97,
-      "prerequisites": 97,
-      "context": 97,
-      "theoryAnalogy": 97,
-      "guidedDemo": 97,
-      "codeExplanation": 97,
-      "execution": 97,
-      "expectedResult": 97,
-      "deliberateFailure": 97,
-      "guidedPractice": 97,
-      "independentPractice": 97,
-      "closure": 97,
-      "commonErrors": 97,
-      "resources": 97,
-      "standaloneExample": 97,
-      "learningEvidence": 97,
-      "complete": 97
+      "topics": 99,
+      "objective": 99,
+      "prerequisites": 99,
+      "context": 99,
+      "theoryAnalogy": 99,
+      "guidedDemo": 98,
+      "codeExplanation": 99,
+      "execution": 98,
+      "expectedResult": 99,
+      "deliberateFailure": 99,
+      "guidedPractice": 99,
+      "independentPractice": 99,
+      "closure": 99,
+      "commonErrors": 99,
+      "resources": 99,
+      "standaloneExample": 99,
+      "learningEvidence": 99,
+      "complete": 98
     },
     "ios": {
       "topics": 56,
@@ -241,44 +241,44 @@
       "complete": 58
     },
     "rutaflow": {
-      "topics": 26,
-      "objective": 26,
-      "prerequisites": 26,
-      "context": 26,
-      "theoryAnalogy": 26,
-      "guidedDemo": 26,
-      "codeExplanation": 26,
-      "execution": 26,
-      "expectedResult": 26,
-      "deliberateFailure": 26,
-      "guidedPractice": 26,
-      "independentPractice": 26,
-      "closure": 26,
-      "commonErrors": 26,
-      "resources": 26,
-      "standaloneExample": 26,
-      "learningEvidence": 26,
-      "complete": 26
+      "topics": 29,
+      "objective": 29,
+      "prerequisites": 29,
+      "context": 29,
+      "theoryAnalogy": 29,
+      "guidedDemo": 29,
+      "codeExplanation": 29,
+      "execution": 29,
+      "expectedResult": 29,
+      "deliberateFailure": 29,
+      "guidedPractice": 29,
+      "independentPractice": 29,
+      "closure": 29,
+      "commonErrors": 29,
+      "resources": 29,
+      "standaloneExample": 29,
+      "learningEvidence": 28,
+      "complete": 28
     },
     "spring-boot": {
-      "topics": 84,
-      "objective": 84,
-      "prerequisites": 84,
-      "context": 84,
-      "theoryAnalogy": 84,
-      "guidedDemo": 84,
-      "codeExplanation": 84,
-      "execution": 84,
-      "expectedResult": 84,
-      "deliberateFailure": 84,
-      "guidedPractice": 84,
-      "independentPractice": 84,
-      "closure": 84,
-      "commonErrors": 84,
-      "resources": 84,
-      "standaloneExample": 84,
-      "learningEvidence": 84,
-      "complete": 84
+      "topics": 87,
+      "objective": 87,
+      "prerequisites": 87,
+      "context": 87,
+      "theoryAnalogy": 87,
+      "guidedDemo": 87,
+      "codeExplanation": 87,
+      "execution": 87,
+      "expectedResult": 87,
+      "deliberateFailure": 87,
+      "guidedPractice": 87,
+      "independentPractice": 87,
+      "closure": 87,
+      "commonErrors": 87,
+      "resources": 87,
+      "standaloneExample": 87,
+      "learningEvidence": 87,
+      "complete": 87
     }
   },
   "topics": {
@@ -827,6 +827,32 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": false
         }
       },
       {
@@ -12410,6 +12436,32 @@
         }
       },
       {
+        "module": 10,
+        "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 11,
         "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
         "criteria": {
@@ -14305,6 +14357,32 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": false,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
         }
       },
       {
@@ -25840,6 +25918,58 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Cotización y facturación reproducible",
         "criteria": {
@@ -25894,6 +26024,32 @@
       {
         "module": 6,
         "topic": "Tema 3: Fraude responsable",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -26960,6 +27116,32 @@
         }
       },
       {
+        "module": 15,
+        "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 16,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
         "criteria": {
@@ -27456,6 +27638,58 @@
       {
         "module": 20,
         "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "criteria": {
           "objective": true,
           "prerequisites": true,

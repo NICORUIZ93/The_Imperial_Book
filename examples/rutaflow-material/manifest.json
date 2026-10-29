@@ -1,0 +1,120 @@
+[
+  {
+    "track": "rutaflow",
+    "module": 5,
+    "title": "Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+    "lesson": "web/public/content/rutaflow/modulo-5.md",
+    "examples": [
+      "examples/rutaflow-material/socketio/package.json",
+      "examples/rutaflow-material/socketio/gateway.mjs",
+      "examples/rutaflow-material/socketio/gateway.test.mjs",
+      "examples/rutaflow-material/socketio/serve.mjs",
+      "examples/rutaflow-material/socketio/cliente.dart"
+    ],
+    "sourceFiles": [
+      "imagenes/IMG_1030.PNG"
+    ]
+  },
+  {
+    "track": "spring-boot",
+    "module": 20,
+    "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+    "lesson": "web/public/content/spring-boot/modulo-20.md",
+    "examples": [
+      "examples/rutaflow-material/spring-ai/pom.xml",
+      "examples/rutaflow-material/spring-ai/src/test/java/academia/ChatToolsTest.java"
+    ],
+    "sourceFiles": [
+      "imagenes/1832B290-561D-4287-A11B-A051A72603E2.PNG"
+    ]
+  },
+  {
+    "track": "spring-boot",
+    "module": 20,
+    "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+    "lesson": "web/public/content/spring-boot/modulo-20.md",
+    "examples": [
+      "examples/rutaflow-material/spring-ai/src/test/java/academia/RagScopeTest.java"
+    ],
+    "sourceFiles": [
+      "imagenes/1832B290-561D-4287-A11B-A051A72603E2.PNG"
+    ]
+  },
+  {
+    "track": "foundations",
+    "module": 7,
+    "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
+    "lesson": "web/public/content/foundations/modulo-7.md",
+    "examples": [
+      "examples/rutaflow-material/records-csharp/Records.csproj",
+      "examples/rutaflow-material/records-csharp/Program.cs"
+    ],
+    "sourceFiles": [
+      "Captura de pantalla 2026-10-29 a la(s) 10.53.15 a.m..png"
+    ]
+  },
+  {
+    "track": "rutaflow",
+    "module": 5,
+    "title": "OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+    "lesson": "web/public/content/rutaflow/modulo-5.md",
+    "examples": [
+      "examples/rutaflow-material/osrm/ruta.py",
+      "examples/rutaflow-material/osrm/respuesta.json",
+      "examples/rutaflow-material/osrm/test_ruta.py"
+    ],
+    "sourceFiles": [
+      "imagenes/DA1606C0-14B3-4679-868E-3109B9C323B0.PNG",
+      "imagenes/IMG_1030.PNG"
+    ]
+  },
+  {
+    "track": "spring-boot",
+    "module": 15,
+    "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+    "lesson": "web/public/content/spring-boot/modulo-15.md",
+    "examples": [
+      "examples/rutaflow-material/sagas/compensacion.py",
+      "examples/rutaflow-material/sagas/test_compensacion.py"
+    ],
+    "sourceFiles": [
+      "Captura de pantalla 2026-10-29 a la(s) 10.46.40 a.m..png",
+      "Captura de pantalla 2026-10-29 a la(s) 10.48.04 a.m..png"
+    ]
+  },
+  {
+    "track": "foundations",
+    "module": 10,
+    "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+    "lesson": "web/public/content/foundations/modulo-10.md",
+    "examples": [
+      "examples/rutaflow-material/capacity/medir.mjs"
+    ],
+    "sourceFiles": [
+      "Captura de pantalla 2026-10-29 a la(s) 11.00.14 a.m..png"
+    ]
+  },
+  {
+    "track": "rutaflow",
+    "module": 6,
+    "title": "Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
+    "lesson": "web/public/content/rutaflow/modulo-6.md",
+    "examples": [
+      "examples/rutaflow-material/payments/contrato.mjs",
+      "examples/rutaflow-material/payments/contrato.test.mjs"
+    ],
+    "sourceFiles": [
+      "imagenes/131607D4-2F83-4CF8-BC54-CFB2CFF588A7.PNG"
+    ]
+  },
+  {
+    "track": "android",
+    "module": 13,
+    "title": "Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+    "lesson": "web/public/content/android/modulo-13.md",
+    "examples": [],
+    "sourceFiles": [
+      "imagenes/E0931544-6A91-4E88-9F60-290FCB124816.PNG"
+    ]
+  }
+]

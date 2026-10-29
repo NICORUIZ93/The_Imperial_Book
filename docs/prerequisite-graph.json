@@ -485,6 +485,17 @@
       ]
     },
     {
+      "id": "foundations:7:5",
+      "track": "foundations",
+      "module": 7,
+      "position": 5,
+      "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
+      "file": "web/public/content/foundations/modulo-7.md",
+      "requires": [
+        "foundations:7:4"
+      ]
+    },
+    {
       "id": "foundations:8:1",
       "track": "foundations",
       "module": 8,
@@ -492,7 +503,7 @@
       "title": "El sistema operativo como administrador y frontera",
       "file": "web/public/content/foundations/modulo-8.md",
       "requires": [
-        "foundations:7:4"
+        "foundations:7:5"
       ]
     },
     {
@@ -639,6 +650,17 @@
       ]
     },
     {
+      "id": "foundations:10:6",
+      "track": "foundations",
+      "module": 10,
+      "position": 6,
+      "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+      "file": "web/public/content/foundations/modulo-10.md",
+      "requires": [
+        "foundations:10:5"
+      ]
+    },
+    {
       "id": "foundations:11:1",
       "track": "foundations",
       "module": 11,
@@ -646,7 +668,7 @@
       "title": "Sistemas, arquitectura y sistemas operativos",
       "file": "web/public/content/foundations/modulo-11.md",
       "requires": [
-        "foundations:10:5"
+        "foundations:10:6"
       ]
     },
     {
@@ -4507,6 +4529,17 @@
       ]
     },
     {
+      "id": "spring-boot:15:7",
+      "track": "spring-boot",
+      "module": 15,
+      "position": 7,
+      "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+      "file": "web/public/content/spring-boot/modulo-15.md",
+      "requires": [
+        "spring-boot:15:6"
+      ]
+    },
+    {
       "id": "spring-boot:16:1",
       "track": "spring-boot",
       "module": 16,
@@ -4514,7 +4547,7 @@
       "title": "Relaciones, lado propietario y ciclo de vida",
       "file": "web/public/content/spring-boot/modulo-16.md",
       "requires": [
-        "spring-boot:15:6"
+        "spring-boot:15:7"
       ]
     },
     {
@@ -4661,6 +4694,28 @@
       ]
     },
     {
+      "id": "spring-boot:20:7",
+      "track": "spring-boot",
+      "module": 20,
+      "position": 7,
+      "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "file": "web/public/content/spring-boot/modulo-20.md",
+      "requires": [
+        "spring-boot:20:6"
+      ]
+    },
+    {
+      "id": "spring-boot:20:8",
+      "track": "spring-boot",
+      "module": 20,
+      "position": 8,
+      "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+      "file": "web/public/content/spring-boot/modulo-20.md",
+      "requires": [
+        "spring-boot:20:7"
+      ]
+    },
+    {
       "id": "spring-boot:21:1",
       "track": "spring-boot",
       "module": 21,
@@ -4668,7 +4723,7 @@
       "title": "Productor, tópico, key y consumidor",
       "file": "web/public/content/spring-boot/modulo-21.md",
       "requires": [
-        "spring-boot:20:6"
+        "spring-boot:20:8"
       ]
     },
     {
@@ -7246,6 +7301,17 @@
       ]
     },
     {
+      "id": "android:13:5",
+      "track": "android",
+      "module": 13,
+      "position": 5,
+      "title": "Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
+      "file": "web/public/content/android/modulo-13.md",
+      "requires": [
+        "android:13:4"
+      ]
+    },
+    {
       "id": "android:14:1",
       "track": "android",
       "module": 14,
@@ -7253,7 +7319,7 @@
       "title": "ComposeTestRule ejecuta tu UI sin emulador visible",
       "file": "web/public/content/android/modulo-14.md",
       "requires": [
-        "android:13:4"
+        "android:13:5"
       ]
     },
     {
@@ -11730,6 +11796,28 @@
       ]
     },
     {
+      "id": "rutaflow:5:4",
+      "track": "rutaflow",
+      "module": 5,
+      "position": 4,
+      "title": "Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
+      "file": "web/public/content/rutaflow/modulo-5.md",
+      "requires": [
+        "rutaflow:5:3"
+      ]
+    },
+    {
+      "id": "rutaflow:5:5",
+      "track": "rutaflow",
+      "module": 5,
+      "position": 5,
+      "title": "OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
+      "file": "web/public/content/rutaflow/modulo-5.md",
+      "requires": [
+        "rutaflow:5:4"
+      ]
+    },
+    {
       "id": "rutaflow:6:1",
       "track": "rutaflow",
       "module": 6,
@@ -11737,7 +11825,7 @@
       "title": "Cotización y facturación reproducible",
       "file": "web/public/content/rutaflow/modulo-6.md",
       "requires": [
-        "rutaflow:5:3"
+        "rutaflow:5:5"
       ]
     },
     {
@@ -11763,6 +11851,17 @@
       ]
     },
     {
+      "id": "rutaflow:6:4",
+      "track": "rutaflow",
+      "module": 6,
+      "position": 4,
+      "title": "Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
+      "file": "web/public/content/rutaflow/modulo-6.md",
+      "requires": [
+        "rutaflow:6:3"
+      ]
+    },
+    {
       "id": "rutaflow:7:1",
       "track": "rutaflow",
       "module": 7,
@@ -11770,7 +11869,7 @@
       "title": "Infraestructura y entrega segura",
       "file": "web/public/content/rutaflow/modulo-7.md",
       "requires": [
-        "rutaflow:6:3"
+        "rutaflow:6:4"
       ]
     },
     {

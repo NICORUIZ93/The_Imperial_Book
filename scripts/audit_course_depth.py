@@ -53,6 +53,8 @@ def signals(demo: str) -> list[str]:
 
 def build() -> dict:
     manifest = json.loads((ROOT / 'examples/professional-bridges/manifest.json').read_text())
+    material = ROOT / 'examples/rutaflow-material/manifest.json'
+    if material.exists(): manifest += json.loads(material.read_text())
     new_topics = {(x['track'], x['module'], x['title']) for x in manifest}
     rows = []
     for path in sorted((ROOT / 'web/public/content').glob('*/modulo-*.md')):

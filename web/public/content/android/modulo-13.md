@@ -564,3 +564,48 @@ Derivado de la [documentación oficial](https://developer.android.com/develop), 
 
 Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
 <!-- OFFICIAL-TOPIC-ATLAS:END -->
+
+
+## Aplicación del material de referencia
+
+### Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar recogerás evidencias de memoria, estado térmico y arranque en un dispositivo de pruebas, distinguiendo mediciones disponibles de garantías de seguridad. **Prerrequisitos:** Android Studio, Platform Tools, una app de laboratorio instalada y autorización de depuración del dispositivo. Ejemplo independiente: usa la app Restauracion del módulo 4 o una copia propia; no necesitas modificar el kernel.
+
+#### Paso 2 · Contexto y caso real
+Una app de entregas puede funcionar en pruebas cortas y perder fluidez después de usar GPS y pantalla durante un periodo prolongado. **¿Por qué es importante?** El sistema físico participa: consumo de energía, memoria y límites térmicos condicionan el trabajo. Una captura que promociona un libro no demuestra la causa del problema de tu dispositivo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un SoC integra varias unidades de cómputo; CPU y GPU no son recursos ilimitados. La jerarquía de memoria y la presión del sistema cambian el rendimiento. La gestión térmica puede reducir trabajo o rendimiento para proteger el dispositivo. Verified Boot establece una cadena de confianza al arrancar; leer una propiedad con ADB no equivale a una atestación remota validada.
+
+**Analogía:** una cocina comparte energía, espacio y ventilación. Añadir más encargos no aumenta la capacidad física. El límite es que ese modelo no identifica un cuello de botella: hay que medir y correlacionar, sin forzar temperaturas peligrosas ni desactivar protecciones.
+
+#### Paso 4 · Demostración guiada desde cero
+Crea una carpeta vacía para conservar evidencia y confirma el dispositivo autorizado:
+```bash
+mkdir diagnostico-android
+cd diagnostico-android
+adb devices
+adb shell dumpsys -l
+```
+Con un único dispositivo de laboratorio seleccionado, ejecuta:
+```bash
+adb shell dumpsys meminfo com.example.restauracion > memoria.txt
+adb shell dumpsys thermalservice > termico.txt
+adb shell getprop ro.boot.verifiedbootstate > arranque.txt
+```
+Crea `README.md` con modelo, versión de Android, paquete de la app, estado de carga, condiciones de la prueba y los comandos. **Resultado esperado:** archivos con la información que el dispositivo exponga. Algunos emuladores o fabricantes no exponen todos los sensores o propiedades; un archivo vacío o permiso denegado se registra como ausencia de evidencia, no como «dispositivo seguro».
+
+Explica cada bloque: ADB identifica el destino, dumpsys consulta servicios disponibles y las redirecciones conservan la salida en archivos del computador. `meminfo` del paquete observa memoria atribuida al proceso, no toda la jerarquía de cachés del SoC. `thermalservice` refleja lo que publica el servicio, no una temperatura universal comparable entre modelos.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** sustituye el paquete por `com.example.noexiste`. Observa que no hay proceso correspondiente y compáralo con `adb shell pidof com.example.restauracion`. **Pista:** comprueba identidad y estado de ejecución antes de inferir que la app consume cero memoria. Corrige el paquete y abre la app.
+
+#### Paso 6 · Práctica independiente
+Toma dos muestras durante un flujo normal de prueba, sin calentamiento artificial ni estrés peligroso. Relaciona los tiempos y las acciones con lo observado; no concluyas causalidad solo porque dos valores cambiaron. Define qué información complementaria recogerías con profiler, trazas y pruebas en dispositivo físico.
+
+#### Paso 7 · Cierre y evidencia
+**Evidencia de aprendizaje:** tres archivos, condiciones, fallo de paquete y limitaciones de visibilidad. El siguiente paso es vincular la adaptación de carga a APIs de estado térmico y un presupuesto de rendimiento medido. **Errores comunes:** comparar emulador y teléfono como equivalentes, interpretar una propiedad vacía como garantía y desactivar medidas de protección. **Límites y decisión de uso:** no se ensaya root, desbloqueo de bootloader ni atestación; esas acciones no son necesarias para este diagnóstico.
+
+**Fuentes oficiales:** [dumpsys](https://developer.android.com/tools/dumpsys), [mitigación térmica](https://source.android.com/docs/core/power/thermal-mitigation) y [Verified Boot](https://source.android.com/docs/security/features/verifiedboot).

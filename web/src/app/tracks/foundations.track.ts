@@ -157,6 +157,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
   m(7, 'Requisitos, diseño, arquitectura y mantenimiento', 'Ingeniería de software', 'Integración', '12 h', '#6d5dfc',
     'Diseña software como sistema mantenible: convierte necesidades en requisitos verificables, prioriza atributos de calidad, define límites arquitectónicos y documenta decisiones y evolución.',
     [
+      'Records de C#: igualdad por valor no implica inmutabilidad profunda',
       'Stakeholders, requisitos funcionales/no funcionales, historias y criterios',
       'Atributos de calidad, arquitectura, dependencias y diagramas C4',
       'Cohesión, acoplamiento, SOLID, patrones y refactoring',
@@ -220,6 +221,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
   m(10, 'Sistemas distribuidos, resiliencia y observabilidad', 'Sistemas distribuidos', 'Experto', '14 h', '#6d5dfc',
     'Evoluciona el inventario hacia componentes que se comunican por red y aprende a diseñar bajo fallos parciales, mensajes duplicados, relojes imperfectos y dependencias lentas mediante invariantes, idempotencia y evidencia operativa.',
     [
+      'Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada',
       'Fallos parciales, latencia, tiempo, orden causal y límites de red',
       'Replicación, particiones, consistencia, consenso y compromisos CAP',
       'Mensajería, entrega, idempotencia, reintentos, outbox y sagas',

@@ -34,13 +34,16 @@ export const RUTAFLOW_MODULES: CourseModule[] = [
     ['Flutter', 'Dart', 'SQLite', 'MapLibre'], 'App Flutter del conductor operable offline con GPS medido, evidencia de entrega y sincronización idempotente.'),
   m(5, 'Rutas, mapas y seguimiento en tiempo real', 'Rutas y tiempo real', 'Experto', '12 h', '#f97316',
     'Conecta geocodificación, matrices de distancia, heurísticas de rutas, streaming GPS y estimaciones sin presentar aproximaciones como certezas.',
-    ['Grafos y VRP', 'Geocoding y map matching', 'WebSocket/SSE y backpressure', 'ETA, precisión y datos tardíos'],
+    [
+      'OSRM: del contrato de coordenadas a una respuesta de ruta verificable',
+      'Socket.IO extremo a extremo: un gateway compatible con el cliente móvil','Grafos y VRP', 'Geocoding y map matching', 'WebSocket/SSE y backpressure', 'ETA, precisión y datos tardíos'],
     ['Compara heurísticas', 'Simula mil conductores', 'Ordena eventos fuera de secuencia', 'Calcula ETA con intervalo'],
     ['¿Por qué la ruta más corta puede ser operativamente inválida?', '¿Cómo se procesa una posición tardía?'],
     ['Python', 'PostGIS', 'MapLibre', 'OpenTelemetry'], 'Simulador de rutas y tracking en tiempo real con métricas, incertidumbre y pruebas de carga.'),
   m(6, 'Facturación, recaudo, liquidaciones y fraude', 'Finanzas y riesgo', 'Experto', '12 h', '#f97316',
     'Implementa tarifas versionadas, factura, recaudo contra entrega, liquidación de conductores, conciliación y controles de riesgo auditables.',
-    ['Tarifas y vigencia', 'Doble partida y reversos', 'Conciliación e impuestos', 'Señales de fraude y revisión humana'],
+    [
+      'Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación','Tarifas y vigencia', 'Doble partida y reversos', 'Conciliación e impuestos', 'Señales de fraude y revisión humana'],
     ['Calcula una cotización reproducible', 'Registra recaudo balanceado', 'Concilia diferencias', 'Modela reverso y disputa'],
     ['¿Por qué una corrección contable es otro movimiento?', '¿Qué riesgo tiene bloquear automáticamente por GPS?'],
     ['Java', 'Spring Boot', 'PostgreSQL'], 'Subsistema financiero balanceado con tarifas, recaudo, liquidación, conciliación y auditoría.'),
