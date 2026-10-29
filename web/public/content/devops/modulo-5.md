@@ -483,6 +483,183 @@ Ya diseñas y simulas un rollback que actúa más rápido que cualquier supervis
 - **El feature flag requiere reiniciar la aplicación completa.** Si lees la variable solo al arrancar, necesitas recarga en caliente o aceptar el reinicio.
 - **No sabes qué métrica usar para el rollback automático.** Empieza con la tasa de error HTTP 5xx como señal de partida razonable.
 
+### Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar distinguirás un experimento A/B de un canary y de un despliegue
+shadow, asignarás una variante de forma determinista y protegerás la respuesta
+real cuando una segunda versión solo observa tráfico. **Prerrequisitos:** los
+Temas 1–3 de este módulo, HTTP, una función y pruebas con Node.js 20 o superior.
+El ejemplo es independiente y no requiere Kubernetes, una cuenta cloud ni
+tráfico real.
+
+#### Paso 2 · Contexto y caso real
+
+La captura de referencia resume siete estrategias: rolling update, recreate,
+blue/green, canary, A/B y shadow (las dos primeras ya aparecen también en el
+Módulo 7). No son sinónimos:
+
+- **A/B** asigna grupos comparables a variantes y mide una métrica de producto;
+  la asignación debe ser estable para que una persona no cambie de versión en
+  cada petición.
+- **Shadow** duplica una petición hacia la candidata, pero entrega al usuario
+  únicamente la respuesta estable y descarta la respuesta espejo.
+- **Canary** limita el porcentaje de tráfico real a una versión nueva para
+  decidir si continuar; no es automáticamente un experimento estadístico.
+
+**¿Por qué es importante?** Un A/B que cambia de variante por petición mezcla
+los grupos y contamina la comparación. Un shadow que repite un `POST` con efecto
+de negocio puede duplicar pagos, reservas o envíos. La estrategia solo es segura
+si el contrato de la segunda versión define qué puede observar y qué no puede
+mutar.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+Piensa en tres interruptores distintos: A/B decide **quién** ve cada variante;
+canary decide **cuánto tráfico** recibe una candidata durante un rollout; shadow
+decide **qué tráfico se copia** sin exponer su respuesta. El bucket de A/B debe
+ser determinista (por ejemplo, un hash del identificador), y la copia shadow
+necesita un timeout y aislamiento de efectos.
+
+**Analogía:** A/B es dividir una clase en dos grupos para comparar dos métodos;
+canary es probar una receta con pocas mesas antes de servirla a todo el salón;
+shadow es dejar que una segunda cocina prepare una copia que nadie come. El
+límite es que un hash local no corrige sesgos de selección, consentimiento,
+privacidad, tamaño de muestra ni métricas mal elegidas.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Desde la raíz del repositorio crea una copia del laboratorio:
+
+```bash
+cp -R examples/rutaflow-material/deployment-strategies ejemplo-deploy-strategies
+cd ejemplo-deploy-strategies
+npm test
+```
+
+El archivo `deployment.mjs` contiene las dos operaciones completas:
+
+`package.json`:
+
+```json
+{
+  "name": "rutaflow-deployment-strategies",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node deployment.test.mjs" }
+}
+```
+
+```js
+import { createHash } from 'node:crypto';
+
+/**
+ * Asigna siempre el mismo usuario a la misma variante dentro de este ejemplo.
+ * No es un sistema de experimentación de producción: no persiste consentimiento,
+ * métricas, exclusiones ni reglas de privacidad.
+ */
+export function abVariant(userId, split = 0.1) {
+  if (!userId || !Number.isFinite(split) || split < 0 || split > 1) {
+    throw new Error('userId y split válido (0..1) son obligatorios');
+  }
+  const digest = createHash('sha256').update(userId).digest();
+  const bucket = digest.readUInt32BE(0) / 0x1_0000_0000;
+  return bucket < split ? 'canary' : 'stable';
+}
+
+/**
+ * Ejecuta el comportamiento estable y envía una copia a la variante shadow.
+ * La respuesta shadow se descarta y el callback recibe solo la respuesta real.
+ * El handler shadow debe ser de solo lectura o idempotente para no duplicar
+ * efectos de negocio.
+ */
+export async function serveWithShadow({ request, stable, shadow, timeoutMs = 100 }) {
+  if (typeof stable !== 'function' || typeof shadow !== 'function') {
+    throw new Error('stable y shadow deben ser funciones');
+  }
+  const shadowWork = Promise.resolve()
+    .then(() => shadow(request))
+    .catch(() => undefined);
+  const stableResult = await stable(request);
+  await Promise.race([
+    shadowWork,
+    new Promise(resolve => setTimeout(resolve, timeoutMs)),
+  ]);
+  return stableResult;
+}
+```
+
+`deployment.test.mjs` comprueba la asignación estable y que el shadow no
+reemplaza la respuesta real:
+
+```js
+import assert from 'node:assert/strict';
+import { abVariant, serveWithShadow } from './deployment.mjs';
+
+assert.equal(abVariant('ENV-42', 0), 'stable');
+assert.equal(abVariant('ENV-42', 1), 'canary');
+assert.equal(abVariant('ENV-42'), abVariant('ENV-42'));
+
+const calls = [];
+const response = await serveWithShadow({
+  request: { id: 'ENV-42' },
+  stable: async request => {
+    calls.push(`stable:${request.id}`);
+    return { status: 200, source: 'stable' };
+  },
+  shadow: async request => {
+    calls.push(`shadow:${request.id}`);
+    return { status: 500, source: 'shadow' };
+  },
+});
+assert.deepEqual(response, { status: 200, source: 'stable' });
+assert.deepEqual(calls.sort(), ['shadow:ENV-42', 'stable:ENV-42']);
+console.log('deployment strategies: ok');
+```
+
+**Resultado esperado:** `deployment strategies: ok`. El identificador `ENV-42`
+siempre cae en el mismo bucket, el split 0 produce `stable` y el split 1 produce
+`canary`; aunque shadow devuelva error, la respuesta entregada sigue siendo la
+estable. El test verifica además que ambas funciones reciben la misma petición.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** cambia `const bucket = ...` por `Math.random()` y ejecuta
+`npm test` varias veces. El test de estabilidad debe fallar o el mismo usuario
+debe cambiar de variante. Después cambia `shadow` para incrementar una variable
+de negocio y explica por qué eso no es un shadow seguro.
+
+**Pista:** la variante debe depender de una entrada estable; el callback shadow
+debe poder reintentarse o ejecutarse sin producir un efecto externo.
+
+#### Paso 6 · Práctica independiente
+
+1. Añade una función `experimentMetric` que cuente respuestas por variante sin
+   guardar identificadores personales.
+2. Prueba `split = 0.25` con una lista de 100 identificadores y registra el
+   conteo observado, sin exigir que una muestra pequeña sea exactamente 25/75.
+3. Añade un timeout shadow de 1 ms y comprueba que una shadow lenta no bloquea
+   indefinidamente la respuesta estable.
+4. Escribe una tabla que indique qué operaciones son de solo lectura, cuáles son
+   idempotentes y cuáles no deben duplicarse.
+
+#### Paso 7 · Cierre y evidencia
+
+**Evidencia de aprendizaje:** salida de `npm test`, explicación escrita de las
+diferencias A/B–canary–shadow y una tabla de efectos permitidos en la variante
+shadow. El siguiente paso es comparar estas decisiones con `Recreate` y
+`RollingUpdate` del Módulo 7 y con el split 90/10 de Istio del Módulo 15.
+
+**Errores comunes:** cambiar de variante por petición, usar `Math.random()` sin
+control, medir una muestra demasiado pequeña como si fuera una conclusión,
+reenviar `POST` con efectos, copiar credenciales o ignorar el timeout de la
+versión shadow. **Límites y decisión de uso:** el laboratorio no implementa
+consentimiento, análisis estadístico, balanceadores, service mesh ni garantías
+de aislamiento; demuestra la frontera conceptual y un contrato local.
+
+**Fuente de contraste:** [Kubernetes Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
+
 ---
 
 

@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-29 21:07 UTC
+Generated: 2026-10-29 21:14 UTC
 Root: `The_Imperial_Book`
-Indexed files: 901
-Import edges: 54
+Indexed files: 904
+Import edges: 55
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,7 +15,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 56 files
+- `angular-app`: 59 files
 - `automation-script`: 31 files
 - `course-content`: 247 files
 - `documentation`: 52 files
@@ -27,11 +27,11 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `.md`: 306
 - `.py`: 157
-- `.ts`: 65
+- `.ts`: 66
 - `.json`: 64
 - `.js`: 54
 - `.java`: 53
-- `.html`: 37
+- `.html`: 38
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 22
@@ -39,7 +39,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.mjs`: 15
 - `.kt`: 13
 - `.yaml`: 9
-- `.scss`: 7
+- `.scss`: 8
 - `.sh`: 6
 - `.jsx`: 6
 - `.yml`: 5
@@ -91,6 +91,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.routes.ts` -> `web/src/app/catalog/course-catalog.ts`
 - `web/src/app/app.routes.ts` -> `web/src/app/course/course-shell.ts`
 - `web/src/app/app.routes.ts` -> `web/src/app/course/lesson-viewer.ts`
+- `web/src/app/app.routes.ts` -> `web/src/app/course/track-overview.ts`
 - `web/src/app/app.spec.ts` -> `web/src/app/app.routes.ts`
 - `web/src/app/app.spec.ts` -> `web/src/app/app.ts`
 - `web/src/app/app.spec.ts` -> `web/src/app/catalog/course-catalog.ts`
@@ -127,7 +128,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Most Connected Files
 
 - `web/src/app/course-data.ts`: in=4, out=14
-- `web/src/app/app.routes.ts`: in=2, out=3
+- `web/src/app/app.routes.ts`: in=2, out=4
 - `web/src/app/app.spec.ts`: in=0, out=5
 - `examples/javascript-master/src/main.ts`: in=0, out=5
 - `examples/javascript-master/src/demo.ts`: in=0, out=5
@@ -170,7 +171,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
 - `web/src/app/course/course-shell.scss` (79 lines)
 - `web/src/app/course/course-shell.ts` (68 lines) - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../command-palette.service
-- ... 38 more files
+- ... 41 more files
 
 ### automation-script
 
@@ -272,16 +273,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2863 lines)
-- `docs/course-depth-review.json` (12282 lines)
+- `docs/code-visual-quality.json` (2870 lines)
+- `docs/course-depth-review.json` (12304 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (11910 lines)
+- `docs/prerequisite-graph.json` (11932 lines)
 - `docs/requested-master-topics.json` (189 lines)
-- `docs/rutaflow-source-index.json` (364 lines)
-- `docs/seven-step-methodology.json` (28447 lines)
+- `docs/rutaflow-source-index.json` (385 lines)
+- `docs/seven-step-methodology.json` (28499 lines)
 - ... 34 more files

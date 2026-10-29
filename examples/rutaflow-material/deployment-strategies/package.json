@@ -1,0 +1,6 @@
+{
+  "name": "rutaflow-deployment-strategies",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node deployment.test.mjs" }
+}

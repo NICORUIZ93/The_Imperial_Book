@@ -61,23 +61,23 @@
       "complete": 156
     },
     "devops": {
-      "topics": 104,
-      "objective": 104,
-      "prerequisites": 104,
-      "context": 104,
-      "theoryAnalogy": 104,
+      "topics": 105,
+      "objective": 105,
+      "prerequisites": 105,
+      "context": 105,
+      "theoryAnalogy": 105,
       "guidedDemo": 104,
-      "codeExplanation": 104,
-      "execution": 104,
-      "expectedResult": 104,
-      "deliberateFailure": 104,
-      "guidedPractice": 104,
-      "independentPractice": 104,
-      "closure": 104,
-      "commonErrors": 104,
+      "codeExplanation": 105,
+      "execution": 105,
+      "expectedResult": 105,
+      "deliberateFailure": 105,
+      "guidedPractice": 105,
+      "independentPractice": 105,
+      "closure": 105,
+      "commonErrors": 105,
       "resources": 104,
-      "standaloneExample": 104,
-      "learningEvidence": 104,
+      "standaloneExample": 105,
+      "learningEvidence": 105,
       "complete": 104
     },
     "flutter": {
@@ -261,22 +261,22 @@
       "complete": 28
     },
     "spring-boot": {
-      "topics": 87,
-      "objective": 87,
-      "prerequisites": 87,
-      "context": 87,
-      "theoryAnalogy": 87,
+      "topics": 88,
+      "objective": 88,
+      "prerequisites": 88,
+      "context": 88,
+      "theoryAnalogy": 88,
       "guidedDemo": 87,
-      "codeExplanation": 87,
-      "execution": 87,
-      "expectedResult": 87,
-      "deliberateFailure": 87,
-      "guidedPractice": 87,
-      "independentPractice": 87,
-      "closure": 87,
-      "commonErrors": 87,
+      "codeExplanation": 88,
+      "execution": 88,
+      "expectedResult": 88,
+      "deliberateFailure": 88,
+      "guidedPractice": 88,
+      "independentPractice": 88,
+      "closure": 88,
+      "commonErrors": 88,
       "resources": 87,
-      "standaloneExample": 87,
+      "standaloneExample": 88,
       "learningEvidence": 87,
       "complete": 87
     }
@@ -9621,6 +9621,32 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
         }
       },
       {
@@ -27139,6 +27165,32 @@
         "classification": {
           "stepsPassed": 16,
           "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": true,
+          "learningEvidence": false
+        },
+        "classification": {
+          "stepsPassed": 13,
+          "complete": false
         }
       },
       {

@@ -4540,6 +4540,17 @@
       ]
     },
     {
+      "id": "spring-boot:15:8",
+      "track": "spring-boot",
+      "module": 15,
+      "position": 8,
+      "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
+      "file": "web/public/content/spring-boot/modulo-15.md",
+      "requires": [
+        "spring-boot:15:7"
+      ]
+    },
+    {
       "id": "spring-boot:16:1",
       "track": "spring-boot",
       "module": 16,
@@ -4547,7 +4558,7 @@
       "title": "Relaciones, lado propietario y ciclo de vida",
       "file": "web/public/content/spring-boot/modulo-16.md",
       "requires": [
-        "spring-boot:15:7"
+        "spring-boot:15:8"
       ]
     },
     {
@@ -9149,10 +9160,21 @@
       "track": "devops",
       "module": 5,
       "position": 6,
-      "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+      "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
       "file": "web/public/content/devops/modulo-5.md",
       "requires": [
         "devops:5:5"
+      ]
+    },
+    {
+      "id": "devops:5:7",
+      "track": "devops",
+      "module": 5,
+      "position": 7,
+      "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+      "file": "web/public/content/devops/modulo-5.md",
+      "requires": [
+        "devops:5:6"
       ]
     },
     {
@@ -9163,7 +9185,7 @@
       "title": "Pod, ReplicaSet, Deployment",
       "file": "web/public/content/devops/modulo-6.md",
       "requires": [
-        "devops:5:6"
+        "devops:5:7"
       ]
     },
     {

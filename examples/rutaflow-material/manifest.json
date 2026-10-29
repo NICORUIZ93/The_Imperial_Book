@@ -116,5 +116,31 @@
     "sourceFiles": [
       "imagenes/E0931544-6A91-4E88-9F60-290FCB124816.PNG"
     ]
+  },
+  {
+    "track": "devops",
+    "module": 5,
+    "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+    "lesson": "web/public/content/devops/modulo-5.md",
+    "examples": [
+      "examples/rutaflow-material/deployment-strategies/package.json",
+      "examples/rutaflow-material/deployment-strategies/deployment.mjs",
+      "examples/rutaflow-material/deployment-strategies/deployment.test.mjs"
+    ],
+    "sourceFiles": [
+      "23944112-5C4F-468B-A0D7-8EA937901448.PNG"
+    ]
+  },
+  {
+    "track": "spring-boot",
+    "module": 15,
+    "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
+    "lesson": "web/public/content/spring-boot/modulo-15.md",
+    "examples": [
+      "examples/rutaflow-material/clean-architecture/Main.java"
+    ],
+    "sourceFiles": [
+      "4140CB07-D8E3-4811-886B-D879969024CA.PNG"
+    ]
   }
 ]

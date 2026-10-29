@@ -61,17 +61,17 @@
       "repeatedDemo": 0
     },
     "devops": {
-      "topics": 104,
-      "explanation": 104,
-      "code": 104,
+      "topics": 105,
+      "explanation": 105,
+      "code": 105,
       "visual": 96,
-      "filePath": 104,
-      "runCommand": 104,
-      "expectedResult": 104,
-      "practice": 104,
+      "filePath": 105,
+      "runCommand": 105,
+      "expectedResult": 105,
+      "practice": 105,
       "project": 104,
-      "modelMental": 104,
-      "limitsDecision": 104,
+      "modelMental": 105,
+      "limitsDecision": 105,
       "practicable": 104,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -221,17 +221,17 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 87,
-      "explanation": 87,
-      "code": 87,
+      "topics": 88,
+      "explanation": 88,
+      "code": 88,
       "visual": 66,
-      "filePath": 87,
-      "runCommand": 87,
-      "expectedResult": 87,
-      "practice": 87,
+      "filePath": 88,
+      "runCommand": 88,
+      "expectedResult": 88,
+      "practice": 88,
       "project": 87,
-      "modelMental": 87,
-      "limitsDecision": 87,
+      "modelMental": 88,
+      "limitsDecision": 88,
       "practicable": 87,
       "genericScaffold": 0,
       "repeatedDemo": 0
@@ -8139,6 +8139,28 @@
         "classification": {
           "rubricScore": 16,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -22965,6 +22987,28 @@
         "classification": {
           "rubricScore": 14,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

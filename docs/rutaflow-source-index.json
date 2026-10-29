@@ -1,6 +1,6 @@
 {
   "sourceFolder": "Downloads/Proyecto-RutaFlow",
-  "method": "Inventario por hash, OCR de las 33 imágenes y revisión visual de las seis capturas de raíz; cruce editorial con lecciones, sin asumir que un título acredita cobertura. No se copia contenido personal ni imágenes de terceros a la web.",
+  "method": "Inventario por hash de 37 archivos, OCR de las 33 imágenes iniciales y revisión visual de las dos capturas técnicas añadidas; cruce editorial con lecciones, sin asumir que un título acredita cobertura. No se copia contenido personal ni imágenes de terceros a la web.",
   "files": [
     {
       "file": "Captura de pantalla 2026-10-29 a la(s) 10.46.40 a.m..png",
@@ -64,6 +64,27 @@
         "web/public/content/spring-boot/modulo-10.md",
         "web/public/content/cloud/modulo-32.md",
         "web/public/content/devops/modulo-14.md"
+      ]
+    },
+    {
+      "file": "23944112-5C4F-468B-A0D7-8EA937901448.PNG",
+      "sha256": "02304f091338b72e607f119ab4361c97e08e17ab19bbc6cef3b1f3af9477007b",
+      "bytes": 715707,
+      "kind": "tecnico",
+      "subject": "Kubernetes: rolling, recreate, blue/green, canary, A/B y shadow",
+      "destinations": [
+        "web/public/content/devops/modulo-5.md",
+        "web/public/content/devops/modulo-7.md"
+      ]
+    },
+    {
+      "file": "4140CB07-D8E3-4811-886B-D879969024CA.PNG",
+      "sha256": "88763aca5ebd17abc692db6715edfd6955de84789e9e2afdef5ce8989dfedff1",
+      "bytes": 4160130,
+      "kind": "tecnico",
+      "subject": "Clean Architecture y DDD táctico: entidades, casos de uso, adaptadores y drivers",
+      "destinations": [
+        "web/public/content/spring-boot/modulo-15.md"
       ]
     },
     {
@@ -347,9 +368,9 @@
     }
   ],
   "summary": {
-    "files": 35,
-    "uniqueFiles": 33,
-    "images": 33,
+    "files": 37,
+    "uniqueFiles": 35,
+    "images": 35,
     "pdfFiles": 2
   },
   "laboratoryManifest": "examples/rutaflow-material/manifest.json",

@@ -985,3 +985,153 @@ Añade contador de intentos, próximo instante permitido y estado de revisión m
 **Evidencia de aprendizaje:** fallo, estado persistido antes del reinicio, recuperación y cantidad final. El siguiente paso es probar dos participantes y reentrega real de mensajes. **Errores comunes:** confundir compensación con rollback global, marcar HECHA antes del efecto y reintentar sin observabilidad ni límite. **Límites y decisión de uso:** esta muestra serial no prueba concurrencia entre múltiples consumidores; una variante concurrente necesita bloqueo o transición condicional y pruebas de carreras.
 
 **Fuente oficial:** [patrón Saga](https://microservices.io/patterns/data/saga.html).
+
+### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar separarás una regla de negocio en entidad, caso de uso, puerto y
+adaptador, y podrás explicar dónde entra Spring Boot, JPA y H2 sin convertirlos
+en el centro del dominio. **Prerrequisitos:** Módulo 3 (persistencia), Módulo 10
+Tema 7 (contextos delimitados e invariantes) y Java 21 o superior. El ejemplo
+independiente se compila con `javac`; no necesita levantar Spring para demostrar
+la dirección de dependencias.
+
+#### Paso 2 · Contexto y caso real
+
+La captura de referencia anuncia cinco incrementos: entidades DDD táctico,
+casos de uso/interactors y boundaries, adaptadores de interfaz, frameworks y
+drivers, y un código completo que llega hasta la API. La secuencia es útil si se
+conserva el límite: una entidad protege una regla; el caso de uso coordina; un
+puerto expresa lo que necesita; un adaptador conecta la tecnología; Spring Boot
+es un driver de entrada o infraestructura, no el dueño de la regla.
+
+**¿Por qué es importante?** Un controlador que crea directamente un repositorio
+JPA mezcla HTTP, transacción y negocio. Puede funcionar en una demo y volverse
+difícil de probar o migrar cuando cambia la base de datos. Clean Architecture
+no significa multiplicar carpetas: significa que el dominio no importa
+frameworks y que la dirección de dependencias apunta hacia la regla.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+Usa cuatro anillos prácticos:
+
+1. **Dominio:** entidad, value object y agregado con invariantes.
+2. **Aplicación:** caso de uso/interactor que recibe una orden y usa puertos.
+3. **Adaptadores:** controlador, presenter y repositorio que traducen formatos.
+4. **Frameworks y drivers:** Spring Boot, JPA, H2, HTTP, mensajería y sistema
+   operativo.
+
+**Analogía:** el dominio es la receta y sus restricciones; el caso de uso es
+la persona que coordina la preparación; los puertos son enchufes con una forma
+estable; los adaptadores son los cables concretos; Spring es la cocina. Cambiar
+la cocina no debe cambiar la receta. El límite es que una arquitectura limpia no
+garantiza buen modelado: una entidad anémica o un caso de uso que solo reenvía
+llamadas sigue siendo diseño débil aunque tenga muchos paquetes.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Desde la raíz del repositorio ejecuta:
+
+```bash
+cp -R examples/rutaflow-material/clean-architecture ejemplo-clean-architecture
+cd ejemplo-clean-architecture
+bash test.sh
+```
+
+El archivo `Main.java` contiene las capas mínimas sin importar Spring:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+record ShipmentId(String value) {
+    ShipmentId {
+        if (value == null || value.isBlank()) throw new IllegalArgumentException("id requerido");
+    }
+}
+
+record Shipment(ShipmentId id, String status) {
+    Shipment {
+        if (status == null || status.isBlank()) throw new IllegalArgumentException("estado requerido");
+    }
+}
+
+interface ShipmentRepository {
+    void save(Shipment shipment);
+    Shipment find(ShipmentId id);
+}
+
+final class InMemoryShipmentRepository implements ShipmentRepository {
+    private final List<Shipment> values = new ArrayList<>();
+
+    @Override public void save(Shipment shipment) { values.removeIf(value -> value.id().equals(shipment.id())); values.add(shipment); }
+    @Override public Shipment find(ShipmentId id) { return values.stream().filter(value -> value.id().equals(id)).findFirst().orElse(null); }
+}
+
+final class CreateShipment {
+    private final ShipmentRepository repository;
+
+    CreateShipment(ShipmentRepository repository) { this.repository = repository; }
+
+    Shipment execute(String id) {
+        Shipment shipment = new Shipment(new ShipmentId(id), "CREATED");
+        repository.save(shipment);
+        return shipment;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ShipmentRepository repository = new InMemoryShipmentRepository();
+        CreateShipment useCase = new CreateShipment(repository);
+        Shipment shipment = useCase.execute("ENV-42");
+        if (!"CREATED".equals(repository.find(shipment.id()).status())) throw new AssertionError("estado incorrecto");
+        System.out.println("shipment=" + shipment.id().value() + " status=" + shipment.status());
+    }
+}
+```
+
+**Resultado esperado:** `shipment=ENV-42 status=CREATED`. `ShipmentId` y
+`Shipment` representan el dominio; `CreateShipment` es el interactor;
+`ShipmentRepository` es el boundary; `InMemoryShipmentRepository` es un
+adaptador de prueba. En una aplicación Spring, un `@RestController` convertiría
+HTTP en la entrada del caso de uso y un adaptador JPA implementaría el puerto,
+pero ninguna de esas clases aparece en el dominio.
+
+#### Paso 5 · Práctica guiada
+
+**Fallo deliberado:** importa una anotación de Spring en `Shipment` o cambia el
+caso de uso para recibir `EntityManager`. Compila de nuevo y explica qué
+dependencia cruzó el límite. Después cambia el repositorio en memoria por un
+adaptador falso que registre llamadas sin modificar `CreateShipment`.
+
+**Pista:** el caso de uso debe depender de `ShipmentRepository`, no de la clase
+que lo implementa. Si para probar la regla necesitas levantar H2, la frontera
+está demasiado adentro.
+
+#### Paso 6 · Práctica independiente
+
+1. Añade una transición `CANCELLED` que solo pueda ocurrir desde `CREATED`.
+2. Escribe un test puro que falle al cancelar dos veces.
+3. Diseña un `CreateShipmentController` que traduzca una petición HTTP a la
+   orden del caso de uso, sin devolver la entidad de persistencia directamente.
+4. Enumera qué parte cambiaría al pasar de H2 a PostgreSQL y qué parte debería
+   permanecer intacta.
+
+#### Paso 7 · Cierre y evidencia
+
+**Evidencia de aprendizaje:** compilación con `bash test.sh`, diagrama de la
+dirección de dependencias, test de la transición inválida y una tabla que
+separe dominio, aplicación, adaptadores y drivers. El siguiente paso es revisar
+la regla con ArchUnit en el Tema 3 y conectar el caso de uso a una API REST sin
+exponer entidades JPA.
+
+**Errores comunes:** llamar Clean Architecture a una estructura de carpetas sin
+reglas verificables, poner lógica en controllers, compartir entidades JPA entre
+contextos, crear interfaces para cada clase sin una razón y usar `@Data` en
+entidades con relaciones. **Límites y decisión de uso:** este laboratorio
+demuestra dirección de dependencias y no reemplaza pruebas de integración,
+transacciones reales, migraciones Flyway ni seguridad de la API.
+
+**Fuente de contraste:** [Spring Boot reference](https://docs.spring.io/spring-boot/reference/) y [DDD Aggregate de Martin Fowler](https://martinfowler.com/bliki/DDD_Aggregate.html).

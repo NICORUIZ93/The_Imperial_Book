@@ -1,4 +1,4 @@
-> Nota de actualización: este cruce histórico localiza títulos y no acredita que los 23 puntos estén implementados de extremo a extremo. La incoherencia Socket.IO/STOMP se aborda ahora mediante un gateway compatible en RutaFlow 5; el inventario vigente de los 35 archivos está en [rutaflow-source-index.md](rutaflow-source-index.md). No se reintroducen rutas `/roadmaps`.
+> Nota de actualización: este cruce histórico localiza títulos y no acredita que los 23 puntos estén implementados de extremo a extremo. La incoherencia Socket.IO/STOMP se aborda ahora mediante un gateway compatible en RutaFlow 5; el inventario vigente de los 37 archivos está en [rutaflow-source-index.md](rutaflow-source-index.md). No se reintroducen rutas `/roadmaps`.
 
 # Cruce: temario RutaFlow (IMG_1030) vs. contenido existente del repo
 

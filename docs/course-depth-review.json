@@ -3,9 +3,9 @@
   "totals": {
     "tracks": 14,
     "modules": 241,
-    "topics": 1082,
+    "topics": 1084,
     "topicsWithSignals": 147,
-    "newLaboratories": 23
+    "newLaboratories": 25
   },
   "priorities": {
     "foundations": {
@@ -4028,9 +4028,20 @@
     {
       "track": "devops",
       "module": 5,
+      "title": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+      "file": "web/public/content/devops/modulo-5.md",
+      "line": 486,
+      "signals": [],
+      "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "devops",
+      "module": 5,
       "title": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
       "file": "web/public/content/devops/modulo-5.md",
-      "line": 491,
+      "line": 668,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
@@ -11706,6 +11717,17 @@
       "title": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "line": 894,
+      "signals": [],
+      "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "title": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
+      "file": "web/public/content/spring-boot/modulo-15.md",
+      "line": 989,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

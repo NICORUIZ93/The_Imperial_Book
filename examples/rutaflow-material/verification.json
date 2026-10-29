@@ -64,6 +64,20 @@
       "title": "Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
       "status": "pending",
       "evidence": "ADB no encontró dispositivos conectados. Diagnóstico físico, sensores y arranque pendientes; no se alteró configuración ni se afirmó atestación."
+    },
+    {
+      "track": "devops",
+      "module": 5,
+      "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+      "status": "checked",
+      "evidence": "Node ejecutó deployment.test.mjs: asignación A/B determinista para ENV-42, respuesta estable preservada y trabajo shadow observado aunque su resultado falle. No representa un balanceador, consentimiento, métricas de producción ni aislamiento de efectos externos."
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
+      "status": "checked",
+      "evidence": "JDK25 compiló Main.java con javac y ejecutó el caso de uso sobre un puerto y adaptador en memoria: shipment=ENV-42 status=CREATED. No se levantó Spring, JPA ni H2; el límite de dependencias queda demostrado con Java puro."
     }
   ],
   "browser": {

@@ -12,13 +12,13 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 80 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 87 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 88 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 104 | 2 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 105 | 2 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
@@ -386,6 +386,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | devops / 5 | [Tema 3: Rolling updates](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 4: Feature flags vs branches por entorno](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 5: Rollback automático por métricas](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 5 | [Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 6: Rollback ensayado y compatibilidad del artefacto anterior](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 1: Pod, ReplicaSet, Deployment](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 2: Service (ClusterIP, NodePort, LoadBalancer)](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1059,6 +1060,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 15 | [Tema 5: Saga con compensación real](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 15 | [Tema 6: Event Sourcing con replay real](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida](../web/public/content/spring-boot/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
 | spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |

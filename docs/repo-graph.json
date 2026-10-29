@@ -540,7 +540,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2863,
+      "lines": 2870,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -572,7 +572,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12282,
+      "lines": 12304,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -580,7 +580,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1112,
+      "lines": 1114,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -613,7 +613,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 52,
+      "lines": 54,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -766,7 +766,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 11910,
+      "lines": 11932,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -843,7 +843,7 @@
     },
     {
       "path": "docs/rutaflow-source-index.json",
-      "lines": 364,
+      "lines": 385,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -851,7 +851,7 @@
     },
     {
       "path": "docs/rutaflow-source-index.md",
-      "lines": 53,
+      "lines": 56,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -862,7 +862,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28447,
+      "lines": 28499,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +897,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24075,
+      "lines": 24119,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -4916,7 +4916,7 @@
     },
     {
       "path": "examples/rutaflow-material/verification.json",
-      "lines": 77,
+      "lines": 91,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -7660,7 +7660,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-5.md",
-      "lines": 546,
+      "lines": 723,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10746,7 +10746,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 988,
+      "lines": 1138,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11061,7 +11061,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4841,
+      "lines": 4849,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12160,6 +12160,53 @@
       "headings": []
     },
     {
+      "path": "web/src/app/course/track-overview.html",
+      "lines": 72,
+      "kind": "angular-app",
+      "symbols": [
+        "module-list",
+        "module-list-title"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/course/track-overview.scss",
+      "lines": 88,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/course/track-overview.ts",
+      "lines": 98,
+      "kind": "angular-app",
+      "symbols": [
+        "TrackOverviewComponent",
+        "track",
+        "guide",
+        "project",
+        "percent",
+        "nextModuleId",
+        "groups"
+      ],
+      "imports": [
+        "@angular/common",
+        "@angular/core",
+        "@angular/core/rxjs-interop",
+        "@angular/router",
+        "lucide-angular",
+        "rxjs",
+        "../course-data",
+        "../track-guides",
+        "../learning-activities",
+        "../progress.service",
+        "../topic-index.service"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/course-data.ts",
       "lines": 887,
       "kind": "angular-app",
@@ -12645,6 +12692,10 @@
     {
       "source": "web/src/app/app.routes.ts",
       "target": "web/src/app/course/course-shell.ts"
+    },
+    {
+      "source": "web/src/app/app.routes.ts",
+      "target": "web/src/app/course/track-overview.ts"
     },
     {
       "source": "web/src/app/app.routes.ts",

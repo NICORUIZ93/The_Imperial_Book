@@ -1604,6 +1604,10 @@
         "fragment": "tema-5-rollback-automatico-por-metricas"
       },
       {
+        "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
+      },
+      {
         "title": "Rollback ensayado y compatibilidad del artefacto anterior",
         "fragment": "tema-6-rollback-ensayado-y-compatibilidad-del-artefacto-anterior"
       }
@@ -4606,6 +4610,10 @@
       {
         "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
         "fragment": "tema-7-compensacion-que-falla-conservar-trabajo-pendiente-y-reintentar-sin-duplicar"
+      },
+      {
+        "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
+        "fragment": "tema-8-clean-architecture-y-ddd-tactico-caso-de-uso-antes-que-framework"
       }
     ],
     "16": [

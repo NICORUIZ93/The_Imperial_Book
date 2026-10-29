@@ -1,8 +1,8 @@
 # Material de Proyecto-RutaFlow y destinos curriculares
 
-Inventario por hash, OCR de las 33 imágenes y revisión visual de las seis capturas de raíz; cruce editorial con lecciones, sin asumir que un título acredita cobertura. No se copia contenido personal ni imágenes de terceros a la web.
+Inventario por hash de 37 archivos, OCR de las 33 imágenes iniciales y revisión visual de las dos capturas técnicas añadidas; cruce editorial con lecciones, sin asumir que un título acredita cobertura. No se copia contenido personal ni imágenes de terceros a la web.
 
-Inventario: 35 archivos, 33 únicos. Dos PDF idénticos; no se contabilizan como dos temarios.
+Inventario: 37 archivos, 35 únicos. Dos PDF idénticos y dos imágenes duplicadas; no se contabilizan como temarios separados.
 
 Las incorporaciones nuevas y sus límites de ejecución están en `examples/rutaflow-material/manifest.json` y `verification.json`. Las 69 páginas del PDF conservan su cruce separado.
 
@@ -14,6 +14,8 @@ Las incorporaciones nuevas y sus límites de ejecución están en `examples/ruta
 | Captura de pantalla 2026-10-29 a la(s) 10.53.15 a.m..png | tecnico | Records de C#: igualdad y copia superficial | [foundations modulo-7](../web/public/content/foundations/modulo-7.md) |
 | Captura de pantalla 2026-10-29 a la(s) 10.54.49 a.m..png | tecnico | Git: familias de comandos y estados de trabajo | [devops modulo-1](../web/public/content/devops/modulo-1.md), [foundations modulo-5](../web/public/content/foundations/modulo-5.md) |
 | Captura de pantalla 2026-10-29 a la(s) 11.00.14 a.m..png | tecnico | Diseño de sistemas: fundamentos, distribución, operación y capacidad | [foundations modulo-10](../web/public/content/foundations/modulo-10.md), [spring-boot modulo-10](../web/public/content/spring-boot/modulo-10.md), [cloud modulo-32](../web/public/content/cloud/modulo-32.md), [devops modulo-14](../web/public/content/devops/modulo-14.md) |
+| 23944112-5C4F-468B-A0D7-8EA937901448.PNG | tecnico | Kubernetes: rolling, recreate, blue/green, canary, A/B y shadow | [devops modulo-5](../web/public/content/devops/modulo-5.md), [devops modulo-7](../web/public/content/devops/modulo-7.md) |
+| 4140CB07-D8E3-4811-886B-D879969024CA.PNG | tecnico | Clean Architecture y DDD táctico: entidades, casos de uso, adaptadores y drivers | [spring-boot modulo-15](../web/public/content/spring-boot/modulo-15.md) |
 | Recopilacion capturas - prompts IA y recursos de programacion (69 pags).pdf | pdf-compilado | 69 páginas: usar el índice por página existente |  |
 | imagenes/07DB3F7B-13F7-4453-9C79-B2992EC36A40.PNG | tecnico | C4 y decisiones ADR | [foundations modulo-7](../web/public/content/foundations/modulo-7.md), [spring-boot modulo-15](../web/public/content/spring-boot/modulo-15.md) |
 | imagenes/095A28B9-D208-4942-B22A-AF562E2457FE.PNG | pausado | Electrónica: conservar la pausa del registro de trabajo | [foundations modulo-12](../web/public/content/foundations/modulo-12.md) |
@@ -48,5 +50,6 @@ Las incorporaciones nuevas y sus límites de ejecución están en `examples/ruta
 
 - Los recursos promocionales sin índice no permiten reconstruir un libro o curso completo.
 - Los enlaces a temas existentes indican localización; no certifican profundidad ni ejecución.
+- Las dos capturas técnicas añadidas se integraron con ejemplos locales; la captura de Kubernetes se complementa con las estrategias Recreate/RollingUpdate ya presentes en el módulo 7.
 - RAG vectorial y proveedor real, despliegue OSRM con dataset, diagnóstico físico Android y compilación .NET requieren evidencias separadas.
 - Electrónica permanece en pausa según el registro de continuación.

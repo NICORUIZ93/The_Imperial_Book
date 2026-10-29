@@ -25,16 +25,16 @@
       "officialSource": 140
     },
     "devops": {
-      "topics": 104,
-      "code": 104,
-      "commentedCode": 51,
+      "topics": 105,
+      "code": 105,
+      "commentedCode": 52,
       "mermaid": 54,
       "archifyVisual": 1,
       "asciiVisual": 43,
       "misleadingDiagramLabel": 0,
-      "filePath": 104,
-      "runCommand": 103,
-      "officialSource": 34
+      "filePath": 105,
+      "runCommand": 104,
+      "officialSource": 35
     },
     "javascript": {
       "topics": 88,
@@ -97,16 +97,16 @@
       "officialSource": 41
     },
     "spring-boot": {
-      "topics": 87,
-      "code": 87,
+      "topics": 88,
+      "code": 88,
       "commentedCode": 70,
       "mermaid": 44,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 87,
-      "runCommand": 87,
-      "officialSource": 64
+      "filePath": 88,
+      "runCommand": 88,
+      "officialSource": 65
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2057,6 +2057,13 @@
       "track": "spring-boot",
       "module": 11,
       "topic": "Tema 1: Fat JAR vs capas de Docker",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
       "missingCode": false,
       "missingComments": true
     },
