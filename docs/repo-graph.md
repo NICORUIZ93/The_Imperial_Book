@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-28 23:04 UTC
+Generated: 2026-10-29 13:41 UTC
 Root: `The_Imperial_Book`
-Indexed files: 877
+Indexed files: 878
 Import edges: 50
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 58 files
 - `automation-script`: 27 files
 - `course-content`: 242 files
-- `documentation`: 75 files
+- `documentation`: 76 files
 - `example`: 425 files
 - `local-infra`: 1 files
 - `project-file`: 49 files
 
 ## File Types
 
-- `.md`: 322
+- `.md`: 323
 - `.py`: 147
 - `.ts`: 64
 - `.json`: 57
@@ -220,6 +220,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
 - `README.md` (306 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `docs/CONTINUAR-7-PASOS.md` (98 lines) - headings: # Continuación: completar la metodología de siete pasos, ## Qué ya se hizo (no repetir), ## Regla de oro para continuar, ## Plan priorizado (mayor retorno primero)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
@@ -231,8 +232,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/auditoria-profundidad-cobertura.md` (174 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca/clean-code.md` (30 lines) - headings: # Identificación e índice: Código limpio, ## Temas localizados en el índice, pendientes de lectura
 - `docs/biblioteca/cola.md` (78 lines) - headings: # Cola de revisión libro por libro
-- `docs/biblioteca/revision-imagenes-20261013.md` (118 lines) - headings: # Revisión individual de imágenes — 2026-10-13, ## Correcciones al registro anterior, ## Contraste puntual con fuentes oficiales, ## Registro completo
-- ... 57 more files
+- ... 58 more files
 
 ### example
 

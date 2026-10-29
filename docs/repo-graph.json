@@ -110,6 +110,22 @@
       "headings": []
     },
     {
+      "path": "docs/CONTINUAR-7-PASOS.md",
+      "lines": 98,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Continuaci\u00f3n: completar la metodolog\u00eda de siete pasos",
+        "## Qu\u00e9 ya se hizo (no repetir)",
+        "## Regla de oro para continuar",
+        "## Plan priorizado (mayor retorno primero)",
+        "### A falta de UN SOLO marcador (48+20+\u2026 = ~87 temas, el camino m\u00e1s r\u00e1pido)",
+        "### Deuda mayor por track (requiere reescritura de varios pasos por tema)",
+        "## C\u00f3mo encontrar los temas exactos"
+      ]
+    },
+    {
       "path": "docs/ESTANDAR-DE-CODIGO.md",
       "lines": 56,
       "kind": "documentation",
