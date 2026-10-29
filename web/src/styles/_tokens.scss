@@ -33,3 +33,8 @@ $reading-width: 720px; // ancho máximo de la columna de lectura del lector tipo
 $transition: var(--transition, .3s ease);
 $code-bg: var(--code-bg);   // fondo de bloques de código (oscuro en ambos temas)
 $code-text: var(--code-text);
+$grad: var(--grad);         // gradiente de marca (cian → violeta)
+$glow: var(--glow);         // halo de acento para hover/activos
+$mono: var(--font-mono);    // fuente monoespaciada (código y detalles técnicos)
+$sans: var(--font-sans);    // fuente de cuerpo/UI
+$serif: var(--font-serif);  // fuente de titulares (Space Grotesk)

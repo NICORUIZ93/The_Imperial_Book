@@ -41,10 +41,6 @@ SELECT * FROM tareas;
 ```bash
 sqlite3 tareas.db < src/schema.sql
 ```
-```
-```bash
-sqlite3 tareas.db < src/schema.sql
-```
 **Resultado esperado:** la fila de "Pagar factura" sigue existiendo con `categoria_id=1`, aunque esa categoría ya no está en `categorias` — quedó huérfana. **Fallo deliberado:** a diferencia de PostgreSQL, SQLite NO activa las claves foráneas por defecto; aunque declaraste `REFERENCES categorias(id)`, el `DELETE` anterior se ejecutó sin ningún error. Repetí el experimento agregando `PRAGMA foreign_keys = ON;` como primera línea del script, antes del `DELETE`: ahora SQLite lo rechaza con `FOREIGN KEY constraint failed`, porque todavía existe una tarea que referencia esa categoría.
 
 #### Paso 5 · Práctica guiada

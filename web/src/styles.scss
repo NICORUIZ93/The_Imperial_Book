@@ -1,70 +1,79 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-// ── Tema global "The Imperial Book": identidad EDITORIAL de libro premium ──
-// [data-theme] se aplica en <html> vía ThemeService y es la fuente de verdad
-// para todos los componentes a través de src/styles/_tokens.scss.
-// Papel crema cálido + tinta cálida + acento terracota, con títulos en serif
-// (Fraunces) y cuerpo en Inter — una sola identidad de libro en toda la app.
-// --font-serif se usa en títulos; --font-sans en UI y cuerpo.
+// ── Identidad global "The Imperial Book" — DARK TECH ──
+// Rediseño completo: superficie oscura profunda (casi negro azulado), acento
+// eléctrico cian→violeta, tipografía Space Grotesk para titulares, Inter para
+// cuerpo/UI y JetBrains Mono para código y detalles técnicos.
+// [data-theme] se aplica en <html> vía ThemeService; _tokens.scss mapea estas
+// variables a toda la app, así que un solo cambio aquí redefine la identidad.
+
+// Tema por defecto = oscuro (la marca ahora es dark-first).
 :root,
-:root[data-theme='light'] {
-  --bg: #faf7f2;               /* papel crema */
-  --bg-elevated: #ffffff;
-  --bg-subtle: #f0ebe2;        /* crema más cálido para cajas */
-  --bg-instrument: #1c1917;
-  --text: #1c1917;             /* tinta cálida casi negra */
-  --text-secondary: #57534e;
-  --text-faint: #8a7f70;
-  --accent: #9a3412;           /* terracota */
-  --accent-hover: #7c2d12;
-  --accent-soft: #fbeee3;      /* terracota muy claro */
-  --accent-2: #b45309;         /* ámbar para lomos/detalles */
-  --success: #166534;
-  --success-soft: #ecfdf5;
-  --warning: #b45309;
-  --warning-soft: #fef3e2;
-  --error: #b91c1c;
-  --error-soft: #fef2f2;
-  --border: #e7e0d6;           /* bordes cálidos suaves */
-  --border-strong: #d6cdbf;
-  --shadow-sm: 0 1px 2px rgba(60,40,20,.05);
-  --shadow-md: 0 8px 24px rgba(60,40,20,.07);
-  --shadow-lg: 0 18px 44px rgba(60,40,20,.10);
-  --transition: .2s cubic-bezier(.2,.8,.2,1);
-  --code-bg: #1c1917;
-  --code-text: #e7e0d6;
-  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
+:root[data-theme='dark'] {
+  --bg: #07090f;               /* casi negro azulado */
+  --bg-elevated: #0e1320;      /* panel */
+  --bg-subtle: #121a2b;        /* caja sutil */
+  --bg-instrument: #05070c;
+  --text: #eef2fb;             /* casi blanco frío */
+  --text-secondary: #9aa6c2;
+  --text-faint: #5d6782;
+  --accent: #22d3ee;           /* cian eléctrico */
+  --accent-hover: #67e8f9;
+  --accent-soft: rgba(34, 211, 238, .12);
+  --accent-2: #a855f7;         /* violeta (gradiente) */
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, .14);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, .14);
+  --error: #fb7185;
+  --error-soft: rgba(251, 113, 133, .14);
+  --border: #1d2740;           /* borde frío tenue */
+  --border-strong: #2d3a5c;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-md: 0 12px 34px rgba(0,0,0,.55);
+  --shadow-lg: 0 24px 60px rgba(2,6,20,.7);
+  --glow: 0 0 0 1px rgba(34,211,238,.25), 0 12px 40px rgba(34,211,238,.14);
+  --transition: .22s cubic-bezier(.2,.8,.2,1);
+  --code-bg: #05070c;
+  --code-text: #c7d2e6;
+  --grad: linear-gradient(120deg, #22d3ee, #a855f7);
+  --font-serif: 'Space Grotesk', system-ui, sans-serif;  /* titulares */
+  --font-sans: 'Inter', system-ui, sans-serif;           /* cuerpo/UI */
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace; /* código/detalles */
 }
 
-:root[data-theme='dark'] {
-  --bg: #1a1714;               /* papel oscuro cálido (sepia noche) */
-  --bg-elevated: #211d18;
-  --bg-subtle: #262019;
-  --bg-instrument: #12100d;
-  --text: #f0e9df;
-  --text-secondary: #c4b8a6;
-  --text-faint: #8a7f70;
-  --accent: #e8814e;           /* terracota luminoso */
-  --accent-hover: #f0a075;
-  --accent-soft: #3a241a;
-  --accent-2: #e0ac57;
-  --success: #4ade80;
-  --success-soft: rgba(74, 222, 128, .12);
-  --warning: #e0ac57;
-  --warning-soft: #2c2312;
-  --error: #f87171;
-  --error-soft: rgba(248, 113, 113, .14);
-  --border: #3a332b;
-  --border-strong: #4d4439;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.35);
-  --shadow-md: 0 10px 30px rgba(0,0,0,.45);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,.55);
-  --transition: .3s ease;
-  --code-bg: #12100d;
-  --code-text: #e7ddd0;
-  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+// Tema claro = variante "day" del mismo lenguaje tech (no vuelve al crema).
+:root[data-theme='light'] {
+  --bg: #f4f6fb;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #eef1f8;
+  --bg-instrument: #0e1320;
+  --text: #0b1220;
+  --text-secondary: #475069;
+  --text-faint: #8a93ab;
+  --accent: #0891b2;           /* cian más profundo para contraste en claro */
+  --accent-hover: #0e7490;
+  --accent-soft: rgba(8, 145, 178, .10);
+  --accent-2: #7c3aed;
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, .10);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, .12);
+  --error: #e11d48;
+  --error-soft: rgba(225, 29, 72, .10);
+  --border: #dfe4ef;
+  --border-strong: #c3cbdd;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,.06);
+  --shadow-md: 0 12px 30px rgba(15,23,42,.10);
+  --shadow-lg: 0 24px 56px rgba(15,23,42,.14);
+  --glow: 0 0 0 1px rgba(8,145,178,.22), 0 12px 36px rgba(8,145,178,.12);
+  --transition: .22s cubic-bezier(.2,.8,.2,1);
+  --code-bg: #0e1320;
+  --code-text: #c7d2e6;
+  --grad: linear-gradient(120deg, #0891b2, #7c3aed);
+  --font-serif: 'Space Grotesk', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
@@ -72,36 +81,40 @@
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
+  color-scheme: dark;
 }
+:root[data-theme='light'] { color-scheme: light; }
+
 * { box-sizing: border-box; min-width: 0; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  background:
-    radial-gradient(1100px 600px at 50% -15%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 70%),
-    var(--bg);
   color: var(--text);
+  background:
+    radial-gradient(900px 520px at 12% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
+    radial-gradient(900px 520px at 100% 0%, color-mix(in srgb, var(--accent-2) 14%, transparent), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
   transition: background var(--transition), color var(--transition);
 }
 
-// Identidad editorial: todos los títulos en serif Fraunces, con óptica fina.
-// Los componentes heredan esto salvo que fijen su propia fuente.
+// Titulares en Space Grotesk; cuerpo hereda Inter.
 h1, h2, h3, h4, .serif {
   font-family: var(--font-serif);
-  font-optical-sizing: auto;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
+code, kbd, samp, pre, .mono { font-family: var(--font-mono); }
+
 button, input, textarea { font: inherit; letter-spacing: 0; }
 button { cursor: pointer; }
 button, a, input, summary, textarea { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 3px solid color-mix(in srgb,var(--accent) 72%,transparent); outline-offset: 3px; }
+:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }
 
-/* Global overflow protection */
 p, li, td, th, blockquote, figcaption {
   overflow-wrap: break-word;
   word-break: break-word;
@@ -109,7 +122,7 @@ p, li, td, th, blockquote, figcaption {
 img, video, svg { max-width: 100%; height: auto; display: block; }
 .skip-link {
   position: fixed; z-index: 1000; top: 12px; left: 12px; padding: 10px 14px;
-  border-radius: 10px; color: #fff; background: var(--accent); font-weight: 700;
+  border-radius: 10px; color: #05070c; background: var(--accent); font-weight: 700;
   transform: translateY(-160%); transition: transform var(--transition);
 }
 .skip-link:focus { transform: translateY(0); }

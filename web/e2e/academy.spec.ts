@@ -7,18 +7,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
-  await expect(page.locator('.catalog-topbar')).toContainText('The Imperial Book');
-  await expect(page.locator('.track-card').first()).toBeVisible();
+  await expect(page.locator('.topbar')).toContainText('The Imperial Book');
+  await expect(page.locator('.card').first()).toBeVisible();
   await expect(page.locator('.hero-stats')).toContainText('14');
 });
 
 test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({ page }) => {
   await page.goto('/catalogo');
 
-  await expect(page.locator('.catalog-topbar')).toContainText('The Imperial Book');
-  await expect(page.locator('.track-group h3').first()).toBeVisible();
-  await expect(page.locator('.track-card')).toHaveCount(14);
-  await expect(page.locator('.hero-stats strong').nth(2)).not.toHaveText('—');
+  await expect(page.locator('.topbar')).toContainText('The Imperial Book');
+  await expect(page.locator('.group-title').first()).toBeVisible();
+  await expect(page.locator('.card')).toHaveCount(14);
+  await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
 });
 
 test('catalogo: informa si el índice de temas no está disponible', async ({ page }) => {
@@ -36,7 +36,7 @@ test('catalogo: informa si el índice de temas no está disponible', async ({ pa
   await expect(page.getByRole('alert')).toHaveCount(0);
   const index = await (await page.request.get('/content/topic-index.json')).json();
   const total = Object.values(index).flatMap(track => Object.values(track as Record<string, unknown[]>)).reduce((sum, topics) => sum + topics.length, 0);
-  await expect(page.locator('.hero-stats strong').nth(2)).toHaveText(String(total));
+  await expect(page.locator('.hero-stats dd').nth(2)).toHaveText(String(total));
 });
 
 test('roadmaps: navega los 53 temas y conserva pasos completados', async ({ page }) => {
@@ -126,10 +126,10 @@ test('accesibilidad y respaldo: exporta y restaura progreso desde controles etiq
     })),
   });
   await expect(page.getByRole('status')).toContainText('Progreso restaurado y aplicado');
-  const javaCard = page.locator('.track-card').filter({
-    has: page.locator('.track-card-main[aria-label="Abrir Java de cero a avanzado"]'),
+  const javaCard = page.locator('.card').filter({
+    has: page.locator('.card-head[aria-label="Abrir Java de cero a avanzado"]'),
   });
-  await expect(javaCard.locator('.track-card-meta')).toContainText('5% completado');
+  await expect(javaCard.locator('.card-meta')).toContainText('5% completado');
 });
 
 test('curso cloud: abre el lector por capítulos con el contenido base de Floci', async ({ page }) => {
@@ -143,7 +143,7 @@ test('ruta antigua de laboratorio vuelve al inicio nuevo', async ({ page }) => {
   await page.goto('/laboratorio/floci');
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator('.catalog-topbar')).toContainText('The Imperial Book');
+  await expect(page.locator('.topbar')).toContainText('The Imperial Book');
 });
 
 test('búsqueda: encuentra un tema real y navega a su fragmento', async ({ page }) => {
@@ -214,6 +214,17 @@ test('lector: muestra la transferencia al proyecto y los límites editoriales', 
   await expect(cloudTopic).toContainText('Un comando interpretado por Bash');
 });
 
+test('estructura: cada Tema se muestra como una tarjeta separada, no anidado en otro', async ({ page }) => {
+  // foundations/4 tuvo un bloque ``` desbalanceado que atrapaba los temas 2-4
+  // dentro del tema 1. Este caso fija que los cuatro temas vuelven a verse como
+  // topic-card independientes y que ninguna anida a otra.
+  await page.goto('/curso/foundations/4');
+  await expect(page.locator('.topic-card')).toHaveCount(4);
+  await expect(page.locator('.topic-card .topic-card')).toHaveCount(0);
+  await expect(page.locator('.topic-card.expanded')).toHaveCount(1);
+  await expect(page.locator('.lesson-error')).toHaveCount(0);
+});
+
 test('formación: electrónica incorpora ejemplos y prompts editables por tema', async ({ page }) => {
   await page.goto('/curso/foundations/12');
   await expect(page.locator('.topic-card')).toHaveCount(17);
@@ -238,8 +249,7 @@ test('inicio desde cero: conduce de la página inicial a la primera sesión', as
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   const start = page.getByRole('link', { name: 'Empezar desde cero', exact: true });
   await expect(start).toBeVisible();
-  await page.getByText('Cómo trabajar cada tema', { exact: true }).click();
-  await expect(page.locator('.beginner-entry')).toContainText('Guarda también tus archivos');
+  await expect(page.locator('.starter-steps')).toContainText('Crea el archivo indicado');
   await start.click();
   await expect(page).toHaveURL(/\/curso\/foundations\/0$/);
   await expect(page.locator('.lesson h1')).toContainText('Cómo funciona tu entorno');
