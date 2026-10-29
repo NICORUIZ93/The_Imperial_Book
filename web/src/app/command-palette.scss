@@ -25,6 +25,6 @@
 }
 .palette-result:hover { background:$pl; }
 .palette-result.active { background:$pl; outline:2px solid color-mix(in srgb,$p 32%,transparent); outline-offset:-2px; }
-.palette-result strong { font:600 13.5px Inter, sans-serif; color:$ink; }
+.palette-result strong { font:600 13.5px var(--font-sans); color:$ink; }
 .palette-result span { font-size:11.5px; color:$mu; }
 .palette-empty { padding:16px; text-align:center; color:$mu; font-size:13px; }

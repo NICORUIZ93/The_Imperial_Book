@@ -123,6 +123,11 @@ RutaFlow no quiere gestionar ni rotar contraseñas compartidas con el socio exte
 #### Paso 3 · Teoría, modelo mental y analogía
 La clave pública es la cerradura que instalás; la clave privada se queda siempre con el usuario, nunca viaja ni se comparte.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 SERVER_ID=$(aws transfer list-servers --query 'Servers[0].ServerId' --output text)
 ssh-keygen -t rsa -f /tmp/clave-socio -N "" -q
@@ -181,6 +186,11 @@ Antes de prometerle al socio logístico externo que ya puede subir manifiestos p
 #### Paso 3 · Teoría, modelo mental y analogía
 El plano de gestión configura la oficina completa (servidores, usuarios, claves); el plano de datos es el que efectivamente transporta los paquetes — y en Fase 1, solo el primero está terminado.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 SERVER_ID=$(aws transfer list-servers --query 'Servers[0].ServerId' --output text)
 aws transfer describe-server --server-id "$SERVER_ID" --query 'Server.{Estado:State,Protocolos:Protocols}'

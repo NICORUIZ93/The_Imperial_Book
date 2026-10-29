@@ -586,6 +586,11 @@ graph TD
 **Diagrama interactivo:** [Árbol binario de búsqueda: invariante de orden y por qué degenera](/visuals/temas/foundations/modulo-2-tema-5-bst.html) — versión explorable con temas claro/oscuro y la regla de orden de cada nodo.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `bst.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Crea `bst.py`:
 
 ```python
@@ -648,7 +653,9 @@ Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliber
 **Cuándo no usarlo:** si solo necesitas buscar por igualdad exacta sin orden, una tabla hash (Tema 6) da O(1) promedio y es más simple; el BST brilla cuando necesitas orden (rangos, mínimo, máximo, recorrido ordenado).
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** indexa las tareas por fecha de vencimiento en un BST y compara el número de comparaciones de una búsqueda contra el recorrido lineal de la lista, con 100 y 10.000 tareas.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 6: Tablas hash — búsqueda en tiempo constante
 
 #### Paso 1 · Objetivo y preparación
@@ -663,6 +670,11 @@ Una tabla hash usa una **función hash** que transforma una clave en un índice 
 **Analogía:** es como un guardarropa numerado: en vez de buscar tu abrigo revisando todos, la función hash (tu número de ficha) te lleva directo al casillero. Una colisión es cuando dos personas comparten casillero: hay que mirar los pocos abrigos de ESE casillero, no los de todo el guardarropa.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `tabla_hash.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Crea `tabla_hash.py`:
 
 ```python
@@ -716,7 +728,9 @@ Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado 
 **Cuándo no usarlo:** si necesitas recorrer los datos en orden o buscar rangos, usa un árbol (Tema 5); una tabla hash no tiene orden.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** guarda las tareas en una tabla hash indexada por ID y mide el factor de carga a medida que crece el inventario, confirmando que la búsqueda por ID se mantiene constante.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 7: Grafos y recorridos BFS/DFS
 
 #### Paso 1 · Objetivo y preparación
@@ -742,6 +756,11 @@ graph LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `grafos.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Crea `grafos.py`:
 
 ```python
@@ -800,7 +819,9 @@ Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del f
 **Cuándo no usarlo:** para datos jerárquicos de un solo padre (un sistema de archivos, un organigrama) un árbol (Tema 5) es más simple; el grafo general se justifica cuando hay múltiples conexiones o ciclos.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela las dependencias entre tareas (una tarea que debe hacerse antes que otra) como un grafo y usa un recorrido para detectar si hay un ciclo de dependencias imposible de resolver.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 8: Programación dinámica — resolver una vez, recordar el resultado
 
 #### Paso 1 · Objetivo y preparación
@@ -815,6 +836,11 @@ La **programación dinámica (DP)** aplica a problemas con dos propiedades: subp
 **Analogía:** es como hacer un examen donde varias preguntas comparten el mismo cálculo intermedio: en vez de rehacerlo cada vez, lo escribes una vez en el margen y lo copias. Fibonacci ingenuo recalcula `fib(5)` miles de veces; con memoización, cada valor se calcula exactamente una vez.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `dp.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
 Crea `dp.py`:
 
 ```python
@@ -863,7 +889,9 @@ Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y 
 **Cuándo no usarlo:** si los subproblemas no se repiten (cada uno es único), la DP no aporta y añade complejidad; úsala solo cuando detectes recálculo del mismo subproblema.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor calcula alguna métrica acumulada sobre rangos de fechas repetidos, memoiza el resultado por rango y demuestra con un contador que evitas recalcular los mismos rangos.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ## Construcción guiada del capítulo
 
 ### Proyecto 2: gestor de inventario con análisis de rendimiento

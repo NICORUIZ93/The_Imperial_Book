@@ -12,6 +12,11 @@ RutaFlow necesita responder "¿qué repartidores cubrieron alguna vez la misma z
 #### Paso 3 · Teoría, modelo mental y analogía
 El vértice es la entidad (un repartidor, una zona); la arista es la relación entre ellos (`cubrio_zona`); un recorrido es seguir esos enlaces, salto a salto.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 pregunta_por_clave="SELECT * FROM entregas WHERE guia = 'RF-001'"
 pregunta_multi_salto="g.V().has('nombre','Ana').out('cubrio_zona').in('cubrio_zona').dedup()"
@@ -191,6 +196,11 @@ RutaFlow necesita "el envío con esta guía exacta" (`ShipmentEvents`), "reparti
 #### Paso 3 · Teoría, modelo mental y analogía
 La estructura de datos debe seguir la pregunta dominante de cada parte del sistema, no una preferencia por una tecnología de moda aplicada a todo por igual.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws dynamodb get-item --table-name ShipmentEvents --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
 curl "http://$ENDPOINT/paquetes/_search?q=fragil"

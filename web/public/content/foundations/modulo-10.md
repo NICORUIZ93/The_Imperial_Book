@@ -17,6 +17,13 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 La red es una carretera con retrasos, pérdidas y duplicados — un timeout es un límite de espera local, nunca una prueba de lo que pasó del lado del servidor.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 import socket
 
@@ -135,6 +142,13 @@ Si `ShipmentEvents` tuviera una tabla global multi-región (como la del Módulo 
 Las réplicas son copias con reglas de coordinación propias; leer una réplica puede devolver un estado anterior al real — el mismo quorum que evita decisiones aisladas también tiene un costo de latencia.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 primaria = {"env-4471": "entregado"}
 replica = {"env-4471": "en_ruta"}  # todavía no recibió la replicación
@@ -241,6 +255,13 @@ Si la app del conductor reintenta "confirmar entrega" por una mala conexión (Te
 Un broker es una bandeja numerada; la deduplicación por `commandId` hace que repetir el mismo número nunca produzca un segundo efecto, solo devuelve el recibo que ya existía.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```typescript
 import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from "./confirm-delivery";
 
@@ -358,6 +379,13 @@ Si el proveedor de SMS que notifica al cliente (Módulo 10 del track Cloud) empi
 Un SLI mide lo que importa (proporción de confirmaciones completadas bajo 300ms); el error budget es la fracción de incumplimiento que el negocio decidió tolerar — una alerta solo tiene sentido si consume una parte real de ese presupuesto.
 
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```python
 def sli_confirmaciones(eventos):
     elegibles = [e for e in eventos if e["valido"]]
@@ -454,6 +482,140 @@ flowchart LR
 ```
 
 Un SLI equivalente para el proyecto integrador Fundamentos viviría en `tareas.py`: si el CLI alguna vez dependiera de un servicio externo (por ejemplo, para sincronizar tareas), medirías la proporción de comandos completados bajo un umbral de tiempo, exactamente con la misma función `sli_confirmaciones` de este Tema, solo cambiando qué evento se considera "bueno".
+
+### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás ordenar eventos sin reloj global con relojes lógicos de Lamport, elegir un coordinador cuando el anterior falla con el algoritmo del matón (bully) y explicar cómo el commit en dos fases (2PC) logra que todos confirmen o nadie lo haga. Prerrequisitos: Temas 1 a 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow, la central, la bodega y la moto registran eventos de la misma entrega en máquinas distintas cuyos relojes no coinciden: ordenar por hora local mostró entregas "antes" de ser despachadas. Además, cuando cae el servidor coordinador alguien debe reemplazarlo, y un pedido que toca inventario, pagos y despacho debe aplicarse en los tres o en ninguno. Son los problemas clásicos que trata Tanenbaum en *Sistemas operativos distribuidos* y un caso real de todo sistema con varios servicios.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **reloj lógico de Lamport** es un contador por nodo: se incrementa en cada evento y, al recibir un mensaje, toma `max(propio, marca del mensaje) + 1`. Así, si A causó B, la marca de A es menor que la de B (aunque marcas iguales no implican nada). El **algoritmo del matón** elige como coordinador al nodo vivo con mayor identificador: quien detecta la caída convoca a los mayores, y el mayor que responde toma el control. El **commit en dos fases** tiene una fase de *preparación* (cada participante vota si puede confirmar) y una de *decisión* (COMMIT solo si todos votaron sí). Su debilidad: si el coordinador cae entre fases, los participantes quedan bloqueados; por eso los microservicios suelen preferir sagas (Spring Boot, Módulo 15).
+
+**Analogía:** Lamport es numerar los pasos de una receta compartida por varios cocineros sin mirar el reloj; 2PC es la boda: el oficiante pregunta a ambos y solo declara el matrimonio si los dos dicen sí.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+    participant C as Central
+    participant B as Bodega
+    participant M as Moto
+    C->>B: preparar G-1 (marca 2)
+    Note over B: reloj = max(1, 2) + 1 = 3
+    B->>M: G-1 listo (marca 4)
+    Note over M: reloj = max(0, 4) + 1 = 5
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir distribuidos && cd distribuidos
+```
+
+Crea `distribuidos.py`:
+
+```python
+import random
+
+# --- 1. Relojes lógicos de Lamport: ordenar eventos sin un reloj global
+class Nodo:
+    def __init__(self, nombre):
+        self.nombre, self.reloj, self.log = nombre, 0, []
+    def evento(self, texto):
+        self.reloj += 1
+        self.log.append((self.reloj, self.nombre, texto))
+    def enviar(self, texto):
+        self.evento(f"envía {texto}")
+        return (self.reloj, texto)
+    def recibir(self, mensaje):
+        marca, texto = mensaje
+        self.reloj = max(self.reloj, marca) + 1          # regla de Lamport
+        self.log.append((self.reloj, self.nombre, f"recibe {texto}"))
+
+central, bodega, moto = Nodo("central"), Nodo("bodega"), Nodo("moto")
+central.evento("crea pedido G-1")
+m1 = central.enviar("preparar G-1")
+bodega.evento("revisa inventario")
+bodega.recibir(m1)
+m2 = bodega.enviar("G-1 listo")
+moto.recibir(m2)
+moto.evento("entrega G-1")
+print("Orden por reloj de Lamport:")
+for marca, nodo, texto in sorted(central.log + bodega.log + moto.log):
+    print(f"  {marca:>2} {nodo:<8} {texto}")
+
+# --- 2. Elección de líder con el algoritmo del matón (bully)
+def bully(vivos, iniciador):
+    mayores = [n for n in vivos if n > iniciador]
+    if not mayores:
+        return iniciador                                 # nadie mayor respondió: gana
+    return bully(vivos, min(mayores))                    # el siguiente mayor toma la elección
+servidores = [1, 2, 3, 4, 5]
+caido = 5
+vivos = [s for s in servidores if s != caido]
+print(f"\nCayó el coordinador {caido}; el nodo 2 inicia la elección -> nuevo líder: {bully(vivos, 2)}")
+
+# --- 3. Commit en dos fases (2PC): todos confirman o nadie confirma
+def dos_fases(participantes):
+    votos = {nombre: voto() for nombre, voto in participantes.items()}   # fase 1: preparar
+    decision = "COMMIT" if all(votos.values()) else "ABORT"             # fase 2: decidir
+    return votos, decision
+random.seed(3)
+for intento in range(1, 3):
+    votos, decision = dos_fases({
+        "inventario": lambda: True,
+        "pagos": lambda: random.random() > 0.4,
+        "despacho": lambda: True,
+    })
+    print(f"Transacción {intento}: votos={votos} -> {decision}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 distribuidos.py
+```
+
+**Resultado esperado:**
+
+```text
+Orden por reloj de Lamport:
+   1 bodega   revisa inventario
+   1 central  crea pedido G-1
+   2 central  envía preparar G-1
+   3 bodega   recibe preparar G-1
+   4 bodega   envía G-1 listo
+   5 moto     recibe G-1 listo
+   6 moto     entrega G-1
+
+Cayó el coordinador 5; el nodo 2 inicia la elección -> nuevo líder: 4
+Transacción 1: votos={'inventario': True, 'pagos': False, 'despacho': True} -> ABORT
+Transacción 2: votos={'inventario': True, 'pagos': True, 'despacho': True} -> COMMIT
+```
+
+Los eventos con la misma marca (1) son concurrentes: Lamport no decide cuál fue primero. La transacción 1 se abortó porque `pagos` votó no; la semilla fija hace el resultado repetible.
+
+**Fallo deliberado:** En `recibir` reemplaza `self.reloj = max(self.reloj, marca) + 1` por `self.reloj += 1`. Ahora `bodega recibe preparar G-1` y `central envía preparar G-1` quedan con la misma marca (2), y `moto recibe G-1 listo` aparece con marca 1, antes de que la bodega lo enviara. Sin tomar el máximo se rompe la causalidad.
+
+#### Paso 5 · Práctica guiada
+Agrega un cuarto nodo, `cliente`, que reciba el aviso de entrega de la moto, y verifica que su marca es mayor que todas las anteriores de la cadena. **Pista:** la moto debe usar `enviar` después de `entregar` y el cliente `recibir` con ese mensaje.
+
+#### Paso 6 · Práctica independiente
+Simula en `dos_fases` que el coordinador cae después de recibir los votos y antes de decidir. Escribe qué estado queda en cada participante y por qué 2PC se considera un protocolo bloqueante.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
+**Fuente oficial:** [Lamport: Time, Clocks, and the Ordering of Events (1978)](https://lamport.azurewebsites.net/pubs/time-clocks.pdf), [Two-phase commit protocol (Wikipedia)](https://en.wikipedia.org/wiki/Two-phase_commit_protocol); Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3.
+**Conceptos clave:** reloj lógico, relación "ocurrió antes", eventos concurrentes, elección de líder, algoritmo del matón, commit en dos fases, protocolo bloqueante.
+**Cuándo no usarlo:** no implementes estos algoritmos en producción: usa herramientas probadas (etcd, ZooKeeper, transacciones de la base de datos, sagas). Implementarlos sirve para entender sus garantías y límites.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** registra cada cambio de estado de una tarea con una marca de Lamport y ordena el historial con ella.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
 
 ## Construcción guiada del capítulo
 

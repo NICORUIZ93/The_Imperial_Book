@@ -15,6 +15,13 @@ RutaFlow está lista para subir a ambas tiendas — nadie generó todavía los a
 `flutter build appbundle --release` genera el `.aab` requerido por Google Play; `flutter build ipa --release` genera el `.ipa` para App Store, requiriendo específicamente macOS con Xcode.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```bash
 flutter build appbundle --release   # → .aab para Google Play Console
 flutter build ipa --release          # → .ipa para App Store Connect (requiere macOS/Xcode)
@@ -82,6 +89,13 @@ Android necesita el ícono de RutaFlow en múltiples resoluciones para distintas
 `flutter_launcher_icons` y `flutter_native_splash` toman una única imagen fuente declarada en `pubspec.yaml` y generan automáticamente todas las variantes requeridas por cada plataforma.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```yaml
 # pubspec.yaml
 flutter_launcher_icons:
@@ -243,6 +257,126 @@ En el proyecto integrador RutaFlow, el pipeline vive en `codemagic.yaml` en la r
 
 ---
 
+### Tema 4: Entornos y flavors con --dart-define-from-file
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás compilar la misma app para desarrollo, QA y producción inyectando configuración con `--dart-define-from-file`, leerla con constantes de compilación y fallar rápido si falta un valor. Prerrequisitos: Temas 1 a 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+La app del repartidor de RutaFlow se publicó una vez apuntando al servidor de pruebas, porque la URL estaba escrita en el código y alguien olvidó cambiarla. Separar entornos en la compilación es el caso real que resuelven los *flavors*: cada build sabe a qué API habla, con qué nombre y con qué nivel de logs.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`--dart-define` y `--dart-define-from-file` pasan pares clave-valor al **compilador**. En Dart se leen con `String.fromEnvironment`, `bool.fromEnvironment` o `int.fromEnvironment`, que solo están garantizados como **constantes** (`const`). Como el valor queda dentro del binario, **no sirve para secretos**: solo para configuración pública (URLs, nombres, banderas). Los *flavors* nativos (`productFlavors` de Android y *schemes* de iOS) agregan lo que Dart no puede cambiar: el identificador de la app, el ícono y el nombre visible, para instalar dev y prod en el mismo teléfono. Se usan juntos: `flutter run --flavor dev --dart-define-from-file=config/dev.json`.
+
+**Analogía:** es imprimir el mismo folleto con distinta dirección de contacto según la ciudad: la dirección se decide en la imprenta, no cuando alguien lo lee.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    D[config/dev.json] --> C[flutter build o test]
+    PR[config/prod.json] --> C
+    C --> B[binario con constantes]
+    B --> E[Entorno.apiUrl]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir entornos && cd entornos
+flutter create repartidor_entornos
+cd repartidor_entornos
+mkdir -p config
+```
+
+Crea `config/dev.json`:
+
+```json
+{
+  "ENTORNO": "dev",
+  "API_URL": "https://api-dev.rutaflow.co",
+  "LOGS_DETALLADOS": "true"
+}
+```
+
+Crea `config/prod.json`:
+
+```json
+{
+  "ENTORNO": "prod",
+  "API_URL": "https://api.rutaflow.co",
+  "LOGS_DETALLADOS": "false"
+}
+```
+
+Crea `lib/entorno.dart`:
+
+```dart
+// lib/entorno.dart — la configuración llega en tiempo de COMPILACIÓN con --dart-define
+class Entorno {
+  static const nombre = String.fromEnvironment('ENTORNO', defaultValue: 'desconocido');
+  static const apiUrl = String.fromEnvironment('API_URL');
+  static const logsDetallados = bool.fromEnvironment('LOGS_DETALLADOS');
+
+  static void validar() {
+    if (apiUrl.isEmpty) {
+      throw StateError('API_URL no definido: ejecuta con --dart-define-from-file=config/<entorno>.json');
+    }
+  }
+}
+```
+
+Crea `test/entorno_test.dart`:
+
+```dart
+// test/entorno_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:repartidor_entornos/entorno.dart';
+
+void main() {
+  test('usa la configuración del entorno dev', () {
+    expect(Entorno.nombre, 'dev');
+    expect(Entorno.apiUrl, 'https://api-dev.rutaflow.co');
+    expect(Entorno.logsDetallados, isTrue);
+    expect(Entorno.validar, returnsNormally);
+  });
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+rm test/widget_test.dart
+flutter test --dart-define-from-file=config/dev.json
+flutter run --dart-define-from-file=config/prod.json
+```
+
+**Resultado esperado:**
+
+```text
+00:02 +1: All tests passed!
+```
+
+En el `flutter run` con `prod.json` la app compila contra `https://api.rutaflow.co`; puedes mostrar `Entorno.nombre` en una esquina de la pantalla para comprobarlo. El tiempo y el número de la primera columna varían.
+
+**Fallo deliberado:** Ejecuta `flutter test` **sin** `--dart-define-from-file`. La prueba falla con `Expected: 'dev'` y `Actual: 'desconocido'`: sin la definición, las constantes toman su valor por defecto. Por eso `validar()` debe llamarse al arrancar la app (`main`) para que una compilación mal configurada falle de inmediato y no en manos del repartidor.
+
+#### Paso 5 · Práctica guiada
+Crea `config/qa.json` y una prueba que verifique que en QA los logs detallados están activos y la URL termina en `-qa.rutaflow.co`. **Pista:** copia la prueba de dev, cambia las expectativas y ejecútala con `--dart-define-from-file=config/qa.json`.
+
+#### Paso 6 · Práctica independiente
+Configura `productFlavors` dev y prod en `android/app/build.gradle.kts` con `applicationIdSuffix = ".dev"` y un nombre visible distinto, e instala ambas versiones en el mismo emulador.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque publicar con la configuración equivocada es un error real y costoso, y los flavors son requisito en cualquier equipo con QA.
+**Fuente oficial:** [Flutter: Set up flavors for Android](https://docs.flutter.dev/deployment/flavors), [Dart: String.fromEnvironment](https://api.dart.dev/stable/dart-core/String/String.fromEnvironment.html).
+**Conceptos clave:** `--dart-define`, `--dart-define-from-file`, `String.fromEnvironment`, constante de compilación, flavor, `applicationIdSuffix`, scheme de iOS.
+**Cuándo no usarlo:** no pongas claves privadas ni tokens en `dart-define`: cualquiera puede extraerlos del binario. Los secretos se quedan en el backend (ver Módulo 13, Tema 2).
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** compila la app del repartidor contra la API de QA o de producción sin cambiar código, y muestra el entorno en la pantalla de ajustes.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
 
 ## Laboratorio práctico
 

@@ -3,7 +3,7 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 236 módulos y 1007 temas editoriales en formato de
+La academia reúne 14 rutas, 241 módulos y 1062 temas editoriales en formato de
 libro. La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -142,8 +142,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 236
-módulos y 1007 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 241
+módulos y 1062 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -152,9 +152,9 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 1007/1007 temas practicables (cada tema tiene demostración ejecutable con
+registra 1062/1062 temas practicables (cada tema tiene demostración ejecutable con
 comando y resultado, verificado por el auditor endurecido). La auditoría independiente
-de metodología de siete pasos registra 752/1007 temas completos según sus marcadores
+de metodología de siete pasos registra 1062/1062 temas completos según sus marcadores
 (el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
 «Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
 recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de
@@ -203,17 +203,17 @@ como certificaciones.
 
 | Track | Módulos | Enfoque |
 |---|---|---|
-| Fundamentos | 13 | Computador, programación, web, datos e ingeniería de software |
+| Fundamentos | 16 | Computador, programación, algoritmos, web, datos e ingeniería de software |
 | Cloud Local | 35 | AWS, Azure y GCP en local con Floci |
 | DevOps | 17 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation |
 | JavaScript | 15 | Lenguaje, DOM, asincronía, rendimiento |
 | Node.js | 15 | Backend, APIs, bases de datos, producción |
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |
 | React | 15 | Hooks, estado, data fetching, Next.js |
-| Java | 19 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA y HTTP |
+| Java | 20 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA y HTTP |
 | Spring Boot | 22 | REST, JPA, seguridad, Batch, Kafka y microservicios |
 | Kotlin Multiplatform | 14 | Lógica compartida entre Android e iOS |
-| Android | 15 | Jetpack Compose, ciclo de vida, Room, Hilt |
+| Android | 16 | Jetpack Compose, ciclo de vida, Room, Hilt |
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |
 | Flutter | 16 | Widgets, gestión de estado, plataformas nativas |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |

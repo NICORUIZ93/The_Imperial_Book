@@ -15,6 +15,13 @@ El equipo iOS necesita consumir la lógica de dominio compartida (`Tarea`, casos
 Kotlin/Native compila el módulo compartido directamente a un binario nativo real (no una capa de interpretación ni un puente entre procesos), importable en Xcode exactamente como cualquier otro framework de terceros. La analogía: un componente fabricado en una fábrica extranjera pero completamente terminado según el estándar local exacto, instalable sin ninguna adaptación especial.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.kt` dentro.
+```bash
+gradle init --type kotlin-application
+```
+
+**Crea** el archivo `src/ejemplo.kt` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 ```kotlin
 // shared/build.gradle.kts
 kotlin {
@@ -255,7 +262,7 @@ sharedRepository.obtenerTareas { tareas, error in
 ---
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Adapta la consulta suspend para el consumidor Swift y cubre éxito, error y cancelación. Una prueba iOS debe terminar también en el camino de error, sin dejar una continuación pendiente.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una app SwiftUI que consume el módulo compartido KMP a través del framework generado.

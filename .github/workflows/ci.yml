@@ -51,6 +51,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes postgresql
           echo "$(pg_config --bindir)" >> "$GITHUB_PATH"
+      - name: Regenerar repo graph
+        run: python3 scripts/build_repo_graph.py
       - name: Validate repository
         run: ./scripts/validate.sh
       - name: Run text quality check

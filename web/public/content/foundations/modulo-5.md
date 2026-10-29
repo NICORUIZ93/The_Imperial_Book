@@ -15,6 +15,8 @@ El proyecto integrador Fundamentos que vas a construir en este track ya guarda t
 Depurar con evidencia significa tres cosas en orden: reproducir el fallo con el caso más pequeño posible, escribir una hipótesis verificable sobre la causa ANTES de cambiar nada, y modificar una sola variable por intento para saber con certeza qué fue lo que corrigió (o no corrigió) el problema. Un cambio que "podría ayudar" pero no ataca la hipótesis es una pista falsa: puede incluso parecer una mejora y aun así dejar el bug intacto. La analogía es la de un perito: no reordena la escena antes de fotografiarla, la documenta, propone una explicación y prueba solo esa explicación.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 Partí de una carpeta vacía y reproducí un bug real de filtrado de tareas:
 ```bash
 mkdir depuracion-tareas
@@ -123,6 +125,8 @@ Desde el Módulo 4, el proyecto Fundamentos no solo cuenta pendientes en memoria
 Una prueba unitaria aísla una pieza pequeña y rápida: en este caso, `contar_pendientes(tareas)` operando sobre una lista en memoria, sin tocar disco. Una prueba de integración comprueba la colaboración real entre piezas: la misma regla de negocio, pero ejecutada contra una base SQLite real, con la consulta SQL real. Un doble de prueba (fake, stub o mock) reemplaza una pieza lenta o no determinista; el riesgo es que, si el doble es demasiado simple, deja de importar qué hace la pieza real que reemplaza — la prueba sigue en verde aunque esa pieza esté rota. La analogía: un simulador de vuelo que ignora el viento no te prepara para aterrizar con viento real, aunque todas sus lecciones salgan perfectas.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 Partí de una carpeta vacía y construí las dos capas que el Módulo 4 ya dejó instaladas: la función pura y la consulta SQL.
 ```bash
 mkdir pruebas-tareas
@@ -389,6 +393,8 @@ El proyecto Fundamentos ya tiene pruebas (Tema 2) e historial con buenos mensaje
 El análisis estático detecta problemas SIN ejecutar el programa: un linter como Ruff encuentra imports sin usar, variables no definidas y patrones riesgosos leyendo el código, no corriéndolo. CI (integración continua) ejecuta esos controles —lint, pruebas— automáticamente en un entorno recién creado, con un clon limpio del repositorio: ningún archivo que hayas creado a mano durante una sesión de prueba sobrevive ahí. Por eso una prueba que depende de "algo que ya está en mi carpeta" puede pasar en tu máquina y fallar en CI sin que el código haya cambiado — el entorno es el que cambió. La analogía: ensayar una receta en tu cocina, con ingredientes que ya tenías picados de ayer, no prueba que la receta funcione completa desde cero en otra cocina.
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 Desde una **carpeta vacía**, reproducí primero un catch de análisis estático y después la trampa de "funciona en mi máquina":
 ```bash
 mkdir calidad-tareas

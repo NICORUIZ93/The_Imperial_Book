@@ -121,6 +121,11 @@ El servicio de seguimiento necesita enterarse de que `modo_mantenimiento` cambi�
 #### Paso 3 · Teoría, modelo mental y analogía
 La sesión de AppConfigData entrega un token; cada consulta posterior con ese token devuelve solo lo que cambió desde la última vez, como suscribirte a las actualizaciones de un documento en vez de redescargarlo entero.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 TOKEN=$(aws appconfigdata start-configuration-session \
   --application-identifier "$APP_ID" --environment-identifier "$ENV_ID" \
@@ -239,6 +244,11 @@ Antes de aplicar una migración de esquema arriesgada sobre `ShipmentEvents` (co
 #### Paso 3 · Teoría, modelo mental y analogía
 El estado del job de respaldo es un semáforo (`CREATED → RUNNING → COMPLETED`) que te dice si ya es seguro continuar con la migración o si todavía hay que esperar.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
   --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents \

@@ -189,6 +189,11 @@ Al finalizar vas a escribir las dos políticas de mínimo privilegio exactas que
 #### Paso 3 · Teoría, modelo mental y analogía
 El rol es el pase de la función; la policy es su alcance exacto — como viste en el Módulo 7, nunca un pase maestro "por si acaso".
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 cat > policy-crud.json <<'EOF'
 {"Version":"2012-10-17","Statement":[

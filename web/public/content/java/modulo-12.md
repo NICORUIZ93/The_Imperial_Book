@@ -68,7 +68,7 @@ Este Builder fluido es apropiado para construir el objeto inmutable de configura
 El ejemplo implementa `cliente`, `codigo` y `unidades`; `build()` exige cliente y código no vacíos, y rechaza unidades menores a uno. No comparte el Builder entre hilos ni expone un `Pedido` parcial. El ejercicio amplía el mensaje de validación para hacerlo explícito. Si diferentes constructores deben producir representaciones del mismo producto mediante los mismos pasos, compara esa variante GoF en vez de asumir que todo Builder es una API fluida.
 
 **Cuándo no usarlo:** para una clase pequeña con pocos campos obligatorios, un constructor normal y validación clara suele ser más simple. No agregues una clase directora si solo existe una secuencia de construcción y nadie necesita reutilizarla.
-
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ### Tema 2: Factory Method y Strategy
 
 #### Paso 1 · Objetivo y preparación
@@ -156,7 +156,7 @@ class SimpleNotificadorFactory {
 En el Proyecto integrador (Módulo 13), el punto de composición elige el canal y la política según configuración; el caso de uso depende de sus contratos, no de clases concretas dispersas.
 
 **Cuándo no usar Factory Method:** si no hay variantes de creación o una Factory simple resuelve claramente la selección, una jerarquía de creadores agrega indirección sin valor. Strategy tampoco aporta si existe una única fórmula estable.
-
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ### Tema 3: Abstract Factory y familias de productos compatibles
 
 #### Paso 1 · Objetivo y preparación
@@ -194,6 +194,7 @@ final class LocalFactory implements TransportistaFactory {
 **Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
 
 ```bash
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
 # Maven
 mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app && mvn test
@@ -203,7 +204,7 @@ cd app && mvn test
 
 #### Paso 5 · Práctica guiada
 Provoca una incompatibilidad creando a mano `new InternacionalFactory().crearEtiqueta()` y combinándola con `new LocalFactory().crearGuia()`. Aunque Java no lo impide porque ambos objetos cumplen sus interfaces, el resultado contradice la regla del dominio. Corrígelo inyectando una sola `TransportistaFactory` al servicio y pide a esa misma instancia ambos productos. La consistencia depende de conservar la familia como una unidad; las interfaces por sí solas no pueden validar una pareja creada desde fábricas diferentes.
-
+**Pista:** aplica un cambio cada vez y vuelve a ejecutar; si algo se rompe, el último cambio es el sospechoso.
 #### Paso 6 · Práctica independiente
 Agrega una familia `ExpressFactory` con etiqueta y guía propias, sin cambiar el servicio consumidor. Añade una prueba o demostración que compruebe que la configuración express crea ambos productos de esa familia; registra además qué política debe rechazar una modalidad desconocida y dónde se comunica el error.
 
@@ -225,7 +226,8 @@ flowchart TB
 ```
 
 Abstract Factory es útil cuando cambia el conjunto de productos relacionados y el cliente no debe mezclar variantes. Si el único producto variable es un notificador, Factory Method o una Factory simple bastan. Añadir una familia requiere implementar todos los productos del contrato; agregar un nuevo tipo de producto afecta la interfaz y todas las fábricas concretas, por lo que no es una extensión gratuita.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ### Tema 4: SOLID y cuándo NO aplicar un patrón
 
 #### Paso 1 · Objetivo y preparación
@@ -268,7 +270,7 @@ Crea `src/main/java/academia/pedidos/Pedido.java` mezclando deliberadamente tres
 
 #### Paso 5 · Práctica guiada
 Pista: cambia únicamente el formato del PDF y registra qué responsabilidades ajenas quedan acopladas a `Pedido`; ese acoplamiento es el síntoma deliberado. En `Cotizador`, reemplaza `Tarifa` por una clase concreta y añade un `if` para `Normal`/`Express`; al agregar `Recogida`, debes editar el consumidor. Resultado esperado: extraer `EmailService` y `PdfGenerator` aísla razones de cambio, y restaurar el contrato `Tarifa` permite agregar políticas sin cambiar `Cotizador`.
-
+**Fallo deliberado:** altera deliberadamente un valor o una línea del ejemplo para provocar un error; lee el mensaje y diagnostica la causa antes de revertirlo.
 #### Paso 6 · Práctica independiente
 Completa la extracción y divide la interfaz de persistencia en `ConsultaEntrega` y `ActualizaEntrega` si algún consumidor solo necesita leer. Documenta cómo un adaptador de base de datos podría implementar esos contratos y por qué una subclase que rechaza operaciones prometidas rompería la sustitución (LSP).
 
@@ -302,8 +304,8 @@ En el Proyecto integrador (Módulo 13), el caso de uso depende de contratos y co
 **Cuándo no usarlo:** dividir una clase pequeña con una sola razón real de cambio en múltiples clases "por si acaso" es sobre-ingeniería; aplica SRP cuando ya observas responsabilidades genuinamente distintas, no antes.
 
 ---
-
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** refactorizar un módulo propio aplicando al menos dos patrones de diseño justificados por una necesidad real.

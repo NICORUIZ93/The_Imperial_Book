@@ -185,6 +185,11 @@ El pipe del Tema 3 (SQS → Lambda directo), la regla `SoloEntregados` del Módu
 #### Paso 3 · Teoría, modelo mental y analogía
 Un pipe es un pasillo directo entre dos oficinas; una regla EventBridge es una recepcionista que redirige según de qué se trate; una Step Function es el proceso completo con varios departamentos y aprobaciones.
 #### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
 ```bash
 aws pipes describe-pipe --name demo-pipe --query 'Source'
 aws events list-rules --event-bus-name rutaflow-eventos --query 'Rules[].Name'

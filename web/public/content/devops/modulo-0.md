@@ -801,6 +801,248 @@ Ya sabes levantar un proxy inverso, leer sus logs estructurados y diagnosticar u
 
 ---
 
+### Tema 10: Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás crear usuarios y grupos, compartir una carpeta entre un equipo con permisos de grupo y el bit setgid, comprobar quién puede leer qué y conceder `sudo` solo para un comando concreto. Prerrequisitos: Temas 1 y 6 de este módulo (permisos y hardening).
+
+#### Paso 2 · Contexto y caso real
+En el servidor de despacho de RutaFlow todos usaban la cuenta `root` para dejar los manifiestos del día. Cuando un archivo apareció borrado, nadie sabía quién fue. El caso real en cualquier servidor compartido es dar a cada persona su usuario, agrupar por equipo y entregar solo los privilegios necesarios.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Cada proceso corre como un **usuario** (uid) y pertenece a **grupos** (gid). Los permisos `rwx` se evalúan para el dueño, el grupo y el resto. Para una carpeta compartida se le asigna el grupo del equipo y el bit **setgid** (`chmod 2770`): todo archivo nuevo hereda el grupo de la carpeta en vez del grupo personal de quien lo crea. `sudo` permite ejecutar comandos como otro usuario; la regla `ana ALL=(root) NOPASSWD: /usr/bin/systemctl restart despacho.service` concede **un solo comando**, no una consola de root. Las reglas van en `/etc/sudoers.d/` y se validan con `visudo -c`.
+
+**Analogía:** el usuario es tu credencial, el grupo es el área en la que trabajas, y `sudo` limitado es una llave que abre una sola puerta, no el llavero completo.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    A[ana] --> G[grupo despacho]
+    G --> D["/srv/rutaflow/manifiestos 2770"]
+    B[beto] -. sin grupo .-> D
+    A --> S[sudo: solo systemctl restart despacho]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir usuarios-linux && cd usuarios-linux
+```
+
+Crea `usuarios.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Ejecutar como root dentro de un contenedor Ubuntu desechable
+set -euo pipefail
+
+groupadd despacho                                  # grupo del equipo de despacho
+useradd --create-home --shell /bin/bash --groups despacho ana
+useradd --create-home --shell /bin/bash beto       # beto NO pertenece a despacho
+
+mkdir -p /srv/rutaflow/manifiestos
+echo "BO-004512;Chapinero" > /srv/rutaflow/manifiestos/hoy.csv
+chown -R root:despacho /srv/rutaflow/manifiestos
+chmod 2770 /srv/rutaflow/manifiestos              # setgid: lo nuevo hereda el grupo despacho
+chmod 640 /srv/rutaflow/manifiestos/hoy.csv
+
+echo "--- identidades"
+id ana
+id beto
+echo "--- permisos"
+ls -ld /srv/rutaflow/manifiestos
+ls -l /srv/rutaflow/manifiestos
+
+echo "--- ana lee y crea archivos"
+sudo -u ana cat /srv/rutaflow/manifiestos/hoy.csv
+sudo -u ana touch /srv/rutaflow/manifiestos/manana.csv
+ls -l /srv/rutaflow/manifiestos/manana.csv | awk '{print $3, $4, $9}'
+
+echo "--- beto intenta leer"
+sudo -u beto cat /srv/rutaflow/manifiestos/hoy.csv || echo "beto fue rechazado (código $?)"
+
+echo "--- sudo limitado: ana puede reiniciar solo el servicio de despacho"
+echo 'ana ALL=(root) NOPASSWD: /usr/bin/systemctl restart despacho.service' > /etc/sudoers.d/despacho
+chmod 440 /etc/sudoers.d/despacho
+visudo -cf /etc/sudoers.d/despacho
+sudo -l -U ana | tail -1
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+docker run --rm -v "$(pwd)":/work -w /work ubuntu:24.04 bash -c \
+  "apt-get update -qq && apt-get install -y -qq sudo >/dev/null && bash usuarios.sh"
+```
+
+**Resultado esperado:**
+
+```text
+--- identidades
+uid=1001(ana) gid=1002(ana) groups=1002(ana),1001(despacho)
+uid=1002(beto) gid=1003(beto) groups=1003(beto)
+--- permisos
+drwxrws--- 2 root despacho 4096 Oct 28 21:51 /srv/rutaflow/manifiestos
+total 4
+-rw-r----- 1 root despacho 20 Oct 28 21:51 hoy.csv
+--- ana lee y crea archivos
+BO-004512;Chapinero
+ana despacho /srv/rutaflow/manifiestos/manana.csv
+--- beto intenta leer
+cat: /srv/rutaflow/manifiestos/hoy.csv: Permission denied
+beto fue rechazado (código 1)
+--- sudo limitado: ana puede reiniciar solo el servicio de despacho
+/etc/sudoers.d/despacho: parsed OK
+    (root) NOPASSWD: /usr/bin/systemctl restart despacho.service
+```
+
+Los números de uid y gid y la fecha pueden variar. Lo importante es que `manana.csv` quedó con grupo `despacho` gracias al setgid, y que `beto` fue rechazado.
+
+**Fallo deliberado:** Cambia `chmod 2770` por `chmod 770` y vuelve a ejecutar. Ahora `manana.csv` queda con grupo `ana` en lugar de `despacho`, y los demás miembros del equipo no lo podrán leer. No hay ningún error en pantalla: el problema aparecerá mañana cuando otra persona del equipo reciba `Permission denied`.
+
+#### Paso 5 · Práctica guiada
+Agrega a `caro` al grupo `despacho` sin quitarle sus otros grupos y comprueba que puede leer `hoy.csv`. **Pista:** usa `usermod -aG despacho caro`; sin la `-a`, `-G` reemplaza todos sus grupos secundarios.
+
+#### Paso 6 · Práctica independiente
+Escribe una regla de sudo que permita a todo el grupo `despacho` (`%despacho`) ver el journal del servicio, pero no reiniciarlo. Valídala con `visudo -cf` y `sudo -l -U`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque usuarios compartidos y `sudo` sin límites son de los hallazgos más comunes en auditorías de seguridad, y el principio de mínimo privilegio empieza en el sistema operativo.
+**Fuente oficial:** [Ubuntu Server: User management](https://documentation.ubuntu.com/server/how-to/security/user-management/), [sudoers(5)](https://man7.org/linux/man-pages/man5/sudoers.5.html).
+**Conceptos clave:** uid y gid, grupo primario y secundario, `chown`, `chmod`, bit setgid, `usermod -aG`, `sudoers.d`, `visudo -c`, mínimo privilegio.
+**Cuándo no usarlo:** en contenedores y plataformas gestionadas no crees usuarios interactivos: define un usuario no root en la imagen (`USER` en el Dockerfile) y gestiona el acceso con la identidad de la plataforma (IAM, RBAC).
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** define el usuario no root con el que corre el agente de despliegue y el comando exacto que puede ejecutar con sudo.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
+### Tema 11: systemd: servicios, timers y logs con journalctl
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás escribir una unidad de servicio y un timer de systemd, validarlos sin arrancarlos, calcular sus próximas ejecuciones y operar el servicio con `systemctl` y `journalctl`. Prerrequisitos: Temas 2, 5 y 10 de este módulo (procesos, cron y usuarios).
+
+#### Paso 2 · Contexto y caso real
+El reporte de despacho de RutaFlow corría con `cron`: cuando el servidor se apagaba de noche, el reporte de esa mañana nunca se generaba, y sus errores se perdían porque nadie redirigía la salida. En los servidores Linux actuales el caso real se resuelve con systemd: servicios con usuario propio, timers que recuperan ejecuciones perdidas y logs centralizados.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**systemd** es el primer proceso (PID 1) de la mayoría de distribuciones. Administra **unidades**: un `.service` describe cómo ejecutar un proceso (usuario, comando, reinicios, aislamiento) y un `.timer` cuándo activarlo. `OnCalendar` usa expresiones como `Mon..Sat *-*-* 06:30:00`, y `Persistent=true` ejecuta al arrancar lo que se perdió mientras la máquina estaba apagada. Todo lo que el servicio escribe en stdout y stderr va al **journal**, que se consulta con `journalctl -u nombre`. `systemd-analyze verify` valida la sintaxis sin ejecutar nada.
+
+**Analogía:** el `.service` es la receta, el `.timer` es la alarma del horno y el journal es el cuaderno donde queda anotado qué pasó cada vez.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    T[reporte-despacho.timer] -- 06:30 --> S[reporte-despacho.service]
+    S -- User=ana --> P[reporte-despacho.sh]
+    P -- stdout --> J[(journal)]
+    J --> Q[journalctl -u reporte-despacho]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir systemd-despacho && cd systemd-despacho
+```
+
+Crea `reporte-despacho.sh`:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+# Escribe a stdout: systemd lo envía al journal, sin archivos de log propios
+echo "Reporte de despacho generado: $(date --iso-8601=seconds)"
+echo "Entregas pendientes: $(wc -l < /srv/rutaflow/pendientes.csv)"
+```
+
+Crea `reporte-despacho.service`:
+
+```ini
+[Unit]
+Description=Genera el reporte diario de despacho de RutaFlow
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ana
+ExecStart=/usr/local/bin/reporte-despacho.sh
+# Endurecimiento: el servicio no puede escribir en /home ni ganar privilegios
+ProtectHome=true
+NoNewPrivileges=true
+```
+
+Crea `reporte-despacho.timer`:
+
+```ini
+[Unit]
+Description=Ejecuta el reporte de despacho de lunes a sábado a las 6:30
+
+[Timer]
+OnCalendar=Mon..Sat *-*-* 06:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+Crea `verificar.sh`:
+
+```bash
+#!/usr/bin/env bash
+set -uo pipefail
+install -m 755 reporte-despacho.sh /usr/local/bin/reporte-despacho.sh
+cp reporte-despacho.service reporte-despacho.timer /etc/systemd/system/
+
+echo "--- verificación de las unidades"
+systemd-analyze verify /etc/systemd/system/reporte-despacho.service /etc/systemd/system/reporte-despacho.timer \
+  && echo "unidades válidas"
+
+echo "--- próximas ejecuciones del timer"
+systemd-analyze calendar --iterations=3 --base-time='2026-10-30 12:00' 'Mon..Sat *-*-* 06:30:00' | grep -E 'Original|Normalized|Next|Iter'
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+docker run --rm -e TZ=America/Bogota -v "$(pwd)":/work -w /work ubuntu:24.04 bash -c \
+  "apt-get update -qq && apt-get install -y -qq systemd tzdata >/dev/null && useradd ana && bash verificar.sh"
+```
+
+**Resultado esperado:**
+
+```text
+--- verificación de las unidades
+unidades válidas
+--- próximas ejecuciones del timer
+Normalized form: Mon..Sat *-*-* 06:30:00
+    Next elapse: Sat 2026-10-31 06:30:00 -05
+   Iteration #2: Mon 2026-11-02 06:30:00 -05
+   Iteration #3: Tue 2026-11-03 06:30:00 -05
+```
+
+La zona horaria aparece al final de cada fecha. En un contenedor no hay systemd corriendo como PID 1, por eso aquí solo se **valida**; en un servidor o una máquina virtual activas el timer con `sudo systemctl daemon-reload && sudo systemctl enable --now reporte-despacho.timer`, lo listas con `systemctl list-timers`, lo pruebas con `sudo systemctl start reporte-despacho.service` y lees su salida con `journalctl -u reporte-despacho.service --since today`.
+
+**Fallo deliberado:** En el timer escribe los días en español: `OnCalendar=Lun..Sab *-*-* 06:30:00`. `systemd-analyze verify` responde `Failed to parse calendar specification, ignoring: Lun..Sab *-*-* 06:30:00` y `Timer unit lacks value setting. Refusing.`: sin una expresión válida el timer no tiene cuándo dispararse. Valida siempre antes de habilitar.
+
+#### Paso 5 · Práctica guiada
+Agrega al servicio `Restart=on-failure` no aplica a `oneshot`; en su lugar agrega `OnFailure=` para avisar a otra unidad cuando el reporte falle, y valídalo. **Pista:** crea una unidad `aviso-falla@.service` que haga `echo` del nombre recibido en `%i` y referencia `OnFailure=aviso-falla@%n.service` en la sección `[Unit]`.
+
+#### Paso 6 · Práctica independiente
+En una máquina virtual con systemd real, habilita el timer, fuerza una ejecución, provoca un error (borra `pendientes.csv`) y encuentra el mensaje con `journalctl -u reporte-despacho.service -p err`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque systemd gestiona los servicios de casi todos los servidores Linux, y saber leer el journal es lo primero en un incidente.
+**Fuente oficial:** [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html), [systemd.service(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html), [journalctl(1)](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html).
+**Conceptos clave:** unidad, `.service`, `.timer`, `OnCalendar`, `Persistent`, `Type=oneshot`, journal, `journalctl -u`, `systemd-analyze verify`, endurecimiento con `ProtectHome` y `NoNewPrivileges`.
+**Cuándo no usarlo:** dentro de contenedores no uses systemd: el orquestador (Docker, Kubernetes) cumple ese papel con políticas de reinicio, CronJobs y logs del contenedor.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** ejecuta el agente de despliegue como servicio de systemd con usuario propio y revisa sus logs con journalctl.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-devops && cd academia-devops && git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

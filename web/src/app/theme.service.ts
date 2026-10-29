@@ -25,10 +25,9 @@ export class ThemeService {
     } catch {
       // localStorage no disponible: se ignora
     }
-    const prefersDark = typeof window !== 'undefined'
-      && window.matchMedia
-      && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
+    // Edición libro: la página blanca es la identidad por defecto; el modo
+    // oscuro ("lectura nocturna") queda a un clic y se recuerda.
+    return 'light';
   }
 
   private apply(theme: Theme): void {

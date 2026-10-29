@@ -645,6 +645,13 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+```bash
+ng new ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tracking --standalone --skip-git --defaults`), crea la carpeta de la feature `tracking` con sus archivos relacionados:
 
@@ -767,6 +774,13 @@ Un **pipe** (`|`) transforma un valor solo para mostrarlo, sin cambiar el dato (
 **Analogía:** un pipe es un filtro de Instagram sobre una foto (cambia cómo se ve, no la foto original); una directiva es un accesorio que le pones a un mueble (una rueda, una luz) que cambia cómo se comporta sin rehacer el mueble.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+```bash
+ng new ejemplo
+```
+
+**Crea** el archivo `src/ejemplo.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 ```typescript
 // distancia.pipe.ts — transforma metros en texto legible
@@ -817,6 +831,178 @@ Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-n
 **Cuándo no usarlo:** no crees una directiva/pipe para algo que se usa en un solo sitio y una sola vez; su valor está en la reutilización. Para lógica compleja de negocio, un servicio es más apropiado que un pipe.
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** crea el pipe `distancia` y la directiva `appResaltar` y úsalos en la tabla de envíos para mostrar distancias legibles y marcar los urgentes.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
+**Fuente oficial:** [documentación de Angular](https://angular.dev/).
+**Evidencia de aprendizaje:** entrega la salida del Paso 4, el fallo diagnosticado en el Paso 5 y una explicación breve de la corrección.
+### Tema 7: Pipes puros e impuros, AsyncPipe y signals
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás explicar cuándo Angular vuelve a ejecutar un pipe puro y uno impuro, demostrar el error de mutar un array con un pipe puro, usar `AsyncPipe` con un Observable y elegir signals con actualizaciones inmutables. Prerrequisitos: Tema 6 de este módulo y Módulo 2 (signals).
+
+#### Paso 2 · Contexto y caso real
+En el centro de control logístico, el total de kilos de la carga no se actualizaba al agregar un paquete. El código hacía `paquetes.push(...)` y el pipe `totalKilos` seguía mostrando el valor viejo. Es un bug real y frecuente: el pipe estaba bien, el problema era la mutación.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un pipe es **puro** por defecto: Angular solo lo vuelve a ejecutar cuando cambia la **referencia** de su entrada (comparación `===`). Por eso `push` sobre el mismo array no lo dispara. Un pipe **impuro** (`pure: false`) se ejecuta en **cada** detección de cambios: siempre está al día, pero cuesta rendimiento. `AsyncPipe` es impuro a propósito: se suscribe a un Observable o Promise, muestra el último valor y se desuscribe al destruir el componente. Con signals, `update` con un array nuevo cambia la referencia y el pipe puro funciona.
+
+**Analogía:** el pipe puro es un portero que solo mira si cambió la persona que llega a la puerta, no si la misma persona cambió de ropa.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    M[push sobre el mismo array] --> R{¿cambió la referencia?}
+    R -- no --> P[pipe puro no se ejecuta: 7 kg]
+    I[pipe impuro] --> S[se ejecuta siempre: 17 kg]
+    N[signal.update con array nuevo] --> R2{¿cambió la referencia?}
+    R2 -- sí --> P2[pipe puro se ejecuta: 17 kg]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir angular-pipes && cd angular-pipes
+npx -y @angular/cli@22 new pipes-demo --defaults --skip-git --style=css --ssr=false
+cd pipes-demo
+```
+
+Crea `src/app/kilos.pipes.ts`:
+
+```typescript
+import { Pipe, PipeTransform } from '@angular/core';
+
+export interface Paquete { guia: string; kilos: number; }
+
+let ejecucionesPuro = 0;
+let ejecucionesImpuro = 0;
+export const contadores = () => ({ puro: ejecucionesPuro, impuro: ejecucionesImpuro });
+
+// Puro (por defecto): Angular solo lo vuelve a ejecutar si cambia la REFERENCIA de la entrada
+@Pipe({ name: 'totalKilos' })
+export class TotalKilosPipe implements PipeTransform {
+  transform(paquetes: Paquete[]): number {
+    ejecucionesPuro++;
+    return paquetes.reduce((total, p) => total + p.kilos, 0);
+  }
+}
+
+// Impuro: se ejecuta en CADA detección de cambios, aunque la referencia sea la misma
+@Pipe({ name: 'totalKilosImpuro', pure: false })
+export class TotalKilosImpuroPipe implements PipeTransform {
+  transform(paquetes: Paquete[]): number {
+    ejecucionesImpuro++;
+    return paquetes.reduce((total, p) => total + p.kilos, 0);
+  }
+}
+```
+
+Crea `src/app/carga.ts`:
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { interval, map, take } from 'rxjs';
+import { Paquete, TotalKilosImpuroPipe, TotalKilosPipe } from './kilos.pipes';
+
+@Component({
+  selector: 'app-carga',
+  imports: [TotalKilosPipe, TotalKilosImpuroPipe, AsyncPipe],
+  template: `
+    <p id="puro">Puro: {{ paquetes | totalKilos }} kg</p>
+    <p id="impuro">Impuro: {{ paquetes | totalKilosImpuro }} kg</p>
+    <p id="senal">Con signal: {{ paquetesSignal() | totalKilos }} kg</p>
+    <p id="async">Camiones en ruta: {{ camiones$ | async }}</p>
+  `,
+})
+export class Carga {
+  paquetes: Paquete[] = [{ guia: 'G-1', kilos: 2 }, { guia: 'G-2', kilos: 5 }];
+  paquetesSignal = signal<Paquete[]>([...this.paquetes]);
+  // AsyncPipe se suscribe, muestra el último valor y se desuscribe al destruir el componente
+  camiones$ = interval(10).pipe(take(3), map((n) => n + 1));
+
+  agregarMutando(p: Paquete) {
+    this.paquetes.push(p);                       // misma referencia: el pipe puro no se entera
+  }
+  agregarInmutable(p: Paquete) {
+    this.paquetesSignal.update((lista) => [...lista, p]);   // referencia nueva
+  }
+}
+```
+
+Crea `src/app/carga.spec.ts`:
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { Carga } from './carga';
+import { contadores } from './kilos.pipes';
+
+const texto = (el: HTMLElement, id: string) => el.querySelector(`#${id}`)!.textContent!.trim();
+
+describe('Carga: pipes puros, impuros y async', () => {
+  it('muestra el efecto de mutar frente a crear una referencia nueva', async () => {
+    const fixture = TestBed.createComponent(Carga);
+    const el = fixture.nativeElement as HTMLElement;
+    await fixture.whenStable();
+
+    fixture.componentInstance.agregarMutando({ guia: 'G-3', kilos: 10 });
+    fixture.componentInstance.agregarInmutable({ guia: 'G-3', kilos: 10 });
+    fixture.changeDetectorRef.markForCheck();
+    fixture.detectChanges();
+
+    console.log(texto(el, 'puro'), '|', texto(el, 'impuro'), '|', texto(el, 'senal'));
+    console.log('Ejecuciones', contadores());
+    expect(texto(el, 'puro')).toBe('Puro: 7 kg');          // desactualizado: no vio el push
+    expect(texto(el, 'impuro')).toBe('Impuro: 17 kg');
+    expect(texto(el, 'senal')).toBe('Con signal: 17 kg');
+  });
+
+  it('AsyncPipe muestra el último valor emitido', async () => {
+    const fixture = TestBed.createComponent(Carga);
+    await new Promise((r) => setTimeout(r, 60));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    console.log(texto(el, 'async'));
+    expect(texto(el, 'async')).toBe('Camiones en ruta: 3');
+  });
+});
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+rm src/app/app.spec.ts
+npx ng test --watch=false
+```
+
+**Resultado esperado:**
+
+```text
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+```
+
+Las dos pruebas pasan porque **documentan** el comportamiento: el pipe puro queda desactualizado en 7 kg después del `push`, y las versiones impura y con signal muestran 17 kg. El tiempo de ejecución varía.
+
+**Fallo deliberado:** Quita `AsyncPipe` del arreglo `imports` de `Carga`. La compilación falla con `NG8004: No pipe found with name 'async'.` y Angular sugiere importarlo desde `@angular/common`. En componentes standalone cada pipe se importa donde se usa.
+
+#### Paso 5 · Práctica guiada
+Agrega un método `agregarCopiando` que agregue el paquete creando un array nuevo (`this.paquetes = [...this.paquetes, p]`) y una prueba que demuestre que el pipe puro ahora sí muestra 17 kg. **Pista:** la prueba es igual a la primera, pero llama a `agregarCopiando` en lugar de `agregarMutando` y espera `Puro: 17 kg`.
+
+#### Paso 6 · Práctica independiente
+Reemplaza `camiones$ | async` por `toSignal(camiones$)` y compara las dos formas en legibilidad y manejo de la suscripción.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los datos que "no se actualizan" son una de las quejas más comunes en Angular, y casi siempre se deben a mutaciones o a pipes impuros usados para taparlas.
+**Fuente oficial:** [Angular: Pipes](https://angular.dev/guide/templates/pipes), [Angular: AsyncPipe](https://angular.dev/api/common/AsyncPipe).
+**Conceptos clave:** pipe puro, pipe impuro, igualdad por referencia, mutación frente a inmutabilidad, `AsyncPipe`, `signal.update`, `toSignal`.
+**Cuándo no usarlo:** no marques un pipe como impuro para "arreglar" datos que no se refrescan: corrige la mutación. Los pipes impuros pesados se ejecutan decenas de veces por segundo.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** muestra el total de kilos del tablero con un pipe puro alimentado por un signal que se actualiza de forma inmutable.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
 
 ## Laboratorio práctico
 

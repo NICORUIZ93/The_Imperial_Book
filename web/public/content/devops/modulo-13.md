@@ -15,6 +15,11 @@ A lo largo del track construiste cada etapa de este pipeline por separado (tests
 Un pipeline CI/CD maduro encadena etapas donde cada una es un gate real: si una falla, la siguiente no se ejecuta — una línea de ensamblaje donde ningún vehículo avanza sin pasar el control de calidad de la estación anterior.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `.github/workflows/complete-pipeline.yml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
 
 Crea `.github/workflows/complete-pipeline.yml` en tu repositorio y ejecuta el pipeline completo con `git push`:
 
@@ -34,7 +39,10 @@ git push → CI: tests → CI: escaneo Trivy → [¿crítica? → STOP]
         normal: fin exitoso          anómalo: rollback automático
 ```
 Resultado esperado: un commit con una vulnerabilidad crítica introducida deliberadamente detiene el pipeline en la etapa de escaneo, antes de llegar a construir o publicar ninguna imagen; un commit limpio atraviesa las seis etapas y termina con el nuevo `Deployment` corriendo y verificado contra sus métricas reales.
-
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
 #### Paso 5 · Práctica guiada
 Pista: configurá el job de escaneo de Trivy para que imprima el reporte de vulnerabilidades pero sin `exit-code: 1` — ese es el fallo deliberado: el pipeline completo "pasa" en verde aunque Trivy haya encontrado una vulnerabilidad crítica real, porque el job de escaneo nunca falla realmente, solo informa; el gate existe en el papel, pero no bloquea nada en la práctica.
 
@@ -90,6 +98,11 @@ Tener cada módulo (CI, escaneo, Helm, observabilidad) funcionando por separado 
 La integración horizontal implica que la salida de una etapa se convierte en la entrada de la siguiente, y que cada etapa deja evidencia trazable (tag con hash del commit, logs con correlation ID) que permite reconstruir la cadena completa ante un incidente.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/logging/correlation.ts` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
 
 Crea `src/logging/correlation.ts` en tu aplicación Node para propagar el correlation ID, y ejecuta `helm` y `kubectl` para verificar trazabilidad:
 
@@ -112,7 +125,10 @@ bash ejemplo.sh
 Verifica la salida y el estado de los recursos creados.
 
 Resultado esperado: dado un incidente real en producción, el equipo de RutaFlow puede recorrer hacia atrás la cadena completa (imagen corriendo → tag → commit → resultado del escaneo → pipeline que lo desplegó) consultando únicamente el tag de la imagen y los logs con correlation ID, sin ninguna laguna de información.
-
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
 #### Paso 5 · Práctica guiada
 Pista: etiquetá la imagen de producción con `rutaflow:latest` en vez de con el hash del commit, "para no complicar el pipeline" — ese es el fallo deliberado: un incidente en producción un viernes a la noche no permite saber qué commit específico está corriendo realmente, porque `latest` se sobrescribió varias veces desde el último despliegue intencional, y reconstruir la cadena de trazabilidad se vuelve imposible.
 
@@ -164,6 +180,11 @@ Completar el proyecto integrador no garantiza por sí solo que cada concepto est
 Aplicar la misma disciplina de checklist usada en producción (Módulo 12) al propio aprendizaje es una forma de verificar honestamente el dominio real, distinto de simplemente haber "visto" cada tema una vez.
 
 #### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `examples/rutaflow/devops/deployment.yaml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
 
 Crea `docs/cierre-track-checklist.md` en tu proyecto y documenta tus respuestas, ejecutando `kubectl` contra el mismo `examples/rutaflow/devops/deployment.yaml` del proyecto integrador para verificar cada decisión (por ejemplo, `kubectl explain deployment.spec.strategy` para la pregunta 3):
 
@@ -184,7 +205,10 @@ bash ejemplo.sh
 Verifica la salida y el estado de los recursos creados.
 
 Resultado esperado: respondés las tres preguntas con una justificación concreta anclada en una decisión real del pipeline de RutaFlow que construiste, confirmando que el conocimiento quedó conectado a una aplicación práctica, no memorizado de forma aislada.
-
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
 #### Paso 5 · Práctica guiada
 Pista: respondé la pregunta sobre GitOps con una definición genérica copiada ("GitOps es usar Git como fuente de verdad") sin conectarla con ninguna decisión específica del pipeline de RutaFlow — ese es el fallo deliberado: esa respuesta "suena" correcta pero no demuestra que entendiste por qué esa propiedad reduce exposición de credenciales en tu propio pipeline, y no te prepara para defender esa decisión frente a alguien que pregunte "¿por qué no simplemente CD tradicional acá?".
 

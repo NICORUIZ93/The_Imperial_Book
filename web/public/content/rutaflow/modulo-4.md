@@ -177,7 +177,7 @@ Entregá la estructura de carpetas por capacidades, la salida `OK pendientes=2` 
 **Transferencia al proyecto integrador «RutaFlow»:** Separa ruta, evidencia y sincronización como capacidades de la app móvil. Prueba el caso de uso de entrega sin montar widgets y evita que cada pantalla construya su propia cola de cambios.
 
 **Límites y decisión de uso:** Las capas no justifican duplicar modelos y adaptadores sin una frontera real. Separa dominio de dispositivo y transporte donde facilite pruebas y sustitución; conserva un flujo simple para decisiones puramente visuales.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 2: GPS, permisos y batería
 
 **Conceptos clave:** precisión, frecuencia, distancia, background, consentimiento y muestreo adaptativo.
@@ -228,6 +228,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Crea una carpeta independiente y agrega los paquetes reales de ubicación y batería:
 
@@ -306,7 +308,7 @@ Entregá `politica_ubicacion.dart` con el manejo explícito de `deniedForever`, 
 **Errores comunes:** pedir `LocationPermission.always` de entrada sin verificar si la función realmente necesita segundo plano; descartar el valor de retorno de `requestPermission()`; fijar un intervalo de muestreo constante sin medir el impacto real en la batería del dispositivo.
 
 **Transferencia al proyecto integrador «RutaFlow»:** Solicita ubicación con una explicación vinculada a la función activa. Prueba permiso revocado y ejecución en segundo plano, registrando precisión y consumo observado sin prometer seguimiento continuo.
-
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 3: Offline-first y prueba de entrega
 
 **Conceptos clave:** SQLite, outbox local, estados de sincronización, conflictos y evidencia.
@@ -356,6 +358,8 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/ejemplo.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
 
 Crea una carpeta independiente y agrega `sqflite` junto con la variante que corre sobre el Dart VM para poder verificar sin un emulador:
 
@@ -475,3 +479,4 @@ Entregá `outbox_entregas.dart`, la salida `OK llamadas=1` del Paso 4, la duplic
 **Transferencia al proyecto integrador «RutaFlow»:** Conserva evidencia y comando de confirmación localmente antes de sincronizar. Reinicia sin red y reintenta dos veces: la entrega debe quedar aplicada una sola vez y el archivo disponible hasta su recepción.
 
 **Límites y decisión de uso:** Guardar offline no implica confirmación del servidor ni elimina conflictos. Conserva estado pendiente y evidencia hasta recibir una respuesta durable, define reintentos y permite intervención cuando la guía cambió mientras no había conexión.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

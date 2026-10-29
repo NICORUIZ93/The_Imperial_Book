@@ -5,7 +5,7 @@
 .topic-search span { display:block; margin:0 4px 6px; color:$mu; font-size:10px; font-weight:800; letter-spacing:.45px; text-transform:uppercase; }
 .topic-search input {
   width:100%; border:1px solid $bd; border-radius:$rs; padding:8px 9px; background:$bg2; color:$ink;
-  font:500 12px Inter, system-ui, sans-serif; outline:none;
+  font:500 12px var(--font-sans); outline:none;
 }
 .topic-search input:focus { border-color:$p; box-shadow:0 0 0 3px $pl; }
 .topic-search-empty { margin:0 4px 14px; color:$mu; font-size:12px; line-height:1.45; }

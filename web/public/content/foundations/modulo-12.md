@@ -305,10 +305,10 @@ Crea `examples/electronics/comunicaciones.py` en un proyecto nuevo o utiliza el 
 
 ```python
 dato = 0b10110010
-paridad = dato.bit_count() % 2
+paridad = bin(dato).count("1") % 2
 recibido = dato ^ 0b00000001
 # Un cambio de un bit altera la paridad.
-valido = recibido.bit_count() % 2 == paridad
+valido = bin(recibido).count("1") % 2 == paridad
 print(f"Trama válida: {valido}")
 ```
 
@@ -323,7 +323,7 @@ python3 examples/electronics/comunicaciones.py
 Trama válida: False
 ```
 
-**Explicación por bloques:** `bit_count` cuenta unos del byte; el módulo dos calcula paridad. XOR con 1 invierte un bit sin tocar los demás. El receptor vuelve a calcular y compara: una cuenta impar cambia de paridad. Invertir dos bits puede mantenerla, así que el resultado True no demostraría integridad completa.
+**Explicación por bloques:** `bin(x).count("1")` cuenta los bits en 1 del byte; el módulo dos calcula paridad. XOR con 1 invierte un bit sin tocar los demás. El receptor vuelve a calcular y compara: una cuenta impar cambia de paridad. Invertir dos bits puede mantenerla, así que el resultado True no demostraría integridad completa.
 
 **Fallo deliberado y diagnóstico:** Invierte dos bits con ^ 0b00000011: la paridad acepta una trama corrupta; identifica su límite. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
 
