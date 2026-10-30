@@ -60,4 +60,39 @@ describe('ProgressService', () => {
 
     expect(() => service.importProgress(backup)).toThrowError('El archivo supera el tamaño máximo de 1 MB.');
   });
+
+  it('registra evidencia por tema y la conserva en la copia de seguridad', () => {
+    const service = TestBed.inject(ProgressService);
+    expect(service.isTopicVerified('java', 3, 'tema-2')).toBe(false);
+
+    service.verifyTopic('java', 3, 'tema-2', '  salida: java Hola -> Hola desde la JVM  ');
+
+    expect(service.isTopicVerified('java', 3, 'tema-2')).toBe(true);
+    expect(service.topicEvidence('java', 3, 'tema-2')).toBe('salida: java Hola -> Hola desde la JVM');
+
+    const backup = service.exportProgress();
+    localStorage.clear();
+    const restored = new ProgressService();
+    restored.importProgress(backup);
+
+    expect(restored.isTopicVerified('java', 3, 'tema-2')).toBe(true);
+    expect(restored.topicEvidence('java', 3, 'tema-2')).toContain('Hola desde la JVM');
+  });
+
+  it('rechaza evidencia vacía y no marca el tema', () => {
+    const service = TestBed.inject(ProgressService);
+
+    expect(() => service.verifyTopic('java', 0, 'tema-1', '   ')).toThrowError(
+      'La evidencia debe describir o pegar al menos 10 caracteres verificables.',
+    );
+    expect(service.isTopicVerified('java', 0, 'tema-1')).toBe(false);
+  });
+
+  it('recorta la evidencia a 280 caracteres', () => {
+    const service = TestBed.inject(ProgressService);
+
+    service.verifyTopic('java', 0, 'tema-1', 'x'.repeat(500));
+
+    expect(service.topicEvidence('java', 0, 'tema-1').length).toBe(280);
+  });
 });

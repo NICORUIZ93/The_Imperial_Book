@@ -4,11 +4,19 @@ import { TRACKS } from './course-data';
 export interface TrackProgress {
   completedModules: number[];
   completedExercises: string[];
+  verifiedTopics: string[];
+  topicEvidence: Record<string, string>;
 }
 
 type ProgressState = Record<string, TrackProgress>;
 
-const EMPTY_TRACK_PROGRESS: TrackProgress = { completedModules: [], completedExercises: [] };
+const EMPTY_TRACK_PROGRESS: TrackProgress = {
+  completedModules: [],
+  completedExercises: [],
+  verifiedTopics: [],
+  topicEvidence: {},
+};
+const MAX_EVIDENCE_CHARS = 280;
 const STORAGE_KEY = 'academia-progress-v2';
 const LEGACY_CLOUD_KEY = 'cloud-local-academy-progress';
 const BACKUP_FORMAT = 'academia-floci-progress';
@@ -36,7 +44,12 @@ export class ProgressService {
       if (!legacyRaw) return {};
       const legacy = JSON.parse(legacyRaw) as Partial<TrackProgress>;
       const migrated: ProgressState = {
-        cloud: { completedModules: legacy.completedModules ?? [], completedExercises: [] },
+        cloud: {
+          completedModules: legacy.completedModules ?? [],
+          completedExercises: [],
+          verifiedTopics: [],
+          topicEvidence: {},
+        },
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
       return migrated;
@@ -106,6 +119,8 @@ export class ProgressService {
       const track = progress as Record<string, unknown>;
       const modules = track['completedModules'];
       const exercises = track['completedExercises'];
+      const verified = track['verifiedTopics'] ?? [];
+      const evidence = track['topicEvidence'] ?? {};
       if (
         !Array.isArray(modules) ||
         modules.length > totalModules ||
@@ -118,11 +133,36 @@ export class ProgressService {
           const match = /^(\d+):.{1,200}$/.exec(key);
           return !!match && Number.isSafeInteger(Number(match[1])) && Number(match[1]) < totalModules;
         }) ||
-        new Set(exercises).size !== exercises.length
+        new Set(exercises).size !== exercises.length ||
+        !Array.isArray(verified) ||
+        verified.length > 10_000 ||
+        !verified.every(key => {
+          if (typeof key !== 'string') return false;
+          const match = /^(\d+):.{1,200}$/.exec(key);
+          return !!match && Number.isSafeInteger(Number(match[1])) && Number(match[1]) < totalModules;
+        }) ||
+        new Set(verified).size !== verified.length ||
+        !evidence ||
+        typeof evidence !== 'object' ||
+        Array.isArray(evidence) ||
+        Object.entries(evidence as Record<string, unknown>).length > 10_000 ||
+        !Object.entries(evidence as Record<string, unknown>).every(([key, value]) => {
+          const match = /^(\d+):.{1,200}$/.exec(key);
+          return !!match &&
+            Number.isSafeInteger(Number(match[1])) &&
+            Number(match[1]) < totalModules &&
+            typeof value === 'string' &&
+            value.length <= MAX_EVIDENCE_CHARS;
+        })
       ) {
         throw new Error(`La copia contiene progreso inválido para la ruta "${trackId}".`);
       }
-      tracks[trackId] = { completedModules: modules, completedExercises: exercises };
+      tracks[trackId] = {
+        completedModules: modules,
+        completedExercises: exercises,
+        verifiedTopics: verified,
+        topicEvidence: evidence as Record<string, string>,
+      };
     }
     return tracks;
   }
@@ -160,6 +200,35 @@ export class ProgressService {
     this.state.update(state => ({
       ...state,
       [trackId]: { ...current, completedExercises: [...current.completedExercises, key] },
+    }));
+    this.persist();
+  }
+
+  isTopicVerified(trackId: string, moduleId: number, topicId: string): boolean {
+    return this.trackProgress(trackId).verifiedTopics.includes(`${moduleId}:${topicId}`);
+  }
+
+  topicEvidence(trackId: string, moduleId: number, topicId: string): string {
+    return this.trackProgress(trackId).topicEvidence[`${moduleId}:${topicId}`] ?? '';
+  }
+
+  verifyTopic(trackId: string, moduleId: number, topicId: string, evidence: string): void {
+    const key = `${moduleId}:${topicId}`;
+    const excerpt = evidence.replace(/\s+/g, ' ').trim().slice(0, MAX_EVIDENCE_CHARS);
+    if (excerpt.length < 10) {
+      throw new Error('La evidencia debe describir o pegar al menos 10 caracteres verificables.');
+    }
+    const current = this.trackProgress(trackId);
+    const verifiedTopics = current.verifiedTopics.includes(key)
+      ? current.verifiedTopics
+      : [...current.verifiedTopics, key];
+    this.state.update(state => ({
+      ...state,
+      [trackId]: {
+        ...current,
+        verifiedTopics,
+        topicEvidence: { ...current.topicEvidence, [key]: excerpt },
+      },
     }));
     this.persist();
   }

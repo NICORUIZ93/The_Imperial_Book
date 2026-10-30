@@ -115,7 +115,7 @@
       <footer class="lesson-footer">
         <button class="complete-toggle" [class.done]="isComplete()" [attr.aria-pressed]="isComplete()" (click)="toggleComplete()">
           <lucide-icon [img]="icons.CircleCheck" />
-          <span>{{ isComplete() ? 'Capítulo completado' : 'Marcar capítulo como completado' }}</span>
+          <span>{{ isComplete() ? 'Capítulo leído' : 'Marcar capítulo como leído' }}</span>
         </button>
         <div class="lesson-nav">
           <button *ngIf="previousModule() as prev" [attr.aria-label]="'Ir al capítulo anterior: ' + prev.shortTitle" (click)="goToModule(prev.id)"><lucide-icon [img]="icons.ChevronLeft" /><span>{{ prev.shortTitle }}</span></button>

@@ -284,7 +284,7 @@ test('renovación: retoma el siguiente capítulo y conserva el progreso al recar
   await page.getByRole('link', { name: 'Empezar desde cero', exact: true }).click();
   await expect(page.locator('.topic-card').first()).toContainText('Hola, mundo');
   await expect(page.locator('.project-bootstrap')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Marcar capítulo como completado', exact: true }).click();
+  await page.getByRole('button', { name: 'Marcar capítulo como leído', exact: true }).click();
   await page.getByRole('link', { name: 'Catálogo', exact: true }).click();
   const resume = page.locator('.resume-list').getByRole('link').filter({ hasText: 'Fundamentos' });
   await expect(resume).toHaveAttribute('href', '/curso/foundations/1');
