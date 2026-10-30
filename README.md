@@ -11,10 +11,11 @@ ni demuestra por sí sola que un ejemplo se ejecutó.
 
 - [Material solicitado de Proyecto-RutaFlow y destinos](docs/rutaflow-source-index.md)
 - [Revisión de profundidad de todos los temas](docs/course-depth-review.md)
+- [Revisión integral: cobertura y pendientes](docs/full-review.md)
 - [Plan total de cambio y estado](docs/PLAN-TOTAL-DE-CAMBIO.md)
 - [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
 - [Continuación de la metodología de siete pasos](docs/CONTINUAR-7-PASOS.md)
-- [Guia web](web/README.md)
+- [Guía web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
 - [Índice de las 69 páginas e integración de merged.pdf](docs/merged-pdf-review.md)
 - [Prompts de formación profesional disponibles en cada tema](docs/PROMPTS-FORMACION.md)
@@ -25,7 +26,7 @@ ni demuestra por sí sola que un ejemplo se ejecutó.
 - [Estándar de código, Clean Code y SOLID](docs/ESTANDAR-DE-CODIGO.md)
 - [Proyecto transversal de logística RutaFlow](examples/rutaflow/README.md)
 
-## Como empezar
+## Cómo empezar
 
 1. Instala Node.js LTS y clona el repositorio.
 2. Ejecuta `cd web && npm ci && npm start`.
@@ -149,9 +150,9 @@ node examples/node/floci-example.js
 python3 examples/python/floci-example.py
 ```
 
-Tambien hay ejemplos base en Java, Go y Rust dentro de `examples/`.
+También hay ejemplos base en Java, Go y Rust dentro de `examples/`.
 
-## Metodologia
+## Metodología
 
 El contrato editorial que debe alcanzar cada tema es:
 
@@ -175,19 +176,15 @@ existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
 Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
-estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 1092/1098 temas practicables (cada tema tiene demostración ejecutable con
-comando y resultado, verificado por el auditor endurecido). La auditoría independiente
-de metodología de siete pasos registra 1098/1098 temas completos según sus marcadores
-(el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
-«Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
-recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de
-`mkdir`, `ng new` o `flutter create`). Los temas aún incompletos permanecen como deuda editorial
-real —no detectable como falso negativo— y requieren reescritura específica. La
-diferencia y los
-criterios faltantes por tema permanecen visibles en
-[`docs/seven-step-methodology.md`](docs/seven-step-methodology.md) y
-[`docs/editorial-backlog.md`](docs/editorial-backlog.md).
+estructural detectada por heurísticas, no calidad ni ejecución: el corte
+versionado registra 1092/1098 temas con los nueve criterios detectados. La
+auditoría independiente de metodología registra 1098/1098 con sus marcadores de
+siete pasos. Ninguno de esos resultados demuestra que las instrucciones sean
+correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
+El estado por tema y las señales adicionales están en
+[`docs/seven-step-methodology.md`](docs/seven-step-methodology.md),
+[`docs/editorial-backlog.md`](docs/editorial-backlog.md) y
+[`docs/full-review.md`](docs/full-review.md).
 
 ## Licencias
 
@@ -198,13 +195,10 @@ marcas y recursos con licencia propia quedan excluidos; consulta los avisos de
 atribución junto al material. Ver [`LICENSE`](LICENSE) y
 [`web/public/content/LICENCIA-CONTENIDO.md`](web/public/content/LICENCIA-CONTENIDO.md).
 
-La preparación completa se muestra únicamente en el módulo inicial. La ruta
-oficial permanece disponible de forma plegable en el índice y el proyecto
-integrador aparece en el capítulo final. WebFlux es uno de los temas que ya alcanza el recorrido manual
-esperado; no se usa para ocultar la deuda editorial de los demás.
-La auditoría editorial de `docs/topic-learning-quality.md` sigue midiendo el
-Markdown real por separado: una ayuda generada en la interfaz no convierte una
-explicación superficial en contenido editorial completo.
+La preparación de entorno se muestra en el módulo inicial; la ruta oficial está
+disponible en el índice y el proyecto integrador en el capítulo final. Estas
+características de navegación no acreditan una revisión pedagógica tema por
+tema: el estado manual queda explícito en el informe integral.
 
 `docs/code-visual-quality.md` mide además, sin contar las guías generadas, qué
 temas tienen código, comentarios didácticos, ubicación, comando, Mermaid y
@@ -242,8 +236,8 @@ como certificaciones.
 | Flutter | 16 | Widgets, gestión de estado, plataformas nativas |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |
 
-`scripts/validate.sh` valida automaticamente que el numero de archivos
-Markdown de cada track coincida con los modulos declarados en su fuente
+`scripts/validate.sh` valida automáticamente que el número de archivos
+Markdown de cada track coincida con los módulos declarados en su fuente
 TypeScript, que el índice web corresponda a esos 14 tracks y que los reportes de
 calidad permanezcan sincronizados con el Markdown real.
 
@@ -265,9 +259,9 @@ obligatoria de producción.
 
 ## Seguridad
 
-Los temas de seguridad se tratan desde una practica defensiva y autorizada:
+Los temas de seguridad se tratan desde una práctica defensiva y autorizada:
 entender riesgos, proteger sistemas propios, validar configuraciones y construir
-software mas robusto. No incluye instrucciones para atacar sistemas de terceros.
+software más robusto. No incluye instrucciones para atacar sistemas de terceros.
 
 ## Estructura
 
@@ -294,35 +288,35 @@ Antes de subir cambios, ejecuta:
 ```
 
 La validación comprueba la aplicación Angular, la relación entre tracks y
-Markdown, las auditorías educativas,
-los 12 proyectos, el progreso académico y el mapa actualizado del repositorio.
-También exige los nueve criterios editoriales en cada tema y prueba la
-restauración de backups en un PostgreSQL temporal cuando sus herramientas
-están disponibles; CI las instala.
+Markdown, las auditorías educativas, los 12 proyectos, el progreso académico y
+que el mapa del repositorio versionado esté actualizado. Aplica un umbral de
+presencia editorial detectada por heurísticas; no exige falsamente que todos los
+criterios estén completos en cada tema. También prueba la restauración de backups
+en un PostgreSQL temporal; CI instala las herramientas necesarias.
 
-El CI tambien ejecuta build y tests de Angular:
+El CI también ejecuta build y tests de Angular:
 
 ```bash
 cd web
 npm run build --silent
-npm test -- --watch=false
+npm test -- --watch=false --coverage
 npm run e2e
 ```
 
 ## Mapa compacto para asistentes de IA
 
-Para reducir exploracion repetida del repositorio, este proyecto incluye:
+Para reducir exploración repetida del repositorio, este proyecto incluye:
 
 - `docs/repo-graph.md`: snapshot legible para asistentes.
-- `docs/repo-graph.json`: indice estructurado para herramientas.
+- `docs/repo-graph.json`: índice estructurado para herramientas.
 
-Actualizalo cuando cambie la estructura:
+Actualízalo cuando cambie la estructura:
 
 ```bash
 python3 scripts/build_repo_graph.py
 ```
 
-Comprueba sincronizacion:
+Comprueba sincronización:
 
 ```bash
 python3 scripts/build_repo_graph.py --check
