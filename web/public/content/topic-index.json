@@ -1640,12 +1640,12 @@
         "fragment": "tema-5-rollback-automatico-por-metricas"
       },
       {
-        "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
-        "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
-      },
-      {
         "title": "Rollback ensayado y compatibilidad del artefacto anterior",
         "fragment": "tema-6-rollback-ensayado-y-compatibilidad-del-artefacto-anterior"
+      },
+      {
+        "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
       }
     ],
     "6": [

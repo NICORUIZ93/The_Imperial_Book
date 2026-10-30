@@ -302,6 +302,14 @@
       "headings": []
     },
     {
+      "path": "docs/app-flow-inspection-evidence.json",
+      "lines": 8798,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/app-flow-inspection-relocate.json",
       "lines": 11319,
       "kind": "project-file",
@@ -5884,6 +5892,27 @@
         "hashlib",
         "json",
         "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/relocate_evidence_to_close.py",
+      "lines": 145,
+      "kind": "automation-script",
+      "symbols": [
+        "topic_slice",
+        "relocate",
+        "guard",
+        "improve_topic",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "re",
+        "sys",
+        "pathlib",
+        "audit_lesson_substance"
       ],
       "headings": []
     },

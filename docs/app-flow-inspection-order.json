@@ -1,0 +1,1616 @@
+{
+  "summary": {
+    "generatedAt": "2026-10-30T17:34:41.920Z",
+    "baseUrl": "http://127.0.0.1:4200",
+    "pagesInspected": 19,
+    "errors": 0,
+    "warnings": 0,
+    "scopeNote": "Este barrido verifica renderizado y flujo, no sustituye la auditoría editorial de scripts/audit_topic_learning_quality.py sobre el Markdown."
+  },
+  "pages": [
+    {
+      "trackId": "devops",
+      "moduleId": "0",
+      "expectedTopicCount": 11,
+      "expectedTitles": [
+        "Sistema de archivos y permisos (chmod/chown)",
+        "Procesos, señales y jobs en segundo plano",
+        "Pipes, redirección y filtros (grep, awk, sed)",
+        "Variables de entorno y scripts bash robustos (set -euo pipefail)",
+        "Cron y tareas programadas",
+        "Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor",
+        "Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga",
+        "Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor",
+        "NGINX y proxies desde cero",
+        "Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
+        "systemd: servicios, timers y logs con journalctl"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/0",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 1.1Sistema de archivos y permisos (chmod/chown)Ocultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/1"
+          ]
+        },
+        {
+          "title": "§ 1.2Procesos, señales y jobs en segundo planoAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/2"
+          ]
+        },
+        {
+          "title": "§ 1.3Pipes, redirección y filtros (grep, awk, sed)Abrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/3"
+          ]
+        },
+        {
+          "title": "§ 1.4Variables de entorno y scripts bash robustos (set -euo pipefail)Abrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/4"
+          ]
+        },
+        {
+          "title": "§ 1.5Cron y tareas programadasAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/5"
+          ]
+        },
+        {
+          "title": "§ 1.6Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmorAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/6"
+          ]
+        },
+        {
+          "title": "§ 1.7Redes — modelo OSI, TCP/IP, DNS y balanceadores de cargaAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/7"
+          ]
+        },
+        {
+          "title": "§ 1.8Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→MonitorAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/8"
+          ]
+        },
+        {
+          "title": "§ 1.9NGINX y proxies desde ceroAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/9"
+          ]
+        },
+        {
+          "title": "§ 1.10Usuarios, grupos, permisos compartidos y sudo con mínimo privilegioAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/10"
+          ]
+        },
+        {
+          "title": "§ 1.11systemd: servicios, timers y logs con journalctlAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/0/tema/11"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "1",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Trunk-based development vs GitFlow",
+        "Rebase interactivo vs merge",
+        "Bisect para encontrar regresiones",
+        "Hooks de Git y commits firmados",
+        "Monorepos vs polyrepos",
+        "git cherry-pick, git stash, git reset vs git revert",
+        "git reflog, git worktree y git submodule"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/1",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 2.1Trunk-based development vs GitFlowOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/1"
+          ]
+        },
+        {
+          "title": "§ 2.2Rebase interactivo vs mergeAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/2"
+          ]
+        },
+        {
+          "title": "§ 2.3Bisect para encontrar regresionesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/3"
+          ]
+        },
+        {
+          "title": "§ 2.4Hooks de Git y commits firmadosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/4"
+          ]
+        },
+        {
+          "title": "§ 2.5Monorepos vs polyreposAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/5"
+          ]
+        },
+        {
+          "title": "§ 2.6git cherry-pick, git stash, git reset vs git revertAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/6"
+          ]
+        },
+        {
+          "title": "§ 2.7git reflog, git worktree y git submoduleAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/1/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "2",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Dockerfile multi-stage",
+        "Capas e invalidación de caché",
+        "Imágenes base distroless/alpine",
+        "Volúmenes vs bind mounts",
+        "Redes en Docker",
+        "Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor",
+        "Operación diaria: inspect, stats, events y respaldo de volúmenes"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/2",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 3.1Dockerfile multi-stageOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/1"
+          ]
+        },
+        {
+          "title": "§ 3.2Capas e invalidación de cachéAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/2"
+          ]
+        },
+        {
+          "title": "§ 3.3Imágenes base distroless/alpineAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/3"
+          ]
+        },
+        {
+          "title": "§ 3.4Volúmenes vs bind mountsAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/4"
+          ]
+        },
+        {
+          "title": "§ 3.5Redes en DockerAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/5"
+          ]
+        },
+        {
+          "title": "§ 3.6Registries — Docker Hub, AWS ECR, Azure Container Registry, HarborAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/6"
+          ]
+        },
+        {
+          "title": "§ 3.7Operación diaria: inspect, stats, events y respaldo de volúmenesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/2/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "3",
+      "expectedTopicCount": 4,
+      "expectedTitles": [
+        "Servicios, dependencias y healthchecks",
+        "Variables de entorno y .env",
+        "Redes y descubrimiento por nombre de servicio",
+        "Perfiles para distintos entornos"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/3",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 4.1Servicios, dependencias y healthchecksOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/3/tema/1"
+          ]
+        },
+        {
+          "title": "§ 4.2Variables de entorno y .envAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/3/tema/2"
+          ]
+        },
+        {
+          "title": "§ 4.3Redes y descubrimiento por nombre de servicioAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/3/tema/3"
+          ]
+        },
+        {
+          "title": "§ 4.4Perfiles para distintos entornosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/3/tema/4"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "4",
+      "expectedTopicCount": 4,
+      "expectedTitles": [
+        "Jobs, steps y matrices de build",
+        "Caché de dependencias en CI",
+        "Artifacts y reportes de cobertura",
+        "Pipelines como código (GitHub Actions/GitLab CI)"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/4",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 5.1Jobs, steps y matrices de buildOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/4/tema/1"
+          ]
+        },
+        {
+          "title": "§ 5.2Caché de dependencias en CIAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/4/tema/2"
+          ]
+        },
+        {
+          "title": "§ 5.3Artifacts y reportes de coberturaAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/4/tema/3"
+          ]
+        },
+        {
+          "title": "§ 5.4Pipelines como código (GitHub Actions/GitLab CI)Abrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/visuals/temas/devops/modulo-4-tema-4-pipeline-ci.html",
+            "/curso/devops/4/tema/4"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "5",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Blue-green deployment",
+        "Canary releases",
+        "Rolling updates",
+        "Feature flags vs branches por entorno",
+        "Rollback automático por métricas",
+        "Rollback ensayado y compatibilidad del artefacto anterior",
+        "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/5",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 6.1Blue-green deploymentOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/1"
+          ]
+        },
+        {
+          "title": "§ 6.2Canary releasesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/2"
+          ]
+        },
+        {
+          "title": "§ 6.3Rolling updatesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/3"
+          ]
+        },
+        {
+          "title": "§ 6.4Feature flags vs branches por entornoAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/4"
+          ]
+        },
+        {
+          "title": "§ 6.5Rollback automático por métricasAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/5"
+          ]
+        },
+        {
+          "title": "§ 6.6Rollback ensayado y compatibilidad del artefacto anteriorAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/6"
+          ]
+        },
+        {
+          "title": "§ 6.7A/B testing y shadow traffic: medir sin convertir usuarios en cobayasAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/5/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "6",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Pod, ReplicaSet, Deployment",
+        "Service (ClusterIP, NodePort, LoadBalancer)",
+        "ConfigMaps y Secrets",
+        "kubectl esencial",
+        "Namespaces",
+        "StatefulSets, DaemonSets, Jobs y CronJobs",
+        "Persistent Volumes, PVCs y StorageClasses"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/6",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 7.1Pod, ReplicaSet, DeploymentOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/1"
+          ]
+        },
+        {
+          "title": "§ 7.2Service (ClusterIP, NodePort, LoadBalancer)Abrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/2"
+          ]
+        },
+        {
+          "title": "§ 7.3ConfigMaps y SecretsAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/3"
+          ]
+        },
+        {
+          "title": "§ 7.4kubectl esencialAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/4"
+          ]
+        },
+        {
+          "title": "§ 7.5NamespacesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/5"
+          ]
+        },
+        {
+          "title": "§ 7.6StatefulSets, DaemonSets, Jobs y CronJobsAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/6"
+          ]
+        },
+        {
+          "title": "§ 7.7Persistent Volumes, PVCs y StorageClassesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/6/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "7",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Helm charts y values",
+        "Ingress Controllers y reglas de enrutamiento",
+        "HorizontalPodAutoscaler",
+        "Probes de liveness y readiness",
+        "RBAC en Kubernetes",
+        "Service Mesh — Istio, Linkerd, Envoy y mTLS",
+        "Estrategias de despliegue — Recreate vs RollingUpdate"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/7",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 8.1Helm charts y valuesOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/1"
+          ]
+        },
+        {
+          "title": "§ 8.2Ingress Controllers y reglas de enrutamientoAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/2"
+          ]
+        },
+        {
+          "title": "§ 8.3HorizontalPodAutoscalerAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/3"
+          ]
+        },
+        {
+          "title": "§ 8.4Probes de liveness y readinessAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/4"
+          ]
+        },
+        {
+          "title": "§ 8.5RBAC en KubernetesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/5"
+          ]
+        },
+        {
+          "title": "§ 8.6Service Mesh — Istio, Linkerd, Envoy y mTLSAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/6"
+          ]
+        },
+        {
+          "title": "§ 8.7Estrategias de despliegue — Recreate vs RollingUpdateAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/7/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "8",
+      "expectedTopicCount": 8,
+      "expectedTitles": [
+        "Providers, resources y data sources",
+        "State remoto y locking",
+        "Módulos reutilizables",
+        "terraform plan vs apply",
+        "Workspaces para múltiples entornos",
+        "Ansible — playbooks, roles, inventory y módulos",
+        "Pulumi como alternativa a HCL",
+        "OpenTofu, plan y estado sin recursos cloud"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/8",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 9.1Providers, resources y data sourcesOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/1"
+          ]
+        },
+        {
+          "title": "§ 9.2State remoto y lockingAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/2"
+          ]
+        },
+        {
+          "title": "§ 9.3Módulos reutilizablesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/3"
+          ]
+        },
+        {
+          "title": "§ 9.4terraform plan vs applyAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/4"
+          ]
+        },
+        {
+          "title": "§ 9.5Workspaces para múltiples entornosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/5"
+          ]
+        },
+        {
+          "title": "§ 9.6Ansible — playbooks, roles, inventory y módulosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/6"
+          ]
+        },
+        {
+          "title": "§ 9.7Pulumi como alternativa a HCLAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/7"
+          ]
+        },
+        {
+          "title": "§ 9.8Tema complementario: OpenTofu, plan y estado sin recursos cloudAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/8/tema/8"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "9",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Modelo de métricas de Prometheus — counter, gauge, histogram",
+        "PromQL esencial",
+        "Dashboards en Grafana",
+        "Alertmanager y reglas de alerta",
+        "SLI, SLO, SLA",
+        "OpenTelemetry como estándar de instrumentación",
+        "Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/9",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 10.1Modelo de métricas de Prometheus — counter, gauge, histogramOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/1"
+          ]
+        },
+        {
+          "title": "§ 10.2PromQL esencialAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/2"
+          ]
+        },
+        {
+          "title": "§ 10.3Dashboards en GrafanaAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/3"
+          ]
+        },
+        {
+          "title": "§ 10.4Alertmanager y reglas de alertaAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/4"
+          ]
+        },
+        {
+          "title": "§ 10.5SLI, SLO, SLAAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/5"
+          ]
+        },
+        {
+          "title": "§ 10.6OpenTelemetry como estándar de instrumentaciónAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/6"
+          ]
+        },
+        {
+          "title": "§ 10.7Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure RateAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/9/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "10",
+      "expectedTopicCount": 4,
+      "expectedTitles": [
+        "Logging estructurado (JSON)",
+        "Pipeline ELK/EFK",
+        "Loki + Grafana como alternativa ligera",
+        "Correlation ID a través de servicios"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/10",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 11.1Logging estructurado (JSON)Ocultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/10/tema/1"
+          ]
+        },
+        {
+          "title": "§ 11.2Pipeline ELK/EFKAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/10/tema/2"
+          ]
+        },
+        {
+          "title": "§ 11.3Loki + Grafana como alternativa ligeraAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/10/tema/3"
+          ]
+        },
+        {
+          "title": "§ 11.4Correlation ID a través de serviciosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/10/tema/4"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "11",
+      "expectedTopicCount": 7,
+      "expectedTitles": [
+        "Escaneo de imágenes y dependencias (Trivy, Snyk)",
+        "Integración en el pipeline",
+        "Gestión de secretos (Vault, SOPS)",
+        "Menor privilegio en CI/CD",
+        "SBOM y supply chain security",
+        "SAST, DAST y SCA — diferencias y herramientas",
+        "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/11",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 12.1Escaneo de imágenes y dependencias (Trivy, Snyk)Ocultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/1"
+          ]
+        },
+        {
+          "title": "§ 12.2Integración en el pipelineAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/2"
+          ]
+        },
+        {
+          "title": "§ 12.3Gestión de secretos (Vault, SOPS)Abrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/3"
+          ]
+        },
+        {
+          "title": "§ 12.4Menor privilegio en CI/CDAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/4"
+          ]
+        },
+        {
+          "title": "§ 12.5SBOM y supply chain securityAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/5"
+          ]
+        },
+        {
+          "title": "§ 12.6SAST, DAST y SCA — diferencias y herramientasAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/6"
+          ]
+        },
+        {
+          "title": "§ 12.7Reconocimiento de tu propio laboratorio: escaneo de puertos y bannersAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/11/tema/7"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "12",
+      "expectedTopicCount": 6,
+      "expectedTitles": [
+        "De cloud local a un proveedor cloud real",
+        "Gestión de secretos cloud-native",
+        "IaC multi-nube",
+        "Checklist de salida a producción",
+        "GitOps con ArgoCD y FluxCD",
+        "Platform Engineering — Internal Developer Platforms (IDPs)"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/12",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 13.1De cloud local a un proveedor cloud realOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/12/tema/1"
+          ]
+        },
+        {
+          "title": "§ 13.2Gestión de secretos cloud-nativeAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/12/tema/2"
+          ]
+        },
+        {
+          "title": "§ 13.3IaC multi-nubeAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/12/tema/3"
+          ]
+        },
+        {
+          "title": "§ 13.4Checklist de salida a producciónAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/12/tema/4"
+          ]
+        },
+        {
+          "title": "§ 13.5GitOps con ArgoCD y FluxCDAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/12/tema/5"
+          ]
+        },
+        {
+          "title": "§ 13.6Platform Engineering — Internal Developer Platforms (IDPs)Abrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/12/tema/6"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "13",
+      "expectedTopicCount": 3,
+      "expectedTitles": [
+        "El pipeline completo — de commit a producción verificada",
+        "Uniendo cada módulo del track en un solo flujo",
+        "Cierre del track — checklist final y reflexión"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/13",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 14.1El pipeline completo — de commit a producción verificadaOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/13/tema/1"
+          ]
+        },
+        {
+          "title": "§ 14.2Uniendo cada módulo del track en un solo flujoAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/13/tema/2"
+          ]
+        },
+        {
+          "title": "§ 14.3Cierre del track — checklist final y reflexiónAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/13/tema/3"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "14",
+      "expectedTopicCount": 4,
+      "expectedTitles": [
+        "Confiabilidad es una expectativa cuantificada",
+        "Una alerta debe conducir a una acción",
+        "Construir una imagen no demuestra de dónde proviene",
+        "Una plataforma interna es un producto con límites"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/14",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 15.1Confiabilidad es una expectativa cuantificadaOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/14/tema/1"
+          ]
+        },
+        {
+          "title": "§ 15.2Una alerta debe conducir a una acciónAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/14/tema/2"
+          ]
+        },
+        {
+          "title": "§ 15.3Construir una imagen no demuestra de dónde provieneAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/14/tema/3"
+          ]
+        },
+        {
+          "title": "§ 15.4Una plataforma interna es un producto con límitesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/14/tema/4"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "15",
+      "expectedTopicCount": 6,
+      "expectedTitles": [
+        "Docker y Compose avanzados",
+        "Kubernetes extensible y Helm avanzado",
+        "Service Mesh con Istio o Linkerd",
+        "GitOps con Argo CD y Flux",
+        "Ansible, inventarios, roles y Vault",
+        "DevSecOps y métricas DORA"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/15",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 16.1Docker y Compose avanzadosOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/15/tema/1"
+          ]
+        },
+        {
+          "title": "§ 16.2Kubernetes extensible y Helm avanzadoAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/15/tema/2"
+          ]
+        },
+        {
+          "title": "§ 16.3Service Mesh con Istio o LinkerdAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/15/tema/3"
+          ]
+        },
+        {
+          "title": "§ 16.4GitOps con Argo CD y FluxAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/15/tema/4"
+          ]
+        },
+        {
+          "title": "§ 16.5Ansible, inventarios, roles y VaultAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/15/tema/5"
+          ]
+        },
+        {
+          "title": "§ 16.6DevSecOps y métricas DORAAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/15/tema/6"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "16",
+      "expectedTopicCount": 6,
+      "expectedTitles": [
+        "Postman y Newman — tu primera colección contra una API real",
+        "Scripts y assertions — pruebas automatizadas sobre datos reales",
+        "Newman en profundidad — reportes y el contrato del código de salida",
+        "Jenkins — instalación, jobs y el linter real de pipelines declarativos",
+        "Integración completa — Newman dentro de un pipeline Jenkins",
+        "Bruno y Postman, evaluar con el mismo contrato"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/16",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 17.1Postman y Newman — tu primera colección contra una API realOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/16/tema/1"
+          ]
+        },
+        {
+          "title": "§ 17.2Scripts y assertions — pruebas automatizadas sobre datos realesAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/16/tema/2"
+          ]
+        },
+        {
+          "title": "§ 17.3Newman en profundidad — reportes y el contrato del código de salidaAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/16/tema/3"
+          ]
+        },
+        {
+          "title": "§ 17.4Jenkins — instalación, jobs y el linter real de pipelines declarativosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/16/tema/4"
+          ]
+        },
+        {
+          "title": "§ 17.5Integración completa — Newman dentro de un pipeline JenkinsAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/16/tema/5"
+          ]
+        },
+        {
+          "title": "§ 17.6Tema complementario: Bruno y Postman, evaluar con el mismo contratoAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 0,
+          "mermaidRendered": 0,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/16/tema/6"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "17",
+      "expectedTopicCount": 4,
+      "expectedTitles": [
+        "El borde: balanceo, proxy inverso, CDN y límites de tasa",
+        "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+        "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+        "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/17",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 18.1El borde: balanceo, proxy inverso, CDN y límites de tasaOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/17/tema/1"
+          ]
+        },
+        {
+          "title": "§ 18.2Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQLAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/17/tema/2"
+          ]
+        },
+        {
+          "title": "§ 18.3CAP, consistencia e idempotencia: lo que se paga en cada decisiónAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/17/tema/3"
+          ]
+        },
+        {
+          "title": "§ 18.4Capacidad y observabilidad: latencia, throughput, SLO y pruebas de cargaAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/17/tema/4"
+          ]
+        }
+      ]
+    },
+    {
+      "trackId": "devops",
+      "moduleId": "18",
+      "expectedTopicCount": 4,
+      "expectedTitles": [
+        "Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+        "Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+        "Despliegue y rollback: systemd, nginx y artefactos versionados",
+        "Respaldos que se restauran: restic, RPO/RTO y simulacro"
+      ],
+      "url": "http://127.0.0.1:4200/curso/devops/18",
+      "findings": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "topics": [
+        {
+          "title": "§ 19.1Aprovisionar y endurecer: usuario, SSH, firewall y parchesOcultar tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/18/tema/1"
+          ]
+        },
+        {
+          "title": "§ 19.2Dominio, TLS y borde: DNS, Let's Encrypt y CloudflareAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/18/tema/2"
+          ]
+        },
+        {
+          "title": "§ 19.3Despliegue y rollback: systemd, nginx y artefactos versionadosAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/18/tema/3"
+          ]
+        },
+        {
+          "title": "§ 19.4Respaldos que se restauran: restic, RPO/RTO y simulacroAbrir tema⌄",
+          "hasCode": true,
+          "mermaidBlocks": 1,
+          "mermaidRendered": 1,
+          "hasPrompts": true,
+          "promptTextareasEmpty": false,
+          "internalLinks": [
+            "/curso/devops/18/tema/4"
+          ]
+        }
+      ]
+    }
+  ]
+}

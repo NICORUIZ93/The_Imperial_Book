@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 16:37 UTC
+Generated: 2026-10-30 16:43 UTC
 Root: `Academia_Floci`
-Indexed files: 926
+Indexed files: 928
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,18 +16,18 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 37 files
+- `automation-script`: 38 files
 - `course-content`: 251 files
 - `documentation`: 54 files
 - `example`: 467 files
 - `local-infra`: 1 files
-- `project-file`: 57 files
+- `project-file`: 58 files
 
 ## File Types
 
 - `.md`: 312
-- `.py`: 163
-- `.json`: 70
+- `.py`: 164
+- `.json`: 71
 - `.ts`: 66
 - `.java`: 54
 - `.js`: 54
@@ -192,9 +192,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/merge_duplicate_sections.py` (179 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
+- `scripts/relocate_evidence_to_close.py` (145 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
 - `scripts/relocate_tail_to_theory.py` (162 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
-- `scripts/start.sh` (10 lines)
-- ... 19 more files
+- ... 20 more files
 
 ### course-content
 
@@ -272,6 +272,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection-dedup.json` (8267 lines)
 - `docs/app-flow-inspection-devops.json` (1617 lines)
+- `docs/app-flow-inspection-evidence.json` (8798 lines)
 - `docs/app-flow-inspection-relocate.json` (11319 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
@@ -285,5 +286,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/lesson-substance.json` (10029 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
-- `docs/official-sources.json` (195 lines)
-- ... 39 more files
+- ... 40 more files

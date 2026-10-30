@@ -9833,7 +9833,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "topic": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -9859,7 +9859,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
+        "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
         "criteria": {
           "objective": true,
           "prerequisites": true,

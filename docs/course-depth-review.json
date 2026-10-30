@@ -4118,7 +4118,7 @@
     {
       "track": "devops",
       "module": 5,
-      "title": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+      "title": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
       "file": "web/public/content/devops/modulo-5.md",
       "line": 486,
       "signals": [],
@@ -4129,9 +4129,9 @@
     {
       "track": "devops",
       "module": 5,
-      "title": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
+      "title": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
       "file": "web/public/content/devops/modulo-5.md",
-      "line": 673,
+      "line": 541,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",

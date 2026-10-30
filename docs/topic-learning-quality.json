@@ -8321,28 +8321,6 @@
       },
       {
         "module": 5,
-        "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": false,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 12,
-          "practicable": false,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 5,
         "topic": "Tema 6: Rollback ensayado y compatibilidad del artefacto anterior",
         "criteria": {
           "explanation": true,
@@ -8359,6 +8337,28 @@
         "classification": {
           "rubricScore": 14,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

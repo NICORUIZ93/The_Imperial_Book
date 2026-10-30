@@ -9226,7 +9226,7 @@
       "track": "devops",
       "module": 5,
       "position": 6,
-      "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+      "title": "Rollback ensayado y compatibilidad del artefacto anterior",
       "file": "web/public/content/devops/modulo-5.md",
       "requires": [
         "devops:5:5"
@@ -9237,7 +9237,7 @@
       "track": "devops",
       "module": 5,
       "position": 7,
-      "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+      "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
       "file": "web/public/content/devops/modulo-5.md",
       "requires": [
         "devops:5:6"

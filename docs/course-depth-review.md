@@ -394,8 +394,8 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | devops / 5 | [Tema 3: Rolling updates](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 4: Feature flags vs branches por entorno](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 5: Rollback automático por métricas](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| devops / 5 | [Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 6: Rollback ensayado y compatibilidad del artefacto anterior](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 5 | [Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 1: Pod, ReplicaSet, Deployment](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 2: Service (ClusterIP, NodePort, LoadBalancer)](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 3: ConfigMaps y Secrets](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
