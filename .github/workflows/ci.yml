@@ -33,7 +33,7 @@ jobs:
       - name: Test web
         run: |
           cd web
-          npm test -- --watch=false
+          npm test -- --watch=false --coverage
       - name: Install browser for end-to-end tests
         run: |
           cd web

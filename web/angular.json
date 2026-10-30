@@ -92,7 +92,15 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverageThresholds": {
+              "statements": 60,
+              "branches": 50,
+              "functions": 55,
+              "lines": 60
+            }
+          }
         }
       }
     }

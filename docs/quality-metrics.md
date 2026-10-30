@@ -13,6 +13,15 @@ capas separadas.
 | Calidad de visuales | Presencia de Mermaid, enlaces Archify locales, visuales ASCII, código, comentarios, rutas y fuentes. En este corte: 580 temas con Mermaid, 18 enlaces Archify y 216 con ASCII pendiente. | Que una figura renderice, sea accesible o represente correctamente el concepto. | [code-visual-quality.md](./code-visual-quality.md) y [audit_code_visual_quality.py](../scripts/audit_code_visual_quality.py) | 216 visuales ASCII siguen pendientes de redibujo y revisión; no se sustituyen con gráficos decorativos. |
 | Deuda editorial | Criterios de presencia ausentes por tema y módulo. En este corte: 6 temas incompletos en el perfil de 9 criterios; 5 sin conexión detectada a proyecto y 1 sin ruta detectada. | La deuda pedagógica completa; una coincidencia positiva no demuestra que el contenido enseñe. | [editorial-backlog.md](./editorial-backlog.md) | 6 temas requieren revisión específica según el detector; hay defectos de sustancia adicionales en su auditoría independiente. |
 
+## Cobertura de pruebas de la aplicación
+
+Las pruebas unitarias Angular usan el proveedor V8 fijado en `web/package.json`.
+CI exige como mínimo 60% de statements, 50% de branches, 55% de functions y
+60% de lines, calculado globalmente (no por archivo). Es un piso de regresión
+basado en la cobertura medida el 2026-10-30, no evidencia de que todos los
+flujos de usuario estén probados ni de la calidad del contenido curricular.
+Compruébalo con `cd web && npm test -- --watch=false --coverage`.
+
 ## Cómo usar los resultados
 
 1. Trata cada señal como una pista que requiere inspección del tema fuente.

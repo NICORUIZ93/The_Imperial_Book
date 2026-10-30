@@ -14,7 +14,7 @@ y respeta las licencias y atribuciones de los materiales que aportes.
 
    ```bash
    ./scripts/validate.sh
-   cd web && npm test -- --watch=false
+   cd web && npm test -- --watch=false --coverage
    cd web && npm run build --silent
    ```
 
