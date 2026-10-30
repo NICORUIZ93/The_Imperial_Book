@@ -90,10 +90,26 @@ curl http://localhost:4588
 
 Servicios locales:
 
-- AWS local: `http://localhost:4566`
-- StackPort (explorador AWS ligero incluido en este compose): `http://localhost:8080`
-- Azure local: `http://localhost:4577`
-- GCP local: `http://localhost:4588`
+| Servicio | Puerto predeterminado | Variable de entorno |
+|---|---:|---|
+| AWS local (Floci) | 4566 | `AWS_LOCAL_PORT` |
+| StackPort (explorador AWS del Compose) | 8080 | `STACKPORT_PORT` |
+| Azure local | 4577 | `AZURE_LOCAL_PORT` |
+| GCP local | 4588 | `GCP_LOCAL_PORT` |
+| Floci UI (proyecto externo) | 4500 | `FLOCI_UI_PORT`* |
+
+Ejemplo: si `8080` está ocupado, configura `STACKPORT_PORT=8081` en `.env` o
+ejecuta `export STACKPORT_PORT=8081` antes de `docker compose up -d`. El puerto
+del contenedor sigue siendo `8080`; solo cambia el puerto publicado en tu host.
+Para cargar los valores del repositorio, copia `.env.example` a `.env`. Si una
+aplicación de ejemplo consume StackPort, configura también
+`STACKPORT_URL=http://localhost:8081` en su entorno.
+
+*Floci UI vive en otro repositorio y su Compose oficial publica actualmente
+`4500:4500` de forma literal. Para remapearlo, cambia el puerto del host en su
+archivo Compose a `"${FLOCI_UI_PORT:-4500}:4500"` antes de ejecutar su `docker
+compose up`; `.env` de este repositorio no configura automáticamente ese
+proyecto externo.
 
 Las imágenes de este Compose están fijadas por versión y digest; actualízalas de
 forma deliberada después de revisar sus cambios.
