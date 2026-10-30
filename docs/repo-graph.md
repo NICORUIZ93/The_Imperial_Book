@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 13:38 UTC
+Generated: 2026-10-30 13:46 UTC
 Root: `Academia_Floci`
-Indexed files: 909
+Indexed files: 920
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,19 +16,19 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 31 files
-- `course-content`: 247 files
-- `documentation`: 52 files
+- `automation-script`: 34 files
+- `course-content`: 251 files
+- `documentation`: 54 files
 - `example`: 467 files
 - `local-infra`: 1 files
-- `project-file`: 52 files
+- `project-file`: 54 files
 
 ## File Types
 
-- `.md`: 306
-- `.py`: 157
+- `.md`: 312
+- `.py`: 160
+- `.json`: 67
 - `.ts`: 66
-- `.json`: 65
 - `.java`: 54
 - `.js`: 54
 - `.html`: 38
@@ -178,6 +178,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `scripts/audit_code_visual_quality.py` (138 lines) - symbols: student_visible_content, structural_text, blocks, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_course_depth.py` (103 lines) - symbols: signals, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
+- `scripts/audit_lesson_substance.py` (347 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (181 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
@@ -185,6 +186,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
 - `scripts/catalog_external_library.py` (49 lines) - symbols: main; imports: argparse, hashlib, json, pathlib, pymupdf
+- `scripts/clean_legacy_tails.py` (152 lines) - symbols: legacy_candidates, trim_topic, fences_balanced, safe_trim, clean_file, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/extract_pdf_toc.py` (33 lines) - imports: sys, pathlib, pymupdf
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
@@ -192,9 +194,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
 - `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/tests/test_editorial_validation.py` (90 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, fix_lessons
-- `scripts/validate-floci.sh` (43 lines)
-- `scripts/validate.sh` (136 lines)
-- ... 13 more files
+- ... 16 more files
 
 ### course-content
 
@@ -216,7 +216,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-6.md` (406 lines) - headings: # Módulo 6: Persistencia local con Room, ## Aprende construyendo, ### Tema 1: Entities, DAOs y Database, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-7.md` (388 lines) - headings: # Módulo 7: Inyección de dependencias con Hilt, ## Aprende construyendo, ### Tema 1: Configuración básica de Hilt, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-8.md` (376 lines) - headings: # Módulo 8: Trabajo en segundo plano, ## Aprende construyendo, ### Tema 1: CoroutineWorker y garantía de ejecución, #### Paso 1 · Objetivo y preparación
-- ... 229 more files
+- ... 233 more files
 
 ### documentation
 
@@ -230,6 +230,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
+- `docs/PLAN-TOTAL-DE-CAMBIO.md` (171 lines) - headings: # Plan total de cambio, ## Diagnóstico, ## Definición operativa de «de cero a profesional», ## Fases
 - `docs/PLANTILLA-LECCION.md` (109 lines) - headings: # Plantilla de Lección — Prompt Maestro para Claude / Codex, ## PROMPT MAESTRO (copiar desde aquí), ## DATOS DE LA LECCIÓN, ## REGLAS DE ESTILO
 - `docs/PROMPTS-FORMACION.md` (30 lines) - headings: # Prompts de formación profesional a partir de merged.pdf, ## Tutor paso a paso (página 1), ## Ruta de 30 pasos (página 21), ## Revisión profesional (página 55)
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
@@ -237,8 +238,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- `docs/biblioteca-externa-gaps-angular.md` (27 lines) - headings: # Huecos del track Angular frente a la biblioteca externa, ## Estado (2026-10-28), ## Libro cotejado, ## Veredicto
-- ... 34 more files
+- ... 36 more files
 
 ### example
 
@@ -278,12 +278,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/course-depth-review.json` (12460 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
+- `docs/lesson-substance-baseline.json` (2052 lines)
+- `docs/lesson-substance.json` (10845 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
 - `docs/prerequisite-graph.json` (12086 lines)
 - `docs/requested-master-topics.json` (189 lines)
-- `docs/rutaflow-source-index.json` (385 lines)
-- `docs/seven-step-methodology.json` (28863 lines)
-- ... 34 more files
+- ... 36 more files

@@ -172,6 +172,27 @@
       ]
     },
     {
+      "path": "docs/PLAN-TOTAL-DE-CAMBIO.md",
+      "lines": 171,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan total de cambio",
+        "## Diagn\u00f3stico",
+        "## Definici\u00f3n operativa de \u00abde cero a profesional\u00bb",
+        "## Fases",
+        "### Fase 0 \u2014 Instrumento y verdad (implementada)",
+        "### Fase 1 \u2014 Cirug\u00eda estructural (iniciada)",
+        "### Fase 2 \u2014 N\u00facleo profesional (en curso)",
+        "### Fase 3 \u2014 R\u00e9plica por ruta (pendiente)",
+        "### Fase 4 \u2014 Aplicaci\u00f3n y evaluaci\u00f3n (pendiente)",
+        "### Fase 5 \u2014 Validaci\u00f3n humana (pendiente)",
+        "## Temas del PDF de referencia y d\u00f3nde viven",
+        "## Reglas de gobernanza"
+      ]
+    },
+    {
       "path": "docs/PLANTILLA-LECCION.md",
       "lines": 109,
       "kind": "documentation",
@@ -694,6 +715,36 @@
         "### 6. `2DEB0ECE-6AE1-4EFA-BF5F-7A9B7FD2126D.PNG` \u2014 Material de estudio general",
         "## Lote 3",
         "### 7. `4620C2A8-FA33-45CB-9111-CBAD4D508AAD.PNG` \u2014 Material t\u00e9cnico (arquitectura Java)"
+      ]
+    },
+    {
+      "path": "docs/lesson-substance-baseline.json",
+      "lines": 2052,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/lesson-substance.json",
+      "lines": 10845,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/lesson-substance.md",
+      "lines": 85,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Sustancia de las lecciones",
+        "## Defectos por tipo",
+        "## Ap\u00e9ndices heredados m\u00e1s frecuentes",
+        "## Temas con m\u00e1s defectos",
+        "## C\u00f3mo se corrige"
       ]
     },
     {
@@ -5505,6 +5556,36 @@
       "headings": []
     },
     {
+      "path": "scripts/audit_lesson_substance.py",
+      "lines": 347,
+      "kind": "automation-script",
+      "symbols": [
+        "norm",
+        "paragraphs",
+        "count_words",
+        "evaluate_topic",
+        "module_level_sections",
+        "topic_key",
+        "build",
+        "render_markdown",
+        "baseline_from",
+        "check_strict",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "hashlib",
+        "json",
+        "re",
+        "sys",
+        "collections",
+        "pathlib",
+        "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/audit_seven_step_methodology.py",
       "lines": 181,
       "kind": "automation-script",
@@ -5662,6 +5743,30 @@
       "headings": []
     },
     {
+      "path": "scripts/clean_legacy_tails.py",
+      "lines": 152,
+      "kind": "automation-script",
+      "symbols": [
+        "legacy_candidates",
+        "trim_topic",
+        "fences_balanced",
+        "safe_trim",
+        "clean_file",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "re",
+        "sys",
+        "pathlib",
+        "audit_lesson_substance",
+        "audit_seven_step_methodology",
+        "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/extract_pdf_toc.py",
       "lines": 33,
       "kind": "automation-script",
@@ -5765,6 +5870,22 @@
         "audit_topic_learning_quality",
         "audit_code_visual_quality",
         "fix_lessons"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/tests/test_lesson_substance.py",
+      "lines": 97,
+      "kind": "automation-script",
+      "symbols": [
+        "filler",
+        "SubstanceAuditTests"
+      ],
+      "imports": [
+        "sys",
+        "pathlib",
+        "unittest",
+        "audit_lesson_substance"
       ],
       "headings": []
     },
@@ -7643,6 +7764,48 @@
       ]
     },
     {
+      "path": "web/public/content/devops/modulo-17.md",
+      "lines": 690,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 17: Dise\u00f1o de sistemas distribuidos: borde, datos y capacidad",
+        "## Aprende construyendo",
+        "### Tema 1: El borde: balanceo, proxy inverso, CDN y l\u00edmites de tasa",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: Datos que crecen: \u00edndices, r\u00e9plicas, sharding y la elecci\u00f3n SQL/NoSQL",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/devops/modulo-18.md",
+      "lines": 695,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 18: Servidor propio: VPS endurecido, TLS y recuperaci\u00f3n",
+        "## Aprende construyendo",
+        "### Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "# 1. Usuario sin privilegios, con la misma clave que ya usas",
+        "# 2. sshd: drop-in que gana sobre el archivo principal",
+        "# 3. Firewall: permitir primero, habilitar despu\u00e9s",
+        "# 4. fail2ban y parches de seguridad",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
+      ]
+    },
+    {
       "path": "web/public/content/devops/modulo-2.md",
       "lines": 615,
       "kind": "course-content",
@@ -9087,6 +9250,27 @@
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
         "### Tema 2: Gen\u00e9ricos, wildcards y type erasure",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/java/modulo-20.md",
+      "lines": 380,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 20: Java funcional \u2014 interfaces que componen comportamiento",
+        "## Aprende construyendo",
+        "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
@@ -10957,6 +11141,27 @@
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
         "### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia"
+      ]
+    },
+    {
+      "path": "web/public/content/spring-boot/modulo-22.md",
+      "lines": 417,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 22: Arquitectura: puertos, C4 y decisiones",
+        "## Aprende construyendo",
+        "### Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
