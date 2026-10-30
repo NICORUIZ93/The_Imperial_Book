@@ -7,7 +7,7 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1098 |
-| Temas con algún defecto | 476 |
+| Temas con algún defecto | 468 |
 | Módulos con apéndices heredados | 184/245 |
 
 ## Defectos por tipo
@@ -15,8 +15,8 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Código | Temas |
 |---|---:|
 | `andamiaje-generico` | 128 |
-| `bloque-repetido` | 218 |
-| `cola-tras-cierre` | 382 |
+| `bloque-repetido` | 202 |
+| `cola-tras-cierre` | 381 |
 | `parrafo-repetido` | 5 |
 | `tema-breve` | 2 |
 
@@ -66,12 +66,12 @@ defectos detectados tampoco acredita haber sido comprendida.
 | foundations / 4 | Tema 1: Del mundo real al modelo relacional | 1541 | 939 | bloque-repetido, cola-tras-cierre |
 | java / 1 | Tema 2: Herencia y sobreescritura | 1284 | 927 | bloque-repetido, cola-tras-cierre |
 | ios / 0 | Tema 4: Closures, colecciones y genéricos con propósito | 1302 | 904 | bloque-repetido, cola-tras-cierre |
-| kotlin-multiplatform / 11 | Tema 2: Sincronización de datos remotos con caché local | 1258 | 855 | bloque-repetido, cola-tras-cierre |
 | foundations / 1 | Tema 1: Del problema al algoritmo y a los casos de prueba | 1435 | 852 | bloque-repetido, cola-tras-cierre |
 | react / 1 | Tema 1: useState y actualizaciones funcionales | 1418 | 828 | bloque-repetido, cola-tras-cierre |
 | foundations / 2 | Tema 4: Complejidad, medición, ordenamiento y recursión | 1395 | 810 | bloque-repetido, cola-tras-cierre |
 | foundations / 3 | Tema 3: HTML semántico, formularios y el DOM | 1391 | 797 | bloque-repetido, cola-tras-cierre |
 | cloud / 5 | Tema 3: Runtimes — Node.js, Python, Java, Go | 1303 | 792 | bloque-repetido, cola-tras-cierre |
+| cloud / 22 | Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real | 1199 | 783 | andamiaje-generico, cola-tras-cierre |
 
 ## Cómo se corrige
 
@@ -81,4 +81,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `33bf68372cff8f036d5afb0ac844436b09fa3de3a03152f632d6f71c8f0e3d6d`
+Huella del contenido: `4a67dcc39da7154221a2f3235f766316b9cf13a28b1c608c2e65fd3f56dff18e`

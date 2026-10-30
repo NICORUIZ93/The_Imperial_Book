@@ -203,8 +203,6 @@ Probar hooks personalizados de forma aislada, sin envolverlos en un componente v
 
 **Analogía:** probar un hook con `renderHook` es como probar el motor de un vehículo en un banco de pruebas aislado, verificando su comportamiento sin necesidad de montar la carrocería completa del vehículo únicamente para poder encenderlo.
 
-**¿Por qué es importante?** `renderHook` aísla la prueba de un hook personalizado de cualquier componente visual innecesario, manteniendo la prueba enfocada específicamente en la lógica de estado y efectos del hook.
-
 **Código del ejemplo:**
 
 ```jsx
@@ -235,7 +233,6 @@ npm test -- --testPathPattern=useFiltroZona
 Resultado esperado: la suite pasa en milisegundos porque no monta ningún árbol de componentes — solo invoca el hook y verifica `result.current`.
 
 ---
-
 
 ## Laboratorio práctico
 

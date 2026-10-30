@@ -727,7 +727,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10596,
+      "lines": 10571,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -9110,7 +9110,7 @@
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 425,
+      "lines": 416,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9131,7 +9131,7 @@
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 404,
+      "lines": 392,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9782,7 +9782,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 283,
+      "lines": 281,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9803,7 +9803,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "lines": 277,
+      "lines": 273,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10496,7 +10496,7 @@
     },
     {
       "path": "web/public/content/react/modulo-2.md",
-      "lines": 540,
+      "lines": 538,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10559,7 +10559,7 @@
     },
     {
       "path": "web/public/content/react/modulo-5.md",
-      "lines": 283,
+      "lines": 281,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10622,7 +10622,7 @@
     },
     {
       "path": "web/public/content/react/modulo-8.md",
-      "lines": 268,
+      "lines": 265,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

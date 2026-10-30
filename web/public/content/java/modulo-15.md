@@ -50,8 +50,6 @@ Los perfiles no deben convertir el build en una configuración secreta por ambie
 
 > **Equivalente en Gradle:** lo que Enforcer hace con reglas, Gradle lo logra con *resolution strategies* (`configurations.all { resolutionStrategy.failOnVersionConflict() }`), *version catalogs* (`libs.versions.toml`) para versiones centralizadas, y *platforms* (`platform("grupo:bom:version")`) como equivalente del BOM. El `java { toolchain { languageVersion.set(JavaLanguageVersion.of(25)) } }` exige una versión de JDK, igual que la regla `requireJavaVersion` de Enforcer. Este tema usa Maven por ser el estándar empresarial de este tipo de control; la tabla de equivalencias general está en el Módulo 8, Tema 4.
 
-**¿Por qué es importante?** Un build empresarial debe detectar versiones divergentes y entornos inválidos antes de producir un artefacto aparentemente correcto.
-
 #### Aplicación práctica
 Usa los POM de `examples/java-maven` como referencia. Conserva las salidas del reactor alineado, el conflicto transitivo y el requisito de Java rechazado. La comparación con Gradle es un laboratorio: no obliga a mantener dos builds de producción.
 
@@ -109,8 +107,6 @@ Guarda ambos hashes SHA-256 (antes y después de quitar el timestamp), y el arch
 El wrapper fija la versión de Gradle y toolchains selecciona el JDK de compilación. El bloqueo de dependencias registra versiones resueltas; la verificación valida checksum o firma para detectar artefactos modificados. Un build reproducible también evita timestamps o orden no determinista dentro de archivos y separa entradas/salidas de cada tarea.
 
 La caché acelera solo tareas deterministas. Una tarea que consulta la hora o una variable no declarada puede devolver un resultado viejo. `--configuration-cache` exige que la configuración no conserve objetos no serializables ni lea estado externo arbitrariamente.
-
-**¿Por qué es importante?** El mismo commit debe producir el mismo contenido y dependencias tanto en una laptop limpia como en CI.
 
 #### Aplicación práctica
 
@@ -182,8 +178,6 @@ flowchart LR
     APP --> DOMAIN["domain"]
 ```
 
-**¿Por qué es importante?** Un ciclo entre módulos revela responsabilidades mal ubicadas y dificulta pruebas, despliegue y evolución independiente.
-
 #### Aplicación práctica
 
 En `settings.gradle.kts` incluye los cuatro módulos y crea `build-logic/src/main/kotlin/academia.java-conventions.gradle.kts`. Ejecuta `./gradlew projects` y `./gradlew build`; el grafo debe coincidir con Mermaid. Intenta importar una clase de infraestructura desde domain: el error de compilación esperado protege la dirección.
@@ -239,8 +233,6 @@ Guarda el test completo, el fallo provocado al vaciar el repositorio y su correc
 JUnit ejecuta pruebas; Mockito reemplaza colaboradores; AssertJ expresa resultados. Un mock no demuestra que SQL, JSON o HTTP funcionen. Prefiere objetos reales para valores y fakes para repositorios sencillos; usa mocks cuando la interacción forma parte del contrato o provocar el caso real resulta lento o inseguro.
 
 Las pruebas deben observar comportamiento. Verificar cada llamada privada acopla la suite a la implementación. Un `ArgumentCaptor` ayuda a inspeccionar un mensaje enviado, pero una aserción sobre el resultado suele ser más estable.
-
-**¿Por qué es importante?** Una suite rápida pierde valor si permite falsos positivos o se rompe ante cualquier refactor interno.
 
 #### Aplicación práctica
 
@@ -308,8 +300,6 @@ Una integración ejercita al menos dos componentes reales y el protocolo entre e
 
 Cada prueba debe controlar datos y tiempo. Reutilizar una base mutable compartida introduce dependencia de orden. Esperas fijas vuelven la suite lenta y frágil; espera una condición observable con límite.
 
-**¿Por qué es importante?** Los adaptadores fallan en sus contratos concretos, no en la interfaz idealizada por una prueba unitaria.
-
 #### Aplicación práctica
 
 Crea `infrastructure/src/integrationTest/java/com/academia/infrastructure/RepositorioGuiasIT.java`, configura PostgreSQL Testcontainers y Flyway:
@@ -371,8 +361,6 @@ Guarda el `traceId` contaminado provocado por el pool de hilos, su corrección c
 SLF4J es una fachada; Logback es una implementación. Parametrizar `log.info("guia={} estado={}", guia, estado)` evita concatenar cuando el nivel está deshabilitado. MDC adjunta `traceId`, `guiaId` o centro al hilo actual, pero debe limpiarse; con pools o virtual threads, un contexto abandonado puede contaminar otra operación.
 
 Logs estructurados producen campos consultables. No registres tokens, direcciones completas ni documentos. Un error debe incluir contexto y excepción una sola vez; registrarlo en cada capa multiplica ruido. Logs complementan métricas y trazas, no las reemplazan.
-
-**¿Por qué es importante?** Durante un incidente se necesita reconstruir una operación sin exponer datos personales ni buscar texto ambiguo entre millones de líneas.
 
 #### Aplicación práctica
 

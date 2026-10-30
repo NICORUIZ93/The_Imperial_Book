@@ -1647,11 +1647,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "33bf68372cff8f036d5afb0ac844436b09fa3de3a03152f632d6f71c8f0e3d6d",
+    "fingerprint": "4a67dcc39da7154221a2f3235f766316b9cf13a28b1c608c2e65fd3f56dff18e",
     "issues": {
       "andamiaje-generico": 128,
-      "bloque-repetido": 218,
-      "cola-tras-cierre": 382,
+      "bloque-repetido": 202,
+      "cola-tras-cierre": 381,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1663,7 +1663,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1098,
-    "topicsWithIssues": 476
+    "topicsWithIssues": 468
   },
   "topics": {
     "android": [
@@ -7014,97 +7014,79 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 14,
-        "tailWords": 600,
+        "tailWords": 574,
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-        "words": 995
+        "words": 969
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 517,
+        "tailWords": 498,
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-        "words": 945
+        "words": 926
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 14,
-        "tailWords": 536,
+        "tailWords": 516,
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-        "words": 905
+        "words": 885
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 14,
-        "tailWords": 745,
+        "tailWords": 719,
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
-        "words": 1136
+        "words": 1110
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 419,
+        "tailWords": 398,
         "topic": "Tema 1: Maven avanzado",
-        "words": 907
+        "words": 886
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 378,
+        "tailWords": 356,
         "topic": "Tema 2: Gradle y builds reproducibles",
-        "words": 787
+        "words": 765
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 359,
+        "tailWords": 340,
         "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-        "words": 713
+        "words": 694
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 371,
+        "tailWords": 351,
         "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-        "words": 780
+        "words": 760
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 366,
+        "tailWords": 346,
         "topic": "Tema 5: Pruebas de integración reproducibles",
-        "words": 758
+        "words": 738
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 393,
+        "tailWords": 369,
         "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-        "words": 855
+        "words": 831
       },
       {
         "issues": [],
@@ -8196,13 +8178,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 10,
-        "tailWords": 756,
+        "tailWords": 722,
         "topic": "Tema 1: Pipeline Gradle multiplataforma en CI",
-        "words": 1153
+        "words": 1119
       },
       {
         "issues": [
@@ -8223,23 +8204,21 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 11,
-        "tailWords": 605,
+        "tailWords": 568,
         "topic": "Tema 1: Arquitectura del proyecto integrador",
-        "words": 985
+        "words": 948
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 11,
-        "tailWords": 855,
+        "tailWords": 813,
         "topic": "Tema 2: Sincronización de datos remotos con caché local",
-        "words": 1258
+        "words": 1216
       },
       {
         "issues": [
@@ -9470,13 +9449,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 2,
-        "tailWords": 554,
+        "tailWords": 519,
         "topic": "Tema 3: useMemo y useCallback con criterio",
-        "words": 1124
+        "words": 1089
       },
       {
         "issues": [
@@ -9562,13 +9540,11 @@
         "words": 883
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 485,
+        "tailWords": 450,
         "topic": "Tema 2: Loaders — datos antes de renderizar",
-        "words": 948
+        "words": 913
       },
       {
         "issues": [],
@@ -9664,13 +9640,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 8,
-        "tailWords": 655,
+        "tailWords": 624,
         "topic": "Tema 3: Testing de hooks personalizados",
-        "words": 984
+        "words": 953
       },
       {
         "issues": [],

@@ -7221,7 +7221,7 @@
       "module": 14,
       "title": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 109,
+      "line": 107,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7232,7 +7232,7 @@
       "module": 14,
       "title": "Tema 3: Deserializar es permitir construcción y comportamiento",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 193,
+      "line": 189,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7245,7 +7245,7 @@
       "module": 14,
       "title": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 279,
+      "line": 273,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7269,7 +7269,7 @@
       "module": 15,
       "title": "Tema 2: Gradle y builds reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 62,
+      "line": 60,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7280,7 +7280,7 @@
       "module": 15,
       "title": "Tema 3: Proyectos multi-módulo sin ciclos",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 132,
+      "line": 128,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7293,7 +7293,7 @@
       "module": 15,
       "title": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 197,
+      "line": 191,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7306,7 +7306,7 @@
       "module": 15,
       "title": "Tema 5: Pruebas de integración reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 265,
+      "line": 257,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7319,7 +7319,7 @@
       "module": 15,
       "title": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 330,
+      "line": 320,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8981,7 +8981,7 @@
       "module": 10,
       "title": "Tema 2: Fastlane",
       "file": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "line": 109,
+      "line": 107,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8992,7 +8992,7 @@
       "module": 10,
       "title": "Tema 3: Versionado compartido",
       "file": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "line": 197,
+      "line": 195,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -9014,7 +9014,7 @@
       "module": 11,
       "title": "Tema 2: Sincronización de datos remotos con caché local",
       "file": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "line": 84,
+      "line": 82,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -9025,7 +9025,7 @@
       "module": 11,
       "title": "Tema 3: Cierre del track — la promesa realista de KMP",
       "file": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "line": 186,
+      "line": 182,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10771,7 +10771,7 @@
       "module": 2,
       "title": "Tema 4: Reglas de los hooks, useReducer y useImperativeHandle",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 269,
+      "line": 267,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10784,7 +10784,7 @@
       "module": 2,
       "title": "Tema 5: Error Boundaries — contener errores de render sin romper toda la app",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 353,
+      "line": 351,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10795,7 +10795,7 @@
       "module": 2,
       "title": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 477,
+      "line": 475,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
@@ -10911,7 +10911,7 @@
       "module": 5,
       "title": "Tema 3: Rutas protegidas y code-splitting por ruta",
       "file": "web/public/content/react/modulo-5.md",
-      "line": 183,
+      "line": 181,
       "signals": [
         "comprobar-script-test"
       ],

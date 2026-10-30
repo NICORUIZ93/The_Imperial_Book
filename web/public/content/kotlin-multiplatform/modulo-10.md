@@ -70,8 +70,6 @@ Validar ambos targets en cada push individual (no solo antes de un release) dete
 
 **Analogía:** validar ambos targets en cada push es como hacer una prueba de manejo de un vehículo en ambos tipos de terreno (ciudad y montaña) cada vez que se modifica algo del motor, en vez de probarlo solo en un terreno y asumir que funcionará igual de bien en el otro, descubriendo el problema real recién cuando efectivamente se necesita conducir en el terreno no probado.
 
-**¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
-
 **Casos de uso reales:**
 - Detectar en un pull request que un cambio en `commonMain` rompe la compilación de iOS antes de hacer merge.
 - Ejecutar `commonTest` (Módulo 9) en cada push para atrapar regresiones de lógica compartida temprano.
