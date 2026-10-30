@@ -79,6 +79,34 @@ go run examples/go/s3_create_bucket.go mi-bucket
 cargo run --bin s3_create_bucket -- mi-bucket
 ```
 
+## Requisitos y salida esperada
+
+Las versiones de CI son el entorno comprobado del repositorio, no una promesa de
+versión mínima para cada ejemplo. Java, Go y Rust no tienen manifiestos ni
+toolchains fijados aquí: crea el proyecto y declara las dependencias indicadas
+antes de copiar el ejemplo.
+
+| Lenguaje | Requisito comprobado/documentado | Preparación |
+|---|---|---|
+| Node.js | CI usa Node.js 24; `examples/node/package.json` declara AWS SDK v3 (`^3.0.0`) y dependencias del demo. | `cd examples/node && npm install` |
+| Python | CI usa Python 3.11; `requirements.txt` declara `boto3>=1.34,<2`. | `python3 -m pip install -r examples/python/requirements.txt` |
+| Java | Sin versión fijada ni `pom.xml`; los ejemplos usan AWS SDK for Java v2. | Añade AWS SDK v2 a tu proyecto y classpath. |
+| Go | Sin versión fijada ni `go.mod`; los ejemplos usan AWS SDK for Go v2. | Crea `go.mod` e instala los módulos indicados por el ejemplo. |
+| Rust | Sin versión fijada ni `Cargo.toml`; los ejemplos usan crates AWS SDK. | Crea `Cargo.toml` con los crates indicados por el ejemplo. |
+
+Con Floci iniciado y sin buckets, el ejemplo de Node debe mostrar:
+
+```text
+No hay buckets todavía. Crea uno con s3-create-bucket.js
+```
+
+El de Python muestra la misma indicación, con el nombre
+`s3_create_bucket.py`.
+
+Después de crear `mi-bucket`, la salida empieza con `Buckets:` y contiene una
+línea para `mi-bucket` con una fecha de creación. El timestamp concreto depende
+del runtime y de Floci; no lo uses como valor fijo en una prueba.
+
 Notas por lenguaje:
 
 - Los archivos de `dynamodb_get_item.go` y `dynamodb_update_item.go` requieren
