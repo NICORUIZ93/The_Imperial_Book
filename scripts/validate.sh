@@ -106,8 +106,12 @@ const declaredInventory = readme.match(/La academia reúne 14 tracks, (\d+) mód
 if (!declaredInventory) {
   throw new Error('README.md debe declarar el inventario actual de 14 tracks, módulos y temas');
 }
-const tableRows = [...readme.matchAll(/^\| (?!Track \|)([^|]+) \| (\d+) \|/gm)];
-const moduleTotal = tableRows.reduce((total, row) => total + Number(row[2]), 0);
+const moduleTable = readme.match(
+  /^\| Track \| Módulos \| Enfoque \|\n^\|[-| :]+\|\n((?:^\|[^\n]+\|\n?)+)/m,
+);
+if (!moduleTable) throw new Error('README.md debe incluir la tabla Track | Módulos | Enfoque');
+const tableRows = [...moduleTable[1].matchAll(/^\| [^|]+ \| (\d+) \| [^|]+ \|$/gm)];
+const moduleTotal = tableRows.reduce((total, row) => total + Number(row[1]), 0);
 const expectedModuleTotal = Object.values(TRACK_SOURCES).reduce((total, sourceFile) => {
   const source = fs.readFileSync(sourceFile, 'utf8');
   return total + (source.match(/^\s*m\(\d+,/gm) || []).length;

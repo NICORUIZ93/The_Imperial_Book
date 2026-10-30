@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 16:43 UTC
+Generated: 2026-10-30 23:36 UTC
 Root: `Academia_Floci`
-Indexed files: 928
+Indexed files: 934
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,18 +16,18 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 38 files
+- `automation-script`: 39 files
 - `course-content`: 251 files
-- `documentation`: 54 files
+- `documentation`: 57 files
 - `example`: 467 files
 - `local-infra`: 1 files
-- `project-file`: 58 files
+- `project-file`: 60 files
 
 ## File Types
 
-- `.md`: 312
-- `.py`: 164
-- `.json`: 71
+- `.md`: 315
+- `.py`: 165
+- `.json`: 72
 - `.ts`: 66
 - `.java`: 54
 - `.js`: 54
@@ -41,8 +41,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.yaml`: 9
 - `.scss`: 8
 - `.sh`: 7
+- `.yml`: 6
 - `.jsx`: 6
-- `.yml`: 5
 - `.tf`: 4
 - `.example`: 3
 - `.txt`: 3
@@ -51,9 +51,9 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (310 lines, documentation)
-  - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
-- `scripts/validate.sh` (136 lines, automation-script)
+- `README.md` (328 lines, documentation)
+  - headings: # The_Imperial_Book, ## Cómo empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
+- `scripts/validate.sh` (169 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -182,6 +182,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_seven_step_methodology.py` (181 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
+- `scripts/build_full_review.py` (140 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
 - `scripts/build_prerequisite_graph.py` (114 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
@@ -193,13 +194,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/merge_duplicate_sections.py` (179 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
 - `scripts/relocate_evidence_to_close.py` (145 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
-- `scripts/relocate_tail_to_theory.py` (162 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
-- ... 20 more files
+- ... 21 more files
 
 ### course-content
 
 - `web/public/content/ATRIBUCION.md` (20 lines) - headings: # Atribucion y licencia
-- `web/public/content/LICENCIA-CONTENIDO.md` (25 lines) - headings: # Licencia del contenido original, ## Exclusiones y avisos
+- `web/public/content/LICENCIA-CONTENIDO.md` (44 lines) - headings: # Licencia del contenido original, ## Exclusiones y avisos, ## Inventario de recursos de terceros de la aplicación
 - `web/public/content/LICENSE-FLOCI.txt` (21 lines)
 - `web/public/content/android/modulo-0.md` (550 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
 - `web/public/content/android/modulo-1.md` (343 lines) - headings: # Módulo 1: Ciclo de vida: Activities y ViewModel, ## Aprende construyendo, ### Tema 1: Ciclo de vida de una Activity, #### Paso 1 · Objetivo y preparación
@@ -224,8 +224,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CHANGELOG.md` (17 lines) - headings: # Changelog, ## Unreleased, ## 2026-10-13
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
-- `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (310 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
+- `README.md` (328 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Levantar Floci, # 1. Levantar todos los servicios
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -238,11 +238,11 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 36 more files
+- ... 39 more files
 
 ### example
 
-- `examples/README.md` (129 lines) - headings: # Ejemplos de referencia, ## Ejemplos por operación (node/, python/, java/, go/, rust/), # Node.js (requiere: npm install en examples/node/), # Python (requiere: pip install boto3)
+- `examples/README.md` (157 lines) - headings: # Ejemplos de referencia, ## Ejemplos por operación (node/, python/, java/, go/, rust/), # Node.js (requiere: npm install en examples/node/), # Python (requiere: pip install boto3)
 - `examples/archify/README.md` (10 lines) - headings: # Primer mapa Archify de la academia
 - `examples/archify/mobile-controls.css` (11 lines)
 - `examples/archify/recorrido-estudio.workflow.json` (235 lines)
@@ -268,11 +268,13 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### project-file
 
-- `.env.example` (8 lines)
+- `.env.example` (15 lines)
+- `.github/ISSUE_TEMPLATE/bug_report.yml` (80 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection-dedup.json` (8267 lines)
 - `docs/app-flow-inspection-devops.json` (1617 lines)
 - `docs/app-flow-inspection-evidence.json` (8798 lines)
+- `docs/app-flow-inspection-order.json` (1617 lines)
 - `docs/app-flow-inspection-relocate.json` (11319 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
@@ -284,6 +286,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
 - `docs/lesson-substance.json` (10029 lines)
-- `docs/merged-pdf-index.json` (426 lines)
-- `docs/official-learning-guides.json` (22 lines)
-- ... 40 more files
+- ... 42 more files

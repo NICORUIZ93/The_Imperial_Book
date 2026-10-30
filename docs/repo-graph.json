@@ -2,7 +2,15 @@
   "files": [
     {
       "path": ".env.example",
-      "lines": 8,
+      "lines": 15,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "lines": 80,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -70,25 +78,26 @@
     },
     {
       "path": "CONTRIBUTING.md",
-      "lines": 31,
+      "lines": 41,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Contribuir a The Imperial Book",
+        "## Idioma y commits",
         "## Antes de abrir un cambio",
         "## Licencias"
       ]
     },
     {
       "path": "README.md",
-      "lines": 310,
+      "lines": 328,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# The_Imperial_Book",
-        "## Como empezar",
+        "## C\u00f3mo empezar",
         "## Levantar Floci",
         "# 1. Levantar todos los servicios",
         "# 2. Verificar Floci AWS",
@@ -96,7 +105,7 @@
         "# 4. Verificar GCP",
         "# 5. Validar todo el entorno",
         "# docker compose --profile multicloud up   # AWS + Azure + GCP",
-        "## Metodologia",
+        "## Metodolog\u00eda",
         "## Tracks de la academia",
         "## Licencias"
       ]
@@ -304,6 +313,14 @@
     {
       "path": "docs/app-flow-inspection-evidence.json",
       "lines": 8798,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/app-flow-inspection-order.json",
+      "lines": 1617,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -709,6 +726,33 @@
       "headings": []
     },
     {
+      "path": "docs/floci.md",
+      "lines": 76,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Floci: instalaci\u00f3n, versiones y contingencia",
+        "## Versiones y endpoint del curr\u00edculo",
+        "## Descarga y revisi\u00f3n del instalador",
+        "## Plan B: LocalStack para pruebas AWS locales"
+      ]
+    },
+    {
+      "path": "docs/full-review.md",
+      "lines": 39,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n integral y trazable",
+        "## Cobertura y estado por capa",
+        "## Hallazgos estructurales que requieren priorizaci\u00f3n",
+        "## Registro de revisi\u00f3n manual",
+        "## Reproducibilidad"
+      ]
+    },
+    {
       "path": "docs/integracion-biblioteca-externa-progreso.md",
       "lines": 171,
       "kind": "documentation",
@@ -888,6 +932,18 @@
       ]
     },
     {
+      "path": "docs/quality-metrics.md",
+      "lines": 35,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00e9tricas de calidad editorial",
+        "## Cobertura de pruebas de la aplicaci\u00f3n",
+        "## C\u00f3mo usar los resultados"
+      ]
+    },
+    {
       "path": "docs/renovacion-cursos-2026-10-29.md",
       "lines": 27,
       "kind": "documentation",
@@ -1019,7 +1075,7 @@
     },
     {
       "path": "examples/README.md",
-      "lines": 129,
+      "lines": 157,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -1032,6 +1088,7 @@
         "# Go (requiere: go get github.com/aws/aws-sdk-go-v2/config github.com/aws/aws-sdk-go-v2/service/s3)",
         "# Rust (requiere un Cargo.toml propio con aws-config, aws-sdk-s3,",
         "# aws-credential-types y tokio; cada archivo es un binario independiente)",
+        "## Requisitos y salida esperada",
         "## Ejemplos por track (`tracks/<track-id>/`)",
         "## Proyecto final de referencia"
       ]
@@ -5683,6 +5740,29 @@
       "headings": []
     },
     {
+      "path": "scripts/build_full_review.py",
+      "lines": 140,
+      "kind": "automation-script",
+      "symbols": [
+        "total_field",
+        "topic_count",
+        "build",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "pathlib",
+        "audit_code_visual_quality",
+        "audit_course_depth",
+        "audit_lesson_substance",
+        "audit_seven_step_methodology",
+        "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/build_prerequisite_graph.py",
       "lines": 114,
       "kind": "automation-script",
@@ -6025,7 +6105,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 136,
+      "lines": 169,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -6209,7 +6289,7 @@
     },
     {
       "path": "web/angular.json",
-      "lines": 101,
+      "lines": 109,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6227,7 +6307,7 @@
     },
     {
       "path": "web/package.json",
-      "lines": 46,
+      "lines": 47,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6255,13 +6335,14 @@
     },
     {
       "path": "web/public/content/LICENCIA-CONTENIDO.md",
-      "lines": 25,
+      "lines": 44,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Licencia del contenido original",
-        "## Exclusiones y avisos"
+        "## Exclusiones y avisos",
+        "## Inventario de recursos de terceros de la aplicaci\u00f3n"
       ]
     },
     {
