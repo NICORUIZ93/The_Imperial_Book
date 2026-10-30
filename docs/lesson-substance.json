@@ -1647,11 +1647,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "14f62d537242d8e5174fb954228d4785d572db424c88ec830f3253e9da7d70e4",
+    "fingerprint": "0b5cf2035151f6345fdefaff035c81d6aefcfc341b2400569c54c5d0065843d9",
     "issues": {
       "andamiaje-generico": 128,
-      "bloque-repetido": 353,
-      "cola-tras-cierre": 386,
+      "bloque-repetido": 240,
+      "cola-tras-cierre": 382,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1663,7 +1663,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1098,
-    "topicsWithIssues": 586
+    "topicsWithIssues": 497
   },
   "topics": {
     "android": [
@@ -2080,86 +2080,69 @@
     ],
     "angular": [
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 196,
         "topic": "Tema 1: El CLI ya no genera NgModules",
-        "words": 1486
+        "words": 1433
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 201,
         "topic": "Tema 2: Interpolación y property binding",
-        "words": 1454
+        "words": 1423
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 251,
         "topic": "Tema 3: TypeScript a fondo — unknown, any, never y utility types",
-        "words": 1609
+        "words": 1562
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 232,
         "topic": "Tema 4: Compilador AOT frente a JIT",
-        "words": 1515
+        "words": 1479
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 219,
         "topic": "Tema 1: input()/output() basados en signals",
-        "words": 1444
+        "words": 1390
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 201,
         "topic": "Tema 2: Control de flujo nativo — @if, @for, @switch",
-        "words": 1482
+        "words": 1436
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 200,
         "topic": "Tema 3: Content projection con ng-content",
-        "words": 1360
+        "words": 1322
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 206,
         "topic": "Tema 4: Ciclo de vida completo de un componente",
-        "words": 1502
+        "words": 1464
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
+          "andamiaje-generico"
         ],
         "module": 1,
         "tailWords": 234,
         "topic": "Tema 5: Consultas signal y trabajo posterior al render",
-        "words": 1545
+        "words": 1495
       },
       {
         "issues": [
@@ -2178,31 +2161,25 @@
         "words": 1156
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 194,
         "topic": "Tema 1: TestBed y componentes standalone",
-        "words": 1327
+        "words": 1286
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 227,
         "topic": "Tema 2: Angular Testing Library",
-        "words": 1422
+        "words": 1386
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 246,
         "topic": "Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest",
-        "words": 1474
+        "words": 1434
       },
       {
         "issues": [],
@@ -2261,31 +2238,25 @@
         "words": 573
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 158,
         "topic": "Tema 1: Estructura del proyecto integrador",
-        "words": 1392
+        "words": 1351
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 187,
         "topic": "Tema 2: Integrando routing, store y formularios",
-        "words": 1366
+        "words": 1319
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 169,
         "topic": "Tema 3: TareasStore — combinando signals, computed y HttpClient",
-        "words": 1405
+        "words": 1356
       },
       {
         "issues": [],
@@ -2392,40 +2363,32 @@
         "words": 1268
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 198,
         "topic": "Tema 1: signal(), computed() y effect()",
-        "words": 1426
+        "words": 1383
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 202,
         "topic": "Tema 2: Mutación frente a actualización inmutable",
-        "words": 1502
+        "words": 1452
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 198,
         "topic": "Tema 3: Signals frente a Observables",
-        "words": 1426
+        "words": 1372
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 211,
         "topic": "Tema 4: Hacia zoneless change detection",
-        "words": 1622
+        "words": 1582
       },
       {
         "issues": [
@@ -2446,76 +2409,60 @@
         "words": 907
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 204,
         "topic": "Tema 1: @Injectable y providedIn: root",
-        "words": 1565
+        "words": 1518
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 208,
         "topic": "Tema 2: inject() frente a inyección por constructor",
-        "words": 1331
+        "words": 1290
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 208,
         "topic": "Tema 3: Jerarquía de inyectores",
-        "words": 1466
+        "words": 1419
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 214,
         "topic": "Tema 4: Tokens de inyección y decoradores de resolución",
-        "words": 1430
+        "words": 1380
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 203,
         "topic": "Tema 1: Router config con rutas standalone",
-        "words": 1464
+        "words": 1423
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 198,
         "topic": "Tema 2: Guards funcionales",
-        "words": 1400
+        "words": 1357
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 201,
         "topic": "Tema 3: Lazy loading con loadComponent",
-        "words": 1458
+        "words": 1426
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 219,
         "topic": "Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing",
-        "words": 1441
+        "words": 1400
       },
       {
         "issues": [],
@@ -2525,157 +2472,123 @@
         "words": 604
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 190,
         "topic": "Tema 1: Reactive Forms — FormGroup y FormControl",
-        "words": 1401
+        "words": 1358
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 192,
         "topic": "Tema 2: Validadores asíncronos",
-        "words": 1444
+        "words": 1402
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 186,
         "topic": "Tema 3: FormArray para campos dinámicos",
-        "words": 1349
+        "words": 1303
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 235,
         "topic": "Tema 4: Template-driven forms — cuándo siguen siendo válidos",
-        "words": 1362
+        "words": 1314
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 187,
         "topic": "Tema 1: Observable frente a Promise",
-        "words": 1416
+        "words": 1369
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 181,
         "topic": "Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest",
-        "words": 1319
+        "words": 1284
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 189,
         "topic": "Tema 3: Manejo de suscripciones sin fugas de memoria",
-        "words": 1387
+        "words": 1349
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 232,
         "topic": "Tema 4: Subjects y operadores de aplanamiento avanzados",
-        "words": 1470
+        "words": 1425
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 194,
         "topic": "Tema 1: HttpClient con backend fetch",
-        "words": 1298
+        "words": 1257
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 196,
         "topic": "Tema 2: Interceptores funcionales",
-        "words": 1298
+        "words": 1263
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 204,
         "topic": "Tema 3: Registro de interceptores y centralización del manejo de errores",
-        "words": 1199
+        "words": 1159
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 183,
         "topic": "Tema 1: Bootstrap sin NgModules",
-        "words": 1211
+        "words": 1175
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 198,
         "topic": "Tema 2: Organización por feature",
-        "words": 1258
+        "words": 1231
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 182,
         "topic": "Tema 3: Migración desde NgModules",
-        "words": 1324
+        "words": 1293
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
         "tailWords": 196,
         "topic": "Tema 1: Store propio con signals",
-        "words": 1400
+        "words": 1359
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
         "tailWords": 199,
         "topic": "Tema 2: NgRx — actions, reducers y selectors",
-        "words": 1395
+        "words": 1357
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
         "tailWords": 248,
         "topic": "Tema 3: Cuándo NgRx justifica su complejidad",
-        "words": 1377
+        "words": 1333
       }
     ],
     "cloud": [
@@ -5060,13 +4973,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 12,
-        "tailWords": 578,
+        "tailWords": 533,
         "topic": "Tema 1: Arquitectura por features y Clean Architecture",
-        "words": 918
+        "words": 873
       },
       {
         "issues": [
@@ -5324,13 +5236,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 4,
-        "tailWords": 971,
+        "tailWords": 940,
         "topic": "Tema 4: Formularios profesionales con Formz y Riverpod",
-        "words": 1346
+        "words": 1315
       },
       {
         "issues": [],
@@ -5408,13 +5319,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 7,
-        "tailWords": 654,
+        "tailWords": 607,
         "topic": "Tema 1: MethodChannel",
-        "words": 988
+        "words": 941
       },
       {
         "issues": [
@@ -5438,13 +5348,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 7,
-        "tailWords": 974,
+        "tailWords": 936,
         "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia",
-        "words": 1356
+        "words": 1318
       },
       {
         "issues": [
@@ -5589,13 +5498,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 1,
-        "tailWords": 698,
+        "tailWords": 674,
         "topic": "Tema 4: Funciones y descomposición de problemas",
-        "words": 1267
+        "words": 1243
       },
       {
         "issues": [
@@ -6045,13 +5953,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 3,
-        "tailWords": 742,
+        "tailWords": 721,
         "topic": "Tema 2: HTTP como contrato observable",
-        "words": 1288
+        "words": 1267
       },
       {
         "issues": [
@@ -6065,13 +5972,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 3,
-        "tailWords": 810,
+        "tailWords": 786,
         "topic": "Tema 4: CSS, layout responsive y accesibilidad verificable",
-        "words": 1574
+        "words": 1550
       },
       {
         "issues": [],
@@ -6299,13 +6205,12 @@
       {
         "issues": [
           "andamiaje-generico",
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 8,
-        "tailWords": 727,
+        "tailWords": 702,
         "topic": "Tema 2: Memoria y concurrencia sin magia",
-        "words": 1116
+        "words": 1091
       },
       {
         "issues": [
@@ -6338,13 +6243,12 @@
       {
         "issues": [
           "andamiaje-generico",
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 9,
-        "tailWords": 703,
+        "tailWords": 675,
         "topic": "Tema 1: Lógica para especificar antes de programar",
-        "words": 1171
+        "words": 1143
       },
       {
         "issues": [
@@ -6371,13 +6275,12 @@
       {
         "issues": [
           "andamiaje-generico",
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 9,
-        "tailWords": 720,
+        "tailWords": 694,
         "topic": "Tema 4: Probabilidad y evidencia para decisiones técnicas",
-        "words": 1162
+        "words": 1136
       }
     ],
     "ios": [
@@ -6461,23 +6364,20 @@
         "words": 820
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 10,
-        "tailWords": 471,
+        "tailWords": 423,
         "topic": "Tema 2: Accesibilidad con VoiceOver",
-        "words": 778
+        "words": 730
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 10,
-        "tailWords": 573,
+        "tailWords": 524,
         "topic": "Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit",
-        "words": 942
+        "words": 893
       },
       {
         "issues": [
@@ -6659,22 +6559,19 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 2,
-        "tailWords": 749,
+        "tailWords": 705,
         "topic": "Tema 1: @State y @Binding",
-        "words": 1205
+        "words": 1161
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
-        "tailWords": 494,
+        "tailWords": 456,
         "topic": "Tema 2: @Observable",
-        "words": 916
+        "words": 878
       },
       {
         "issues": [
@@ -6687,23 +6584,18 @@
         "words": 976
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 466,
+        "tailWords": 431,
         "topic": "Tema 1: NavigationStack y NavigationPath",
-        "words": 800
+        "words": 765
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 508,
+        "tailWords": 460,
         "topic": "Tema 2: Sheets, full screen covers y TabView",
-        "words": 857
+        "words": 809
       },
       {
         "issues": [
@@ -6717,23 +6609,19 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 4,
-        "tailWords": 567,
+        "tailWords": 524,
         "topic": "Tema 1: async/await y Task",
-        "words": 986
+        "words": 943
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 507,
+        "tailWords": 463,
         "topic": "Tema 2: Actors para estado mutable seguro",
-        "words": 874
+        "words": 830
       },
       {
         "issues": [
@@ -6753,13 +6641,11 @@
         "words": 501
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 499,
+        "tailWords": 463,
         "topic": "Tema 1: URLSession con async/await y Codable",
-        "words": 891
+        "words": 855
       },
       {
         "issues": [
@@ -6790,13 +6676,11 @@
         "words": 770
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 483,
+        "tailWords": 450,
         "topic": "Tema 2: @Query y operaciones de escritura",
-        "words": 839
+        "words": 806
       },
       {
         "issues": [
@@ -6818,13 +6702,11 @@
         "words": 751
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 498,
+        "tailWords": 465,
         "topic": "Tema 2: Operadores: debounce y combineLatest",
-        "words": 847
+        "words": 814
       },
       {
         "issues": [
@@ -6836,13 +6718,11 @@
         "words": 865
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 8,
-        "tailWords": 449,
+        "tailWords": 402,
         "topic": "Tema 1: De una vista \"gorda\" a MVVM",
-        "words": 896
+        "words": 849
       },
       {
         "issues": [
@@ -7073,13 +6953,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 12,
-        "tailWords": 605,
+        "tailWords": 574,
         "topic": "Tema 1: Builder — configuración paso a paso y validación",
-        "words": 1013
+        "words": 982
       },
       {
         "issues": [
@@ -7099,13 +6978,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 12,
-        "tailWords": 550,
+        "tailWords": 506,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
-        "words": 1183
+        "words": 1139
       },
       {
         "issues": [
@@ -7676,31 +7554,25 @@
         "words": 586
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 101,
         "topic": "Tema 1: Tres formas de escribir una función",
-        "words": 952
+        "words": 904
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 136,
         "topic": "Tema 2: Parámetros por defecto y rest/spread",
-        "words": 973
+        "words": 929
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 111,
         "topic": "Tema 3: Funciones de orden superior",
-        "words": 895
+        "words": 837
       },
       {
         "issues": [
@@ -7712,13 +7584,11 @@
         "words": 935
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 126,
         "topic": "Tema 5: IIFE y el objeto arguments",
-        "words": 928
+        "words": 887
       },
       {
         "issues": [],
@@ -7959,94 +7829,74 @@
         "words": 693
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 104,
         "topic": "Tema 1: Scope léxico y closures",
-        "words": 850
+        "words": 807
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 142,
         "topic": "Tema 2: Hoisting y Temporal Dead Zone",
-        "words": 885
+        "words": 851
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 107,
         "topic": "Tema 3: Call stack y contexto de ejecución",
-        "words": 863
+        "words": 825
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 107,
         "topic": "Tema 4: this según el modo de invocación",
-        "words": 892
+        "words": 842
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 109,
         "topic": "Tema 5: Module pattern y factory functions",
-        "words": 910
+        "words": 863
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 104,
         "topic": "Tema 6: Execution Context, Scope Chain y Lexical Environment",
-        "words": 891
+        "words": 845
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 101,
         "topic": "Tema 1: Prototype chain y Object.create",
-        "words": 887
+        "words": 842
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 105,
         "topic": "Tema 2: class, extends y super",
-        "words": 867
+        "words": 815
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 144,
         "topic": "Tema 3: Getters, setters y propiedades computadas",
-        "words": 956
+        "words": 908
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 112,
         "topic": "Tema 4: Encapsulación con campos privados (#campo)",
-        "words": 962
+        "words": 919
       },
       {
         "issues": [],
@@ -8056,130 +7906,102 @@
         "words": 827
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 108,
         "topic": "Tema 1: map, filter, reduce, find, some/every",
-        "words": 907
+        "words": 865
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 112,
         "topic": "Tema 2: Set y Map frente a Array y Object",
-        "words": 962
+        "words": 918
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 103,
         "topic": "Tema 3: Inmutabilidad y actualización de estructuras anidadas",
-        "words": 810
+        "words": 772
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 105,
         "topic": "Tema 4: WeakMap y WeakSet",
-        "words": 831
+        "words": 790
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 110,
         "topic": "Tema 5: Métodos inmutables modernos",
-        "words": 774
+        "words": 740
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 112,
         "topic": "Tema 1: El Event Loop",
-        "words": 914
+        "words": 879
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 149,
         "topic": "Tema 2: Promesas",
-        "words": 1024
+        "words": 988
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 116,
         "topic": "Tema 3: Promise.all, allSettled, race y any",
-        "words": 928
+        "words": 875
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 107,
         "topic": "Tema 4: El motor V8 — JIT y AST",
-        "words": 964
+        "words": 924
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 101,
         "topic": "Tema 5: Stack, Heap y Garbage Collection",
-        "words": 1005
+        "words": 955
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 108,
         "topic": "Tema 1: async/await sobre promesas",
-        "words": 910
+        "words": 862
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 109,
         "topic": "Tema 2: try/catch en flujos asíncronos",
-        "words": 1046
+        "words": 991
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 162,
         "topic": "Tema 3: fetch API y AbortController",
-        "words": 891
+        "words": 854
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 101,
         "topic": "Tema 4: Reintentos y timeouts manuales",
-        "words": 891
+        "words": 853
       },
       {
         "issues": [],
@@ -8393,13 +8215,11 @@
         "words": 1025
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 10,
-        "tailWords": 492,
+        "tailWords": 458,
         "topic": "Tema 3: Versionado compartido",
-        "words": 870
+        "words": 836
       },
       {
         "issues": [
@@ -9395,13 +9215,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 0,
-        "tailWords": 593,
+        "tailWords": 558,
         "topic": "Tema 2: Listas con key estable",
-        "words": 1415
+        "words": 1380
       },
       {
         "issues": [
@@ -9442,13 +9261,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 1,
-        "tailWords": 545,
+        "tailWords": 510,
         "topic": "Tema 3: Batching de actualizaciones",
-        "words": 1002
+        "words": 967
       },
       {
         "issues": [],
@@ -9494,13 +9312,11 @@
         "words": 660
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 11,
-        "tailWords": 499,
+        "tailWords": 462,
         "topic": "Tema 1: Tipado de props y children",
-        "words": 915
+        "words": 878
       },
       {
         "issues": [
@@ -9523,14 +9339,11 @@
         "words": 1153
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 12,
-        "tailWords": 530,
+        "tailWords": 484,
         "topic": "Tema 1: Estructura del proyecto integrador",
-        "words": 962
+        "words": 916
       },
       {
         "issues": [
@@ -9551,33 +9364,30 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
-        "module": 13,
-        "tailWords": 646,
-        "topic": "Tema 1: Diseñar estados de carga, error y recuperación",
-        "words": 1115
-      },
-      {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
-        "module": 13,
-        "tailWords": 587,
-        "topic": "Tema 2: La composición visual debe conservar semántica y foco",
-        "words": 962
-      },
-      {
-        "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 13,
         "tailWords": 619,
+        "topic": "Tema 1: Diseñar estados de carga, error y recuperación",
+        "words": 1088
+      },
+      {
+        "issues": [
+          "cola-tras-cierre"
+        ],
+        "module": 13,
+        "tailWords": 563,
+        "topic": "Tema 2: La composición visual debe conservar semántica y foco",
+        "words": 938
+      },
+      {
+        "issues": [
+          "cola-tras-cierre"
+        ],
+        "module": 13,
+        "tailWords": 590,
         "topic": "Tema 3: Cliente y servidor forman una sola frontera de seguridad",
-        "words": 983
+        "words": 954
       },
       {
         "issues": [
@@ -9696,23 +9506,21 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 3,
-        "tailWords": 614,
+        "tailWords": 573,
         "topic": "Tema 1: React Hook Form y el problema del re-render por tecla",
-        "words": 1072
+        "words": 1031
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 3,
-        "tailWords": 588,
+        "tailWords": 544,
         "topic": "Tema 2: Validación con zod y formularios multi-paso",
-        "words": 1043
+        "words": 999
       },
       {
         "issues": [],
@@ -9749,13 +9557,11 @@
         "words": 657
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 474,
+        "tailWords": 448,
         "topic": "Tema 1: Rutas anidadas y layouts compartidos",
-        "words": 909
+        "words": 883
       },
       {
         "issues": [
@@ -9774,14 +9580,11 @@
         "words": 679
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 524,
+        "tailWords": 490,
         "topic": "Tema 1: useQuery y el problema que resuelve",
-        "words": 1205
+        "words": 1171
       },
       {
         "issues": [
@@ -9854,13 +9657,12 @@
       },
       {
         "issues": [
-          "bloque-repetido",
           "cola-tras-cierre"
         ],
         "module": 8,
-        "tailWords": 538,
+        "tailWords": 501,
         "topic": "Tema 2: Mock Service Worker (MSW)",
-        "words": 886
+        "words": 849
       },
       {
         "issues": [
@@ -9873,13 +9675,11 @@
         "words": 984
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 462,
+        "tailWords": 429,
         "topic": "Tema 1: Medir antes de optimizar",
-        "words": 926
+        "words": 893
       },
       {
         "issues": [
@@ -9921,31 +9721,25 @@
     ],
     "rutaflow": [
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 186,
         "topic": "Tema 1: El proceso logístico como sistema",
-        "words": 1106
+        "words": 962
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 187,
         "topic": "Tema 2: Entorno reproducible en Windows, macOS y Linux",
-        "words": 1112
+        "words": 960
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 175,
         "topic": "Tema 3: Arquitectura, privacidad y amenazas",
-        "words": 1048
+        "words": 900
       },
       {
         "issues": [

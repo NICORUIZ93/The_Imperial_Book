@@ -70,8 +70,6 @@ Dentro de cada feature, las capas de Clean Architecture (`domain/` con modelos y
 
 **Analogía:** organizar por features es como organizar un edificio de oficinas por departamento funcional completo (cada departamento con su propia recepción, archivo y sala de reuniones) en vez de agrupar todas las recepciones de todos los departamentos en un piso, todos los archivos en otro piso distinto: la primera organización mantiene junto todo lo relacionado con un mismo propósito de negocio, facilitando encontrar y modificar cualquier cosa relacionada con ese departamento específico sin recorrer todo el edificio.
 
-**¿Por qué es importante?** Organizar por feature agrupa código relacionado por propósito de negocio en vez de por tipo técnico de archivo, facilitando el mantenimiento; Clean Architecture con capas Domain/Data/Presentation mantiene la lógica de negocio central aislada de detalles de infraestructura, altamente testeable.
-
 **Diagrama:**
 
 ```

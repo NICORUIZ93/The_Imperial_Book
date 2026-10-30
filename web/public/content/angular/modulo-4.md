@@ -47,8 +47,6 @@ URL entrante: /tareas
                                            porque ya hubo coincidencia)
 ```
 
-**¿Por qué es importante?** La configuración declarativa de rutas centraliza toda la navegación posible de una aplicación en un lugar auditable, y `provideRouter` reemplaza el patrón anterior basado en NgModules, alineándose con la arquitectura standalone moderna estudiada en el Módulo 8.
-
 **Código del ejemplo:**
 
 ```ts
@@ -218,8 +216,6 @@ navegación → /admin
 └───────────────┘
 ```
 
-**¿Por qué es importante?** Los guards funcionales son considerablemente más fáciles de testear que las clases guard clásicas, y el patrón de devolver una `UrlTree` para redirigir (en vez de simplemente bloquear) ofrece una experiencia de usuario más amigable ante un acceso denegado.
-
 **Código del ejemplo:**
 
 ```ts
@@ -367,8 +363,6 @@ carga inicial de la app
                                                           └───────────────────┘
 ```
 
-**¿Por qué es importante?** `loadComponent` reduce directamente el tamaño del bundle inicial, mejorando el tiempo de carga percibido, especialmente valioso en aplicaciones con muchas rutas o funcionalidades opcionales de uso poco frecuente.
-
 **Código del ejemplo:**
 
 ```ts
@@ -504,8 +498,6 @@ URL: /pedidos/42
 │ extrae :id = "42"  │                                   │ recibe "42"         │
 └───────────────────┘                                    └────────────────────┘
 ```
-
-**¿Por qué es importante?** El input binding de rutas simplifica la lectura de parámetros integrándose directamente con signals; los guards avanzados (`CanDeactivate`, `CanMatch`, `canActivateChild`) y `ResolveFn` cubren escenarios de navegación más sofisticados que un simple `CanActivate` no resuelve por sí solo.
 
 **Código del ejemplo:**
 

@@ -29,8 +29,6 @@ Comprender este orden con precisión no es un ejercicio académico abstracto: ex
 
 **Analogía:** el Event Loop es como un camarero en un restaurante con una única persona atendiendo mesas (single-threaded): atiende completamente la mesa donde está en este momento (código síncrono), luego revisa y atiende TODOS los pedidos que ya están listos en la ventanilla de la cocina (microtasks) antes de aceptar una única mesa nueva de la fila de espera (una macrotask), y vuelve a repetir el ciclo completo.
 
-**¿Por qué es importante?** Predecir correctamente el orden de ejecución asíncrona es esencial para depurar comportamientos inesperados en cualquier aplicación real que combine Promesas, temporizadores y eventos, que es prácticamente cualquier aplicación JavaScript no trivial.
-
 **Diagrama:**
 
 ```mermaid
@@ -122,8 +120,6 @@ Es importante distinguir claramente entre el momento en que se crea una Promesa 
 
 **Analogía:** una Promesa es como un recibo que te entrega una tintorería al dejar ropa para lavar: el recibo (la Promesa) existe inmediatamente, en estado "pendiente", y representa el compromiso de que en algún momento futuro la ropa (el valor) estará lista (`fulfilled`) o habrá un problema que impidió completarla (`rejected`); el estado final del recibo, una vez determinado, no vuelve a cambiar.
 
-**¿Por qué es importante?** Las Promesas son la abstracción fundamental sobre la que se construye prácticamente toda la asincronía moderna en JavaScript, incluyendo `async`/`await` (Módulo 6), que es sintaxis construida directamente sobre este mismo mecanismo.
-
 **Diagrama:**
 
 ```mermaid
@@ -210,8 +206,6 @@ Elegir el combinador correcto según la semántica real del problema —¿necesi
 
 **Analogía:** `Promise.all` es como esperar a que todos los pasajeros de un grupo de viaje aborden el avión antes de despegar (si uno falta, el vuelo entero se cancela); `allSettled` es un chequeo de asistencia que anota quién llegó y quién no, sin cancelar nada; `race` es una carrera donde solo importa quién cruza la meta primero, sin importar si es descalificado después; `any` es una carrera donde se busca al primer corredor que termine legítimamente, ignorando a los descalificados.
 
-**¿Por qué es importante?** Elegir el combinador incorrecto es una fuente común de bugs de robustez: usar `Promise.all` cuando en realidad se necesitaban resultados parciales tolerantes a fallos (que exigiría `allSettled`) puede hacer que un único fallo no crítico derribe una operación completa que, de otro modo, podría haber tenido éxito parcial.
-
 **Diagrama:**
 
 ```mermaid
@@ -296,8 +290,6 @@ Aunque como desarrollador de aplicaciones rara vez se interactúa directamente c
 
 **Analogía:** Ignition es como un cocinero que prepara rápidamente cualquier plato solicitado usando una receta genérica flexible, sin optimizar nada de antemano; TurboFan es un cocinero especializado que, tras observar que un plato específico se pide con mucha frecuencia y siempre con los mismos ingredientes exactos, desarrolla una receta ultra optimizada específicamente para ese caso, aunque si de pronto llegan ingredientes distintos a los esperados, tiene que volver temporalmente a la receta genérica flexible mientras aprende el nuevo patrón.
 
-**¿Por qué es importante?** Entender la compilación JIT en dos niveles explica por qué el rendimiento de JavaScript puede degradarse con patrones de código inconsistentes, y da contexto técnico real a recomendaciones de optimización que de otro modo parecerían arbitrarias.
-
 **Diagrama:**
 
 ```mermaid
@@ -380,8 +372,6 @@ V8 implementa además una estrategia de recolección "generacional", basada en l
 Comprender este modelo, aunque el desarrollador de aplicaciones rara vez interactúa con él directamente, explica por qué mantener referencias innecesarias a objetos grandes (por ejemplo, en un closure que vive más tiempo del necesario, o en una estructura de caché sin límite de tamaño) puede causar un crecimiento sostenido del uso de memoria de una aplicación, un problema conocido coloquialmente como "fuga de memoria", aunque JavaScript técnicamente sí tiene recolección automática de basura: el problema no es la ausencia de recolección, sino mantener referencias activas más tiempo del necesario, impidiendo que el recolector considere esos objetos como inalcanzables.
 
 **Analogía:** el Stack es como una pila de bandejas de autoservicio que se retiran automáticamente en cuanto se termina de usarlas, en un orden estrictamente predecible; el Heap es como un gran almacén compartido donde se guardan objetos de tamaño variable que distintas personas pueden seguir necesitando por tiempos distintos e impredecibles, y periódicamente un equipo de limpieza (el recolector de basura) recorre el almacén completo, identifica qué artículos ya nadie reclama activamente, y los retira para liberar espacio.
-
-**¿Por qué es importante?** Entender Stack, Heap y Garbage Collection da un modelo mental correcto de por qué ciertos patrones (closures de larga vida, cachés sin límite) pueden acumular uso de memoria, y por qué "fuga de memoria" en JavaScript significa "referencias innecesarias mantenidas activas", no "ausencia de recolección automática".
 
 **Diagrama:**
 

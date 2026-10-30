@@ -108,8 +108,6 @@ Manejar fetching manualmente con `useState` + `useEffect` (guardar el resultado,
 
 **Analogía:** manejar fetching manualmente con `useState`/`useEffect` en cada componente es como cada persona de una oficina llamando individualmente al mismo proveedor para pedir la misma información, sin coordinarse entre sí; TanStack Query es como un único departamento centralizado que recibe todas esas solicitudes, consulta al proveedor una única vez cuando es necesario, y distribuye la misma respuesta a quien la solicitó, evitando llamadas redundantes.
 
-**¿Por qué es importante?** `useQuery` elimina el "loading hell" de gestionar manualmente estado de carga/error/cache en cada componente, y agrega automáticamente deduplicación, cache compartida y revalidación en segundo plano sin código adicional.
-
 **Código del ejemplo:**
 
 ```jsx

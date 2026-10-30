@@ -115,8 +115,6 @@ La telemetría incluye versión, ruta lógica y correlation ID, no props complet
 
 **Analogía:** los mamparos de un barco no evitan toda entrada de agua; limitan qué compartimento se pierde y permiten que el resto siga operando mientras se repara.
 
-**¿Por qué es importante?** porque un error de una tarjeta no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación deja al usuario atrapado.
-
 **Casos de uso reales:** chunk lazy que falla, query rechazada, componente con dato inesperado, actualización optimista revertida, sesión expirada y efecto duplicado en desarrollo.
 
 **Diagrama:**
@@ -212,8 +210,6 @@ Testing Library consulta por roles/nombres porque aproxima el árbol accesible. 
 
 **Analogía:** componer componentes es ensamblar señales de tránsito. Cambiar pintura no puede eliminar el significado, orden ni ruta que una persona necesita para llegar.
 
-**¿Por qué es importante?** porque abstracciones de diseño pueden borrar semántica sin que TypeScript avise. El resultado excluye usuarios y vuelve frágiles las pruebas.
-
 **Casos de uso reales:** modal por portal, combobox, formulario multi-paso, lista reordenable, toast, navegación protegida y skeleton que oculta nombres.
 
 **Diagrama:**
@@ -304,8 +300,6 @@ export async function deleteTask(formData: FormData) {
 ```
 
 **Analogía:** un Server Action es una puerta tras el mostrador, no una habitación secreta. Aunque el cliente normal llegue mediante un botón, cualquiera puede intentar la dirección y la puerta debe verificar identidad y permiso.
-
-**¿Por qué es importante?** porque mezclar render servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX. Un supuesto equivocado filtra secretos o autoriza por interfaz.
 
 **Casos de uso reales:** CMS, markdown, avatar URL, acción admin, cookie de sesión, RSC con objeto usuario, cache de dashboard y error serializado.
 

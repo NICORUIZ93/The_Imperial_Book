@@ -63,8 +63,6 @@ path.append(tarea) // navega programáticamente, sin depender de NavigationLink 
 
 **Analogía:** `NavigationStack` con `NavigationPath` es como un sistema de coordenadas GPS que permite saltar directamente a cualquier punto de una ruta con instrucciones programáticas explícitas, en vez de depender únicamente de seguir letrero por letrero (`NavigationLink`) el camino predefinido de una sola dirección posible.
 
-**¿Por qué es importante?** `NavigationPath` habilita navegación programática y flujos complejos (deep linking, resetear el stack completo) que serían difíciles de expresar con el modelo anterior basado únicamente en `NavigationLink` anidados dentro de cada vista.
-
 **Código del ejemplo:**
 
 ```swift
@@ -135,8 +133,6 @@ TabView {
 Anidar un `NavigationStack` independiente dentro de cada pestaña de una `TabView` establece exactamente el mismo patrón de stacks de navegación independientes por sección estudiado en Android (Módulo 3 del track de Android): cada pestaña mantiene su propio historial de navegación, de modo que cambiar de pestaña y regresar preserva el punto exacto donde el usuario quedó en cada una, cumpliendo con la misma expectativa de UX consolidada en apps móviles de ambas plataformas.
 
 **Analogía:** un sheet es como abrir un cajón parcialmente para consultar algo rápido sin perder de vista el resto de la habitación; un full screen cover es como entrar a una sala separada donde la puerta se cierra completamente, apropiada cuando la actividad requiere concentración total sin ninguna distracción del contexto anterior.
-
-**¿Por qué es importante?** Elegir entre sheet y full screen cover comunica al usuario la intensidad esperada de la interrupción (complementaria y descartable vs obligatoria y de atención completa); anidar un `NavigationStack` por pestaña preserva el historial independiente de cada sección, la misma expectativa de UX de Android.
 
 **Diagrama:**
 

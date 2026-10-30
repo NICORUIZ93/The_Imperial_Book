@@ -288,8 +288,6 @@ Este comportamiento es una optimización de rendimiento deliberada: sin batching
 
 **Analogía:** el batching es como un cajero que espera a que termines de pedir los tres artículos completos antes de calcular el total una única vez, en vez de recalcular y anunciar un nuevo total parcial después de cada artículo individual que mencionas.
 
-**¿Por qué es importante?** El batching evita ciclos de render y commit redundantes cuando múltiples actualizaciones de estado ocurren en el mismo manejador de evento, aplicando únicamente el estado final combinado en un único ciclo.
-
 **Código del ejemplo:**
 
 ```jsx

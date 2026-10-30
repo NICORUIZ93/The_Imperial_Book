@@ -62,8 +62,6 @@ Recorrer la estructura generada por `ng new` —`src/app` con el componente raí
 
 **Analogía:** un proyecto Angular generado hoy es como una casa moderna de planta abierta, donde cada habitación (componente) tiene acceso directo a lo que necesita sin pasar por un pasillo central obligatorio (el antiguo `NgModule`); un proyecto Angular antiguo era como una casa con habitaciones organizadas estrictamente por ala, donde cada ala (módulo) debía declarar explícitamente qué habitaciones contenía antes de que fueran accesibles desde fuera de esa ala.
 
-**¿Por qué es importante?** Entender que los proyectos Angular modernos no usan `NgModule` es el punto de partida indispensable para todo lo demás en este track: gran parte de la complejidad organizativa que Angular tenía fama de requerir en el pasado ya no aplica al Angular que se enseña y se usa hoy.
-
 **Prueba en terminal:**
 
 ```bash
@@ -199,8 +197,6 @@ Usar `[disabled]="cargando"` en vez de simplemente escribir el atributo `disable
 Elegir correctamente entre interpolación y property binding no es una cuestión de preferencia estilística: interpolación es la herramienta correcta para mostrar contenido textual dentro del cuerpo de un elemento; property binding es la herramienta correcta para controlar dinámicamente cualquier propiedad del elemento (atributos booleanos, URLs de imágenes, clases, estilos, o cualquier propiedad específica del DOM), y confundir ambos (por ejemplo, intentar interpolar dentro de un atributo que requiere binding real) produce comportamientos incorrectos o simplemente no funciona según lo esperado.
 
 **Analogía:** la interpolación es como escribir directamente un cartel de texto visible; el property binding es como ajustar un control eléctrico real del propio dispositivo (como el interruptor de encendido/apagado), no simplemente escribir la palabra "encendido" en una etiqueta decorativa sin ninguna conexión real al estado funcional del dispositivo.
-
-**¿Por qué es importante?** Distinguir correctamente cuándo usar interpolación frente a property binding evita errores sutiles al intentar controlar dinámicamente propiedades del DOM (como `disabled` o `value`) usando la herramienta equivocada.
 
 **Código del ejemplo:**
 
@@ -354,8 +350,6 @@ Los utility types integrados en TypeScript transforman tipos existentes sin nece
 
 **Analogía:** `any` es como aceptar cualquier paquete sin revisar su contenido en absoluto; `unknown` es como aceptar un paquete cerrado que debes abrir y verificar explícitamente su contenido antes de poder usarlo para cualquier propósito específico; `never` es como una casilla que, por diseño, nunca puede contener nada, útil precisamente para verificar que ningún caso inesperado quedó sin cubrir en una lista de posibilidades.
 
-**¿Por qué es importante?** `unknown` preserva seguridad de tipos donde `any` la sacrifica completamente; `never` permite verificaciones exhaustivas verificadas por el compilador; los utility types evitan redeclarar manualmente variantes de un mismo tipo base, patrones que aparecerán constantemente en el código Angular idiomático de los módulos siguientes.
-
 **Diagrama:**
 
 ```
@@ -502,8 +496,6 @@ AOT es el modo por defecto y recomendado para producción desde hace ya varias v
 `ng build` usa AOT por defecto; `ng serve` durante desarrollo también usa AOT en las versiones modernas del CLI (a diferencia de versiones muy antiguas de Angular, donde el modo de desarrollo usaba JIT por su compilación incremental más rápida), reflejando la madurez actual de las herramientas de build de Angular, que logran tiempos de compilación AOT suficientemente rápidos incluso para el ciclo de desarrollo iterativo cotidiano, eliminando la necesidad práctica de mantener JIT como una alternativa relevante salvo en escenarios muy específicos y poco comunes.
 
 **Analogía:** AOT es como traducir completamente un libro a otro idioma antes de imprimirlo y distribuirlo, entregando a cada lector un libro ya listo para leer directamente; JIT sería como entregar el libro en su idioma original junto con un traductor humano que debe traducir cada página en tiempo real mientras el lector espera, un proceso evidentemente más lento en el momento del consumo real.
-
-**¿Por qué es importante?** AOT produce bundles más pequeños, arranque más rápido, y detección más temprana de errores de plantilla, siendo el modo estándar y por defecto de Angular moderno tanto en desarrollo como en producción.
 
 **Diagrama:**
 

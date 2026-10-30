@@ -74,8 +74,6 @@ React Hook Form (`const { register, handleSubmit, formState: { errors } } = useF
 
 **Analogía:** manejar cada campo con `useState` individual es como anunciar en voz alta a toda la sala cada letra que alguien escribe en cualquier formulario de la sala; React Hook Form es como dejar que cada persona escriba en su propio papel privado, y solo recolectar y anunciar el contenido completo cuando alguien efectivamente entrega su formulario terminado.
 
-**¿Por qué es importante?** React Hook Form evita el costo de re-renderizar el formulario completo en cada tecla, un problema de rendimiento mensurable en formularios con muchos campos, sin sacrificar la capacidad de validar y reaccionar a los valores ingresados.
-
 **Código del ejemplo:**
 
 ```jsx
@@ -148,8 +146,6 @@ Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18
 Un formulario multi-paso mantiene el estado combinado de todos los pasos en un componente padre compartido (`const [datos, setDatos] = useState({})`), donde cada paso individual es un sub-formulario independiente que, al completarse, fusiona sus propios datos con el estado acumulado existente (`setDatos(prev => ({ ...prev, ...datosDelPaso }))`) antes de avanzar al siguiente paso (`setPaso(p => p + 1)`); al retroceder a un paso anterior, ese estado combinado ya existente permite prellenar nuevamente los campos con los valores previamente ingresados, en vez de perderlos y forzar al usuario a reescribirlos desde cero.
 
 **Analogía:** un schema de zod es como una plantilla de aduana que especifica exactamente qué documentos y en qué formato son válidos para pasar, rechazando automáticamente cualquier envío que no cumpla esos requisitos declarados; un formulario multi-paso es como llenar un formulario largo en varias hojas separadas que se van acumulando en la misma carpeta, permitiendo volver a una hoja anterior sin perder lo ya escrito en las demás.
-
-**¿Por qué es importante?** Un schema de zod centraliza y hace reutilizable la lógica de validación, potencialmente compartida entre cliente y servidor; conservar el estado combinado entre pasos evita que el usuario pierda datos ya ingresados al navegar entre pasos de un formulario largo.
 
 **Código del ejemplo:**
 

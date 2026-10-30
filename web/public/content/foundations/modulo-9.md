@@ -102,8 +102,6 @@ def test_retirar_preserva_stock_no_negativo(stock, cantidad):
 
 **Analogía:** una especificación lógica se parece al contrato de una caja fuerte: define qué condiciones permiten abrirla y qué propiedad debe continuar cierta; no prescribe todavía la forma de las bisagras.
 
-**¿Por qué es importante?** porque casos de prueba elegidos a mano suelen confirmar nuestra intuición. Predicados e invariantes obligan a declarar qué significa “correcto” y permiten buscar contraejemplos.
-
 **Casos de uso reales:** reglas de autorización, validación de formularios, restricciones SQL, contratos de API, estados de pedidos y pruebas basadas en propiedades.
 
 **Diagrama:**
@@ -408,8 +406,6 @@ print({"n": len(latencias), "media": mean(latencias), "p50": p50, "p95": p95})
 Comparar dos versiones exige controlar calentamiento, carga, datos, hardware y orden; registrar semilla y ambiente; repetir; mostrar distribución y tamaño del efecto. Un valor p no mide importancia práctica ni probabilidad de que una hipótesis sea verdadera. Correlación tampoco prueba causalidad: una tercera variable puede explicar ambas.
 
 **Analogía:** probar una cucharada de sopa informa sobre toda la olla solo si antes se mezcló bien y la muestra no fue elegida para confirmar el sabor esperado.
-
-**¿Por qué es importante?** porque métricas y experimentos influyen en capacidad, alertas y despliegues. Una conclusión exagerada puede optimizar el lugar equivocado o degradar usuarios reales.
 
 **Casos de uso reales:** pruebas A/B, SLO de latencia, detección de anomalías, planificación de capacidad, backoff aleatorio, muestreo de logs y análisis de defectos.
 

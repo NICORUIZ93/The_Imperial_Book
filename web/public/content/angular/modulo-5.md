@@ -41,8 +41,6 @@ FormGroup { nombre, email }
 └─────────────────┘                            └──────────────────────┘
 ```
 
-**¿Por qué es importante?** La definición explícita de Reactive Forms en TypeScript es lo que permite testear formularios completos sin renderizar HTML real, y mostrar mensajes de error específicos según el validador exacto que falló mejora significativamente la experiencia de corrección del usuario.
-
 **Código del ejemplo:**
 
 ```ts
@@ -184,8 +182,6 @@ setValue('ocupado@x.com')
 │ status: VALID  │ ───────────────────────▶│ status: PENDING│ ───────────────▶│ status: INVALID/VALID│
 └───────────────┘                          └───────────────┘                 └────────────────────┘
 ```
-
-**¿Por qué es importante?** Los validadores asíncronos permiten verificaciones contra fuentes externas (como disponibilidad de un email) integradas transparentemente con el mismo mecanismo de reporte de errores que los validadores síncronos, siempre que se combinen apropiadamente con debounce para evitar peticiones excesivas.
 
 **Código del ejemplo:**
 
@@ -342,8 +338,6 @@ FormArray: [ tel0, tel1 ]
 FormArray: [ tel1 ]   (tel1 conserva su propio estado de validacion)
 ```
 
-**¿Por qué es importante?** `FormArray` es la herramienta correcta para campos de formulario cuyo número exacto no se conoce de antemano y debe poder crecer o reducirse dinámicamente según la interacción del usuario, con validación independiente por cada entrada y validación agregada sobre el conjunto completo.
-
 **Código del ejemplo:**
 
 ```ts
@@ -481,8 +475,6 @@ La recomendación práctica, y la que la mayoría de equipos de Angular experime
        │            componente.busqueda = 'x'     │
        └──────────────────────────────────────────┘
 ```
-
-**¿Por qué es importante?** Elegir conscientemente entre Reactive Forms y template-driven forms según la complejidad real del formulario (no por hábito automático) equilibra la simplicidad de `ngModel` para casos triviales con la robustez y testabilidad de Reactive Forms para cualquier cosa más allá de lo más simple.
 
 **Código del ejemplo:**
 

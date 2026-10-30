@@ -187,8 +187,6 @@ El lock coordina hilos de este proceso; la transacción y la condición SQL prot
 
 **Analogía:** dos agentes venden el último asiento desde copias distintas. Un control de reserva atómico decide quién lo obtiene; pedir que trabajen más rápido no resuelve el conflicto.
 
-**¿Por qué es importante?** porque las pruebas secuenciales pueden pasar y el sistema fallar únicamente bajo tráfico real. La corrección concurrente debe diseñarse como propiedad.
-
 **Casos de uso reales:** descontar inventario, procesar pagos idempotentes, ejecutar workers, actualizar cachés y evitar migraciones simultáneas.
 
 **Diagrama:**

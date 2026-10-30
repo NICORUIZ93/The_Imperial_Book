@@ -29,8 +29,6 @@ Un signal es un contenedor de valor reactivo: `signal(0)` crea un signal con val
 
 **Analogía:** un signal es como un marcador electrónico visible en una fábrica que muestra el conteo actual de piezas producidas; un `computed()` es como un panel secundario que siempre muestra automáticamente el doble de ese conteo, actualizándose únicamente cuando el marcador principal cambia, sin que nadie tenga que recalcularlo manualmente; un `effect()` es como una alarma que suena automáticamente cada vez que el marcador alcanza cierto umbral, una acción externa disparada por el cambio, no un valor derivado a consultar después.
 
-**¿Por qué es importante?** Signals ofrecen un modelo de reactividad síncrono, preciso y memoizado automáticamente, donde Angular sabe exactamente qué depende de qué, sentando las bases conceptuales para todo el resto del modelo de reactividad moderno de Angular estudiado en los módulos siguientes.
-
 **Diagrama:**
 
 ```mermaid
@@ -168,8 +166,6 @@ La forma correcta es siempre actualizar con una nueva referencia: `tareas.update
 Este requisito de inmutabilidad no es una limitación arbitraria de Angular, sino una consecuencia directa y deliberada de cómo los signals detectan cambios de forma eficiente: comparar referencias es una operación extremadamente rápida (una simple comparación de igualdad), mucho más barata que comparar profundamente el contenido completo de una estructura de datos compleja en cada posible cambio; a cambio de esa eficiencia, el desarrollador debe adoptar la disciplina de siempre reemplazar (nunca mutar in-place) el valor almacenado en un signal cuando ese valor es una estructura de datos compuesta como un array u objeto.
 
 **Analogía:** mutar un array dentro de un signal es como tachar y reescribir directamente sobre un documento oficial ya archivado sin generar una nueva copia: el archivo permanece siendo "el mismo documento" según su número de referencia oficial, y nadie que consulte solo ese número de referencia se entera de que el contenido cambió; actualizar con `update()` y spread es como archivar una copia completamente nueva con un número de referencia distinto, y notificar activamente a todos los interesados que ahora existe una versión más reciente a consultar.
-
-**¿Por qué es importante?** Entender que los signals detectan cambios por referencia (no por contenido profundo) es esencial para evitar el bug extremadamente común de mutar in-place una estructura de datos dentro de un signal y no entender por qué la interfaz de usuario no se actualiza en respuesta.
 
 **Diagrama:**
 
@@ -310,8 +306,6 @@ Comparar la misma pieza de estado implementada primero con un `BehaviorSubject` 
 
 **Analogía:** un signal es como un termómetro digital que muestra directamente la temperatura actual en el momento en que lo consultas; un Observable de RxJS es como un sistema de monitoreo climático completo que registra, combina y procesa continuamente múltiples fuentes de datos meteorológicos a lo largo del tiempo, produciendo análisis derivados más complejos que un simple valor puntual actual.
 
-**¿Por qué es importante?** Elegir correctamente entre signals (estado síncrono simple) y RxJS (flujos asíncronos complejos con composición temporal) según la naturaleza real del problema evita tanto la sobrecomplicación de usar RxJS donde un signal simple bastaría, como la limitación de forzar signals en escenarios que genuinamente requieren la composición temporal que RxJS ofrece.
-
 **Diagrama:**
 
 ```mermaid
@@ -448,8 +442,6 @@ Con el modelo de signals, Angular tiene información precisa y exacta de qué si
 Adoptar zoneless no es simplemente activar una bandera de configuración sin ninguna otra consideración: requiere que el estado de la aplicación esté modelado consistentemente con signals (o con APIs que Angular sabe rastrear directamente sin depender de Zone.js), de modo que Angular tenga la información precisa que necesita para saber cuándo actualizar la interfaz sin la red de seguridad de fuerza bruta que Zone.js proporcionaba anteriormente; código que dependa de mutaciones directas sin pasar por signals, o de mecanismos asíncronos que Angular no rastrea nativamente sin Zone.js, podría no disparar actualizaciones de interfaz correctamente en modo zoneless sin las adaptaciones correspondientes.
 
 **Analogía:** Zone.js es como un sistema de vigilancia que revisa cada habitación completa de un edificio entero cada vez que se detecta cualquier tipo de movimiento en cualquier parte, sin saber exactamente dónde ocurrió ni qué cambió específicamente; el modelo basado en signals es como un sistema de sensores individuales colocados exactamente en cada punto relevante, que notifican con precisión exacta cuál sensor específico se activó y qué área específica necesita atención, sin necesidad de revisar el edificio completo cada vez.
-
-**¿Por qué es importante?** El modelo de signals hace posible eliminar Zone.js del bundle de una aplicación, reduciendo su tamaño y el overhead de interceptar cada operación asíncrona, una dirección clara hacia la que Angular moderno está evolucionando activamente.
 
 **Diagrama:**
 

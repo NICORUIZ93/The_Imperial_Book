@@ -37,8 +37,6 @@ Un servicio con `providedIn: "root"` es el patrón por defecto y correcto para l
 
 **Analogía:** un servicio con `providedIn: "root"` es como el departamento central de recursos humanos de una empresa completa: existe una única instancia compartida por toda la organización, y cualquier departamento que necesite consultarlo accede exactamente al mismo departamento central, sin que cada departamento individual necesite mantener su propia copia independiente y potencialmente desincronizada de esa misma información.
 
-**¿Por qué es importante?** `providedIn: "root"` es la forma estándar de registrar un servicio como singleton de aplicación con beneficios de tree-shaking, y es el patrón correcto por defecto para la gran mayoría de servicios que comparten estado o lógica entre múltiples partes de una aplicación.
-
 **Código del ejemplo:**
 
 ```ts
@@ -188,8 +186,6 @@ La elección entre ambas formas, para el caso común de inyectar dependencias di
 
 **Analogía:** la inyección por constructor es como recibir todas tus herramientas de trabajo exclusivamente en el momento formal de tu contratación, empaquetadas todas juntas en un único punto de entrada; `inject()` es como poder solicitar cada herramienta específica exactamente en el momento y lugar donde la necesitas dentro de tu jornada laboral, sin estar limitado a recibirlas todas únicamente en ese único momento inicial formal.
 
-**¿Por qué es importante?** `inject()` es más flexible que la inyección por constructor, siendo la única opción viable en contextos funcionales modernos (guards, interceptores) y simplificando la herencia de clases, razones por las que el ecosistema Angular moderno la favorece consistentemente.
-
 **Diagrama:**
 
 ```
@@ -301,8 +297,6 @@ Un servicio provisto únicamente en el inyector raíz (`providedIn: "root"`, Tem
 Si el mismo servicio se provee simultáneamente en múltiples niveles de la jerarquía (por ejemplo, en `root` y también en un componente específico), el nivel más cercano al punto de solicitud "gana": un componente que provee su propia instancia de un servicio, aunque ese mismo servicio también esté registrado globalmente en `root`, recibirá su propia instancia local específica de ese componente, no la instancia global compartida, precisamente porque Angular resuelve la dependencia comenzando desde el inyector más cercano antes de subir hacia niveles superiores de la jerarquía.
 
 **Analogía:** la jerarquía de inyectores es como una cadena de mando organizacional: una solicitud de recursos se dirige primero al supervisor directo más cercano (inyector de componente); si ese supervisor no puede resolverla, se escala al gerente de departamento (inyector de ruta); y si tampoco puede, finalmente a la dirección general de toda la organización (inyector raíz). Si el supervisor directo ya tiene autoridad para resolver la solicitud por sí mismo, la resuelve ahí mismo sin necesidad de escalarla más arriba en la jerarquía.
-
-**¿Por qué es importante?** Entender la jerarquía de inyectores explica por qué un servicio provisto a nivel de ruta o componente produce instancias independientes en vez del singleton global esperado, un comportamiento que sorprende a quien no conoce esta jerarquía y espera siempre una única instancia compartida.
 
 **Diagrama:**
 
@@ -433,8 +427,6 @@ Un `InjectionToken` permite inyectar valores que no son instancias de una clase 
 Estos decoradores de resolución son herramientas relativamente especializadas, usadas con mayor frecuencia al escribir bibliotecas de componentes reutilizables o directivas complejas que necesitan un control preciso sobre exactamente en qué nivel de la jerarquía se resuelve una dependencia específica, más que en el código de aplicación cotidiano, donde la resolución jerárquica por defecto (sin ningún decorador adicional) es apropiada en la gran mayoría de los casos.
 
 **Analogía:** un `InjectionToken` es como una etiqueta de identificación única para un tipo específico de recurso de configuración que no tiene una "clase" propia asociada, permitiendo registrar y solicitar ese recurso de forma inequívoca. `@SkipSelf`/`@Self`/`@Host` son como instrucciones específicas y explícitas sobre en qué nivel exacto de la cadena de mando debe resolverse una solicitud particular, en vez de seguir el protocolo jerárquico por defecto.
-
-**¿Por qué es importante?** Los tokens de inyección personalizados permiten inyectar configuración y valores no basados en clases de forma desacoplada y testeable; los decoradores de resolución dan control preciso sobre en qué nivel exacto de la jerarquía se resuelve una dependencia, relevante especialmente al construir bibliotecas de componentes reutilizables.
 
 **Diagrama:**
 

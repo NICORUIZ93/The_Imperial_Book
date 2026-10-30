@@ -29,8 +29,6 @@ Esta integración con signals significa que un input declarado con `input()` par
 
 **Analogía:** `input()` es como una ranura de entrada claramente etiquetada y obligatoria (si se declara `required`) en un formulario, que el remitente (el componente padre) debe rellenar antes de que el formulario se procese; `output()` es como un buzón de salida desde el que el componente puede enviar notificaciones hacia quien esté escuchando, sin necesidad de saber de antemano quién las recibirá ni cuántos destinatarios habrá.
 
-**¿Por qué es importante?** `input()`/`output()` integran nativamente los inputs y outputs de un componente con el grafo de reactividad de signals, simplificando el modelo mental general de reactividad de Angular al usar un único mecanismo consistente (signals) en vez de mezclar propiedades de clase ordinarias con el sistema de detección de cambios tradicional.
-
 **Diagrama:**
 
 ```mermaid
@@ -196,8 +194,6 @@ Usar `track tarea.id` (un identificador único y estable de cada elemento) en ve
 
 **Analogía:** `track` es como una etiqueta de identificación única cosida permanentemente a cada prenda de un guardarropa: cuando reorganizas el guardarropa (reordenas la lista), el sistema reconoce cada prenda por su etiqueta única y simplemente la mueve de posición, en vez de asumir (por usar solo la posición del perchero como identificador) que cada prenda es "nueva" simplemente porque cambió de percha, y tener que fabricar una prenda completamente nueva desde cero en cada percha.
 
-**¿Por qué es importante?** La sintaxis nativa de control de flujo es más legible y permite mejores optimizaciones del compilador; usar `track` con un identificador estable en `@for` es esencial para el rendimiento de listas que cambian con frecuencia, evitando recreaciones innecesarias de elementos del DOM.
-
 **Diagrama:**
 
 ```
@@ -339,8 +335,6 @@ Este patrón es fundamentalmente distinto de pasar datos mediante un `input()`: 
 `<ng-content select="...">` con múltiples slots nombrados permite proyectar distintas porciones de contenido del padre en distintas posiciones específicas de la plantilla del componente hijo (por ejemplo, un slot para el encabezado del modal y otro para su cuerpo principal), seleccionando qué contenido va a cada slot mediante un selector CSS aplicado sobre los elementos hijos proyectados, una capacidad más avanzada que un único `<ng-content>` sin selector, que simplemente proyecta todo el contenido del padre en un único punto.
 
 **Analogía:** content projection es como un marco de fotos genérico y reutilizable, diseñado para exhibir cualquier fotografía específica que alguien decida colocar dentro de él, sin que el fabricante del marco necesite saber de antemano qué fotografía exacta se exhibirá; múltiples slots nombrados serían como un marco con varias aberturas específicas y etiquetadas, cada una destinada a un tipo específico de contenido (una para el título, otra para la imagen principal).
-
-**¿Por qué es importante?** Content projection permite construir componentes de layout verdaderamente genéricos y reutilizables cuyo contenido interno específico lo determina completamente quien los consume, un patrón de composición fundamental en cualquier biblioteca de componentes de UI madura.
 
 **Diagrama:**
 
@@ -487,8 +481,6 @@ Angular invoca una secuencia bien definida de "hooks" de ciclo de vida en moment
 
 **Analogía:** el ciclo de vida de un componente es como el ciclo completo de un empleado en una empresa: la contratación inicial con verificación de credenciales (`ngOnChanges`/`ngOnInit`), el desempeño continuo verificado periódicamente (`ngDoCheck`), la integración con su equipo de trabajo directo una vez asignado (`ngAfterViewInit`), y finalmente el proceso ordenado de salida donde se revocan accesos y se cierran cuentas pendientes (`ngOnDestroy`), cada etapa con un propósito claramente distinto en el ciclo de vida completo.
 
-**¿Por qué es importante?** Conocer el propósito específico de cada hook, y especialmente la importancia crítica de `ngOnDestroy` para prevenir fugas de memoria, es esencial para escribir componentes Angular correctos y de larga vida en una aplicación real.
-
 **Diagrama:**
 
 ```mermaid
@@ -625,8 +617,6 @@ Al finalizar podrás confirmar, con un componente real que usa `viewChild.requir
 `afterNextRender()` registra callbacks que Angular invoca una sola vez, después de que el componente se renderiza en el navegador, separados en fases bien definidas: `write` para escribir en el DOM, y `read` para medirlo, evitando alternar lecturas y escrituras de layout (un patrón que puede forzar que el navegador recalcule el layout varias veces dentro del mismo frame). A diferencia de `ngAfterViewChecked`, que puede invocarse muchas veces por cada ciclo de detección de cambios, `afterNextRender()` se ejecuta una sola vez tras el render inicial, dejando claro que no es un lugar seguro para lógica repetitiva. Ninguna callback de `afterNextRender()` se ejecuta durante SSR (el servidor no tiene un DOM real que medir); por eso un componente nunca debe depender de esa medición para producir su HTML inicial correcto.
 
 **Analogía:** `viewChild` es una ventana de inspección hacia una pieza ya instalada, no hacia un plano todavía en construcción; las fases de `afterNextRender` son el turno del equipo de montaje (`write`) y, después, el del equipo de medición (`read`) — medir mientras todavía se mueve la estructura produce resultados inestables y trabajo repetido.
-
-**¿Por qué es importante?** Las consultas signal se integran con el modelo reactivo moderno de Angular, y separar las fases de render reduce lecturas y escrituras de layout intercaladas; reconocer el límite real de SSR evita que el HTML inicial dependa de una medición que solo existe en el navegador.
 
 **Diagrama:**
 

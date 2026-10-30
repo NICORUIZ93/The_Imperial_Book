@@ -29,8 +29,6 @@ Esta separación clara entre `tareas/` y `auth/` refleja además una separación
 
 **Analogía:** la estructura del proyecto integrador es como un edificio con departamentos claramente delimitados (tareas, autenticación), cada uno con su propia responsabilidad interna bien definida, comunicándose entre sí únicamente a través de puertas y protocolos explícitos (el guard, el interceptor), sin que un departamento necesite conocer el funcionamiento interno completo del otro.
 
-**¿Por qué es importante?** Una estructura clara por feature, con puntos de integración explícitos entre features distintas, mantiene el proyecto comprensible y modificable a medida que crece, evitando que la lógica de dominios distintos se entremezcle de forma difícil de mantener.
-
 **Diagrama:**
 
 ```
@@ -191,8 +189,6 @@ El formulario de creación/edición de tareas usa Reactive Forms (Módulo 5) con
 
 **Analogía:** integrar routing, store y formularios es como coordinar la entrada (el guard, verificando quién puede pasar), el almacén central (el store, con la única versión autorizada de la mercancía) y el mostrador de pedidos (el formulario, donde se solicitan cambios que el almacén central procesa y refleja para todos).
 
-**¿Por qué es importante?** Combinar estas piezas de forma coherente (guard protegiendo rutas, store como única fuente de verdad, formulario comunicándose con el store a través de métodos públicos) demuestra cómo los conceptos estudiados de forma aislada en módulos anteriores se combinan naturalmente en una aplicación real.
-
 **Diagrama:**
 
 ```mermaid
@@ -329,8 +325,6 @@ El método `cargar()` del store inyecta `HttpClient` (Módulo 7) y realiza la pe
 Esta combinación de signals para el estado local reactivo, `computed()` para estado derivado, y `HttpClient` para sincronizar ese estado con un backend real, ejemplifica el patrón central de gestión de estado que domina la mayoría de aplicaciones Angular modernas: un store simple, inyectable y encapsulado, que integra naturalmente tanto la reactividad síncrona de signals como la naturaleza asíncrona de la comunicación de red, sin necesidad de la ceremonia adicional de NgRx (Módulo 9) para un caso de uso de esta complejidad moderada.
 
 **Analogía:** `TareasStore` es como un gestor de inventario que mantiene la lista maestra actualizada de productos (el signal `tareas`), calcula automáticamente vistas derivadas útiles como "productos por reabastecer" (el `computed` `pendientes`), y se encarga por su cuenta de sincronizar periódicamente esa lista maestra con el proveedor externo (la petición HTTP), sin que ningún otro departamento de la empresa necesite involucrarse directamente en esa sincronización.
-
-**¿Por qué es importante?** `TareasStore` demuestra en una única clase compacta cómo combinar los tres pilares estudiados a lo largo del track — reactividad de signals, estado derivado con `computed`, y comunicación asíncrona con `HttpClient` — en un patrón de store simple y suficiente para la gran mayoría de aplicaciones reales.
 
 **Diagrama:**
 

@@ -27,8 +27,6 @@ Combinar `HttpClient` con `toSignal()` (Módulo 6) convierte directamente el Obs
 
 **Analogía:** `HttpClient` es como un mensajero especializado que sabe exactamente cómo pedir información a un servidor remoto y traer la respuesta de vuelta; tipar la respuesta es como pedirle al mensajero que traiga la información en un formato específico y conocido de antemano, para que quien la reciba sepa exactamente qué esperar sin tener que inspeccionarla manualmente.
 
-**¿Por qué es importante?** `provideHttpClient(withFetch())` moderniza el transporte subyacente de las peticiones; tipar las respuestas atrapa errores de uso en tiempo de compilación; `toSignal` integra los datos de red en el mismo modelo reactivo que el resto de la aplicación.
-
 **Diagrama — HttpTestingController intercepta antes de la red:**
 
 ```
@@ -191,8 +189,6 @@ Un interceptor es una función que se inserta en la cadena de procesamiento de c
 └────────────┘                     └────────────────┘               └───────────┘
 ```
 
-**¿Por qué es importante?** Los interceptores centralizan comportamiento transversal (autenticación, manejo de errores) que de otro modo tendría que repetirse manualmente en cada llamada HTTP individual de la aplicación, un ejemplo directo del principio DRY.
-
 **Código del ejemplo:**
 
 ```ts
@@ -336,8 +332,6 @@ Los interceptores se registran en `app.config.ts` mediante `provideHttpClient(wi
 Sin un interceptor centralizado de errores, cada componente o servicio que realiza una petición HTTP tendría que repetir su propia lógica de `catchError` para manejar un 401 (redirigir a login) o un 500 (mostrar un mensaje genérico de error), duplicando la misma lógica de manejo decenas de veces a lo largo de la aplicación, y arriesgando inconsistencias si un desarrollador olvida agregar ese manejo en una llamada nueva; centralizarlo en un único interceptor garantiza que el comportamiento sea uniforme y que agregar una nueva regla de manejo de errores (por ejemplo, reintentar automáticamente ante un error 503) solo requiera modificar un único lugar del código.
 
 **Analogía:** registrar interceptores es como definir el orden de las estaciones de control por las que pasa cada paquete en un centro de distribución: el orden importa porque cada estación puede depender de que la anterior ya haya hecho su trabajo (por ejemplo, etiquetar el paquete antes de que la siguiente estación lo escanee).
-
-**¿Por qué es importante?** El orden de registro de interceptores determina el orden real de ejecución; centralizar el manejo de errores en un único interceptor evita duplicar la misma lógica de manejo en cada llamada HTTP individual de la aplicación.
 
 **Diagrama — orden de ejecución declarado vs. real:**
 

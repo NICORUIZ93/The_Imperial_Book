@@ -81,8 +81,6 @@ Esta estructura anidada refleja directamente la jerarquía visual real de la apl
 
 **Analogía:** un layout compartido en rutas anidadas es como un marco de fotos común que envuelve distintas fotos intercambiables: el marco (la navbar) permanece igual, mientras que el contenido específico dentro de él (la vista actual) cambia según la ruta activa.
 
-**¿Por qué es importante?** Anidar rutas bajo un layout compartido centraliza ese layout en un único lugar, evitando duplicarlo manualmente en cada componente de vista individual.
-
 **Código del ejemplo:**
 
 ```jsx

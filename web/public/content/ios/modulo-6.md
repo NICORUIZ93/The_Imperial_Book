@@ -150,8 +150,6 @@ try? context.save()
 
 **Analogía:** `@Query` es como una pantalla de monitoreo que se actualiza sola en tiempo real cada vez que algo cambia en el almacén subyacente, sin que un operador tenga que refrescarla manualmente; `ModelContext` es como el libro de registro oficial a través del cual se asientan todos los movimientos de entrada y salida del almacén.
 
-**¿Por qué es importante?** `@Query` mantiene la vista sincronizada automáticamente con los datos persistidos, sin mecanismos de notificación manual; `ModelContext` centraliza todas las operaciones de escritura y su persistencia explícita al almacenamiento subyacente.
-
 **Diagrama:**
 
 ```

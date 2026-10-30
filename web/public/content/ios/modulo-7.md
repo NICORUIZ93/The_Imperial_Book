@@ -130,8 +130,6 @@ Publishers.CombineLatest($filtro, $orden)
 
 **Analogía:** `debounce` es como esperar a que alguien termine completamente de hablar antes de responder, en vez de interrumpir después de cada palabra individual; `combineLatest` es como un tablero que se actualiza automáticamente cada vez que cualquiera de dos indicadores independientes cambia, mostrando siempre la combinación más reciente de ambos sin importar cuál se actualizó más recientemente.
 
-**¿Por qué es importante?** `debounce` evita disparar acciones costosas en cada cambio individual, esperando un silencio antes de reaccionar; `combineLatest` reacciona a cambios de múltiples fuentes de estado independientes sin coordinación manual explícita.
-
 **Código del ejemplo:**
 
 ```swift

@@ -27,8 +27,6 @@ Esta capacidad de emitir múltiples valores a lo largo del tiempo es precisament
 
 **Analogía:** una Promesa es como pedir un solo paquete que llegará exactamente una vez, en un momento futuro determinado, sin posibilidad de cancelar el envío una vez iniciado; un Observable es como suscribirse a una revista con entregas periódicas continuas a lo largo del tiempo, que puedes cancelar en cualquier momento (desuscribiéndote) para dejar de recibir más entregas futuras.
 
-**¿Por qué es importante?** Entender que los Observables modelan flujos de múltiples valores cancelables (a diferencia de las Promesas, de un único valor no cancelable) explica por qué RxJS sigue siendo necesario en Angular para casos que involucran eventos continuos o cancelación explícita de operaciones en curso.
-
 **Diagrama:**
 
 ```
@@ -178,8 +176,6 @@ Al finalizar podrás confirmar, con `fakeAsync`/`tick` sobre un `Subject` real, 
 └───────────┘      └────────────────┘
 ```
 
-**¿Por qué es importante?** `switchMap` cancela automáticamente la petición anterior cuando el usuario dispara una nueva, resolviendo el problema clásico de condiciones de carrera en buscadores en vivo sin necesidad de gestión manual de cancelación.
-
 **Código del ejemplo:**
 
 ```ts
@@ -318,8 +314,6 @@ El `async` pipe, usado directamente en la plantilla (`{{ observable$ | async }}`
 └────────────────┘ ─────────────────▶└─────────────────┘
 ```
 
-**¿Por qué es importante?** El `async` pipe evita la fuga de memoria clásica de un `subscribe()` sin `unsubscribe()` de forma completamente automática; `takeUntilDestroyed` extiende esa misma automatización a los casos donde una suscripción manual explícita es genuinamente necesaria.
-
 **Código del ejemplo:**
 
 ```html
@@ -440,8 +434,6 @@ Un `Subject` es simultáneamente un Observable y un "emisor" activo: a diferenci
 `shareReplay()` convierte un Observable "frío" (que ejecuta su lógica productora de forma independiente para cada nueva suscripción) en uno "caliente" que comparte una única ejecución subyacente entre múltiples suscriptores, cacheando además un número configurable de emisiones pasadas para entregarlas inmediatamente a cualquier suscriptor nuevo que llegue después, útil para evitar disparar la misma petición HTTP costosa múltiples veces cuando varios componentes distintos se suscriben independientemente al mismo Observable de datos compartido.
 
 **Analogía:** `mergeMap` es como atender simultáneamente a todos los clientes que llegan, sin hacer esperar a ninguno por el otro; `concatMap` es como atender a los clientes estrictamente en el orden de llegada, uno completamente después del anterior; `exhaustMap` es como un empleado que, mientras atiende a un cliente, simplemente ignora a cualquier otro que intente interrumpir hasta terminar con el actual. `shareReplay` es como una única presentación grabada que múltiples espectadores pueden ver, compartiendo la misma grabación en vez de que el presentador tenga que repetir la presentación completa para cada espectador individual.
-
-**¿Por qué es importante?** Elegir el operador de aplanamiento correcto (`switchMap`/`mergeMap`/`concatMap`/`exhaustMap`) según la semántica real deseada ante emisiones superpuestas es una decisión de diseño con consecuencias concretas de comportamiento; `shareReplay` evita ejecuciones redundantes costosas al compartir una única fuente entre múltiples suscriptores.
 
 **Diagrama:**
 

@@ -87,25 +87,52 @@ def trim_topic(topic_text: str) -> tuple[str, bool]:
     return topic_text[:cut].rstrip() + "\n\n" + topic_text[body_end:], True
 
 
+def dedupe_topic(topic_text: str) -> tuple[str, bool]:
+    """Quita la segunda aparición de una sección y su párrafo."""
+    changed = False
+    for marker in ("**¿Por qué es importante?**", "**Analogía:**"):
+        positions = [match.start() for match in re.finditer(re.escape(marker), topic_text)]
+        if len(positions) < 2:
+            continue
+        for position in reversed(positions[1:]):
+            end = len(topic_text)
+            for separator in ("\n**", "\n#### ", "\n### ", "\n## "):
+                found = topic_text.find(separator, position + len(marker))
+                if found >= 0:
+                    end = min(end, found)
+            topic_text = topic_text[:position] + topic_text[end:].lstrip("\n")
+            changed = True
+    return topic_text, changed
+
+
 def fences_balanced(text: str) -> bool:
     return len(re.findall(r"^```", text, re.MULTILINE)) % 2 == 0
 
 
+def topic_slice(topic_text: str) -> str:
+    """Parte del bloque que pertenece al tema, sin las secciones H2 del módulo."""
+    boundary = NEXT_H2.search(topic_text)
+    return topic_text[: boundary.start()] if boundary else topic_text
+
+
 def safe_trim(topic_text: str) -> tuple[str, bool]:
     proposed, changed = trim_topic(topic_text)
+    deduped, dedupe_changed = dedupe_topic(proposed)
+    if dedupe_changed:
+        proposed, changed = deduped, True
     if not changed:
         return topic_text, False
 
-    before_issues = evaluate_topic(topic_text)["issues"]
-    after = evaluate_topic(proposed)
+    before_issues = evaluate_topic(topic_slice(topic_text))["issues"]
+    after = evaluate_topic(topic_slice(proposed))
     if len(after["issues"]) >= len(before_issues):
         return topic_text, False
     if after["words"] < 450 or not fences_balanced(proposed):
         return topic_text, False
     if not all(seven_step(proposed).values()):
         return topic_text, False
-    before_editorial = editorial(topic_text)
-    after_editorial = editorial(proposed)
+    before_editorial = editorial(topic_slice(topic_text))
+    after_editorial = editorial(topic_slice(proposed))
     if any(before_editorial[key] and not after_editorial[key] for key in before_editorial):
         return topic_text, False
     return proposed, True

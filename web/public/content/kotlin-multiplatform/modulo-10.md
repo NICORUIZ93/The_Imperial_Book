@@ -242,8 +242,6 @@ Mantener el número de versión sincronizado entre la app Android y la app iOS, 
 
 **Analogía:** el versionado compartido es como asegurarse de que todas las sucursales de una franquicia sigan exactamente la misma edición del manual de operaciones central, evitando la confusión de que distintas sucursales operen simultáneamente según versiones distintas y potencialmente incompatibles del mismo manual base.
 
-**¿Por qué es importante?** Sincronizar el versionado entre ambas plataformas evita la confusión de no saber con certeza qué versión del módulo compartido corre cada plataforma, simplificando el diagnóstico de bugs reportados por usuarios.
-
 **Casos de uso reales:**
 - Un usuario reporta un bug desde la app iOS 2.3.1; el equipo identifica de inmediato qué versión de `commonMain` corresponde.
 - Coordinar un release simultáneo donde Android e iOS despliegan la misma versión del módulo compartido el mismo día.

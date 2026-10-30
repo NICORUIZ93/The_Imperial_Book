@@ -70,8 +70,6 @@ El compilador de Swift genera automáticamente la conformidad completa a `Codabl
 
 **Analogía:** `Codable` es como un traductor automático certificado que convierte fielmente un documento en un formato genérico (JSON) hacia una estructura tipada específica en el idioma de destino, sin que el receptor tenga que traducir manualmente palabra por palabra cada campo del documento original.
 
-**¿Por qué es importante?** `Codable` elimina gran parte del parsing manual de JSON necesario en versiones anteriores de Objective-C/Swift, generando automáticamente la conformidad completa siempre que todas las propiedades del `struct` también sean `Codable`.
-
 **Código del ejemplo:**
 
 ```swift

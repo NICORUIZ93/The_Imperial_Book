@@ -91,8 +91,6 @@ Siguiendo el principio de organización por feature (el mismo criterio aplicado 
 
 **Analogía:** la estructura del proyecto integrador es como una empresa con departamentos claramente delimitados por función (tareas, autenticación) más una oficina central separada que gestiona únicamente aspectos generales de la instalación (como si las luces de cierta sección están encendidas), sin que esa oficina central se entrometa en la lógica de negocio específica de cada departamento.
 
-**¿Por qué es importante?** Separar features por dominio, y aislar el estado de UI puro en un store dedicado sin mezclarlo con datos de servidor, mantiene el proyecto comprensible y evita las complicaciones de mezclar tipos de estado con ciclos de vida y necesidades completamente distintas.
-
 **Diagrama:**
 
 ```

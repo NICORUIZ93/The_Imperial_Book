@@ -39,8 +39,6 @@ Al estar registrado con `providedIn: 'root'` (Módulo 3), cualquier componente e
 └─────────────────────────────┘
 ```
 
-**¿Por qué es importante?** Un store de signals encapsulado evita que cualquier parte de la aplicación modifique el estado compartido de forma descontrolada, y evita el "prop drilling" de pasar estado manualmente a través de componentes intermedios que no lo necesitan.
-
 **Código del ejemplo:**
 
 ```ts
@@ -180,8 +178,6 @@ Los "selectors" (`createSelector`) son funciones derivadas que calculan valores 
 Este flujo estrictamente unidireccional (acción despachada → reducer puro → nuevo estado → selectors recalculados → vista actualizada) hace que cada cambio de estado en la aplicación quede registrado como una action explícita con nombre descriptivo, habilitando herramientas como Redux DevTools para inspeccionar el historial completo de cambios de estado a lo largo del tiempo, incluyendo la capacidad de viajar en el tiempo (time-travel debugging) para reproducir exactamente la secuencia de acciones que llevó a un estado particular, algo que un store de signals simple no ofrece de forma nativa.
 
 **Analogía:** un reducer de NgRx es como un contable que nunca modifica un libro de cuentas existente directamente, sino que siempre registra una nueva entrada firmada (la action) y produce un balance completamente nuevo a partir de esa entrada, dejando un rastro auditable completo de cada cambio ocurrido a lo largo del tiempo.
-
-**¿Por qué es importante?** El flujo unidireccional estricto de NgRx, con reducers puros y actions explícitas, produce un historial de cambios completamente inspeccionable y reproducible, a costa de más ceremonia de código que un store de signals directo.
 
 **Diagrama — flujo unidireccional de NgRx:**
 
@@ -336,8 +332,6 @@ Esta ceremonia adicional está genuinamente justificada cuando el historial de c
 Para la mayoría de features de tamaño moderado, sin embargo, un store de signals bien diseñado (Tema 1) ofrece prácticamente el mismo beneficio de estado compartido y encapsulado con una fracción de la ceremonia, siendo la recomendación por defecto salvo que exista una razón concreta y específica (no solo "podría ser útil algún día") para asumir el costo adicional de NgRx.
 
 **Analogía:** NgRx es como un sistema de contabilidad corporativo completo con auditoría externa, apropiado para una empresa grande con múltiples departamentos y necesidad de trazabilidad legal; un store de signals es como llevar las cuentas personales en una libreta simple, perfectamente adecuado y mucho menos costoso de mantener cuando la escala y las necesidades de auditoría no lo justifican.
-
-**¿Por qué es importante?** Elegir NgRx por defecto sin una necesidad concreta impone ceremonia innecesaria; elegir un store de signals cuando el historial inspeccionable o la coordinación de equipo grande son genuinamente necesarios deja a la aplicación sin herramientas que resultarán valiosas más adelante.
 
 **Diagrama:**
 

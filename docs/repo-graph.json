@@ -719,7 +719,7 @@
     },
     {
       "path": "docs/lesson-substance-baseline.json",
-      "lines": 2052,
+      "lines": 1757,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -727,7 +727,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10845,
+      "lines": 10639,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -5744,12 +5744,14 @@
     },
     {
       "path": "scripts/clean_legacy_tails.py",
-      "lines": 152,
+      "lines": 179,
       "kind": "automation-script",
       "symbols": [
         "legacy_candidates",
         "trim_topic",
+        "dedupe_topic",
         "fences_balanced",
+        "topic_slice",
         "safe_trim",
         "clean_file",
         "main"
@@ -6484,7 +6486,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-0.md",
-      "lines": 654,
+      "lines": 646,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6505,7 +6507,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-1.md",
-      "lines": 1028,
+      "lines": 1018,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6526,7 +6528,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-10.md",
-      "lines": 648,
+      "lines": 642,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6589,7 +6591,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-13.md",
-      "lines": 485,
+      "lines": 479,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6673,7 +6675,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-2.md",
-      "lines": 768,
+      "lines": 760,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6694,7 +6696,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-3.md",
-      "lines": 569,
+      "lines": 561,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6715,7 +6717,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-4.md",
-      "lines": 692,
+      "lines": 684,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6736,7 +6738,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-5.md",
-      "lines": 608,
+      "lines": 600,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6757,7 +6759,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-6.md",
-      "lines": 570,
+      "lines": 562,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6778,7 +6780,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-7.md",
-      "lines": 480,
+      "lines": 474,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6799,7 +6801,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-8.md",
-      "lines": 420,
+      "lines": 414,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6820,7 +6822,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-9.md",
-      "lines": 447,
+      "lines": 441,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8079,7 +8081,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-12.md",
-      "lines": 290,
+      "lines": 288,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8205,7 +8207,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-4.md",
-      "lines": 706,
+      "lines": 704,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8268,7 +8270,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-7.md",
-      "lines": 461,
+      "lines": 457,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8352,7 +8354,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-1.md",
-      "lines": 650,
+      "lines": 648,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8520,7 +8522,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-3.md",
-      "lines": 714,
+      "lines": 710,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8625,7 +8627,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-8.md",
-      "lines": 545,
+      "lines": 543,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8646,7 +8648,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-9.md",
-      "lines": 454,
+      "lines": 450,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8709,7 +8711,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-10.md",
-      "lines": 407,
+      "lines": 403,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8814,7 +8816,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 330,
+      "lines": 326,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8835,7 +8837,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-3.md",
-      "lines": 254,
+      "lines": 250,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8856,7 +8858,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 344,
+      "lines": 340,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8877,7 +8879,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-5.md",
-      "lines": 279,
+      "lines": 277,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8898,7 +8900,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-6.md",
-      "lines": 263,
+      "lines": 261,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8919,7 +8921,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-7.md",
-      "lines": 237,
+      "lines": 235,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8940,7 +8942,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-8.md",
-      "lines": 269,
+      "lines": 267,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9066,7 +9068,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 435,
+      "lines": 431,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9444,7 +9446,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-1.md",
-      "lines": 584,
+      "lines": 576,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9570,7 +9572,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-2.md",
-      "lines": 559,
+      "lines": 547,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9591,7 +9593,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-3.md",
-      "lines": 535,
+      "lines": 527,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9612,7 +9614,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-4.md",
-      "lines": 426,
+      "lines": 416,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9633,7 +9635,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-5.md",
-      "lines": 472,
+      "lines": 462,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9654,7 +9656,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-6.md",
-      "lines": 597,
+      "lines": 589,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9780,7 +9782,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 285,
+      "lines": 283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10347,7 +10349,7 @@
     },
     {
       "path": "web/public/content/react/modulo-0.md",
-      "lines": 467,
+      "lines": 465,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10368,7 +10370,7 @@
     },
     {
       "path": "web/public/content/react/modulo-1.md",
-      "lines": 412,
+      "lines": 410,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10410,7 +10412,7 @@
     },
     {
       "path": "web/public/content/react/modulo-11.md",
-      "lines": 309,
+      "lines": 307,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10431,7 +10433,7 @@
     },
     {
       "path": "web/public/content/react/modulo-12.md",
-      "lines": 291,
+      "lines": 289,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10452,7 +10454,7 @@
     },
     {
       "path": "web/public/content/react/modulo-13.md",
-      "lines": 484,
+      "lines": 478,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10515,7 +10517,7 @@
     },
     {
       "path": "web/public/content/react/modulo-3.md",
-      "lines": 265,
+      "lines": 261,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10557,7 +10559,7 @@
     },
     {
       "path": "web/public/content/react/modulo-5.md",
-      "lines": 285,
+      "lines": 283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10578,7 +10580,7 @@
     },
     {
       "path": "web/public/content/react/modulo-6.md",
-      "lines": 360,
+      "lines": 358,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10620,7 +10622,7 @@
     },
     {
       "path": "web/public/content/react/modulo-8.md",
-      "lines": 270,
+      "lines": 268,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10641,7 +10643,7 @@
     },
     {
       "path": "web/public/content/react/modulo-9.md",
-      "lines": 408,
+      "lines": 406,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10662,7 +10664,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-0.md",
-      "lines": 359,
+      "lines": 321,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

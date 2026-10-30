@@ -12,8 +12,8 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
 | Síntoma | Dato |
 |---|---|
 | Uniformidad artificial | 1098/1098 temas con bloque `bash`, «resultado esperado» y URL; 97,8% con «fallo deliberado» |
-| Repetición interna | 353 temas con una sección editorial duplicada; 362 repiten «¿Por qué es importante?» |
-| Cola editorial | 386 temas con más de 500 palabras después del cierre |
+| Repetición interna | 240 temas con una sección editorial duplicada; 362 repiten «¿Por qué es importante?» |
+| Cola editorial | 382 temas con más de 500 palabras después del cierre |
 | Apéndices heredados | 184/245 módulos con «Errores comunes y soluciones», ruta de proyecto o laboratorio pegados al final |
 | Profundidad plana | «Experto»: 972 palabras/tema; «Fundamentos»: 1.029 |
 | Sin evaluación | 33 ejercicios verificables en 1.098 temas; `completedExercises` no se escribe desde la interfaz |
@@ -49,9 +49,9 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
   validación entre CI y una máquina local).
 - [x] Artefactos `.class` fuera de Git y `build/` ignorado.
 - [x] Documento de continuación actualizado a los números reales.
-- [x] Primer lote de limpieza con guarda: 13 temas recortados sin perder
-  criterios ni romper fences (`scripts/clean_legacy_tails.py`).
-- [ ] Resto de apéndices y secciones duplicadas (**586 temas**): requiere
+- [x] Limpieza con guarda: 132 recortes en dos pasadas sin perder criterios
+  ni romper fences (`scripts/clean_legacy_tails.py`).
+- [ ] Resto de apéndices y secciones duplicadas (**497 temas**): requiere
   revisión editorial, no un script ciego.
 - [ ] Unificar `cloud` en `tracks/cloud.track.ts`.
 - [ ] Sustituir «Experto» por los cuatro niveles operativos y retirar la
@@ -138,7 +138,7 @@ El PDF es una recopilación de publicaciones técnicas. Sus temas se mapearon as
 
 ## Estado y riesgo
 
-La deuda histórica (586 temas con defectos) no se elimina en una sesión. El plan
+La deuda histórica (497 temas con defectos) no se elimina en una sesión. El plan
 la convierte en una deuda **medida y decreciente** en lugar de una promesa
 implícita de calidad. Reescribir 1.098 temas a mano requiere 2.000–4.000 horas:
 por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
@@ -152,7 +152,7 @@ por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 | Pruebas unitarias Angular | 17 correctas (incluye evidencia por tema) |
 | Metodología de siete pasos | 1098/1098 completos |
 | Criterios editoriales | 1092/1098 practicables; deuda de 6 |
-| Sustancia | 586 temas con defectos históricos registrados; 13 recortados; **0 defectos nuevos** |
+| Sustancia | 497 temas con defectos históricos; 102 menos que al inicio; **0 defectos nuevos** |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
 Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,
@@ -162,7 +162,7 @@ validadores Node de C4 y ADR se probaron con el resultado documentado.
 
 ### Lo que sigue pendiente
 
-1. Los 586 temas con repetición o cola heredada: se reducen por tandas y el
+1. Los 497 temas con repetición o cola heredada: se reducen por tandas y el
    baseline solo puede bajar.
 2. La ruta piloto completa (Fundamentos + Java) con checkpoints por módulo.
 3. `cloud` fuera de `course-data.ts` y una sola fuente de verdad por track.

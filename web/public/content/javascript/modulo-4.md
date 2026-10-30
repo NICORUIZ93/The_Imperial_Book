@@ -29,8 +29,6 @@ Dominar cuándo usar cada uno de estos métodos frente a un bucle `for` tradicio
 
 **Analogía:** `map` es como una línea de producción que transforma cada pieza que pasa por ella según una regla fija, produciendo una pieza nueva por cada una que entra; `filter` es un control de calidad que descarta las piezas que no cumplen un estándar; `reduce` es una prensa que combina todas las piezas que sobrevivieron en un único producto final consolidado.
 
-**¿Por qué es importante?** Estos métodos son el vocabulario básico y omnipresente de cualquier código JavaScript moderno que manipule colecciones de datos, y son la base directa de operadores equivalentes en RxJS (Angular) y de patrones de transformación de estado en React.
-
 **Diagrama:**
 
 ```mermaid
@@ -115,8 +113,6 @@ console.log(enRuta.isDisjointFrom(new Set(['RF-999']))); // true
 
 **Analogía:** un objeto plano es como un formulario impreso con campos fijos predefinidos (nombre, edad, dirección); un `Map` es como una libreta en blanco donde puedes escribir cualquier tipo de etiqueta en cualquier página sin restricción previa de formato; un `Set` es como una lista de invitados que automáticamente rechaza cualquier nombre que ya esté escrito, garantizando que nadie aparezca dos veces.
 
-**¿Por qué es importante?** Elegir la estructura de datos correcta según el problema (en vez de usar siempre un array u objeto plano por defecto) produce código más claro, más eficiente y con menos casos límite inesperados relacionados con duplicados o colisiones de claves.
-
 **Diagrama:**
 
 ```mermaid
@@ -193,8 +189,6 @@ La normalización de datos es una técnica relacionada: en vez de anidar profund
 
 **Analogía:** actualizar sin mutar es como fotocopiar un documento completo, corregir solo la línea necesaria en la fotocopia, y conservar el original intacto en el archivo; mutar directamente sería como escribir la corrección directamente sobre el documento original con tinta, perdiendo para siempre la posibilidad de comparar la versión anterior con la nueva.
 
-**¿Por qué es importante?** La inmutabilidad facilita la detección eficiente de cambios (comparación por referencia), simplifica la depuración (el estado anterior sigue disponible para comparar), y es un requisito de diseño fundamental en frameworks reactivos modernos como React.
-
 **Diagrama:**
 
 ```mermaid
@@ -268,8 +262,6 @@ En la práctica cotidiana, `WeakMap` y `WeakSet` son herramientas de uso relativ
 
 **Analogía:** un `Map` normal es como una lista de invitados a un evento que, una vez escrita, obliga a mantener reservado el lugar de cada invitado indefinidamente aunque cancelen su asistencia; un `WeakMap` es como una lista que automáticamente borra el nombre de un invitado en cuanto esa persona deja de existir en cualquier otro registro del sistema, liberando su lugar sin intervención manual.
 
-**¿Por qué es importante?** `WeakMap`/`WeakSet` resuelven un problema específico y real de gestión de memoria (asociar datos a objetos sin impedir su liberación), relevante especialmente al construir bibliotecas o herramientas que manejan un volumen grande de objetos de vida corta.
-
 **Diagrama:**
 
 ```mermaid
@@ -342,8 +334,6 @@ La introducción de estos métodos refleja una tendencia deliberada en la evoluc
 Adoptar estos métodos modernos en código nuevo, cuando el entorno de ejecución los soporta (verificar la compatibilidad del entorno objetivo, especialmente si se necesita soportar navegadores más antiguos), simplifica el razonamiento sobre inmutabilidad: si el objetivo es no mutar nunca los arrays originales, usar consistentemente los métodos con prefijo `to` (o `with`) elimina el riesgo de invocar accidentalmente su contraparte mutante y producir un bug sutil de estado compartido inesperado.
 
 **Analogía:** los métodos mutables tradicionales son como escribir directamente sobre un documento original con un bolígrafo permanente; los nuevos métodos inmutables son como usar siempre una fotocopiadora que produce automáticamente una copia nueva con el cambio aplicado, dejando el documento original archivado sin ninguna marca.
-
-**¿Por qué es importante?** Estos métodos modernos reducen una fuente histórica de bugs (confundir métodos mutables e inmutables) proporcionando una alternativa inmutable explícita y nombrada de forma consistente para cada operación común de array.
 
 **Diagrama:**
 

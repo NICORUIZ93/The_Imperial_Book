@@ -29,8 +29,6 @@ Reescribir una cadena de `.then().then().catch()` como una función `async` con 
 
 **Analogía:** `async`/`await` es como leer una receta de cocina escrita en pasos secuenciales normales ("hierve el agua, luego añade la pasta, luego escurre"), en vez de la misma receta escrita como una cadena de instrucciones condicionales anidadas ("cuando el agua hierva, entonces añade la pasta, y cuando la pasta esté lista, entonces escurre"); el resultado final es idéntico, pero la primera forma se sigue con mucha menos carga cognitiva.
 
-**¿Por qué es importante?** `async`/`await` es la forma dominante y recomendada de escribir código asíncrono en JavaScript moderno, y entender que es sintaxis sobre Promesas (no un mecanismo distinto) evita confusiones sobre cómo interactúa con el Event Loop y con los combinadores de Promesas del Módulo 5.
-
 **Diagrama:**
 
 ```mermaid
@@ -136,8 +134,6 @@ function normalizarRechazo(valor) {
 
 **Analogía:** `try/catch` alrededor de un `await` es como tener una red de seguridad instalada exactamente debajo de un tramo específico y conocido de un trapecio: si el artista (la operación asíncrona) cae en ese tramo exacto, la red lo atrapa ahí mismo; si no se instala ninguna red en ese tramo, la caída continúa hacia abajo (se propaga) hasta encontrar, si existe, una red instalada en un nivel inferior (un `try/catch` en una función que invocó a esta).
 
-**¿Por qué es importante?** Manejar explícitamente los errores en cada punto de `await` que pueda fallar de forma esperada es la diferencia entre una aplicación que degrada de forma controlada ante fallos de red (mostrando un mensaje útil al usuario) y una que simplemente se rompe silenciosamente o produce errores no manejados en la consola.
-
 **Código del ejemplo:**
 
 #### Paso 4 · Demostración guiada desde cero
@@ -218,8 +214,6 @@ Combinar `AbortController` con `debounce` (visto en el Módulo 1) es un patrón 
 
 **Analogía:** `fetch` sin `AbortController` es como enviar una carta por correo sin ninguna forma de interceptarla una vez enviada, incluso si te das cuenta después de que ya no la necesitas; `AbortController` es como tener la capacidad de llamar a la oficina de correos y cancelar el envío mientras la carta aún está en tránsito, antes de que llegue a su destino.
 
-**¿Por qué es importante?** La cancelación explícita de peticiones evita condiciones de carrera donde una respuesta desactualizada sobrescribe una más reciente, un bug sutil y frecuente en interfaces de búsqueda o de filtrado dinámico sin esta protección.
-
 **Código del ejemplo:**
 
 #### Paso 4 · Demostración guiada desde cero
@@ -296,8 +290,6 @@ Combinar reintentos con timeout requiere cuidado en el orden de composición: no
 Estas dos técnicas —reintentos con backoff y timeout manual— son extremadamente comunes en clientes de API de producción, y su ausencia es una causa frecuente de aplicaciones frágiles que fallan completamente ante cualquier interrupción transitoria de red, en vez de recuperarse automáticamente de forma silenciosa para el usuario final.
 
 **Analogía:** el backoff en reintentos es como llamar por teléfono a alguien que no contesta: en vez de volver a marcar inmediatamente una y otra vez sin pausa (lo cual sería inútil e insistente), esperas un poco más cada vez antes de volver a intentar, dando tiempo a que la situación que impidió la respuesta se resuelva por sí sola. Un timeout manual es como decidir de antemano que, si nadie contesta después de cierto número de tonos, cuelgas y consideras la llamada fallida, en vez de esperar indefinidamente sin límite.
-
-**¿Por qué es importante?** Reintentos con backoff y timeouts manuales son prácticas de robustez estándar en cualquier cliente de API de producción seria, protegiendo a la aplicación de fallos transitorios de red sin requerir intervención manual del usuario.
 
 **Código del ejemplo:**
 

@@ -78,8 +78,6 @@ Optimizar código sin esta información concreta es, en la inmensa mayoría de l
 
 **Analogía:** optimizar sin el Profiler es como intentar reparar un motor de auto basándose únicamente en la intuición de qué pieza "suena mal", en vez de conectar un diagnóstico real que muestre exactamente qué componente específico está fallando y por qué.
 
-**¿Por qué es importante?** El Profiler proporciona evidencia concreta de qué componentes se re-renderizan innecesariamente y por qué, evitando esfuerzo de optimización desperdiciado en suposiciones incorrectas sobre dónde está el problema real.
-
 **Diagrama:**
 
 ```

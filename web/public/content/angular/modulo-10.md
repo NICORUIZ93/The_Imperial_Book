@@ -38,8 +38,6 @@ Al finalizar podrás confirmar, con `TestBed` real, que `fixture.componentRef.se
                                                   └──────────────────┘
 ```
 
-**¿Por qué es importante?** `setInput` respeta el mecanismo real de propagación de inputs signal que Angular usa en producción, haciendo que la prueba verifique el comportamiento genuino del componente en vez de un atajo que podría no reflejar el comportamiento real.
-
 **Código del ejemplo:**
 
 ```ts
@@ -182,8 +180,6 @@ Este enfoque produce pruebas que sobreviven refactors internos de implementació
 └───────────────────────────┘                                └────────┘
 ```
 
-**¿Por qué es importante?** Consultar el DOM como lo haría un usuario real (por texto, por rol) hace que las pruebas sobrevivan a refactors internos de implementación que no cambian el comportamiento observable de la aplicación.
-
 **Código del ejemplo:**
 
 ```ts
@@ -313,8 +309,6 @@ Al finalizar podrás confirmar, con `HttpTestingController` real, tanto una resp
 Históricamente, las pruebas de Angular se ejecutaban con Karma (un ejecutor de pruebas que abre un navegador real, típicamente Chrome, para ejecutar las pruebas dentro de él) combinado con Jasmine como framework de aserciones; el nuevo builder de pruebas de Angular (`@angular/build:unit-test`) reemplaza esta combinación usando Vitest por debajo, un ejecutor de pruebas considerablemente más rápido para arrancar y para el modo watch de desarrollo (re-ejecutar automáticamente solo las pruebas afectadas por un cambio de archivo), dado que Vitest puede ejecutar pruebas en un entorno simulado de DOM sin necesidad de abrir un navegador real completo para cada ejecución, aunque sigue siendo posible ejecutar contra un navegador real cuando es necesario verificar comportamiento específico de un motor de renderizado particular.
 
 **Analogía:** `HttpTestingController` es como un actor que se hace pasar por el servidor real durante un ensayo teatral, respondiendo exactamente las líneas que el guion de la prueba requiere, sin necesidad de que el servidor real (y todos sus datos reales impredecibles) esté presente en el ensayo; migrar de Karma a Vitest es como reemplazar un ensayo que requiere montar el escenario físico completo cada vez por uno que puede simularse rápidamente en una sala más simple, llegando al mismo resultado con mucha menor fricción de configuración.
-
-**¿Por qué es importante?** `HttpTestingController` aísla completamente las pruebas de un backend real, haciendo que sean deterministas y ejecutables sin red; el builder basado en Vitest reduce significativamente el tiempo de arranque y de iteración durante el desarrollo con pruebas.
 
 **Diagrama — dos escenarios simulados con la misma peticion:**
 

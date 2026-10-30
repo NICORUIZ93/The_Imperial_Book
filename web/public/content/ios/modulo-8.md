@@ -71,8 +71,6 @@ Una vista que mezcla fetching de red, decisiones sobre errores y formateo de dat
 
 **Analogía:** una vista que hace fetching, decide sobre errores y formatea datos es como un mostrador de atención al público que además fija la política de reembolsos y audita el inventario: funciona si el local es pequeño, pero se vuelve insostenible cuando el negocio crece; separar esas responsabilidades entre el mostrador (vista) y la oficina que define la política (ViewModel) es lo que MVVM logra.
 
-**¿Por qué es importante?** Separar la lógica de negocio de la vista resuelve el problema concreto de testeabilidad (no podés probar `cargar()` sin un ViewModel aislado) y de acoplamiento accidental (un ViewModel que no importa SwiftUI no puede filtrarse UIKit por error, como mostró el Paso 5).
-
 **Código del ejemplo:**
 
 ```swift

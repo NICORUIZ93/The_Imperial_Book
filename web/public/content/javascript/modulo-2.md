@@ -29,8 +29,6 @@ Es importante notar que cada invocación de `createCounter()` crea un entorno co
 
 **Analogía:** un closure es como un investigador que, tras terminar formalmente un proyecto de investigación en un laboratorio, se lleva consigo un cuaderno de notas privado con los datos exactos de ese proyecto; aunque el laboratorio (la ejecución de la función contenedora) ya cerró, el investigador (la función devuelta) sigue teniendo acceso completo a esas notas específicas, sin que nadie más externo pueda leerlas directamente.
 
-**¿Por qué es importante?** Los closures son el mecanismo fundamental detrás de patrones extremadamente comunes en JavaScript: variables privadas, factory functions, memoización (Módulo 10), y el propio modelo de Hooks de React, que depende internamente de closures para mantener el estado entre renderizados.
-
 **Diagrama:**
 
 ```mermaid
@@ -115,8 +113,6 @@ Comprender el hoisting con precisión evita errores de razonamiento comunes, com
 
 **Analogía:** el hoisting de `var` es como reservar una mesa en un restaurante con antelación, donde la mesa existe (está reservada) pero la comida ("el valor real") aún no ha llegado y se sirve automáticamente un plato vacío (`undefined`) si preguntas antes de tiempo; la TDZ de `let`/`const` es como una mesa que existe en el plano del restaurante pero está físicamente bloqueada con una cinta hasta el momento exacto de la reserva, y cualquiera que intente sentarse antes recibe una alarma inmediata (`ReferenceError`) en vez de servírsele algo vacío silenciosamente.
 
-**¿Por qué es importante?** Entender la TDZ con precisión es la base para depurar correctamente errores de "variable no accesible" en código moderno con `let`/`const`, distinguiéndolos de errores genuinos de variable jamás declarada.
-
 **Diagrama:**
 
 ```mermaid
@@ -198,8 +194,6 @@ Leer un stack trace (la traza que JavaScript imprime automáticamente al lanzar 
 El call stack también explica por qué JavaScript es fundamentalmente síncrono en su ejecución de código normal (no asíncrono): mientras el call stack no esté vacío, el motor no puede procesar ninguna otra tarea pendiente, incluyendo callbacks de temporizadores o promesas resueltas (el mecanismo completo del Event Loop, que coordina el call stack con las colas de tareas asíncronas, se estudiará en profundidad en el Módulo 5).
 
 **Analogía:** el call stack es como una pila de bandejas en una cafetería de autoservicio: cada vez que alguien coge una tarea nueva (invoca una función), se apila una bandeja nueva encima; cuando termina esa tarea (la función retorna), se retira la bandeja superior y se vuelve a la que estaba debajo. Una recursión sin caso base es como seguir apilando bandejas sin nunca retirar ninguna, hasta que la pila colapsa por su propio peso (stack overflow).
-
-**¿Por qué es importante?** Entender el call stack es indispensable para depurar recursiones descontroladas, para leer cualquier stack trace de error con criterio, y como base conceptual necesaria antes de abordar el Event Loop en el Módulo 5.
 
 **Diagrama:**
 
@@ -288,8 +282,6 @@ Comprender profundamente esta mecánica de `this` es esencial antes de trabajar 
 
 **Analogía:** `this` es como un pronombre que se refiere a "quien está hablando en este momento", y depende de quién pronuncia la frase, no de dónde se escribió el guion originalmente; `bind` es como grabar esa frase en un audio permanente donde el hablante queda fijado para siempre, sin importar quién reproduzca después la grabación.
 
-**¿Por qué es importante?** El comportamiento dinámico de `this` es una de las características más distintivas (y más propensas a confusión) de JavaScript frente a otros lenguajes orientados a objetos, y dominarlo es un prerequisito indispensable para trabajar con clases, event listeners, y frameworks que dependen de callbacks de métodos.
-
 **Diagrama:**
 
 ```mermaid
@@ -373,8 +365,6 @@ La elección entre factory functions (basadas en closures) y clases (basadas en 
 En la práctica, es común encontrar ambos enfoques conviviendo dentro de una misma base de código: clases para modelar jerarquías de objetos con herencia explícita y bien definida, y factory functions para módulos de utilidad con estado simple donde la encapsulación por closure resulta más directa y con menos superficie de error potencial que gestionar manualmente el valor de `this`.
 
 **Analogía:** una factory function es como una línea de producción que entrega, en cada pedido, un producto completamente nuevo y ensamblado según una especificación fija, con todas sus piezas internas ya montadas y ocultas dentro de una carcasa sellada (el closure), sin que el comprador final necesite entender ni pueda acceder directamente a los mecanismos internos.
-
-**¿Por qué es importante?** Las factory functions son una alternativa legítima y ampliamente usada a las clases para encapsular estado y comportamiento, y entender ambos enfoques (closures frente a prototipos/clases) da flexibilidad real para elegir la herramienta más apropiada según el contexto específico de cada problema.
 
 **Diagrama:**
 
@@ -467,8 +457,6 @@ Es importante distinguir la Scope Chain (determinada estáticamente por dónde e
 Aunque estos términos —Execution Context, Lexical Environment, Scope Chain— rara vez se usan explícitamente en el código cotidiano, entenderlos conceptualmente proporciona un modelo mental preciso y verificable de por qué el scope léxico y los closures funcionan exactamente como funcionan, en vez de simplemente memorizar el comportamiento observado sin entender su causa subyacente en el diseño del motor.
 
 **Analogía:** el Lexical Environment de cada función es como una libreta de contactos personal que, además de sus propios contactos, incluye una referencia a la libreta de contactos de la persona que la "presentó" originalmente en la organización; si buscas un contacto que no está en tu libreta, consultas automáticamente la libreta de quien te presentó, y así sucesivamente hacia arriba en la jerarquía, hasta llegar a la libreta general de toda la organización (el scope global).
-
-**¿Por qué es importante?** Este modelo formal (aunque interno y rara vez visible directamente) es lo que sustenta y explica con precisión todo el comportamiento de scope y closures estudiado en este módulo, dando una base conceptual sólida en vez de reglas memorizadas sin justificación subyacente.
 
 **Diagrama:**
 

@@ -29,8 +29,6 @@ Elegir entre las tres formas no es arbitrario: usar function declarations para f
 
 **Analogía:** una function declaration es como un empleado permanente ya contratado y en nómina desde el primer día de la empresa (disponible desde el inicio, sin importar en qué línea del organigrama aparezca escrito); una function expression es como un contratista que empieza a trabajar exactamente el día en que se firma su contrato (disponible solo a partir de esa línea); una arrow function es como un empleado que, sin importar a qué departamento lo transfieran, sigue reportando siempre al mismo jefe original con quien fue contratado (el `this` léxico no cambia según dónde se invoque).
 
-**¿Por qué es importante?** Confundir estas tres formas —especialmente asumir que una arrow function se comporta como un método normal respecto a `this`— es una de las fuentes más comunes de bugs sutiles para quien aprende JavaScript, particularmente al escribir métodos de clase o callbacks dentro de objetos.
-
 **Diagrama:**
 
 ```mermaid
@@ -115,8 +113,6 @@ Es importante no confundir rest y spread simplemente porque comparten la misma s
 Combinar parámetros por defecto con rest en la misma función es perfectamente válido y frecuente: `function log(nivel = "info", ...mensajes)` permite invocar tanto `log()` como `log("error", "algo falló", "detalle adicional")` con un comportamiento predecible en ambos casos, siempre que el parámetro rest se coloque, como exige la sintaxis del lenguaje, al final de la lista de parámetros.
 
 **Analogía:** un parámetro por defecto es como un formulario que ya viene con un valor precompletado en un campo opcional, que el usuario puede sobreescribir si lo desea; rest es como una caja de recolección que junta todo lo que sobra de una lista variable de artículos en un solo paquete; spread es la acción inversa, sacar todos los artículos de un paquete existente y esparcirlos individualmente sobre la mesa.
-
-**¿Por qué es importante?** Rest y spread eliminan la necesidad de patrones antiguos verbosos para manejar número variable de argumentos o para combinar/clonar estructuras de datos, y son omnipresentes en JavaScript moderno, incluyendo dentro de frameworks como React (props spread) y Node.js.
 
 **Diagrama:**
 
@@ -204,8 +200,6 @@ Una función de orden superior es, por definición, cualquier función que recib
 El valor real de las funciones de orden superior no está en su elegancia sintáctica, sino en que permiten eliminar duplicación de código extrayendo un patrón de comportamiento común (como "esperar antes de ejecutar" en `debounce`, o "encadenar transformaciones" en `pipe`) en una única función reutilizable, parametrizada exactamente en los puntos donde varía cada caso de uso específico (qué función ejecutar, cuánto esperar, qué funciones encadenar).
 
 **Analogía:** una función de orden superior es como una máquina que fabrica otras máquinas personalizadas: le entregas una especificación (la función `fn`) y algunos parámetros (como `ms`), y te devuelve una máquina nueva y lista para usar, con ese comportamiento específico ya incorporado, sin que tengas que construir esa máquina desde cero cada vez.
-
-**¿Por qué es importante?** Las funciones de orden superior son la base de patrones extremadamente comunes en JavaScript moderno —`debounce`, `throttle`, `memoize`, `pipe`, `curry`— y entenderlas profundamente en este módulo facilita enormemente entender más adelante los Hooks de React o los operadores de RxJS en Angular, que son, en esencia, la misma idea aplicada a contextos más específicos.
 
 **Diagrama:**
 
@@ -384,8 +378,6 @@ El objeto `arguments` es una estructura similar a un array (pero no un array rea
 En JavaScript moderno, el operador rest (Tema 2) ha reemplazado prácticamente por completo la necesidad de usar `arguments` directamente: `function f(...args)` produce un array real desde el inicio, con todos los métodos de array disponibles de inmediato, sin necesidad de conversión adicional, y además funciona de forma consistente incluso dentro de arrow functions (donde `arguments` simplemente no existe, heredándose en su lugar del scope contenedor si lo hay). Por esta razón, el código nuevo debería preferir siempre rest sobre `arguments`, reservando el conocimiento de este último principalmente para entender y mantener código legado existente.
 
 **Analogía:** una IIFE es como una habitación temporal montada y desmontada en el mismo instante para una reunión privada de un solo uso, sin dejar rastro visible en el resto del edificio; `arguments` es como una bolsa genérica que automáticamente recoge todo lo que alguien te entrega en la puerta, sin etiquetar ni organizar nada, mientras que rest es una caja etiquetada y organizada específicamente para ese propósito desde el diseño mismo de la función.
-
-**¿Por qué es importante?** Aunque las IIFE y `arguments` son menos centrales en JavaScript moderno que hace una década, reconocerlas es esencial para leer y mantener código legado, que sigue siendo extremadamente común en proyectos de larga vida en la industria.
 
 **Diagrama:**
 

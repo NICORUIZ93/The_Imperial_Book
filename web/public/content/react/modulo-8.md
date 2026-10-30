@@ -138,8 +138,6 @@ MSW intercepta peticiones HTTP a nivel de red (registrando un service worker o, 
 
 **Analogía:** MSW es como un servidor de pruebas que se hace pasar de forma completamente transparente por el servidor real en una red aislada, de modo que el código bajo prueba nunca se entera de que está hablando con un impostor, en vez de reemplazar directamente la línea telefónica del código bajo prueba con un cable falso que requiere modificar el propio código para usarlo.
 
-**¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo que el código de producción se pruebe exactamente como se ejecutaría en producción real, sin necesidad de modificarlo ni de mockear directamente `fetch` de forma frágil.
-
 **Código del ejemplo:**
 
 ```js

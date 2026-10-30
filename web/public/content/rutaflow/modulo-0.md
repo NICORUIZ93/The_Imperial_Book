@@ -49,27 +49,11 @@ Al finalizar podrás construir y verificar **Tema 1: El proceso logístico como 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** `RF-4471` puede pasar por `admitido → clasificado → asignado → en_tránsito → entregado`, o desviarse a `intentado` si el conductor no encuentra al destinatario. Si el estado "entregado" no es realmente terminal en el código (solo en la documentación), un reintento de red o un webhook duplicado puede regresar silenciosamente un envío ya entregado a "en_tránsito", corrompiendo la trazabilidad que tesorería usa para facturar y que soporte usa para responder reclamos.
-
 **Caso real:** dos eventos de un mismo proveedor de GPS llegan fuera de orden por una reconexión de red; si el sistema aplica el segundo evento sin validar la transición, el estado queda inconsistente con la historia real del envío.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
 Un envío no es solo un registro mutable con un campo `estado`: es una secuencia de **eventos** (hechos ya ocurridos, inmutables) de la cual el estado actual es una proyección. Modelar las transiciones válidas explícitamente (una tabla o función que dice qué estados siguen a cuáles) convierte una invariante de negocio ("un envío entregado es terminal") en código que falla de forma ruidosa ante una transición ilegal, en vez de una regla que solo vive en un documento y que cualquier pantalla nueva puede violar sin darse cuenta.
-
-**Analogía:** es como un semáforo con una secuencia fija de colores: no existe un botón que lleve de "rojo" directo a "verde intermedio" ya usado; cada estado solo permite avanzar a los siguientes estados válidos de la secuencia, nunca retroceder a uno ya cerrado.
-
-```mermaid
-flowchart LR
-  A[admitido] --> B[clasificado]
-  B --> C[asignado]
-  C --> D[en_transito]
-  D --> E[intentado]
-  D --> F[entregado]
-  E --> D
-  E --> F
-  F -.->|transición inválida, rechazada| D
-```
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -172,22 +156,11 @@ Al finalizar podrás construir y verificar **Tema 2: Entorno reproducible en Win
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Un script que conecta a PostgreSQL funciona perfecto cuando lo corrés directo en tu terminal, pero falla con un error de resolución de nombre apenas lo movés a correr dentro de otro contenedor Docker — "funciona en mi máquina" casi siempre es, en el fondo, una confusión entre la red del host y la red interna que Docker Compose crea entre sus propios contenedores.
-
 **Caso real:** el equipo agrega un segundo servicio (por ejemplo, un worker) al `docker-compose.yml` y copia la misma `DATABASE_URL` que usaba el script de la terminal, con `localhost` como host; el worker no puede conectar, porque `localhost` dentro de un contenedor se refiere al contenedor mismo, no al contenedor de la base de datos ni al host.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
 Docker Compose crea una red interna donde cada servicio es accesible por su **nombre de servicio** (el que aparece como clave en `docker-compose.yml`) desde los OTROS contenedores de esa misma red — nunca por `localhost`, que dentro de un contenedor siempre apunta al contenedor mismo. Desde tu terminal (el host), en cambio, un puerto publicado con `ports:` sí es alcanzable por `localhost`, porque el host no es parte de esa red interna. Son dos redes distintas con reglas de resolución de nombres distintas, y confundirlas produce el clásico "funciona en mi máquina, no en el contenedor" (o viceversa).
-
-**Analogía:** es como el conmutador interno de una oficina frente a la línea externa: marcar la extensión "203" solo funciona entre teléfonos internos conectados al mismo conmutador; alguien llamando desde afuera necesita el número público completo, y confundir ambos solo produce un tono de error, no una llamada equivocada.
-
-```mermaid
-flowchart LR
-  H["Tu terminal (host)"] -->|localhost:5432 publicado| DB[(Contenedor db)]
-  W["Contenedor worker"] -->|nombre de servicio: db:5432| DB
-  W -.->|localhost dentro del contenedor = el worker mismo, NO db| X[Falla de conexión]
-```
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -278,22 +251,11 @@ Al finalizar podrás construir y verificar **Tema 3: Arquitectura, privacidad y 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Cada envío en RutaFlow carga teléfono y dirección completa del destinatario — datos personales reales. Un `console.log` de depuración que alguien olvida en producción, apuntando a un envío completo sin redactar, puede terminar escribiendo esos datos en un sistema de logs centralizado con retención de meses y acceso mucho más amplio que la base de datos original.
-
 **Caso real:** durante la implementación del Tema 1, alguien agrega un log temporal para depurar una transición de estado y lo deja en el código: ahora cada evento de cada envío imprime el teléfono y la dirección completa del destinatario en texto plano en los logs del servicio.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
 STRIDE (un modelo de amenazas de Microsoft) nombra seis categorías de riesgo; la que aplica directamente a este caso es la **E** (Exposición de información): un dato sensible llega a un lugar con más acceso del que su clasificación permite. La defensa no es "tener cuidado" — es una función de redacción que se aplica SIEMPRE antes de loguear, de forma que un desarrollador nuevo no pueda loguear PII sin querer, porque el camino fácil (llamar a la función de log del equipo) ya redacta por defecto.
-
-**Analogía:** es como un sobre con ventanilla: el repartidor ve el destinatario y la dirección porque la ventanilla lo expone a propósito; un sistema de logs es un archivo compartido con mucho más personal con acceso — ahí la misma información debería ir tachada, no a la vista de cualquiera con acceso al archivo.
-
-```mermaid
-flowchart LR
-  A["Envío con PII<br/>(telefono, direccion)"] --> B{"¿Pasa por redactarPII()?"}
-  B -->|sí| C["Log seguro<br/>telefono: **"]
-  B -->|no, log directo| D["Log con PII expuesta<br/>categoría STRIDE: Exposición"]
-```
 
 #### Paso 4 · Demostración guiada desde cero
 

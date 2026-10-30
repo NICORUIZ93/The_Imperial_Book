@@ -29,8 +29,6 @@ Este modelo de "herencia por delegación" es fundamentalmente distinto del model
 
 **Analogía:** la cadena de prototipos es como un sistema de bibliotecas conectadas: si un libro que buscas no está en tu biblioteca local (el objeto), automáticamente se consulta la biblioteca regional conectada (su prototipo), y si tampoco está ahí, se consulta la biblioteca nacional (el prototipo del prototipo), y así sucesivamente, sin que ninguna biblioteca individual necesite tener una copia física de cada libro disponible en el sistema completo.
 
-**¿Por qué es importante?** Entender la cadena de prototipos como delegación (no como copia) es la base conceptual indispensable para entender qué es realmente `class` en JavaScript, y para depurar correctamente comportamientos donde una propiedad "aparece" en un objeto sin haber sido asignada directamente ahí.
-
 **Diagrama:**
 
 ```mermaid
@@ -114,8 +112,6 @@ La sintaxis `class`, introducida en ES6, no crea un mecanismo de herencia nuevo 
 Comparar la implementación de una jerarquía `Animal`/`Perro` usando funciones constructoras con `.prototype` (el estilo anterior a ES6) frente a la misma jerarquía usando `class` es un ejercicio revelador: ambas producen exactamente el mismo comportamiento en tiempo de ejecución y la misma estructura de cadena de prototipos, confirmando de forma tangible que `class` es, efectivamente, solo una forma más legible de expresar el mismo mecanismo subyacente, sin introducir ningún modelo de herencia fundamentalmente nuevo.
 
 **Analogía:** `class` es como un formulario estandarizado y con plantilla clara para rellenar una solicitud, mientras que la sintaxis anterior de funciones constructoras y `.prototype` es como rellenar la misma solicitud a mano libre en una hoja en blanco: el contenido final que se procesa (el mecanismo de prototipos) es exactamente el mismo, pero el formulario estandarizado (`class`) es más legible y menos propenso a errores de formato.
-
-**¿Por qué es importante?** Entender que `class` es azúcar sintáctica sobre prototipos, no un mecanismo nuevo, evita concepciones erróneas sobre "clases verdaderas" al estilo Java, y prepara el terreno para entender por qué ciertos comportamientos de JavaScript (como la delegación dinámica de métodos) difieren de lenguajes con clases en sentido más tradicional.
 
 **Diagrama:**
 
@@ -212,8 +208,6 @@ Las propiedades computadas permiten usar el valor de una variable (o el resultad
 Combinar destructuring anidado con estas herramientas permite extraer directamente valores de estructuras de datos complejas y profundamente anidadas en una sola expresión declarativa, evitando accesos manuales encadenados como `usuario.direccion.ciudad`, y en su lugar escribiendo `const { direccion: { ciudad } } = usuario;`, extrayendo directamente `ciudad` como una variable local independiente.
 
 **Analogía:** un getter es como un cajero automático que, en vez de simplemente entregarte un saldo guardado estáticamente, recalcula ese saldo en tiempo real cada vez que lo consultas, garantizando que nunca esté desincronizado con las transacciones más recientes; una propiedad computada es como escribir una etiqueta para un archivador usando el contenido de un post-it que tienes en la mano, en vez de escribir el texto literal "post-it" en la etiqueta.
-
-**¿Por qué es importante?** Getters/setters permiten exponer una interfaz de propiedad simple mientras se ejecuta lógica de validación o cálculo por detrás, y las propiedades computadas son indispensables para construir objetos dinámicamente a partir de datos cuya estructura no se conoce en tiempo de escritura del código.
 
 **Diagrama:**
 
@@ -318,8 +312,6 @@ console.log(configuracion.limites.porMinuto); // 999: la mutación anidada sí t
 ```
 
 **Analogía:** la convención `_campo` es como un cartel de "prohibido el paso" colocado sobre una puerta sin cerradura, que cualquiera podría ignorar y cruzar de todas formas; un campo privado `#campo` es una puerta con una cerradura real cuya llave literalmente no existe fuera del edificio donde se definió, haciendo el acceso no autorizado no solo desaconsejado sino técnicamente imposible.
-
-**¿Por qué es importante?** Los campos privados permiten diseñar clases con garantías reales de invariantes internas (por ejemplo, "el saldo nunca puede ser negativo"), algo que una simple convención de nomenclatura nunca pudo garantizar de forma técnica y verificable por el propio lenguaje.
 
 **Diagrama:**
 

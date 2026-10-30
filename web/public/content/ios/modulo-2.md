@@ -96,8 +96,6 @@ struct BotonContador: View {
 
 **Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
 
-**¿Por qué es importante?** `@State` posee el valor y pertenece exclusivamente a una vista; `@Binding` es una referencia mutable hacia el estado de otra, permitiendo el mismo patrón de state hoisting que existe en otros frameworks de UI declarativa como Jetpack Compose y React.
-
 **Código del ejemplo:**
 
 ```swift
@@ -187,8 +185,6 @@ struct PantallaTareas: View {
 Esta granularidad de redibujado bajo `@Observable` es análoga a la optimización de "skippability" en Jetpack Compose (Módulo 10 del track de Android), donde Compose evita recomponer un composable si sus parámetros efectivamente relevantes no cambiaron, aunque el mecanismo interno de detección sea distinto (Compose analiza parámetros de entrada, `@Observable` rastrea qué propiedades específicas de un objeto observable se leyeron durante el último `body`).
 
 **Analogía:** `@Observable` es como un sistema de notificaciones que avisa únicamente a quienes se suscribieron específicamente a un tema exacto de interés (una propiedad concreta), en vez de notificar a todos los suscriptores de un canal general cada vez que cualquier tema dentro de ese canal cambia, sin importar si les interesa ese tema específico o no.
-
-**¿Por qué es importante?** `@Observable` mejora el rendimiento al redibujar solo las vistas que leen la propiedad específica que cambió, resolviendo la sobre-notificación del modelo anterior `ObservableObject` + `@Published`, que redibujaba cualquier observador del objeto completo sin distinción.
 
 **Código del ejemplo:**
 

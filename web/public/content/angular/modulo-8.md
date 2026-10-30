@@ -29,8 +29,6 @@ Sin `AppModule`, tampoco existen `declarations` ni el concepto de "módulo de fe
 
 **Analogía:** el `AppModule` tradicional era como un directorio telefónico central que había que consultar y mantener actualizado para saber qué partes de la aplicación existían y cómo se relacionaban entre sí; con standalone components, cada componente lleva consigo su propia lista de contactos directos, sin depender de un directorio centralizado externo.
 
-**¿Por qué es importante?** Eliminar el `AppModule` y los NgModules de features simplifica el árbol de dependencias de la aplicación: cada componente declara explícitamente lo que necesita, sin capas intermedias de configuración de módulos que rastrear.
-
 **Código del ejemplo:**
 
 ```ts
@@ -164,8 +162,6 @@ Organizar por feature en cambio agrupa bajo una única carpeta (`tareas/`) todos
 
 **Analogía:** organizar por tipo es como guardar todas las herramientas de un mismo material en un cajón (todos los destornilladores juntos, todos los martillos juntos), obligando a abrir varios cajones distintos para ensamblar un mueble completo; organizar por feature es como tener una caja de herramientas dedicada específicamente a ensamblar ese mueble en particular, con todo lo necesario junto en un mismo lugar.
 
-**¿Por qué es importante?** La organización por feature mantiene junto todo lo que cambia junto, facilitando entender, modificar y eliminar una funcionalidad completa como una unidad coherente.
-
 **Diagrama:**
 
 ```
@@ -296,8 +292,6 @@ El segundo paso reemplaza `RouterModule.forRoot(routes)` (la configuración trad
 El CLI de Angular incluye `ng generate @angular/core:standalone`, un esquema de migración automática (Módulo 12) que analiza el proyecto existente y aplica gran parte de estos tres pasos automáticamente, reduciendo significativamente el trabajo manual necesario para una migración completa, aunque revisar manualmente el resultado sigue siendo necesario para casos especiales que el esquema automático no cubre perfectamente.
 
 **Analogía:** migrar de NgModules a standalone es como remodelar una casa habitada habitación por habitación en vez de demoler la casa entera y reconstruirla de cero: cada habitación (componente) se puede actualizar de forma independiente mientras el resto de la casa sigue siendo habitable y funcional durante todo el proceso.
-
-**¿Por qué es importante?** Una migración incremental, apoyada por herramientas automáticas del CLI, permite modernizar gradualmente un proyecto grande sin necesidad de detener el desarrollo de nuevas funcionalidades durante el proceso.
 
 **Diagrama:**
 

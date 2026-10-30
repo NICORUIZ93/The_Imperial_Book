@@ -7,7 +7,7 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1098 |
-| Temas con algún defecto | 586 |
+| Temas con algún defecto | 497 |
 | Módulos con apéndices heredados | 184/245 |
 
 ## Defectos por tipo
@@ -15,8 +15,8 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Código | Temas |
 |---|---:|
 | `andamiaje-generico` | 128 |
-| `bloque-repetido` | 353 |
-| `cola-tras-cierre` | 386 |
+| `bloque-repetido` | 240 |
+| `cola-tras-cierre` | 382 |
 | `parrafo-repetido` | 5 |
 | `tema-breve` | 2 |
 
@@ -37,9 +37,6 @@ defectos detectados tampoco acredita haber sido comprendida.
 | kotlin-multiplatform / 12 | Tema 1: La mejor frontera compartida es deliberadamente pequeña | 1166 | 758 | bloque-repetido, cola-tras-cierre, parrafo-repetido |
 | foundations / 4 | Tema 3: Índices, restricciones y planes de consulta | 1341 | 748 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | devops / 13 | Tema 3: Cierre del track — checklist final y reflexión | 1213 | 729 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
-| foundations / 8 | Tema 2: Memoria y concurrencia sin magia | 1116 | 727 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
-| foundations / 9 | Tema 4: Probabilidad y evidencia para decisiones técnicas | 1162 | 720 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
-| foundations / 9 | Tema 1: Lógica para especificar antes de programar | 1171 | 703 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | foundations / 4 | Tema 4: Transacciones, concurrencia y elección SQL/NoSQL | 1404 | 697 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | kotlin-multiplatform / 12 | Tema 3: Un artefacto compatible necesita más que el mismo número de versión | 1101 | 697 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
 | kotlin-multiplatform / 12 | Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos | 1104 | 689 | bloque-repetido, cola-tras-cierre, parrafo-repetido |
@@ -65,13 +62,16 @@ defectos detectados tampoco acredita haber sido comprendida.
 | node / 13 | Tema 4: Webhooks verificables y recuperación por reconciliación | 872 | 507 | bloque-repetido, cola-tras-cierre, parrafo-repetido |
 | cloud / 5 | Tema 1: Qué es serverless — ventajas y desventajas | 1720 | 1399 | bloque-repetido, cola-tras-cierre |
 | cloud / 8 | Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio | 1447 | 1077 | andamiaje-generico, cola-tras-cierre |
-| flutter / 7 | Tema 4: Cámara, galería y carga multipart de una evidencia | 1356 | 974 | bloque-repetido, cola-tras-cierre |
-| flutter / 4 | Tema 4: Formularios profesionales con Formz y Riverpod | 1346 | 971 | bloque-repetido, cola-tras-cierre |
 | ios / 10 | Tema 4: UIKit desde cero para mantener aplicaciones reales | 1333 | 959 | bloque-repetido, cola-tras-cierre |
 | foundations / 4 | Tema 1: Del mundo real al modelo relacional | 1541 | 939 | bloque-repetido, cola-tras-cierre |
 | java / 1 | Tema 2: Herencia y sobreescritura | 1284 | 927 | bloque-repetido, cola-tras-cierre |
 | ios / 0 | Tema 4: Closures, colecciones y genéricos con propósito | 1302 | 904 | bloque-repetido, cola-tras-cierre |
 | kotlin-multiplatform / 11 | Tema 2: Sincronización de datos remotos con caché local | 1258 | 855 | bloque-repetido, cola-tras-cierre |
+| foundations / 1 | Tema 1: Del problema al algoritmo y a los casos de prueba | 1435 | 852 | bloque-repetido, cola-tras-cierre |
+| react / 1 | Tema 1: useState y actualizaciones funcionales | 1418 | 828 | bloque-repetido, cola-tras-cierre |
+| foundations / 2 | Tema 4: Complejidad, medición, ordenamiento y recursión | 1395 | 810 | bloque-repetido, cola-tras-cierre |
+| foundations / 3 | Tema 3: HTML semántico, formularios y el DOM | 1391 | 797 | bloque-repetido, cola-tras-cierre |
+| cloud / 5 | Tema 3: Runtimes — Node.js, Python, Java, Go | 1303 | 792 | bloque-repetido, cola-tras-cierre |
 
 ## Cómo se corrige
 
@@ -81,4 +81,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `14f62d537242d8e5174fb954228d4785d572db424c88ec830f3253e9da7d70e4`
+Huella del contenido: `0b5cf2035151f6345fdefaff035c81d6aefcfc341b2400569c54c5d0065843d9`

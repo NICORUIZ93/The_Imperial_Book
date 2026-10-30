@@ -517,8 +517,6 @@ stateDiagram-v2
 
 **Analogía:** las entradas Formz son inspectores especializados y el estado del formulario es el tablero de despacho. El tablero coordina resultados, pero no repite las reglas de inspección de cada campo.
 
-**¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets. Separar `isValid` de `SubmitStatus` evita confundir «datos correctos» con «datos ya guardados» y previene envíos duplicados.
-
 **Ejecución y resultado esperado:** ejecuta `flutter test test/features/delivery_issue/presentation/issue_form_notifier_test.dart` y luego `flutter run`. El botón permanece inactivo con observación corta, se activa con entradas válidas, muestra progreso durante una única petición y conserva valores ante un error recuperable.
 
 **Fallo deliberado:** toca dos veces rápidamente el botón y configura el repositorio falso para tardar dos segundos. La prueba debe demostrar que `report` se invoca una sola vez. Después haz que el backend responda `422`; conserva un mensaje general y asigna errores de campo solamente si el contrato del servidor los identifica explícitamente.
