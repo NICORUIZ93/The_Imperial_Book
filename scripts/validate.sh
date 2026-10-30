@@ -6,6 +6,7 @@ cd "$ROOT"
 
 node <<'NODE'
 const fs = require('fs');
+const crypto = require('crypto');
 
 const requiredFiles = [
   'README.md',
@@ -19,6 +20,16 @@ const requiredFiles = [
 ];
 for (const file of requiredFiles) {
   if (!fs.existsSync(file)) throw new Error(`Falta ${file}`);
+}
+
+if (fs.existsSync('floci-install.sh')) {
+  const flociDocs = fs.readFileSync('docs/floci.md', 'utf8');
+  const expected = flociDocs.match(/SHA-256 del instalador descargado \(corte 2026-10-30\):\s*`([a-f0-9]{64})`/);
+  if (!expected) throw new Error('docs/floci.md no registra el SHA-256 aprobado del instalador');
+  const actual = crypto.createHash('sha256').update(fs.readFileSync('floci-install.sh')).digest('hex');
+  if (actual !== expected[1]) {
+    throw new Error(`floci-install.sh no coincide con el SHA-256 documentado (esperado ${expected[1]}, actual ${actual})`);
+  }
 }
 
 const angularCourseData = fs.readFileSync('web/src/app/course-data.ts', 'utf8');

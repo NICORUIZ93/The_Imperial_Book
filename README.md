@@ -54,6 +54,7 @@ Opción recomendada — `floci-cli` (la herramienta oficial del proyecto, que us
 
 ```bash
 curl --fail --location --show-error --output floci-install.sh https://floci.io/install.sh
+printf '%s  %s\n' 'd2564a85bf07d389691987807e58d32a9904105e07dd20ede3ffb7bce9de056d' floci-install.sh | shasum -a 256 -c -
 less floci-install.sh                          # inspecciona el contenido descargado
 sh floci-install.sh                             # ejecuta solo después de revisarlo
 floci start                                     # levanta Floci AWS
@@ -65,6 +66,8 @@ floci stop                                      # detén Floci al terminar
 La inspección no sustituye una firma o checksum publicado por el mantenedor. Si
 el proyecto publica binarios firmados en sus releases oficiales, prefiere esa vía
 y verifica la firma antes de instalarlos.
+El hash de arriba identifica la copia del instalador oficial revisada el
+2026-10-30; si no coincide, no la ejecutes y consulta [la guía de Floci](docs/floci.md).
 
 Opción alternativa — Docker Compose (útil para correr AWS, Azure y GCP local a la vez):
 
