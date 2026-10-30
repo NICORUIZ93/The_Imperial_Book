@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 16:00 UTC
+Generated: 2026-10-30 16:08 UTC
 Root: `Academia_Floci`
-Indexed files: 920
+Indexed files: 921
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,7 +16,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 34 files
+- `automation-script`: 35 files
 - `course-content`: 251 files
 - `documentation`: 54 files
 - `example`: 467 files
@@ -26,7 +26,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ## File Types
 
 - `.md`: 312
-- `.py`: 160
+- `.py`: 161
 - `.json`: 67
 - `.ts`: 66
 - `.java`: 54
@@ -189,12 +189,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/clean_legacy_tails.py` (184 lines) - symbols: legacy_candidates, trim_topic, dedupe_topic, fences_balanced, topic_slice, safe_trim, clean_file, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/extract_pdf_toc.py` (33 lines) - imports: sys, pathlib, pymupdf
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
+- `scripts/merge_duplicate_sections.py` (179 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
 - `scripts/start.sh` (10 lines)
 - `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
 - `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
-- `scripts/tests/test_editorial_validation.py` (90 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, fix_lessons
-- ... 16 more files
+- ... 17 more files
 
 ### course-content
 

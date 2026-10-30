@@ -5799,6 +5799,34 @@
       "headings": []
     },
     {
+      "path": "scripts/merge_duplicate_sections.py",
+      "lines": 179,
+      "kind": "automation-script",
+      "symbols": [
+        "topic_slice",
+        "paragraph_span",
+        "normalized",
+        "merge_marker",
+        "merge_topic",
+        "drop_generic_scaffold",
+        "fences_balanced",
+        "guard",
+        "improve_topic",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "re",
+        "sys",
+        "pathlib",
+        "audit_lesson_substance",
+        "audit_seven_step_methodology",
+        "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/prepare_study_diagram.py",
       "lines": 39,
       "kind": "automation-script",
@@ -7809,7 +7837,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-2.md",
-      "lines": 615,
+      "lines": 617,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

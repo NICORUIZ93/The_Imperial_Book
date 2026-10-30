@@ -81,4 +81,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `4a67dcc39da7154221a2f3235f766316b9cf13a28b1c608c2e65fd3f56dff18e`
+Huella del contenido: `077fbea239f11257165b8e2b3df5947ef926e458bb2536a0026c460ec2838741`

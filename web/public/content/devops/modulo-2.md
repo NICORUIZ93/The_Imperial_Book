@@ -9,7 +9,7 @@
 
 Al finalizar podrás escribir un Dockerfile multi-stage que separa la compilación de la ejecución, reduciendo drásticamente el tamaño y la superficie de ataque de la imagen final.
 
-**Conocimiento previo:** Docker básico (Módulo 0 del track Cloud) y Docker instalado localmente.
+**Conocimiento previo:** Docker básico — contenedores, imágenes, `docker pull`/`run`/`ps` (Módulo 1 del track Cloud, "Virtualización vs contenedores" a "Comandos esenciales de Docker"). Si nunca ejecutaste `docker run hello-world`, completa ese módulo primero; el repaso de abajo no lo reemplaza, solo lo recuerda. Docker instalado localmente.
 
 #### Paso 2 · Contexto y caso real
 
@@ -17,7 +17,9 @@ Al finalizar podrás escribir un Dockerfile multi-stage que separa la compilaci�
 
 #### Paso 3 · Teoría con analogía
 
-**Conceptos clave:** etapa de build, etapa final, `COPY --from`, artefactos intermedios descartados.
+**Conceptos clave:** imagen, contenedor, Dockerfile de una sola etapa, etapa de build, etapa final, `COPY --from`, artefactos intermedios descartados.
+
+**Repaso rápido antes de multi-stage:** una **imagen** es una plantilla de solo lectura (capas apiladas) construida a partir de un `Dockerfile`; un **contenedor** es una instancia en ejecución de esa imagen, con su propio sistema de archivos editable encima. Un `Dockerfile` de una sola etapa tiene, como mínimo, cuatro instrucciones: `FROM <imagen-base>` (de dónde parte), `COPY <origen> <destino>` (qué archivos del proyecto entran a la imagen), `RUN <comando>` (qué se ejecuta durante el build, por ejemplo instalar dependencias) y `CMD [<comando>]` (qué se ejecuta cuando arranca el contenedor, no durante el build). `docker build -t mi-imagen .` lee ese `Dockerfile` y produce la imagen; `docker run mi-imagen` crea y arranca un contenedor a partir de ella. Con esa base, multi-stage es solo repetir `FROM` más de una vez dentro del mismo archivo.
 
 Un Dockerfile de una sola etapa mezcla, en la misma imagen final, todo lo necesario para construir la aplicación (compiladores, dependencias de desarrollo) con todo lo necesario únicamente para ejecutarla. Un Dockerfile multi-stage separa el proceso en etapas nombradas con `AS <nombre>`: una etapa de build instala todo y compila; una segunda etapa, la final, parte de una imagen limpia y usa `COPY --from=build` para copiar únicamente los artefactos ya construidos. `--from` es la bandera de `COPY` que fija de qué etapa (o imagen) tomar los archivos, en vez del contexto de build normal; en el `RUN npm ci --omit=dev` de la etapa de build, `--omit` es la bandera que excluye una categoría de dependencias (aquí, las de desarrollo) del resultado de la instalación.
 

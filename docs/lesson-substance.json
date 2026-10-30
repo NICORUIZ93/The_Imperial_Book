@@ -1647,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "4a67dcc39da7154221a2f3235f766316b9cf13a28b1c608c2e65fd3f56dff18e",
+    "fingerprint": "077fbea239f11257165b8e2b3df5947ef926e458bb2536a0026c460ec2838741",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 202,
@@ -4481,7 +4481,7 @@
         "module": 2,
         "tailWords": 173,
         "topic": "Tema 1: Dockerfile multi-stage",
-        "words": 933
+        "words": 1110
       },
       {
         "issues": [],
