@@ -310,3 +310,23 @@ test('biblioteca: filtra por área y encuentra temas reales sin perder accesos',
   await expect(page.locator('.card-topics')).toContainText('Antes de empezar');
   await expect(page.locator('.card-topics')).toContainText('Evidencia de trabajo');
 });
+
+test('tema: la ruta propia enfoca un solo tema y vuelve al capítulo', async ({ page }) => {
+  await page.goto('/curso/angular/0/tema/2');
+  const cards = page.locator('.topic-card');
+  await expect(cards.nth(0)).not.toHaveClass(/expanded/);
+  await expect(cards.nth(1)).toHaveClass(/expanded/);
+  const banner = page.locator('.topic-focus-banner');
+  await expect(banner).toBeVisible();
+  await expect(banner).toContainText('Vista de un tema');
+
+  await banner.getByRole('link', { name: 'Volver al capítulo completo' }).click();
+  await expect(page).toHaveURL(/\/curso\/angular\/0$/);
+});
+
+test('tema: el enlace «Ver solo este tema» abre la ruta enfocada', async ({ page }) => {
+  await page.goto('/curso/angular/0');
+  await page.locator('.topic-card').nth(2).locator('.topic-focus-link').click();
+  await expect(page).toHaveURL(/\/curso\/angular\/0\/tema\/3$/);
+  await expect(page.locator('.topic-card').nth(2)).toHaveClass(/expanded/);
+});

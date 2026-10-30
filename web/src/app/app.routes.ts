@@ -20,6 +20,7 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'overview' },
       { path: 'overview', loadComponent: () => import('./course/track-overview').then(m => m.TrackOverviewComponent) },
+      { path: ':moduleId/tema/:topicIndex', loadComponent: () => import('./course/lesson-viewer').then(m => m.LessonViewerComponent) },
       { path: ':moduleId', loadComponent: () => import('./course/lesson-viewer').then(m => m.LessonViewerComponent) },
     ],
   },

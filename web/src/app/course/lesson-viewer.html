@@ -51,6 +51,10 @@
           </div>
         </details>
       </header>
+      <p class="topic-focus-banner" *ngIf="focusedTopic() as topic">
+        <span>Vista de un tema: <strong>{{ topic.title }}</strong></span>
+        <a [routerLink]="['/curso', trackId(), moduleId()]">Volver al capítulo completo</a>
+      </p>
       <p class="sr-only" aria-live="polite">{{ chapterAnnouncement() }}</p>
 
       <details class="project-progress-card" *ngIf="trackProject() as project" aria-labelledby="project-progress-title">

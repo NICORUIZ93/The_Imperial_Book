@@ -121,6 +121,17 @@ export class LessonViewerComponent implements OnDestroy {
   private readonly requestedFragment = toSignal(this.route.fragment, {
     initialValue: this.route.snapshot.fragment,
   });
+  private readonly topicIndexParam = toSignal(
+    this.route.paramMap.pipe(map(params => params.get('topicIndex'))),
+    { initialValue: this.route.snapshot.paramMap.get('topicIndex') },
+  );
+  /** Índice 0-based cuando la URL es /curso/:trackId/:moduleId/tema/:n (n = 1-based). */
+  readonly focusedTopicIndex = computed(() => {
+    const raw = this.topicIndexParam();
+    if (raw === null) return null;
+    const index = Number(raw) - 1;
+    return Number.isInteger(index) && index >= 0 ? index : null;
+  });
 
   readonly track = computed(() => findTrack(this.trackId()));
   readonly module = computed(() => this.track()?.modules.find(m => m.id === this.moduleId()));
@@ -205,7 +216,13 @@ export class LessonViewerComponent implements OnDestroy {
   /** Resumen corto del capítulo para que el siguiente tema no quede escondido
    * al final del documento largo. El Markdown sigue siendo la fuente real. */
   readonly chapterTopics = computed(() => this.topicIndex.topics(this.trackId(), this.moduleId()));
+  readonly focusedTopic = computed(() => {
+    const index = this.focusedTopicIndex();
+    return index === null ? null : (this.chapterTopics()[index] ?? null);
+  });
   readonly currentTopicIndex = computed(() => {
+    const focused = this.focusedTopicIndex();
+    if (focused !== null) return focused;
     const fragment = this.requestedFragment();
     const topics = this.chapterTopics();
     const index = fragment ? topics.findIndex(topic => topic.fragment === fragment) : -1;
@@ -260,6 +277,15 @@ export class LessonViewerComponent implements OnDestroy {
       afterNextRender(() => {
         const container = this.lessonContent()?.nativeElement;
         if (container) this.scrollToRequestedFragment(container, fragment);
+      }, { injector: this.injector });
+    });
+
+    effect(() => {
+      const index = this.focusedTopicIndex();
+      if (index === null || !this.lessonHtml()) return;
+      afterNextRender(() => {
+        const container = this.lessonContent()?.nativeElement;
+        if (container) this.applyTopicFocus(container);
       }, { injector: this.injector });
     });
   }
@@ -342,6 +368,7 @@ export class LessonViewerComponent implements OnDestroy {
     this.prepareAnatomyFigures(container);
     this.prepareArchifyVisuals(container);
     this.enhanceEducationalContent(container);
+    this.applyTopicFocus(container);
     this.enhanceVerifiableExercises(container);
     this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')));
     this.buildTopicMap(container);
@@ -791,7 +818,36 @@ export class LessonViewerComponent implements OnDestroy {
       card.appendChild(body);
       this.addTopicLearningSupport(body, heading);
       this.addTopicEvidence(card, heading, index);
+      this.addTopicFocusLink(card, index);
     });
+  }
+
+  /** Enlace permanente al tema como página propia. */
+  private addTopicFocusLink(card: HTMLElement, index: number): void {
+    const link = document.createElement('a');
+    link.className = 'topic-focus-link';
+    link.href = `/curso/${encodeURIComponent(this.trackId())}/${this.moduleId()}/tema/${index + 1}`;
+    link.dataset['topicFocus'] = String(index + 1);
+    link.textContent = 'Ver solo este tema';
+    card.appendChild(link);
+  }
+
+  /** Deja expandido solo el tema pedido por la URL y lo trae a la vista. */
+  private applyTopicFocus(container: HTMLElement): void {
+    const index = this.focusedTopicIndex();
+    if (index === null) return;
+    const cards = Array.from(container.querySelectorAll<HTMLElement>('.topic-card'));
+    const card = cards[index];
+    if (!card) return;
+    cards.forEach((item, position) => {
+      const expanded = position === index;
+      item.classList.toggle('expanded', expanded);
+      const toggle = item.querySelector<HTMLButtonElement>('[data-topic-toggle]');
+      toggle?.setAttribute('aria-expanded', String(expanded));
+      const label = toggle?.querySelector('span');
+      if (label) label.textContent = expanded ? 'Ocultar tema' : 'Abrir tema';
+    });
+    requestAnimationFrame(() => card.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' }));
   }
 
   /**
@@ -1004,6 +1060,13 @@ export class LessonViewerComponent implements OnDestroy {
           feedback.classList.remove('verified');
         }
       }
+      return;
+    }
+    const focusLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('[data-topic-focus]');
+    if (focusLink) {
+      event.preventDefault();
+      const index = focusLink.dataset['topicFocus'];
+      if (index) void this.router.navigate(['/curso', this.trackId(), this.moduleId(), 'tema', index]);
       return;
     }
     const topicDestination = (event.target as HTMLElement).closest<HTMLAnchorElement>('[data-topic-destination]');

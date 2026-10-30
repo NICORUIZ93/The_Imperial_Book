@@ -12,7 +12,7 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
 | Síntoma | Dato |
 |---|---|
 | Uniformidad artificial | 1098/1098 temas con bloque `bash`, «resultado esperado» y URL; 97,8% con «fallo deliberado» |
-| Repetición interna | 240 temas con una sección editorial duplicada; 362 repiten «¿Por qué es importante?» |
+| Repetición interna | 218 temas con una sección editorial duplicada; 362 repiten «¿Por qué es importante?» |
 | Cola editorial | 382 temas con más de 500 palabras después del cierre |
 | Apéndices heredados | 184/245 módulos con «Errores comunes y soluciones», ruta de proyecto o laboratorio pegados al final |
 | Profundidad plana | «Experto»: 972 palabras/tema; «Fundamentos»: 1.029 |
@@ -49,9 +49,9 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
   validación entre CI y una máquina local).
 - [x] Artefactos `.class` fuera de Git y `build/` ignorado.
 - [x] Documento de continuación actualizado a los números reales.
-- [x] Limpieza con guarda: 132 recortes en dos pasadas sin perder criterios
+- [x] Limpieza con guarda: 154 recortes en tres pasadas sin perder criterios
   ni romper fences (`scripts/clean_legacy_tails.py`).
-- [ ] Resto de apéndices y secciones duplicadas (**497 temas**): requiere
+- [ ] Resto de apéndices y secciones duplicadas (**476 temas**): requiere
   revisión editorial, no un script ciego.
 - [ ] Unificar `cloud` en `tracks/cloud.track.ts`.
 - [ ] Sustituir «Experto» por los cuatro niveles operativos y retirar la
@@ -79,7 +79,9 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
 
 ### Fase 4 — Aplicación y evaluación (pendiente)
 
-- [ ] Ruta por tema `/tema/:slug` (los fragmentos `#tema-…` ya dan enlace por tema).
+- [x] Ruta por tema: `/curso/:trackId/:moduleId/tema/:n` enfoca un solo tema y
+  enlaza de vuelta al capítulo. Sustituye a `/tema/:slug` conservando los
+  fragmentos históricos.
 - [x] Progreso por evidencia: textarea por tema, huella guardada y copia de
   seguridad. «Leído» ya no es la única señal.
 - [ ] Checkpoints que el alumno ejecuta y cuya salida se registra.
@@ -138,7 +140,7 @@ El PDF es una recopilación de publicaciones técnicas. Sus temas se mapearon as
 
 ## Estado y riesgo
 
-La deuda histórica (497 temas con defectos) no se elimina en una sesión. El plan
+La deuda histórica (476 temas con defectos) no se elimina en una sesión. El plan
 la convierte en una deuda **medida y decreciente** en lugar de una promesa
 implícita de calidad. Reescribir 1.098 temas a mano requiere 2.000–4.000 horas:
 por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
@@ -150,9 +152,10 @@ por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 | `./scripts/validate.sh` | Código 0: 21 pruebas Python, pedagogía, currículo, fuentes, fences, índices y grafos |
 | Build Angular | Correcto; aviso de bundle inicial 625,24 kB frente al presupuesto de 600 kB (no se amplió) |
 | Pruebas unitarias Angular | 17 correctas (incluye evidencia por tema) |
+| E2E Chrome | 46 correctas (42 previas + 4 de la ruta por tema) |
 | Metodología de siete pasos | 1098/1098 completos |
 | Criterios editoriales | 1092/1098 practicables; deuda de 6 |
-| Sustancia | 497 temas con defectos históricos; 102 menos que al inicio; **0 defectos nuevos** |
+| Sustancia | 476 temas con defectos históricos; 123 menos que al inicio; **0 defectos nuevos** |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
 Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,
@@ -162,7 +165,7 @@ validadores Node de C4 y ADR se probaron con el resultado documentado.
 
 ### Lo que sigue pendiente
 
-1. Los 497 temas con repetición o cola heredada: se reducen por tandas y el
+1. Los 476 temas con repetición o cola heredada: se reducen por tandas y el
    baseline solo puede bajar.
 2. La ruta piloto completa (Fundamentos + Java) con checkpoints por módulo.
 3. `cloud` fuera de `course-data.ts` y una sola fuente de verdad por track.
