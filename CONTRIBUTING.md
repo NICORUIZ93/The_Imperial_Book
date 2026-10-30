@@ -3,6 +3,16 @@
 Gracias por ayudar a mejorar la academia. Mantén el alcance de cada cambio claro
 y respeta las licencias y atribuciones de los materiales que aportes.
 
+## Idioma y commits
+
+- La prosa de las lecciones, guías y documentación para estudiantes se escribe
+  en español. Conserva en inglés los identificadores, nombres oficiales de APIs
+  y términos técnicos cuando traducirlos genere ambigüedad.
+- Usa Conventional Commits con asunto en inglés y una sola intención por
+  commit: `type(scope): concise description`, por ejemplo
+  `docs(curriculum): clarify the Java learning path`.
+- Prefiere tipos como `feat`, `fix`, `docs`, `test`, `refactor` y `chore`.
+
 ## Antes de abrir un cambio
 
 1. Lee `docs/editorial-contract.md` y el estándar de código aplicable.

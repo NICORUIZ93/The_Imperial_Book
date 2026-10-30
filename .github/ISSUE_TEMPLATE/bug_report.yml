@@ -1,0 +1,79 @@
+name: Reportar un error
+description: Informa de un problema reproducible en la academia o sus ejemplos.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Comparte pasos reproducibles y evita incluir credenciales o datos personales.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Resumen
+      description: ¿Qué funciona mal?
+      placeholder: Describe el comportamiento observado.
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Ruta o tema
+      description: URL, track, módulo y tema si aplica.
+      placeholder: /curso/java/5/tema/2
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Navegación
+        - Contenido o ejemplo
+        - Diagrama o imagen
+        - Progreso guardado
+        - Accesibilidad
+        - Rendimiento
+        - Otra
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      description: Incluye las acciones exactas y cualquier comando utilizado.
+      placeholder: |
+        1. Abre ...
+        2. Selecciona ...
+        3. Observa ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado observado
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Entorno
+      description: Navegador y versión, sistema operativo, o runtime relevante.
+      placeholder: Chrome 130, macOS 15
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia
+      description: Añade capturas sin datos sensibles o mensajes relevantes de consola.
+      render: text
+    validations:
+      required: false
