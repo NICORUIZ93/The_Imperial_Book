@@ -44,22 +44,6 @@ Esta capacidad de "escribir una vez, probar en ambas plataformas" es el compleme
 - Detectar en CI (Módulo 10) si un cambio en `commonMain` rompe la lógica compartida antes de compilar ambas apps completas.
 - Cubrir reglas de negocio críticas (cálculo de precios, validaciones) con un único test suite mantenido por un solo equipo.
 
-**Código del ejemplo:**
-
-```kotlin
-class ObtenerTareasPendientesUseCaseTest {
-    @Test
-    fun filtraSoloPendientes() = runTest {
-        val repoFake = TareaRepositoryFake(listOf(
-            Tarea("1", "A", completada = false),
-            Tarea("2", "B", completada = true),
-        ))
-        val resultado = ObtenerTareasPendientesUseCase(repoFake)()
-        assertEquals(1, resultado.size)
-    }
-}
-```
-
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Prueba en commonTest las reglas de confirmación con datos válidos, duplicados e incompletos. Ejecuta los targets disponibles y documenta las pruebas nativas adicionales que commonTest no sustituye.
 
 #### Paso 4 · Demostración guiada desde cero

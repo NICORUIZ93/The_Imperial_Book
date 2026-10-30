@@ -39,16 +39,6 @@ Este modelo declarativo es considerablemente más natural para deep linking (Tem
 
 **¿Por qué es importante?** go_router resuelve el problema de que el Navigator 1.0 imperativo no tiene ninguna representación explícita de "en qué ruta está la app", un problema crítico específicamente para deep linking y Flutter Web, donde la URL debe ser la fuente de verdad sincronizada del estado de navegación.
 
-**Código del ejemplo:**
-
-```dart
-final router = GoRouter(routes: [
-  GoRoute(path: '/', builder: (context, state) => ListaTareasScreen()),
-  GoRoute(path: '/tareas/:id', builder: (context, state) => DetalleTareaScreen(id: state.pathParameters['id']!)),
-]);
-context.go('/tareas/42');
-```
-
 **Diagrama: URL como fuente de verdad**
 
 ```mermaid
@@ -124,16 +114,6 @@ Con go_router, un link externo (`miapp://tareas/42`) simplemente navega a la rut
 
 **¿Por qué es importante?** Los guards declarativos centralizan la protección de rutas directamente en su definición, evitando verificaciones dispersas y propensas a omisión; el deep linking es más directo de configurar con un router declarativo porque la navegación ya es una función de la URL, sin requerir un mecanismo paralelo separado.
 
-**Código del ejemplo:**
-
-```dart
-GoRoute(
-  path: '/admin',
-  redirect: (context, state) => estaAutenticado ? null : '/login',
-  builder: (context, state) => AdminScreen(),
-)
-```
-
 **Diagrama: guard declarativo con redirect**
 
 ```mermaid
@@ -206,15 +186,6 @@ Personalizar transiciones de forma consistente en puntos clave de la app (no en 
 **Analogía:** una transición personalizada es como elegir deliberadamente el tipo de puerta apropiado para cada tipo de tránsito en un edificio (una puerta giratoria para tránsito continuo casual, una puerta de seguridad con verificación para un área restringida), comunicando visualmente la naturaleza de cada transición específica en vez de usar el mismo tipo de puerta genérica en todas partes sin ninguna distinción.
 
 **¿Por qué es importante?** Las transiciones personalizadas, aplicadas deliberadamente en puntos clave, comunican mejor la relación semántica entre pantallas que la transición por defecto genérica, un detalle de pulido perceptible por el usuario aunque sutil.
-
-**Código del ejemplo:**
-
-```dart
-CustomTransitionPage(
-  child: DetalleScreen(),
-  transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
-)
-```
 
 **Diagrama: cuándo personalizar una transición**
 

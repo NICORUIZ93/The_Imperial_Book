@@ -120,18 +120,6 @@ Este patrón de "red primero, con fallback a caché local" (u otras variantes si
 - Un catálogo de productos de e-commerce que muestra precios de la última sincronización exitosa durante un corte de red.
 - Cola de cambios pendientes de subir (Módulo 6) que se sincroniza automáticamente al recuperar conexión.
 
-**Código del ejemplo:**
-
-```kotlin
-override suspend fun obtenerTodas(): List<Tarea> = try {
-    val remotas = api.get("/tareas").body<List<TareaDTO>>()
-    db.tareaQueries.transaction { remotas.forEach { guardarLocal(it) } }
-    db.tareaQueries.selectTodas().executeAsList()
-} catch (e: Exception) {
-    db.tareaQueries.selectTodas().executeAsList() // fallback offline a la caché local
-}
-```
-
 Este repositorio vive en `shared/src/commonMain/kotlin/com/academia/kmp/TareaRepositoryImpl.kt`, y se recompila para ambos targets con Gradle (`./gradlew :shared:build`). El flujo de decisión red-primero-fallback-caché:
 
 ```mermaid

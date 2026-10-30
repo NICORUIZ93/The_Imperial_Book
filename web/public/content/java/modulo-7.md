@@ -160,22 +160,6 @@ Este pattern matching para `instanceof` reemplaza el patrón clásico anterior (
 
 **¿Por qué es importante?** El pattern matching exhaustivo garantiza, verificado por el compilador, que ningún caso posible de una sealed interface quede sin cubrir; el pattern matching para instanceof elimina la redundancia y el riesgo del casteo manual clásico.
 
-**Código del ejemplo:**
-
-```java
-double area(Forma forma) {
-    return switch (forma) {
-        case Circulo c -> Math.PI * c.radio() * c.radio();
-        case Cuadrado q -> q.lado() * q.lado();
-        // sin default: el compilador verifica que cubriste TODOS los casos posibles de Forma
-    };
-}
-
-if (obj instanceof Circulo c) {
-    System.out.println(c.radio()); // sin casteo manual: c ya es de tipo Circulo aquí
-}
-```
-
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash

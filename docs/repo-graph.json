@@ -576,7 +576,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1904,
+      "lines": 1925,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6782,7 +6782,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-4.md",
-      "lines": 684,
+      "lines": 674,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6992,7 +6992,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-12.md",
-      "lines": 212,
+      "lines": 204,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7003,12 +7003,12 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "# El mismo correlation_id se propaga a trav\u00e9s de CADA servicio que procesa esta solicitud",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Metric filters y alarmas"
+        "### Tema 2: Metric filters y alarmas",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
@@ -8062,7 +8062,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-0.md",
-      "lines": 506,
+      "lines": 486,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8104,7 +8104,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-10.md",
-      "lines": 272,
+      "lines": 247,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8230,7 +8230,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-2.md",
-      "lines": 285,
+      "lines": 274,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8251,7 +8251,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-3.md",
-      "lines": 287,
+      "lines": 258,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8293,7 +8293,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-5.md",
-      "lines": 343,
+      "lines": 332,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8377,7 +8377,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-9.md",
-      "lines": 303,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8734,7 +8734,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-0.md",
-      "lines": 537,
+      "lines": 529,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8755,7 +8755,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-1.md",
-      "lines": 440,
+      "lines": 429,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8881,7 +8881,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 329,
+      "lines": 317,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8902,7 +8902,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-3.md",
-      "lines": 251,
+      "lines": 243,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8923,7 +8923,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 342,
+      "lines": 322,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9301,7 +9301,7 @@
     },
     {
       "path": "web/public/content/java/modulo-2.md",
-      "lines": 227,
+      "lines": 215,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9385,7 +9385,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 487,
+      "lines": 468,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9406,7 +9406,7 @@
     },
     {
       "path": "web/public/content/java/modulo-6.md",
-      "lines": 268,
+      "lines": 253,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9427,7 +9427,7 @@
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 319,
+      "lines": 303,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9847,7 +9847,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 283,
+      "lines": 274,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9868,7 +9868,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "lines": 276,
+      "lines": 264,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10078,7 +10078,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-9.md",
-      "lines": 276,
+      "lines": 260,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10456,7 +10456,7 @@
     },
     {
       "path": "web/public/content/react/modulo-10.md",
-      "lines": 328,
+      "lines": 318,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

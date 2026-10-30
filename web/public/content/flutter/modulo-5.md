@@ -124,17 +124,6 @@ Este mismo principio de generación de código de parsing tipado en tiempo de co
 
 **¿Por qué es importante?** Generar modelos con `json_serializable` es más seguro que parsear JSON manualmente con `Map<String, dynamic>` porque un campo faltante o mal tipado falla de forma clara y explícita en el punto de deserialización, en vez de propagar un error silencioso que se manifiesta de forma confusa más adelante en el código.
 
-**Código del ejemplo:**
-
-```dart
-@JsonSerializable()
-class Tarea {
-  final String id;
-  final String titulo;
-  factory Tarea.fromJson(Map<String, dynamic> json) => _$TareaFromJson(json);
-}
-```
-
 **Diagrama: campo faltante detectado al deserializar**
 
 ```mermaid

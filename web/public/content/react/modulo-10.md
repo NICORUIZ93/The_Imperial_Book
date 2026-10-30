@@ -125,16 +125,6 @@ Esta directiva establece un límite explícito y deliberado en el árbol de comp
 
 **¿Por qué es importante?** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible en el árbol maximiza la cantidad de código que permanece exclusivamente en el servidor.
 
-**Código del ejemplo:**
-
-```jsx
-"use client";
-function BotonLike() {
-  const [likes, setLikes] = useState(0); // hooks de estado solo funcionan en Client Components
-  return <button onClick={() => setLikes(l => l + 1)}>{likes} likes</button>;
-}
-```
-
 * Ejecutar: `npm test`
 * Proyecto: proyecto integrador RutaFlow
 * Visualización: concepto mostrado en diagrama

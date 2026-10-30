@@ -1647,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "e90f688b5da394559eec5dc946db1229848f9a64a06fe805cb85a2d9c7a8cec2",
+    "fingerprint": "cacaddab32611d99c9187344c48d086a215ccdb9048a240817f117f255f9c579",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 202,
@@ -2448,7 +2448,7 @@
         "module": 4,
         "tailWords": 198,
         "topic": "Tema 2: Guards funcionales",
-        "words": 1357
+        "words": 1334
       },
       {
         "issues": [],
@@ -2723,7 +2723,7 @@
         "module": 12,
         "tailWords": 64,
         "topic": "Tema 1: Log groups, log streams y correlation ID",
-        "words": 1040
+        "words": 1011
       },
       {
         "issues": [],
@@ -4611,7 +4611,7 @@
         "module": 0,
         "tailWords": 120,
         "topic": "Tema 2: Clases y mixins",
-        "words": 1117
+        "words": 1091
       },
       {
         "issues": [
@@ -4620,7 +4620,7 @@
         "module": 0,
         "tailWords": 117,
         "topic": "Tema 3: Futures, async/await y colecciones funcionales",
-        "words": 1069
+        "words": 1039
       },
       {
         "issues": [],
@@ -4663,7 +4663,7 @@
         "module": 10,
         "tailWords": 133,
         "topic": "Tema 1: ThemeData con Material 3",
-        "words": 864
+        "words": 839
       },
       {
         "issues": [
@@ -4672,7 +4672,7 @@
         "module": 10,
         "tailWords": 156,
         "topic": "Tema 2: Adaptación Material vs Cupertino",
-        "words": 929
+        "words": 913
       },
       {
         "issues": [
@@ -4681,7 +4681,7 @@
         "module": 10,
         "tailWords": 156,
         "topic": "Tema 3: Accesibilidad con Semantics y dark mode",
-        "words": 988
+        "words": 962
       },
       {
         "issues": [
@@ -4910,7 +4910,7 @@
         "module": 2,
         "tailWords": 134,
         "topic": "Tema 3: Breakpoints propios y SafeArea",
-        "words": 963
+        "words": 935
       },
       {
         "issues": [
@@ -4919,7 +4919,7 @@
         "module": 3,
         "tailWords": 138,
         "topic": "Tema 1: go_router: navegación como función de la URL",
-        "words": 986
+        "words": 956
       },
       {
         "issues": [
@@ -4928,7 +4928,7 @@
         "module": 3,
         "tailWords": 135,
         "topic": "Tema 2: Guards y deep linking",
-        "words": 950
+        "words": 933
       },
       {
         "issues": [
@@ -4937,7 +4937,7 @@
         "module": 3,
         "tailWords": 143,
         "topic": "Tema 3: Transiciones personalizadas",
-        "words": 865
+        "words": 848
       },
       {
         "issues": [
@@ -4996,7 +4996,7 @@
         "module": 5,
         "tailWords": 146,
         "topic": "Tema 2: json_serializable",
-        "words": 983
+        "words": 960
       },
       {
         "issues": [
@@ -5121,7 +5121,7 @@
         "module": 9,
         "tailWords": 127,
         "topic": "Tema 1: Unit tests y widget tests",
-        "words": 987
+        "words": 953
       },
       {
         "issues": [
@@ -5130,7 +5130,7 @@
         "module": 9,
         "tailWords": 134,
         "topic": "Tema 2: Mocking con mocktail",
-        "words": 884
+        "words": 867
       },
       {
         "issues": [
@@ -5956,7 +5956,7 @@
         "module": 0,
         "tailWords": 147,
         "topic": "Tema 1: Optionals y unwrapping seguro",
-        "words": 1184
+        "words": 1166
       },
       {
         "issues": [
@@ -5992,7 +5992,7 @@
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 1: El protocolo View y composición",
-        "words": 1347
+        "words": 1324
       },
       {
         "issues": [
@@ -6209,7 +6209,7 @@
         "module": 2,
         "tailWords": 123,
         "topic": "Tema 1: @State y @Binding",
-        "words": 1161
+        "words": 1135
       },
       {
         "issues": [],
@@ -6248,14 +6248,14 @@
         "module": 3,
         "tailWords": 116,
         "topic": "Tema 3: Deep linking y controles de formulario",
-        "words": 888
+        "words": 870
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 111,
         "topic": "Tema 1: async/await y Task",
-        "words": 943
+        "words": 906
       },
       {
         "issues": [],
@@ -6271,7 +6271,7 @@
         "module": 4,
         "tailWords": 132,
         "topic": "Tema 3: TaskGroup y MainActor",
-        "words": 1013
+        "words": 979
       },
       {
         "issues": [],
@@ -6804,7 +6804,7 @@
         "module": 2,
         "tailWords": 123,
         "topic": "Tema 2: Genéricos, wildcards y type erasure",
-        "words": 981
+        "words": 944
       },
       {
         "issues": [
@@ -6913,7 +6913,7 @@
         "module": 5,
         "tailWords": 126,
         "topic": "Tema 2: CompletableFuture",
-        "words": 809
+        "words": 784
       },
       {
         "issues": [
@@ -6922,7 +6922,7 @@
         "module": 5,
         "tailWords": 168,
         "topic": "Tema 3: Virtual threads",
-        "words": 1035
+        "words": 1016
       },
       {
         "issues": [
@@ -6982,7 +6982,7 @@
         "module": 6,
         "tailWords": 136,
         "topic": "Tema 3: Archivos grandes y recursos del classpath",
-        "words": 960
+        "words": 917
       },
       {
         "issues": [
@@ -7009,7 +7009,7 @@
         "module": 7,
         "tailWords": 132,
         "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
-        "words": 924
+        "words": 864
       },
       {
         "issues": [
@@ -7777,7 +7777,7 @@
         "module": 10,
         "tailWords": 149,
         "topic": "Tema 2: Fastlane",
-        "words": 1025
+        "words": 1013
       },
       {
         "issues": [],
@@ -7798,7 +7798,7 @@
         "module": 11,
         "tailWords": 157,
         "topic": "Tema 2: Sincronización de datos remotos con caché local",
-        "words": 1216
+        "words": 1173
       },
       {
         "issues": [
@@ -8109,7 +8109,7 @@
         "module": 9,
         "tailWords": 132,
         "topic": "Tema 1: kotlin.test en commonTest",
-        "words": 951
+        "words": 919
       },
       {
         "issues": [
@@ -8761,7 +8761,7 @@
         "module": 10,
         "tailWords": 150,
         "topic": "Tema 2: use client para interactividad",
-        "words": 889
+        "words": 858
       },
       {
         "issues": [

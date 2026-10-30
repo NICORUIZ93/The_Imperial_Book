@@ -140,15 +140,6 @@ Esta automatización es particularmente valiosa en un contexto multiplataforma c
 - Subir simultáneamente builds de Android e iOS de la misma versión en un único paso de CI coordinado.
 - Evitar el error humano clásico de subir a producción una build firmada con el certificado de desarrollo equivocado.
 
-**Código del ejemplo:**
-
-```ruby
-lane :beta do
-  build_app(scheme: "MiApp")
-  upload_to_testflight
-end
-```
-
 El lane termina firmando y subiendo el binario de una app como `examples/rutaflow/ios/RutaFlowApp.swift` (proyecto integrador RutaFlow) empaquetado con el `Shared.framework` del Módulo 8. Antes de confiar en `fastlane beta` en CI, conviene validar el toolchain por separado: `swift --version` confirma que el runner tiene Swift disponible para compilar el `.ipa`. La secuencia completa del lane:
 
 ```mermaid

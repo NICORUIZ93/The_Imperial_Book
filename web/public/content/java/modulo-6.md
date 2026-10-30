@@ -202,21 +202,6 @@ Este patrón mantiene en memoria en cualquier momento dado únicamente la línea
 
 **¿Por qué es importante?** Leer un archivo grande línea por línea con un buffer evita problemas de memoria que cargar el archivo completo (`readAllBytes`) no evita; los recursos del classpath garantizan disponibilidad empaquetada junto con el código, sin depender de la ubicación específica del sistema de archivos del entorno de destino.
 
-**Código del ejemplo:**
-
-```java
-try (BufferedReader reader = Files.newBufferedReader(rutaGrande)) {
-    String linea;
-    while ((linea = reader.readLine()) != null) {
-        procesar(linea); // procesa línea por línea, sin cargar el archivo completo en memoria
-    }
-}
-
-try (InputStream in = getClass().getResourceAsStream("/config.json")) {
-    String config = new String(in.readAllBytes());
-}
-```
-
 ---
 
 #### Paso 4 · Demostración guiada desde cero

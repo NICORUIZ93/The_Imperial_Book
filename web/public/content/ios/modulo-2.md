@@ -45,18 +45,6 @@ struct BotonContador: View {
 
 **Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
 
-**Código del ejemplo:**
-
-```swift
-struct PantallaContador: View {
-    @State private var contador = 0
-    var body: some View { BotonContador(valor: $contador) }
-}
-struct BotonContador: View {
-    @Binding var valor: Int
-}
-```
-
 * Código: `examples/rutaflow/ios/ContentView.swift`
 * Proyecto: proyecto integrador RutaFlow
 * Visualización: concepto mostrado en diagrama

@@ -189,16 +189,6 @@ Este patrón de composición de comportamiento transversal es conceptualmente si
 
 **¿Por qué es importante?** Un mixin permite compartir comportamiento reutilizable entre clases sin depender de herencia múltiple tradicional (no soportada en Dart), resolviendo el mismo problema que protocolos con extensiones en Swift o interfaces con implementación por defecto en otros lenguajes orientados a objetos.
 
-**Código del ejemplo:**
-
-```dart
-mixin Volador {
-  void volar() => print("Volando");
-}
-class Pajaro extends Animal with Volador {}
-// Pajaro hereda de Animal Y obtiene el comportamiento de Volador
-```
-
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -297,16 +287,6 @@ final total = pedidos.fold<double>(0, (acumulado, p) => acumulado + p.monto);
 **Analogía:** un `Future` es como un recibo de un pedido que garantiza la entrega en algún momento posterior, aunque no inmediatamente: se puede seguir haciendo otras cosas mientras se espera, y `await` es simplemente el momento de recoger el pedido cuando efectivamente está listo; encadenar `where`/`map`/`fold` es como una línea de ensamblaje con estaciones sucesivas, cada una aplicando una transformación simple y bien definida, produciendo en conjunto un resultado complejo a partir de pasos individuales fáciles de entender por separado.
 
 **¿Por qué es importante?** `Future` con `async`/`await` permite código asíncrono legible de forma lineal, el mismo modelo convergente que otros lenguajes modernos; encadenar operaciones funcionales sobre colecciones expresa transformaciones complejas de forma declarativa y legible, sin bucles imperativos con estado mutable manual.
-
-**Código del ejemplo:**
-
-```dart
-Future<Usuario> obtenerUsuario() async {
-  await Future.delayed(Duration(seconds: 1));
-  return Usuario("Ana");
-}
-final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList();
-```
 
 ---
 

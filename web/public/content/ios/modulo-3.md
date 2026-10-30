@@ -173,14 +173,6 @@ Cuando el conductor toca una notificación push "nueva entrega asignada: RF-4471
 
 **¿Por qué es importante?** El deep linking mediante `.onOpenURL` lleva al usuario directamente al contenido relevante desde una entrada externa; los controles estándar de formulario y los gestos de swipe/delete cumplen con las convenciones de interacción esperadas en apps iOS nativas.
 
-**Código del ejemplo:**
-
-```swift
-.onOpenURL { url in
-    if let id = extraerID(de: url) { path.append(Tarea(id: id)) }
-}
-```
-
 **Diagrama: deep link validado antes de navegar**
 
 ```mermaid

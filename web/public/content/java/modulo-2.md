@@ -102,18 +102,6 @@ Los wildcards (`List<? extends Number>`, aceptando una lista de `Number` o cualq
 
 **¿Por qué es importante?** Los genéricos proporcionan seguridad de tipos en tiempo de compilación sin necesidad de castear manualmente; el type erasure explica por qué esa información de tipo genérico no está disponible para inspección en tiempo de ejecución, una limitación relevante al usar reflexión o al diseñar ciertas APIs genéricas avanzadas.
 
-**Código del ejemplo:**
-
-```java
-class Caja<T> {
-    private T contenido;
-    void guardar(T valor) { this.contenido = valor; }
-    T obtener() { return contenido; }
-}
-Caja<String> cajaTexto = new Caja<>();
-// En tiempo de ejecución: type erasure borra <String>, solo queda Caja
-```
-
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash

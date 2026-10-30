@@ -201,17 +201,6 @@ Scaffold(body: SafeArea(child: ContenidoPrincipal()))
 
 **¿Por qué es importante?** Centralizar los breakpoints en una función reutilizable evita inconsistencias de comparaciones numéricas dispersas; `SafeArea` importa de forma variable según el dispositivo específico dado que los elementos físicos y del sistema que invaden los bordes de pantalla (notch, controles de gestos) difieren considerablemente entre modelos.
 
-**Código del ejemplo:**
-
-```dart
-enum TipoDispositivo { movil, tablet, escritorio }
-TipoDispositivo segunAncho(double ancho) {
-  if (ancho < 600) return TipoDispositivo.movil;
-  if (ancho < 1024) return TipoDispositivo.tablet;
-  return TipoDispositivo.escritorio;
-}
-```
-
 **Diagrama: categorización por breakpoint**
 
 ```mermaid

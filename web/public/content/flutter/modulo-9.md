@@ -45,17 +45,6 @@ Un unit test verifica lógica pura (como una función de validación) completame
 
 **¿Por qué es importante?** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real, cerrando la brecha entre "la lógica es correcta" (unit test) y "la UI refleja correctamente esa lógica" sin el costo de un integration test completo.
 
-**Código del ejemplo:**
-
-```dart
-testWidgets('incrementa el contador al tocar el botón', (tester) async {
-  await tester.pumpWidget(MaterialApp(home: Contador()));
-  await tester.tap(find.byType(ElevatedButton));
-  await tester.pump();
-  expect(find.text('1'), findsOneWidget);
-});
-```
-
 **Diagrama: unit test vs widget test**
 
 ```mermaid
@@ -132,13 +121,6 @@ Esta necesidad de aislar dependencias externas para hacer los tests más rápido
 **Analogía:** mockear una dependencia con `mocktail` es como usar un maniquí programable que responde exactamente como se le indique ante una acción específica de práctica, sin necesidad de contar con la persona o el sistema real completo para ese ensayo puntual, permitiendo repetir el ensayo tantas veces como sea necesario de forma rápida y predecible.
 
 **¿Por qué es importante?** Aislar dependencias externas con `mocktail` hace los widget tests más rápidos (sin latencia real de red/disco) y más confiables (sin depender de la disponibilidad de servicios externos reales que podrían fallar o variar entre ejecuciones del test).
-
-**Código del ejemplo:**
-
-```dart
-class RepositorioFake extends Mock implements TareaRepository {}
-when(() => repo.obtenerTodas()).thenAnswer((_) async => [tareaDePrueba]);
-```
 
 **Diagrama: aislamiento con mock**
 

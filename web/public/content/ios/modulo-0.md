@@ -83,14 +83,6 @@ Swift incorpora la ausencia de valor directamente en el sistema de tipos mediant
 
 **¿Por qué es importante?** El sistema de optionals de Swift previene la categoría completa de errores de "acceder a un valor ausente" detectándolos en tiempo de compilación, en vez de dejar que se manifiesten como crashes en producción como ocurre en lenguajes sin este mecanismo incorporado al sistema de tipos.
 
-**Código del ejemplo:**
-
-```swift
-var nombre: String? = nil
-if let nombreDesenvuelto = nombre { print(nombreDesenvuelto) }
-let saludo = nombre ?? "Invitado"
-```
-
 #### Paso 4 · Demostración guiada desde cero
 Parte de una **carpeta vacía** y crea un ejecutable dedicado a valores ausentes:
 ```bash

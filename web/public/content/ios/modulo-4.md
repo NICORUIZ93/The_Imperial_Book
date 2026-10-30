@@ -35,16 +35,6 @@ El modificador `.task { }` en una vista SwiftUI lanza una `Task` vinculada autom
 
 **Analogía:** `async`/`await` es como poder escribir instrucciones de cocina en el orden natural en que ocurren ("hierve el agua, luego agrega la pasta"), en vez de tener que estructurarlas como una cadena de notas de "cuando termines esto, avísame para hacer lo siguiente" (callbacks anidados); `.task` vinculado al ciclo de vida es como cancelar automáticamente un pedido si el cliente que lo hizo ya se retiró del restaurante.
 
-**Código del ejemplo:**
-
-```swift
-func obtenerUsuario(id: String) async throws -> Usuario {
-    try await Task.sleep(for: .seconds(1))
-    return Usuario(id: id, nombre: "Ana")
-}
-.task { usuario = try await obtenerUsuario(id: "1") }  // cancelado automáticamente si la vista desaparece
-```
-
 * Proyecto: proyecto integrador RutaFlow
 * Visualización: concepto mostrado en diagrama
 
@@ -195,16 +185,6 @@ Marcar una clase (o una propiedad específica) con `@MainActor` garantiza, verif
 **Analogía:** un `TaskGroup` es como un supervisor que lanza varios equipos a trabajar en paralelo pero se asegura de que todos hayan terminado (o hayan sido detenidos) antes de dar por cerrado el proyecto completo, sin dejar ningún equipo trabajando sin supervisión después de que el proyecto oficialmente concluyó; `@MainActor` es como una regla de seguridad de fábrica que exige que cierta maquinaria delicada (la UI) solo pueda ser operada por un único operador designado, verificada automáticamente antes de permitir que cualquier otro trabajador intente tocarla.
 
 **¿Por qué es importante?** `TaskGroup` garantiza que las tareas hijas lanzadas en paralelo completen dentro de un ámbito bien definido, evitando tareas huérfanas; `@MainActor` previene, verificado por el compilador, actualizaciones inseguras de UI desde hilos en segundo plano.
-
-**Código del ejemplo:**
-
-```swift
-withThrowingTaskGroup(of: Any.self) { group in
-    group.addTask { try await obtenerUsuario() }
-    group.addTask { try await obtenerPedidos() }
-}
-// Ambas tareas corren en paralelo, y el bloque no retorna hasta que ambas completen
-```
 
 **Diagrama: TaskGroup en paralelo + @MainActor**
 

@@ -103,17 +103,6 @@ Cualquier tipo que implemente el protocolo `View` (con una propiedad computada `
 
 **¿Por qué es importante?** El protocolo `View` unifica vistas nativas de SwiftUI y vistas propias bajo el mismo mecanismo de composición, permitiendo construir UIs complejas a partir de piezas pequeñas y reutilizables sin ninguna distinción especial entre ellas.
 
-**Código del ejemplo:**
-
-```swift
-struct TarjetaTarea: View {
-    let titulo: String
-    var body: some View {
-        Text(titulo).padding().background(Color.blue.opacity(0.1))
-    }
-}
-```
-
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Divide la tarjeta de entrega en vistas que reciben datos y acciones. Usa previews con estados pendiente y entregado y verifica que componer la vista no ejecuta operaciones de red.
 
 #### Paso 4 · Demostración guiada desde cero

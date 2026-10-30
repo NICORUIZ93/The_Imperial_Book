@@ -103,15 +103,6 @@ Esta composición fluida resuelve el problema de anidar callbacks asíncronos su
 
 **¿Por qué es importante?** `CompletableFuture` permite componer operaciones asíncronas dependientes entre sí de forma legible y lineal, con manejo de errores centralizado, evitando la anidación progresiva de callbacks manuales.
 
-**Código del ejemplo:**
-
-```java
-CompletableFuture.supplyAsync(() -> obtenerDatos())
-    .thenApply(datos -> transformar(datos))
-    .thenAccept(resultado -> System.out.println(resultado))
-    .exceptionally(error -> { log.error("Falló", error); return null; });
-```
-
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -168,16 +159,6 @@ Este bloque lanza 100,000 tareas concurrentes, cada una en su propio virtual thr
 **Analogía:** un thread de plataforma es como reservar una habitación de hotel completa dedicada exclusivamente a una única tarea, con un costo fijo considerable sin importar cuánto tiempo esa tarea pase simplemente esperando sin hacer nada; un virtual thread es como una sala de espera compartida y económica donde miles de personas pueden esperar simultáneamente, y solo se asigna un recurso físico real (el carrier thread) a quien efectivamente está siendo atendido en ese instante específico, liberándolo inmediatamente para atender a otra persona en cuanto la primera simplemente vuelve a esperar.
 
 **¿Por qué es importante?** Los virtual threads consumen una fracción de la memoria de los threads de plataforma y permiten lanzar cientos de miles de tareas concurrentes con código síncrono familiar, siendo especialmente apropiados para cargas dominadas por I/O bloqueante.
-
-**Código del ejemplo:**
-
-```java
-try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-    for (int i = 0; i < 100_000; i++) {
-        executor.submit(() -> hacerLlamadaIO());
-    }
-}
-```
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:

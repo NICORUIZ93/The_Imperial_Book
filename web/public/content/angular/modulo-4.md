@@ -216,16 +216,6 @@ navegación → /admin
 └───────────────┘
 ```
 
-**Código del ejemplo:**
-
-```ts
-export const authGuard: CanActivateFn = () => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
-  return auth.estaAutenticado() ? true : router.parseUrl('/login');
-};
-```
-
 #### Paso 4 · Demostración guiada desde cero
 
 Continuando en `demo-routing` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-guards --standalone --skip-git --defaults`), crea `src/app/auth.guard.ts`:

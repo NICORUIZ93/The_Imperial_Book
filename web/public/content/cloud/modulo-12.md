@@ -36,14 +36,6 @@ Un correlation ID es un identificador único generado al inicio de una solicitud
 
 **¿Por qué es importante?** El correlation ID es esencial para diagnosticar problemas porque permite filtrar todos los logs relacionados con una transacción específica que atraviesa múltiples servicios mediante una búsqueda directa, en vez de correlacionar manualmente logs dispersos basándose en suposiciones de timing.
 
-**Código del ejemplo:**
-
-```python
-correlation_id = str(uuid.uuid4())
-logging.info(f"correlation_id={correlation_id} accion=procesar_tarea")
-# El mismo correlation_id se propaga a través de CADA servicio que procesa esta solicitud
-```
-
 **Diagrama:**
 
 ```mermaid

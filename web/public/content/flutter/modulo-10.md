@@ -33,16 +33,6 @@ Definir un `ThemeData` centralizado en el punto de entrada de la app (colores, t
 
 **¿Por qué es importante?** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget, y `ThemeMode.system` respeta automáticamente la preferencia de modo oscuro/claro del sistema operativo del usuario.
 
-**Código del ejemplo:**
-
-```dart
-MaterialApp(
-  theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
-  darkTheme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue, brightness: Brightness.dark),
-  themeMode: ThemeMode.system,
-)
-```
-
 **Diagrama: un color base deriva todo el esquema**
 
 ```mermaid
@@ -112,14 +102,6 @@ Esta decisión de "una sola base de código Dart, pero apariencia adaptada segú
 **Analogía:** adaptar Material/Cupertino según la plataforma es como un guía turístico bilingüe que no solo traduce el idioma sino que también adapta sutilmente su comportamiento y protocolo según las costumbres culturales específicas de cada audiencia, resultando en una experiencia que se percibe genuinamente adaptada en vez de una traducción literal aplicada indiscriminadamente sin ninguna consideración cultural.
 
 **¿Por qué es importante?** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo con las expectativas visuales y de interacción específicas que los usuarios de cada plataforma ya tienen formadas por el uso de otras apps nativas.
-
-**Código del ejemplo:**
-
-```dart
-Platform.isIOS
-    ? CupertinoButton(child: Text('Continuar'), onPressed: () {})
-    : ElevatedButton(child: Text('Continuar'), onPressed: () {})
-```
 
 **Diagrama: adaptación por plataforma**
 
@@ -195,13 +177,6 @@ Probar la app explícitamente en ambos modos (claro y oscuro) en un dispositivo 
 **Analogía:** navegar la propia app solo con un lector de pantalla activado es como intentar usar el propio producto con los ojos vendados, revelando qué tan bien funciona genuinamente para alguien que depende completamente del tacto y del sonido; probar ambos modos de color explícitamente es como revisar un documento impreso tanto en tinta clara como oscura antes de asumir que es legible en cualquiera de las dos condiciones.
 
 **¿Por qué es importante?** Activar un lector de pantalla en la propia app revela huecos de accesibilidad que una inspección visual no puede detectar; probar ambos modos de color explícitamente revela contrastes insuficientes o iconografía invisible que no se notarían probando solo uno de los dos modos.
-
-**Código del ejemplo:**
-
-```dart
-Semantics(label: 'Eliminar tarea', button: true, child: IconButton(icon: Icon(Icons.delete), onPressed: eliminar))
-// Sin esto, TalkBack/VoiceOver leen simplemente "botón" genérico
-```
 
 **Diagrama: verificación en ambos ejes**
 

@@ -87,7 +87,7 @@
     "java": {
       "topics": 83,
       "code": 83,
-      "commentedCode": 59,
+      "commentedCode": 57,
       "mermaid": 24,
       "archifyVisual": 3,
       "asciiVisual": 0,
@@ -147,7 +147,7 @@
     "flutter": {
       "topics": 63,
       "code": 63,
-      "commentedCode": 48,
+      "commentedCode": 47,
       "mermaid": 51,
       "archifyVisual": 0,
       "asciiVisual": 15,
@@ -1300,6 +1300,13 @@
     {
       "track": "java",
       "module": 2,
+      "topic": "Tema 2: Genéricos, wildcards y type erasure",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 2,
       "topic": "Tema 3: Comparable vs Comparator, e iteración",
       "missingCode": false,
       "missingComments": true
@@ -1392,6 +1399,13 @@
       "track": "java",
       "module": 7,
       "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
       "missingCode": false,
       "missingComments": true
     },
@@ -1777,6 +1791,13 @@
       "track": "ios",
       "module": 7,
       "topic": "Tema 2: Operadores: debounce y combineLatest",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "flutter",
+      "module": 0,
+      "topic": "Tema 2: Clases y mixins",
       "missingCode": false,
       "missingComments": true
     },
