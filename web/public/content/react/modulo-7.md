@@ -32,6 +32,36 @@ graph TD
     style D fill:#fff3e0
 ```
 
+**Evidencia de aprendizaje:** entrega store compartido, divergencia detectada y tercer consumidor sincronizado.
+**Conceptos clave:** `create`, suscripción selectiva, sin Provider obligatorio.
+
+Zustand crea un store global mediante una única función `create((set, get) => ({...}))`, donde `set` actualiza el estado (de forma similar en espíritu a un setter de `useState` pero operando sobre un store compartido fuera del árbol de componentes) y `get` lee el estado actual dentro de las propias acciones del store (`total: () => get().items.reduce((s, i) => s + i.precio, 0)`), sin requerir ningún `Provider` envolvente en el árbol de componentes (a diferencia de Context, Módulo 4, que exige un Provider explícito para que sus consumidores funcionen).
+
+La característica más importante de Zustand para el rendimiento es la suscripción selectiva: `const items = useCarrito(state => state.items)` suscribe al componente únicamente a la porción específica del store que la función selectora extrae (`state.items`), re-renderizando ese componente solo cuando esa porción específica cambia, no ante cualquier cambio en cualquier otra parte del store, resolviendo directamente el problema de granularidad de re-render que Context tiene (Módulo 4, Tema 2), donde cualquier consumidor se re-renderiza ante cualquier cambio del valor completo provisto, sin distinción de qué porción específica cambió.
+
+**Analogía:** Zustand es como un tablero de anuncios central donde cada persona puede suscribirse específicamente solo a la sección del tablero que le interesa, notificándose únicamente cuando esa sección específica cambia, en vez de recibir una notificación cada vez que cualquier sección del tablero completo se actualiza.
+
+**¿Por qué es importante?** La suscripción selectiva de Zustand evita re-renders innecesarios de componentes que no dependen de la porción específica del estado que cambió, un problema que Context no resuelve de forma nativa.
+
+**Código del ejemplo:**
+
+```jsx
+const useCarrito = create((set, get) => ({
+  items: [],
+  agregar: (item) => set(state => ({ items: [...state.items, item] })),
+  total: () => get().items.reduce((s, i) => s + i.precio, 0),
+}));
+
+function Carrito() {
+  const items = useCarrito(state => state.items); // solo re-renderiza si `items` cambia
+  return <ul>{items.map(i => <li key={i.id}>{i.nombre}</li>)}</ul>;
+}
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const useFiltroStore = create((set) => ({
@@ -66,35 +96,6 @@ Corregí el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agregá 
 #### Paso 7 · Cierre y evidencia
 Entregá el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explicá por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuentes oficiales: https://zustand.docs.pmnd.rs/getting-started/introduction y https://zustand.docs.pmnd.rs/guides/typescript.
 **¿Por qué es importante?** La suscripción selectiva de Zustand evita re-renders innecesarios, y un store único como fuente de verdad evita la divergencia que ocurre cuando el mismo dato vive duplicado en dos lugares.
-**Evidencia de aprendizaje:** entrega store compartido, divergencia detectada y tercer consumidor sincronizado.
-**Conceptos clave:** `create`, suscripción selectiva, sin Provider obligatorio.
-
-Zustand crea un store global mediante una única función `create((set, get) => ({...}))`, donde `set` actualiza el estado (de forma similar en espíritu a un setter de `useState` pero operando sobre un store compartido fuera del árbol de componentes) y `get` lee el estado actual dentro de las propias acciones del store (`total: () => get().items.reduce((s, i) => s + i.precio, 0)`), sin requerir ningún `Provider` envolvente en el árbol de componentes (a diferencia de Context, Módulo 4, que exige un Provider explícito para que sus consumidores funcionen).
-
-La característica más importante de Zustand para el rendimiento es la suscripción selectiva: `const items = useCarrito(state => state.items)` suscribe al componente únicamente a la porción específica del store que la función selectora extrae (`state.items`), re-renderizando ese componente solo cuando esa porción específica cambia, no ante cualquier cambio en cualquier otra parte del store, resolviendo directamente el problema de granularidad de re-render que Context tiene (Módulo 4, Tema 2), donde cualquier consumidor se re-renderiza ante cualquier cambio del valor completo provisto, sin distinción de qué porción específica cambió.
-
-**Analogía:** Zustand es como un tablero de anuncios central donde cada persona puede suscribirse específicamente solo a la sección del tablero que le interesa, notificándose únicamente cuando esa sección específica cambia, en vez de recibir una notificación cada vez que cualquier sección del tablero completo se actualiza.
-
-**¿Por qué es importante?** La suscripción selectiva de Zustand evita re-renders innecesarios de componentes que no dependen de la porción específica del estado que cambió, un problema que Context no resuelve de forma nativa.
-
-**Código del ejemplo:**
-
-```jsx
-const useCarrito = create((set, get) => ({
-  items: [],
-  agregar: (item) => set(state => ({ items: [...state.items, item] })),
-  total: () => get().items.reduce((s, i) => s + i.precio, 0),
-}));
-
-function Carrito() {
-  const items = useCarrito(state => state.items); // solo re-renderiza si `items` cambia
-  return <ul>{items.map(i => <li key={i.id}>{i.nombre}</li>)}</ul>;
-}
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 2: Redux Toolkit — slices y ceremonia
 
@@ -106,6 +107,33 @@ El equipo de RutaFlow está evaluando si migrar todo su estado de cliente a Redu
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Redux Toolkit reduce el boilerplate del Redux clásico con `createSlice` e Immer, pero sigue requiriendo slice + store central + Provider, más ceremonia que la función única de Zustand.
+
+**Evidencia de aprendizaje:** entrega implementación con Redux Toolkit, selector de granularidad gruesa detectado y corrección con selector específico.
+**Conceptos clave:** `createSlice`, Immer para mutación segura, comparación de ceremonia con Zustand.
+
+Redux Toolkit es la forma moderna y recomendada de usar Redux, reduciendo drásticamente el boilerplate del Redux clásico (que requería definir manualmente constantes de action types, creadores de actions, y reducers con switch statements extensos): `createSlice({ name: 'carrito', initialState: { items: [] }, reducers: { agregar: (state, action) => { state.items.push(action.payload); } } })` genera automáticamente los creadores de actions y el reducer correspondiente a partir de una única definición declarativa, y crucialmente usa Immer internamente, permitiendo escribir código que "parece" mutar el estado directamente (`state.items.push(...)`) mientras Immer, por debajo, produce en realidad un nuevo objeto de estado inmutable, preservando la garantía de inmutabilidad que Redux requiere sin que el desarrollador tenga que escribir manualmente el spread de objetos y arreglos.
+
+A pesar de esta reducción significativa de boilerplate respecto al Redux clásico, Redux Toolkit sigue trayendo más ceremonia estructural que Zustand para el mismo caso de uso: un store de Redux Toolkit requiere definir slices, configurar un store central, y envolver la aplicación con un `Provider` de Redux, mientras que el mismo carrito implementado con Zustand (Tema 1) es una única función `create()` sin ninguna infraestructura adicional, reflejando la misma relación de ceremonia frente a beneficio estudiada para NgRx frente a un store de signals en el Módulo 9 del track de Angular: Redux Toolkit se justifica cuando el proyecto necesita las herramientas de depuración de historial (Redux DevTools), RTK Query para gestión de datos del servidor integrada, o un patrón único obligatorio en un equipo grande.
+
+**Analogía:** Redux Toolkit es como un sistema de contabilidad corporativo con procedimientos estandarizados y auditoría integrada, considerablemente más simple que la contabilidad manual tradicional (Redux clásico) pero todavía más formal y estructurado que llevar las cuentas en una libreta simple (Zustand).
+
+**¿Por qué es importante?** Redux Toolkit reduce drásticamente el boilerplate del Redux clásico mediante `createSlice` e Immer, pero sigue trayendo más ceremonia estructural que Zustand, justificada cuando se necesitan sus herramientas de depuración o su ecosistema (RTK Query).
+
+**Código del ejemplo:**
+
+```jsx
+const carritoSlice = createSlice({
+  name: 'carrito',
+  initialState: { items: [] },
+  reducers: {
+    agregar: (state, action) => { state.items.push(action.payload); }, // Immer permite "mutar" de forma segura
+  },
+});
+```
+
+* Ejecutar: `npm test`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -149,32 +177,6 @@ Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.z
 #### Paso 7 · Cierre y evidencia
 Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
 **¿Por qué es importante?** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
-**Evidencia de aprendizaje:** entrega implementación con Redux Toolkit, selector de granularidad gruesa detectado y corrección con selector específico.
-**Conceptos clave:** `createSlice`, Immer para mutación segura, comparación de ceremonia con Zustand.
-
-Redux Toolkit es la forma moderna y recomendada de usar Redux, reduciendo drásticamente el boilerplate del Redux clásico (que requería definir manualmente constantes de action types, creadores de actions, y reducers con switch statements extensos): `createSlice({ name: 'carrito', initialState: { items: [] }, reducers: { agregar: (state, action) => { state.items.push(action.payload); } } })` genera automáticamente los creadores de actions y el reducer correspondiente a partir de una única definición declarativa, y crucialmente usa Immer internamente, permitiendo escribir código que "parece" mutar el estado directamente (`state.items.push(...)`) mientras Immer, por debajo, produce en realidad un nuevo objeto de estado inmutable, preservando la garantía de inmutabilidad que Redux requiere sin que el desarrollador tenga que escribir manualmente el spread de objetos y arreglos.
-
-A pesar de esta reducción significativa de boilerplate respecto al Redux clásico, Redux Toolkit sigue trayendo más ceremonia estructural que Zustand para el mismo caso de uso: un store de Redux Toolkit requiere definir slices, configurar un store central, y envolver la aplicación con un `Provider` de Redux, mientras que el mismo carrito implementado con Zustand (Tema 1) es una única función `create()` sin ninguna infraestructura adicional, reflejando la misma relación de ceremonia frente a beneficio estudiada para NgRx frente a un store de signals en el Módulo 9 del track de Angular: Redux Toolkit se justifica cuando el proyecto necesita las herramientas de depuración de historial (Redux DevTools), RTK Query para gestión de datos del servidor integrada, o un patrón único obligatorio en un equipo grande.
-
-**Analogía:** Redux Toolkit es como un sistema de contabilidad corporativo con procedimientos estandarizados y auditoría integrada, considerablemente más simple que la contabilidad manual tradicional (Redux clásico) pero todavía más formal y estructurado que llevar las cuentas en una libreta simple (Zustand).
-
-**¿Por qué es importante?** Redux Toolkit reduce drásticamente el boilerplate del Redux clásico mediante `createSlice` e Immer, pero sigue trayendo más ceremonia estructural que Zustand, justificada cuando se necesitan sus herramientas de depuración o su ecosistema (RTK Query).
-
-**Código del ejemplo:**
-
-```jsx
-const carritoSlice = createSlice({
-  name: 'carrito',
-  initialState: { items: [] },
-  reducers: {
-    agregar: (state, action) => { state.items.push(action.payload); }, // Immer permite "mutar" de forma segura
-  },
-});
-```
-
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto
 
@@ -186,6 +188,32 @@ Alguien propuso guardar la lista de envíos (que viene de la API) dentro del mis
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El estado de servidor (datos de una API, sujetos a expiración y revalidación) pertenece a TanStack Query; el estado de cliente puro (un modal abierto, un filtro) pertenece a Zustand/Context/`useState`; mezclarlos reimplementa peor lo que TanStack Query ya ofrece.
+
+**Evidencia de aprendizaje:** entrega mezcla incorrecta identificada, divergencia provocada y store limpio con responsabilidades separadas.
+**Conceptos clave:** separación de responsabilidades entre TanStack Query y estado global, sobre-ingeniería evitable.
+
+El estado de servidor (datos que provienen de una API externa, sujetos a expiración, necesitados de revalidación periódica, y potencialmente compartidos entre múltiples usuarios simultáneos) pertenece conceptualmente a TanStack Query (Módulo 6), que ya resuelve cache, invalidación y refetch específicamente para ese tipo de estado; el estado de cliente puro (si un modal está abierto, qué pestaña está activa, el tema visual seleccionado) pertenece a Zustand, Context, o simplemente `useState` local, dado que ese estado no tiene ningún origen ni necesidad de sincronización con un servidor externo.
+
+Mezclar ambos tipos de estado en el mismo store (por ejemplo, guardar tanto la lista de tareas obtenida de una API como el estado de si un modal está abierto en el mismo store de Zustand) suele complicar innecesariamente ambos casos: el estado de servidor terminaría reimplementando manualmente (de forma más pobre) la cache, invalidación y revalidación que TanStack Query ya ofrece de fábrica, mientras que el estado de cliente puro no se beneficia en nada de vivir junto a datos de red que tienen un ciclo de vida completamente distinto.
+
+Finalmente, una parte importante de gestión de estado con criterio es reconocer cuándo ninguna librería de estado global es necesaria en absoluto: si el estado relevante solo se usa dentro de un único componente (o un componente y sus hijos directos, pasables cómodamente vía props), introducir Zustand, Redux, o incluso Context es sobre-ingeniería que agrega indirección sin ningún beneficio real; `useState` local sigue siendo, en la inmensa mayoría de los casos, la herramienta correcta por defecto.
+
+**Analogía:** mezclar estado de servidor y de cliente en el mismo store es como guardar en el mismo cajón tanto la correspondencia que llega diariamente del exterior (que necesita revisarse y actualizarse constantemente) como los objetos personales fijos que nunca cambian, complicando la gestión de ambos innecesariamente; reconocer cuándo no se necesita ninguna librería es como no instalar un sistema de gestión de inventario completo para organizar tres objetos personales en un cajón.
+
+**¿Por qué es importante?** Separar claramente estado de servidor (TanStack Query) de estado de cliente (Zustand/Context/`useState`) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita complicar estado de cliente simple con infraestructura innecesaria; reconocer cuándo ningún estado global es necesario evita sobre-ingeniería.
+
+**Diagrama:**
+
+```
+Estado de servidor (API, cache, expiración) → TanStack Query
+Estado de cliente puro (modal abierto, tema) → Zustand / Context / useState local
+Estado usado en un único componente → useState local, sin ninguna librería global
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -217,31 +245,6 @@ Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por comp
 #### Paso 7 · Cierre y evidencia
 Entregá la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explicá con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/getting-started/introduction.
 **¿Por qué es importante?** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
-**Evidencia de aprendizaje:** entrega mezcla incorrecta identificada, divergencia provocada y store limpio con responsabilidades separadas.
-**Conceptos clave:** separación de responsabilidades entre TanStack Query y estado global, sobre-ingeniería evitable.
-
-El estado de servidor (datos que provienen de una API externa, sujetos a expiración, necesitados de revalidación periódica, y potencialmente compartidos entre múltiples usuarios simultáneos) pertenece conceptualmente a TanStack Query (Módulo 6), que ya resuelve cache, invalidación y refetch específicamente para ese tipo de estado; el estado de cliente puro (si un modal está abierto, qué pestaña está activa, el tema visual seleccionado) pertenece a Zustand, Context, o simplemente `useState` local, dado que ese estado no tiene ningún origen ni necesidad de sincronización con un servidor externo.
-
-Mezclar ambos tipos de estado en el mismo store (por ejemplo, guardar tanto la lista de tareas obtenida de una API como el estado de si un modal está abierto en el mismo store de Zustand) suele complicar innecesariamente ambos casos: el estado de servidor terminaría reimplementando manualmente (de forma más pobre) la cache, invalidación y revalidación que TanStack Query ya ofrece de fábrica, mientras que el estado de cliente puro no se beneficia en nada de vivir junto a datos de red que tienen un ciclo de vida completamente distinto.
-
-Finalmente, una parte importante de gestión de estado con criterio es reconocer cuándo ninguna librería de estado global es necesaria en absoluto: si el estado relevante solo se usa dentro de un único componente (o un componente y sus hijos directos, pasables cómodamente vía props), introducir Zustand, Redux, o incluso Context es sobre-ingeniería que agrega indirección sin ningún beneficio real; `useState` local sigue siendo, en la inmensa mayoría de los casos, la herramienta correcta por defecto.
-
-**Analogía:** mezclar estado de servidor y de cliente en el mismo store es como guardar en el mismo cajón tanto la correspondencia que llega diariamente del exterior (que necesita revisarse y actualizarse constantemente) como los objetos personales fijos que nunca cambian, complicando la gestión de ambos innecesariamente; reconocer cuándo no se necesita ninguna librería es como no instalar un sistema de gestión de inventario completo para organizar tres objetos personales en un cajón.
-
-**¿Por qué es importante?** Separar claramente estado de servidor (TanStack Query) de estado de cliente (Zustand/Context/`useState`) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita complicar estado de cliente simple con infraestructura innecesaria; reconocer cuándo ningún estado global es necesario evita sobre-ingeniería.
-
-**Diagrama:**
-
-```
-Estado de servidor (API, cache, expiración) → TanStack Query
-Estado de cliente puro (modal abierto, tema) → Zustand / Context / useState local
-Estado usado en un único componente → useState local, sin ninguna librería global
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 4: Jotai, Recoil y XState como alternativas
 

@@ -11,22 +11,7 @@ Al finalizar vas a publicar en un repositorio ECR privado la imagen del planific
 El planificador de rutas de RutaFlow calcula asignaciones óptimas conductor-envío con lógica propietaria de la empresa — esa imagen nunca debería publicarse en un registro público como Docker Hub, ni accesible sin control de acceso vía IAM.
 #### Paso 3 · Teoría, modelo mental y analogía
 ECR es un almacén cerrado con identidad y auditoría, integrado directamente con IAM; Docker Hub es un mercado público pensado para compartir, no para proteger.
-#### Paso 4 · Demostración guiada
-```bash
-echo -e "FROM node:20-alpine\nCOPY . .\nCMD [\"node\",\"planificador.js\"]" > Dockerfile
-docker build -t rutaflow-planificador:latest .
-aws ecr create-repository --repository-name rutaflow-planificador
-aws ecr get-login-password | docker login --username AWS --password-stdin localhost:4566
-docker tag rutaflow-planificador:latest localhost:4566/rutaflow-planificador:latest
-docker push localhost:4566/rutaflow-planificador:latest
-```
-Resultado esperado: `docker push` termina confirmando el digest de la imagen subida — la imagen del planificador ahora vive en un repositorio privado, visible solo para quien tenga el permiso IAM correspondiente, nunca en un índice público.
-#### Paso 5 · Práctica guiada
-Pista: cerrá sesión (`docker logout localhost:4566`) y probá `docker pull localhost:4566/rutaflow-planificador:latest` sin volver a autenticarte — ese es el fallo deliberado: la extracción se rechaza porque no hay sesión autenticada contra el registro, a diferencia de Docker Hub, donde una imagen pública se puede extraer sin ninguna credencial.
-#### Paso 6 · Práctica independiente
-Volvé a autenticarte, publicá una segunda versión (`:v2`) de la misma imagen, y usá `aws ecr describe-images --repository-name rutaflow-planificador` para comparar el `imageDigest` de `latest` contra el de `v2` — confirmá que son distintos, evidencia de que un tag mutable como `latest` no te dice por sí solo qué contenido real se está ejecutando.
-#### Paso 7 · Cierre y evidencia
-Entregá la publicación exitosa del Paso 4, el rechazo sin sesión del Paso 5, y la comparación de digests del Paso 6; explicá por qué un repositorio como este nunca debería ser público para RutaFlow. Siguiente paso: orquestación. Errores comunes: usar tags mutables y credenciales compartidas. Fuente oficial: https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html.
+
 **Conceptos clave:** registro privado con control de acceso IAM integrado, no un registro público genérico.
 
 ```bash
@@ -56,6 +41,23 @@ docker push localhost:4566/mi-api:latest
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Publica la imagen del consumidor con una etiqueta identificable y registra su digest. Despliega por esa referencia inmutable y comprueba que reconstruir otra imagen no cambia el artefacto ya seleccionado.
 
+#### Paso 4 · Demostración guiada
+```bash
+echo -e "FROM node:20-alpine\nCOPY . .\nCMD [\"node\",\"planificador.js\"]" > Dockerfile
+docker build -t rutaflow-planificador:latest .
+aws ecr create-repository --repository-name rutaflow-planificador
+aws ecr get-login-password | docker login --username AWS --password-stdin localhost:4566
+docker tag rutaflow-planificador:latest localhost:4566/rutaflow-planificador:latest
+docker push localhost:4566/rutaflow-planificador:latest
+```
+Resultado esperado: `docker push` termina confirmando el digest de la imagen subida — la imagen del planificador ahora vive en un repositorio privado, visible solo para quien tenga el permiso IAM correspondiente, nunca en un índice público.
+#### Paso 5 · Práctica guiada
+Pista: cerrá sesión (`docker logout localhost:4566`) y probá `docker pull localhost:4566/rutaflow-planificador:latest` sin volver a autenticarte — ese es el fallo deliberado: la extracción se rechaza porque no hay sesión autenticada contra el registro, a diferencia de Docker Hub, donde una imagen pública se puede extraer sin ninguna credencial.
+#### Paso 6 · Práctica independiente
+Volvé a autenticarte, publicá una segunda versión (`:v2`) de la misma imagen, y usá `aws ecr describe-images --repository-name rutaflow-planificador` para comparar el `imageDigest` de `latest` contra el de `v2` — confirmá que son distintos, evidencia de que un tag mutable como `latest` no te dice por sí solo qué contenido real se está ejecutando.
+#### Paso 7 · Cierre y evidencia
+Entregá la publicación exitosa del Paso 4, el rechazo sin sesión del Paso 5, y la comparación de digests del Paso 6; explicá por qué un repositorio como este nunca debería ser público para RutaFlow. Siguiente paso: orquestación. Errores comunes: usar tags mutables y credenciales compartidas. Fuente oficial: https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html.
+
 ### Tema 2: Task Definition y ECS Cluster
 
 #### Paso 1 · Objetivo y preparación
@@ -64,20 +66,7 @@ Al finalizar vas a correr `rutaflow-planificador` (Tema 1) como una tarea real d
 El planificador corre varios minutos calculando rutas óptimas — RutaFlow necesita que, si el contenedor se cae a mitad de cálculo, algo lo vuelva a levantar automáticamente, sin que un humano tenga que notarlo y reiniciarlo a mano.
 #### Paso 3 · Teoría, modelo mental y analogía
 La Task Definition es el plano de cómo correr el contenedor; el Cluster es quien mantiene ese estado deseado, reemplazando tareas que se caen.
-#### Paso 4 · Demostración guiada
-```bash
-aws ecs register-task-definition --family rutaflow-planificador-task \
-  --container-definitions '[{"name":"planificador","image":"localhost:4566/rutaflow-planificador:latest","memory":512,"cpu":256}]'
-aws ecs create-cluster --cluster-name rutaflow-cluster
-aws ecs run-task --cluster rutaflow-cluster --task-definition rutaflow-planificador-task
-```
-Resultado esperado: `run-task` devuelve un JSON con la tarea en estado `PENDING` o `RUNNING` — el cluster ya sabe exactamente cuánta memoria (512 MB) y CPU (256 unidades) reservar para cada ejecución del planificador, declarado una sola vez en la Task Definition.
-#### Paso 5 · Práctica guiada
-Pista: registrá una segunda Task Definition (`rutaflow-planificador-task-v2`) apuntando a una imagen que nunca publicaste (`localhost:4566/rutaflow-planificador:v99`) y corré `run-task` con ella — ese es el fallo deliberado: la tarea entra en estado `STOPPED` con un motivo de fallo relacionado a no poder descargar la imagen, no un error de tu código, sino de una referencia que nunca existió.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 apuntando de nuevo a `:latest`, y documentá qué pasaría si el planificador necesitara escalar a tres ejecuciones simultáneas en hora pico (pista: `run-task --count 3` en vez de una tarea suelta, o un ECS Service en vez de tareas individuales para mantener ese número de forma continua).
-#### Paso 7 · Cierre y evidencia
-Entregá la Task Definition registrada y corriendo, el fallo de imagen inexistente del Paso 5, y la reflexión sobre escalado del Paso 6; explicá qué controla la Task Definition y qué controla el Cluster por separado. Siguiente paso: elegir servicio. Errores comunes: estado manual y no definir límites. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
+
 **Conceptos clave:** especificación declarativa de cómo ejecutar un contenedor, orquestada por un cluster.
 
 ```bash
@@ -106,6 +95,21 @@ flowchart TD
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Declara recursos, imagen, configuración y logs de la tarea del consumidor. Arráncala con una configuración inválida y verifica que el fallo es observable sin que la tarea aparezca saludable.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws ecs register-task-definition --family rutaflow-planificador-task \
+  --container-definitions '[{"name":"planificador","image":"localhost:4566/rutaflow-planificador:latest","memory":512,"cpu":256}]'
+aws ecs create-cluster --cluster-name rutaflow-cluster
+aws ecs run-task --cluster rutaflow-cluster --task-definition rutaflow-planificador-task
+```
+Resultado esperado: `run-task` devuelve un JSON con la tarea en estado `PENDING` o `RUNNING` — el cluster ya sabe exactamente cuánta memoria (512 MB) y CPU (256 unidades) reservar para cada ejecución del planificador, declarado una sola vez en la Task Definition.
+#### Paso 5 · Práctica guiada
+Pista: registrá una segunda Task Definition (`rutaflow-planificador-task-v2`) apuntando a una imagen que nunca publicaste (`localhost:4566/rutaflow-planificador:v99`) y corré `run-task` con ella — ese es el fallo deliberado: la tarea entra en estado `STOPPED` con un motivo de fallo relacionado a no poder descargar la imagen, no un error de tu código, sino de una referencia que nunca existió.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 apuntando de nuevo a `:latest`, y documentá qué pasaría si el planificador necesitara escalar a tres ejecuciones simultáneas en hora pico (pista: `run-task --count 3` en vez de una tarea suelta, o un ECS Service en vez de tareas individuales para mantener ese número de forma continua).
+#### Paso 7 · Cierre y evidencia
+Entregá la Task Definition registrada y corriendo, el fallo de imagen inexistente del Paso 5, y la reflexión sobre escalado del Paso 6; explicá qué controla la Task Definition y qué controla el Cluster por separado. Siguiente paso: elegir servicio. Errores comunes: estado manual y no definir límites. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
 
 ### Tema 3: Contenedores vs Lambda, y EKS
 

@@ -207,37 +207,6 @@ Al abrir el historial completo de envíos de un conductor con meses de actividad
 #### Paso 3 · Teoría, modelo mental y analogía
 `async` libera durante la espera de I/O, pero no paraleliza un cálculo CPU-bound; mover ese trabajo pesado a otro isolate con `compute` libera al isolate de UI para seguir respondiendo mientras tanto.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-List<Envio> decodeEnvios(String body) =>
-    (jsonDecode(body) as List)
-        .cast<Map<String, Object?>>()
-        .map(Envio.fromJson)
-        .toList(growable: false);
-
-Future<List<Envio>> decodeOffUi(String body) => compute(decodeEnvios, body);
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: grabando con DevTools mientras se abre el historial, el isolate de UI permanece respondiendo mientras `decodeEnvios` corre en un isolate worker separado, que solo devuelve el resultado final ya decodificado.
-
-#### Paso 5 · Práctica guiada
-Pista: envolvé también la decodificación de un JSON pequeño (la respuesta de un solo envío) con el mismo patrón `compute` "para ser consistentes" — ese es el fallo deliberado: medí con DevTools el tiempo total antes y después; el costo de copiar el mensaje entre isolates y coordinar el resultado termina siendo mayor que el propio tiempo de decodificación, haciendo la operación más lenta, no más fluida.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo la decodificación del JSON pequeño al isolate de UI directamente, dejando `compute` únicamente para el historial grande donde sí se justifica, y documentá el criterio de tamaño/costo que usaste.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la decodificación off-UI del Paso 4, el costo medido de mover trabajo pequeño a un isolate del Paso 5, y el criterio documentado del Paso 6; explicá por qué crear isolates para operaciones diminutas cuesta más de lo que ahorra. Siguiente paso: estudia qué exige producción en términos de protocolo y telemetría. Errores comunes: asumir que `async`/`await` paraleliza cálculo CPU-bound, mover operaciones triviales a un isolate sin medir el costo de coordinación, y no perfilar en modo profile sobre un dispositivo representativo. Fuente oficial: https://docs.flutter.dev/perf/isolates.
-**¿Por qué es importante?** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
 **Evidencia de aprendizaje:** entrega decodificación off-UI del historial grande, costo medido de mover trabajo pequeño y criterio de decisión documentado.
 **Conceptos clave:** event loop, UI isolate, frame budget, jank, raster thread, isolate, `compute`, transfer cost, allocation, image cache, DevTools, timeline y benchmark.
 
@@ -279,6 +248,38 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, `decodeOffUi` vive en `lib/features/offline/pending_delivery.dart`. Límite de la decisión: `compute` no conviene para operaciones diminutas — el costo de copiar el mensaje entre isolates y coordinar el resultado supera el propio tiempo de decodificación; usalo específicamente cuando el payload es grande y el perfilado en DevTools confirma el bloqueo real del isolate de UI, nunca como optimización preventiva sin medir.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+List<Envio> decodeEnvios(String body) =>
+    (jsonDecode(body) as List)
+        .cast<Map<String, Object?>>()
+        .map(Envio.fromJson)
+        .toList(growable: false);
+
+Future<List<Envio>> decodeOffUi(String body) => compute(decodeEnvios, body);
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: grabando con DevTools mientras se abre el historial, el isolate de UI permanece respondiendo mientras `decodeEnvios` corre en un isolate worker separado, que solo devuelve el resultado final ya decodificado.
+
+#### Paso 5 · Práctica guiada
+Pista: envolvé también la decodificación de un JSON pequeño (la respuesta de un solo envío) con el mismo patrón `compute` "para ser consistentes" — ese es el fallo deliberado: medí con DevTools el tiempo total antes y después; el costo de copiar el mensaje entre isolates y coordinar el resultado termina siendo mayor que el propio tiempo de decodificación, haciendo la operación más lenta, no más fluida.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo la decodificación del JSON pequeño al isolate de UI directamente, dejando `compute` únicamente para el historial grande donde sí se justifica, y documentá el criterio de tamaño/costo que usaste.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la decodificación off-UI del Paso 4, el costo medido de mover trabajo pequeño a un isolate del Paso 5, y el criterio documentado del Paso 6; explicá por qué crear isolates para operaciones diminutas cuesta más de lo que ahorra. Siguiente paso: estudia qué exige producción en términos de protocolo y telemetría. Errores comunes: asumir que `async`/`await` paraleliza cálculo CPU-bound, mover operaciones triviales a un isolate sin medir el costo de coordinación, y no perfilar en modo profile sobre un dispositivo representativo. Fuente oficial: https://docs.flutter.dev/perf/isolates.
+**¿Por qué es importante?** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
 
 ### Tema 4: Producción exige protocolo, telemetría y contención
 

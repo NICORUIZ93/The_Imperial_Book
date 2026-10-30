@@ -140,25 +140,6 @@ Un proyecto de un solo módulo crece hasta que cualquier cambio en la lógica de
 #### Paso 3 · Teoría, modelo mental y analogía
 Un proyecto multi-módulo agrupa subproyectos bajo un POM padre; cada módulo declara explícitamente sus propias dependencias, incluidas las dependencias hacia otros módulos del mismo proyecto. La analogía: departamentos con presupuesto propio que deben solicitar formalmente los recursos de otro departamento, en vez de compartirlo todo automáticamente.
 
-#### Paso 4 · Demostración guiada desde cero
-**Actualiza** `core/src/main/java/academia/build/App.java` (generado por el archetype) agregando un método público `saludo()` que `api` podrá invocar una vez declarada la dependencia explícita entre módulos.
-
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-multimodulo && cd ejemplo-multimodulo
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=core -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-mvn -B archetype:generate -DgroupId=academia.build -DartifactId=api -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-```
-Crea un `pom.xml` raíz con `<modules><module>core</module><module>api</module></modules>`, y en `api/pom.xml` agrega una `<dependency>` hacia `academia.build:core`. Ejecuta `mvn -pl api -am compile` desde la raíz: `-am` (also-make) construye primero `core` porque `api` depende de él.
-
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente la dependencia de `api` hacia `core` en su pom.xml y compila `api` referenciando una clase de `core`; provocarás un fallo de compilación por símbolo no encontrado. Resultado esperado: restaurar la dependencia explícita corrige el fallo.
-#### Paso 6 · Práctica independiente
-Agrega un tercer módulo `infra` que dependa de `api`, y documenta por qué `core` no debería depender nunca de `infra` ni de `api`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda la estructura de los tres módulos, el pom.xml raíz y el fallo de compilación provocado al romper la dependencia; como siguiente paso conecta el multi-módulo a un pipeline de CI. Errores comunes: dependencias circulares entre módulos, olvidar `-am` al compilar un módulo específico, y permitir que `core` dependa de módulos que deberían depender de él. Fuentes oficiales: https://maven.apache.org/guides/mini/guide-multiple-modules.html.
-**¿Por qué es importante?** Porque separar módulos de build impone, a nivel de herramienta, los mismos límites arquitectónicos que el equipo diseñó a nivel de capas.
 **Evidencia de aprendizaje:** entrega los tres módulos, el fallo de compilación provocado y su corrección.
 **Conceptos clave:** separación de responsabilidades entre módulos, dependencias explícitas entre ellos.
 
@@ -183,6 +164,26 @@ flowchart LR
 La estructura `core`/`api` de este tema es, en miniatura, la misma separación que el Proyecto integrador (Módulo 13) exige entre la lógica de dominio y la capa que la expone.
 
 **Cuándo no usarlo:** para una aplicación pequeña de un solo equipo y despliegue único, un multi-módulo añade sobrecarga de configuración sin beneficio; un solo módulo con paquetes bien organizados es suficiente hasta que el proyecto realmente lo justifique.
+
+#### Paso 4 · Demostración guiada desde cero
+**Actualiza** `core/src/main/java/academia/build/App.java` (generado por el archetype) agregando un método público `saludo()` que `api` podrá invocar una vez declarada la dependencia explícita entre módulos.
+
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-multimodulo && cd ejemplo-multimodulo
+mvn -B archetype:generate -DgroupId=academia.build -DartifactId=core -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+mvn -B archetype:generate -DgroupId=academia.build -DartifactId=api -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+```
+Crea un `pom.xml` raíz con `<modules><module>core</module><module>api</module></modules>`, y en `api/pom.xml` agrega una `<dependency>` hacia `academia.build:core`. Ejecuta `mvn -pl api -am compile` desde la raíz: `-am` (also-make) construye primero `core` porque `api` depende de él.
+
+#### Paso 5 · Práctica guiada
+Pista: elimina deliberadamente la dependencia de `api` hacia `core` en su pom.xml y compila `api` referenciando una clase de `core`; provocarás un fallo de compilación por símbolo no encontrado. Resultado esperado: restaurar la dependencia explícita corrige el fallo.
+#### Paso 6 · Práctica independiente
+Agrega un tercer módulo `infra` que dependa de `api`, y documenta por qué `core` no debería depender nunca de `infra` ni de `api`.
+
+#### Paso 7 · Cierre y evidencia
+Guarda la estructura de los tres módulos, el pom.xml raíz y el fallo de compilación provocado al romper la dependencia; como siguiente paso conecta el multi-módulo a un pipeline de CI. Errores comunes: dependencias circulares entre módulos, olvidar `-am` al compilar un módulo específico, y permitir que `core` dependa de módulos que deberían depender de él. Fuentes oficiales: https://maven.apache.org/guides/mini/guide-multiple-modules.html.
+**¿Por qué es importante?** Porque separar módulos de build impone, a nivel de herramienta, los mismos límites arquitectónicos que el equipo diseñó a nivel de capas.
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
 

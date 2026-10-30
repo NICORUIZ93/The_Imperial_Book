@@ -38,28 +38,6 @@ graph TD
     style E fill:#2196f3
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-react-m10
-cd ejemplo-react-m10
-npx create-next-app@latest app --ts --eslint --app --src-dir --no-tailwind --use-npm
-cd app
-npm run dev
-```
-
-`npx` es el comando que ejecuta un paquete sin instalarlo globalmente (`create-next-app`, el andamiador oficial de Next.js). `--ts` es la bandera que usa TypeScript; `--eslint` activa el linter; `--app` usa el App Router; `--src-dir` mueve el código a una carpeta `src/`; `--no-tailwind` es la bandera que omite Tailwind CSS; `--use-npm` es la bandera que fija npm como gestor de paquetes en vez de preguntar.
-Crea src/app/deliveries/page.tsx como Server Component y src/app/deliveries/DeliveryButton.tsx con use client; explica la frontera y el resultado.
-
-#### Paso 5 · Práctica guiada
-Pista: importa deliberadamente un hook en un componente servidor para provocar un fallo deliberado de compilación; lee el mensaje y mueve la frontera correcta. Resultado esperado: build estable.
-
-#### Paso 6 · Práctica independiente
-Añade Suspense, una Server Action con validación, estado pending y una medición del JavaScript enviado al cliente.
-
-#### Paso 7 · Cierre y evidencia
-Guarda build, capturas y métricas; como siguiente paso estudia despliegue. Errores comunes: enviar secretos al cliente, usar hooks en servidor, mutar sin autorización y asumir que streaming arregla consultas lentas. Fuentes oficiales: https://nextjs.org/docs/app y https://react.dev/reference/rsc/server-components.
-**¿Por qué es importante?** Porque separar servidor y cliente mejora rendimiento, seguridad y claridad de responsabilidades.
 **Evidencia de aprendizaje:** entrega árbol, frontera client/server, fallo, acción y medición.
 **Conceptos clave:** ejecución exclusiva en servidor, acceso directo a recursos del backend, sin JavaScript enviado al cliente.
 
@@ -92,6 +70,29 @@ async function PaginaTareas() {
 }
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-react-m10
+cd ejemplo-react-m10
+npx create-next-app@latest app --ts --eslint --app --src-dir --no-tailwind --use-npm
+cd app
+npm run dev
+```
+
+`npx` es el comando que ejecuta un paquete sin instalarlo globalmente (`create-next-app`, el andamiador oficial de Next.js). `--ts` es la bandera que usa TypeScript; `--eslint` activa el linter; `--app` usa el App Router; `--src-dir` mueve el código a una carpeta `src/`; `--no-tailwind` es la bandera que omite Tailwind CSS; `--use-npm` es la bandera que fija npm como gestor de paquetes en vez de preguntar.
+Crea src/app/deliveries/page.tsx como Server Component y src/app/deliveries/DeliveryButton.tsx con use client; explica la frontera y el resultado.
+
+#### Paso 5 · Práctica guiada
+Pista: importa deliberadamente un hook en un componente servidor para provocar un fallo deliberado de compilación; lee el mensaje y mueve la frontera correcta. Resultado esperado: build estable.
+
+#### Paso 6 · Práctica independiente
+Añade Suspense, una Server Action con validación, estado pending y una medición del JavaScript enviado al cliente.
+
+#### Paso 7 · Cierre y evidencia
+Guarda build, capturas y métricas; como siguiente paso estudia despliegue. Errores comunes: enviar secretos al cliente, usar hooks en servidor, mutar sin autorización y asumir que streaming arregla consultas lentas. Fuentes oficiales: https://nextjs.org/docs/app y https://react.dev/reference/rsc/server-components.
+**¿Por qué es importante?** Porque separar servidor y cliente mejora rendimiento, seguridad y claridad de responsabilidades.
+
 ### Tema 2: use client para interactividad
 
 #### Paso 1 · Objetivo y preparación
@@ -103,35 +104,6 @@ Al finalizar vas a marcar `BotonConfirmarEntrega` con `"use client"` porque usa 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cualquier componente con hooks de estado o manejadores de eventos debe marcarse con `"use client"`; ese límite se establece lo más profundo posible en el árbol, no envolviendo páginas completas.
 
-#### Paso 4 · Demostración guiada desde cero
-```tsx
-"use client";
-function BotonConfirmarEntrega({ envioId }) {
-  const [confirmando, setConfirmando] = useState(false);
-  return <button onClick={() => setConfirmando(true)}>{confirmando ? 'Confirmando...' : 'Confirmar entrega'}</button>;
-}
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá `"use client"` directamente en `PaginaEnvio` "para que todo funcione sin pensar en la frontera" — ese es el fallo deliberado: ahora toda la página (incluyendo la consulta a la base de datos) se convierte en Client Component, perdiendo el acceso directo a la base de datos y obligando a reemplazar esa consulta por un endpoint API adicional que antes no era necesario.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
-**¿Por qué es importante?** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
 **Evidencia de aprendizaje:** entrega frontera correctamente ubicada, error por marcar la página completa y medición comparativa del JavaScript enviado.
 **Conceptos clave:** hooks de estado solo en Client Components, límite explícito entre servidor y cliente.
 
@@ -166,6 +138,36 @@ function BotonLike() {
 * Ejecutar: `npm test`
 * Proyecto: proyecto integrador RutaFlow
 * Visualización: concepto mostrado en diagrama
+
+#### Paso 4 · Demostración guiada desde cero
+```tsx
+"use client";
+function BotonConfirmarEntrega({ envioId }) {
+  const [confirmando, setConfirmando] = useState(false);
+  return <button onClick={() => setConfirmando(true)}>{confirmando ? 'Confirmando...' : 'Confirmar entrega'}</button>;
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá `"use client"` directamente en `PaginaEnvio` "para que todo funcione sin pensar en la frontera" — ese es el fallo deliberado: ahora toda la página (incluyendo la consulta a la base de datos) se convierte en Client Component, perdiendo el acceso directo a la base de datos y obligando a reemplazar esa consulta por un endpoint API adicional que antes no era necesario.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
+**¿Por qué es importante?** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
 
 ### Tema 3: Streaming con Suspense en el servidor
 

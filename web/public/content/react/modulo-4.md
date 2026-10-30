@@ -39,6 +39,41 @@ graph TD
     style H fill:#4caf50
 ```
 
+**Evidencia de aprendizaje:** entrega Context funcionando, crash por Provider faltante y validación explícita agregada.
+**Conceptos clave:** proveedor y consumidor, evitar prop drilling.
+
+`createContext('claro')` crea un objeto Context con un valor por defecto, que luego se provee a un subárbol completo de componentes mediante un componente `Provider` (`<ThemeContext.Provider value={{ tema, setTema }}>`) envolviendo esa parte de la aplicación; cualquier componente descendiente de ese Provider, sin importar cuántos niveles de anidamiento existan entre ambos, puede leer ese valor directamente con `useContext(ThemeContext)`, sin que ningún componente intermedio entre el Provider y el consumidor final necesite recibir, conocer, ni reenviar manualmente ese valor a través de sus propias props.
+
+Esto resuelve directamente el problema conocido como "prop drilling": sin Context, compartir un valor entre un componente ancestro y otro descendiente lejano en el árbol requeriría pasar ese valor explícitamente como prop a través de cada componente intermedio en el camino entre ambos, incluso si esos componentes intermedios no usan ese valor para nada propio, simplemente lo reenvían hacia abajo — un acoplamiento innecesario que hace que cambiar la forma de ese valor compartido, o insertar un nuevo componente intermedio en el árbol, requiera modificar potencialmente muchos componentes que no tienen ninguna relación conceptual real con ese dato compartido, más allá de estar geográficamente ubicados entre el proveedor y el consumidor final.
+
+**Analogía:** Context es como un anuncio por altavoz que llega directamente a cualquier persona dentro de un edificio específico, sin necesidad de que cada persona en cada piso intermedio tenga que repetir manualmente el mensaje al piso siguiente para que finalmente llegue a su destinatario real.
+
+**¿Por qué es importante?** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, evitando el acoplamiento innecesario del prop drilling.
+
+**Código del ejemplo:**
+
+```jsx
+const ThemeContext = createContext('claro');
+
+function App() {
+  const [tema, setTema] = useState('claro');
+  return (
+    <ThemeContext.Provider value={{ tema, setTema }}>
+      <Pagina />
+    </ThemeContext.Provider>
+  );
+}
+
+function BotonToggle() {
+  const { tema, setTema } = useContext(ThemeContext); // sin pasar props por cada nivel intermedio
+  return <button onClick={() => setTema(t => t === 'claro' ? 'oscuro' : 'claro')}>{tema}</button>;
+}
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const SesionContext = createContext(null);
@@ -78,40 +113,6 @@ Corregí el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, 
 #### Paso 7 · Cierre y evidencia
 Entregá el Context funcionando del Paso 4, el crash por Provider faltante del Paso 5, y la validación explícita del Paso 6; explicá por qué `useContext` nunca "busca" el Provider más cercano en todo el árbol, sino solo entre los ancestros reales del componente que lo consume. Siguiente paso: estudia cuándo Context deja de ser suficiente. Errores comunes: olvidar envolver una parte del árbol (especialmente contenido montado vía portales) con el Provider correspondiente, no validar que el valor del contexto no sea el valor por defecto antes de usarlo, y crear un nuevo objeto de valor en cada render del Provider sin memoizarlo. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/reference/react/useContext.
 **¿Por qué es importante?** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, pero solo funciona dentro del subárbol efectivamente envuelto por su Provider.
-**Evidencia de aprendizaje:** entrega Context funcionando, crash por Provider faltante y validación explícita agregada.
-**Conceptos clave:** proveedor y consumidor, evitar prop drilling.
-
-`createContext('claro')` crea un objeto Context con un valor por defecto, que luego se provee a un subárbol completo de componentes mediante un componente `Provider` (`<ThemeContext.Provider value={{ tema, setTema }}>`) envolviendo esa parte de la aplicación; cualquier componente descendiente de ese Provider, sin importar cuántos niveles de anidamiento existan entre ambos, puede leer ese valor directamente con `useContext(ThemeContext)`, sin que ningún componente intermedio entre el Provider y el consumidor final necesite recibir, conocer, ni reenviar manualmente ese valor a través de sus propias props.
-
-Esto resuelve directamente el problema conocido como "prop drilling": sin Context, compartir un valor entre un componente ancestro y otro descendiente lejano en el árbol requeriría pasar ese valor explícitamente como prop a través de cada componente intermedio en el camino entre ambos, incluso si esos componentes intermedios no usan ese valor para nada propio, simplemente lo reenvían hacia abajo — un acoplamiento innecesario que hace que cambiar la forma de ese valor compartido, o insertar un nuevo componente intermedio en el árbol, requiera modificar potencialmente muchos componentes que no tienen ninguna relación conceptual real con ese dato compartido, más allá de estar geográficamente ubicados entre el proveedor y el consumidor final.
-
-**Analogía:** Context es como un anuncio por altavoz que llega directamente a cualquier persona dentro de un edificio específico, sin necesidad de que cada persona en cada piso intermedio tenga que repetir manualmente el mensaje al piso siguiente para que finalmente llegue a su destinatario real.
-
-**¿Por qué es importante?** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, evitando el acoplamiento innecesario del prop drilling.
-
-**Código del ejemplo:**
-
-```jsx
-const ThemeContext = createContext('claro');
-
-function App() {
-  const [tema, setTema] = useState('claro');
-  return (
-    <ThemeContext.Provider value={{ tema, setTema }}>
-      <Pagina />
-    </ThemeContext.Provider>
-  );
-}
-
-function BotonToggle() {
-  const { tema, setTema } = useContext(ThemeContext); // sin pasar props por cada nivel intermedio
-  return <button onClick={() => setTema(t => t === 'claro' ? 'oscuro' : 'claro')}>{tema}</button>;
-}
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 2: Cuándo Context es suficiente y cuándo no
 
@@ -123,6 +124,29 @@ Alguien propuso meter también el texto del filtro de búsqueda de envíos (que 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada cambio en el valor de un Context re-renderiza todos sus consumidores, sin distinción granular — aceptable para valores que cambian poco (operador, tema), problemático para valores que cambian mucho (una tecla por vez).
+
+**Evidencia de aprendizaje:** entrega medición del re-render innecesario y corrección separando el estado de cambio frecuente.
+**Conceptos clave:** frecuencia de cambio del valor, re-renders de todos los consumidores.
+
+Context resuelve bien el caso de valores que cambian con poca frecuencia relativa (el tema visual de la aplicación, el idioma seleccionado, la identidad del usuario autenticado) y que necesitan leerse desde muchos lugares distintos y potencialmente lejanos del árbol de componentes, dado que el costo de un re-render ocasional de todos los consumidores de ese Context (cada vez que el valor provisto cambia, absolutamente todos los componentes que consumen ese Context con `useContext` se re-renderizan, sin distinción de granularidad más fina) es perfectamente aceptable cuando esos cambios son infrecuentes.
+
+Ese mismo comportamiento se vuelve problemático cuando el valor compartido cambia con mucha frecuencia (por ejemplo, el valor de un input que cambia en cada tecla) y es consumido por muchos componentes distintos: cada cambio re-renderizaría absolutamente todos esos consumidores, incluso aquellos que, en la práctica, solo necesitarían actualizarse ante una porción específica y más granular de ese cambio, no ante cualquier cambio del Context completo, un problema de rendimiento que empeora proporcionalmente a la frecuencia del cambio y a la cantidad de consumidores, y que librerías dedicadas de estado como Zustand (Módulo 7) resuelven de forma más granular, permitiendo a cada componente suscribirse selectivamente solo a la porción específica del estado que efectivamente necesita, sin re-renderizarse ante cambios de otras porciones no relacionadas.
+
+**Analogía:** Context es como un tablón de anuncios comunitario, perfecto para avisos poco frecuentes que interesan a todo el vecindario (el tema, el idioma); para actualizaciones extremadamente frecuentes que solo interesan a ciertos vecinos específicos, un tablón general que notifica a todo el vecindario ante cada actualización se vuelve ruidoso e ineficiente, siendo preferible un sistema de suscripción más selectivo y granular.
+
+**¿Por qué es importante?** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; para estado que cambia con mucha frecuencia y es consumido selectivamente, una librería con suscripción granular como Zustand evita re-renders innecesarios de consumidores no relacionados con el cambio específico.
+
+**Diagrama:**
+
+```
+Context apropiado: tema, idioma, usuario autenticado (cambia poco, se lee en muchos lugares)
+Context problemático: valor de un input en cada tecla (cambia mucho, re-renderiza TODOS los consumidores)
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -161,28 +185,6 @@ Corregí el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo co
 #### Paso 7 · Cierre y evidencia
 Entregá la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explicá con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.
 **¿Por qué es importante?** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; mezclar un valor de cambio frecuente dentro del mismo Context re-renderiza innecesariamente a todos los consumidores que no lo usan.
-**Evidencia de aprendizaje:** entrega medición del re-render innecesario y corrección separando el estado de cambio frecuente.
-**Conceptos clave:** frecuencia de cambio del valor, re-renders de todos los consumidores.
-
-Context resuelve bien el caso de valores que cambian con poca frecuencia relativa (el tema visual de la aplicación, el idioma seleccionado, la identidad del usuario autenticado) y que necesitan leerse desde muchos lugares distintos y potencialmente lejanos del árbol de componentes, dado que el costo de un re-render ocasional de todos los consumidores de ese Context (cada vez que el valor provisto cambia, absolutamente todos los componentes que consumen ese Context con `useContext` se re-renderizan, sin distinción de granularidad más fina) es perfectamente aceptable cuando esos cambios son infrecuentes.
-
-Ese mismo comportamiento se vuelve problemático cuando el valor compartido cambia con mucha frecuencia (por ejemplo, el valor de un input que cambia en cada tecla) y es consumido por muchos componentes distintos: cada cambio re-renderizaría absolutamente todos esos consumidores, incluso aquellos que, en la práctica, solo necesitarían actualizarse ante una porción específica y más granular de ese cambio, no ante cualquier cambio del Context completo, un problema de rendimiento que empeora proporcionalmente a la frecuencia del cambio y a la cantidad de consumidores, y que librerías dedicadas de estado como Zustand (Módulo 7) resuelven de forma más granular, permitiendo a cada componente suscribirse selectivamente solo a la porción específica del estado que efectivamente necesita, sin re-renderizarse ante cambios de otras porciones no relacionadas.
-
-**Analogía:** Context es como un tablón de anuncios comunitario, perfecto para avisos poco frecuentes que interesan a todo el vecindario (el tema, el idioma); para actualizaciones extremadamente frecuentes que solo interesan a ciertos vecinos específicos, un tablón general que notifica a todo el vecindario ante cada actualización se vuelve ruidoso e ineficiente, siendo preferible un sistema de suscripción más selectivo y granular.
-
-**¿Por qué es importante?** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; para estado que cambia con mucha frecuencia y es consumido selectivamente, una librería con suscripción granular como Zustand evita re-renders innecesarios de consumidores no relacionados con el cambio específico.
-
-**Diagrama:**
-
-```
-Context apropiado: tema, idioma, usuario autenticado (cambia poco, se lee en muchos lugares)
-Context problemático: valor de un input en cada tecla (cambia mucho, re-renderiza TODOS los consumidores)
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 3: Componentes compuestos, render props y hooks personalizados
 

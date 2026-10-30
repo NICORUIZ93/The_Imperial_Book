@@ -74,27 +74,6 @@ Probar `ServicioPedidos.crear(...)` contra una base de datos real hace la suite 
 #### Paso 3 · Teoría, modelo mental y analogía
 Mockito reemplaza una dependencia real por un objeto simulado (mock) cuyo comportamiento se configura explícitamente desde la propia prueba (`when(...).thenReturn(...)`), y permite verificar después que una interacción específica ocurrió (`verify(...)`). La analogía: un actor de reparto que sigue exactamente el guion indicado para esta representación, permitiendo ensayar al protagonista sin que el elenco completo real esté disponible.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-mockito-repositorio
-cd ejemplo-mockito-repositorio
-mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn test          # Maven
-./gradlew test    # Gradle (equivalente)
-```
-Crea `src/test/java/academia/entregas/ServicioPedidosTest.java` con `@Mock RepositorioPedidos repositorio` y `@InjectMocks ServicioPedidos servicio`; configura `when(repositorio.guardar(any())).thenReturn(new Pedido(1))` y verifica con `verify(repositorio).guardar(any())`.
-
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente el `when(...)` que configura el mock para provocar un fallo deliberado (el mock devuelve `null` por defecto y el test lanza `NullPointerException`); lee el stack trace, que apunta directamente a la línea sin stub. Resultado esperado: restaurar el `when(...)` corrige el fallo.
-
-#### Paso 6 · Práctica independiente
-Agrega una segunda dependencia mockeada (por ejemplo un servicio de notificaciones) y escribe un `verify` que confirme que se llamó exactamente una vez, usando `verify(notificador, times(1))`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el test, el fallo de `NullPointerException` provocado y su corrección; como siguiente paso cubre varios casos con tests parametrizados. Errores comunes: mockear la clase bajo prueba en vez de sus dependencias (deja de probar código real), confundir `when` (configurar comportamiento) con `verify` (comprobar que una interacción ocurrió), y mockear un objeto de valor simple que sería más claro usar real. Fuentes oficiales: https://site.mockito.org/.
-**¿Por qué es importante?** Porque mockear las dependencias externas permite probar la lógica de negocio en aislamiento, rápido y de forma determinista, sin depender de la disponibilidad ni el estado de una base de datos u otro servicio real.
 **Evidencia de aprendizaje:** entrega el test con `@Mock`/`@InjectMocks`, el fallo de `NullPointerException` al olvidar configurar el mock, y su corrección con `when(...)`.
 **Conceptos clave:** `@Mock`, `@InjectMocks`, `when`/`verify`.
 
@@ -127,6 +106,28 @@ class ServicioPedidosTest {
 Aislar dependencias con mocks es lo que permite que la suite de pruebas del Proyecto integrador (Módulo 13) corra en segundos, sin levantar la base de datos real cada vez.
 
 **Cuándo no usarlo:** si la dependencia es un objeto de valor simple (por ejemplo un `record` inmutable sin efectos secundarios), usar el objeto real es más simple y claro que mockearlo.
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-mockito-repositorio
+cd ejemplo-mockito-repositorio
+mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app
+mvn test          # Maven
+./gradlew test    # Gradle (equivalente)
+```
+Crea `src/test/java/academia/entregas/ServicioPedidosTest.java` con `@Mock RepositorioPedidos repositorio` y `@InjectMocks ServicioPedidos servicio`; configura `when(repositorio.guardar(any())).thenReturn(new Pedido(1))` y verifica con `verify(repositorio).guardar(any())`.
+
+#### Paso 5 · Práctica guiada
+Pista: elimina deliberadamente el `when(...)` que configura el mock para provocar un fallo deliberado (el mock devuelve `null` por defecto y el test lanza `NullPointerException`); lee el stack trace, que apunta directamente a la línea sin stub. Resultado esperado: restaurar el `when(...)` corrige el fallo.
+
+#### Paso 6 · Práctica independiente
+Agrega una segunda dependencia mockeada (por ejemplo un servicio de notificaciones) y escribe un `verify` que confirme que se llamó exactamente una vez, usando `verify(notificador, times(1))`.
+
+#### Paso 7 · Cierre y evidencia
+Guarda el test, el fallo de `NullPointerException` provocado y su corrección; como siguiente paso cubre varios casos con tests parametrizados. Errores comunes: mockear la clase bajo prueba en vez de sus dependencias (deja de probar código real), confundir `when` (configurar comportamiento) con `verify` (comprobar que una interacción ocurrió), y mockear un objeto de valor simple que sería más claro usar real. Fuentes oficiales: https://site.mockito.org/.
+**¿Por qué es importante?** Porque mockear las dependencias externas permite probar la lógica de negocio en aislamiento, rápido y de forma determinista, sin depender de la disponibilidad ni el estado de una base de datos u otro servicio real.
 
 ### Tema 3: Tests parametrizados y cobertura
 

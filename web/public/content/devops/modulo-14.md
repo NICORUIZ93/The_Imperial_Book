@@ -98,6 +98,42 @@ El equipo de RutaFlow tiene una alerta que se dispara varias veces por semana si
 #### Paso 3 · Teoría, modelo mental y analogía
 Una página debe despertar a una persona solo si exige acción inmediata; los labels participan en enrutamiento y agrupación, las annotations transportan contexto humano. La analogía es una alarma de incendio útil que indica zona y procedimiento, no una sirena constante que termina ignorada.
 
+**Evidencia de aprendizaje:** entrega alerta con labels/annotations correctos, cardinalidad descontrolada detectada y corrección verificada.
+**Conceptos clave:** symptom, cause, page, ticket, runbook, incident commander, severity, timeline, mitigation, recovery, game day y blameless postmortem.
+
+Alerta por síntomas de usuario y consumo de presupuesto; usa métricas causales para diagnóstico. Una página despierta a una persona solo si exige acción inmediata. Cada alerta tiene propietario, severidad, enlace a dashboard y runbook con verificación y contención segura.
+
+En esta regla, `labels` y `annotations` son metadatos con responsabilidades diferentes. Los **labels** tienen valores pequeños y estables que participan en agrupación, enrutamiento y silencios (`severity`, `team`, `service`); cambiar un label puede crear una serie distinta y alterar a quién se notifica. Las **annotations** transportan contexto humano que no identifica la alerta, como resumen, descripción y enlace al runbook. No coloques identificadores de petición, mensajes completos de error ni valores de alta cardinalidad en labels: multiplican series y elevan memoria, almacenamiento y coste de consulta.
+
+Para leer el flujo: Prometheus evalúa `expr`; si permanece verdadera durante `for`, crea la alerta con sus labels y annotations; Alertmanager agrupa y enruta principalmente por labels; la persona abre el runbook indicado en annotations. Este modelo permite verificar cada frontera por separado en vez de tratar el YAML como configuración “mágica”.
+
+```yaml
+- alert: FastErrorBudgetBurn
+  expr: job:slo_errors_per_request:ratio_rate5m > (14.4 * 0.001)
+  for: 2m
+  labels: { severity: page }
+  annotations:
+    summary: "La API consume rápidamente su presupuesto de error"
+    runbook: "https://runbooks.example/tasks-api/high-burn"
+```
+
+Durante incidente separa coordinación, operaciones y comunicación. Mitiga primero, investiga después. Conserva timeline factual. El postmortem evita culpa individual y busca condiciones del sistema: controles faltantes, acoplamiento, documentación o carga. Las acciones tienen dueño y fecha. Un game day introduce un fallo acotado para verificar detección, autoridad, rollback y comunicación.
+
+**Analogía:** una alarma de incendio útil indica zona y procedimiento; una sirena constante termina ignorada.
+
+**¿Por qué es importante?** porque detectar sin responder solo transforma fallos técnicos en fatiga humana.
+
+**Casos de uso reales:** alerta ruidosa sin runbook, rollback sin permisos, dependencia caída, certificado vencido y postmortem con acciones olvidadas.
+
+**Diagrama:**
+
+```text
+detectar -> declarar -> roles -> contener -> recuperar
+                                      -> timeline -> aprender -> acciones
+```
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Reescribe una alerta del servicio con impacto, responsable y primer comando de diagnóstico. Realiza un simulacro y mide si otra persona puede identificar la causa usando solo el aviso y el runbook.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
 ```bash
@@ -137,41 +173,6 @@ Corregí el Paso 5 moviendo el `request_id` a `annotations` (donde sí pertenece
 #### Paso 7 · Cierre y evidencia
 Entregá la alerta con labels/annotations correctos del Paso 4, la cardinalidad descontrolada provocada en el Paso 5, y la corrección del Paso 6; explicá por qué un identificador de alta cardinalidad en un label multiplica series, mientras que en una annotation no tiene ese costo. Siguiente paso: estudia por qué construir una imagen no demuestra de dónde proviene. Errores comunes: colocar identificadores de alta cardinalidad en labels en vez de annotations, alertas sin runbook vinculado, y alertar por causa interna en vez de por síntoma observado por el usuario. Fuentes oficiales: https://prometheus.io/docs/practices/naming/ y https://sre.google/workbook/alerting-on-slos/.
 **¿Por qué es importante?** Detectar sin responder solo transforma fallos técnicos en fatiga humana; una alerta bien diseñada lleva directamente a una acción concreta.
-**Evidencia de aprendizaje:** entrega alerta con labels/annotations correctos, cardinalidad descontrolada detectada y corrección verificada.
-**Conceptos clave:** symptom, cause, page, ticket, runbook, incident commander, severity, timeline, mitigation, recovery, game day y blameless postmortem.
-
-Alerta por síntomas de usuario y consumo de presupuesto; usa métricas causales para diagnóstico. Una página despierta a una persona solo si exige acción inmediata. Cada alerta tiene propietario, severidad, enlace a dashboard y runbook con verificación y contención segura.
-
-En esta regla, `labels` y `annotations` son metadatos con responsabilidades diferentes. Los **labels** tienen valores pequeños y estables que participan en agrupación, enrutamiento y silencios (`severity`, `team`, `service`); cambiar un label puede crear una serie distinta y alterar a quién se notifica. Las **annotations** transportan contexto humano que no identifica la alerta, como resumen, descripción y enlace al runbook. No coloques identificadores de petición, mensajes completos de error ni valores de alta cardinalidad en labels: multiplican series y elevan memoria, almacenamiento y coste de consulta.
-
-Para leer el flujo: Prometheus evalúa `expr`; si permanece verdadera durante `for`, crea la alerta con sus labels y annotations; Alertmanager agrupa y enruta principalmente por labels; la persona abre el runbook indicado en annotations. Este modelo permite verificar cada frontera por separado en vez de tratar el YAML como configuración “mágica”.
-
-```yaml
-- alert: FastErrorBudgetBurn
-  expr: job:slo_errors_per_request:ratio_rate5m > (14.4 * 0.001)
-  for: 2m
-  labels: { severity: page }
-  annotations:
-    summary: "La API consume rápidamente su presupuesto de error"
-    runbook: "https://runbooks.example/tasks-api/high-burn"
-```
-
-Durante incidente separa coordinación, operaciones y comunicación. Mitiga primero, investiga después. Conserva timeline factual. El postmortem evita culpa individual y busca condiciones del sistema: controles faltantes, acoplamiento, documentación o carga. Las acciones tienen dueño y fecha. Un game day introduce un fallo acotado para verificar detección, autoridad, rollback y comunicación.
-
-**Analogía:** una alarma de incendio útil indica zona y procedimiento; una sirena constante termina ignorada.
-
-**¿Por qué es importante?** porque detectar sin responder solo transforma fallos técnicos en fatiga humana.
-
-**Casos de uso reales:** alerta ruidosa sin runbook, rollback sin permisos, dependencia caída, certificado vencido y postmortem con acciones olvidadas.
-
-**Diagrama:**
-
-```text
-detectar -> declarar -> roles -> contener -> recuperar
-                                      -> timeline -> aprender -> acciones
-```
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Reescribe una alerta del servicio con impacto, responsable y primer comando de diagnóstico. Realiza un simulacro y mide si otra persona puede identificar la causa usando solo el aviso y el runbook.
 
 ### Tema 3: Construir una imagen no demuestra de dónde proviene
 
@@ -184,41 +185,6 @@ Cualquiera con acceso al registry de RutaFlow podría, en teoría, subir una ima
 #### Paso 3 · Teoría, modelo mental y analogía
 Un SBOM inventaría componentes, una firma vincula identidad con digest; ninguno por sí solo prueba ausencia de vulnerabilidad, pero juntos permiten rechazar lo que no proviene del builder confiable. La analogía: el SBOM es la lista de ingredientes; la firma sella el paquete; la procedencia registra la cocina.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-
-Ejecuta `syft` para generar SBOM y `cosign` para verificar firmas de tu imagen:
-
-```bash
-syft packages registry.rutaflow.app/api@sha256:ABC -o cyclonedx-json > sbom.json
-cosign verify \
-  --certificate-identity-regexp='github.com/rutaflow/api/' \
-  --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  registry.rutaflow.app/api@sha256:ABC
-```
-
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
-
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
-Resultado esperado: `cosign verify` confirma que la imagen con ese digest exacto fue firmada específicamente por el workflow de GitHub Actions del repositorio `rutaflow/api`, mediante una identidad OIDC emitida por GitHub — no por cualquier firma válida de cualquier origen.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `--certificate-identity-regexp` de la verificación, dejando solo que la firma sea criptográficamente válida sin importar de qué repositorio — ese es el fallo deliberado: una imagen firmada legítimamente por el pipeline de OTRO proyecto distinto (con una identidad OIDC real pero no autorizada para RutaFlow) pasaría la verificación igual.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `--certificate-identity-regexp` apuntando específicamente al repositorio `rutaflow/api`, y agregá una política de admisión en el clúster que rechace cualquier imagen sin esa firma verificada.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la verificación de SBOM + firma del Paso 4, la aceptación de un origen no autorizado del Paso 5, y la política de admisión del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Siguiente paso: estudia por qué una plataforma interna es un producto con límites. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
-**¿Por qué es importante?** El pipeline y sus dependencias son parte del producto desplegado; sin procedencia verificable, construir una imagen no demuestra de dónde proviene realmente.
 **Evidencia de aprendizaje:** entrega SBOM y firma verificados, aceptación de origen no autorizado detectada y política de admisión confirmada.
 **Conceptos clave:** dependency graph, SBOM, provenance, digest, signature, attestation, trusted builder, least privilege, OIDC, admission policy, SLSA y reproducibility.
 
@@ -264,6 +230,41 @@ Resultado esperado: el webhook existe y referencia la misma política de identid
 Paso 4 — sin este paso, `cosign verify` manual es solo una comprobación de desarrollador, no una
 garantía del clúster. En el proyecto integrador RutaFlow, esta política protegería exactamente
 `rutaflow-delivery-api` en `examples/rutaflow/devops/deployment.yaml`.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
+Ejecuta `syft` para generar SBOM y `cosign` para verificar firmas de tu imagen:
+
+```bash
+syft packages registry.rutaflow.app/api@sha256:ABC -o cyclonedx-json > sbom.json
+cosign verify \
+  --certificate-identity-regexp='github.com/rutaflow/api/' \
+  --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
+  registry.rutaflow.app/api@sha256:ABC
+```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+Resultado esperado: `cosign verify` confirma que la imagen con ese digest exacto fue firmada específicamente por el workflow de GitHub Actions del repositorio `rutaflow/api`, mediante una identidad OIDC emitida por GitHub — no por cualquier firma válida de cualquier origen.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `--certificate-identity-regexp` de la verificación, dejando solo que la firma sea criptográficamente válida sin importar de qué repositorio — ese es el fallo deliberado: una imagen firmada legítimamente por el pipeline de OTRO proyecto distinto (con una identidad OIDC real pero no autorizada para RutaFlow) pasaría la verificación igual.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `--certificate-identity-regexp` apuntando específicamente al repositorio `rutaflow/api`, y agregá una política de admisión en el clúster que rechace cualquier imagen sin esa firma verificada.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la verificación de SBOM + firma del Paso 4, la aceptación de un origen no autorizado del Paso 5, y la política de admisión del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Siguiente paso: estudia por qué una plataforma interna es un producto con límites. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
+**¿Por qué es importante?** El pipeline y sus dependencias son parte del producto desplegado; sin procedencia verificable, construir una imagen no demuestra de dónde proviene realmente.
 
 ### Tema 4: Una plataforma interna es un producto con límites
 

@@ -17,6 +17,37 @@ Cuando una API falla en producción, un párrafo libre no permite buscar por sol
 
 Cada evento debe tener nivel, mensaje y campos estables. JSON es una ficha de inventario: máquinas pueden filtrarla sin interpretar frases ambiguas.
 
+Ya produces logs útiles para máquinas y personas. El siguiente tema añadirá un identificador común a cada request.
+
+**Errores comunes:** concatenar strings; imprimir tokens; usar niveles inconsistentes; loggear cada chunk; incluir datos personales sin necesidad.
+
+**Fuentes oficiales:** [Node console](https://nodejs.org/api/console.html) y [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html).
+
+**Evidencia de aprendizaje:** entrega la salida JSON y demuestra que un secreto fue redactado.
+
+**Conceptos clave:** logs en JSON frente a texto libre, indexación y filtrado.
+
+`console.log` con mensajes de texto libre es adecuado para desarrollo local, pero se vuelve rápidamente insuficiente en producción, donde los logs de una aplicación real necesitan ser indexados, filtrados y correlacionados por herramientas de agregación de logs (Datadog, CloudWatch, Grafana Loki, mencionadas también en el Módulo 10 del track DevOps), capacidades que dependen de que cada línea de log tenga una estructura consistente y parseable, no texto libre arbitrario donde cada desarrollador elige su propio formato inconsistente de mensaje.
+
+Pino es una biblioteca de logging para Node diseñada específicamente para producir logs estructurados en formato JSON con overhead de rendimiento mínimo (una consideración de diseño deliberada, dado que el logging ocurre en el camino crítico de cada petición de una aplicación de alto tráfico): `log.info({usuarioId: 42, accion: "crear_tarea"}, "Tarea creada")` produce una línea JSON con campos estructurados (`usuarioId`, `accion`) además del mensaje descriptivo, en vez de un string de texto libre donde esa misma información estaría incrustada de forma no estructurada y difícil de consultar programáticamente después.
+
+Esta estructura consistente permite que un sistema de agregación de logs realice consultas precisas como "todos los logs donde `usuarioId` es 42 durante la última hora", algo prácticamente imposible de hacer de forma confiable sobre logs de texto libre sin una estructura consistente subyacente. Adoptar logging estructurado desde el inicio de un proyecto (en vez de migrar `console.log` disperso hacia un formato estructurado más adelante, un esfuerzo de refactorización considerable en un proyecto ya grande) es una práctica recomendada que paga dividendos considerables el día que se necesita diagnosticar un incidente real de producción bajo presión de tiempo.
+
+**Analogía:** los logs de texto libre son como notas manuscritas dispersas en distintos formatos personales de cada empleado; los logs estructurados en JSON son como un formulario estandarizado con campos fijos y consistentes que cualquier sistema automatizado puede procesar, filtrar y buscar de forma confiable, sin depender de interpretar el estilo personal de redacción de cada autor individual.
+
+**¿Por qué es importante?** Los logs estructurados en JSON son indexables y consultables de forma confiable por herramientas de agregación, una capacidad esencial para diagnosticar incidentes reales de producción que el texto libre de `console.log` no proporciona de forma consistente.
+
+**Código del ejemplo:**
+
+```js
+import pino from "pino";
+const log = pino();
+log.info({ usuarioId: 42, accion: "crear_tarea" }, "Tarea creada");
+// {"level":30,"time":...,"usuarioId":42,"accion":"crear_tarea","msg":"Tarea creada"}
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Registra resultado, duración y correlación de una confirmación en JSON. Prueba una excepción y confirma que el log permite encontrar la causa sin incluir tokens, direcciones ni el cuerpo completo.
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
@@ -50,37 +81,6 @@ Filtra eventos por `LOG_LEVEL` y entrega salida de desarrollo y producción, sin
 
 #### Paso 7 · Cierre y conexión
 
-Ya produces logs útiles para máquinas y personas. El siguiente tema añadirá un identificador común a cada request.
-
-**Errores comunes:** concatenar strings; imprimir tokens; usar niveles inconsistentes; loggear cada chunk; incluir datos personales sin necesidad.
-
-**Fuentes oficiales:** [Node console](https://nodejs.org/api/console.html) y [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html).
-
-**Evidencia de aprendizaje:** entrega la salida JSON y demuestra que un secreto fue redactado.
-
-**Conceptos clave:** logs en JSON frente a texto libre, indexación y filtrado.
-
-`console.log` con mensajes de texto libre es adecuado para desarrollo local, pero se vuelve rápidamente insuficiente en producción, donde los logs de una aplicación real necesitan ser indexados, filtrados y correlacionados por herramientas de agregación de logs (Datadog, CloudWatch, Grafana Loki, mencionadas también en el Módulo 10 del track DevOps), capacidades que dependen de que cada línea de log tenga una estructura consistente y parseable, no texto libre arbitrario donde cada desarrollador elige su propio formato inconsistente de mensaje.
-
-Pino es una biblioteca de logging para Node diseñada específicamente para producir logs estructurados en formato JSON con overhead de rendimiento mínimo (una consideración de diseño deliberada, dado que el logging ocurre en el camino crítico de cada petición de una aplicación de alto tráfico): `log.info({usuarioId: 42, accion: "crear_tarea"}, "Tarea creada")` produce una línea JSON con campos estructurados (`usuarioId`, `accion`) además del mensaje descriptivo, en vez de un string de texto libre donde esa misma información estaría incrustada de forma no estructurada y difícil de consultar programáticamente después.
-
-Esta estructura consistente permite que un sistema de agregación de logs realice consultas precisas como "todos los logs donde `usuarioId` es 42 durante la última hora", algo prácticamente imposible de hacer de forma confiable sobre logs de texto libre sin una estructura consistente subyacente. Adoptar logging estructurado desde el inicio de un proyecto (en vez de migrar `console.log` disperso hacia un formato estructurado más adelante, un esfuerzo de refactorización considerable en un proyecto ya grande) es una práctica recomendada que paga dividendos considerables el día que se necesita diagnosticar un incidente real de producción bajo presión de tiempo.
-
-**Analogía:** los logs de texto libre son como notas manuscritas dispersas en distintos formatos personales de cada empleado; los logs estructurados en JSON son como un formulario estandarizado con campos fijos y consistentes que cualquier sistema automatizado puede procesar, filtrar y buscar de forma confiable, sin depender de interpretar el estilo personal de redacción de cada autor individual.
-
-**¿Por qué es importante?** Los logs estructurados en JSON son indexables y consultables de forma confiable por herramientas de agregación, una capacidad esencial para diagnosticar incidentes reales de producción que el texto libre de `console.log` no proporciona de forma consistente.
-
-**Código del ejemplo:**
-
-```js
-import pino from "pino";
-const log = pino();
-log.info({ usuarioId: 42, accion: "crear_tarea" }, "Tarea creada");
-// {"level":30,"time":...,"usuarioId":42,"accion":"crear_tarea","msg":"Tarea creada"}
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Registra resultado, duración y correlación de una confirmación en JSON. Prueba una excepción y confirma que el log permite encontrar la causa sin incluir tokens, direcciones ni el cuerpo completo.
-
 ### Tema 2: Correlation ID por request
 
 #### Paso 1 · Objetivo y preparación
@@ -94,6 +94,41 @@ Una entrega puede atravesar API, base y proveedor de mapas. Sin un identificador
 #### Paso 3 · Teoría y analogía aplicada
 
 El ID es una etiqueta de expediente, no una credencial. Se genera si falta y se propaga a logs y cabecera de respuesta.
+
+Ya puedes seguir una solicitud completa. El siguiente tema tratará fallos fatales y apagado seguro.
+
+Este mismo correlation ID es el que necesitarás en el proyecto integrador (API productiva, Módulo 12) para diagnosticar, entre miles de líneas de log de producción, exactamente qué peticiones tocó un error reportado por un usuario específico.
+
+**Cuándo no usarlo:** en un servicio local de un solo proceso sin volumen de tráfico real, generar y propagar un correlation ID agrega una línea de código sin beneficio inmediato; se vuelve indispensable en cuanto hay más de un proceso o servicio involucrado en atender una misma petición.
+
+**Errores comunes:** reutilizar IDs globales; aceptar cualquier texto; loggear PII; perder el ID en callbacks; usarlo como autenticación.
+
+**Fuentes oficiales:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html), [`crypto.randomUUID`](https://nodejs.org/api/crypto.html#cryptorandomuuidoptions) y [W3C Trace Context](https://www.w3.org/TR/trace-context/).
+
+**Evidencia de aprendizaje:** entrega dos requests, uno con ID válido y otro rechazado, con sus logs.
+
+**Conceptos clave:** rastreo de una petición específica, `req.log` con contexto adjunto.
+
+Un correlation ID es un identificador único generado al inicio de cada petición entrante (típicamente con `randomUUID()` del módulo `crypto` core, estudiado en el Módulo 0), adjuntado a cada línea de log producida durante el procesamiento de esa petición específica, permitiendo reconstruir después el rastro completo de una petición individual filtrando por su correlation ID único, incluso en un sistema con alto volumen de tráfico donde miles de peticiones concurrentes producen logs entrelazados en el mismo flujo de salida.
+
+Implementar esto con un middleware (recordando el patrón middleware del Módulo 4) que genera el correlation ID al inicio de cada petición y crea un logger "hijo" con ese contexto ya adjunto (`req.log = log.child({correlationId: req.correlationId})`) permite que cualquier código posterior en la cadena de procesamiento de esa petición use `req.log` en vez de el logger global, garantizando automáticamente que cada línea de log que se produzca durante esa petición específica incluya el correlation ID correspondiente, sin necesidad de pasarlo manualmente como parámetro adicional a cada función que registra un log.
+
+Este mecanismo se vuelve especialmente valioso en arquitecturas de microservicios (mencionadas en el Módulo 12 del track DevOps), donde una única petición de usuario puede atravesar múltiples servicios distintos; propagar el mismo correlation ID a través de las cabeceras de las peticiones internas entre servicios permite reconstruir el rastro completo de esa petición a través de todo el sistema distribuido, no solo dentro de un único servicio aislado, una capacidad de diagnóstico indispensable en sistemas distribuidos complejos donde un problema puede originarse en cualquier punto de una cadena de servicios interconectados.
+
+**Analogía:** un correlation ID es como un número de seguimiento único asignado a un paquete en el momento de su envío, que permite rastrear exactamente ese paquete específico a través de cada etapa de su viaje (almacén, transporte, entrega), sin confundirlo con ningún otro paquete que esté viajando simultáneamente por el mismo sistema logístico.
+
+**¿Por qué es importante?** El correlation ID es la herramienta fundamental que permite reconstruir el rastro completo de una petición específica entre el volumen masivo de logs concurrentes de un sistema de producción real, particularmente indispensable en arquitecturas distribuidas de microservicios.
+
+**Código del ejemplo:**
+
+```js
+app.use((req, res, next) => {
+  req.correlationId = randomUUID();
+  req.log = log.child({ correlationId: req.correlationId }); // adjunto automáticamente
+  next();
+});
+// cada log de esta request específica incluye el mismo correlationId
+```
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -131,41 +166,6 @@ Propaga el ID a una función asíncrona y entrega una salida con tres eventos qu
 
 #### Paso 7 · Cierre y conexión
 
-Ya puedes seguir una solicitud completa. El siguiente tema tratará fallos fatales y apagado seguro.
-
-Este mismo correlation ID es el que necesitarás en el proyecto integrador (API productiva, Módulo 12) para diagnosticar, entre miles de líneas de log de producción, exactamente qué peticiones tocó un error reportado por un usuario específico.
-
-**Cuándo no usarlo:** en un servicio local de un solo proceso sin volumen de tráfico real, generar y propagar un correlation ID agrega una línea de código sin beneficio inmediato; se vuelve indispensable en cuanto hay más de un proceso o servicio involucrado en atender una misma petición.
-
-**Errores comunes:** reutilizar IDs globales; aceptar cualquier texto; loggear PII; perder el ID en callbacks; usarlo como autenticación.
-
-**Fuentes oficiales:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html), [`crypto.randomUUID`](https://nodejs.org/api/crypto.html#cryptorandomuuidoptions) y [W3C Trace Context](https://www.w3.org/TR/trace-context/).
-
-**Evidencia de aprendizaje:** entrega dos requests, uno con ID válido y otro rechazado, con sus logs.
-
-**Conceptos clave:** rastreo de una petición específica, `req.log` con contexto adjunto.
-
-Un correlation ID es un identificador único generado al inicio de cada petición entrante (típicamente con `randomUUID()` del módulo `crypto` core, estudiado en el Módulo 0), adjuntado a cada línea de log producida durante el procesamiento de esa petición específica, permitiendo reconstruir después el rastro completo de una petición individual filtrando por su correlation ID único, incluso en un sistema con alto volumen de tráfico donde miles de peticiones concurrentes producen logs entrelazados en el mismo flujo de salida.
-
-Implementar esto con un middleware (recordando el patrón middleware del Módulo 4) que genera el correlation ID al inicio de cada petición y crea un logger "hijo" con ese contexto ya adjunto (`req.log = log.child({correlationId: req.correlationId})`) permite que cualquier código posterior en la cadena de procesamiento de esa petición use `req.log` en vez de el logger global, garantizando automáticamente que cada línea de log que se produzca durante esa petición específica incluya el correlation ID correspondiente, sin necesidad de pasarlo manualmente como parámetro adicional a cada función que registra un log.
-
-Este mecanismo se vuelve especialmente valioso en arquitecturas de microservicios (mencionadas en el Módulo 12 del track DevOps), donde una única petición de usuario puede atravesar múltiples servicios distintos; propagar el mismo correlation ID a través de las cabeceras de las peticiones internas entre servicios permite reconstruir el rastro completo de esa petición a través de todo el sistema distribuido, no solo dentro de un único servicio aislado, una capacidad de diagnóstico indispensable en sistemas distribuidos complejos donde un problema puede originarse en cualquier punto de una cadena de servicios interconectados.
-
-**Analogía:** un correlation ID es como un número de seguimiento único asignado a un paquete en el momento de su envío, que permite rastrear exactamente ese paquete específico a través de cada etapa de su viaje (almacén, transporte, entrega), sin confundirlo con ningún otro paquete que esté viajando simultáneamente por el mismo sistema logístico.
-
-**¿Por qué es importante?** El correlation ID es la herramienta fundamental que permite reconstruir el rastro completo de una petición específica entre el volumen masivo de logs concurrentes de un sistema de producción real, particularmente indispensable en arquitecturas distribuidas de microservicios.
-
-**Código del ejemplo:**
-
-```js
-app.use((req, res, next) => {
-  req.correlationId = randomUUID();
-  req.log = log.child({ correlationId: req.correlationId }); // adjunto automáticamente
-  next();
-});
-// cada log de esta request específica incluye el mismo correlationId
-```
-
 ### Tema 3: Excepciones no capturadas y graceful shutdown
 
 #### Paso 1 · Objetivo y preparación
@@ -179,38 +179,6 @@ Un despliegue necesita retirar una instancia sin cortar solicitudes activas. Un 
 #### Paso 3 · Teoría y analogía aplicada
 
 Graceful shutdown es cerrar una tienda: dejar de aceptar clientes, terminar trabajos activos y liberar recursos. `uncaughtException` no debe usarse para continuar a ciegas.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-shutdown
-cd ejemplo-shutdown
-npm init -y
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import http from "node:http";
-const server = http.createServer((_req, res) => setTimeout(() => res.end("ok"), 50));
-server.listen(3000, () => console.log("listo"));
-function cerrar(signal) { console.log(`recibido ${signal}`); server.close(() => { console.log("cerrado"); process.exitCode = 0; }); setTimeout(() => process.exit(1), 5000).unref(); }
-process.once("SIGTERM", () => cerrar("SIGTERM"));
-process.once("SIGINT", () => cerrar("SIGINT"));
-```
-
-Ejecuta `node src/server.js` y detén con `Ctrl+C`. **Resultado esperado:** se imprime `cerrado`. **Fallo deliberado y diagnóstico:** cambia el callback para lanzar un error; observa que el proceso termina y el supervisor debe reiniciarlo, en lugar de capturarlo y servir datos dudosos.
-
-#### Paso 5 · Práctica guiada
-
-Añade contador de solicitudes activas y espera a cero antes de cerrar. **Pista:** incrementa al entrar y decrementa en `finally`.
-
-#### Paso 6 · Práctica independiente
-
-Envía SIGTERM durante una respuesta lenta y entrega evidencia de que la respuesta termina o expira por timeout.
-
-#### Paso 7 · Cierre y conexión
 
 Ya distingues apagado ordenado de recuperación peligrosa. El siguiente tema comparará contratos REST, GraphQL y gRPC.
 
@@ -247,6 +215,38 @@ process.on("SIGTERM", async () => {
 });
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-shutdown
+cd ejemplo-shutdown
+npm init -y
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import http from "node:http";
+const server = http.createServer((_req, res) => setTimeout(() => res.end("ok"), 50));
+server.listen(3000, () => console.log("listo"));
+function cerrar(signal) { console.log(`recibido ${signal}`); server.close(() => { console.log("cerrado"); process.exitCode = 0; }); setTimeout(() => process.exit(1), 5000).unref(); }
+process.once("SIGTERM", () => cerrar("SIGTERM"));
+process.once("SIGINT", () => cerrar("SIGINT"));
+```
+
+Ejecuta `node src/server.js` y detén con `Ctrl+C`. **Resultado esperado:** se imprime `cerrado`. **Fallo deliberado y diagnóstico:** cambia el callback para lanzar un error; observa que el proceso termina y el supervisor debe reiniciarlo, en lugar de capturarlo y servir datos dudosos.
+
+#### Paso 5 · Práctica guiada
+
+Añade contador de solicitudes activas y espera a cero antes de cerrar. **Pista:** incrementa al entrar y decrementa en `finally`.
+
+#### Paso 6 · Práctica independiente
+
+Envía SIGTERM durante una respuesta lenta y entrega evidencia de que la respuesta termina o expira por timeout.
+
+#### Paso 7 · Cierre y conexión
+
 ### Tema 4: REST, GraphQL y gRPC
 
 #### Paso 1 · Objetivo y preparación
@@ -260,38 +260,6 @@ Una app móvil puede necesitar recursos REST, una pantalla flexible puede pedir 
 #### Paso 3 · Teoría y analogía aplicada
 
 REST organiza recursos y caché; GraphQL permite seleccionar campos; gRPC usa contratos protobuf y HTTP/2. Son menús distintos: uno por platos, otro a la carta y otro con pedido binario estricto.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-contratos-api
-cd ejemplo-contratos-api
-npm init -y
-npm install express
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import express from "express";
-const app = express();
-app.get("/paquetes/:id", (req, res) => res.json({ id: req.params.id, estado: "en-ruta" }));
-app.post("/graphql", express.json(), (req, res) => res.json({ data: { echo: req.body.query ?? null } }));
-app.listen(3000, () => console.log("API lista"));
-```
-
-Ejecuta `node src/server.js`, consulta `/paquetes/RF-1` y envía `{ "query": "paquetes" }` a `/graphql`. **Resultado esperado:** cada contrato devuelve JSON. **Fallo deliberado y diagnóstico:** solicita `/paquete/RF-1`; recibe `404`, que es un contrato REST diferente, no un problema de serialización.
-
-#### Paso 5 · Práctica guiada
-
-Documenta la misma operación en una tabla REST/GraphQL/gRPC. **Pista:** compara versionado, selección de campos y generación de cliente.
-
-#### Paso 6 · Práctica independiente
-
-Implementa content negotiation con `Accept` y entrega respuestas `application/json` y `406`.
-
-#### Paso 7 · Cierre y conexión
 
 Ya puedes justificar un estilo por contrato y consumidor. El siguiente tema expondrá métricas y trazas.
 
@@ -324,6 +292,38 @@ gRPC:    binario (Protocol Buffers), contratos .proto tipados, ideal para micros
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Expón la consulta de guía mediante el contrato elegido y prueba errores equivalentes. Justifica REST, GraphQL o gRPC con las necesidades de los clientes sin duplicar reglas de autorización en cada transporte.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-contratos-api
+cd ejemplo-contratos-api
+npm init -y
+npm install express
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+const app = express();
+app.get("/paquetes/:id", (req, res) => res.json({ id: req.params.id, estado: "en-ruta" }));
+app.post("/graphql", express.json(), (req, res) => res.json({ data: { echo: req.body.query ?? null } }));
+app.listen(3000, () => console.log("API lista"));
+```
+
+Ejecuta `node src/server.js`, consulta `/paquetes/RF-1` y envía `{ "query": "paquetes" }` a `/graphql`. **Resultado esperado:** cada contrato devuelve JSON. **Fallo deliberado y diagnóstico:** solicita `/paquete/RF-1`; recibe `404`, que es un contrato REST diferente, no un problema de serialización.
+
+#### Paso 5 · Práctica guiada
+
+Documenta la misma operación en una tabla REST/GraphQL/gRPC. **Pista:** compara versionado, selección de campos y generación de cliente.
+
+#### Paso 6 · Práctica independiente
+
+Implementa content negotiation con `Accept` y entrega respuestas `application/json` y `406`.
+
+#### Paso 7 · Cierre y conexión
 
 ### Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry
 

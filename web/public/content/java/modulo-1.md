@@ -53,34 +53,6 @@ Un sistema de reparto trata conductores y vehículos de forma polimórfica (todo
 #### Paso 3 · Teoría, modelo mental y analogía
 El tipo real del objeto en tiempo de ejecución decide qué versión sobreescrita se ejecuta, no el tipo declarado de la variable. La analogía es una plantilla de formulario: la subclase personaliza ciertas secciones manteniendo el resto de la plantilla original.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-herencia-anotacion
-cd ejemplo-herencia-anotacion
-mkdir -p src/main/java/academia/animales
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `Animal`/`Perro` con `@Override` (código en "Código del ejemplo") y, en un segundo archivo, la anotación `@Auditable` con `@Retention(RUNTIME)` y `EntregaService` que la usa. Compila ambos y ejecuta una clase `Main` que invoque `hablar()` sobre una referencia `Animal` que apunta a un `Perro`.
-
-#### Paso 5 · Práctica guiada
-Pista: quita deliberadamente `@Retention(RUNTIME)` de `@Auditable` para provocar un fallo diagnosticable; una consulta por reflexión que buscaba la anotación deja de encontrarla, aunque el código compile igual. Resultado esperado: identificas que la causa es la política de retención, no el `@Target`.
-
-#### Paso 6 · Práctica independiente
-Agrega una tercera subclase de `Animal` (por ejemplo `Gato`) y confirma que invocar `hablar()` sobre las tres referencias `Animal` ejecuta la versión correcta de cada una; agrega una segunda anotación propia con `@Target(ElementType.FIELD)`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda las clases, la anotación, la salida del polimorfismo y el diagnóstico del fallo de retención; como siguiente paso estudia interfaces y clases abstractas. Errores comunes: herencia por reutilización sin relación "es un" real, olvidar `@Override`, y anotaciones sin la retención correcta para su consumidor. Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
-
 El patrón de anotación propia + interceptor por reflexión es el mismo mecanismo que usa Spring (track de Spring Boot) para funcionalidad transversal como auditoría o seguridad, aplicado aquí en Java puro antes de depender de un framework que lo automatice.
 
 **Cuándo no usarlo:** crear una anotación propia con reflexión agrega una capa de indirección; para una única llamada de auditoría en un único lugar, invocar directamente el código de registro es más simple y más fácil de rastrear que una anotación que un interceptor debe descubrir.
@@ -141,6 +113,34 @@ class Perro extends Animal {
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** Sustituye dos estrategias de asignación mediante un contrato común. Prueba ambas con el mismo conjunto de entregas y verifica invariantes compartidas sin depender de detalles de una subclase.
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-herencia-anotacion
+cd ejemplo-herencia-anotacion
+mkdir -p src/main/java/academia/animales
+```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+Crea `Animal`/`Perro` con `@Override` (código en "Código del ejemplo") y, en un segundo archivo, la anotación `@Auditable` con `@Retention(RUNTIME)` y `EntregaService` que la usa. Compila ambos y ejecuta una clase `Main` que invoque `hablar()` sobre una referencia `Animal` que apunta a un `Perro`.
+
+#### Paso 5 · Práctica guiada
+Pista: quita deliberadamente `@Retention(RUNTIME)` de `@Auditable` para provocar un fallo diagnosticable; una consulta por reflexión que buscaba la anotación deja de encontrarla, aunque el código compile igual. Resultado esperado: identificas que la causa es la política de retención, no el `@Target`.
+
+#### Paso 6 · Práctica independiente
+Agrega una tercera subclase de `Animal` (por ejemplo `Gato`) y confirma que invocar `hablar()` sobre las tres referencias `Animal` ejecuta la versión correcta de cada una; agrega una segunda anotación propia con `@Target(ElementType.FIELD)`.
+
+#### Paso 7 · Cierre y evidencia
+Guarda las clases, la anotación, la salida del polimorfismo y el diagnóstico del fallo de retención; como siguiente paso estudia interfaces y clases abstractas. Errores comunes: herencia por reutilización sin relación "es un" real, olvidar `@Override`, y anotaciones sin la retención correcta para su consumidor. Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
+
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una
 
 #### Paso 1 · Objetivo y preparación
@@ -151,6 +151,35 @@ El sistema necesita que tipos no relacionados (un `Pajaro` y un `Avion`, por eje
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una interfaz es un contrato puro sin implementación; una clase abstracta combina comportamiento compartido real con métodos que cada subclase debe completar. La analogía: la interfaz es un contrato de servicio que empresas no relacionadas pueden firmar; la clase abstracta es una franquicia que comparte infraestructura real entre sucursales.
+
+**Evidencia de aprendizaje:** entrega la interfaz `Volador` implementada por tipos no relacionados, la clase abstracta `Forma` con sus subclases concretas, y el error de compilación al intentar instanciar `Forma` directamente.
+**Conceptos clave:** contrato sin implementación, comportamiento compartido parcial, múltiple implementación de interfaces.
+
+Una interfaz (`interface Volador { void volar(); }`) define un contrato puro: qué métodos debe tener cualquier clase que la implemente, sin proporcionar ninguna implementación propia por defecto (salvo métodos `default` explícitamente marcados como tales, un caso especial más avanzado), permitiendo que clases completamente no relacionadas entre sí en su jerarquía de herencia (una clase `Pajaro` y una clase `Avion`, por ejemplo, sin ninguna relación de herencia común) implementen el mismo contrato `Volador`, algo que Java permite hacer con múltiples interfaces simultáneamente (`class Pajaro implements Volador, Comestible`), a diferencia de la herencia de clases, donde Java solo permite extender una única superclase.
+
+Una clase abstracta (`abstract class Forma { abstract double area(); void describir() {...} }`) es apropiada en cambio cuando existe comportamiento genuinamente compartido entre subclases relacionadas entre sí (el método `describir()`, con una implementación concreta compartida por todas las subclases de `Forma`), combinado con métodos abstractos que cada subclase concreta debe implementar por su cuenta (`area()`, sin implementación en la clase abstracta, dado que el cálculo específico depende de qué forma geométrica concreta sea cada subclase). La elección entre ambas se resume en si existe comportamiento compartido real que valga la pena centralizar (clase abstracta) frente a un contrato puro que clases potencialmente no relacionadas deben cumplir (interfaz).
+
+**Analogía:** una interfaz es como un contrato de servicio que múltiples empresas completamente distintas y no relacionadas entre sí pueden firmar, comprometiéndose a ofrecer ciertos servicios específicos sin que el contrato les dicte cómo implementarlos internamente; una clase abstracta es como una franquicia que comparte cierta infraestructura y procedimientos comunes reales entre todas sus sucursales, dejando que cada sucursal específica implemente únicamente los detalles particulares de su operación local.
+
+**¿Por qué es importante?** Elegir entre clase abstracta e interfaz según si existe comportamiento compartido real (clase abstracta) o solo un contrato puro (interfaz) produce un diseño de jerarquía de clases más claro y correctamente alineado con la relación real entre los tipos involucrados.
+
+**Código del ejemplo:**
+
+```java
+interface Volador {
+    void volar();
+}
+class Pajaro implements Volador {
+    public void volar() { System.out.println("Vuela"); }
+}
+
+abstract class Forma {
+    abstract double area();              // sin implementación: cada subclase la define
+    void describir() { System.out.println("Área: " + area()); } // con implementación, compartida
+}
+```
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Define una interfaz de asignación y decide qué comportamiento merece una base abstracta. Una implementación falsa debe poder probar el consumidor sin heredar campos que no necesita.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -180,34 +209,6 @@ Agrega una segunda implementación de `Volador` (por ejemplo `Avion`, sin relaci
 #### Paso 7 · Cierre y evidencia
 Guarda las clases, la salida de `describir()` para cada forma y el error de instanciación directa; como siguiente paso estudia sobrecarga y modificadores de acceso. Errores comunes: usar clase abstracta cuando bastaba una interfaz, y duplicar comportamiento compartido en cada implementación de una interfaz en vez de centralizarlo en una clase abstracta. Fuentes oficiales: https://dev.java/learn/classes-objects/ y https://docs.oracle.com/javase/tutorial/java/IandI/.
 **¿Por qué es importante?** Porque elegir mal entre interfaz y clase abstracta duplica comportamiento compartido real entre subclases relacionadas, o fuerza una relación de herencia innecesaria donde solo hacía falta un contrato puro.
-**Evidencia de aprendizaje:** entrega la interfaz `Volador` implementada por tipos no relacionados, la clase abstracta `Forma` con sus subclases concretas, y el error de compilación al intentar instanciar `Forma` directamente.
-**Conceptos clave:** contrato sin implementación, comportamiento compartido parcial, múltiple implementación de interfaces.
-
-Una interfaz (`interface Volador { void volar(); }`) define un contrato puro: qué métodos debe tener cualquier clase que la implemente, sin proporcionar ninguna implementación propia por defecto (salvo métodos `default` explícitamente marcados como tales, un caso especial más avanzado), permitiendo que clases completamente no relacionadas entre sí en su jerarquía de herencia (una clase `Pajaro` y una clase `Avion`, por ejemplo, sin ninguna relación de herencia común) implementen el mismo contrato `Volador`, algo que Java permite hacer con múltiples interfaces simultáneamente (`class Pajaro implements Volador, Comestible`), a diferencia de la herencia de clases, donde Java solo permite extender una única superclase.
-
-Una clase abstracta (`abstract class Forma { abstract double area(); void describir() {...} }`) es apropiada en cambio cuando existe comportamiento genuinamente compartido entre subclases relacionadas entre sí (el método `describir()`, con una implementación concreta compartida por todas las subclases de `Forma`), combinado con métodos abstractos que cada subclase concreta debe implementar por su cuenta (`area()`, sin implementación en la clase abstracta, dado que el cálculo específico depende de qué forma geométrica concreta sea cada subclase). La elección entre ambas se resume en si existe comportamiento compartido real que valga la pena centralizar (clase abstracta) frente a un contrato puro que clases potencialmente no relacionadas deben cumplir (interfaz).
-
-**Analogía:** una interfaz es como un contrato de servicio que múltiples empresas completamente distintas y no relacionadas entre sí pueden firmar, comprometiéndose a ofrecer ciertos servicios específicos sin que el contrato les dicte cómo implementarlos internamente; una clase abstracta es como una franquicia que comparte cierta infraestructura y procedimientos comunes reales entre todas sus sucursales, dejando que cada sucursal específica implemente únicamente los detalles particulares de su operación local.
-
-**¿Por qué es importante?** Elegir entre clase abstracta e interfaz según si existe comportamiento compartido real (clase abstracta) o solo un contrato puro (interfaz) produce un diseño de jerarquía de clases más claro y correctamente alineado con la relación real entre los tipos involucrados.
-
-**Código del ejemplo:**
-
-```java
-interface Volador {
-    void volar();
-}
-class Pajaro implements Volador {
-    public void volar() { System.out.println("Vuela"); }
-}
-
-abstract class Forma {
-    abstract double area();              // sin implementación: cada subclase la define
-    void describir() { System.out.println("Área: " + area()); } // con implementación, compartida
-}
-```
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Define una interfaz de asignación y decide qué comportamiento merece una base abstracta. Una implementación falsa debe poder probar el consumidor sin heredar campos que no necesita.
 
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso
 

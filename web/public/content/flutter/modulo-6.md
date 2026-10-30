@@ -14,33 +14,6 @@ Cada vez que el conductor abre RutaFlow, el filtro de zona vuelve a "todas" por 
 #### Paso 3 · Teoría, modelo mental y analogía
 `shared_preferences` provee almacenamiento clave-valor simple, ideal para configuración pequeña de tipos primitivos; no apropiado para datos estructurados en volumen.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-final prefs = await SharedPreferences.getInstance();
-await prefs.setString('zona_preferida', 'norte');
-final zona = prefs.getString('zona_preferida') ?? 'todas';
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: cerrar y volver a abrir RutaFlow restaura automáticamente `zona_preferida` como `'norte'`, sin que el conductor tenga que volver a seleccionarla.
-
-#### Paso 5 · Práctica guiada
-Pista: guardá también la lista completa de envíos del día serializada como un único string JSON gigante con `prefs.setString('envios_cache', jsonEncode(listaEnvios))` — ese es el fallo deliberado: con cientos de envíos, cada lectura y escritura de esa preferencia completa deserializa y vuelve a serializar la lista completa cada vez, y no hay forma de consultar o modificar un envío individual sin tocar el string gigante entero.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando la lista de envíos de `shared_preferences` por completo, dejando ahí únicamente `zona_preferida`, y documentá qué mecanismo de persistencia (Tema 2) sería apropiado para la lista de envíos en su lugar.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la preferencia simple persistida del Paso 4, el mal uso de shared_preferences para datos estructurados del Paso 5, y la documentación del Paso 6; explicá por qué el modelo clave-valor de `shared_preferences` no está diseñado para consultas eficientes sobre datos en volumen. Siguiente paso: estudia sqflite y Hive para la lista de envíos. Errores comunes: guardar una lista grande de objetos estructurados en `shared_preferences`, no proveer un valor por defecto al leer una preferencia que puede no existir todavía, y usar `shared_preferences` para datos sensibles sin cifrado. Fuentes oficiales: https://pub.dev/packages/shared_preferences y https://docs.flutter.dev/cookbook/persistence/key-value.
-**¿Por qué es importante?** `shared_preferences` no es apropiado para guardar una lista grande de objetos estructurados, dado que su modelo clave-valor simple no está diseñado para consultas eficientes sobre datos en volumen.
 **Evidencia de aprendizaje:** entrega preferencia simple persistida, mal uso detectado y documentación del mecanismo apropiado.
 **Conceptos clave:** almacenamiento clave-valor simple, no apropiado para datos estructurados grandes.
 
@@ -76,26 +49,11 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, `zona_preferida` vive en `lib/features/deliveries/domain/delivery_providers.dart`. Práctica: identificá en tu proyecto propio una preferencia simple y persistila con `shared_preferences`.
 
-### Tema 2: sqflite vs Hive
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a decidir entre `sqflite` y Hive para cachear la lista de envíos de RutaFlow, según si necesitás consultas relacionales o simplemente guardar objetos directos. Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-RutaFlow necesita responder "¿cuántos envíos tiene el conductor X en la zona Y, agrupados por estado?" — una consulta que cruza múltiples criterios, distinta de simplemente "guardame este envío y devolvémelo después por su id".
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`sqflite` expone SQL real, apropiado para queries relacionales complejas y agregaciones; Hive es más simple y directo para persistir objetos completos sin relaciones complejas entre entidades.
-
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final db = await openDatabase('rutaflow.db', version: 1, onCreate: (db, version) {
-  db.execute('CREATE TABLE envio(id TEXT PRIMARY KEY, zona TEXT, conductor TEXT, estado TEXT)');
-});
-final resumen = await db.rawQuery(
-  'SELECT estado, COUNT(*) as total FROM envio WHERE conductor = ? AND zona = ? GROUP BY estado',
-  ['c-891', 'norte'],
-);
+final prefs = await SharedPreferences.getInstance();
+await prefs.setString('zona_preferida', 'norte');
+final zona = prefs.getString('zona_preferida') ?? 'todas';
 ```
 
 **Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
@@ -107,17 +65,29 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: `resumen` devuelve directamente el conteo de envíos agrupados por estado para ese conductor y zona específicos — una agregación relacional que `sqflite` resuelve con una sola query SQL, sin cargar todos los envíos en memoria y agruparlos manualmente en Dart.
+Resultado esperado: cerrar y volver a abrir RutaFlow restaura automáticamente `zona_preferida` como `'norte'`, sin que el conductor tenga que volver a seleccionarla.
 
 #### Paso 5 · Práctica guiada
-Pista: intentá resolver esa misma agregación con Hive, cargando `box.values.toList()` (todos los envíos) y agrupando manualmente con `.where()`/`.fold()` en Dart — ese es el fallo deliberado: funciona con pocos envíos, pero a medida que la cantidad de envíos históricos crece a miles, cargar la colección completa en memoria para cada consulta agregada se vuelve notablemente más lento que dejar que SQLite resuelva la agregación internamente.
+Pista: guardá también la lista completa de envíos del día serializada como un único string JSON gigante con `prefs.setString('envios_cache', jsonEncode(listaEnvios))` — ese es el fallo deliberado: con cientos de envíos, cada lectura y escritura de esa preferencia completa deserializa y vuelve a serializar la lista completa cada vez, y no hay forma de consultar o modificar un envío individual sin tocar el string gigante entero.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `sqflite` para este caso específico, y documentá un caso distinto (guardar la última posición GPS conocida de un conductor) donde Hive sí sería la opción más simple y directa, sin necesitar ninguna query relacional.
+Corregí el Paso 5 quitando la lista de envíos de `shared_preferences` por completo, dejando ahí únicamente `zona_preferida`, y documentá qué mecanismo de persistencia (Tema 2) sería apropiado para la lista de envíos en su lugar.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la agregación SQL del Paso 4, el costo de la alternativa con Hive del Paso 5, y el caso documentado donde Hive sí es apropiado del Paso 6; explicá el criterio concreto que usarías para elegir entre ambos la próxima vez. Siguiente paso: estudia offline-first y Firebase. Errores comunes: elegir Hive para datos que necesitan queries relacionales complejas con joins o agregaciones, elegir `sqflite` para un caso simple de objetos sin relaciones, y no medir el costo real de cargar una colección completa en memoria antes de descartar una opción. Fuentes oficiales: https://pub.dev/packages/sqflite y https://pub.dev/packages/hive.
-**¿Por qué es importante?** Elegir entre Hive y `sqflite` depende de si la app necesita queries relacionales complejas (apropiado para `sqflite`) o simplemente persistir y recuperar objetos directos sin relaciones complejas (más simple con Hive).
+Entregá la preferencia simple persistida del Paso 4, el mal uso de shared_preferences para datos estructurados del Paso 5, y la documentación del Paso 6; explicá por qué el modelo clave-valor de `shared_preferences` no está diseñado para consultas eficientes sobre datos en volumen. Siguiente paso: estudia sqflite y Hive para la lista de envíos. Errores comunes: guardar una lista grande de objetos estructurados en `shared_preferences`, no proveer un valor por defecto al leer una preferencia que puede no existir todavía, y usar `shared_preferences` para datos sensibles sin cifrado. Fuentes oficiales: https://pub.dev/packages/shared_preferences y https://docs.flutter.dev/cookbook/persistence/key-value.
+**¿Por qué es importante?** `shared_preferences` no es apropiado para guardar una lista grande de objetos estructurados, dado que su modelo clave-valor simple no está diseñado para consultas eficientes sobre datos en volumen.
+
+### Tema 2: sqflite vs Hive
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a decidir entre `sqflite` y Hive para cachear la lista de envíos de RutaFlow, según si necesitás consultas relacionales o simplemente guardar objetos directos. Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+RutaFlow necesita responder "¿cuántos envíos tiene el conductor X en la zona Y, agrupados por estado?" — una consulta que cruza múltiples criterios, distinta de simplemente "guardame este envío y devolvémelo después por su id".
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`sqflite` expone SQL real, apropiado para queries relacionales complejas y agregaciones; Hive es más simple y directo para persistir objetos completos sin relaciones complejas entre entidades.
+
 **Evidencia de aprendizaje:** entrega agregación SQL funcionando, costo de la alternativa con Hive medido y caso de uso apropiado para Hive documentado.
 **Conceptos clave:** SQL relacional con queries complejas frente a NoSQL embebido simple y directo.
 
@@ -169,6 +139,38 @@ En el proyecto integrador RutaFlow, la base `sqflite` vive en `lib/features/deli
 ```bash
 flutter test test/envio_dao_test.dart
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+final db = await openDatabase('rutaflow.db', version: 1, onCreate: (db, version) {
+  db.execute('CREATE TABLE envio(id TEXT PRIMARY KEY, zona TEXT, conductor TEXT, estado TEXT)');
+});
+final resumen = await db.rawQuery(
+  'SELECT estado, COUNT(*) as total FROM envio WHERE conductor = ? AND zona = ? GROUP BY estado',
+  ['c-891', 'norte'],
+);
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: `resumen` devuelve directamente el conteo de envíos agrupados por estado para ese conductor y zona específicos — una agregación relacional que `sqflite` resuelve con una sola query SQL, sin cargar todos los envíos en memoria y agruparlos manualmente en Dart.
+
+#### Paso 5 · Práctica guiada
+Pista: intentá resolver esa misma agregación con Hive, cargando `box.values.toList()` (todos los envíos) y agrupando manualmente con `.where()`/`.fold()` en Dart — ese es el fallo deliberado: funciona con pocos envíos, pero a medida que la cantidad de envíos históricos crece a miles, cargar la colección completa en memoria para cada consulta agregada se vuelve notablemente más lento que dejar que SQLite resuelva la agregación internamente.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a `sqflite` para este caso específico, y documentá un caso distinto (guardar la última posición GPS conocida de un conductor) donde Hive sí sería la opción más simple y directa, sin necesitar ninguna query relacional.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la agregación SQL del Paso 4, el costo de la alternativa con Hive del Paso 5, y el caso documentado donde Hive sí es apropiado del Paso 6; explicá el criterio concreto que usarías para elegir entre ambos la próxima vez. Siguiente paso: estudia offline-first y Firebase. Errores comunes: elegir Hive para datos que necesitan queries relacionales complejas con joins o agregaciones, elegir `sqflite` para un caso simple de objetos sin relaciones, y no medir el costo real de cargar una colección completa en memoria antes de descartar una opción. Fuentes oficiales: https://pub.dev/packages/sqflite y https://pub.dev/packages/hive.
+**¿Por qué es importante?** Elegir entre Hive y `sqflite` depende de si la app necesita queries relacionales complejas (apropiado para `sqflite`) o simplemente persistir y recuperar objetos directos sin relaciones complejas (más simple con Hive).
 
 ### Tema 3: Offline-first y Firebase
 

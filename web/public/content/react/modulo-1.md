@@ -33,49 +33,6 @@ graph TD
     style E fill:#e8f5e9
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```jsx
-function FormularioConfirmacion() {
-  const [intentos, setIntentos] = useState(0);
-  function confirmarDosVeces() {
-    setIntentos(intentos + 1);
-    setIntentos(intentos + 1); // ambas leen el mismo `intentos` capturado
-  }
-  return <button onClick={confirmarDosVeces}>Intentos: {intentos}</button>;
-}
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado.
-
-**Demo con React DevTools:**
-1. Abre tu aplicación con el componente anterior
-2. En DevTools → Componentes tab, inspecciona `<FormularioConfirmacion />`
-3. En el panel lateral, mira el estado: `intentos: 0`
-4. Haz click en el botón una vez
-5. Mira cómo `intentos` cambió a `1` en el panel de DevTools (no a 2)
-6. Ahora edita el código del manejador para usar la forma funcional: `setIntentos(i => i + 1)` en ambas líneas
-7. Recarga el componente en DevTools (o rehazlo completamente)
-8. Haz click nuevamente: ahora `intentos` salta a `2` en el panel de DevTools
-9. Resultado esperado: ver en tiempo real cómo la forma funcional acumula correctamente los cambios de estado.
-
-#### Paso 5 · Práctica guiada
-Pista: dejá el código del Paso 4 y esperá que `intentos` llegue a 2 "porque llamé a `setIntentos` dos veces" — ese es el fallo deliberado: el contador queda en 1, no en 2, porque ambas llamadas leyeron el mismo `intentos` capturado antes de que ninguna de las dos se aplicara.
-
-#### Paso 6 · Práctica independiente
-Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirmá que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
-**¿Por qué es importante?** Porque depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
 **Evidencia de aprendizaje:** entrega contador con el bug detectado y corrección con forma funcional.
 **Conceptos clave:** valor capturado por closure, forma funcional del setter.
 
@@ -124,6 +81,50 @@ setCount(c => c + 1); // ahora sí suma 2
 * Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
 * Proyecto: proyecto integrador RutaFlow
 
+#### Paso 4 · Demostración guiada desde cero
+```jsx
+function FormularioConfirmacion() {
+  const [intentos, setIntentos] = useState(0);
+  function confirmarDosVeces() {
+    setIntentos(intentos + 1);
+    setIntentos(intentos + 1); // ambas leen el mismo `intentos` capturado
+  }
+  return <button onClick={confirmarDosVeces}>Intentos: {intentos}</button>;
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado.
+
+**Demo con React DevTools:**
+1. Abre tu aplicación con el componente anterior
+2. En DevTools → Componentes tab, inspecciona `<FormularioConfirmacion />`
+3. En el panel lateral, mira el estado: `intentos: 0`
+4. Haz click en el botón una vez
+5. Mira cómo `intentos` cambió a `1` en el panel de DevTools (no a 2)
+6. Ahora edita el código del manejador para usar la forma funcional: `setIntentos(i => i + 1)` en ambas líneas
+7. Recarga el componente en DevTools (o rehazlo completamente)
+8. Haz click nuevamente: ahora `intentos` salta a `2` en el panel de DevTools
+9. Resultado esperado: ver en tiempo real cómo la forma funcional acumula correctamente los cambios de estado.
+
+#### Paso 5 · Práctica guiada
+Pista: dejá el código del Paso 4 y esperá que `intentos` llegue a 2 "porque llamé a `setIntentos` dos veces" — ese es el fallo deliberado: el contador queda en 1, no en 2, porque ambas llamadas leyeron el mismo `intentos` capturado antes de que ninguna de las dos se aplicara.
+
+#### Paso 6 · Práctica independiente
+Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirmá que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
+**¿Por qué es importante?** Porque depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
+
 ### Tema 2: Render frente a commit
 
 #### Paso 1 · Objetivo y preparación
@@ -165,6 +166,29 @@ graph TD
     style H fill:#ffeb3b
 ```
 
+**Evidencia de aprendizaje:** entrega prueba de render sin cambio visual, aclaración del malentendido y comparación con cambio real.
+**Conceptos clave:** fase de render (cálculo), fase de commit (aplicación al DOM real).
+
+React separa internamente el trabajo de actualizar la interfaz en dos fases distintas: la fase de render, durante la cual React ejecuta la función del componente (y de todos sus componentes hijos afectados) para calcular una descripción de qué debería verse en pantalla (una nueva versión del árbol de elementos producido por JSX/`createElement`, Módulo 0), sin todavía tocar el DOM real del navegador; y la fase de commit, durante la cual React compara esa nueva descripción con la anterior (un proceso llamado reconciliation) y aplica al DOM real únicamente los cambios mínimos necesarios para reflejar las diferencias encontradas.
+
+Esta separación explica por qué ejecutar la función de un componente (la fase de render) no necesariamente implica que algo cambie visualmente en pantalla: si el árbol de elementos resultante de esa ejecución es idéntico al anterior, React no necesita aplicar ningún cambio real al DOM durante la fase de commit, aunque la función del componente sí se haya ejecutado completamente de nuevo. Comprender esta separación es fundamental para entender por qué código con efectos secundarios directos dentro del cuerpo de la función componente (fuera de un `useEffect`, Módulo 2) es problemático: ese código se ejecutaría en cada fase de render, potencialmente múltiples veces antes de que cualquier commit real ocurra, en vez de ejecutarse una única vez cuando el cambio efectivamente se aplica.
+
+**Analogía:** la fase de render es como un arquitecto dibujando planos actualizados de un edificio basándose en los requisitos más recientes, sin todavía haber movido un solo ladrillo real; la fase de commit es como el equipo de construcción aplicando físicamente solo los cambios necesarios entre los planos anteriores y los nuevos, sin reconstruir el edificio completo desde cero cada vez.
+
+**¿Por qué es importante?** Entender que renderizar (ejecutar la función del componente) no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect` y no directamente en el cuerpo de la función componente.
+
+**Diagrama:**
+
+```
+Render:  ejecuta la función componente → calcula el nuevo árbol de elementos
+Commit:  compara con el árbol anterior → aplica solo los cambios mínimos al DOM real
+(Render puede ocurrir sin que el commit produzca ningún cambio visual)
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 function FormularioConfirmacion() {
@@ -194,28 +218,6 @@ Corregí tu conclusión del Paso 5 agregando una segunda prueba: actualizá `pin
 #### Paso 7 · Cierre y evidencia
 Entregá la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explicá por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
 **¿Por qué es importante?** Entender que renderizar no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect`, no directamente en el cuerpo del componente.
-**Evidencia de aprendizaje:** entrega prueba de render sin cambio visual, aclaración del malentendido y comparación con cambio real.
-**Conceptos clave:** fase de render (cálculo), fase de commit (aplicación al DOM real).
-
-React separa internamente el trabajo de actualizar la interfaz en dos fases distintas: la fase de render, durante la cual React ejecuta la función del componente (y de todos sus componentes hijos afectados) para calcular una descripción de qué debería verse en pantalla (una nueva versión del árbol de elementos producido por JSX/`createElement`, Módulo 0), sin todavía tocar el DOM real del navegador; y la fase de commit, durante la cual React compara esa nueva descripción con la anterior (un proceso llamado reconciliation) y aplica al DOM real únicamente los cambios mínimos necesarios para reflejar las diferencias encontradas.
-
-Esta separación explica por qué ejecutar la función de un componente (la fase de render) no necesariamente implica que algo cambie visualmente en pantalla: si el árbol de elementos resultante de esa ejecución es idéntico al anterior, React no necesita aplicar ningún cambio real al DOM durante la fase de commit, aunque la función del componente sí se haya ejecutado completamente de nuevo. Comprender esta separación es fundamental para entender por qué código con efectos secundarios directos dentro del cuerpo de la función componente (fuera de un `useEffect`, Módulo 2) es problemático: ese código se ejecutaría en cada fase de render, potencialmente múltiples veces antes de que cualquier commit real ocurra, en vez de ejecutarse una única vez cuando el cambio efectivamente se aplica.
-
-**Analogía:** la fase de render es como un arquitecto dibujando planos actualizados de un edificio basándose en los requisitos más recientes, sin todavía haber movido un solo ladrillo real; la fase de commit es como el equipo de construcción aplicando físicamente solo los cambios necesarios entre los planos anteriores y los nuevos, sin reconstruir el edificio completo desde cero cada vez.
-
-**¿Por qué es importante?** Entender que renderizar (ejecutar la función del componente) no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect` y no directamente en el cuerpo de la función componente.
-
-**Diagrama:**
-
-```
-Render:  ejecuta la función componente → calcula el nuevo árbol de elementos
-Commit:  compara con el árbol anterior → aplica solo los cambios mínimos al DOM real
-(Render puede ocurrir sin que el commit produzca ningún cambio visual)
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 3: Batching de actualizaciones
 
@@ -249,6 +251,32 @@ graph TD
     style E fill:#c8e6c9
 ```
 
+**Evidencia de aprendizaje:** entrega prueba de un solo render, ruptura del batching detectada y cuarta actualización confirmada.
+**Conceptos clave:** agrupación de múltiples `setState`, un único re-render.
+
+Cuando múltiples llamadas a funciones de actualización de estado ocurren dentro del mismo manejador de evento (`setA(1); setB(2); setC(3);` dentro de una misma función `manejarClick`), React no vuelve a renderizar el componente inmediatamente después de cada llamada individual, sino que agrupa (batchea) todas esas actualizaciones y ejecuta un único ciclo de render y commit que refleja el efecto combinado de las tres, en vez de tres ciclos separados de render y commit, uno por cada llamada individual a una función de actualización de estado.
+
+Este comportamiento es una optimización de rendimiento deliberada: sin batching, cada llamada individual a `setState` dispararía su propio ciclo completo de render y commit, un desperdicio considerable de trabajo cuando en la práctica el componente solo necesita reflejar el estado final combinado de las tres actualizaciones, no cada estado intermedio parcial entre ellas. Este comportamiento se puede verificar empíricamente colocando un `console.log` dentro del cuerpo del componente (que se ejecuta una vez por cada render): tras las tres llamadas a `setState`, ese `console.log` se ejecuta una única vez adicional, no tres veces, confirmando que las tres actualizaciones efectivamente se agruparon en un único render.
+
+**Analogía:** el batching es como un cajero que espera a que termines de pedir los tres artículos completos antes de calcular el total una única vez, en vez de recalcular y anunciar un nuevo total parcial después de cada artículo individual que mencionas.
+
+**Código del ejemplo:**
+
+```jsx
+function manejarClick() {
+  setA(1);
+  setB(2);
+  setC(3);
+  // React agrupa (batchea) estas tres actualizaciones en un único re-render, no en tres
+}
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
+**Límites y decisión de uso:** El batching agrupa trabajo, pero no convierte el estado leído en un valor actualizado inmediatamente. Si una actualización depende de la anterior, usa su forma funcional y comprueba la secuencia, como explica [React sobre actualizaciones de estado](https://react.dev/learn/queueing-a-series-of-state-updates).
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 function confirmar() {
@@ -279,31 +307,6 @@ Corregí el Paso 5 quitando los `setTimeout` innecesarios, y agregá una cuarta 
 #### Paso 7 · Cierre y evidencia
 Entregá la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explicá por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
 **¿Por qué es importante?** El batching evita ciclos de render y commit redundantes cuando múltiples actualizaciones de estado ocurren en el mismo manejador, aplicando únicamente el estado final combinado en un único ciclo.
-**Evidencia de aprendizaje:** entrega prueba de un solo render, ruptura del batching detectada y cuarta actualización confirmada.
-**Conceptos clave:** agrupación de múltiples `setState`, un único re-render.
-
-Cuando múltiples llamadas a funciones de actualización de estado ocurren dentro del mismo manejador de evento (`setA(1); setB(2); setC(3);` dentro de una misma función `manejarClick`), React no vuelve a renderizar el componente inmediatamente después de cada llamada individual, sino que agrupa (batchea) todas esas actualizaciones y ejecuta un único ciclo de render y commit que refleja el efecto combinado de las tres, en vez de tres ciclos separados de render y commit, uno por cada llamada individual a una función de actualización de estado.
-
-Este comportamiento es una optimización de rendimiento deliberada: sin batching, cada llamada individual a `setState` dispararía su propio ciclo completo de render y commit, un desperdicio considerable de trabajo cuando en la práctica el componente solo necesita reflejar el estado final combinado de las tres actualizaciones, no cada estado intermedio parcial entre ellas. Este comportamiento se puede verificar empíricamente colocando un `console.log` dentro del cuerpo del componente (que se ejecuta una vez por cada render): tras las tres llamadas a `setState`, ese `console.log` se ejecuta una única vez adicional, no tres veces, confirmando que las tres actualizaciones efectivamente se agruparon en un único render.
-
-**Analogía:** el batching es como un cajero que espera a que termines de pedir los tres artículos completos antes de calcular el total una única vez, en vez de recalcular y anunciar un nuevo total parcial después de cada artículo individual que mencionas.
-
-**Código del ejemplo:**
-
-```jsx
-function manejarClick() {
-  setA(1);
-  setB(2);
-  setC(3);
-  // React agrupa (batchea) estas tres actualizaciones en un único re-render, no en tres
-}
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-
-**Límites y decisión de uso:** El batching agrupa trabajo, pero no convierte el estado leído en un valor actualizado inmediatamente. Si una actualización depende de la anterior, usa su forma funcional y comprueba la secuencia, como explica [React sobre actualizaciones de estado](https://react.dev/learn/queueing-a-series-of-state-updates).
 
 ### Tema 4: Componentes controlados
 

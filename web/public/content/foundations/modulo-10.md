@@ -16,41 +16,6 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 La red es una carretera con retrasos, pérdidas y duplicados — un timeout es un límite de espera local, nunca una prueba de lo que pasó del lado del servidor.
 
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-import socket
-
-def confirmar_con_timeout(sock, command_id, segundos=2):
-    sock.settimeout(segundos)
-    try:
-        sock.sendall(f"CONFIRMAR {command_id}".encode())
-        return sock.recv(1024)
-    except socket.timeout:
-        return None  # estado desconocido: no sabemos si el servidor procesó el comando
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: si el servidor tarda más que `segundos`, la función devuelve `None` — eso significa literalmente "no sé qué pasó", no "falló".
-
-#### Paso 5 · Práctica guiada
-Pista: tratá ese `None` como "seguro que falló" y reenviá el mismo comando SIN usar el mismo `command_id` (generando uno nuevo) — ese es el fallo deliberado: si el primer intento sí había llegado y se procesó, ahora la entrega queda confirmada dos veces con dos IDs distintos, exactamente el duplicado que la identidad del comando (Tema 3) existe para evitar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reenviando el comando con el MISMO `command_id` original, y documentá qué necesitaría el servidor para responder correctamente a ese reintento (pista: la respuesta del Tema 3, `findCommandResult(commandId)`).
-
-#### Paso 7 · Cierre y evidencia
-Entregá el timeout real devolviendo estado desconocido del Paso 4, el duplicado provocado por generar un ID nuevo del Paso 5, y la corrección reusando el ID original del Paso 6; explicá por qué tratar un timeout como "falló con certeza" es tan equivocado como tratarlo como "funcionó con certeza". Siguiente paso: estudiar consistencia. Errores comunes: asumir orden y reintentar sin límite. Fuente oficial: https://sre.google/sre-book.
 **Conceptos clave:** sistema distribuido, nodo, mensaje, latencia, ancho de banda, timeout, fallo parcial, pérdida, duplicación, reordenamiento, reloj físico, reloj lógico, causalidad y deadline.
 
 #### Profundización · Diseño: Backoff y jitter en reintentos
@@ -131,6 +96,42 @@ sequenceDiagram
 
 El mismo problema de identidad de comando aparece en `examples/rutaflow/node/confirm-delivery.ts` (ya citado en el Módulo 7): el chequeo de `commandId` ya procesado existe precisamente para que un reintento tras un timeout de red nunca se confunda con un comando nuevo, igual que el `operation_id` de Python de este Tema.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+import socket
+
+def confirmar_con_timeout(sock, command_id, segundos=2):
+    sock.settimeout(segundos)
+    try:
+        sock.sendall(f"CONFIRMAR {command_id}".encode())
+        return sock.recv(1024)
+    except socket.timeout:
+        return None  # estado desconocido: no sabemos si el servidor procesó el comando
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: si el servidor tarda más que `segundos`, la función devuelve `None` — eso significa literalmente "no sé qué pasó", no "falló".
+
+#### Paso 5 · Práctica guiada
+Pista: tratá ese `None` como "seguro que falló" y reenviá el mismo comando SIN usar el mismo `command_id` (generando uno nuevo) — ese es el fallo deliberado: si el primer intento sí había llegado y se procesó, ahora la entrega queda confirmada dos veces con dos IDs distintos, exactamente el duplicado que la identidad del comando (Tema 3) existe para evitar.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reenviando el comando con el MISMO `command_id` original, y documentá qué necesitaría el servidor para responder correctamente a ese reintento (pista: la respuesta del Tema 3, `findCommandResult(commandId)`).
+
+#### Paso 7 · Cierre y evidencia
+Entregá el timeout real devolviendo estado desconocido del Paso 4, el duplicado provocado por generar un ID nuevo del Paso 5, y la corrección reusando el ID original del Paso 6; explicá por qué tratar un timeout como "falló con certeza" es tan equivocado como tratarlo como "funcionó con certeza". Siguiente paso: estudiar consistencia. Errores comunes: asumir orden y reintentar sin límite. Fuente oficial: https://sre.google/sre-book.
+
 ### Tema 2: Replicación, consistencia y decisiones explícitas
 
 #### Paso 1 · Objetivo y preparación
@@ -142,40 +143,6 @@ Si `ShipmentEvents` tuviera una tabla global multi-región (como la del Módulo 
 #### Paso 3 · Teoría, modelo mental y analogía
 Las réplicas son copias con reglas de coordinación propias; leer una réplica puede devolver un estado anterior al real — el mismo quorum que evita decisiones aisladas también tiene un costo de latencia.
 
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-primaria = {"env-4471": "entregado"}
-replica = {"env-4471": "en_ruta"}  # todavía no recibió la replicación
-
-def leer_estado(fuente, shipment_id):
-    return fuente.get(shipment_id)
-
-print("primaria:", leer_estado(primaria, "env-4471"))
-print("réplica (obsoleta):", leer_estado(replica, "env-4471"))
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: `primaria` devuelve `"entregado"`, `réplica` todavía devuelve `"en_ruta"` — ambos valores son reales en su propia copia, la inconsistencia es temporal, no un bug.
-
-#### Paso 5 · Práctica guiada
-Pista: usá el valor de la réplica para decidir si facturar el envío como completado — ese es el fallo deliberado: facturar basándose en una lectura obsoleta podría cobrar antes de que la entrega esté realmente confirmada en todo el sistema, exactamente el tipo de operación que necesita consistencia fuerte (leer siempre de la primaria), no eventual.
-
-#### Paso 6 · Práctica independiente
-Identificá, para RutaFlow, una operación que SÍ toleraría leer de la réplica (pista: mostrar el historial de ubicaciones en un panel de analítica, Módulo 19 del track Cloud) frente a una que no (pista: decidir si cobrar o reembolsar) — documentando el criterio que usaste para distinguirlas.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturación del Paso 5, y la clasificación de operaciones del Paso 6; explicá por qué "elegir una base AP o CP" no sustituye decidir, operación por operación, qué inconsistencia tolera el negocio. Siguiente paso: estudiar mensajes. Errores comunes: prometer consistencia sin coste y ocultar lecturas obsoletas. Fuente oficial: https://martinfowler.com/articles/patterns-of-distributed-systems.
 **Conceptos clave:** réplica, líder, seguidor, quorum, partición, disponibilidad, consistencia linealizable, consistencia eventual, lectura obsoleta, conflicto, consenso, CAP, PACELC y fencing token.
 
 #### Profundización · Diseño: Read-your-writes sin coste global
@@ -245,6 +212,41 @@ flowchart LR
 
 El proyecto integrador Fundamentos enfrentaría esta misma decisión si su CLI sincronizara `almacenamiento.py` contra un servidor remoto: leer el estado de una tarea desde una réplica recién creada podría devolver una versión vieja, y decidir si eso es tolerable (listar tareas) o no (confirmar que una tarea crítica ya se guardó) es exactamente el mismo criterio operación-por-operación que este Tema aplica a `ShipmentEvents`.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+primaria = {"env-4471": "entregado"}
+replica = {"env-4471": "en_ruta"}  # todavía no recibió la replicación
+
+def leer_estado(fuente, shipment_id):
+    return fuente.get(shipment_id)
+
+print("primaria:", leer_estado(primaria, "env-4471"))
+print("réplica (obsoleta):", leer_estado(replica, "env-4471"))
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: `primaria` devuelve `"entregado"`, `réplica` todavía devuelve `"en_ruta"` — ambos valores son reales en su propia copia, la inconsistencia es temporal, no un bug.
+
+#### Paso 5 · Práctica guiada
+Pista: usá el valor de la réplica para decidir si facturar el envío como completado — ese es el fallo deliberado: facturar basándose en una lectura obsoleta podría cobrar antes de que la entrega esté realmente confirmada en todo el sistema, exactamente el tipo de operación que necesita consistencia fuerte (leer siempre de la primaria), no eventual.
+
+#### Paso 6 · Práctica independiente
+Identificá, para RutaFlow, una operación que SÍ toleraría leer de la réplica (pista: mostrar el historial de ubicaciones en un panel de analítica, Módulo 19 del track Cloud) frente a una que no (pista: decidir si cobrar o reembolsar) — documentando el criterio que usaste para distinguirlas.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturación del Paso 5, y la clasificación de operaciones del Paso 6; explicá por qué "elegir una base AP o CP" no sustituye decidir, operación por operación, qué inconsistencia tolera el negocio. Siguiente paso: estudiar mensajes. Errores comunes: prometer consistencia sin coste y ocultar lecturas obsoletas. Fuente oficial: https://martinfowler.com/articles/patterns-of-distributed-systems.
+
 ### Tema 3: Mensajes que se procesan con efectos exactamente una vez
 
 #### Paso 1 · Objetivo y preparación
@@ -256,47 +258,6 @@ Si la app del conductor reintenta "confirmar entrega" por una mala conexión (Te
 #### Paso 3 · Teoría, modelo mental y analogía
 Un broker es una bandeja numerada; la deduplicación por `commandId` hace que repetir el mismo número nunca produzca un segundo efecto, solo devuelve el recibo que ya existía.
 
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```typescript
-import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from "./confirm-delivery";
-
-const resultados = new Map<string, DeliveryResult>();
-const repo: DeliveryRepository = {
-  async findCommandResult(commandId) { return resultados.get(commandId) ?? null; },
-  async confirm(command) {
-    const result = { shipmentId: command.shipmentId, status: "delivered" as const };
-    resultados.set(command.commandId, result);
-    return result;
-  },
-};
-
-const comando = { commandId: "cmd-1", shipmentId: "env-4471", occurredAt: "2026-10-05", recipientPin: "837201" };
-console.log(await confirmDelivery(comando, repo));
-console.log(await confirmDelivery(comando, repo)); // mismo commandId, reenviado
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: ambas líneas imprimen el mismo resultado, pero `repo.confirm()` solo se ejecuta una vez — la segunda llamada a `confirmDelivery` lo detecta con `findCommandResult` y devuelve el resultado ya guardado, sin volver a "confirmar" nada.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá el segundo comando para que use `commandId: "cmd-2"` (distinto) pero el mismo `shipmentId` — ese es el fallo deliberado: como el `commandId` es nuevo, `confirmDelivery` lo trata como un comando genuino y vuelve a llamar `repo.confirm()`, confirmando el mismo envío una segunda vez; la deduplicación protege por `commandId`, no por `shipmentId`.
-
-#### Paso 6 · Práctica independiente
-Agregá un `console.log` dentro de `repo.confirm` para contar cuántas veces se ejecuta de verdad, y repetí el comando original (`cmd-1`) cinco veces seguidas — confirmá que el contador queda en 1, sin importar cuántos reintentos reciba.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID distinto del Paso 5, y el contador en 1 tras cinco reintentos del Paso 6; explicá por qué la garantía es "exactamente una vez por `commandId`", no "exactamente una vez por envío" en términos absolutos. Siguiente paso: estudiar resiliencia. Errores comunes: confundir entrega con efecto y reintentar operaciones no idempotentes. Fuente oficial: https://microservices.io/patterns/data/transactional-outbox.html.
 **Conceptos clave:** productor, broker, consumidor, ack, entrega al menos una vez, como máximo una vez, exactamente una vez efectiva, idempotencia, deduplicación, retry, backoff, jitter, dead-letter queue, outbox y saga.
 
 #### Profundización · Diseño: Tabla outbox para notificaciones garantizadas
@@ -370,6 +331,48 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Asigna un identificador a cada comando de completar tarea y registra los ya procesados. Envía el mismo comando dos veces y comprueba un solo cambio durable, incluso al reiniciar el consumidor.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```typescript
+import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from "./confirm-delivery";
+
+const resultados = new Map<string, DeliveryResult>();
+const repo: DeliveryRepository = {
+  async findCommandResult(commandId) { return resultados.get(commandId) ?? null; },
+  async confirm(command) {
+    const result = { shipmentId: command.shipmentId, status: "delivered" as const };
+    resultados.set(command.commandId, result);
+    return result;
+  },
+};
+
+const comando = { commandId: "cmd-1", shipmentId: "env-4471", occurredAt: "2026-10-05", recipientPin: "837201" };
+console.log(await confirmDelivery(comando, repo));
+console.log(await confirmDelivery(comando, repo)); // mismo commandId, reenviado
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: ambas líneas imprimen el mismo resultado, pero `repo.confirm()` solo se ejecuta una vez — la segunda llamada a `confirmDelivery` lo detecta con `findCommandResult` y devuelve el resultado ya guardado, sin volver a "confirmar" nada.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá el segundo comando para que use `commandId: "cmd-2"` (distinto) pero el mismo `shipmentId` — ese es el fallo deliberado: como el `commandId` es nuevo, `confirmDelivery` lo trata como un comando genuino y vuelve a llamar `repo.confirm()`, confirmando el mismo envío una segunda vez; la deduplicación protege por `commandId`, no por `shipmentId`.
+
+#### Paso 6 · Práctica independiente
+Agregá un `console.log` dentro de `repo.confirm` para contar cuántas veces se ejecuta de verdad, y repetí el comando original (`cmd-1`) cinco veces seguidas — confirmá que el contador queda en 1, sin importar cuántos reintentos reciba.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID distinto del Paso 5, y el contador en 1 tras cinco reintentos del Paso 6; explicá por qué la garantía es "exactamente una vez por `commandId`", no "exactamente una vez por envío" en términos absolutos. Siguiente paso: estudiar resiliencia. Errores comunes: confundir entrega con efecto y reintentar operaciones no idempotentes. Fuente oficial: https://microservices.io/patterns/data/transactional-outbox.html.
+
 ### Tema 4: Resiliencia y observabilidad orientadas a objetivos
 
 #### Paso 1 · Objetivo y preparación
@@ -381,43 +384,6 @@ Si el proveedor de SMS que notifica al cliente (Módulo 10 del track Cloud) empi
 #### Paso 3 · Teoría, modelo mental y analogía
 Un SLI mide lo que importa (proporción de confirmaciones completadas bajo 300ms); el error budget es la fracción de incumplimiento que el negocio decidió tolerar — una alerta solo tiene sentido si consume una parte real de ese presupuesto.
 
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-def sli_confirmaciones(eventos):
-    elegibles = [e for e in eventos if e["valido"]]
-    buenos = [e for e in elegibles if e["estado"] == "ok" and e["ms"] <= 300]
-    return len(buenos) / len(elegibles) if elegibles else 1.0
-
-eventos = [
-    {"valido": True, "estado": "ok", "ms": 120},
-    {"valido": True, "estado": "ok", "ms": 280},
-    {"valido": True, "estado": "ok", "ms": 900},  # el proveedor de SMS respondió lento
-]
-print(sli_confirmaciones(eventos))
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: `0.6666...` — dos de tres confirmaciones cumplieron el SLI de 300ms; si el SLO es 99.9% en 28 días, este único evento lento ya consume una fracción real y medible del presupuesto de error, no una sensación vaga.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá el cálculo para usar `mean([e["ms"] for e in eventos])` como única métrica, en vez del SLI de proporción bajo el umbral — ese es el fallo deliberado: el promedio (433ms) puede esconder que 2 de 3 confirmaciones estuvieron perfectamente bien y solo una se disparó; el SLI correcto mide el resultado que le importa al usuario, no un promedio que cualquier valor extremo puede distorsionar.
-
-#### Paso 6 · Práctica independiente
-Agregá una alerta que dispare solo cuando el SLI caiga por debajo de un umbral sostenido (por ejemplo, menos de 99% durante más de 5 minutos, no por un solo evento lento aislado), y documentá qué acción humana concreta debería seguir esa alerta — una alerta sin acción clara es ruido, no observabilidad.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el SLI real calculado del Paso 4, el promedio engañoso del Paso 5, y la alerta con acción concreta del Paso 6; explicá por qué medir "lo que le importa al usuario" (confirmaciones a tiempo) es distinto de medir "lo que es fácil de medir" (CPU, promedio). Siguiente paso: estudiar sistemas operativos. Errores comunes: alertar sin acción y medir solo promedios. Fuente oficial: https://sre.google/sre-book/monitoring-distributed-systems/.
 **Conceptos clave:** resiliencia, bulkhead, circuit breaker, load shedding, degradación, observabilidad, log, métrica, traza, correlation ID, SLI, SLO, error budget, alerta, runbook, incidente y postmortem.
 
 #### Profundización · Diseño: Runbook de diagnóstico a las 3 AM
@@ -486,6 +452,44 @@ flowchart LR
 ```
 
 Un SLI equivalente para el proyecto integrador Fundamentos viviría en `tareas.py`: si el CLI alguna vez dependiera de un servicio externo (por ejemplo, para sincronizar tareas), medirías la proporción de comandos completados bajo un umbral de tiempo, exactamente con la misma función `sli_confirmaciones` de este Tema, solo cambiando qué evento se considera "bueno".
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+def sli_confirmaciones(eventos):
+    elegibles = [e for e in eventos if e["valido"]]
+    buenos = [e for e in elegibles if e["estado"] == "ok" and e["ms"] <= 300]
+    return len(buenos) / len(elegibles) if elegibles else 1.0
+
+eventos = [
+    {"valido": True, "estado": "ok", "ms": 120},
+    {"valido": True, "estado": "ok", "ms": 280},
+    {"valido": True, "estado": "ok", "ms": 900},  # el proveedor de SMS respondió lento
+]
+print(sli_confirmaciones(eventos))
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: `0.6666...` — dos de tres confirmaciones cumplieron el SLI de 300ms; si el SLO es 99.9% en 28 días, este único evento lento ya consume una fracción real y medible del presupuesto de error, no una sensación vaga.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá el cálculo para usar `mean([e["ms"] for e in eventos])` como única métrica, en vez del SLI de proporción bajo el umbral — ese es el fallo deliberado: el promedio (433ms) puede esconder que 2 de 3 confirmaciones estuvieron perfectamente bien y solo una se disparó; el SLI correcto mide el resultado que le importa al usuario, no un promedio que cualquier valor extremo puede distorsionar.
+
+#### Paso 6 · Práctica independiente
+Agregá una alerta que dispare solo cuando el SLI caiga por debajo de un umbral sostenido (por ejemplo, menos de 99% durante más de 5 minutos, no por un solo evento lento aislado), y documentá qué acción humana concreta debería seguir esa alerta — una alerta sin acción clara es ruido, no observabilidad.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el SLI real calculado del Paso 4, el promedio engañoso del Paso 5, y la alerta con acción concreta del Paso 6; explicá por qué medir "lo que le importa al usuario" (confirmaciones a tiempo) es distinto de medir "lo que es fácil de medir" (CPU, promedio). Siguiente paso: estudiar sistemas operativos. Errores comunes: alertar sin acción y medir solo promedios. Fuente oficial: https://sre.google/sre-book/monitoring-distributed-systems/.
 
 ### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases
 

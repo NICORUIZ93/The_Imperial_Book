@@ -15,26 +15,7 @@ worker termine.
 #### Paso 3 · Teoría, modelo mental y analogía
 La cola es una bandeja numerada: el productor deja trabajo, el consumidor lo retira cuando
 puede.
-#### Paso 4 · Demostración guiada
-```bash
-QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
-aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","accion":"confirmar-entrega"}'
-aws sqs receive-message --queue-url "$QUEUE_URL"
-```
-Resultado esperado: `receive-message` devuelve un JSON con `Body` igual al que enviaste y un
-`ReceiptHandle` largo — el mensaje sigue en la cola (invisible), no se borró solo.
-#### Paso 5 · Práctica guiada
-Pista: enviá un mensaje a una URL de cola que no existe (cambiá una letra de `QUEUE_URL`) para
-provocar el fallo deliberado — `send-message` lo rechaza con
-`AWS.SimpleQueueService.NonExistentQueue`, no se pierde en silencio.
-#### Paso 6 · Práctica independiente
-Enviá un segundo mensaje distinto, recibilo, y confirmá con
-`aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
-que la cola sigue teniendo el mensaje — todavía no lo borraste, eso es el Tema 2.
-#### Paso 7 · Cierre y evidencia
-Entregá el `send-message`, el `receive-message`, y el error de la cola inexistente. Siguiente
-paso: visibilidad. Errores comunes: asumir que `receive-message` borra el mensaje. Fuente
-oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html.
+
 **Conceptos clave:** cola de mensajes, productor, consumidor, acoplamiento, comunicación asíncrona.
 
 Una cola de mensajes es una estructura intermedia que permite que dos partes de un sistema se comuniquen sin estar activas al mismo tiempo ni conocerse directamente entre sí. Un productor es cualquier componente que envía mensajes a la cola: podría ser una API que recibe una petición de usuario y necesita procesarla en segundo plano. Un consumidor es cualquier componente que lee y procesa esos mensajes: podría ser una función Lambda, un proceso en un contenedor, o cualquier programa que consulte la cola periódicamente.
@@ -62,6 +43,27 @@ flowchart LR
 **Límites y decisión de uso:** Una cola no convierte por sí sola un efecto en exactamente una vez. La entrega puede repetirse o demorarse; usa identidad estable del mensaje y una operación de negocio idempotente, y distingue recepción de confirmación del procesamiento.
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
 **Evidencia de aprendizaje:** entrega la salida de `send-message` y `receive-message` del Paso 4, y el fallo `NonExistentQueue` que provocaste a propósito en el Paso 5.
+
+#### Paso 4 · Demostración guiada
+```bash
+QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","accion":"confirmar-entrega"}'
+aws sqs receive-message --queue-url "$QUEUE_URL"
+```
+Resultado esperado: `receive-message` devuelve un JSON con `Body` igual al que enviaste y un
+`ReceiptHandle` largo — el mensaje sigue en la cola (invisible), no se borró solo.
+#### Paso 5 · Práctica guiada
+Pista: enviá un mensaje a una URL de cola que no existe (cambiá una letra de `QUEUE_URL`) para
+provocar el fallo deliberado — `send-message` lo rechaza con
+`AWS.SimpleQueueService.NonExistentQueue`, no se pierde en silencio.
+#### Paso 6 · Práctica independiente
+Enviá un segundo mensaje distinto, recibilo, y confirmá con
+`aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
+que la cola sigue teniendo el mensaje — todavía no lo borraste, eso es el Tema 2.
+#### Paso 7 · Cierre y evidencia
+Entregá el `send-message`, el `receive-message`, y el error de la cola inexistente. Siguiente
+paso: visibilidad. Errores comunes: asumir que `receive-message` borra el mensaje. Fuente
+oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html.
 ### Tema 2: Ciclo de vida de un mensaje
 
 #### Paso 1 · Objetivo y preparación
@@ -73,32 +75,7 @@ en `ShipmentEvents`) antes de poder decir "ya terminé con este mensaje".
 #### Paso 3 · Teoría, modelo mental y analogía
 El visibility timeout es el cartel de "en proceso"; el ReceiptHandle es el recibo que prueba
 que tenés ese mensaje en este momento.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].ReceiptHandle' --output text)
-aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
-aws sqs receive-message --queue-url "$QUEUE_URL"
-```
-Resultado esperado: el segundo `receive-message` no devuelve el mensaje que borraste — ya no
-está en la cola.
-#### Paso 5 · Práctica guiada
-Pista: recibí el mensaje restante (el del Paso 6 del Tema 1) pero NO lo borres, y volvé a
-hacer `receive-message` antes de que pase el visibility timeout (30s por defecto) — vas a ver
-que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
-**Fallo deliberado:** guardá el `ReceiptHandle` de esta recepción, dejá pasar el visibility timeout sin borrar el mensaje, y usá ESE handle viejo en un `delete-message` después de que el mensaje ya volvió a estar visible — provoca un error (`ReceiptHandle` inválido), porque cada recepción emite un handle distinto y el anterior queda obsoleto; diagnosticalo comparándolo con el `ReceiptHandle` nuevo que te devuelve el siguiente `receive-message`.
-#### Paso 6 · Práctica independiente
-Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
-repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al
-menos una vez".
-#### Paso 7 · Cierre y evidencia
-Entregá los 2 intentos de `receive-message` (antes y después del timeout) mostrando que el
-mensaje reapareció solo. Siguiente paso: DLQ. Errores comunes: borrar el mensaje antes de
-terminar de procesarlo de verdad. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
 **Conceptos clave:** envío (`send-message`), recepción (`receive-message`), tiempo de visibilidad (visibility timeout), ReceiptHandle, borrado (`delete-message`), entrega al menos una vez (at-least-once).
 
 Un mensaje en SQS pasa por cuatro etapas bien definidas. Primero, un productor lo envía con `send-message`, especificando el cuerpo del mensaje (texto libre, normalmente JSON) y, opcionalmente, atributos adicionales. El mensaje queda almacenado en la cola, disponible para cualquier consumidor que lo solicite. Segundo, un consumidor lo recibe con `receive-message`; en este punto, SQS no elimina el mensaje de la cola —lo marca como invisible durante un periodo configurable llamado tiempo de visibilidad (visibility timeout)—, y le entrega al consumidor, junto con el contenido del mensaje, un identificador temporal llamado ReceiptHandle.
@@ -131,6 +108,33 @@ En el proyecto integrador RutaFlow, `ConfirmarEntregaFn` —la función Lambda d
 describe: recibe el comando de `DeliveryCommands`, y solo lo da por terminado cuando termina de
 escribir en `ShipmentEvents`, no antes.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].ReceiptHandle' --output text)
+aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
+aws sqs receive-message --queue-url "$QUEUE_URL"
+```
+Resultado esperado: el segundo `receive-message` no devuelve el mensaje que borraste — ya no
+está en la cola.
+#### Paso 5 · Práctica guiada
+Pista: recibí el mensaje restante (el del Paso 6 del Tema 1) pero NO lo borres, y volvé a
+hacer `receive-message` antes de que pase el visibility timeout (30s por defecto) — vas a ver
+que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
+**Fallo deliberado:** guardá el `ReceiptHandle` de esta recepción, dejá pasar el visibility timeout sin borrar el mensaje, y usá ESE handle viejo en un `delete-message` después de que el mensaje ya volvió a estar visible — provoca un error (`ReceiptHandle` inválido), porque cada recepción emite un handle distinto y el anterior queda obsoleto; diagnosticalo comparándolo con el `ReceiptHandle` nuevo que te devuelve el siguiente `receive-message`.
+#### Paso 6 · Práctica independiente
+Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
+repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al
+menos una vez".
+#### Paso 7 · Cierre y evidencia
+Entregá los 2 intentos de `receive-message` (antes y después del timeout) mostrando que el
+mensaje reapareció solo. Siguiente paso: DLQ. Errores comunes: borrar el mensaje antes de
+terminar de procesarlo de verdad. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
+
 ### Tema 3: Dead Letter Queues (DLQ)
 
 #### Paso 1 · Objetivo y preparación
@@ -143,34 +147,7 @@ bloquear los comandos de otros envíos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una DLQ es la zona de inspección donde se retiene un paquete que no pasa el control, para no
 frenar el resto de la fila.
-#### Paso 4 · Demostración guiada
-```bash
-DLQ_URL=$(aws sqs create-queue --queue-name delivery-commands-dlq --query QueueUrl --output text)
-DLQ_ARN=$(aws sqs get-queue-attributes --queue-url "$DLQ_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
-aws sqs set-queue-attributes --queue-url "$QUEUE_URL" --attributes "RedrivePolicy={\"deadLetterTargetArn\":\"$DLQ_ARN\",\"maxReceiveCount\":\"2\"}"
-aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-9999","accion":"comando-malformado"}'
-```
-Bajamos `maxReceiveCount` a 2 solo para esta demo, así no hace falta recibir 5 veces.
-#### Paso 5 · Práctica guiada
-Recibí ese mensaje 2 veces sin borrarlo (esperando el visibility timeout entre medio, o
-forzándolo con `--visibility-timeout 0`), y revisá la DLQ:
-```bash
-aws sqs receive-message --queue-url "$DLQ_URL"
-```
-Resultado esperado: la respuesta de la DLQ contiene el mensaje con `shipmentId` igual a `env-9999`.
 
-Ese es el fallo real provocado a propósito: el mensaje migró solo a la DLQ al superar
-`maxReceiveCount`, sin que nadie lo moviera a mano.
-**Fallo deliberado:** en el `set-queue-attributes` del Paso 4, poné `maxReceiveCount` en `0` en vez de `2` antes de ejecutarlo — provoca un error de validación (`InvalidParameterValue`), porque SQS exige que `maxReceiveCount` sea al menos 1; diagnosticalo leyendo el mensaje completo de la excepción antes de corregir el valor.
-Pista: contá cuántas veces recibiste el mensaje antes de que apareciera en la DLQ — tiene que coincidir exactamente con el `maxReceiveCount` configurado, ni una recepción más ni menos.
-#### Paso 6 · Práctica independiente
-Confirmá con
-`aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
-que la cola principal quedó en 0 — el mensaje problemático ya no bloquea nada ahí.
-#### Paso 7 · Cierre y evidencia
-Entregá la configuración de RedrivePolicy, y el mensaje apareciendo en la DLQ. Siguiente paso:
-colas FIFO. Errores comunes: poner `maxReceiveCount` en 1, moviendo a la DLQ mensajes que
-habrían funcionado en un segundo intento. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html.
 **Conceptos clave:** Dead Letter Queue, `maxReceiveCount`, RedrivePolicy, mensaje envenenado (poison message).
 
 Un mensaje "envenenado" es aquel que un consumidor recibe pero nunca logra procesar con éxito, sin importar cuántas veces se reintente: quizá su contenido está malformado, quizá dispara un error de código consistente, o quizá depende de un recurso externo que nunca va a estar disponible para ese caso concreto. Sin ningún mecanismo adicional, un mensaje así entraría en un ciclo infinito: se entrega, falla, el tiempo de visibilidad expira, vuelve a entregarse, vuelve a fallar, indefinidamente, consumiendo recursos de procesamiento sin ningún resultado útil y potencialmente bloqueando el procesamiento de mensajes válidos detrás de él.
@@ -199,6 +176,35 @@ La RedrivePolicy con `maxReceiveCount: 5` que viste al inicio no es un ejemplo a
 misma que corre en el proyecto integrador RutaFlow contra `DeliveryCommandsDLQ`. No conviene
 bajar ese número a 1 en un entorno real por la misma razón que viste en la demo: un fallo
 transitorio no debería aislar un mensaje que habría funcionado en el segundo intento.
+
+#### Paso 4 · Demostración guiada
+```bash
+DLQ_URL=$(aws sqs create-queue --queue-name delivery-commands-dlq --query QueueUrl --output text)
+DLQ_ARN=$(aws sqs get-queue-attributes --queue-url "$DLQ_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
+aws sqs set-queue-attributes --queue-url "$QUEUE_URL" --attributes "RedrivePolicy={\"deadLetterTargetArn\":\"$DLQ_ARN\",\"maxReceiveCount\":\"2\"}"
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-9999","accion":"comando-malformado"}'
+```
+Bajamos `maxReceiveCount` a 2 solo para esta demo, así no hace falta recibir 5 veces.
+#### Paso 5 · Práctica guiada
+Recibí ese mensaje 2 veces sin borrarlo (esperando el visibility timeout entre medio, o
+forzándolo con `--visibility-timeout 0`), y revisá la DLQ:
+```bash
+aws sqs receive-message --queue-url "$DLQ_URL"
+```
+Resultado esperado: la respuesta de la DLQ contiene el mensaje con `shipmentId` igual a `env-9999`.
+
+Ese es el fallo real provocado a propósito: el mensaje migró solo a la DLQ al superar
+`maxReceiveCount`, sin que nadie lo moviera a mano.
+**Fallo deliberado:** en el `set-queue-attributes` del Paso 4, poné `maxReceiveCount` en `0` en vez de `2` antes de ejecutarlo — provoca un error de validación (`InvalidParameterValue`), porque SQS exige que `maxReceiveCount` sea al menos 1; diagnosticalo leyendo el mensaje completo de la excepción antes de corregir el valor.
+Pista: contá cuántas veces recibiste el mensaje antes de que apareciera en la DLQ — tiene que coincidir exactamente con el `maxReceiveCount` configurado, ni una recepción más ni menos.
+#### Paso 6 · Práctica independiente
+Confirmá con
+`aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
+que la cola principal quedó en 0 — el mensaje problemático ya no bloquea nada ahí.
+#### Paso 7 · Cierre y evidencia
+Entregá la configuración de RedrivePolicy, y el mensaje apareciendo en la DLQ. Siguiente paso:
+colas FIFO. Errores comunes: poner `maxReceiveCount` en 1, moviendo a la DLQ mensajes que
+habrían funcionado en un segundo intento. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html.
 
 ### Tema 4: Colas FIFO vs Standard
 

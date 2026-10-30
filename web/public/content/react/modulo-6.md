@@ -162,6 +162,31 @@ graph TD
     style H fill:#e8f5e9
 ```
 
+**Evidencia de aprendizaje:** entrega invalidación tras crear, lista desactualizada detectada y doble invalidación confirmada.
+**Conceptos clave:** `useMutation`, `invalidateQueries`, sincronización tras un cambio.
+
+`useMutation` gestiona operaciones que modifican datos en el servidor (crear, actualizar, eliminar), a diferencia de `useQuery`, orientado a leer datos: `const crear = useMutation({ mutationFn: (tarea) => fetch('/api/tareas', { method: 'POST', body: JSON.stringify(tarea) }), onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tareas'] }) })` ejecuta la petición de creación, y al completarse exitosamente, invalida la query de la lista de tareas (marcándola como obsoleta y disparando automáticamente un refetch de esa query), garantizando que la lista mostrada en pantalla refleje el nuevo elemento recién creado sin que el componente que muestra la lista necesite saber explícitamente que ocurrió una creación en otro lugar de la aplicación.
+
+Esta invalidación explícita tras una mutación exitosa es el mecanismo estándar de sincronización entre escrituras y lecturas en TanStack Query: en vez de actualizar manualmente la cache local con el resultado exacto devuelto por la mutación (un enfoque posible pero propenso a desincronizarse sutilmente de lo que el servidor realmente tiene), invalidar y dejar que TanStack Query vuelva a solicitar los datos reales garantiza que la vista siempre refleje el estado verdadero del servidor tras el cambio, al costo de una petición de red adicional para refrescar esa query invalidada.
+
+**Analogía:** invalidar una query tras una mutación es como avisar a un departamento de inventario que se acaba de agregar un producto nuevo, provocando que ese departamento recuente y actualice su registro completo, en vez de simplemente confiar en anotar manualmente el cambio sin verificar que el recuento real coincide.
+
+**¿Por qué es importante?** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real y actualizado del servidor, sin necesidad de sincronizar manualmente la cache local con el resultado exacto de cada mutación.
+
+**Código del ejemplo:**
+
+```jsx
+const queryClient = useQueryClient();
+const crear = useMutation({
+  mutationFn: (tarea) => fetch('/api/tareas', { method: 'POST', body: JSON.stringify(tarea) }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tareas'] }), // refetch automático
+});
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const queryClient = useQueryClient();
@@ -198,30 +223,6 @@ Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess
 #### Paso 7 · Cierre y evidencia
 Entregá la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explicá por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
 **¿Por qué es importante?** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real del servidor, sin sincronizar manualmente la cache con el resultado exacto de cada mutación.
-**Evidencia de aprendizaje:** entrega invalidación tras crear, lista desactualizada detectada y doble invalidación confirmada.
-**Conceptos clave:** `useMutation`, `invalidateQueries`, sincronización tras un cambio.
-
-`useMutation` gestiona operaciones que modifican datos en el servidor (crear, actualizar, eliminar), a diferencia de `useQuery`, orientado a leer datos: `const crear = useMutation({ mutationFn: (tarea) => fetch('/api/tareas', { method: 'POST', body: JSON.stringify(tarea) }), onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tareas'] }) })` ejecuta la petición de creación, y al completarse exitosamente, invalida la query de la lista de tareas (marcándola como obsoleta y disparando automáticamente un refetch de esa query), garantizando que la lista mostrada en pantalla refleje el nuevo elemento recién creado sin que el componente que muestra la lista necesite saber explícitamente que ocurrió una creación en otro lugar de la aplicación.
-
-Esta invalidación explícita tras una mutación exitosa es el mecanismo estándar de sincronización entre escrituras y lecturas en TanStack Query: en vez de actualizar manualmente la cache local con el resultado exacto devuelto por la mutación (un enfoque posible pero propenso a desincronizarse sutilmente de lo que el servidor realmente tiene), invalidar y dejar que TanStack Query vuelva a solicitar los datos reales garantiza que la vista siempre refleje el estado verdadero del servidor tras el cambio, al costo de una petición de red adicional para refrescar esa query invalidada.
-
-**Analogía:** invalidar una query tras una mutación es como avisar a un departamento de inventario que se acaba de agregar un producto nuevo, provocando que ese departamento recuente y actualice su registro completo, en vez de simplemente confiar en anotar manualmente el cambio sin verificar que el recuento real coincide.
-
-**¿Por qué es importante?** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real y actualizado del servidor, sin necesidad de sincronizar manualmente la cache local con el resultado exacto de cada mutación.
-
-**Código del ejemplo:**
-
-```jsx
-const queryClient = useQueryClient();
-const crear = useMutation({
-  mutationFn: (tarea) => fetch('/api/tareas', { method: 'POST', body: JSON.stringify(tarea) }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tareas'] }), // refetch automático
-});
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 3: Optimistic updates
 

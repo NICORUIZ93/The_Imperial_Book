@@ -14,6 +14,40 @@ Una plataforma de entregas procesa comprobantes subidos por el usuario; si el no
 #### Paso 3 · Teoría, modelo mental y analogía
 `Path` representa una ubicación; `Files` ofrece operaciones explícitas de alto nivel. Validar que la ruta resuelta (`normalize()`) siga dentro del directorio permitido evita un path traversal. La analogía: un archivador con permisos, donde conocer el nombre de un cajón no autoriza abrirlo.
 
+**Evidencia de aprendizaje:** entrega `LectorComprobantes` con su validación de directorio base, la prueba de traversal (`../../../etc/passwd`) correctamente rechazada, y la lectura válida de un comprobante real.
+**Conceptos clave:** API moderna frente a la clase File legada, operaciones expresivas.
+
+Este validador de rutas es exactamente lo que necesitará cualquier endpoint del proyecto integrador de este track que reciba un nombre de archivo desde afuera (subir un comprobante, descargar un reporte).
+
+**Cuándo no usarlo:** validar manualmente contra path traversal como aquí es necesario cuando el nombre de archivo viene de una fuente externa no confiable; para una ruta construida enteramente por el propio código, sin ningún componente proporcionado por el usuario, esta validación es innecesaria.
+
+`Path ruta = Path.of("datos.txt"); String contenido = Files.readString(ruta);` representa la API moderna de manejo de archivos introducida en Java 7 (NIO.2), reemplazando gradualmente a la antigua clase `File` (presente desde las primeras versiones de Java), que tenía limitaciones notables: métodos que devolvían simplemente `false` ante un error sin indicar la causa específica (en vez de lanzar una excepción descriptiva), y una API considerablemente menos expresiva para operaciones comunes como copiar, mover, o recorrer directorios recursivamente.
+
+`Files` ofrece métodos de alto nivel considerablemente más convenientes que sus equivalentes con `File`: `Files.exists(ruta)` (verificar existencia), `Files.copy(origen, destino)` (copiar), `Files.walk(directorio)` (recorrer recursivamente un árbol de directorios como un stream, Módulo 4, en vez de una API recursiva manual más verbosa), y `Files.writeString(ruta, "nuevo contenido")` para escribir directamente sin necesidad de gestionar manualmente un `Writer` o `OutputStream` para el caso simple de escribir contenido de texto completo de una sola vez.
+
+**Analogía:** la antigua clase `File` es como un mapa antiguo y básico que solo indica si un camino existe o no, sin más detalle; NIO.2 con `Path`/`Files` es como un sistema de navegación moderno que no solo confirma la existencia de un camino, sino que ofrece rutas alternativas expresivas y detalles específicos sobre cualquier problema encontrado en el trayecto.
+
+**¿Por qué es importante?** NIO.2 ofrece una API más expresiva y con mejor manejo de errores que la antigua clase `File`, simplificando operaciones comunes de archivos que antes requerían código considerablemente más verboso.
+
+**Código del ejemplo:**
+
+```java
+Path ruta = Path.of("datos.txt");
+String contenido = Files.readString(ruta);
+Files.writeString(ruta, "nuevo contenido");
+```
+
+La validación contra *path traversal* que exigen la Demostración guiada (Paso 4) y la Práctica guiada (Paso 5) se apoya exactamente en este patrón: resolver la ruta recibida contra un directorio base conocido, normalizarla, y confirmar que el resultado normalizado todavía comienza dentro de ese directorio base antes de leer nada.
+
+```java
+Path resuelta = directorioBase.resolve(nombreArchivo).normalize();
+if (!resuelta.startsWith(directorioBase)) {
+    throw new IllegalArgumentException("Ruta fuera del directorio permitido: " + nombreArchivo);
+}
+```
+
+Con `nombreArchivo = "../../../etc/passwd"`, `resolve` seguido de `normalize()` produce una ruta que sale de `directorioBase`; `startsWith` lo detecta antes de que `Files.readString` llegue a ejecutarse, y el método lanza `IllegalArgumentException` en vez de leer un archivo fuera del directorio permitido.
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -71,39 +105,6 @@ Agrega `Files.copy` para respaldar el comprobante leído a un directorio de arch
 #### Paso 7 · Cierre y evidencia
 Guarda el validador de rutas, la prueba de traversal rechazada y la lectura válida; como siguiente paso estudia serialización con Jackson. Errores comunes: concatenar rutas con `+` en vez de `resolve()`, confiar en la extensión del archivo sin validar la ruta completa resuelta, y normalizar antes de resolver en vez de después (el orden importa: primero `resolve`, después `normalize()`). Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html.
 **¿Por qué es importante?** Porque aceptar un nombre de archivo externo sin validar que la ruta resuelta permanezca dentro del directorio permitido es exactamente el tipo de vulnerabilidad (path traversal) que permite leer archivos arbitrarios del sistema, no solo los comprobantes esperados.
-**Evidencia de aprendizaje:** entrega `LectorComprobantes` con su validación de directorio base, la prueba de traversal (`../../../etc/passwd`) correctamente rechazada, y la lectura válida de un comprobante real.
-**Conceptos clave:** API moderna frente a la clase File legada, operaciones expresivas.
-
-Este validador de rutas es exactamente lo que necesitará cualquier endpoint del proyecto integrador de este track que reciba un nombre de archivo desde afuera (subir un comprobante, descargar un reporte).
-
-**Cuándo no usarlo:** validar manualmente contra path traversal como aquí es necesario cuando el nombre de archivo viene de una fuente externa no confiable; para una ruta construida enteramente por el propio código, sin ningún componente proporcionado por el usuario, esta validación es innecesaria.
-
-`Path ruta = Path.of("datos.txt"); String contenido = Files.readString(ruta);` representa la API moderna de manejo de archivos introducida en Java 7 (NIO.2), reemplazando gradualmente a la antigua clase `File` (presente desde las primeras versiones de Java), que tenía limitaciones notables: métodos que devolvían simplemente `false` ante un error sin indicar la causa específica (en vez de lanzar una excepción descriptiva), y una API considerablemente menos expresiva para operaciones comunes como copiar, mover, o recorrer directorios recursivamente.
-
-`Files` ofrece métodos de alto nivel considerablemente más convenientes que sus equivalentes con `File`: `Files.exists(ruta)` (verificar existencia), `Files.copy(origen, destino)` (copiar), `Files.walk(directorio)` (recorrer recursivamente un árbol de directorios como un stream, Módulo 4, en vez de una API recursiva manual más verbosa), y `Files.writeString(ruta, "nuevo contenido")` para escribir directamente sin necesidad de gestionar manualmente un `Writer` o `OutputStream` para el caso simple de escribir contenido de texto completo de una sola vez.
-
-**Analogía:** la antigua clase `File` es como un mapa antiguo y básico que solo indica si un camino existe o no, sin más detalle; NIO.2 con `Path`/`Files` es como un sistema de navegación moderno que no solo confirma la existencia de un camino, sino que ofrece rutas alternativas expresivas y detalles específicos sobre cualquier problema encontrado en el trayecto.
-
-**¿Por qué es importante?** NIO.2 ofrece una API más expresiva y con mejor manejo de errores que la antigua clase `File`, simplificando operaciones comunes de archivos que antes requerían código considerablemente más verboso.
-
-**Código del ejemplo:**
-
-```java
-Path ruta = Path.of("datos.txt");
-String contenido = Files.readString(ruta);
-Files.writeString(ruta, "nuevo contenido");
-```
-
-La validación contra *path traversal* que exigen la Demostración guiada (Paso 4) y la Práctica guiada (Paso 5) se apoya exactamente en este patrón: resolver la ruta recibida contra un directorio base conocido, normalizarla, y confirmar que el resultado normalizado todavía comienza dentro de ese directorio base antes de leer nada.
-
-```java
-Path resuelta = directorioBase.resolve(nombreArchivo).normalize();
-if (!resuelta.startsWith(directorioBase)) {
-    throw new IllegalArgumentException("Ruta fuera del directorio permitido: " + nombreArchivo);
-}
-```
-
-Con `nombreArchivo = "../../../etc/passwd"`, `resolve` seguido de `normalize()` produce una ruta que sale de `directorioBase`; `startsWith` lo detecta antes de que `Files.readString` llegue a ejecutarse, y el método lanza `IllegalArgumentException` en vez de leer un archivo fuera del directorio permitido.
 
 ### Tema 2: Serialización con Jackson
 
@@ -116,28 +117,6 @@ Una API de entregas necesita convertir un objeto `Entrega` a JSON para responder
 #### Paso 3 · Teoría, modelo mental y analogía
 `ObjectMapper` serializa un objeto Java a JSON y deserializa en la dirección inversa, inspeccionando la estructura de la clase por reflexión. Los `record` (Módulo 7) son un modelo de datos particularmente natural para esto, sin anotaciones adicionales en el caso simple. La analogía: un traductor bidireccional entre dos idiomas que traduce automáticamente basándose en la estructura conocida de cada objeto.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-jackson-record
-cd ejemplo-jackson-record
-mkdir -p src/main/java/academia/json
-```
-Crea `SerializacionEntrega.java` con `record Entrega(String numero, String estado, double pesoKg) {}` y un `main` que serialice una instancia a JSON con `ObjectMapper`, la imprima, y luego la deserialice de vuelta confirmando que el objeto reconstruido es `equals()` al original. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/json/SerializacionEntrega.java
-java -cp out academia.json.SerializacionEntrega
-```
-
-#### Paso 5 · Práctica guiada
-Pista: modifica deliberadamente el JSON de entrada para que le falte el campo `pesoKg` y provoca un fallo de deserialización; lee el mensaje de Jackson e identifica qué campo falta. Resultado esperado: el error señala exactamente el campo faltante, no un fallo genérico.
-
-#### Paso 6 · Práctica independiente
-Agrega un segundo `record` anidado (por ejemplo `Entrega` con un campo `Destinatario` propio) y confirma que Jackson serializa/deserializa la estructura anidada completa sin configuración adicional.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el `record`, el JSON serializado y la confirmación de igualdad tras el ciclo completo; como siguiente paso estudia archivos grandes y recursos del classpath. Errores comunes: olvidar un constructor sin argumentos o getters/setters esperando que Jackson los necesite para un `record` (no los necesita), asumir que un campo faltante en el JSON se completa con un valor por defecto silencioso en vez de fallar, y no fijar una versión concreta de Jackson en el proyecto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://github.com/FasterXML/jackson-docs.
-**¿Por qué es importante?** Porque serializar y deserializar manualmente campo por campo es repetitivo y propenso a errores de sincronización entre el modelo Java y el JSON; Jackson automatiza esa conversión inspeccionando la estructura real del `record`, y falla con un mensaje específico cuando algo no coincide.
 **Evidencia de aprendizaje:** entrega el `record Entrega` serializado a JSON, la deserialización que reconstruye un objeto `equals()` al original, y el error de Jackson al faltar un campo obligatorio.
 **Conceptos clave:** `ObjectMapper`, serializar/deserializar, records como modelos de datos.
 
@@ -162,6 +141,29 @@ ObjectMapper mapper = new ObjectMapper();
 String json = mapper.writeValueAsString(new Persona("Ana", 28));
 Persona persona = mapper.readValue(json, Persona.class);
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-jackson-record
+cd ejemplo-jackson-record
+mkdir -p src/main/java/academia/json
+```
+Crea `SerializacionEntrega.java` con `record Entrega(String numero, String estado, double pesoKg) {}` y un `main` que serialice una instancia a JSON con `ObjectMapper`, la imprima, y luego la deserialice de vuelta confirmando que el objeto reconstruido es `equals()` al original. Compila y ejecuta:
+```bash
+javac -d out src/main/java/academia/json/SerializacionEntrega.java
+java -cp out academia.json.SerializacionEntrega
+```
+
+#### Paso 5 · Práctica guiada
+Pista: modifica deliberadamente el JSON de entrada para que le falte el campo `pesoKg` y provoca un fallo de deserialización; lee el mensaje de Jackson e identifica qué campo falta. Resultado esperado: el error señala exactamente el campo faltante, no un fallo genérico.
+
+#### Paso 6 · Práctica independiente
+Agrega un segundo `record` anidado (por ejemplo `Entrega` con un campo `Destinatario` propio) y confirma que Jackson serializa/deserializa la estructura anidada completa sin configuración adicional.
+
+#### Paso 7 · Cierre y evidencia
+Guarda el `record`, el JSON serializado y la confirmación de igualdad tras el ciclo completo; como siguiente paso estudia archivos grandes y recursos del classpath. Errores comunes: olvidar un constructor sin argumentos o getters/setters esperando que Jackson los necesite para un `record` (no los necesita), asumir que un campo faltante en el JSON se completa con un valor por defecto silencioso en vez de fallar, y no fijar una versión concreta de Jackson en el proyecto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://github.com/FasterXML/jackson-docs.
+**¿Por qué es importante?** Porque serializar y deserializar manualmente campo por campo es repetitivo y propenso a errores de sincronización entre el modelo Java y el JSON; Jackson automatiza esa conversión inspeccionando la estructura real del `record`, y falla con un mensaje específico cuando algo no coincide.
 
 ### Tema 3: Archivos grandes y recursos del classpath
 

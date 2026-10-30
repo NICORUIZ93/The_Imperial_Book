@@ -36,76 +36,6 @@ La app del conductor de RutaFlow necesita mostrar la misma tarjeta de envío en 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cualquier tipo que implemente `View` con un `body` es componible en cualquier lugar donde iría `Text` o `Button` — el mismo certificado universal que permite mezclar piezas básicas y compuestas en un plano de construcción.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-struct TarjetaEnvio: View {
-    let guia: String
-    let estado: String
-    var body: some View {
-        Text("\(guia): \(estado)").padding().background(Color.blue.opacity(0.1))
-    }
-}
-
-struct ListaEnvios: View {
-    var body: some View {
-        VStack {
-            TarjetaEnvio(guia: "RF-4471", estado: "en ruta")
-            TarjetaEnvio(guia: "RF-5002", estado: "entregado")
-        }
-    }
-}
-```
-Crea el proyecto y ejecútalo desde cero:
-
-```bash
-mkdir ComposicionDemo && cd ComposicionDemo
-# Crea en Xcode: File ▸ New ▸ Project ▸ App (interfaz SwiftUI), nómbralo RutaFlowApp.
-# Pega el código anterior en ContentView.swift y añade #Preview { ListaEnvios() }
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-**Resultado esperado:** aparecen dos tarjetas ("RF-4471: en ruta" y "RF-5002: entregado"). `ListaEnvios` compone dos `TarjetaEnvio` igual que compondría dos `Text` nativos — SwiftUI no distingue entre una vista "de sistema" y una propia. Para comprobarlo visualmente, pausa la app y abre **Debug ▸ View Hierarchy**: verás `ListaEnvios → TarjetaEnvio → Text`.
-
-**Por qué este tema importa en el trabajo real:** la composición de vistas propias es la base de TODA app SwiftUI profesional. Sin ella, acabarías con un único `body` gigante e irrepetible; con ella, construyes una biblioteca de componentes reutilizables (tarjetas, filas, badges) que el equipo comparte entre pantallas. Es el mismo principio que hace mantenibles las apps grandes.
-
-**Fallo deliberado:** mira el Paso 5 — al cambiar el color de una sola `TarjetaEnvio`, confirmas que cada instancia es independiente, no un estado global compartido.
-
-#### Paso 5 · Práctica guiada · Fallo deliberado
-
-**Tarea:** agregá un tercer envío copiando y pegando el `Text().padding().background()` completo DENTRO de `ListaEnvios`, en vez de instanciar `TarjetaEnvio`.
-
-```swift
-struct ListaEnviosConDuplicacion: View {
-    var body: some View {
-        VStack {
-            TarjetaEnvio(guia: "RF-4471", estado: "en ruta")
-            TarjetaEnvio(guia: "RF-5002", estado: "entregado")
-            // Fallo deliberado: duplicación de código
-            Text("RF-5003: en ruta").padding().background(Color.blue.opacity(0.1))
-        }
-    }
-}
-```
-
-**Resultado esperado del fallo:**
-- El tercer envío aparece visualmente idéntico a los primeros dos.
-- Pero el código está duplicado: `Text().padding().background()` aparece solo una vez en `TarjetaEnvio`, pero por separado para el tercero.
-
-**Paso de diagnóstico:**
-1. En Xcode, cambia el color de `.background()` en `TarjetaEnvio` a `.red`.
-2. Corre la app: los primeros dos envíos se ponen rojos.
-3. **El tercero sigue azul** — no se actualizó porque no estaba usando `TarjetaEnvio`.
-4. Ahora tienes que cambiar el color en DOS lugares: en `TarjetaEnvio` Y en el código duplicado.
-
-**¿Por qué ocurre?** Copiar y pegar layout hace una copia independiente que no se actualiza con el original. Es una violación del principio DRY (Don't Repeat Yourself).
-
-**Corrección:** extrae el código duplicado de vuelta a una instancia de `TarjetaEnvio`, y ahora un cambio futuro se aplica automáticamente en los tres lugares.
-Pista: cambiá el color SOLO en `TarjetaEnvio` y corré la app antes de tocar el código duplicado — así confirmás, una tarjeta a la vez, cuál de las tres sigue sin actualizarse en vez de sospechar de las tres al mismo tiempo.
-#### Paso 6 · Práctica independiente
-Extraé ese tercer envío de vuelta a una instancia de `TarjetaEnvio`, y agregale un estado `loading` que muestre un placeholder en vez de la guía real mientras el dato todavía no llegó.
-#### Paso 7 · Cierre y evidencia
 
 **Entrega:**
 1. `TarjetaEnvio` compuesta dentro de `ListaEnvios` del Paso 4.
@@ -186,6 +116,77 @@ struct TarjetaTarea: View {
 
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Divide la tarjeta de entrega en vistas que reciben datos y acciones. Usa previews con estados pendiente y entregado y verifica que componer la vista no ejecuta operaciones de red.
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+struct TarjetaEnvio: View {
+    let guia: String
+    let estado: String
+    var body: some View {
+        Text("\(guia): \(estado)").padding().background(Color.blue.opacity(0.1))
+    }
+}
+
+struct ListaEnvios: View {
+    var body: some View {
+        VStack {
+            TarjetaEnvio(guia: "RF-4471", estado: "en ruta")
+            TarjetaEnvio(guia: "RF-5002", estado: "entregado")
+        }
+    }
+}
+```
+Crea el proyecto y ejecútalo desde cero:
+
+```bash
+mkdir ComposicionDemo && cd ComposicionDemo
+# Crea en Xcode: File ▸ New ▸ Project ▸ App (interfaz SwiftUI), nómbralo RutaFlowApp.
+# Pega el código anterior en ContentView.swift y añade #Preview { ListaEnvios() }
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+**Resultado esperado:** aparecen dos tarjetas ("RF-4471: en ruta" y "RF-5002: entregado"). `ListaEnvios` compone dos `TarjetaEnvio` igual que compondría dos `Text` nativos — SwiftUI no distingue entre una vista "de sistema" y una propia. Para comprobarlo visualmente, pausa la app y abre **Debug ▸ View Hierarchy**: verás `ListaEnvios → TarjetaEnvio → Text`.
+
+**Por qué este tema importa en el trabajo real:** la composición de vistas propias es la base de TODA app SwiftUI profesional. Sin ella, acabarías con un único `body` gigante e irrepetible; con ella, construyes una biblioteca de componentes reutilizables (tarjetas, filas, badges) que el equipo comparte entre pantallas. Es el mismo principio que hace mantenibles las apps grandes.
+
+**Fallo deliberado:** mira el Paso 5 — al cambiar el color de una sola `TarjetaEnvio`, confirmas que cada instancia es independiente, no un estado global compartido.
+
+#### Paso 5 · Práctica guiada · Fallo deliberado
+
+**Tarea:** agregá un tercer envío copiando y pegando el `Text().padding().background()` completo DENTRO de `ListaEnvios`, en vez de instanciar `TarjetaEnvio`.
+
+```swift
+struct ListaEnviosConDuplicacion: View {
+    var body: some View {
+        VStack {
+            TarjetaEnvio(guia: "RF-4471", estado: "en ruta")
+            TarjetaEnvio(guia: "RF-5002", estado: "entregado")
+            // Fallo deliberado: duplicación de código
+            Text("RF-5003: en ruta").padding().background(Color.blue.opacity(0.1))
+        }
+    }
+}
+```
+
+**Resultado esperado del fallo:**
+- El tercer envío aparece visualmente idéntico a los primeros dos.
+- Pero el código está duplicado: `Text().padding().background()` aparece solo una vez en `TarjetaEnvio`, pero por separado para el tercero.
+
+**Paso de diagnóstico:**
+1. En Xcode, cambia el color de `.background()` en `TarjetaEnvio` a `.red`.
+2. Corre la app: los primeros dos envíos se ponen rojos.
+3. **El tercero sigue azul** — no se actualizó porque no estaba usando `TarjetaEnvio`.
+4. Ahora tienes que cambiar el color en DOS lugares: en `TarjetaEnvio` Y en el código duplicado.
+
+**¿Por qué ocurre?** Copiar y pegar layout hace una copia independiente que no se actualiza con el original. Es una violación del principio DRY (Don't Repeat Yourself).
+
+**Corrección:** extrae el código duplicado de vuelta a una instancia de `TarjetaEnvio`, y ahora un cambio futuro se aplica automáticamente en los tres lugares.
+Pista: cambiá el color SOLO en `TarjetaEnvio` y corré la app antes de tocar el código duplicado — así confirmás, una tarjeta a la vez, cuál de las tres sigue sin actualizarse en vez de sospechar de las tres al mismo tiempo.
+#### Paso 6 · Práctica independiente
+Extraé ese tercer envío de vuelta a una instancia de `TarjetaEnvio`, y agregale un estado `loading` que muestre un placeholder en vez de la guía real mientras el dato todavía no llegó.
+#### Paso 7 · Cierre y evidencia
+
 ### Tema 2: Orden de modificadores y layout con stacks
 
 #### Paso 1 · Objetivo y preparación
@@ -230,6 +231,34 @@ Si el fondo de color de `TarjetaEnvio` no cubre todo el padding que esperabas, e
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada modificador envuelve la vista anterior en una nueva vista — como envolver un regalo: envolver primero con papel y meter en una caja da un resultado distinto que meter en la caja primero y envolver después.
+
+**Evidencia de aprendizaje:** entrega las dos versiones con orden de modificadores distinto, el padding mal entendido del fallo deliberado y su corrección.
+**Conceptos clave:** cada modificador envuelve la vista anterior en una nueva vista, el orden determina el resultado.
+
+```swift
+Text("Hola").padding().background(Color.blue)   // padding queda DENTRO del fondo azul
+Text("Hola").background(Color.blue).padding()    // padding queda FUERA, el fondo no lo cubre
+```
+
+Cada modificador en SwiftUI (`.padding()`, `.background()`) no muta la vista original en el sentido imperativo, sino que envuelve la vista anterior produciendo una nueva vista compuesta: `.padding().background(Color.blue)` aplica primero el padding y luego coloca el fondo azul alrededor de ese resultado ya expandido (por lo que el fondo cubre también el espacio del padding), mientras que `.background(Color.blue).padding()` coloca el fondo azul ajustado exactamente al tamaño original del texto, y luego agrega el padding por fuera de ese fondo ya fijado (por lo que el padding queda sin cubrir por el color). Esta diferencia visual, sorprendente para quien no conoce el mecanismo subyacente, se explica completamente entendiendo que cada modificador construye una capa adicional envolviendo la anterior, en el orden exacto en que se escriben.
+
+`VStack`, `HStack` y `ZStack` son los tres contenedores de layout fundamentales: apilan contenido verticalmente, horizontalmente, y superpuesto respectivamente, combinables libremente para construir cualquier estructura visual compleja, de forma directamente análoga a `Column`, `Row` y `Box` en Jetpack Compose (Módulo 2 del track de Android), reflejando que ambos ecosistemas de UI declarativa moderna convergieron hacia el mismo conjunto mínimo de primitivas de layout componibles.
+
+**Analogía:** los modificadores encadenados son como capas sucesivas de envoltorio aplicadas a un regalo: envolver primero con papel y luego meter en una caja produce un resultado distinto (la caja cubre el papel completo) que meter primero en una caja pequeña y luego envolver esa caja con papel (el papel se ajusta solo al tamaño exacto de la caja) — el orden de aplicación cambia físicamente el resultado final.
+
+**¿Por qué es importante?** Entender que cada modificador envuelve la vista anterior en una nueva capa explica por qué el orden cambia el resultado visual, un comportamiento que sorprende a quien no conoce este mecanismo subyacente pero que se vuelve predecible una vez internalizado.
+
+**Código del ejemplo:**
+
+```swift
+VStack(spacing: 8) {
+    HStack { Text("Izquierda"); Spacer(); Text("Derecha") }
+    ZStack { Image("fondo"); Text("Superpuesto") }
+}
+```
+
+**Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Construye el detalle con texto largo y tamaño de fuente ampliado. Compara el orden de padding, fondo y límites y comprueba que las acciones siguen accesibles sin superponer contenido.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 Text("RF-4471: en ruta").padding().background(Color.blue)   // el fondo cubre también el padding
@@ -295,32 +324,6 @@ Combiná `VStack`, `HStack` y `ZStack` para mostrar `TarjetaEnvio` con un ícono
 #### Paso 7 · Cierre y evidencia
 Entregá las dos versiones con orden distinto del Paso 4, el padding mal entendido del Paso 5, y el layout combinado del Paso 6; explicá por qué "el orden no debería importar" es la intuición equivocada más común al empezar con modificadores de SwiftUI. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
-**Evidencia de aprendizaje:** entrega las dos versiones con orden de modificadores distinto, el padding mal entendido del fallo deliberado y su corrección.
-**Conceptos clave:** cada modificador envuelve la vista anterior en una nueva vista, el orden determina el resultado.
-
-```swift
-Text("Hola").padding().background(Color.blue)   // padding queda DENTRO del fondo azul
-Text("Hola").background(Color.blue).padding()    // padding queda FUERA, el fondo no lo cubre
-```
-
-Cada modificador en SwiftUI (`.padding()`, `.background()`) no muta la vista original en el sentido imperativo, sino que envuelve la vista anterior produciendo una nueva vista compuesta: `.padding().background(Color.blue)` aplica primero el padding y luego coloca el fondo azul alrededor de ese resultado ya expandido (por lo que el fondo cubre también el espacio del padding), mientras que `.background(Color.blue).padding()` coloca el fondo azul ajustado exactamente al tamaño original del texto, y luego agrega el padding por fuera de ese fondo ya fijado (por lo que el padding queda sin cubrir por el color). Esta diferencia visual, sorprendente para quien no conoce el mecanismo subyacente, se explica completamente entendiendo que cada modificador construye una capa adicional envolviendo la anterior, en el orden exacto en que se escriben.
-
-`VStack`, `HStack` y `ZStack` son los tres contenedores de layout fundamentales: apilan contenido verticalmente, horizontalmente, y superpuesto respectivamente, combinables libremente para construir cualquier estructura visual compleja, de forma directamente análoga a `Column`, `Row` y `Box` en Jetpack Compose (Módulo 2 del track de Android), reflejando que ambos ecosistemas de UI declarativa moderna convergieron hacia el mismo conjunto mínimo de primitivas de layout componibles.
-
-**Analogía:** los modificadores encadenados son como capas sucesivas de envoltorio aplicadas a un regalo: envolver primero con papel y luego meter en una caja produce un resultado distinto (la caja cubre el papel completo) que meter primero en una caja pequeña y luego envolver esa caja con papel (el papel se ajusta solo al tamaño exacto de la caja) — el orden de aplicación cambia físicamente el resultado final.
-
-**¿Por qué es importante?** Entender que cada modificador envuelve la vista anterior en una nueva capa explica por qué el orden cambia el resultado visual, un comportamiento que sorprende a quien no conoce este mecanismo subyacente pero que se vuelve predecible una vez internalizado.
-
-**Código del ejemplo:**
-
-```swift
-VStack(spacing: 8) {
-    HStack { Text("Izquierda"); Spacer(); Text("Derecha") }
-    ZStack { Image("fondo"); Text("Superpuesto") }
-}
-```
-
-**Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Construye el detalle con texto largo y tamaño de fuente ampliado. Compara el orden de padding, fondo y límites y comprueba que las acciones siguen accesibles sin superponer contenido.
 
 ### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers
 

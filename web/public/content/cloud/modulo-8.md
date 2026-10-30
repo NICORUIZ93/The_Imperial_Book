@@ -11,34 +11,7 @@ Al finalizar vas a portar la foto de prueba de entrega del bucket `pruebas-entre
 Si RutaFlow tuviera que migrar a Azure, la foto que el conductor sube al cerrar un envío (Módulo 2) necesitaría vivir en Blob Storage en vez de S3 — mismo problema, otro proveedor.
 #### Paso 3 · Teoría, modelo mental y analogía
 Blob Storage es la misma herramienta que S3 con otro nombre: contenedor en vez de bucket, blob en vez de objeto.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-az storage container create --name pruebas-entrega --connection-string "$AZURE_CONN_LOCAL"
-az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg --name envio-4471/entrega-001.jpg --connection-string "$AZURE_CONN_LOCAL"
-az storage blob download --container-name pruebas-entrega --name envio-4471/entrega-001.jpg --file descargada-azure.jpg --connection-string "$AZURE_CONN_LOCAL"
-diff entrega-001.jpg descargada-azure.jpg
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: `diff` no muestra ninguna diferencia — el mismo archivo que subiste a S3 en el Módulo 2 ahora hace el mismo ciclo completo (subir, descargar, verificar) en Blob Storage.
-#### Paso 5 · Práctica guiada
-Pista: reintentá el `upload` apuntando la cadena de conexión al puerto de Queue Storage (10001) en vez del puerto de Blob (10000) — ese es el fallo deliberado: la conexión falla o el servicio rechaza la operación, porque Queue Storage no entiende peticiones de blobs aunque esté en la misma cuenta de almacenamiento.
-#### Paso 6 · Práctica independiente
-Relacioná cada pieza de RutaFlow con su servicio Azure correcto: la foto de entrega (Blob Storage), el mensaje "confirmar entrega" (Queue Storage), el historial de eventos del envío (Cosmos DB) — y justificá por qué ninguno de los tres es intercambiable con otro.
-#### Paso 7 · Cierre y evidencia
-Entregá el ciclo completo de subida/descarga en Blob Storage, el error de puerto equivocado del Paso 5 y la relación de los tres servicios del Paso 6; explicá qué cambia y qué no cambia al portar `pruebas-entrega` de S3 a Blob Storage. Siguiente paso: GCP. Errores comunes: asumir nombres idénticos entre nubes. Fuente oficial: https://learn.microsoft.com/azure/.
 **Conceptos clave:** cuenta de almacenamiento, contenedor Blob, Queue Storage, Table Storage, Cosmos DB, Azure Functions.
 
 Azure organiza sus servicios de almacenamiento bajo el paraguas de una "cuenta de almacenamiento" (storage account), un contenedor de nivel superior que agrupa varios tipos de almacenamiento relacionados pero distintos: Blob Storage para objetos binarios (el equivalente directo a S3), Queue Storage para colas de mensajes simples (el equivalente más cercano a SQS Standard, aunque con menos funcionalidades avanzadas como las DLQ nativas que viste en el Módulo 3), y Table Storage para datos NoSQL simples de clave-valor con un modelo más limitado que Cosmos DB.
@@ -71,14 +44,6 @@ ese recurso no conviene hacerlo "a ciegas" copiando el nombre — hay que decidi
 si Blob Storage necesita el mismo versionado y ciclo de vida que ya configuraste en S3 (Módulo
 2), porque esa configuración no se porta sola entre proveedores.
 
-### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a modelar el mismo "confirmar entrega" de `DeliveryCommands` (Módulo 3, SQS) como un topic Pub/Sub real en GCP. Prerrequisitos: Módulo 3, floci-gcp corriendo (Módulo 0).
-#### Paso 2 · Contexto y caso real
-Si RutaFlow corriera en GCP, el worker que confirma entregas no tendría una cola SQS: tendría un topic con una suscripción, un modelo de mensajería distinto, no solo un nombre distinto.
-#### Paso 3 · Teoría, modelo mental y analogía
-Un topic es un altavoz: cualquier suscripción sintonizada recibe su propia copia del mensaje, a diferencia de una cola SQS donde un mensaje se consume una sola vez.
 #### Paso 4 · Demostración guiada
 **Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
 ```bash
@@ -86,10 +51,10 @@ mkdir ejemplo && cd ejemplo && floci start
 ```
 
 ```bash
-gcloud pubsub topics create delivery-commands --project mi-proyecto-local
-gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --project mi-proyecto-local
-gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-4471","recipientPin":"837201"}' --project mi-proyecto-local
-gcloud pubsub subscriptions pull delivery-commands-sub --auto-ack --project mi-proyecto-local
+az storage container create --name pruebas-entrega --connection-string "$AZURE_CONN_LOCAL"
+az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg --name envio-4471/entrega-001.jpg --connection-string "$AZURE_CONN_LOCAL"
+az storage blob download --container-name pruebas-entrega --name envio-4471/entrega-001.jpg --file descargada-azure.jpg --connection-string "$AZURE_CONN_LOCAL"
+diff entrega-001.jpg descargada-azure.jpg
 ```
 
 **Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
@@ -100,13 +65,23 @@ aws --endpoint-url http://localhost:4566 sts get-caller-identity
 ```
 Confirma la respuesta del servicio emulado.
 
-Resultado esperado: el `pull` devuelve el mismo JSON que publicaste — el mismo comando "confirmar entrega" que en el Módulo 3 viajaba por `DeliveryCommands` (SQS), ahora viajando por un topic+suscripción de Pub/Sub.
+Resultado esperado: `diff` no muestra ninguna diferencia — el mismo archivo que subiste a S3 en el Módulo 2 ahora hace el mismo ciclo completo (subir, descargar, verificar) en Blob Storage.
 #### Paso 5 · Práctica guiada
-Pista: publicá un mensaje contra `delivery-commands-fallback` (un topic que nunca creaste) — ese es el fallo deliberado: `NOT_FOUND: Resource not found`, a diferencia de SQS donde al menos la URL de la cola identifica el recurso; en Pub/Sub el topic tiene que existir antes de poder publicar nada en él.
+Pista: reintentá el `upload` apuntando la cadena de conexión al puerto de Queue Storage (10001) en vez del puerto de Blob (10000) — ese es el fallo deliberado: la conexión falla o el servicio rechaza la operación, porque Queue Storage no entiende peticiones de blobs aunque esté en la misma cuenta de almacenamiento.
 #### Paso 6 · Práctica independiente
-Creá una segunda suscripción (`delivery-commands-sub-2`) sobre el mismo topic, publicá un mensaje nuevo, y confirmá que AMBAS suscripciones reciben su propia copia con `pull` — algo que SQS no haría con una sola cola y dos consumidores compitiendo por el mismo mensaje.
+Relacioná cada pieza de RutaFlow con su servicio Azure correcto: la foto de entrega (Blob Storage), el mensaje "confirmar entrega" (Queue Storage), el historial de eventos del envío (Cosmos DB) — y justificá por qué ninguno de los tres es intercambiable con otro.
 #### Paso 7 · Cierre y evidencia
-Entregá la publicación y recepción exitosa, el error de topic inexistente del Paso 5, y la doble recepción del Paso 6; explicá por qué Pub/Sub no es un calco exacto de SQS aunque resuelva el mismo problema de negocio. Siguiente paso: comparación. Errores comunes: confundir documento con tabla y evento con cola. Fuente oficial: https://cloud.google.com/docs.
+Entregá el ciclo completo de subida/descarga en Blob Storage, el error de puerto equivocado del Paso 5 y la relación de los tres servicios del Paso 6; explicá qué cambia y qué no cambia al portar `pruebas-entrega` de S3 a Blob Storage. Siguiente paso: GCP. Errores comunes: asumir nombres idénticos entre nubes. Fuente oficial: https://learn.microsoft.com/azure/.
+
+### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a modelar el mismo "confirmar entrega" de `DeliveryCommands` (Módulo 3, SQS) como un topic Pub/Sub real en GCP. Prerrequisitos: Módulo 3, floci-gcp corriendo (Módulo 0).
+#### Paso 2 · Contexto y caso real
+Si RutaFlow corriera en GCP, el worker que confirma entregas no tendría una cola SQS: tendría un topic con una suscripción, un modelo de mensajería distinto, no solo un nombre distinto.
+#### Paso 3 · Teoría, modelo mental y analogía
+Un topic es un altavoz: cualquier suscripción sintonizada recibe su propia copia del mensaje, a diferencia de una cola SQS donde un mensaje se consume una sola vez.
+
 **Conceptos clave:** bucket de Cloud Storage, topic y suscripción de Pub/Sub, colección y documento de Firestore, Cloud Functions.
 
 Google Cloud Storage es, de los tres equivalentes de almacenamiento de objetos que vas a ver en este módulo, el que más se parece conceptualmente a S3: organiza sus datos en buckets con nombre único, y dentro de cada bucket los archivos se identifican por una clave de objeto, siguiendo exactamente el mismo modelo plano sin carpetas reales que ya conoces. La terminología incluso coincide casi palabra por palabra con S3 en muchos comandos de su CLI (`gcloud storage`).
@@ -139,6 +114,35 @@ cola `DeliveryCommands` que `examples/rutaflow/cloud/template.yaml` declara con 
 `DeliveryCommandsDLQ` — no conviene asumir que Pub/Sub resuelve mensajes envenenados igual: acá
 necesitarías una suscripción separada con política de reintentos explícita, no una DLQ nativa
 como la de SQS.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+gcloud pubsub topics create delivery-commands --project mi-proyecto-local
+gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --project mi-proyecto-local
+gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-4471","recipientPin":"837201"}' --project mi-proyecto-local
+gcloud pubsub subscriptions pull delivery-commands-sub --auto-ack --project mi-proyecto-local
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: el `pull` devuelve el mismo JSON que publicaste — el mismo comando "confirmar entrega" que en el Módulo 3 viajaba por `DeliveryCommands` (SQS), ahora viajando por un topic+suscripción de Pub/Sub.
+#### Paso 5 · Práctica guiada
+Pista: publicá un mensaje contra `delivery-commands-fallback` (un topic que nunca creaste) — ese es el fallo deliberado: `NOT_FOUND: Resource not found`, a diferencia de SQS donde al menos la URL de la cola identifica el recurso; en Pub/Sub el topic tiene que existir antes de poder publicar nada en él.
+#### Paso 6 · Práctica independiente
+Creá una segunda suscripción (`delivery-commands-sub-2`) sobre el mismo topic, publicá un mensaje nuevo, y confirmá que AMBAS suscripciones reciben su propia copia con `pull` — algo que SQS no haría con una sola cola y dos consumidores compitiendo por el mismo mensaje.
+#### Paso 7 · Cierre y evidencia
+Entregá la publicación y recepción exitosa, el error de topic inexistente del Paso 5, y la doble recepción del Paso 6; explicá por qué Pub/Sub no es un calco exacto de SQS aunque resuelva el mismo problema de negocio. Siguiente paso: comparación. Errores comunes: confundir documento con tabla y evento con cola. Fuente oficial: https://cloud.google.com/docs.
 
 ### Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio
 

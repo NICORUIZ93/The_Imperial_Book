@@ -16,33 +16,6 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 Un programa es el archivo `domain.py`; un proceso es ese programa corriendo de verdad, con PID, memoria y descriptores propios — el kernel es el bibliotecario que presta esos recursos, nunca el programa accediendo directo al hardware.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```bash
-python3 -c "
-import time
-from examples.rutaflow.foundation.domain import Stop, nearest_neighbor_route
-paradas = [Stop(f'RF-{i}', i*0.01, i*0.01) for i in range(50000)]
-time.sleep(5)
-nearest_neighbor_route((0,0), paradas)
-" &
-ps -o pid,ppid,state,etime,command | grep python3
-```
-Resultado esperado: `ps` muestra el proceso con su propio PID, su estado y el tiempo transcurrido — el cálculo O(n²) sobre 50000 paradas todavía no terminó, y el sistema operativo ya le asignó identidad y recursos propios desde el instante en que arrancó.
-
-#### Paso 5 · Práctica guiada
-Pista: enviá `kill -9 <PID>` (SIGKILL) a ese proceso mientras todavía calcula — ese es el fallo deliberado: el proceso termina de inmediato sin poder liberar nada ni loguear qué estaba haciendo, a diferencia de `kill -TERM <PID>`, que le daría la oportunidad de cerrar ordenadamente.
-
-#### Paso 6 · Práctica independiente
-Repetí el cálculo con una lista de paradas mucho más chica (50 en vez de 50000), y comparzá cuánto tarda en terminar solo con el tiempo reportado por `ps -o etime` en ambos casos — documentando por qué `kill -TERM` sí alcanzaría a interrumpirlo a tiempo en el caso chico.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el proceso real inspeccionado con `ps` del Paso 4, la terminación abrupta con SIGKILL del Paso 5, y la comparación de tiempos del Paso 6; explicá la diferencia entre SIGTERM y SIGKILL en términos de qué puede (y qué no puede) hacer tu código antes de terminar. Errores comunes: usar `kill -9` como primer recurso en vez de `SIGTERM`, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
-**¿Por qué es importante?** Porque un proceso que recibe SIGKILL no tiene ninguna oportunidad de cerrar una transacción o loguear su estado — la diferencia entre SIGTERM y SIGKILL es la diferencia entre un apagado ordenado y una pérdida de evidencia.
 **Escenario:** Tu worker de validación procesa batches de 1000 entregas. Recibe SIGTERM a mitad de un batch. ¿Cómo terminas sin corrupción?
 
 **Tu tarea:**
@@ -98,6 +71,34 @@ Vas a ver dos PIDs distintos, cada uno con su propia memoria y sus propios descr
 > Dos líneas en la salida de `ps`, con PIDs diferentes y el mismo `command`. Si `almacenamiento.py` no coordina el acceso al archivo de tareas (ver Tema 2 de este módulo), ambas instancias podrían leer y escribir `tareas.json` al mismo tiempo y perder una actualización silenciosamente.
 
 **¿Por qué importa?** Confundir "programa" con "proceso" hace invisible el riesgo de que dos instancias del mismo CLI interfieran entre sí sin que el código tenga ningún error evidente.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```bash
+python3 -c "
+import time
+from examples.rutaflow.foundation.domain import Stop, nearest_neighbor_route
+paradas = [Stop(f'RF-{i}', i*0.01, i*0.01) for i in range(50000)]
+time.sleep(5)
+nearest_neighbor_route((0,0), paradas)
+" &
+ps -o pid,ppid,state,etime,command | grep python3
+```
+Resultado esperado: `ps` muestra el proceso con su propio PID, su estado y el tiempo transcurrido — el cálculo O(n²) sobre 50000 paradas todavía no terminó, y el sistema operativo ya le asignó identidad y recursos propios desde el instante en que arrancó.
+
+#### Paso 5 · Práctica guiada
+Pista: enviá `kill -9 <PID>` (SIGKILL) a ese proceso mientras todavía calcula — ese es el fallo deliberado: el proceso termina de inmediato sin poder liberar nada ni loguear qué estaba haciendo, a diferencia de `kill -TERM <PID>`, que le daría la oportunidad de cerrar ordenadamente.
+
+#### Paso 6 · Práctica independiente
+Repetí el cálculo con una lista de paradas mucho más chica (50 en vez de 50000), y comparzá cuánto tarda en terminar solo con el tiempo reportado por `ps -o etime` en ambos casos — documentando por qué `kill -TERM` sí alcanzaría a interrumpirlo a tiempo en el caso chico.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el proceso real inspeccionado con `ps` del Paso 4, la terminación abrupta con SIGKILL del Paso 5, y la comparación de tiempos del Paso 6; explicá la diferencia entre SIGTERM y SIGKILL en términos de qué puede (y qué no puede) hacer tu código antes de terminar. Errores comunes: usar `kill -9` como primer recurso en vez de `SIGTERM`, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
+**¿Por qué es importante?** Porque un proceso que recibe SIGKILL no tiene ninguna oportunidad de cerrar una transacción o loguear su estado — la diferencia entre SIGTERM y SIGKILL es la diferencia entre un apagado ordenado y una pérdida de evidencia.
 ### Tema 2: Memoria y concurrencia sin magia
 
 #### Paso 1 · Objetivo y preparación
@@ -109,45 +110,6 @@ Si dos procesos de asignación intentaran reservar un lugar en el mismo vehícul
 #### Paso 3 · Teoría, modelo mental y analogía
 `capacidad = capacidad - 1` no es una operación atómica: es leer, calcular y escribir — dos hilos pueden leer el mismo valor antes de que ninguno escriba, perdiendo una actualización, igual que dos agentes vendiendo el mismo último asiento desde copias separadas.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-from threading import Thread
-
-capacidad = {"disponible": 10}
-
-def reservar_lugar():
-    actual = capacidad["disponible"]
-    capacidad["disponible"] = actual - 1
-
-hilos = [Thread(target=reservar_lugar) for _ in range(10)]
-[h.start() for h in hilos]
-[h.join() for h in hilos]
-print(capacidad["disponible"])
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: en la mayoría de las corridas, el resultado NO es `0` (el esperado tras 10 reservas de un vehículo con capacidad 10) — algunas actualizaciones se pisan entre sí, y el número exacto varía de ejecución en ejecución.
-
-#### Paso 5 · Práctica guiada
-Pista: ese resultado inconsistente del Paso 4 ES el fallo deliberado — corrélo varias veces y anotá que el número final cambia entre corridas (a veces 2, a veces 4, nunca garantizado 0), la firma de una condición de carrera real, no un bug determinista que siempre falla igual.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 4 envolviendo la lectura-cálculo-escritura en un `Lock()` (como en el ejemplo de `retirar()` de este mismo Tema), y confirmá que ahora el resultado es siempre `0`, sin importar cuántas veces repitas la corrida.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y determinista del Paso 6; explicá por qué un lock en un solo proceso no alcanzaría si la asignación de vehículos corriera en dos procesos o instancias distintas. Errores comunes: asumir que una línea de código como `capacidad -= 1` es atómica, proteger con un lock de un solo proceso una operación que en realidad corre en varios procesos distintos, y bloquear una sección más grande de la necesaria sacrificando rendimiento sin motivo. Fuentes oficiales: https://docs.python.org/3/library/threading.html.
-**¿Por qué es importante?** Porque las pruebas secuenciales de `reservar_lugar()` pueden pasar siempre y el sistema real fallar solo bajo tráfico concurrente — la condición de carrera no se ve leyendo el código línea por línea.
 **Escenario:** Dos procesos en tu inventario: uno transfiere stock de bodega A a B, otro de B a A. Ambos pueden quedarse bloqueados esperándose mutuamente.
 
 **Tu tarea:**
@@ -207,6 +169,46 @@ El proyecto integrador Fundamentos tiene la misma sección crítica escondida en
 
 **Límites y decisión de uso:** Más concurrencia no implica más velocidad y puede introducir carreras o presión de memoria. Identifica estado compartido y trabajo independiente antes de añadir tareas; compara resultados y recursos con la versión secuencial.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+from threading import Thread
+
+capacidad = {"disponible": 10}
+
+def reservar_lugar():
+    actual = capacidad["disponible"]
+    capacidad["disponible"] = actual - 1
+
+hilos = [Thread(target=reservar_lugar) for _ in range(10)]
+[h.start() for h in hilos]
+[h.join() for h in hilos]
+print(capacidad["disponible"])
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: en la mayoría de las corridas, el resultado NO es `0` (el esperado tras 10 reservas de un vehículo con capacidad 10) — algunas actualizaciones se pisan entre sí, y el número exacto varía de ejecución en ejecución.
+
+#### Paso 5 · Práctica guiada
+Pista: ese resultado inconsistente del Paso 4 ES el fallo deliberado — corrélo varias veces y anotá que el número final cambia entre corridas (a veces 2, a veces 4, nunca garantizado 0), la firma de una condición de carrera real, no un bug determinista que siempre falla igual.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 4 envolviendo la lectura-cálculo-escritura en un `Lock()` (como en el ejemplo de `retirar()` de este mismo Tema), y confirmá que ahora el resultado es siempre `0`, sin importar cuántas veces repitas la corrida.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y determinista del Paso 6; explicá por qué un lock en un solo proceso no alcanzaría si la asignación de vehículos corriera en dos procesos o instancias distintas. Errores comunes: asumir que una línea de código como `capacidad -= 1` es atómica, proteger con un lock de un solo proceso una operación que en realidad corre en varios procesos distintos, y bloquear una sección más grande de la necesaria sacrificando rendimiento sin motivo. Fuentes oficiales: https://docs.python.org/3/library/threading.html.
+**¿Por qué es importante?** Porque las pruebas secuenciales de `reservar_lugar()` pueden pasar siempre y el sistema real fallar solo bajo tráfico concurrente — la condición de carrera no se ve leyendo el código línea por línea.
 ### Tema 3: Linux como entorno observable
 
 #### Paso 1 · Objetivo y preparación
@@ -218,30 +220,6 @@ Si el servicio que calcula rutas para RutaFlow dejara de responder, un operador 
 #### Paso 3 · Teoría, modelo mental y analogía
 Operar un servicio es como la medicina clínica: observás signos (CPU, puertos, logs) antes de intervenir, en vez de "reiniciar y ver si se arregla".
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```bash
-python3 -m http.server 8000 --directory /tmp &
-sleep 1
-curl --fail --silent http://127.0.0.1:8000/ > /dev/null && echo "sano"
-ss -ltnp | grep 8000
-ps -o pid,ppid,%cpu,%mem,command | grep http.server
-```
-Resultado esperado: `curl --fail` confirma que el servicio responde (`sano`); `ss -ltnp` muestra el puerto `8000` escuchando con su PID; `ps` confirma el mismo proceso con su consumo real de CPU y memoria — tres ángulos distintos del mismo servicio, antes de tocar nada.
-
-#### Paso 5 · Práctica guiada
-Pista: matá el proceso con `kill -9 <PID>` y repetí el mismo `curl --fail` — ese es el fallo deliberado reproducido a propósito: el comando termina con error (código de salida distinto de 0) en vez de "sano", confirmando con evidencia, no con una suposición, que el servicio ya no responde.
-
-#### Paso 6 · Práctica independiente
-Repetí el Paso 4 completo, pero esta vez redirigiendo la salida del servidor a un log (`> servicio.log 2>&1 &`) y seguilo con `tail -f servicio.log` mientras hacés una petición — documentando qué evidencia adicional te da el log que `ps` y `ss` no muestran.
-
-#### Paso 7 · Cierre y evidencia
-Entregá los tres ángulos de diagnóstico del Paso 4, el fallo real confirmado con `curl --fail` del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Errores comunes: reiniciar el servicio antes de capturar `ps`, `ss` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/ss.8.html.
-**¿Por qué es importante?** Porque `ps` puede mostrar que el proceso sigue vivo mientras `curl --fail` confirma que ya no responde — sin los tres ángulos de diagnóstico, reiniciar a ciegas destruye la evidencia de qué estaba fallando realmente.
 **Escenario:** Tu worker de validación "usa demasiada memoria" según quejas. Necesitas inspeccionar `/proc/PID/status` para diagnosticar.
 
 **Tu tarea:**
@@ -285,6 +263,31 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Identifica proceso, puerto y logs del gestor en Linux. Detén únicamente el proceso de laboratorio y conserva el diagnóstico que diferencia aplicación detenida de error en sus datos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```bash
+python3 -m http.server 8000 --directory /tmp &
+sleep 1
+curl --fail --silent http://127.0.0.1:8000/ > /dev/null && echo "sano"
+ss -ltnp | grep 8000
+ps -o pid,ppid,%cpu,%mem,command | grep http.server
+```
+Resultado esperado: `curl --fail` confirma que el servicio responde (`sano`); `ss -ltnp` muestra el puerto `8000` escuchando con su PID; `ps` confirma el mismo proceso con su consumo real de CPU y memoria — tres ángulos distintos del mismo servicio, antes de tocar nada.
+
+#### Paso 5 · Práctica guiada
+Pista: matá el proceso con `kill -9 <PID>` y repetí el mismo `curl --fail` — ese es el fallo deliberado reproducido a propósito: el comando termina con error (código de salida distinto de 0) en vez de "sano", confirmando con evidencia, no con una suposición, que el servicio ya no responde.
+
+#### Paso 6 · Práctica independiente
+Repetí el Paso 4 completo, pero esta vez redirigiendo la salida del servidor a un log (`> servicio.log 2>&1 &`) y seguilo con `tail -f servicio.log` mientras hacés una petición — documentando qué evidencia adicional te da el log que `ps` y `ss` no muestran.
+
+#### Paso 7 · Cierre y evidencia
+Entregá los tres ángulos de diagnóstico del Paso 4, el fallo real confirmado con `curl --fail` del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Errores comunes: reiniciar el servicio antes de capturar `ps`, `ss` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/ss.8.html.
+**¿Por qué es importante?** Porque `ps` puede mostrar que el proceso sigue vivo mientras `curl --fail` confirma que ya no responde — sin los tres ángulos de diagnóstico, reiniciar a ciegas destruye la evidencia de qué estaba fallando realmente.
 ### Tema 4: Contenedores: aislamiento reproducible
 
 #### Paso 1 · Objetivo y preparación
@@ -296,31 +299,6 @@ Si el cálculo de rutas de RutaFlow corriera en un contenedor, necesitaría guar
 #### Paso 3 · Teoría, modelo mental y analogía
 La imagen es una receta sellada; el contenedor es una preparación concreta de esa receta; el volumen es la despensa externa — podés cambiar la cocina (recrear el contenedor) sin perder lo que había en la despensa.
 
-#### Paso 4 · Demostración guiada desde cero
-```dockerfile
-FROM python:3.12-slim
-WORKDIR /app
-RUN useradd --create-home --uid 10001 rutaflow
-COPY examples/rutaflow/foundation/domain.py ./domain.py
-RUN mkdir /data && chown rutaflow:rutaflow /data
-USER rutaflow
-CMD ["python", "-c", "from domain import nearest_neighbor_route, Stop; print(nearest_neighbor_route((0,0),[Stop('RF-1',1,1)]))"]
-```
-```bash
-docker build -t rutaflow-rutas .
-docker run --rm -v rutaflow-cache:/data rutaflow-rutas
-```
-Resultado esperado: el contenedor corre como `rutaflow` (UID 10001), nunca como root, e imprime la ruta calculada — el mismo cálculo del Tema 1, ahora empaquetado de forma reproducible.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `USER rutaflow` del Dockerfile y volvé a construir — ese es el fallo deliberado: el proceso dentro del contenedor corre como root, aumentando el impacto de cualquier vulnerabilidad en el código o en una dependencia, exactamente lo que el usuario no privilegiado existía para evitar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `USER rutaflow`, escribí un archivo dentro de `/data` desde el contenedor, recreá el contenedor por completo (`docker rm` + `docker run` de nuevo con el mismo volumen), y confirmá que el archivo sigue ahí — la prueba de que el volumen, no el contenedor, es lo que persiste.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el contenedor corriendo como usuario no root del Paso 4, el root innecesario detectado del Paso 5, y la persistencia confirmada del Paso 6; explicá por qué "funciona en mi máquina" suele ocultar justo estas diferencias de identidad y filesystem. Errores comunes: correr el proceso del contenedor como root por omisión, guardar datos que deben persistir en la capa escribible del contenedor en vez de un volumen, y asumir que `EXPOSE` publica un puerto cuando solo lo documenta. Fuentes oficiales: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/.
-**¿Por qué es importante?** Porque un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
 **Escenario:** Tu worker y tu BD corren en el mismo `docker-compose.yml`. Sin límites, el worker consume toda la RAM y mata la BD. Necesitas garantizar 512MB para BD, 256MB para worker.
 
 **Tu tarea:**
@@ -373,6 +351,32 @@ flowchart TB
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Empaqueta el gestor y ejecuta su prueba de humo desde un contenedor limpio. Recrea el proceso y comprueba qué datos persisten mediante el volumen, sin depender de archivos de tu equipo.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+```dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+RUN useradd --create-home --uid 10001 rutaflow
+COPY examples/rutaflow/foundation/domain.py ./domain.py
+RUN mkdir /data && chown rutaflow:rutaflow /data
+USER rutaflow
+CMD ["python", "-c", "from domain import nearest_neighbor_route, Stop; print(nearest_neighbor_route((0,0),[Stop('RF-1',1,1)]))"]
+```
+```bash
+docker build -t rutaflow-rutas .
+docker run --rm -v rutaflow-cache:/data rutaflow-rutas
+```
+Resultado esperado: el contenedor corre como `rutaflow` (UID 10001), nunca como root, e imprime la ruta calculada — el mismo cálculo del Tema 1, ahora empaquetado de forma reproducible.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `USER rutaflow` del Dockerfile y volvé a construir — ese es el fallo deliberado: el proceso dentro del contenedor corre como root, aumentando el impacto de cualquier vulnerabilidad en el código o en una dependencia, exactamente lo que el usuario no privilegiado existía para evitar.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `USER rutaflow`, escribí un archivo dentro de `/data` desde el contenedor, recreá el contenedor por completo (`docker rm` + `docker run` de nuevo con el mismo volumen), y confirmá que el archivo sigue ahí — la prueba de que el volumen, no el contenedor, es lo que persiste.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el contenedor corriendo como usuario no root del Paso 4, el root innecesario detectado del Paso 5, y la persistencia confirmada del Paso 6; explicá por qué "funciona en mi máquina" suele ocultar justo estas diferencias de identidad y filesystem. Errores comunes: correr el proceso del contenedor como root por omisión, guardar datos que deben persistir en la capa escribible del contenedor en vez de un volumen, y asumir que `EXPOSE` publica un puerto cuando solo lo documenta. Fuentes oficiales: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/.
+**¿Por qué es importante?** Porque un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
 
 ### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores
 

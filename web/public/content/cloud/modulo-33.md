@@ -134,20 +134,7 @@ Al finalizar vas a agregarle a `ShipmentEvents` una tabla global multi-región y
 Si RutaFlow expande a una segunda región para reducir latencia, `ShipmentEvents` necesita estar disponible en ambas sin que el equipo reescriba la lógica de replicación a mano; y los reportes pesados de facturación no deberían competir por capacidad con las escrituras reales de `rutaflow-facturacion`.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una tabla global es la misma tabla escribiéndose en varias regiones a la vez, con reconciliación automática; una réplica de lectura es una copia de solo consulta que absorbe el tráfico de reportes sin tocar la instancia principal.
-#### Paso 4 · Demostración guiada
-```bash
-aws dynamodb update-table --table-name ShipmentEvents \
-  --replica-updates '[{"Create":{"RegionName":"us-west-2"}}]'
-aws rds create-db-instance-read-replica --db-instance-identifier rutaflow-facturacion-lectura \
-  --source-db-instance-identifier rutaflow-facturacion
-```
-Resultado esperado: `ShipmentEvents` queda replicándose también hacia `us-west-2`; `rutaflow-facturacion-lectura` aparece como una instancia de solo lectura separada — los reportes pesados pueden apuntar ahí sin competir con las escrituras reales de facturas.
-#### Paso 5 · Práctica guiada
-Pista: escribí un item directamente en la réplica de lectura con `put-item` apuntando a su endpoint — ese es el fallo deliberado: una réplica de lectura de RDS rechaza escrituras por diseño (`ERROR: cannot execute INSERT in a read-only transaction`), porque su único propósito es servir consultas sin afectar la fuente de verdad.
-#### Paso 6 · Práctica independiente
-Documentá qué pasaría con la tabla global de `ShipmentEvents` si las dos regiones recibieran una escritura distinta para el mismo `shipmentId`+`sequence` casi al mismo tiempo (pista: DynamoDB global tables resuelve conflictos por "último escritor gana" según timestamp, no por orden de llegada a cada región).
-#### Paso 7 · Cierre y evidencia
-Entregá la tabla global y la réplica de lectura creadas del Paso 4, el rechazo de escritura del Paso 5, y la resolución de conflictos documentada del Paso 6; explicá por qué ninguna de las dos técnicas se justificaba en los módulos anteriores, cuando RutaFlow corría en una sola región. Siguiente paso: Lambda, API Gateway y observabilidad avanzada. Errores comunes: escribir en una réplica de lectura y asumir orden global en tablas multi-región. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html.
+
 **Conceptos clave:** DynamoDB global tables, réplicas de lectura de RDS, resolución de conflictos multi-región, separación de tráfico de lectura y escritura.
 
 Estas dos técnicas resuelven problemas que solo aparecen a cierta escala: una tabla global existe porque servir lecturas desde la región más cercana al usuario reduce latencia real, no por "más disponibilidad" en abstracto; una réplica de lectura existe porque los reportes de facturación, al escanear muchas filas, competirían por recursos con las transacciones reales si corrieran contra la misma instancia.
@@ -199,6 +186,21 @@ aws s3api put-bucket-lifecycle-configuration --bucket rutaflow-pruebas-entrega -
 ```
 Las fotos de `PruebasEntrega` (Módulo 9) más antiguas de 90 días se mueven automáticamente a una clase de almacenamiento más económica (Glacier Instant Retrieval), sin que nadie tenga que auditar y mover objetos viejos a mano — siguen siendo recuperables casi al instante si un reclamo de un cliente necesita revisar una entrega de hace meses.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws dynamodb update-table --table-name ShipmentEvents \
+  --replica-updates '[{"Create":{"RegionName":"us-west-2"}}]'
+aws rds create-db-instance-read-replica --db-instance-identifier rutaflow-facturacion-lectura \
+  --source-db-instance-identifier rutaflow-facturacion
+```
+Resultado esperado: `ShipmentEvents` queda replicándose también hacia `us-west-2`; `rutaflow-facturacion-lectura` aparece como una instancia de solo lectura separada — los reportes pesados pueden apuntar ahí sin competir con las escrituras reales de facturas.
+#### Paso 5 · Práctica guiada
+Pista: escribí un item directamente en la réplica de lectura con `put-item` apuntando a su endpoint — ese es el fallo deliberado: una réplica de lectura de RDS rechaza escrituras por diseño (`ERROR: cannot execute INSERT in a read-only transaction`), porque su único propósito es servir consultas sin afectar la fuente de verdad.
+#### Paso 6 · Práctica independiente
+Documentá qué pasaría con la tabla global de `ShipmentEvents` si las dos regiones recibieran una escritura distinta para el mismo `shipmentId`+`sequence` casi al mismo tiempo (pista: DynamoDB global tables resuelve conflictos por "último escritor gana" según timestamp, no por orden de llegada a cada región).
+#### Paso 7 · Cierre y evidencia
+Entregá la tabla global y la réplica de lectura creadas del Paso 4, el rechazo de escritura del Paso 5, y la resolución de conflictos documentada del Paso 6; explicá por qué ninguna de las dos técnicas se justificaba en los módulos anteriores, cuando RutaFlow corría en una sola región. Siguiente paso: Lambda, API Gateway y observabilidad avanzada. Errores comunes: escribir en una réplica de lectura y asumir orden global en tablas multi-región. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html.
+
 ### Tema 4: Lambda, API Gateway y observabilidad avanzada
 
 #### Paso 1 · Objetivo y preparación
@@ -207,20 +209,7 @@ Al finalizar vas a reducir el cold start de `confirmar-entrega` con concurrencia
 El cold start medido en el Módulo 5 Tema 1 es aceptable para uso normal, pero si `confirmar-entrega` tuviera que responder siempre en menos de 200ms (por ejemplo, detrás de un SLA real con el socio logístico), ese primer arranque lento ya no sería tolerable.
 #### Paso 3 · Teoría, modelo mental y analogía
 La concurrencia aprovisionada mantiene entornos "calientes" esperando, como tener cocineros ya listos en vez de contratar uno apenas llega el primer pedido; X-Ray es la hoja de ruta de una petición, mostrando cuánto tardó cada parada del recorrido.
-#### Paso 4 · Demostración guiada
-```bash
-aws lambda put-provisioned-concurrency-config --function-name confirmar-entrega \
-  --qualifier produccion --provisioned-concurrent-executions 2
-time aws lambda invoke --function-name confirmar-entrega:produccion \
-  --payload '{"shipmentId":"env-9001","recipientPin":"837201"}' salida.json
-```
-Resultado esperado: el tiempo de esta invocación ya no muestra el cold start que medías en el Módulo 5 — los 2 entornos aprovisionados estaban esperando antes de que llegara la petición.
-#### Paso 5 · Práctica guiada
-Pista: invocá una tercera vez simultánea mientras las 2 ejecuciones aprovisionadas están ocupadas — ese es el fallo deliberado: esa tercera invocación sí sufre un cold start real, porque la concurrencia aprovisionada cubre un número fijo de ejecuciones simultáneas, no invocaciones ilimitadas sin arranque en frío.
-#### Paso 6 · Práctica independiente
-Habilitá X-Ray sobre `confirmar-entrega` y sobre el método `POST /entregas` de API Gateway (Módulo 6), hacé una invocación real a través de la API, y revisá el segmento de traza resultante — identificá cuánto tiempo se fue en API Gateway vs en la Lambda vs en el `PutItem` a `ShipmentEvents`.
-#### Paso 7 · Cierre y evidencia
-Entregá la invocación sin cold start del Paso 4, el cold start real de la tercera invocación simultánea del Paso 5, y la traza X-Ray desglosada del Paso 6; explicá por qué la concurrencia aprovisionada tiene un costo fijo incluso sin tráfico, a diferencia del modelo de pago por invocación del Módulo 5. Siguiente paso: seguridad, auditoría y FinOps. Errores comunes: aprovisionar de más sin medir tráfico real y no instrumentar X-Ray en toda la cadena. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html.
+
 **Conceptos clave:** concurrencia aprovisionada, cold start mitigado (no eliminado), trazas distribuidas con X-Ray, segmentos y subsegmentos.
 
 La concurrencia aprovisionada no elimina el cold start, lo prepaga: AWS mantiene un número fijo de entornos de ejecución ya inicializados, listos para atender peticiones sin el arranque en frío, pero esa capacidad tiene un costo constante aunque no llegue tráfico, muy distinto al modelo "pagás solo cuando se ejecuta" que ya conocés de Lambda estándar.
@@ -255,6 +244,21 @@ Logs Insights consulta directamente el contenido de los logs con un lenguaje tip
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Correlaciona una llamada de confirmación entre gateway, función y persistencia. Provoca un timeout de dependencia y usa la traza para distinguir fallo del backend de rechazo del contrato HTTP.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws lambda put-provisioned-concurrency-config --function-name confirmar-entrega \
+  --qualifier produccion --provisioned-concurrent-executions 2
+time aws lambda invoke --function-name confirmar-entrega:produccion \
+  --payload '{"shipmentId":"env-9001","recipientPin":"837201"}' salida.json
+```
+Resultado esperado: el tiempo de esta invocación ya no muestra el cold start que medías en el Módulo 5 — los 2 entornos aprovisionados estaban esperando antes de que llegara la petición.
+#### Paso 5 · Práctica guiada
+Pista: invocá una tercera vez simultánea mientras las 2 ejecuciones aprovisionadas están ocupadas — ese es el fallo deliberado: esa tercera invocación sí sufre un cold start real, porque la concurrencia aprovisionada cubre un número fijo de ejecuciones simultáneas, no invocaciones ilimitadas sin arranque en frío.
+#### Paso 6 · Práctica independiente
+Habilitá X-Ray sobre `confirmar-entrega` y sobre el método `POST /entregas` de API Gateway (Módulo 6), hacé una invocación real a través de la API, y revisá el segmento de traza resultante — identificá cuánto tiempo se fue en API Gateway vs en la Lambda vs en el `PutItem` a `ShipmentEvents`.
+#### Paso 7 · Cierre y evidencia
+Entregá la invocación sin cold start del Paso 4, el cold start real de la tercera invocación simultánea del Paso 5, y la traza X-Ray desglosada del Paso 6; explicá por qué la concurrencia aprovisionada tiene un costo fijo incluso sin tráfico, a diferencia del modelo de pago por invocación del Módulo 5. Siguiente paso: seguridad, auditoría y FinOps. Errores comunes: aprovisionar de más sin medir tráfico real y no instrumentar X-Ray en toda la cadena. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html.
+
 ### Tema 5: Seguridad, auditoría y FinOps
 
 #### Paso 1 · Objetivo y preparación
@@ -263,19 +267,7 @@ Al finalizar vas a conectar una alarma de presupuesto real sobre el gasto sintet
 Un pico de costo inesperado en `demo-costo-antes` o en `ShipmentEvents` (por un bug que crea objetos o escribe en loop) debería alertar a alguien automáticamente, no descubrirse al revisar la factura al final del mes.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una alarma de presupuesto es un sensor de humo conectado al costo, no al fuego: avisa por un umbral cruzado, antes de que el incendio (la factura) ya esté completo.
-#### Paso 4 · Demostración guiada
-```bash
-aws budgets create-budget --account-id 000000000000 --budget \
-  '{"BudgetName":"rutaflow-mensual","BudgetLimit":{"Amount":"50","Unit":"USD"},"TimeUnit":"MONTHLY","BudgetType":"COST"}' \
-  --notifications-with-subscribers '[{"Notification":{"NotificationType":"ACTUAL","ComparisonOperator":"GREATER_THAN","Threshold":80},"Subscribers":[{"SubscriptionType":"EMAIL","Address":"equipo-rutaflow@example.com"}]}]'
-```
-Resultado esperado: el presupuesto queda creado con una notificación al 80% de $50 — si el gasto sintetizado del Módulo 29 cruza ese umbral, el equipo se entera por correo antes de llegar al límite completo.
-#### Paso 5 · Práctica guiada
-Pista: simulá con `aws iam simulate-custom-policy` que el rol `RutaFlowConfirmarEntregaRole` (Módulo 7) tiene permiso `budgets:ModifyBudget` además de sus permisos normales de DynamoDB/SQS — ese es el fallo deliberado: una función que solo necesita confirmar entregas nunca debería poder modificar ni apagar la alarma de presupuesto que la vigila a ella misma indirectamente; es el mismo principio de mínimo privilegio del Módulo 7, aplicado a gobierno financiero.
-#### Paso 6 · Práctica independiente
-Documentá qué pasaría si ese presupuesto se cruzara de verdad: ¿quién lo revisa?, ¿qué decisión tomaría (investigar un bug, escalar capacidad a propósito, ignorarlo porque es tráfico real de crecimiento)? Una alarma sin un responsable definido es tan inútil como no tenerla.
-#### Paso 7 · Cierre y evidencia
-Entregá el presupuesto con alarma del Paso 4, el permiso excesivo detectado del Paso 5, y el plan de respuesta del Paso 6; explicá por qué auditoría y FinOps son, en el fondo, la misma disciplina de "ver lo que está pasando antes de que sea demasiado tarde" aplicada a dos cosas distintas (permisos, costo). Siguiente paso: microservicios, Big Data, AI/ML y multi-cloud. Errores comunes: alarmas sin responsable y permisos financieros amplios. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html.
+
 **Conceptos clave:** alarma de presupuesto, umbral de notificación, mínimo privilegio aplicado a FinOps, responsable de alarma.
 
 Seguridad y FinOps convergen en un mismo principio: ambos dependen de saber qué está pasando antes de que el daño (una brecha, una factura inesperada) ya esté hecho. Una alarma de presupuesto sin nadie asignado a revisarla es equivalente a un rol con permisos excesivos que nadie audita — ambos "existen" pero no protegen nada en la práctica.
@@ -308,6 +300,20 @@ aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,Attribut
   --start-time $(date -d '-7 days' +%Y-%m-%dT%H:%M:%SZ)
 ```
 La simulación de permisos del Paso 5 responde "¿quién PODRÍA modificar el presupuesto?"; CloudTrail responde la pregunta complementaria y distinta: "¿quién LO MODIFICÓ, de verdad, y cuándo?" — cada llamada a `ModifyBudget` queda registrada con el identificador exacto del rol o usuario que la hizo, sin depender de que alguien lo reporte manualmente. Sin CloudTrail, un cambio no autorizado al presupuesto solo se notaría por sus efectos (la alarma deja de dispararse), nunca por su causa.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws budgets create-budget --account-id 000000000000 --budget \
+  '{"BudgetName":"rutaflow-mensual","BudgetLimit":{"Amount":"50","Unit":"USD"},"TimeUnit":"MONTHLY","BudgetType":"COST"}' \
+  --notifications-with-subscribers '[{"Notification":{"NotificationType":"ACTUAL","ComparisonOperator":"GREATER_THAN","Threshold":80},"Subscribers":[{"SubscriptionType":"EMAIL","Address":"equipo-rutaflow@example.com"}]}]'
+```
+Resultado esperado: el presupuesto queda creado con una notificación al 80% de $50 — si el gasto sintetizado del Módulo 29 cruza ese umbral, el equipo se entera por correo antes de llegar al límite completo.
+#### Paso 5 · Práctica guiada
+Pista: simulá con `aws iam simulate-custom-policy` que el rol `RutaFlowConfirmarEntregaRole` (Módulo 7) tiene permiso `budgets:ModifyBudget` además de sus permisos normales de DynamoDB/SQS — ese es el fallo deliberado: una función que solo necesita confirmar entregas nunca debería poder modificar ni apagar la alarma de presupuesto que la vigila a ella misma indirectamente; es el mismo principio de mínimo privilegio del Módulo 7, aplicado a gobierno financiero.
+#### Paso 6 · Práctica independiente
+Documentá qué pasaría si ese presupuesto se cruzara de verdad: ¿quién lo revisa?, ¿qué decisión tomaría (investigar un bug, escalar capacidad a propósito, ignorarlo porque es tráfico real de crecimiento)? Una alarma sin un responsable definido es tan inútil como no tenerla.
+#### Paso 7 · Cierre y evidencia
+Entregá el presupuesto con alarma del Paso 4, el permiso excesivo detectado del Paso 5, y el plan de respuesta del Paso 6; explicá por qué auditoría y FinOps son, en el fondo, la misma disciplina de "ver lo que está pasando antes de que sea demasiado tarde" aplicada a dos cosas distintas (permisos, costo). Siguiente paso: microservicios, Big Data, AI/ML y multi-cloud. Errores comunes: alarmas sin responsable y permisos financieros amplios. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html.
 
 ### Tema 6: Microservicios, Big Data, AI/ML y multi-cloud
 

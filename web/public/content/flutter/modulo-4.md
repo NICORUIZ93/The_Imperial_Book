@@ -32,6 +32,26 @@ graph TD
     style F fill:#ffcccc
 ```
 
+**Evidencia de aprendizaje:** entrega prop drilling funcional, acoplamiento sin beneficio detectado y documentación del punto de quiebre.
+**Conceptos clave:** suficiente para estado local, incómodo para estado compartido entre widgets distantes.
+
+`setState()` (Módulo 1) es suficiente y apropiado cuando el estado pertenece exclusivamente a un único widget y su subárbol inmediato de hijos, sin necesidad de que ningún otro widget distante en el árbol lea o reaccione a ese mismo estado; se vuelve incómodo y progresivamente más difícil de mantener cuando varios widgets distantes entre sí (que no comparten una relación directa de padre-hijo cercana) necesitan compartir y reaccionar al mismo estado, dado que la única forma de compartir ese estado con `setState` puro sería elevarlo hasta un ancestro común suficientemente alto en el árbol y pasarlo manualmente hacia abajo a través de cada nivel intermedio, un patrón de "prop drilling" tedioso y frágil que se agrava cuanto más distantes están los widgets que necesitan el mismo estado compartido.
+
+Este es exactamente el mismo problema fundamental de gestión de estado compartido estudiado en cada ecosistema de UI declarativa: `@State` local vs Context API en React (Módulo 5 del track de React), `remember` local vs un store de signals en Angular (Módulo 4 del track de Angular), y `@State` local vs `@Environment` en SwiftUI (Módulo 2 del track de iOS), todos resolviendo la misma tensión entre simplicidad de estado local y necesidad de compartir estado entre partes distantes de un árbol de UI.
+
+**Analogía:** `setState` para estado puramente local es como llevar notas personales en el propio bolsillo, perfectamente eficiente mientras solo uno mismo las necesita consultar; cuando varias personas distantes entre sí necesitan consultar y modificar la misma nota, mantener copias manuales sincronizadas en cada bolsillo individual se vuelve rápidamente insostenible, requiriendo en cambio un tablero compartido accesible por todos sin necesidad de copias manuales dispersas.
+
+**¿Por qué es importante?** `setState` es suficiente para estado puramente local a un widget y su subárbol cercano, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución de gestión de estado más robusta como Riverpod o Bloc.
+
+**Diagrama:**
+
+```
+setState()  → apropiado: estado local a un widget y su subárbol cercano
+setState()  → incómodo: estado compartido entre widgets distantes (requiere prop drilling manual)
+```
+
+En el proyecto integrador RutaFlow, el prop drilling de este tema vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Práctica propia: documentá en tu proyecto propio el punto exacto donde `setState` dejó de alcanzar.
+
 #### Paso 4 · Demostración guiada desde cero
 ```dart
 class _AppState extends State<App> {
@@ -63,25 +83,6 @@ Corregí el Paso 5 documentando por escrito en qué punto exacto el prop drillin
 #### Paso 7 · Cierre y evidencia
 Entregá el prop drilling funcional del Paso 4, el acoplamiento sin beneficio provocado en el Paso 5, y tu documentación del Paso 6; explicá en qué momento preciso decidirías migrar de `setState` a una solución de estado compartido. Siguiente paso: estudia Riverpod. Errores comunes: usar `setState` para estado que varios widgets distantes necesitan compartir, elevar estado a un ancestro común demasiado alto sin necesidad real todavía, y confundir prop drilling tedioso con un problema de rendimiento. Fuentes oficiales: https://docs.flutter.dev/data-and-backend/state-mgmt/simple y https://docs.flutter.dev/get-started/fwe/state-management.
 **¿Por qué es importante?** `setState` es suficiente para estado puramente local, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución más robusta.
-**Evidencia de aprendizaje:** entrega prop drilling funcional, acoplamiento sin beneficio detectado y documentación del punto de quiebre.
-**Conceptos clave:** suficiente para estado local, incómodo para estado compartido entre widgets distantes.
-
-`setState()` (Módulo 1) es suficiente y apropiado cuando el estado pertenece exclusivamente a un único widget y su subárbol inmediato de hijos, sin necesidad de que ningún otro widget distante en el árbol lea o reaccione a ese mismo estado; se vuelve incómodo y progresivamente más difícil de mantener cuando varios widgets distantes entre sí (que no comparten una relación directa de padre-hijo cercana) necesitan compartir y reaccionar al mismo estado, dado que la única forma de compartir ese estado con `setState` puro sería elevarlo hasta un ancestro común suficientemente alto en el árbol y pasarlo manualmente hacia abajo a través de cada nivel intermedio, un patrón de "prop drilling" tedioso y frágil que se agrava cuanto más distantes están los widgets que necesitan el mismo estado compartido.
-
-Este es exactamente el mismo problema fundamental de gestión de estado compartido estudiado en cada ecosistema de UI declarativa: `@State` local vs Context API en React (Módulo 5 del track de React), `remember` local vs un store de signals en Angular (Módulo 4 del track de Angular), y `@State` local vs `@Environment` en SwiftUI (Módulo 2 del track de iOS), todos resolviendo la misma tensión entre simplicidad de estado local y necesidad de compartir estado entre partes distantes de un árbol de UI.
-
-**Analogía:** `setState` para estado puramente local es como llevar notas personales en el propio bolsillo, perfectamente eficiente mientras solo uno mismo las necesita consultar; cuando varias personas distantes entre sí necesitan consultar y modificar la misma nota, mantener copias manuales sincronizadas en cada bolsillo individual se vuelve rápidamente insostenible, requiriendo en cambio un tablero compartido accesible por todos sin necesidad de copias manuales dispersas.
-
-**¿Por qué es importante?** `setState` es suficiente para estado puramente local a un widget y su subárbol cercano, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución de gestión de estado más robusta como Riverpod o Bloc.
-
-**Diagrama:**
-
-```
-setState()  → apropiado: estado local a un widget y su subárbol cercano
-setState()  → incómodo: estado compartido entre widgets distantes (requiere prop drilling manual)
-```
-
-En el proyecto integrador RutaFlow, el prop drilling de este tema vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Práctica propia: documentá en tu proyecto propio el punto exacto donde `setState` dejó de alcanzar.
 
 ### Tema 2: Riverpod
 
@@ -136,6 +137,40 @@ graph LR
     style D fill:#fff9c4
 ```
 
+**Evidencia de aprendizaje:** entrega provider compartido, uso incorrecto de watch detectado y tercer consumidor sincronizado.
+**Conceptos clave:** verificación de providers en tiempo de compilación, no dependiente del árbol de widgets en runtime.
+
+```dart
+final contadorProvider = StateProvider<int>((ref) => 0);
+
+class PantallaContador extends ConsumerWidget {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final contador = ref.watch(contadorProvider);
+    return ElevatedButton(
+      onPressed: () => ref.read(contadorProvider.notifier).state++,
+      child: Text("$contador"),
+    );
+  }
+}
+```
+
+Riverpod (evolución de Provider, el paquete de gestión de estado más antiguo del ecosistema Flutter) declara providers como objetos globales independientes del árbol de widgets, verificados en tiempo de **compilación**: intentar leer un provider que no existe o que tiene un tipo incorrecto produce un error de compilación inmediato, a diferencia de Provider (el paquete anterior), donde un provider se busca en runtime recorriendo el árbol de widgets hacia arriba (`context.watch<T>()`), de modo que un error de "provider no encontrado" (porque el widget que lo provee no está en el ancestro esperado en el árbol) solo se manifiesta como una excepción en tiempo de ejecución, potencialmente descubierta tarde durante pruebas manuales o incluso en producción.
+
+`ref.watch(contadorProvider)` suscribe el widget a reconstruirse cuando ese provider cambia; `ref.read(contadorProvider.notifier).state++` modifica el estado sin suscribirse a cambios (apropiado dentro de callbacks de eventos, donde no se necesita observar el propio cambio que se está provocando). Consumir el mismo provider desde dos widgets distintos y distantes entre sí simplemente requiere que ambos llamen `ref.watch(contadorProvider)`, sin ningún prop drilling manual entre ellos, resolviendo directamente el problema descrito en el Tema 1.
+
+**Analogía:** Riverpod es como un directorio centralizado de servicios verificado formalmente antes de la apertura de un edificio, donde cualquier intento de referenciar un servicio inexistente se detecta durante la inspección previa (compilación), en vez de descubrirse recién cuando alguien intenta usar ese servicio en el día a día de operación del edificio ya abierto al público (runtime).
+
+**¿Por qué es importante?** Riverpod verifica providers en tiempo de compilación, detectando errores de "provider no encontrado" antes de ejecutar la app, a diferencia de Provider, que depende del árbol de widgets en runtime y descubre esos errores solo al ejecutar el código afectado.
+
+**Código del ejemplo:**
+
+```dart
+final contadorProvider = StateProvider<int>((ref) => 0);
+// Verificado en COMPILACIÓN, independiente de dónde esté ubicado en el árbol de widgets
+```
+
+En el proyecto integrador RutaFlow, `pendientesProvider` vive en `lib/features/deliveries/domain/delivery_providers.dart`. Práctica: extendé ese mismo provider en tu proyecto propio para un segundo contador relacionado.
+
 #### Paso 4 · Demostración guiada desde cero
 ```dart
 final pendientesProvider = StateProvider<int>((ref) => 3);
@@ -172,39 +207,6 @@ Corregí el Paso 5 devolviendo `ref.read(pendientesProvider.notifier).state--` d
 #### Paso 7 · Cierre y evidencia
 Entregá el provider compartido del Paso 4, el uso incorrecto de `watch` en un callback del Paso 5, y el tercer consumidor del Paso 6; explicá la diferencia entre `ref.watch` (suscribe a cambios, usar en `build`) y `ref.read` (lee una vez, usar en callbacks). Siguiente paso: estudia Bloc/Cubit como alternativa con más estructura. Errores comunes: confundir `ref.watch` con `ref.read` dentro de un callback, leer un provider que no fue declarado antes de usarlo, y no aprovechar la verificación en tiempo de compilación que Riverpod ofrece sobre Provider. Fuentes oficiales: https://riverpod.dev/docs/concepts/providers y https://riverpod.dev/docs/concepts/reading.
 **¿Por qué es importante?** Riverpod verifica providers en tiempo de compilación y permite compartir estado entre widgets distantes sin prop drilling manual, resolviendo directamente el problema del Tema 1.
-**Evidencia de aprendizaje:** entrega provider compartido, uso incorrecto de watch detectado y tercer consumidor sincronizado.
-**Conceptos clave:** verificación de providers en tiempo de compilación, no dependiente del árbol de widgets en runtime.
-
-```dart
-final contadorProvider = StateProvider<int>((ref) => 0);
-
-class PantallaContador extends ConsumerWidget {
-  Widget build(BuildContext context, WidgetRef ref) {
-    final contador = ref.watch(contadorProvider);
-    return ElevatedButton(
-      onPressed: () => ref.read(contadorProvider.notifier).state++,
-      child: Text("$contador"),
-    );
-  }
-}
-```
-
-Riverpod (evolución de Provider, el paquete de gestión de estado más antiguo del ecosistema Flutter) declara providers como objetos globales independientes del árbol de widgets, verificados en tiempo de **compilación**: intentar leer un provider que no existe o que tiene un tipo incorrecto produce un error de compilación inmediato, a diferencia de Provider (el paquete anterior), donde un provider se busca en runtime recorriendo el árbol de widgets hacia arriba (`context.watch<T>()`), de modo que un error de "provider no encontrado" (porque el widget que lo provee no está en el ancestro esperado en el árbol) solo se manifiesta como una excepción en tiempo de ejecución, potencialmente descubierta tarde durante pruebas manuales o incluso en producción.
-
-`ref.watch(contadorProvider)` suscribe el widget a reconstruirse cuando ese provider cambia; `ref.read(contadorProvider.notifier).state++` modifica el estado sin suscribirse a cambios (apropiado dentro de callbacks de eventos, donde no se necesita observar el propio cambio que se está provocando). Consumir el mismo provider desde dos widgets distintos y distantes entre sí simplemente requiere que ambos llamen `ref.watch(contadorProvider)`, sin ningún prop drilling manual entre ellos, resolviendo directamente el problema descrito en el Tema 1.
-
-**Analogía:** Riverpod es como un directorio centralizado de servicios verificado formalmente antes de la apertura de un edificio, donde cualquier intento de referenciar un servicio inexistente se detecta durante la inspección previa (compilación), en vez de descubrirse recién cuando alguien intenta usar ese servicio en el día a día de operación del edificio ya abierto al público (runtime).
-
-**¿Por qué es importante?** Riverpod verifica providers en tiempo de compilación, detectando errores de "provider no encontrado" antes de ejecutar la app, a diferencia de Provider, que depende del árbol de widgets en runtime y descubre esos errores solo al ejecutar el código afectado.
-
-**Código del ejemplo:**
-
-```dart
-final contadorProvider = StateProvider<int>((ref) => 0);
-// Verificado en COMPILACIÓN, independiente de dónde esté ubicado en el árbol de widgets
-```
-
-En el proyecto integrador RutaFlow, `pendientesProvider` vive en `lib/features/deliveries/domain/delivery_providers.dart`. Práctica: extendé ese mismo provider en tu proyecto propio para un segundo contador relacionado.
 
 ### Tema 3: Bloc/Cubit y otras alternativas
 
@@ -262,40 +264,6 @@ graph TB
     style Bloc2 fill:#e3f2fd
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-class PendientesCubit extends Cubit<int> {
-  PendientesCubit() : super(3);
-  void entregado() {
-    if (state > 0) emit(state - 1);
-  }
-}
-
-BlocBuilder<PendientesCubit, int>(
-  builder: (context, pendientes) => Text("$pendientes pendientes"),
-)
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: llamar a `entregado()` disminuye el contador en uno, pero nunca por debajo de 0 (la guarda `if (state > 0)` lo impide); esa regla puede testearse de forma completamente aislada instanciando `PendientesCubit()` directamente, sin renderizar ningún widget.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá la guarda `if (state > 0)` y llamá a `entregado()` cuatro veces seguidas con el contador inicial en 3 — ese es el fallo deliberado: el contador llega a -1, un estado que no tiene ningún sentido real en el dominio, y nada en el tipo `int` del estado lo había prevenido.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la guarda, y escribí un test unitario que instancie `PendientesCubit()` directamente y confirme que llamar `entregado()` cuatro veces desde el estado inicial 3 deja el contador exactamente en 0, no en un valor negativo.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el Cubit con la guarda del Paso 4, el estado inválido provocado en el Paso 5, y el test unitario del Paso 6; explicá por qué poder testear esta regla sin renderizar ningún widget es una ventaja concreta de separar "evento" de "cambio de estado" de forma explícita. Siguiente paso: estudia formularios profesionales con Formz y Riverpod. Errores comunes: adoptar Bloc para una feature tan simple que no necesita esa ceremonia, omitir guardas de validez en el método que emite el nuevo estado, y testear un Cubit renderizando widgets en vez de instanciándolo directamente. Fuentes oficiales: https://bloclibrary.dev/bloc-concepts/ y https://bloclibrary.dev/testing/.
-**¿Por qué es importante?** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear de forma aislada para lógica con reglas de transición que deben protegerse explícitamente.
 **Evidencia de aprendizaje:** entrega Cubit con guarda, estado inválido detectado y test unitario sin renderizar widgets.
 **Conceptos clave:** separación explícita entre evento y cambio de estado resultante.
 
@@ -335,26 +303,18 @@ flutter test test/pendientes_cubit_test.dart
 
 Límite de la decisión: Bloc/Cubit no conviene para un contador trivial de un solo widget — ahí el boilerplate de clases Cubit/evento supera el beneficio; frente a esa escala, `setState` o un `StateProvider` de Riverpod siguen siendo la opción correcta.
 
-### Tema 4: Formularios profesionales con Formz y Riverpod
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (`ReasonInput`, `NoteInput`) y un `Notifier` de Riverpod que coordine validación y envío único. Prerrequisitos: módulos 0-3, Riverpod configurado.
-
-#### Paso 2 · Contexto y caso real
-El conductor debe elegir un motivo y escribir una observación de 10 a 300 caracteres — un formulario real necesita distinguir lo que el usuario todavía no tocó, una entrada inválida, un envío en curso, un rechazo del backend y una confirmación exitosa, no solo un conjunto de `TextEditingController`.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Formz distingue `pure` (sin interacción) de `dirty` (ya modificado); el estado del formulario es inmutable y separa validez de estado de red — las entradas son inspectores especializados, el estado del formulario es el tablero de despacho.
-
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-enum ReasonError { empty }
-final class ReasonInput extends FormzInput<String, ReasonError> {
-  const ReasonInput.pure() : super.pure('');
-  const ReasonInput.dirty([super.value = '']) : super.dirty();
-  @override
-  ReasonError? validator(String value) => value.isEmpty ? ReasonError.empty : null;
+class PendientesCubit extends Cubit<int> {
+  PendientesCubit() : super(3);
+  void entregado() {
+    if (state > 0) emit(state - 1);
+  }
 }
+
+BlocBuilder<PendientesCubit, int>(
+  builder: (context, pendientes) => Text("$pendientes pendientes"),
+)
 ```
 
 **Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
@@ -366,17 +326,29 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: un `ReasonInput.pure()` sin que el usuario haya escrito nada no muestra ningún error todavía (porque está "pure"); en cuanto el usuario escribe algo y se convierte en `ReasonInput.dirty(valor)`, el validador corre y puebla el error correspondiente si el valor sigue vacío.
+Resultado esperado: llamar a `entregado()` disminuye el contador en uno, pero nunca por debajo de 0 (la guarda `if (state > 0)` lo impide); esa regla puede testearse de forma completamente aislada instanciando `PendientesCubit()` directamente, sin renderizar ningún widget.
 
 #### Paso 5 · Práctica guiada
-Pista: tocá dos veces rápidamente el botón "Reportar novedad" mientras el repositorio falso tarda dos segundos en responder — ese es el fallo deliberado: sin la guarda `state.submitStatus == SubmitStatus.sending` dentro de `submit()`, el segundo toque dispara una segunda llamada a `report()` mientras la primera todavía está en curso, pudiendo duplicar el reporte en el servidor.
+Pista: quitá la guarda `if (state > 0)` y llamá a `entregado()` cuatro veces seguidas con el contador inicial en 3 — ese es el fallo deliberado: el contador llega a -1, un estado que no tiene ningún sentido real en el dominio, y nada en el tipo `int` del estado lo había prevenido.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 confirmando que la guarda `if (!state.isValid || state.submitStatus == SubmitStatus.sending) return;` está presente, y escribí el test que confirma que `report` se invoca exactamente una vez sin importar cuántos toques rápidos reciba el botón.
+Corregí el Paso 5 restaurando la guarda, y escribí un test unitario que instancie `PendientesCubit()` directamente y confirme que llamar `entregado()` cuatro veces desde el estado inicial 3 deja el contador exactamente en 0, no en un valor negativo.
 
 #### Paso 7 · Cierre y evidencia
-Entregá las entradas Formz tipadas y el Notifier del Paso 4, el envío duplicado provocado en el Paso 5, y el test de envío único del Paso 6; explicá por qué separar `isValid` (datos correctos) de `submitStatus` (datos ya guardados) evita confundir ambas cosas y previene envíos duplicados. Siguiente paso: cerrá el módulo documentando el criterio de elección entre setState, Riverpod y Bloc. Errores comunes: mostrar todos los errores de validación antes de que el usuario interactúe con el campo, no proteger `submit()` contra doble toque mientras una petición está en curso, y borrar los valores escritos cuando el servidor rechaza el envío. Fuentes oficiales: https://pub.dev/packages/formz y https://riverpod.dev/docs/concepts/providers.
-**¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets; separar `isValid` de `SubmitStatus` evita confundir "datos correctos" con "datos ya guardados" y previene envíos duplicados.
+Entregá el Cubit con la guarda del Paso 4, el estado inválido provocado en el Paso 5, y el test unitario del Paso 6; explicá por qué poder testear esta regla sin renderizar ningún widget es una ventaja concreta de separar "evento" de "cambio de estado" de forma explícita. Siguiente paso: estudia formularios profesionales con Formz y Riverpod. Errores comunes: adoptar Bloc para una feature tan simple que no necesita esa ceremonia, omitir guardas de validez en el método que emite el nuevo estado, y testear un Cubit renderizando widgets en vez de instanciándolo directamente. Fuentes oficiales: https://bloclibrary.dev/bloc-concepts/ y https://bloclibrary.dev/testing/.
+**¿Por qué es importante?** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear de forma aislada para lógica con reglas de transición que deben protegerse explícitamente.
+
+### Tema 4: Formularios profesionales con Formz y Riverpod
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (`ReasonInput`, `NoteInput`) y un `Notifier` de Riverpod que coordine validación y envío único. Prerrequisitos: módulos 0-3, Riverpod configurado.
+
+#### Paso 2 · Contexto y caso real
+El conductor debe elegir un motivo y escribir una observación de 10 a 300 caracteres — un formulario real necesita distinguir lo que el usuario todavía no tocó, una entrada inválida, un envío en curso, un rechazo del backend y una confirmación exitosa, no solo un conjunto de `TextEditingController`.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Formz distingue `pure` (sin interacción) de `dirty` (ya modificado); el estado del formulario es inmutable y separa validez de estado de red — las entradas son inspectores especializados, el estado del formulario es el tablero de despacho.
+
 **Evidencia de aprendizaje:** entrega entradas Formz tipadas, envío duplicado detectado y test de envío único.
 **Conceptos clave:** valor `pure`/`dirty`, validación determinista, estado inmutable, feedback progresivo, envío único y error de servidor.
 
@@ -528,6 +500,38 @@ stateDiagram-v2
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Modela validación y envío del formulario de incidencia en Riverpod. Prueba doble toque, campo inválido y error del servidor; el borrador debe conservarse para corregirlo y reintentar.
 
 **Límites y decisión de uso:** Validar en el formulario mejora la interacción, pero el servidor debe repetir reglas y autorización. No descartes el borrador ante un error recuperable y evita que estado válido se interprete como permiso para confirmar una entrega.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+enum ReasonError { empty }
+final class ReasonInput extends FormzInput<String, ReasonError> {
+  const ReasonInput.pure() : super.pure('');
+  const ReasonInput.dirty([super.value = '']) : super.dirty();
+  @override
+  ReasonError? validator(String value) => value.isEmpty ? ReasonError.empty : null;
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: un `ReasonInput.pure()` sin que el usuario haya escrito nada no muestra ningún error todavía (porque está "pure"); en cuanto el usuario escribe algo y se convierte en `ReasonInput.dirty(valor)`, el validador corre y puebla el error correspondiente si el valor sigue vacío.
+
+#### Paso 5 · Práctica guiada
+Pista: tocá dos veces rápidamente el botón "Reportar novedad" mientras el repositorio falso tarda dos segundos en responder — ese es el fallo deliberado: sin la guarda `state.submitStatus == SubmitStatus.sending` dentro de `submit()`, el segundo toque dispara una segunda llamada a `report()` mientras la primera todavía está en curso, pudiendo duplicar el reporte en el servidor.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 confirmando que la guarda `if (!state.isValid || state.submitStatus == SubmitStatus.sending) return;` está presente, y escribí el test que confirma que `report` se invoca exactamente una vez sin importar cuántos toques rápidos reciba el botón.
+
+#### Paso 7 · Cierre y evidencia
+Entregá las entradas Formz tipadas y el Notifier del Paso 4, el envío duplicado provocado en el Paso 5, y el test de envío único del Paso 6; explicá por qué separar `isValid` (datos correctos) de `submitStatus` (datos ya guardados) evita confundir ambas cosas y previene envíos duplicados. Siguiente paso: cerrá el módulo documentando el criterio de elección entre setState, Riverpod y Bloc. Errores comunes: mostrar todos los errores de validación antes de que el usuario interactúe con el campo, no proteger `submit()` contra doble toque mientras una petición está en curso, y borrar los valores escritos cuando el servidor rechaza el envío. Fuentes oficiales: https://pub.dev/packages/formz y https://riverpod.dev/docs/concepts/providers.
+**¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets; separar `isValid` de `SubmitStatus` evita confundir "datos correctos" con "datos ya guardados" y previene envíos duplicados.
 
 ### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones
 

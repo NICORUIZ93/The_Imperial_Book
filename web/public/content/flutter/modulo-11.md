@@ -14,27 +14,6 @@ RutaFlow está lista para subir a ambas tiendas — nadie generó todavía los a
 #### Paso 3 · Teoría, modelo mental y analogía
 `flutter build appbundle --release` genera el `.aab` requerido por Google Play; `flutter build ipa --release` genera el `.ipa` para App Store, requiriendo específicamente macOS con Xcode.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
-```bash
-flutter create ejemplo
-```
-
-```bash
-flutter build appbundle --release   # → .aab para Google Play Console
-flutter build ipa --release          # → .ipa para App Store Connect (requiere macOS/Xcode)
-```
-Resultado esperado: el primer comando genera un `.aab` optimizado y sin herramientas de depuración, listo para Play Console; el segundo, corrido en macOS, genera un `.ipa` firmado con los certificados del Módulo 11 del track de iOS, listo para App Store Connect.
-
-#### Paso 5 · Práctica guiada
-Pista: intentá correr `flutter build ipa --release` desde una máquina Linux o Windows — ese es el fallo deliberado: el comando falla inmediatamente, porque el toolchain de compilación para binarios iOS solo existe en macOS, sin importar que el resto del código Dart sea completamente compartido.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 moviendo ese paso a un runner de macOS, y confirmá que el mismo código Dart compartido produce ambos artefactos sin ninguna modificación, solo cambiando el entorno de ejecución del build.
-
-#### Paso 7 · Cierre y evidencia
-Entregá ambos builds generados del Paso 4, el fallo por entorno incorrecto del Paso 5, y la corrección con el entorno apropiado del Paso 6; explicá por qué "una sola base de código" en Flutter no elimina la necesidad de un entorno específico para el empaquetado final de cada plataforma. Siguiente paso: estudia cómo generar íconos y splash screens para ambas tiendas. Errores comunes: intentar generar el build de iOS sin macOS/Xcode disponible, publicar accidentalmente un build en modo debug en vez de `--release`, y no verificar que la versión/build number cumple los requisitos de cada tienda. Fuentes oficiales: https://docs.flutter.dev/deployment/android y https://docs.flutter.dev/deployment/ios.
-**¿Por qué es importante?** Aunque el código Dart es compartido, cada tienda requiere un artefacto de build específico y un entorno de compilación distinto.
 **Evidencia de aprendizaje:** entrega ambos builds generados, fallo por entorno incorrecto detectado y corrección con el entorno apropiado.
 **Conceptos clave:** una sola base de código, pero artefactos de build específicos y separados por tienda.
 
@@ -75,6 +54,28 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, estos builds se configuran a partir de `pubspec.yaml` en la raíz del proyecto Flutter. Práctica: generá ambos artefactos para tu proyecto propio y confirmá que cada uno abre correctamente en la consola de su tienda correspondiente.
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+```bash
+flutter build appbundle --release   # → .aab para Google Play Console
+flutter build ipa --release          # → .ipa para App Store Connect (requiere macOS/Xcode)
+```
+Resultado esperado: el primer comando genera un `.aab` optimizado y sin herramientas de depuración, listo para Play Console; el segundo, corrido en macOS, genera un `.ipa` firmado con los certificados del Módulo 11 del track de iOS, listo para App Store Connect.
+
+#### Paso 5 · Práctica guiada
+Pista: intentá correr `flutter build ipa --release` desde una máquina Linux o Windows — ese es el fallo deliberado: el comando falla inmediatamente, porque el toolchain de compilación para binarios iOS solo existe en macOS, sin importar que el resto del código Dart sea completamente compartido.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 moviendo ese paso a un runner de macOS, y confirmá que el mismo código Dart compartido produce ambos artefactos sin ninguna modificación, solo cambiando el entorno de ejecución del build.
+
+#### Paso 7 · Cierre y evidencia
+Entregá ambos builds generados del Paso 4, el fallo por entorno incorrecto del Paso 5, y la corrección con el entorno apropiado del Paso 6; explicá por qué "una sola base de código" en Flutter no elimina la necesidad de un entorno específico para el empaquetado final de cada plataforma. Siguiente paso: estudia cómo generar íconos y splash screens para ambas tiendas. Errores comunes: intentar generar el build de iOS sin macOS/Xcode disponible, publicar accidentalmente un build en modo debug en vez de `--release`, y no verificar que la versión/build number cumple los requisitos de cada tienda. Fuentes oficiales: https://docs.flutter.dev/deployment/android y https://docs.flutter.dev/deployment/ios.
+**¿Por qué es importante?** Aunque el código Dart es compartido, cada tienda requiere un artefacto de build específico y un entorno de compilación distinto.
+
 ### Tema 2: Iconos y splash screens
 
 #### Paso 1 · Objetivo y preparación
@@ -86,34 +87,6 @@ Android necesita el ícono de RutaFlow en múltiples resoluciones para distintas
 #### Paso 3 · Teoría, modelo mental y analogía
 `flutter_launcher_icons` y `flutter_native_splash` toman una única imagen fuente declarada en `pubspec.yaml` y generan automáticamente todas las variantes requeridas por cada plataforma.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
-```bash
-flutter create ejemplo
-```
-
-```yaml
-# pubspec.yaml
-flutter_launcher_icons:
-  image_path: "assets/icon_rutaflow.png"
-flutter_native_splash:
-  image: "assets/splash_rutaflow.png"
-```
-```bash
-dart run flutter_launcher_icons
-dart run flutter_native_splash:create
-```
-Resultado esperado: a partir de una única imagen `icon_rutaflow.png`, el primer comando genera automáticamente todas las resoluciones de ícono para Android e iOS, visibles correctamente en ambos sistemas sin ningún trabajo manual de redimensionado.
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `icon_rutaflow.png` por una imagen de baja resolución (48x48 píxeles) "porque total se genera automáticamente" — ese es el fallo deliberado: las variantes generadas para pantallas de alta densidad se ven pixeladas y borrosas, porque la herramienta solo puede reducir una imagen de alta resolución, nunca mejorar una que ya partía siendo demasiado pequeña.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reemplazando la imagen fuente por una de al menos 1024x1024 píxeles, y volví a correr `flutter_launcher_icons`, confirmando que ahora las variantes de alta densidad se ven nítidas.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la generación automática del Paso 4, el ícono pixelado por baja resolución fuente del Paso 5, y la corrección con una imagen de alta resolución del Paso 6; explicá por qué la calidad de todas las variantes generadas depende de la calidad de la única imagen fuente, nunca puede mejorarse después del hecho. Siguiente paso: estudia CI/CD para automatizar todo este proceso. Errores comunes: usar una imagen fuente de baja resolución asumiendo que la generación automática "arregla" eso, producir manualmente cada variante por plataforma, y olvidar regenerar íconos/splash tras cambiar el diseño de marca. Fuentes oficiales: https://pub.dev/packages/flutter_launcher_icons y https://pub.dev/packages/flutter_native_splash.
-**¿Por qué es importante?** Generar automáticamente las variantes de ícono y splash screen a partir de una única imagen fuente evita el trabajo manual tedioso de producir cada variante por separado.
 **Evidencia de aprendizaje:** entrega generación automática funcionando, ícono pixelado detectado y corrección con imagen de alta resolución.
 **Conceptos clave:** configuración declarativa que genera automáticamente los múltiples formatos requeridos por cada plataforma.
 
@@ -162,6 +135,35 @@ flutter pub get
 
 Límite de la decisión: no conviene regenerar íconos y splash en cada build de CI si la imagen fuente no cambió — ese paso es costoso y determinístico; conviene ejecutarlo una vez localmente y commitear los artefactos generados, no como paso repetido del pipeline.
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+```yaml
+# pubspec.yaml
+flutter_launcher_icons:
+  image_path: "assets/icon_rutaflow.png"
+flutter_native_splash:
+  image: "assets/splash_rutaflow.png"
+```
+```bash
+dart run flutter_launcher_icons
+dart run flutter_native_splash:create
+```
+Resultado esperado: a partir de una única imagen `icon_rutaflow.png`, el primer comando genera automáticamente todas las resoluciones de ícono para Android e iOS, visibles correctamente en ambos sistemas sin ningún trabajo manual de redimensionado.
+
+#### Paso 5 · Práctica guiada
+Pista: reemplazá `icon_rutaflow.png` por una imagen de baja resolución (48x48 píxeles) "porque total se genera automáticamente" — ese es el fallo deliberado: las variantes generadas para pantallas de alta densidad se ven pixeladas y borrosas, porque la herramienta solo puede reducir una imagen de alta resolución, nunca mejorar una que ya partía siendo demasiado pequeña.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reemplazando la imagen fuente por una de al menos 1024x1024 píxeles, y volví a correr `flutter_launcher_icons`, confirmando que ahora las variantes de alta densidad se ven nítidas.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la generación automática del Paso 4, el ícono pixelado por baja resolución fuente del Paso 5, y la corrección con una imagen de alta resolución del Paso 6; explicá por qué la calidad de todas las variantes generadas depende de la calidad de la única imagen fuente, nunca puede mejorarse después del hecho. Siguiente paso: estudia CI/CD para automatizar todo este proceso. Errores comunes: usar una imagen fuente de baja resolución asumiendo que la generación automática "arregla" eso, producir manualmente cada variante por plataforma, y olvidar regenerar íconos/splash tras cambiar el diseño de marca. Fuentes oficiales: https://pub.dev/packages/flutter_launcher_icons y https://pub.dev/packages/flutter_native_splash.
+**¿Por qué es importante?** Generar automáticamente las variantes de ícono y splash screen a partir de una única imagen fuente evita el trabajo manual tedioso de producir cada variante por separado.
+
 ### Tema 3: CI/CD con Codemagic o Fastlane
 
 #### Paso 1 · Objetivo y preparación
@@ -173,37 +175,6 @@ Cada vez que el equipo de RutaFlow quiere publicar una nueva versión, alguien c
 #### Paso 3 · Teoría, modelo mental y analogía
 Codemagic/Fastlane automatizan la secuencia completa de build, firma y distribución; una sola base de código no elimina la necesidad de pasos separados por plataforma dentro de ese mismo pipeline.
 
-#### Paso 4 · Demostración guiada desde cero
-```yaml
-# codemagic.yaml
-workflows:
-  android-release:
-    scripts:
-      - flutter build appbundle --release
-    artifacts:
-      - build/**/outputs/**/*.aab
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: cada vez que se dispara este workflow, Codemagic ejecuta automáticamente el build de Android y produce el `.aab` como artefacto descargable, sin que nadie corra el comando manualmente.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá un segundo workflow `ios-release` que reutilice literalmente el mismo script `flutter build appbundle --release` del workflow de Android — ese es el fallo deliberado: ese comando genera un `.aab` (formato de Android), completamente inútil para App Store Connect, que necesita específicamente un `.ipa` generado en un entorno macOS.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 definiendo el workflow `ios-release` con su propio script correcto (`flutter build ipa --release`) y su propio artefacto `.ipa`, confirmando que cada workflow produce el artefacto específico que su tienda realmente necesita.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el workflow de Android del Paso 4, el workflow de iOS incorrecto por copiar el de Android en el Paso 5, y la corrección con el script apropiado del Paso 6; explicá por qué "compartir código" en Flutter no significa que los pasos de publicación también puedan compartirse sin modificación entre plataformas. Siguiente paso: cerrá el módulo integrando build, assets y CI/CD en un release real de RutaFlow. Errores comunes: copiar el mismo script de build entre workflows de plataformas distintas, no verificar que cada workflow produce el artefacto correcto para su tienda, y asumir que un solo pipeline elimina toda la especificidad de plataforma. Fuentes oficiales: https://docs.codemagic.io/flutter-configuration/flutter-projects/ y https://docs.flutter.dev/deployment/cd.
-**¿Por qué es importante?** Automatizar ambos builds con un solo pipeline ahorra esfuerzo manual repetido, pero no elimina la necesidad de pasos específicos y separados por plataforma.
 **Evidencia de aprendizaje:** entrega workflow de Android, error por script copiado entre plataformas detectado y corrección con script apropiado.
 **Conceptos clave:** pipeline automatizado con pasos específicos por plataforma, a pesar del código compartido.
 
@@ -252,6 +223,38 @@ flowchart TD
 En el proyecto integrador RutaFlow, el pipeline vive en `codemagic.yaml` en la raíz del repositorio. Límite de la decisión: no conviene automatizar con CI/CD un proyecto que todavía no publicó ninguna versión manual exitosa al menos una vez — primero conviene validar el proceso completo manualmente, y recién automatizarlo cuando el flujo manual ya es confiable y repetible.
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+```yaml
+# codemagic.yaml
+workflows:
+  android-release:
+    scripts:
+      - flutter build appbundle --release
+    artifacts:
+      - build/**/outputs/**/*.aab
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: cada vez que se dispara este workflow, Codemagic ejecuta automáticamente el build de Android y produce el `.aab` como artefacto descargable, sin que nadie corra el comando manualmente.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá un segundo workflow `ios-release` que reutilice literalmente el mismo script `flutter build appbundle --release` del workflow de Android — ese es el fallo deliberado: ese comando genera un `.aab` (formato de Android), completamente inútil para App Store Connect, que necesita específicamente un `.ipa` generado en un entorno macOS.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 definiendo el workflow `ios-release` con su propio script correcto (`flutter build ipa --release`) y su propio artefacto `.ipa`, confirmando que cada workflow produce el artefacto específico que su tienda realmente necesita.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el workflow de Android del Paso 4, el workflow de iOS incorrecto por copiar el de Android en el Paso 5, y la corrección con el script apropiado del Paso 6; explicá por qué "compartir código" en Flutter no significa que los pasos de publicación también puedan compartirse sin modificación entre plataformas. Siguiente paso: cerrá el módulo integrando build, assets y CI/CD en un release real de RutaFlow. Errores comunes: copiar el mismo script de build entre workflows de plataformas distintas, no verificar que cada workflow produce el artefacto correcto para su tienda, y asumir que un solo pipeline elimina toda la especificidad de plataforma. Fuentes oficiales: https://docs.codemagic.io/flutter-configuration/flutter-projects/ y https://docs.flutter.dev/deployment/cd.
+**¿Por qué es importante?** Automatizar ambos builds con un solo pipeline ahorra esfuerzo manual repetido, pero no elimina la necesidad de pasos específicos y separados por plataforma.
 
 ### Tema 4: Entornos y flavors con --dart-define-from-file
 

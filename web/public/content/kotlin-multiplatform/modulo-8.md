@@ -14,34 +14,6 @@ El equipo iOS necesita consumir la lógica de dominio compartida (`Tarea`, casos
 #### Paso 3 · Teoría, modelo mental y analogía
 Kotlin/Native compila el módulo compartido directamente a un binario nativo real (no una capa de interpretación ni un puente entre procesos), importable en Xcode exactamente como cualquier otro framework de terceros. La analogía: un componente fabricado en una fábrica extranjera pero completamente terminado según el estándar local exacto, instalable sin ninguna adaptación especial.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.kt` dentro.
-```bash
-gradle init --type kotlin-application
-```
-
-```kotlin
-// shared/build.gradle.kts
-kotlin {
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
-        it.binaries.framework { baseName = "Shared" }
-    }
-}
-```
-```bash
-./gradlew linkDebugFrameworkIosSimulatorArm64
-```
-Resultado esperado: Gradle genera `shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework`, importable directamente en un proyecto Xcode con `import Shared`, sin ningún código Objective-C intermedio escrito a mano.
-
-#### Paso 5 · Práctica guiada
-Pista: declará la clase que querés exponer como `internal class` en vez de `public class` dentro de `commonMain`. Ese es el fallo deliberado: el framework compila sin errores, pero esa clase simplemente NO aparece en el framework generado ni es visible desde Swift, porque Kotlin/Native solo expone al binario nativo los símbolos marcados explícitamente como públicos.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `public class`, y agregá un segundo target (`iosArm64`, para dispositivo físico) al mismo `forEach`, confirmando que `./gradlew linkDebugFrameworkIosArm64` genera un binario separado para ese target.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el framework generado e importado del Paso 4, la clase invisible por falta de `public` del Paso 5, y el segundo target agregado del Paso 6; explicá por qué Kotlin/Native expone al binario nativo solo lo que está marcado explícitamente como público, igual que cualquier módulo de una API pública. Siguiente paso: mapeá los tipos de Kotlin hacia sus equivalentes en Swift. Errores comunes: declarar como `internal` una clase que necesita consumirse desde Swift; generar el framework solo para el simulador y olvidar el target de dispositivo físico. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html y https://kotlinlang.org/docs/native-objc-interop.html.
-**¿Por qué es importante?** Porque Kotlin/Native solo expone al binario nativo los símbolos marcados explícitamente como públicos; una clase `internal` compila sin error pero simplemente no existe para el consumidor Swift.
 **Evidencia de aprendizaje:** entrega el framework generado e importado, la clase invisible reproducida por falta de `public`, y el segundo target de dispositivo físico agregado.
 **Conceptos clave:** compilación a binario nativo, importable como cualquier framework nativo.
 
@@ -73,6 +45,35 @@ kotlin {
 }
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.kt` dentro.
+```bash
+gradle init --type kotlin-application
+```
+
+```kotlin
+// shared/build.gradle.kts
+kotlin {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+        it.binaries.framework { baseName = "Shared" }
+    }
+}
+```
+```bash
+./gradlew linkDebugFrameworkIosSimulatorArm64
+```
+Resultado esperado: Gradle genera `shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework`, importable directamente en un proyecto Xcode con `import Shared`, sin ningún código Objective-C intermedio escrito a mano.
+
+#### Paso 5 · Práctica guiada
+Pista: declará la clase que querés exponer como `internal class` en vez de `public class` dentro de `commonMain`. Ese es el fallo deliberado: el framework compila sin errores, pero esa clase simplemente NO aparece en el framework generado ni es visible desde Swift, porque Kotlin/Native solo expone al binario nativo los símbolos marcados explícitamente como públicos.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `public class`, y agregá un segundo target (`iosArm64`, para dispositivo físico) al mismo `forEach`, confirmando que `./gradlew linkDebugFrameworkIosArm64` genera un binario separado para ese target.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el framework generado e importado del Paso 4, la clase invisible por falta de `public` del Paso 5, y el segundo target agregado del Paso 6; explicá por qué Kotlin/Native expone al binario nativo solo lo que está marcado explícitamente como público, igual que cualquier módulo de una API pública. Siguiente paso: mapeá los tipos de Kotlin hacia sus equivalentes en Swift. Errores comunes: declarar como `internal` una clase que necesita consumirse desde Swift; generar el framework solo para el simulador y olvidar el target de dispositivo físico. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html y https://kotlinlang.org/docs/native-objc-interop.html.
+**¿Por qué es importante?** Porque Kotlin/Native solo expone al binario nativo los símbolos marcados explícitamente como públicos; una clase `internal` compila sin error pero simplemente no existe para el consumidor Swift.
+
 ### Tema 2: Mapeo de tipos Kotlin ↔ Swift
 
 #### Paso 1 · Objetivo y preparación
@@ -83,6 +84,38 @@ Un desarrollador Swift maneja `Resultado<Tarea>` con un `switch` que cubre `Exit
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Los tipos básicos de Kotlin se mapean directamente a sus equivalentes en Swift (`String`→`String`, `Int`→`Int32`); una `sealed class` se expone hacia Swift como una jerarquía de clases regular, manejable con `switch`, pero Swift no tiene el conocimiento especial de que proviene de un conjunto cerrado garantizado — no avisa si falta una rama. La analogía: una traducción directa para conceptos simples, pero una adaptación estructural que pierde una garantía del idioma de origen para conceptos más elaborados.
+
+**Evidencia de aprendizaje:** entrega el `switch` funcionando contra los casos conocidos, el caso nuevo no manejado silenciosamente al agregar `Cargando`, y la documentación/corrección agregada.
+**Conceptos clave:** correspondencia directa de tipos básicos, sealed class como jerarquía manejable con switch.
+
+Documentar este mapeo de tipos es indispensable para el proyecto integrador (app KMP completa, Módulo 11): cada `data class` y `sealed class` del dominio compartido (`Tarea`, `Resultado<T>`) cruzará esta misma frontera hacia las vistas SwiftUI de la app iOS.
+
+**Cuándo no usarlo:** documentar manualmente cada mapeo de tipos como aquí es razonable para un dominio compartido pequeño; con muchas sealed classes, confiar solo en la disciplina del equipo para no olvidar una rama del `switch` en Swift no escala — en ese caso conviene una prueba que falle explícitamente si Kotlin agrega una variante nueva sin que Swift la maneje.
+
+Los tipos básicos de Kotlin se mapean directamente a sus equivalentes naturales en Swift (`String` a `String`, `Int`/`Long` a `Int32`/`Int64`), y una `data class` de Kotlin se expone hacia Swift como una clase con propiedades equivalentes accesibles de forma natural (`import Shared; let usuario = SharedUsuario(nombre: "Ana", edad: 28)`, con el prefijo `Shared` en el nombre reflejando el `baseName` configurado en el framework, Tema 1). Una `sealed class` de Kotlin (Módulo 1) se expone hacia Swift como una jerarquía de clases regular, manejable con un `switch` de Swift de forma conceptualmente análoga al `when` exhaustivo de Kotlin, aunque Swift no verifica automáticamente la exhaustividad completa contra el conjunto cerrado original de Kotlin de la misma forma estricta en que Kotlin sí la verifica, dado que desde la perspectiva de Swift esa jerarquía es simplemente una jerarquía de clases regular sin el conocimiento especial de que proviene de una sealed class con un conjunto cerrado garantizado.
+
+**Analogía:** el mapeo de tipos es como una traducción directa palabra por palabra para conceptos simples (números, texto), pero que requiere una adaptación estructural más cuidadosa para conceptos más elaborados (una sealed class), donde el idioma de destino (Swift) representa la misma idea con una estructura gramatical distinta que se comporta de forma similar pero no idéntica en cuanto a garantías del compilador.
+
+**¿Por qué es importante?** Los tipos básicos se mapean directamente entre Kotlin y Swift; las sealed classes se exponen como jerarquías de clases regulares manejables con switch, aunque sin la misma garantía estricta de exhaustividad verificada que Kotlin ofrece nativamente.
+
+**Casos de uso reales:**
+- Consumir `Tarea` (Módulo 4) directamente desde una vista SwiftUI (Módulo 1 del track iOS) como si fuera un struct nativo de Swift.
+- Manejar `Resultado<T>` (Módulo 5) con un `switch` en Swift, replicando el mismo manejo exhaustivo que `when` hace en Kotlin.
+- Documentar explícitamente en el equipo qué sealed classes existen, ya que Swift no avisará si falta una rama en el `switch`.
+
+**Diagrama:**
+
+| Kotlin | Swift |
+|---|---|
+| `String` | `String` |
+| `Int`, `Long` | `Int32`, `Int64` |
+| `data class` | `class` con propiedades equivalentes |
+| `sealed class` | jerarquía de clases, manejable con `switch` |
+
+```swift
+import Shared
+let usuario = SharedUsuario(nombre: "Ana", edad: 28)
+```
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -115,37 +148,6 @@ Corregí el Paso 5 documentando explícitamente (en un comentario o test) la lis
 #### Paso 7 · Cierre y evidencia
 Entregá el `switch` funcionando del Paso 4, el caso silenciosamente no manejado del Paso 5, y la documentación/corrección del Paso 6; explicá por qué la exhaustividad verificada de Kotlin no cruza la frontera hacia Swift automáticamente. Siguiente paso: exponé funciones suspend hacia Swift y elegí cómo distribuir el framework. Errores comunes: asumir que Swift avisará si falta un caso nuevo de una sealed class actualizada; usar un `default` que oculta silenciosamente casos nuevos en vez de uno que, como mínimo, registre un error visible. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/switch.
 **¿Por qué es importante?** Porque la exhaustividad verificada de una `sealed class` en Kotlin no cruza automáticamente hacia Swift; un caso nuevo puede caer silenciosamente en un `default` sin que nadie se entere hasta producción.
-**Evidencia de aprendizaje:** entrega el `switch` funcionando contra los casos conocidos, el caso nuevo no manejado silenciosamente al agregar `Cargando`, y la documentación/corrección agregada.
-**Conceptos clave:** correspondencia directa de tipos básicos, sealed class como jerarquía manejable con switch.
-
-Documentar este mapeo de tipos es indispensable para el proyecto integrador (app KMP completa, Módulo 11): cada `data class` y `sealed class` del dominio compartido (`Tarea`, `Resultado<T>`) cruzará esta misma frontera hacia las vistas SwiftUI de la app iOS.
-
-**Cuándo no usarlo:** documentar manualmente cada mapeo de tipos como aquí es razonable para un dominio compartido pequeño; con muchas sealed classes, confiar solo en la disciplina del equipo para no olvidar una rama del `switch` en Swift no escala — en ese caso conviene una prueba que falle explícitamente si Kotlin agrega una variante nueva sin que Swift la maneje.
-
-Los tipos básicos de Kotlin se mapean directamente a sus equivalentes naturales en Swift (`String` a `String`, `Int`/`Long` a `Int32`/`Int64`), y una `data class` de Kotlin se expone hacia Swift como una clase con propiedades equivalentes accesibles de forma natural (`import Shared; let usuario = SharedUsuario(nombre: "Ana", edad: 28)`, con el prefijo `Shared` en el nombre reflejando el `baseName` configurado en el framework, Tema 1). Una `sealed class` de Kotlin (Módulo 1) se expone hacia Swift como una jerarquía de clases regular, manejable con un `switch` de Swift de forma conceptualmente análoga al `when` exhaustivo de Kotlin, aunque Swift no verifica automáticamente la exhaustividad completa contra el conjunto cerrado original de Kotlin de la misma forma estricta en que Kotlin sí la verifica, dado que desde la perspectiva de Swift esa jerarquía es simplemente una jerarquía de clases regular sin el conocimiento especial de que proviene de una sealed class con un conjunto cerrado garantizado.
-
-**Analogía:** el mapeo de tipos es como una traducción directa palabra por palabra para conceptos simples (números, texto), pero que requiere una adaptación estructural más cuidadosa para conceptos más elaborados (una sealed class), donde el idioma de destino (Swift) representa la misma idea con una estructura gramatical distinta que se comporta de forma similar pero no idéntica en cuanto a garantías del compilador.
-
-**¿Por qué es importante?** Los tipos básicos se mapean directamente entre Kotlin y Swift; las sealed classes se exponen como jerarquías de clases regulares manejables con switch, aunque sin la misma garantía estricta de exhaustividad verificada que Kotlin ofrece nativamente.
-
-**Casos de uso reales:**
-- Consumir `Tarea` (Módulo 4) directamente desde una vista SwiftUI (Módulo 1 del track iOS) como si fuera un struct nativo de Swift.
-- Manejar `Resultado<T>` (Módulo 5) con un `switch` en Swift, replicando el mismo manejo exhaustivo que `when` hace en Kotlin.
-- Documentar explícitamente en el equipo qué sealed classes existen, ya que Swift no avisará si falta una rama en el `switch`.
-
-**Diagrama:**
-
-| Kotlin | Swift |
-|---|---|
-| `String` | `String` |
-| `Int`, `Long` | `Int32`, `Int64` |
-| `data class` | `class` con propiedades equivalentes |
-| `sealed class` | jerarquía de clases, manejable con `switch` |
-
-```swift
-import Shared
-let usuario = SharedUsuario(nombre: "Ana", edad: 28)
-```
 
 ### Tema 3: Coroutines desde Swift, y distribución del framework
 

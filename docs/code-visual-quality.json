@@ -3,7 +3,7 @@
     "foundations": {
       "topics": 99,
       "code": 99,
-      "commentedCode": 67,
+      "commentedCode": 90,
       "mermaid": 69,
       "archifyVisual": 6,
       "asciiVisual": 0,
@@ -15,7 +15,7 @@
     "cloud": {
       "topics": 156,
       "code": 156,
-      "commentedCode": 71,
+      "commentedCode": 112,
       "mermaid": 80,
       "archifyVisual": 4,
       "asciiVisual": 18,
@@ -27,7 +27,7 @@
     "devops": {
       "topics": 113,
       "code": 113,
-      "commentedCode": 60,
+      "commentedCode": 61,
       "mermaid": 62,
       "archifyVisual": 1,
       "asciiVisual": 43,
@@ -51,7 +51,7 @@
     "node": {
       "topics": 77,
       "code": 77,
-      "commentedCode": 36,
+      "commentedCode": 41,
       "mermaid": 23,
       "archifyVisual": 0,
       "asciiVisual": 13,
@@ -75,7 +75,7 @@
     "react": {
       "topics": 58,
       "code": 58,
-      "commentedCode": 36,
+      "commentedCode": 38,
       "mermaid": 37,
       "archifyVisual": 0,
       "asciiVisual": 9,
@@ -87,7 +87,7 @@
     "java": {
       "topics": 83,
       "code": 83,
-      "commentedCode": 58,
+      "commentedCode": 59,
       "mermaid": 24,
       "archifyVisual": 3,
       "asciiVisual": 0,
@@ -111,7 +111,7 @@
     "kotlin-multiplatform": {
       "topics": 56,
       "code": 56,
-      "commentedCode": 36,
+      "commentedCode": 43,
       "mermaid": 31,
       "archifyVisual": 0,
       "asciiVisual": 22,
@@ -135,7 +135,7 @@
     "ios": {
       "topics": 56,
       "code": 56,
-      "commentedCode": 26,
+      "commentedCode": 32,
       "mermaid": 30,
       "archifyVisual": 0,
       "asciiVisual": 16,
@@ -147,7 +147,7 @@
     "flutter": {
       "topics": 63,
       "code": 63,
-      "commentedCode": 23,
+      "commentedCode": 41,
       "mermaid": 51,
       "archifyVisual": 0,
       "asciiVisual": 15,
@@ -173,27 +173,6 @@
     {
       "track": "foundations",
       "module": 10,
-      "topic": "Tema 2: Replicación, consistencia y decisiones explícitas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 10,
-      "topic": "Tema 3: Mensajes que se procesan con efectos exactamente una vez",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 10,
-      "topic": "Tema 4: Resiliencia y observabilidad orientadas a objetivos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 10,
       "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
       "missingCode": false,
       "missingComments": true
@@ -201,35 +180,7 @@
     {
       "track": "foundations",
       "module": 11,
-      "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 11,
-      "topic": "Tema 2: Algoritmos, autómatas, lenguajes y compiladores",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 11,
       "topic": "Tema 3: Bases de datos, almacenes analíticos y minería de datos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 11,
-      "topic": "Tema 4: Inteligencia artificial, aprendizaje automático y visión",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 11,
-      "topic": "Tema 5: Gráficos y cómputo científico",
       "missingCode": false,
       "missingComments": true
     },
@@ -263,27 +214,6 @@
     },
     {
       "track": "foundations",
-      "module": 4,
-      "topic": "Tema 3: Índices, restricciones y planes de consulta",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 4,
-      "topic": "Tema 4: Transacciones, concurrencia y elección SQL/NoSQL",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 5,
-      "topic": "Tema 2: Pruebas con propósito y niveles adecuados",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
       "module": 5,
       "topic": "Tema 4: Calidad estática, revisión e integración continua",
       "missingCode": false,
@@ -291,99 +221,8 @@
     },
     {
       "track": "foundations",
-      "module": 6,
-      "topic": "Tema 1: Activos, amenazas, riesgos y límites de confianza",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 6,
-      "topic": "Tema 2: Identidad, contraseñas, sesiones y autorización",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 6,
-      "topic": "Tema 3: Criptografía aplicada, TLS, claves y secretos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 7,
-      "topic": "Tema 1: Requisitos, stakeholders y criterios verificables",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 7,
-      "topic": "Tema 2: Arquitectura guiada por atributos de calidad",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 7,
-      "topic": "Tema 3: Diseño modular, principios, patrones y refactoring",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
       "module": 7,
       "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 8,
-      "topic": "Tema 1: El sistema operativo como administrador y frontera",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 8,
-      "topic": "Tema 2: Memoria y concurrencia sin magia",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 8,
-      "topic": "Tema 3: Linux como entorno observable",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 8,
-      "topic": "Tema 4: Contenedores: aislamiento reproducible",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 9,
-      "topic": "Tema 1: Lógica para especificar antes de programar",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 9,
-      "topic": "Tema 2: Conjuntos, relaciones, funciones e inducción",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 9,
-      "topic": "Tema 3: Conteo, grafos y estructuras conectadas",
       "missingCode": false,
       "missingComments": true
     },
@@ -397,77 +236,7 @@
     {
       "track": "cloud",
       "module": 0,
-      "topic": "Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 3: Qué vas a aprender y cómo está estructurado el curso",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 6: Ventajas y limitaciones de practicar con un emulador local",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
       "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 1,
-      "topic": "Tema 1: Virtualización vs contenedores",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 1,
-      "topic": "Tema 2: Imágenes y capas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 1,
-      "topic": "Tema 3: Registros de contenedores (Docker Hub)",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 1,
-      "topic": "Tema 4: Comandos esenciales de Docker",
       "missingCode": false,
       "missingComments": true
     },
@@ -488,21 +257,7 @@
     {
       "track": "cloud",
       "module": 10,
-      "topic": "Tema 2: KMS y envelope encryption",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 10,
       "topic": "Tema 3: SSM Parameter Store vs Secrets Manager",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 11,
-      "topic": "Tema 1: El patrón fan-out con SNS",
       "missingCode": false,
       "missingComments": true
     },
@@ -516,21 +271,7 @@
     {
       "track": "cloud",
       "module": 12,
-      "topic": "Tema 2: Metric filters y alarmas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 12,
       "topic": "Tema 3: Diagnóstico sistemático y X-Ray",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 13,
-      "topic": "Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL",
       "missingCode": false,
       "missingComments": true
     },
@@ -545,13 +286,6 @@
       "track": "cloud",
       "module": 14,
       "topic": "Tema 1: ECR y por qué no basta con Docker Hub",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 14,
-      "topic": "Tema 2: Task Definition y ECS Cluster",
       "missingCode": false,
       "missingComments": true
     },
@@ -607,35 +341,7 @@
     {
       "track": "cloud",
       "module": 17,
-      "topic": "Tema 1: Streams vs colas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 17,
-      "topic": "Tema 2: MSK (Kafka gestionado) y consumer groups",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 17,
       "topic": "Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 18,
-      "topic": "Tema 1: Por qué no construir tu propio sistema de autenticación",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 18,
-      "topic": "Tema 2: Access Token, ID Token y Refresh Token",
       "missingCode": false,
       "missingComments": true
     },
@@ -649,13 +355,6 @@
     {
       "track": "cloud",
       "module": 19,
-      "topic": "Tema 1: Data lake y Glue Catalog",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 19,
       "topic": "Tema 3: Parquet vs CSV, y partition pruning",
       "missingCode": false,
       "missingComments": true
@@ -663,63 +362,7 @@
     {
       "track": "cloud",
       "module": 2,
-      "topic": "Tema 2: Claves y metadatos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 2,
-      "topic": "Tema 3: Versionado y ciclo de vida",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 2,
-      "topic": "Tema 4: Transición entre capas de almacenamiento",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 2,
       "topic": "Tema 5: Políticas de bucket, ACL y URLs pre-firmadas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 20,
-      "topic": "Tema 2: Textract y Transcribe",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 21,
-      "topic": "Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 3,
-      "topic": "Tema 1: Colas, productores y consumidores",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 3,
-      "topic": "Tema 2: Ciclo de vida de un mensaje",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 3,
-      "topic": "Tema 3: Dead Letter Queues (DLQ)",
       "missingCode": false,
       "missingComments": true
     },
@@ -733,21 +376,7 @@
     {
       "track": "cloud",
       "module": 31,
-      "topic": "Tema 1: Arquitectura multi-nube y portabilidad de conocimiento",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 31,
       "topic": "Tema 2: Arquitectura interna de cloud local y su uso en CI/CD",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 31,
-      "topic": "Tema 3: Migración desde otros emuladores, y límites de un emulador",
       "missingCode": false,
       "missingComments": true
     },
@@ -810,49 +439,7 @@
     {
       "track": "cloud",
       "module": 34,
-      "topic": "Tema 2: Modelo mental de la plataforma",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 34,
-      "topic": "Tema 5: Automatización, UI y agentes",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 34,
       "topic": "Tema 7: Servicios Azure que completan el recorrido",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 34,
-      "topic": "Tema 8: Servicios GCP que completan el recorrido",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 4,
-      "topic": "Tema 2: Tablas, items y atributos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 4,
-      "topic": "Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE)",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 4,
-      "topic": "Tema 5: Índices secundarios globales (GSI) y locales (LSI)",
       "missingCode": false,
       "missingComments": true
     },
@@ -874,13 +461,6 @@
       "track": "cloud",
       "module": 6,
       "topic": "Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 6,
-      "topic": "Tema 3: Integración con Lambda (proxy)",
       "missingCode": false,
       "missingComments": true
     },
@@ -951,34 +531,6 @@
       "track": "cloud",
       "module": 8,
       "topic": "Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 9,
-      "topic": "Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 9,
-      "topic": "Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 9,
-      "topic": "Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 9,
-      "topic": "Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto",
       "missingCode": false,
       "missingComments": true
     },
@@ -1126,13 +678,6 @@
       "track": "devops",
       "module": 14,
       "topic": "Tema 2: Una alerta debe conducir a una acción",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 14,
-      "topic": "Tema 3: Construir una imagen no demuestra de dónde proviene",
       "missingCode": false,
       "missingComments": true
     },
@@ -1461,13 +1006,6 @@
     {
       "track": "node",
       "module": 10,
-      "topic": "Tema 1: Cabeceras seguras con helmet",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 10,
       "topic": "Tema 4: OWASP API Security Top 10 y auditoría de dependencias",
       "missingCode": false,
       "missingComments": true
@@ -1524,28 +1062,7 @@
     {
       "track": "node",
       "module": 12,
-      "topic": "Tema 5: Posiciones espaciales y Socket.IO con orden recuperable",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 12,
       "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 13,
-      "topic": "Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 13,
-      "topic": "Tema 2: Un contrato HTTP es comportamiento, no solo documentación",
       "missingCode": false,
       "missingComments": true
     },
@@ -1658,13 +1175,6 @@
       "track": "node",
       "module": 6,
       "topic": "Tema 4: OAuth 2.0 y Passport.js",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 6,
-      "topic": "Tema 5: Sesiones, cookies seguras y protección CSRF",
       "missingCode": false,
       "missingComments": true
     },
@@ -1811,13 +1321,6 @@
     {
       "track": "react",
       "module": 2,
-      "topic": "Tema 4: Reglas de los hooks, useReducer y useImperativeHandle",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 2,
       "topic": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
       "missingCode": false,
       "missingComments": true
@@ -1893,23 +1396,9 @@
       "missingComments": true
     },
     {
-      "track": "react",
-      "module": 9,
-      "topic": "Tema 4: useTransition, useDeferredValue y Fiber",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
       "track": "java",
       "module": 1,
       "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 13,
-      "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
       "missingCode": false,
       "missingComments": true
     },
@@ -2014,6 +1503,13 @@
     {
       "track": "java",
       "module": 5,
+      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 5,
       "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "missingCode": false,
       "missingComments": true
@@ -2043,13 +1539,6 @@
       "track": "java",
       "module": 7,
       "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 8,
-      "topic": "Tema 3: Proyectos multi-módulo",
       "missingCode": false,
       "missingComments": true
     },
@@ -2195,50 +1684,8 @@
     },
     {
       "track": "kotlin-multiplatform",
-      "module": 10,
-      "topic": "Tema 1: Pipeline Gradle multiplataforma en CI",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 11,
-      "topic": "Tema 1: Arquitectura del proyecto integrador",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 11,
-      "topic": "Tema 2: Sincronización de datos remotos con caché local",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
       "module": 11,
       "topic": "Tema 3: Cierre del track — la promesa realista de KMP",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 12,
-      "topic": "Tema 1: La mejor frontera compartida es deliberadamente pequeña",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 12,
-      "topic": "Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 12,
-      "topic": "Tema 3: Un artefacto compatible necesita más que el mismo número de versión",
       "missingCode": false,
       "missingComments": true
     },
@@ -2316,13 +1763,6 @@
       "track": "kotlin-multiplatform",
       "module": 9,
       "topic": "Tema 1: kotlin.test en commonTest",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 9,
-      "topic": "Tema 2: Fakes en vez de mocks",
       "missingCode": false,
       "missingComments": true
     },
@@ -2420,49 +1860,7 @@
     {
       "track": "ios",
       "module": 12,
-      "topic": "Tema 1: Arquitectura del proyecto integrador",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 12,
-      "topic": "Tema 2: Sincronización entre red y persistencia local",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 12,
       "topic": "Tema 3: Cierre del track",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 13,
-      "topic": "Tema 1: El sandbox reduce superficie, pero no valida intenciones",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 13,
-      "topic": "Tema 2: Proteger datos es controlar todas sus copias",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 13,
-      "topic": "Tema 3: Offline-first es un protocolo, no una caché",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 13,
-      "topic": "Tema 4: Operar significa detectar, limitar y aprender del fallo",
       "missingCode": false,
       "missingComments": true
     },
@@ -2594,36 +1992,8 @@
     },
     {
       "track": "flutter",
-      "module": 10,
-      "topic": "Tema 1: ThemeData con Material 3",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 10,
-      "topic": "Tema 2: Adaptación Material vs Cupertino",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 11,
-      "topic": "Tema 1: Builds de release para cada plataforma",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
       "module": 12,
       "topic": "Tema 1: Arquitectura por features y Clean Architecture",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 12,
-      "topic": "Tema 2: Uniendo los módulos del track",
       "missingCode": false,
       "missingComments": true
     },
@@ -2651,13 +2021,6 @@
     {
       "track": "flutter",
       "module": 13,
-      "topic": "Tema 3: Fluidez se mide contra el presupuesto de cada frame",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 13,
       "topic": "Tema 4: Producción exige protocolo, telemetría y contención",
       "missingCode": false,
       "missingComments": true
@@ -2673,13 +2036,6 @@
       "track": "flutter",
       "module": 14,
       "topic": "Tema 2: Google Maps y localización en tiempo real",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 14,
-      "topic": "Tema 3: Socket.IO y actualización de rutas",
       "missingCode": false,
       "missingComments": true
     },
@@ -2735,20 +2091,6 @@
     {
       "track": "flutter",
       "module": 2,
-      "topic": "Tema 1: MediaQuery vs LayoutBuilder",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 2,
-      "topic": "Tema 2: Cómo Flutter calcula tamaños",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 2,
       "topic": "Tema 3: Breakpoints propios y SafeArea",
       "missingCode": false,
       "missingComments": true
@@ -2756,42 +2098,7 @@
     {
       "track": "flutter",
       "module": 3,
-      "topic": "Tema 1: go_router: navegación como función de la URL",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 3,
-      "topic": "Tema 2: Guards y deep linking",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 3,
       "topic": "Tema 3: Transiciones personalizadas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 4,
-      "topic": "Tema 4: Formularios profesionales con Formz y Riverpod",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 5,
-      "topic": "Tema 2: json_serializable",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 6,
-      "topic": "Tema 2: sqflite vs Hive",
       "missingCode": false,
       "missingComments": true
     },
@@ -2819,42 +2126,7 @@
     {
       "track": "flutter",
       "module": 7,
-      "topic": "Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 7,
       "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 8,
-      "topic": "Tema 1: Animaciones implícitas vs explícitas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 8,
-      "topic": "Tema 2: Flutter DevTools y detección de jank",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 8,
-      "topic": "Tema 3: const widgets, RepaintBoundary y shouldRepaint",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 9,
-      "topic": "Tema 1: Unit tests y widget tests",
       "missingCode": false,
       "missingComments": true
     },

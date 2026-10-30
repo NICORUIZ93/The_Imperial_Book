@@ -17,6 +17,46 @@ Una imagen de producción no debe contener tests, caches ni herramientas inneces
 
 Multi-stage usa una etapa para compilar y otra para ejecutar. Es como construir un mueble en un taller y llevar solo el resultado, no todas las herramientas.
 
+Ya construyes una imagen reproducible. El siguiente tema separará configuración y healthchecks.
+
+**Errores comunes:** copiar secretos; usar `latest`; ejecutar como root; incluir `node_modules` local; no fijar lockfile.
+
+**Fuentes oficiales:** [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/), [Node Docker](https://github.com/nodejs/docker-node) y [Dockerfile reference](https://docs.docker.com/reference/dockerfile/).
+
+**Evidencia de aprendizaje:** entrega el build, la respuesta `ok` y el fallo de archivo ausente.
+
+**Conceptos clave:** etapa de build frente a etapa final, exclusión de devDependencies.
+
+Un Dockerfile multi-stage (concepto introducido en profundidad en el Módulo 2 del track DevOps) separa el proceso de construcción de una imagen en etapas distintas, cada una con su propio propósito: una etapa de "build" instala todas las dependencias (incluyendo `devDependencies` necesarias para compilar TypeScript o ejecutar un bundler), copia el código fuente completo, y ejecuta el proceso de compilación; una etapa final, considerablemente más ligera, copia únicamente el resultado ya compilado de la etapa de build (`COPY --from=build /app/dist ./dist`) e instala solo las dependencias de producción (`npm ci --omit=dev`, aprovechando la distinción entre `dependencies` y `devDependencies` estudiada en el Módulo 1), sin incluir nunca en la imagen final el código fuente sin compilar, las herramientas de build, ni ninguna dependencia exclusiva de desarrollo.
+
+Esta separación produce una imagen final considerablemente más pequeña y con una superficie de ataque reducida (menos paquetes instalados significa menos vulnerabilidades potenciales de terceros presentes en la imagen final), además de un tiempo de despliegue más rápido (una imagen más pequeña se transfiere y arranca más rápido) comparado con una imagen de una sola etapa que incluyera indiscriminadamente todo lo necesario para desarrollo y construcción además de lo necesario para ejecutar en producción. Comparar el tamaño final de ambas versiones (multi-stage optimizada frente a una versión ingenua de una sola etapa) hace tangible el beneficio concreto de esta técnica, frecuentemente revelando una diferencia de varias veces en el tamaño final de la imagen.
+
+Usar una imagen base ligera como `node:24-alpine` (basada en Alpine Linux, una distribución minimalista, en vez de una distribución completa como Debian o Ubuntu) para ambas etapas reduce aún más el tamaño base de la imagen, aunque requiere verificar que todas las dependencias del proyecto (incluyendo cualquier dependencia nativa que requiera compilación específica del sistema operativo) sean compatibles con el entorno de Alpine, que usa una biblioteca C distinta (musl en vez de glibc) que ocasionalmente causa incompatibilidades sutiles con paquetes que dependen de binarios nativos precompilados específicamente para glibc.
+
+**Analogía:** un Dockerfile multi-stage es como un taller de manufactura con dos zonas separadas: una zona de fabricación completa con todas las herramientas pesadas necesarias para construir el producto (la etapa de build), y una zona de empaquetado final que solo recibe el producto ya terminado, sin ninguna de las herramientas de fabricación pesadas presentes en el empaque final que se envía al cliente.
+
+**¿Por qué es importante?** Un Dockerfile multi-stage produce imágenes de producción considerablemente más pequeñas y con menor superficie de ataque, excluyendo herramientas de build y dependencias de desarrollo que no tienen ninguna razón de estar presentes en el entorno de ejecución final.
+
+**Código del ejemplo:**
+
+```dockerfile
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:24-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+CMD ["node", "dist/index.js"]
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Construye y arranca la API desde una imagen final mínima. Ejecuta pruebas de humo contra esa imagen y verifica que no necesita archivos del workspace ni dependencias exclusivas de desarrollo.
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
@@ -59,46 +99,6 @@ Ejecuta como usuario no root y entrega `docker inspect` con puerto y usuario.
 
 #### Paso 7 · Cierre y conexión
 
-Ya construyes una imagen reproducible. El siguiente tema separará configuración y healthchecks.
-
-**Errores comunes:** copiar secretos; usar `latest`; ejecutar como root; incluir `node_modules` local; no fijar lockfile.
-
-**Fuentes oficiales:** [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/), [Node Docker](https://github.com/nodejs/docker-node) y [Dockerfile reference](https://docs.docker.com/reference/dockerfile/).
-
-**Evidencia de aprendizaje:** entrega el build, la respuesta `ok` y el fallo de archivo ausente.
-
-**Conceptos clave:** etapa de build frente a etapa final, exclusión de devDependencies.
-
-Un Dockerfile multi-stage (concepto introducido en profundidad en el Módulo 2 del track DevOps) separa el proceso de construcción de una imagen en etapas distintas, cada una con su propio propósito: una etapa de "build" instala todas las dependencias (incluyendo `devDependencies` necesarias para compilar TypeScript o ejecutar un bundler), copia el código fuente completo, y ejecuta el proceso de compilación; una etapa final, considerablemente más ligera, copia únicamente el resultado ya compilado de la etapa de build (`COPY --from=build /app/dist ./dist`) e instala solo las dependencias de producción (`npm ci --omit=dev`, aprovechando la distinción entre `dependencies` y `devDependencies` estudiada en el Módulo 1), sin incluir nunca en la imagen final el código fuente sin compilar, las herramientas de build, ni ninguna dependencia exclusiva de desarrollo.
-
-Esta separación produce una imagen final considerablemente más pequeña y con una superficie de ataque reducida (menos paquetes instalados significa menos vulnerabilidades potenciales de terceros presentes en la imagen final), además de un tiempo de despliegue más rápido (una imagen más pequeña se transfiere y arranca más rápido) comparado con una imagen de una sola etapa que incluyera indiscriminadamente todo lo necesario para desarrollo y construcción además de lo necesario para ejecutar en producción. Comparar el tamaño final de ambas versiones (multi-stage optimizada frente a una versión ingenua de una sola etapa) hace tangible el beneficio concreto de esta técnica, frecuentemente revelando una diferencia de varias veces en el tamaño final de la imagen.
-
-Usar una imagen base ligera como `node:24-alpine` (basada en Alpine Linux, una distribución minimalista, en vez de una distribución completa como Debian o Ubuntu) para ambas etapas reduce aún más el tamaño base de la imagen, aunque requiere verificar que todas las dependencias del proyecto (incluyendo cualquier dependencia nativa que requiera compilación específica del sistema operativo) sean compatibles con el entorno de Alpine, que usa una biblioteca C distinta (musl en vez de glibc) que ocasionalmente causa incompatibilidades sutiles con paquetes que dependen de binarios nativos precompilados específicamente para glibc.
-
-**Analogía:** un Dockerfile multi-stage es como un taller de manufactura con dos zonas separadas: una zona de fabricación completa con todas las herramientas pesadas necesarias para construir el producto (la etapa de build), y una zona de empaquetado final que solo recibe el producto ya terminado, sin ninguna de las herramientas de fabricación pesadas presentes en el empaque final que se envía al cliente.
-
-**¿Por qué es importante?** Un Dockerfile multi-stage produce imágenes de producción considerablemente más pequeñas y con menor superficie de ataque, excluyendo herramientas de build y dependencias de desarrollo que no tienen ninguna razón de estar presentes en el entorno de ejecución final.
-
-**Código del ejemplo:**
-
-```dockerfile
-FROM node:24-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM node:24-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
-COPY --from=build /app/dist ./dist
-CMD ["node", "dist/index.js"]
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Construye y arranca la API desde una imagen final mínima. Ejecuta pruebas de humo contra esa imagen y verifica que no necesita archivos del workspace ni dependencias exclusivas de desarrollo.
-
 ### Tema 2: Variables de entorno por ambiente y healthchecks
 
 #### Paso 1 · Objetivo y preparación
@@ -112,6 +112,39 @@ Desarrollo, staging y producción usan puertos y dependencias distintas. Un heal
 #### Paso 3 · Teoría y analogía aplicada
 
 Variables configuran sin recompilar; readiness decide si recibir tráfico. Es un hospital: estar vivo no significa estar listo para atender.
+
+Ya separas liveness, readiness y configuración. El siguiente tema tratará procesos y despliegue sin interrupción.
+
+**Errores comunes:** hornear secretos en imagen; usar readiness como liveness; devolver siempre 200; no validar tipos; imprimir todo `process.env`.
+
+**Fuentes oficiales:** [Docker HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [Kubernetes probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/) y [Node process.env](https://nodejs.org/api/process.html#processenv).
+
+**Evidencia de aprendizaje:** entrega las salidas live/ready y el error de `PORT` inválido.
+
+**Conceptos clave:** configuración externalizada, misma imagen en todos los entornos, `HEALTHCHECK`.
+
+Un principio fundamental de despliegue reproducible (conectado directamente con la práctica de configuración externalizada estudiada en el Módulo 12 del track DevOps) es que la imagen de contenedor debe ser idéntica en todos los entornos (desarrollo, staging, producción); lo único que debería cambiar entre entornos son las variables de entorno inyectadas al arrancar el contenedor (`DATABASE_URL`, `LOG_LEVEL`, entre otras), nunca el código o la configuración hardcodeada dentro de la imagen misma. Mantener archivos `.env` separados por ambiente (`.env.production`, `.env.development`) como referencia de qué variables se necesitan, sin que ninguno de esos archivos con valores sensibles reales se incluya dentro de la imagen de Docker construida, es la práctica correcta.
+
+Un `HEALTHCHECK` declarado directamente en el Dockerfile (`HEALTHCHECK CMD node -e "..."`) permite que Docker (y, por extensión, un orquestador como Kubernetes) verifique periódicamente si el contenedor está genuinamente saludable, no solo si el proceso sigue técnicamente en ejecución: un proceso Node puede seguir corriendo técnicamente mientras está en un estado interno defectuoso (por ejemplo, incapaz de conectarse a su base de datos), y un healthcheck a nivel de aplicación (invocando el endpoint `/health` construido en el Módulo 9, que verifica activamente la conexión a la base de datos antes de responder) detecta esta categoría de fallo que un simple "¿el proceso sigue vivo?" no capturaría.
+
+Este healthcheck es lo que permite a un orquestador tomar decisiones automatizadas informadas: rechazar dirigir tráfico hacia un contenedor que aún no pasó su healthcheck inicial (durante el arranque), o reiniciar automáticamente un contenedor que pasó de saludable a no saludable durante su operación normal, sin depender de que un humano detecte y responda manualmente a ese estado degradado, cerrando el círculo con el Tema 4 (zero-downtime deploys), donde el healthcheck es precisamente el mecanismo que determina cuándo una nueva instancia está lista para recibir tráfico real durante un despliegue rolling.
+
+**Analogía:** externalizar la configuración por variables de entorno es como construir un mismo producto estandarizado que se adapta a distintos mercados simplemente cambiando su empaque de etiquetado externo, sin modificar nunca el producto interno mismo. Un healthcheck es como un chequeo médico rutinario periódico que verifica la salud real del paciente (no solo que "sigue respirando"), permitiendo intervenir proactivamente ante señales tempranas de un problema antes de que se convierta en una falla completa y visible.
+
+**¿Por qué es importante?** Externalizar la configuración garantiza que la misma imagen probada se despliega idénticamente en todos los entornos; un healthcheck a nivel de aplicación permite que el orquestador detecte y responda automáticamente a fallos internos que un simple chequeo de "el proceso sigue vivo" no capturaría.
+
+**Código del ejemplo:**
+
+```dockerfile
+HEALTHCHECK CMD node -e "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1))"
+```
+```bash
+# .env.production          # .env.development
+DATABASE_URL=prod-host      DATABASE_URL=localhost
+LOG_LEVEL=info               LOG_LEVEL=debug
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Valida variables de base, almacenamiento e identidad al arrancar. Prueba una configuración ausente y una dependencia caída, distinguiendo fallo de configuración de indisponibilidad temporal.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -147,39 +180,6 @@ Escribe un `HEALTHCHECK` Docker que consulte `/live` y documenta por qué no deb
 
 #### Paso 7 · Cierre y conexión
 
-Ya separas liveness, readiness y configuración. El siguiente tema tratará procesos y despliegue sin interrupción.
-
-**Errores comunes:** hornear secretos en imagen; usar readiness como liveness; devolver siempre 200; no validar tipos; imprimir todo `process.env`.
-
-**Fuentes oficiales:** [Docker HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [Kubernetes probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/) y [Node process.env](https://nodejs.org/api/process.html#processenv).
-
-**Evidencia de aprendizaje:** entrega las salidas live/ready y el error de `PORT` inválido.
-
-**Conceptos clave:** configuración externalizada, misma imagen en todos los entornos, `HEALTHCHECK`.
-
-Un principio fundamental de despliegue reproducible (conectado directamente con la práctica de configuración externalizada estudiada en el Módulo 12 del track DevOps) es que la imagen de contenedor debe ser idéntica en todos los entornos (desarrollo, staging, producción); lo único que debería cambiar entre entornos son las variables de entorno inyectadas al arrancar el contenedor (`DATABASE_URL`, `LOG_LEVEL`, entre otras), nunca el código o la configuración hardcodeada dentro de la imagen misma. Mantener archivos `.env` separados por ambiente (`.env.production`, `.env.development`) como referencia de qué variables se necesitan, sin que ninguno de esos archivos con valores sensibles reales se incluya dentro de la imagen de Docker construida, es la práctica correcta.
-
-Un `HEALTHCHECK` declarado directamente en el Dockerfile (`HEALTHCHECK CMD node -e "..."`) permite que Docker (y, por extensión, un orquestador como Kubernetes) verifique periódicamente si el contenedor está genuinamente saludable, no solo si el proceso sigue técnicamente en ejecución: un proceso Node puede seguir corriendo técnicamente mientras está en un estado interno defectuoso (por ejemplo, incapaz de conectarse a su base de datos), y un healthcheck a nivel de aplicación (invocando el endpoint `/health` construido en el Módulo 9, que verifica activamente la conexión a la base de datos antes de responder) detecta esta categoría de fallo que un simple "¿el proceso sigue vivo?" no capturaría.
-
-Este healthcheck es lo que permite a un orquestador tomar decisiones automatizadas informadas: rechazar dirigir tráfico hacia un contenedor que aún no pasó su healthcheck inicial (durante el arranque), o reiniciar automáticamente un contenedor que pasó de saludable a no saludable durante su operación normal, sin depender de que un humano detecte y responda manualmente a ese estado degradado, cerrando el círculo con el Tema 4 (zero-downtime deploys), donde el healthcheck es precisamente el mecanismo que determina cuándo una nueva instancia está lista para recibir tráfico real durante un despliegue rolling.
-
-**Analogía:** externalizar la configuración por variables de entorno es como construir un mismo producto estandarizado que se adapta a distintos mercados simplemente cambiando su empaque de etiquetado externo, sin modificar nunca el producto interno mismo. Un healthcheck es como un chequeo médico rutinario periódico que verifica la salud real del paciente (no solo que "sigue respirando"), permitiendo intervenir proactivamente ante señales tempranas de un problema antes de que se convierta en una falla completa y visible.
-
-**¿Por qué es importante?** Externalizar la configuración garantiza que la misma imagen probada se despliega idénticamente en todos los entornos; un healthcheck a nivel de aplicación permite que el orquestador detecte y responda automáticamente a fallos internos que un simple chequeo de "el proceso sigue vivo" no capturaría.
-
-**Código del ejemplo:**
-
-```dockerfile
-HEALTHCHECK CMD node -e "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1))"
-```
-```bash
-# .env.production          # .env.development
-DATABASE_URL=prod-host      DATABASE_URL=localhost
-LOG_LEVEL=info               LOG_LEVEL=debug
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Valida variables de base, almacenamiento e identidad al arrancar. Prueba una configuración ausente y una dependencia caída, distinguiendo fallo de configuración de indisponibilidad temporal.
-
 ### Tema 3: PM2, contenedores y zero-downtime deploys
 
 #### Paso 1 · Objetivo y preparación
@@ -193,36 +193,6 @@ Una API de entregas no puede detenerse para cada versión. Un supervisor inicia 
 #### Paso 3 · Teoría y analogía aplicada
 
 Zero-downtime depende de readiness, conexiones drenadas y rollback; PM2 solo supervisa procesos. Es cambiar una ventanilla cuando la siguiente ya está abierta.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-zero-downtime
-cd ejemplo-zero-downtime
-npm init -y
-npm install pm2
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import http from "node:http";
-const version = process.env.VERSION ?? "v1";
-http.createServer((_req, res) => res.end(version)).listen(3000, "0.0.0.0");
-```
-
-Ejecuta `VERSION=v1 npx pm2 start src/server.js --name demo` y consulta; cambia a `VERSION=v2 npx pm2 reload demo --update-env`. **Resultado esperado:** el proceso termina sirviendo `v2` sin que PM2 pierda supervisión. **Fallo deliberado y diagnóstico:** cambia el puerto ocupado; el reload falla y conserva la versión anterior, mostrando por qué se necesita rollback.
-
-#### Paso 5 · Práctica guiada
-
-Añade `ecosystem.config.cjs` con `instances: 2` y `exec_mode: "cluster"`. **Pista:** no compartas memoria entre instancias.
-
-#### Paso 6 · Práctica independiente
-
-Simula una versión que responde 500 y documenta el procedimiento de rollback.
-
-#### Paso 7 · Cierre y conexión
 
 Ya entiendes que zero-downtime es un protocolo completo, no un comando aislado. El siguiente tema introducirá reverse proxy.
 
@@ -257,6 +227,36 @@ Instancia B (v1) ── activa ──┼── balanceador dirige tráfico
 ```
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Envía SIGTERM durante una confirmación y deja de aceptar trabajo nuevo antes de cerrar conexiones. Conserva una prueba de terminación ordenada y documenta el límite del plazo de apagado.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-zero-downtime
+cd ejemplo-zero-downtime
+npm init -y
+npm install pm2
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import http from "node:http";
+const version = process.env.VERSION ?? "v1";
+http.createServer((_req, res) => res.end(version)).listen(3000, "0.0.0.0");
+```
+
+Ejecuta `VERSION=v1 npx pm2 start src/server.js --name demo` y consulta; cambia a `VERSION=v2 npx pm2 reload demo --update-env`. **Resultado esperado:** el proceso termina sirviendo `v2` sin que PM2 pierda supervisión. **Fallo deliberado y diagnóstico:** cambia el puerto ocupado; el reload falla y conserva la versión anterior, mostrando por qué se necesita rollback.
+
+#### Paso 5 · Práctica guiada
+
+Añade `ecosystem.config.cjs` con `instances: 2` y `exec_mode: "cluster"`. **Pista:** no compartas memoria entre instancias.
+
+#### Paso 6 · Práctica independiente
+
+Simula una versión que responde 500 y documenta el procedimiento de rollback.
+
+#### Paso 7 · Cierre y conexión
 
 ### Tema 4: Nginx como reverse proxy y serverless
 

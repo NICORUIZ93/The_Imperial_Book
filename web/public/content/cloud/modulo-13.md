@@ -11,24 +11,7 @@ Al finalizar vas a crear el esquema relacional real de facturación de RutaFlow,
 Facturación necesita saber "todos los pagos de esta factura, y a qué cliente pertenece" — un join de tres tablas con integridad garantizada, algo que `ShipmentEvents` (clave simple shipmentId+sequence) no está diseñado para resolver.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una base relacional es un libro contable con referencias cruzadas y reglas de integridad que la propia base impone, no que cada consulta tenga que verificar por su cuenta.
-#### Paso 4 · Demostración guiada
-```bash
-aws rds create-db-instance --db-instance-identifier rutaflow-facturacion --db-instance-class db.t3.micro \
-  --engine postgres --master-username admin --master-user-password admin123 --allocated-storage 20
-aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion
-psql -h localhost -U admin -d postgres -c "
-CREATE TABLE clientes (id SERIAL PRIMARY KEY, nombre TEXT);
-CREATE TABLE facturas (id SERIAL PRIMARY KEY, cliente_id INT REFERENCES clientes(id), shipment_id TEXT, monto NUMERIC);
-CREATE TABLE pagos (id SERIAL PRIMARY KEY, factura_id INT REFERENCES facturas(id), monto NUMERIC);
-"
-```
-Resultado esperado: las tres tablas se crean sin error, con `facturas.cliente_id` y `pagos.factura_id` como claves foráneas reales — Postgres va a rechazar cualquier fila que intente violar esas referencias, algo que DynamoDB nunca haría por sí solo.
-#### Paso 5 · Práctica guiada
-Pista: intentá `INSERT INTO pagos (factura_id, monto) VALUES (9999, 100);` (una `factura_id` que no existe) — ese es el fallo deliberado: `ERROR: insert or update on table "pagos" violates foreign key constraint`, la base de datos rechaza la fila antes de guardarla, sin que tu aplicación tuviera que validar manualmente que la factura existe.
-#### Paso 6 · Práctica independiente
-Insertá un cliente, una factura ligada a ese cliente y a un `shipment_id` real (por ejemplo `env-4471`, el mismo de `ShipmentEvents`), y un pago ligado a esa factura — y confirmá con un `JOIN` de las tres tablas que podés reconstruir "qué cliente pagó cuánto por qué envío" en una sola consulta.
-#### Paso 7 · Cierre y evidencia
-Entregá el esquema creado, el error de integridad del Paso 5 y el join exitoso del Paso 6; explicá por qué este caso concreto justifica RDS sobre DynamoDB aunque el resto de RutaFlow use DynamoDB. Siguiente paso: copias. Errores comunes: relaciones implícitas y transacciones incompletas. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html.
+
 **Conceptos clave:** relaciones estructuradas y consultas complejas frente a escala horizontal simple.
 
 ```bash
@@ -59,6 +42,25 @@ En el proyecto integrador RutaFlow, esta tabla `facturas` convive con `ShipmentE
 resuelve el problema para el que fue diseñado, en vez de forzar todo el dominio dentro de un
 único motor de base de datos.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws rds create-db-instance --db-instance-identifier rutaflow-facturacion --db-instance-class db.t3.micro \
+  --engine postgres --master-username admin --master-user-password admin123 --allocated-storage 20
+aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion
+psql -h localhost -U admin -d postgres -c "
+CREATE TABLE clientes (id SERIAL PRIMARY KEY, nombre TEXT);
+CREATE TABLE facturas (id SERIAL PRIMARY KEY, cliente_id INT REFERENCES clientes(id), shipment_id TEXT, monto NUMERIC);
+CREATE TABLE pagos (id SERIAL PRIMARY KEY, factura_id INT REFERENCES facturas(id), monto NUMERIC);
+"
+```
+Resultado esperado: las tres tablas se crean sin error, con `facturas.cliente_id` y `pagos.factura_id` como claves foráneas reales — Postgres va a rechazar cualquier fila que intente violar esas referencias, algo que DynamoDB nunca haría por sí solo.
+#### Paso 5 · Práctica guiada
+Pista: intentá `INSERT INTO pagos (factura_id, monto) VALUES (9999, 100);` (una `factura_id` que no existe) — ese es el fallo deliberado: `ERROR: insert or update on table "pagos" violates foreign key constraint`, la base de datos rechaza la fila antes de guardarla, sin que tu aplicación tuviera que validar manualmente que la factura existe.
+#### Paso 6 · Práctica independiente
+Insertá un cliente, una factura ligada a ese cliente y a un `shipment_id` real (por ejemplo `env-4471`, el mismo de `ShipmentEvents`), y un pago ligado a esa factura — y confirmá con un `JOIN` de las tres tablas que podés reconstruir "qué cliente pagó cuánto por qué envío" en una sola consulta.
+#### Paso 7 · Cierre y evidencia
+Entregá el esquema creado, el error de integridad del Paso 5 y el join exitoso del Paso 6; explicá por qué este caso concreto justifica RDS sobre DynamoDB aunque el resto de RutaFlow use DynamoDB. Siguiente paso: copias. Errores comunes: relaciones implícitas y transacciones incompletas. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html.
+
 ### Tema 2: Snapshots y restore
 
 #### Paso 1 · Objetivo y preparación
@@ -67,21 +69,7 @@ Al finalizar vas a respaldar `rutaflow-facturacion` (Tema 1) y a restaurarlo com
 Un `DELETE` sin `WHERE` sobre `facturas` en producción no debería significar perder el historial contable para siempre — necesitás un punto de restauración probado, no solo "confiar" en que existe un backup automático.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un snapshot es una fotografía fechada de toda la instancia; de nada sirve si nunca probaste que la foto realmente se puede revelar (restaurar).
-#### Paso 4 · Demostración guiada
-```bash
-aws rds create-db-snapshot --db-instance-identifier rutaflow-facturacion --db-snapshot-identifier snap-facturacion-001
-aws rds wait db-snapshot-available --db-snapshot-identifier snap-facturacion-001
-aws rds restore-db-instance-from-db-snapshot --db-instance-identifier rutaflow-facturacion-restaurada --db-snapshot-identifier snap-facturacion-001
-aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion-restaurada
-psql -h localhost -U admin -d postgres -c "SELECT count(*) FROM facturas;"
-```
-Resultado esperado: la instancia restaurada (`rutaflow-facturacion-restaurada`) existe de forma completamente independiente, y el `SELECT count(*)` muestra la misma factura del Tema 1 — la instancia original nunca se tocó durante este proceso.
-#### Paso 5 · Práctica guiada
-Pista: probá `aws rds restore-db-instance-from-db-snapshot --db-instance-identifier otra-instancia --db-snapshot-identifier snap-que-no-existe` — ese es el fallo deliberado: `DBSnapshotNotFoundFault`, confirmando que un plan de recuperación que nunca se probó con un identificador real es indistinguible, en el momento de necesitarlo, de no tener backup en absoluto.
-#### Paso 6 · Práctica independiente
-Documentá, para `rutaflow-facturacion`, un RPO (cuántos datos podés permitirte perder: la ventana entre snapshots) y un RTO (cuánto tiempo real tomó este `restore` desde el Paso 4 hasta que la instancia quedó disponible) — con el tiempo real medido, no una estimación.
-#### Paso 7 · Cierre y evidencia
-Entregá el snapshot y restore exitosos del Paso 4, el error de snapshot inexistente del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué un backup nunca probado no cuenta como plan de recuperación. Siguiente paso: migraciones. Errores comunes: backup sin restore probado y retención insuficiente. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html.
+
 **Conceptos clave:** copias de seguridad puntuales restaurables como una nueva instancia independiente.
 
 ```bash
@@ -122,6 +110,22 @@ memoria — el límite real de esta práctica es que un snapshot nunca probado c
 verificar. En el proyecto integrador RutaFlow, esta misma disciplina de snapshot+restore
 probado aplicaría igual sobre `rutaflow-facturacion` que sobre cualquier tabla declarada en
 `examples/rutaflow/cloud/template.yaml`.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws rds create-db-snapshot --db-instance-identifier rutaflow-facturacion --db-snapshot-identifier snap-facturacion-001
+aws rds wait db-snapshot-available --db-snapshot-identifier snap-facturacion-001
+aws rds restore-db-instance-from-db-snapshot --db-instance-identifier rutaflow-facturacion-restaurada --db-snapshot-identifier snap-facturacion-001
+aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion-restaurada
+psql -h localhost -U admin -d postgres -c "SELECT count(*) FROM facturas;"
+```
+Resultado esperado: la instancia restaurada (`rutaflow-facturacion-restaurada`) existe de forma completamente independiente, y el `SELECT count(*)` muestra la misma factura del Tema 1 — la instancia original nunca se tocó durante este proceso.
+#### Paso 5 · Práctica guiada
+Pista: probá `aws rds restore-db-instance-from-db-snapshot --db-instance-identifier otra-instancia --db-snapshot-identifier snap-que-no-existe` — ese es el fallo deliberado: `DBSnapshotNotFoundFault`, confirmando que un plan de recuperación que nunca se probó con un identificador real es indistinguible, en el momento de necesitarlo, de no tener backup en absoluto.
+#### Paso 6 · Práctica independiente
+Documentá, para `rutaflow-facturacion`, un RPO (cuántos datos podés permitirte perder: la ventana entre snapshots) y un RTO (cuánto tiempo real tomó este `restore` desde el Paso 4 hasta que la instancia quedó disponible) — con el tiempo real medido, no una estimación.
+#### Paso 7 · Cierre y evidencia
+Entregá el snapshot y restore exitosos del Paso 4, el error de snapshot inexistente del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué un backup nunca probado no cuenta como plan de recuperación. Siguiente paso: migraciones. Errores comunes: backup sin restore probado y retención insuficiente. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html.
 
 ### Tema 3: Migrations
 

@@ -43,44 +43,6 @@ graph TD
     style G fill:#e8f5e9
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```tsx
-<ErrorBoundary
-  resetKeys={[envioId]}
-  fallbackRender={({ resetErrorBoundary }) => (
-    <section role="alert">
-      <h2>No pudimos mostrar este envío</h2>
-      <button onClick={resetErrorBoundary}>Intentar de nuevo</button>
-    </section>
-  )}
-  onError={(error, info) => reportError(error, info.componentStack)}
->
-  <Suspense fallback={<EnvioSkeleton />}>
-    <DetalleEnvio id={envioId} />
-  </Suspense>
-</ErrorBoundary>
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error.
-
-#### Paso 5 · Práctica guiada
-Pista: implementá `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agregá un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explicá por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
-**¿Por qué es importante?** Un error de un widget no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación real deja al usuario atrapado repitiendo el mismo fallo.
 **Evidencia de aprendizaje:** entrega ErrorBoundary con recuperación real, botón sin efecto detectado y test de recuperación con MSW.
 **Conceptos clave:** pureza, render, commit, Effect, sincronización, Suspense, promise cacheada, Error Boundary, fallback, reset, error operacional, defecto, component stack, telemetría y Strict Mode.
 
@@ -132,29 +94,22 @@ reset -> nuevo recurso/precondición, no repetir objeto rechazado
 
 **Límites y decisión de uso:** Un spinner indefinido no resuelve una operación cuyo resultado se desconoce. Define plazos, cancelación y reconciliación; un timeout de confirmación no autoriza a repetir un efecto sin identidad estable.
 
-### Tema 2: La composición visual debe conservar semántica y foco
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a corregir el campo de PIN de confirmación de entrega para que un error de validación mueva el foco al campo inválido y lo anuncie mediante `aria-describedby`, en vez de solo cambiar un color. Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Hoy, si el PIN es incorrecto, el campo se pone en borde rojo — alguien que navega con teclado o lector de pantalla no recibe ninguna señal de que algo falló, ni sabe cuál campo corregir.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-React no cambia las reglas de HTML; un campo con error necesita `aria-invalid` y `aria-describedby` apuntando al mensaje real, y el foco debe moverse al primer campo inválido tras un submit fallido.
-
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
-function CampoPin({ id, label, error, ...props }: CampoPinProps) {
-  const errorId = `${id}-error`;
-  return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <input id={id} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} {...props} />
-      {error && <p id={errorId} role="alert">{error}</p>}
-    </div>
-  );
-}
+<ErrorBoundary
+  resetKeys={[envioId]}
+  fallbackRender={({ resetErrorBoundary }) => (
+    <section role="alert">
+      <h2>No pudimos mostrar este envío</h2>
+      <button onClick={resetErrorBoundary}>Intentar de nuevo</button>
+    </section>
+  )}
+  onError={(error, info) => reportError(error, info.componentStack)}
+>
+  <Suspense fallback={<EnvioSkeleton />}>
+    <DetalleEnvio id={envioId} />
+  </Suspense>
+</ErrorBoundary>
 ```
 
 **Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
@@ -166,17 +121,29 @@ npm run dev
 ```
 Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir.
+Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `aria-describedby` y dejá solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
+Pista: implementá `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba.
+Corregí el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agregá un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explicá por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
-**¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
+Entregá el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explicá por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
+**¿Por qué es importante?** Un error de un widget no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación real deja al usuario atrapado repitiendo el mismo fallo.
+
+### Tema 2: La composición visual debe conservar semántica y foco
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a corregir el campo de PIN de confirmación de entrega para que un error de validación mueva el foco al campo inválido y lo anuncie mediante `aria-describedby`, en vez de solo cambiar un color. Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Hoy, si el PIN es incorrecto, el campo se pone en borde rojo — alguien que navega con teclado o lector de pantalla no recibe ninguna señal de que algo falló, ni sabe cuál campo corregir.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+React no cambia las reglas de HTML; un campo con error necesita `aria-invalid` y `aria-describedby` apuntando al mensaje real, y el foco debe moverse al primer campo inválido tras un submit fallido.
+
 **Evidencia de aprendizaje:** entrega campo accesible, error solo por color detectado y movimiento de foco agregado.
 **Conceptos clave:** HTML semántico, nombre accesible, rol, estado, teclado, foco, landmark, heading, route announcement, live region, formulario, error, portal, focus trap, Testing Library y axe.
 
@@ -228,25 +195,17 @@ teclado + lector -> flujo completo comprensible
 
 **Límites y decisión de uso:** Un componente visual reutilizable puede romper la semántica si genera controles anidados o pierde referencias de foco. Prueba el árbol accesible y teclado en la composición final, no solo en su ejemplo aislado.
 
-### Tema 3: Cliente y servidor forman una sola frontera de seguridad
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a auditar la Server Action `confirmarEntregaAction` (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente. Prerrequisitos: Tema 2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Ocultar el botón "Confirmar entrega" para conductores sin la ruta asignada no impide que alguien invoque la Server Action directamente, sin pasar nunca por ese botón.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Una Server Action es un endpoint invocable, no una función privada por estar junto al componente — una puerta tras el mostrador, no una habitación secreta; debe autenticar y autorizar dentro de la propia acción.
-
 #### Paso 4 · Demostración guiada desde cero
-```ts
-export async function confirmarEntregaAction(formData: FormData) {
-  'use server';
-  const session = await requireSession();
-  const envioId = EnvioId.parse(formData.get('envioId'));
-  await authorize(session.userId, 'confirmar', envioId);
-  await envios.confirmar(envioId);
+```tsx
+function CampoPin({ id, label, error, ...props }: CampoPinProps) {
+  const errorId = `${id}-error`;
+  return (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} {...props} />
+      {error && <p id={errorId} role="alert">{error}</p>}
+    </div>
+  );
 }
 ```
 
@@ -259,17 +218,29 @@ npm run dev
 ```
 Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario.
+Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
+Pista: quitá `aria-describedby` y dejá solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual.
+Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explicá por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
-**¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
+Entregá el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explicá por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
+**¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
+
+### Tema 3: Cliente y servidor forman una sola frontera de seguridad
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a auditar la Server Action `confirmarEntregaAction` (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente. Prerrequisitos: Tema 2 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Ocultar el botón "Confirmar entrega" para conductores sin la ruta asignada no impide que alguien invoque la Server Action directamente, sin pasar nunca por ese botón.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una Server Action es un endpoint invocable, no una función privada por estar junto al componente — una puerta tras el mostrador, no una habitación secreta; debe autenticar y autorizar dentro de la propia acción.
+
 **Evidencia de aprendizaje:** entrega Server Action con autorización real, acceso indebido detectado y prueba directa de la acción.
 **Conceptos clave:** XSS, escape, dangerouslySetInnerHTML, sanitización contextual, URL, CSP, nonce, Server Component, Client Component, serialización, secreto, Server Action, autenticación, autorización, CSRF y cache.
 
@@ -317,6 +288,38 @@ CSP/Trusted Types cubren DOM completo
 * Visualización: concepto mostrado en diagrama
 
 **Límites y decisión de uso:** Renderizar en servidor no vuelve confiables entradas ni oculta automáticamente secretos. Revalida sesión y autorización en cada operación y limita los datos enviados al cliente; un control de navegación no sustituye ese límite.
+
+#### Paso 4 · Demostración guiada desde cero
+```ts
+export async function confirmarEntregaAction(formData: FormData) {
+  'use server';
+  const session = await requireSession();
+  const envioId = EnvioId.parse(formData.get('envioId'));
+  await authorize(session.userId, 'confirmar', envioId);
+  await envios.confirmar(envioId);
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explicá por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
+**¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
 
 ### Tema 4: Hidratación determinista, idioma y releases medibles
 

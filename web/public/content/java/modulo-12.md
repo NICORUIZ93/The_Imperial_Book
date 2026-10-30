@@ -14,6 +14,32 @@ Un pedido puede requerir cliente y producto, pero incluir opciones variables com
 #### Paso 3 · Teoría, modelo mental y analogía
 Builder separa la configuración y validación de un producto del objeto ya construido: se expresan pasos nombrados y `build()` entrega un resultado completo o informa por qué no puede crearlo. El Builder fluido anidado de este ejercicio reduce parámetros telescópicos; el Builder GoF también puede usar constructores distintos que ejecutan una secuencia común para crear representaciones diferentes. Una clase directora que guarda secuencias reutilizables es opcional, no un requisito universal del patrón.
 
+**Evidencia de aprendizaje:** entrega tu implementación, demuestra la salida normal y el fallo diagnosticado, y dibuja cómo dos constructores GoF podrían reutilizar los mismos pasos para producir representaciones distintas. No atribuyas al ejemplo existente un director: su Builder anidado es fluido y no usa uno.
+**Conceptos clave:** encadenamiento fluido, evitar confusión de orden de argumentos.
+
+Un constructor con muchos parámetros, varios de ellos opcionales (`new Pedido("Ana", "Laptop", 2, null, true, false, 15.5, ...)`), es propenso a errores de uso: es fácil confundir el orden de los argumentos posicionales, especialmente cuando varios comparten el mismo tipo (¿cuál booleano corresponde a qué opción específica?), y no queda ninguna indicación clara en el sitio de la llamada de qué representa cada valor individual sin consultar constantemente la firma del constructor. El patrón Builder (`Pedido pedido = Pedido.builder().cliente("Ana").producto("Laptop").cantidad(2).build();`) resuelve este problema encadenando llamadas a métodos con nombres descriptivos, uno por cada campo que se desea establecer, en el orden que resulte más natural para quien construye el objeto, omitiendo directamente cualquier campo opcional que no aplique en ese caso específico, sin necesidad de pasar `null` o valores por defecto explícitos como marcadores de posición para cada campo omitido.
+
+Esta legibilidad mejorada es particularmente valiosa cuando el número de campos es considerable y muchos son genuinamente opcionales, dado que el código resultante en el sitio de la llamada se vuelve autoexplicativo (`.cliente("Ana").producto("Laptop")` deja claro exactamente qué representa cada valor, sin ambigüedad posicional), a diferencia de un constructor tradicional con muchos parámetros posicionales, donde esa claridad depende completamente de que quien lee el código recuerde o consulte constantemente el orden exacto de la firma.
+
+**Analogía:** el constructor posicional es un formulario sin etiquetas donde un valor en la casilla incorrecta puede parecer válido; Builder es un formulario guiado con campos nombrados y una revisión final antes de aceptar el pedido.
+
+**Código del ejemplo:**
+
+```java
+Pedido pedido = Pedido.builder()
+    .cliente("Ana")
+    .producto("Laptop")
+    .cantidad(2)
+    .build();
+```
+
+Este Builder fluido es apropiado para construir el objeto inmutable de configuración del Proyecto integrador (Módulo 13), con valores obligatorios, opciones y validación concentrada.
+
+El ejemplo implementa `cliente`, `codigo` y `unidades`; `build()` exige cliente y código no vacíos, y rechaza unidades menores a uno. No comparte el Builder entre hilos ni expone un `Pedido` parcial. El ejercicio amplía el mensaje de validación para hacerlo explícito. Si diferentes constructores deben producir representaciones del mismo producto mediante los mismos pasos, compara esa variante GoF en vez de asumir que todo Builder es una API fluida.
+
+**Cuándo no usarlo:** para una clase pequeña con pocos campos obligatorios, un constructor normal y validación clara suele ser más simple. No agregues una clase directora si solo existe una secuencia de construcción y nadie necesita reutilizarla.
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -42,31 +68,6 @@ Compara este diseño con un constructor tradicional de 6 parámetros posicionale
 #### Paso 7 · Cierre y evidencia
 Guarda el `Pedido.java` con su Builder, el fallo de validación provocado y la comparación contra el constructor posicional. Ejecuta `java examples/java/patrones-rutaflow/CreationalPatternsDemo.java` desde la raíz; la línea `builder=Ana:RF-1:2` confirma la ruta exitosa de la implementación de referencia. Como siguiente paso compara patrones que coordinan la creación de objetos. Errores comunes: compartir un Builder mutable entre hilos, omitir validación en `build()` y usar Builder para objetos con pocos campos obligatorios. Fuente contrastada: https://refactoring.guru/design-patterns/builder.
 **¿Por qué es importante?** Porque los patrones son vocabulario para resolver problemas, no plantillas obligatorias.
-**Evidencia de aprendizaje:** entrega tu implementación, demuestra la salida normal y el fallo diagnosticado, y dibuja cómo dos constructores GoF podrían reutilizar los mismos pasos para producir representaciones distintas. No atribuyas al ejemplo existente un director: su Builder anidado es fluido y no usa uno.
-**Conceptos clave:** encadenamiento fluido, evitar confusión de orden de argumentos.
-
-Un constructor con muchos parámetros, varios de ellos opcionales (`new Pedido("Ana", "Laptop", 2, null, true, false, 15.5, ...)`), es propenso a errores de uso: es fácil confundir el orden de los argumentos posicionales, especialmente cuando varios comparten el mismo tipo (¿cuál booleano corresponde a qué opción específica?), y no queda ninguna indicación clara en el sitio de la llamada de qué representa cada valor individual sin consultar constantemente la firma del constructor. El patrón Builder (`Pedido pedido = Pedido.builder().cliente("Ana").producto("Laptop").cantidad(2).build();`) resuelve este problema encadenando llamadas a métodos con nombres descriptivos, uno por cada campo que se desea establecer, en el orden que resulte más natural para quien construye el objeto, omitiendo directamente cualquier campo opcional que no aplique en ese caso específico, sin necesidad de pasar `null` o valores por defecto explícitos como marcadores de posición para cada campo omitido.
-
-Esta legibilidad mejorada es particularmente valiosa cuando el número de campos es considerable y muchos son genuinamente opcionales, dado que el código resultante en el sitio de la llamada se vuelve autoexplicativo (`.cliente("Ana").producto("Laptop")` deja claro exactamente qué representa cada valor, sin ambigüedad posicional), a diferencia de un constructor tradicional con muchos parámetros posicionales, donde esa claridad depende completamente de que quien lee el código recuerde o consulte constantemente el orden exacto de la firma.
-
-**Analogía:** el constructor posicional es un formulario sin etiquetas donde un valor en la casilla incorrecta puede parecer válido; Builder es un formulario guiado con campos nombrados y una revisión final antes de aceptar el pedido.
-
-**Código del ejemplo:**
-
-```java
-Pedido pedido = Pedido.builder()
-    .cliente("Ana")
-    .producto("Laptop")
-    .cantidad(2)
-    .build();
-```
-
-Este Builder fluido es apropiado para construir el objeto inmutable de configuración del Proyecto integrador (Módulo 13), con valores obligatorios, opciones y validación concentrada.
-
-El ejemplo implementa `cliente`, `codigo` y `unidades`; `build()` exige cliente y código no vacíos, y rechaza unidades menores a uno. No comparte el Builder entre hilos ni expone un `Pedido` parcial. El ejercicio amplía el mensaje de validación para hacerlo explícito. Si diferentes constructores deben producir representaciones del mismo producto mediante los mismos pasos, compara esa variante GoF en vez de asumir que todo Builder es una API fluida.
-
-**Cuándo no usarlo:** para una clase pequeña con pocos campos obligatorios, un constructor normal y validación clara suele ser más simple. No agregues una clase directora si solo existe una secuencia de construcción y nadie necesita reutilizarla.
-**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ### Tema 2: Factory Method y Strategy
 
 #### Paso 1 · Objetivo y preparación
@@ -77,6 +78,40 @@ RutaFlow puede enviar avisos por más de un canal y calcular tarifas con políti
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una Factory simple concentra una selección (por ejemplo, un `switch`) en una función o clase. Factory Method define un método de creación en un creador y permite que sus subclases elijan el producto concreto; el resto del flujo del creador trabaja con el contrato común. Strategy no crea objetos: intercambia el algoritmo que ejecutará un consumidor. La analogía: una Factory Method cambia la cocina que prepara un producto; Strategy cambia la receta que usa el mismo servicio.
+
+**Evidencia de aprendizaje:** ejecuta `CreationalPatternsDemo.java`, identifica el método de creación sobrescrito y añade un creador nuevo sin modificar el flujo `notificar`.
+**Conceptos clave:** Factory simple, Factory Method, producto común, creador, punto de variación, Strategy e inyección.
+
+En una Factory simple, `SimpleNotificadorFactory.crear("email")` puede devolver `EmailNotificador` y `crear("sms")` puede devolver `SmsNotificador`; el consumidor solo ve `Notificador`. Añadir una opción suele requerir editar la selección centralizada. Factory Method mueve la creación a un método que una subclase concreta implementa. En `CreationalPatternsDemo.java`, `EmailFactory` y `SmsFactory` eligen el producto, mientras el método heredado `notificar` ejecuta el mismo flujo con la abstracción `Notificador`. La extensión evita editar ese flujo, aunque añade tipos y no elimina la necesidad de componer el creador adecuado en algún punto.
+
+Strategy encapsula un algoritmo intercambiable detrás de una interfaz común (`interface CalculadoraDescuento { double calcular(double precio); }`, con implementaciones concretas como `DescuentoNavidad`), permitiendo que el código que usa esa estrategia (`double precioFinal = estrategia.calcular(precioOriginal);`) permanezca completamente ajeno a cuál implementación específica de descuento está actualmente activa, delegando esa decisión a quien configura o inyecta la estrategia concreta a usar en cada contexto, sin que el código consumidor necesite ninguna lógica condicional propia (`if`/`switch`) para decidir qué algoritmo aplicar en cada caso.
+
+La pregunta diagnóstica es qué cambia: si varía qué producto se crea dentro de un flujo del creador, considera Factory Method; si varía el algoritmo aplicado por un consumidor, considera Strategy; si solo necesitas mapear una clave a una instancia y el `switch` central es suficiente, una Factory simple puede ser más directa.
+
+**Analogía:** Factory Method cambia la cocina que prepara el producto sin rehacer el servicio que coordina el pedido; Strategy cambia una receta dentro del mismo servicio. Una Factory simple es un mostrador central que deriva cada solicitud según su tipo.
+
+**Código de la Factory simple:**
+
+```java
+interface Notificador { String enviar(String mensaje); }
+class SimpleNotificadorFactory {
+    static Notificador crear(String tipo) {
+        return switch (tipo) {
+            case "email" -> new EmailNotificador();
+            case "sms" -> new SmsNotificador();
+            default -> throw new IllegalArgumentException("Tipo desconocido");
+        };
+    }
+}
+
+```
+
+**Evidencia ejecutable de Factory Method:** desde la raíz ejecuta `java examples/java/patrones-rutaflow/CreationalPatternsDemo.java`; la salida incluye `factory=email:RF-1,sms:RF-1`. El ejemplo completo también contiene Abstract Factory y no requiere dependencias externas.
+
+En el Proyecto integrador (Módulo 13), el punto de composición elige el canal y la política según configuración; el caso de uso depende de sus contratos, no de clases concretas dispersas.
+
+**Cuándo no usar Factory Method:** si no hay variantes de creación o una Factory simple resuelve claramente la selección, una jerarquía de creadores agrega indirección sin valor. Strategy tampoco aporta si existe una única fórmula estable.
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -122,39 +157,6 @@ Agrega una segunda `CalculadoraDescuento` (por ejemplo `DescuentoBlackFriday`) e
 #### Paso 7 · Cierre y evidencia
 Guarda las dos formas de Factory, el fallo por tipo desconocido y su diagnóstico, una tercera implementación de Factory Method y dos Strategies intercambiadas sin cambiar el consumidor. Como siguiente paso revisa si cada clase tiene una responsabilidad clara. Errores comunes: llamar Factory Method a cualquier `switch`, usar Factory Method cuando basta una función, y usar Strategy cuando no existe una segunda política real. Fuentes: https://refactoring.guru/design-patterns/factory-method y https://refactoring.guru/design-patterns/strategy.
 **¿Por qué es importante?** Distinguir selección de creación de selección de algoritmo evita condicionales dispersos y abstracciones que no responden a una variación real.
-**Evidencia de aprendizaje:** ejecuta `CreationalPatternsDemo.java`, identifica el método de creación sobrescrito y añade un creador nuevo sin modificar el flujo `notificar`.
-**Conceptos clave:** Factory simple, Factory Method, producto común, creador, punto de variación, Strategy e inyección.
-
-En una Factory simple, `SimpleNotificadorFactory.crear("email")` puede devolver `EmailNotificador` y `crear("sms")` puede devolver `SmsNotificador`; el consumidor solo ve `Notificador`. Añadir una opción suele requerir editar la selección centralizada. Factory Method mueve la creación a un método que una subclase concreta implementa. En `CreationalPatternsDemo.java`, `EmailFactory` y `SmsFactory` eligen el producto, mientras el método heredado `notificar` ejecuta el mismo flujo con la abstracción `Notificador`. La extensión evita editar ese flujo, aunque añade tipos y no elimina la necesidad de componer el creador adecuado en algún punto.
-
-Strategy encapsula un algoritmo intercambiable detrás de una interfaz común (`interface CalculadoraDescuento { double calcular(double precio); }`, con implementaciones concretas como `DescuentoNavidad`), permitiendo que el código que usa esa estrategia (`double precioFinal = estrategia.calcular(precioOriginal);`) permanezca completamente ajeno a cuál implementación específica de descuento está actualmente activa, delegando esa decisión a quien configura o inyecta la estrategia concreta a usar en cada contexto, sin que el código consumidor necesite ninguna lógica condicional propia (`if`/`switch`) para decidir qué algoritmo aplicar en cada caso.
-
-La pregunta diagnóstica es qué cambia: si varía qué producto se crea dentro de un flujo del creador, considera Factory Method; si varía el algoritmo aplicado por un consumidor, considera Strategy; si solo necesitas mapear una clave a una instancia y el `switch` central es suficiente, una Factory simple puede ser más directa.
-
-**Analogía:** Factory Method cambia la cocina que prepara el producto sin rehacer el servicio que coordina el pedido; Strategy cambia una receta dentro del mismo servicio. Una Factory simple es un mostrador central que deriva cada solicitud según su tipo.
-
-**Código de la Factory simple:**
-
-```java
-interface Notificador { String enviar(String mensaje); }
-class SimpleNotificadorFactory {
-    static Notificador crear(String tipo) {
-        return switch (tipo) {
-            case "email" -> new EmailNotificador();
-            case "sms" -> new SmsNotificador();
-            default -> throw new IllegalArgumentException("Tipo desconocido");
-        };
-    }
-}
-
-```
-
-**Evidencia ejecutable de Factory Method:** desde la raíz ejecuta `java examples/java/patrones-rutaflow/CreationalPatternsDemo.java`; la salida incluye `factory=email:RF-1,sms:RF-1`. El ejemplo completo también contiene Abstract Factory y no requiere dependencias externas.
-
-En el Proyecto integrador (Módulo 13), el punto de composición elige el canal y la política según configuración; el caso de uso depende de sus contratos, no de clases concretas dispersas.
-
-**Cuándo no usar Factory Method:** si no hay variantes de creación o una Factory simple resuelve claramente la selección, una jerarquía de creadores agrega indirección sin valor. Strategy tampoco aporta si existe una única fórmula estable.
-**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ### Tema 3: Abstract Factory y familias de productos compatibles
 
 #### Paso 1 · Objetivo y preparación

@@ -14,38 +14,6 @@ La regla de negocio que marca un envío como "atrasado" no debería necesitar re
 #### Paso 3 · Teoría, modelo mental y analogía
 Un unit test verifica lógica pura completamente aislada; un widget test usa `WidgetTester` para renderizar en un entorno simulado, sin necesidad de un dispositivo real.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-test('un envío con fecha estimada pasada está atrasado', () {
-  expect(estaAtrasado(Envio(fechaEstimada: DateTime.now().subtract(Duration(hours: 1)))), isTrue);
-});
-
-testWidgets('TarjetaEnvio muestra la guía', (tester) async {
-  await tester.pumpWidget(MaterialApp(home: TarjetaEnvio(guia: 'RF-4471', estado: 'en_ruta')));
-  expect(find.text('RF-4471'), findsOneWidget);
-});
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: el unit test verifica la regla de negocio en milisegundos sin ningún widget involucrado; el widget test renderiza `TarjetaEnvio` en un entorno simulado y confirma que el texto "RF-4471" aparece, sin necesitar un emulador completo corriendo.
-
-#### Paso 5 · Práctica guiada
-Pista: en un tercer test, simulá tocar el botón "Marcar revisado" con `tester.tap(...)` pero no llamés a `tester.pump()` después — ese es el fallo deliberado: la aserción que verifica que el ícono cambió a "revisado" falla, aunque el `onPressed` sí se ejecutó correctamente, porque el test nunca le pidió a Flutter que reconstruyera el árbol para reflejar el `setState()` disparado por ese tap.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando `await tester.pump()` inmediatamente después del `tap`, y confirmá que ahora la aserción sobre el ícono "revisado" pasa correctamente.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el unit test y el widget test del Paso 4, el fallo por `pump()` faltante del Paso 5, y la corrección del Paso 6; explicá por qué un widget test necesita simular explícitamente el ciclo de reconstrucción que un dispositivo real haría automáticamente. Siguiente paso: estudia cómo mockear dependencias con mocktail. Errores comunes: olvidar `tester.pump()` tras simular una interacción, escribir un widget test para lógica que en realidad es pura, y buscar widgets por texto visible cuando ese texto puede cambiar por copywriting. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/overview.
-**¿Por qué es importante?** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real.
 **Evidencia de aprendizaje:** entrega unit test y widget test, fallo por pump faltante detectado y corrección confirmada.
 **Conceptos clave:** entorno simulado sin dispositivo real, considerablemente más rápido que un test end-to-end.
 
@@ -100,27 +68,15 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, estos tests viven en `test/tarjeta_envio_test.dart` sobre `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene escribir un widget test para lógica puramente de dominio (como `estaAtrasado()`) — eso es más rápido y claro como unit test aislado; reservá el widget test específicamente para verificar que la UI refleja correctamente ese resultado.
 
-### Tema 2: Mocking con mocktail
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a mockear `EnviosRepository` con `mocktail` para testear `EnviosViewModel` sin hacer ninguna llamada de red real. Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Testear `EnviosViewModel.cargar()` contra la API real de RutaFlow haría el test lento, dependiente de que el backend esté disponible, y frágil ante cualquier cambio en los datos reales de prueba.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`mocktail` genera un mock de una dependencia, permitiendo configurar exactamente qué debe devolver un método específico sin una implementación real completa.
-
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-class EnviosRepositoryFake extends Mock implements EnviosRepository {}
+test('un envío con fecha estimada pasada está atrasado', () {
+  expect(estaAtrasado(Envio(fechaEstimada: DateTime.now().subtract(Duration(hours: 1)))), isTrue);
+});
 
-test('el ViewModel carga envíos del repositorio', () async {
-  final repo = EnviosRepositoryFake();
-  when(() => repo.obtenerEnvios()).thenAnswer((_) async => [envioDePrueba]);
-  final vm = EnviosViewModel(repo);
-  await vm.cargar();
-  expect(vm.envios, [envioDePrueba]);
+testWidgets('TarjetaEnvio muestra la guía', (tester) async {
+  await tester.pumpWidget(MaterialApp(home: TarjetaEnvio(guia: 'RF-4471', estado: 'en_ruta')));
+  expect(find.text('RF-4471'), findsOneWidget);
 });
 ```
 
@@ -133,17 +89,29 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: el test completa en milisegundos sin ninguna conexión de red real — `EnviosRepositoryFake` responde exactamente lo configurado con `when(...).thenAnswer(...)`, sin depender de que el backend de RutaFlow esté corriendo.
+Resultado esperado: el unit test verifica la regla de negocio en milisegundos sin ningún widget involucrado; el widget test renderiza `TarjetaEnvio` en un entorno simulado y confirma que el texto "RF-4471" aparece, sin necesitar un emulador completo corriendo.
 
 #### Paso 5 · Práctica guiada
-Pista: en un segundo test, llamá a `vm.cargar()` sin haber configurado ningún `when(() => repo.obtenerEnvios())` sobre el mock — ese es el fallo deliberado: `mocktail` lanza una excepción indicando que ese método no tiene ningún comportamiento configurado, en vez de devolver silenciosamente `null` o una lista vacía.
+Pista: en un tercer test, simulá tocar el botón "Marcar revisado" con `tester.tap(...)` pero no llamés a `tester.pump()` después — ese es el fallo deliberado: la aserción que verifica que el ícono cambió a "revisado" falla, aunque el `onPressed` sí se ejecutó correctamente, porque el test nunca le pidió a Flutter que reconstruyera el árbol para reflejar el `setState()` disparado por ese tap.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando el `when(...)` correspondiente antes de llamar a `cargar()`, y agregá un tercer test que configure el mock para lanzar una excepción (`thenThrow`), confirmando que `EnviosViewModel` maneja ese error sin crashear.
+Corregí el Paso 5 agregando `await tester.pump()` inmediatamente después del `tap`, y confirmá que ahora la aserción sobre el ícono "revisado" pasa correctamente.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el mock configurado del Paso 4, el error por mock sin configurar del Paso 5, y el test del camino de error del Paso 6; explicá por qué que `mocktail` falle explícitamente ante un método sin configurar ayuda a detectar tests incompletos. Siguiente paso: estudia integration tests para el flujo completo end-to-end. Errores comunes: depender de una API real en un test que debería estar aislado, no configurar el comportamiento de un método del mock antes de invocarlo, y mockear solo el camino feliz sin probar el camino de error. Fuentes oficiales: https://pub.dev/packages/mocktail y https://docs.flutter.dev/cookbook/testing/unit/mocking.
-**¿Por qué es importante?** Aislar dependencias externas con `mocktail` hace los tests más rápidos y confiables, sin depender de la disponibilidad de servicios externos reales.
+Entregá el unit test y el widget test del Paso 4, el fallo por `pump()` faltante del Paso 5, y la corrección del Paso 6; explicá por qué un widget test necesita simular explícitamente el ciclo de reconstrucción que un dispositivo real haría automáticamente. Siguiente paso: estudia cómo mockear dependencias con mocktail. Errores comunes: olvidar `tester.pump()` tras simular una interacción, escribir un widget test para lógica que en realidad es pura, y buscar widgets por texto visible cuando ese texto puede cambiar por copywriting. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/overview.
+**¿Por qué es importante?** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real.
+
+### Tema 2: Mocking con mocktail
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a mockear `EnviosRepository` con `mocktail` para testear `EnviosViewModel` sin hacer ninguna llamada de red real. Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Testear `EnviosViewModel.cargar()` contra la API real de RutaFlow haría el test lento, dependiente de que el backend esté disponible, y frágil ante cualquier cambio en los datos reales de prueba.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`mocktail` genera un mock de una dependencia, permitiendo configurar exactamente qué debe devolver un método específico sin una implementación real completa.
+
 **Evidencia de aprendizaje:** entrega mock configurado, error por mock sin configurar detectado y test del camino de error.
 **Conceptos clave:** aislar el widget bajo prueba de sus dependencias reales.
 
@@ -183,6 +151,40 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, el mock vive en `test/envios_viewmodel_test.dart` sobre `lib/features/deliveries/domain/delivery_providers.dart`. Límite de la decisión: no conviene mockear una dependencia que no tiene efectos externos reales (una función pura de cálculo, por ejemplo) — ahí llamarla directamente en el test es más simple y claro; reservá `mocktail` específicamente para dependencias con red, disco o estado externo real.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+class EnviosRepositoryFake extends Mock implements EnviosRepository {}
+
+test('el ViewModel carga envíos del repositorio', () async {
+  final repo = EnviosRepositoryFake();
+  when(() => repo.obtenerEnvios()).thenAnswer((_) async => [envioDePrueba]);
+  final vm = EnviosViewModel(repo);
+  await vm.cargar();
+  expect(vm.envios, [envioDePrueba]);
+});
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: el test completa en milisegundos sin ninguna conexión de red real — `EnviosRepositoryFake` responde exactamente lo configurado con `when(...).thenAnswer(...)`, sin depender de que el backend de RutaFlow esté corriendo.
+
+#### Paso 5 · Práctica guiada
+Pista: en un segundo test, llamá a `vm.cargar()` sin haber configurado ningún `when(() => repo.obtenerEnvios())` sobre el mock — ese es el fallo deliberado: `mocktail` lanza una excepción indicando que ese método no tiene ningún comportamiento configurado, en vez de devolver silenciosamente `null` o una lista vacía.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 agregando el `when(...)` correspondiente antes de llamar a `cargar()`, y agregá un tercer test que configure el mock para lanzar una excepción (`thenThrow`), confirmando que `EnviosViewModel` maneja ese error sin crashear.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el mock configurado del Paso 4, el error por mock sin configurar del Paso 5, y el test del camino de error del Paso 6; explicá por qué que `mocktail` falle explícitamente ante un método sin configurar ayuda a detectar tests incompletos. Siguiente paso: estudia integration tests para el flujo completo end-to-end. Errores comunes: depender de una API real en un test que debería estar aislado, no configurar el comportamiento de un método del mock antes de invocarlo, y mockear solo el camino feliz sin probar el camino de error. Fuentes oficiales: https://pub.dev/packages/mocktail y https://docs.flutter.dev/cookbook/testing/unit/mocking.
+**¿Por qué es importante?** Aislar dependencias externas con `mocktail` hace los tests más rápidos y confiables, sin depender de la disponibilidad de servicios externos reales.
 
 ### Tema 3: Integration tests
 

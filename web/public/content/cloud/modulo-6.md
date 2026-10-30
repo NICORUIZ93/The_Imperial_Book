@@ -11,28 +11,7 @@ Al finalizar vas a crear el contenedor de API REST que, en los siguientes Temas,
 La app del conductor de RutaFlow necesita confirmar una entrega al toque, con conexión directa, en vez de depender siempre de la cola asíncrona `DeliveryCommands` del Módulo 5 Tema 6 — eso exige un endpoint HTTP síncrono.
 #### Paso 3 · Teoría, modelo mental y analogía
 API Gateway es recepción, enrutamiento y control en una sola puerta entre el cliente HTTP y tu Lambda.
-#### Paso 4 · Demostración guiada
-```bash
-API_ID=$(aws apigateway create-rest-api --name "API RutaFlow" --query id --output text)
-ROOT_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --query 'items[0].id' --output text)
-echo "API_ID=$API_ID ROOT_ID=$ROOT_ID"
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: `API_ID` y `ROOT_ID` quedan guardados en variables de shell — todavía no hay ningún recurso propio ni ningún método, solo el contenedor vacío y su raíz (`/`).
-#### Paso 5 · Práctica guiada
-Pista: probá `curl http://localhost:4566/restapis/$API_ID/dev/_user_request_/entregas` ahora mismo, antes de crear nada más — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, porque ni el recurso `/entregas` ni el stage `dev` existen todavía.
-#### Paso 6 · Práctica independiente
-Corré `aws apigateway get-rest-apis` y confirmá que "API RutaFlow" aparece en la lista con el mismo `id` que guardaste en `API_ID` — es el mismo objeto, solo lo estás consultando por otro camino.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación de la API, el error de ruta inexistente del Paso 5 y la confirmación del Paso 6; explicá qué falta todavía para que `/entregas` responda algo. Siguiente paso: recursos. Errores comunes: exponer rutas internas y no limitar tráfico. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html.
 **Conceptos clave:** puerta de entrada (gateway), API REST, API HTTP, API WebSocket, comunicación bidireccional.
 
 API Gateway es el servicio que actúa como puerta de entrada única entre el mundo exterior (clientes HTTP: navegadores, aplicaciones móviles, otros servicios) y la lógica de tu backend, que puede vivir en Lambda, en un servidor tradicional, o en otro servicio de AWS. En vez de que cada cliente hable directamente con tus funciones Lambda (lo cual no sería siquiera posible de forma nativa, porque Lambda no expone un endpoint HTTP por sí sola), API Gateway recibe la petición HTTP, la transforma en el formato que tu backend espera, invoca ese backend, y transforma la respuesta de vuelta a un formato HTTP válido para el cliente.
@@ -66,6 +45,29 @@ principio: acá se usa REST a propósito, porque este módulo necesita el contro
 modelos de validación del Tema 4, algo que API HTTP no conviene usar si tu caso real no lo
 necesita.
 
+#### Paso 4 · Demostración guiada
+```bash
+API_ID=$(aws apigateway create-rest-api --name "API RutaFlow" --query id --output text)
+ROOT_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --query 'items[0].id' --output text)
+echo "API_ID=$API_ID ROOT_ID=$ROOT_ID"
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: `API_ID` y `ROOT_ID` quedan guardados en variables de shell — todavía no hay ningún recurso propio ni ningún método, solo el contenedor vacío y su raíz (`/`).
+#### Paso 5 · Práctica guiada
+Pista: probá `curl http://localhost:4566/restapis/$API_ID/dev/_user_request_/entregas` ahora mismo, antes de crear nada más — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, porque ni el recurso `/entregas` ni el stage `dev` existen todavía.
+#### Paso 6 · Práctica independiente
+Corré `aws apigateway get-rest-apis` y confirmá que "API RutaFlow" aparece en la lista con el mismo `id` que guardaste en `API_ID` — es el mismo objeto, solo lo estás consultando por otro camino.
+#### Paso 7 · Cierre y evidencia
+Entregá la creación de la API, el error de ruta inexistente del Paso 5 y la confirmación del Paso 6; explicá qué falta todavía para que `/entregas` responda algo. Siguiente paso: recursos. Errores comunes: exponer rutas internas y no limitar tráfico. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html.
+
 ### Tema 2: Recursos, métodos y stages
 
 #### Paso 1 · Objetivo y preparación
@@ -74,19 +76,6 @@ Al finalizar vas a crear el recurso `/entregas` con el único método que necesi
 Confirmar una entrega es una acción que cambia estado (escribe en `ShipmentEvents`), no una consulta — por eso el contrato HTTP correcto es `POST /entregas`, no `GET`.
 #### Paso 3 · Teoría, modelo mental y analogía
 El recurso es el destino (`/entregas`); el método es la acción permitida sobre ese destino (`POST`); el stage, que llega en el Tema 5, es el ambiente donde eso se publica.
-#### Paso 4 · Demostración guiada
-```bash
-ENTREGAS_ID=$(aws apigateway create-resource --rest-api-id "$API_ID" --parent-id "$ROOT_ID" --path-part entregas --query id --output text)
-aws apigateway put-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST --authorization-type NONE
-```
-Resultado esperado: `put-method` devuelve un JSON confirmando `httpMethod: POST` sobre el recurso `/entregas` — el contrato ya existe, aunque todavía no esté conectado a ningún backend (eso es el Tema 3).
-#### Paso 5 · Práctica guiada
-Pista: intentá `aws apigateway put-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method GET --authorization-type NONE` y después invocá con `curl -X GET` sobre el endpoint desplegado (una vez llegues al Tema 5) — ese GET nunca debería existir para este recurso: `/entregas` solo tiene sentido como `POST`, un `GET` ahí es un contrato mal diseñado, no solo un método de más.
-#### Paso 6 · Práctica independiente
-Confirmá con `aws apigateway get-resource --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID"` que el recurso ahora lista ambos métodos (`POST` del Paso 4, `GET` del Paso 5) bajo `resourceMethods`, y borrá el `GET` con `aws apigateway delete-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method GET` para dejar el contrato limpio otra vez.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación de `/entregas` con `POST`, el `GET` agregado por error y su borrado; explicá por qué `POST` es el verbo correcto acá y no `GET`. Siguiente paso: integraciones. Errores comunes: mezclar stages y verbos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-definition.html.
-### Fallo Deliberado: User: arn:aws:apigateway is not authorized to invoke
 
 **Error real:**
 ```error-output
@@ -169,6 +158,20 @@ en producción, declararías junto a `ConfirmarEntregaFn` en
 `create-resource`/`put-method` manuales que acabás de ejecutar — infraestructura como código en
 vez de pasos sueltos de CLI.
 
+#### Paso 4 · Demostración guiada
+```bash
+ENTREGAS_ID=$(aws apigateway create-resource --rest-api-id "$API_ID" --parent-id "$ROOT_ID" --path-part entregas --query id --output text)
+aws apigateway put-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST --authorization-type NONE
+```
+Resultado esperado: `put-method` devuelve un JSON confirmando `httpMethod: POST` sobre el recurso `/entregas` — el contrato ya existe, aunque todavía no esté conectado a ningún backend (eso es el Tema 3).
+#### Paso 5 · Práctica guiada
+Pista: intentá `aws apigateway put-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method GET --authorization-type NONE` y después invocá con `curl -X GET` sobre el endpoint desplegado (una vez llegues al Tema 5) — ese GET nunca debería existir para este recurso: `/entregas` solo tiene sentido como `POST`, un `GET` ahí es un contrato mal diseñado, no solo un método de más.
+#### Paso 6 · Práctica independiente
+Confirmá con `aws apigateway get-resource --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID"` que el recurso ahora lista ambos métodos (`POST` del Paso 4, `GET` del Paso 5) bajo `resourceMethods`, y borrá el `GET` con `aws apigateway delete-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method GET` para dejar el contrato limpio otra vez.
+#### Paso 7 · Cierre y evidencia
+Entregá la creación de `/entregas` con `POST`, el `GET` agregado por error y su borrado; explicá por qué `POST` es el verbo correcto acá y no `GET`. Siguiente paso: integraciones. Errores comunes: mezclar stages y verbos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-definition.html.
+### Fallo Deliberado: User: arn:aws:apigateway is not authorized to invoke
+
 ### Tema 3: Integración con Lambda (proxy)
 
 #### Paso 1 · Objetivo y preparación
@@ -177,23 +180,7 @@ Al finalizar vas a conectar `POST /entregas` con la función `confirmar-entrega`
 `confirmar-entrega` ya sabe devolver `{statusCode, body}` desde el Módulo 5 Tema 4 — exactamente el contrato que una integración proxy espera, sin que tengas que reescribir nada del handler.
 #### Paso 3 · Teoría, modelo mental y analogía
 La integración proxy entrega el paquete completo sin abrirlo; la integración no proxy lo reempaqueta con reglas (VTL) antes de entregarlo.
-#### Paso 4 · Demostración guiada
-```bash
-aws apigateway put-integration --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST \
-  --type AWS_PROXY --integration-http-method POST \
-  --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:confirmar-entrega/invocations
-aws lambda add-permission --function-name confirmar-entrega --statement-id apigw-entregas \
-  --action lambda:InvokeFunction --principal apigateway.amazonaws.com \
-  --source-arn "arn:aws:execute-api:us-east-1:000000000000:$API_ID/*/POST/entregas"
-```
-Resultado esperado: `put-integration` confirma `type: AWS_PROXY`; `add-permission` devuelve la política de recurso agregada a `confirmar-entrega` — sin ese segundo comando, API Gateway no tiene autorización para invocar la función aunque la integración esté bien configurada.
-#### Paso 5 · Práctica guiada
-Pista: comentá mentalmente (o probá de verdad) qué pasaría si NO hubieras corrido el `add-permission` del Paso 4 — ese es el fallo real documentado en el laboratorio de este módulo: el `curl` contra el endpoint responde con un error 500 genérico, aunque invocar `confirmar-entrega` directamente con `aws lambda invoke` funcione perfecto. El problema nunca está en la Lambda en sí, está en el permiso que falta entre los dos servicios.
-**Fallo deliberado:** quitá (o nunca corras) el `add-permission` del Paso 4, dejando solo el `put-integration` — provoca que el `curl` contra el endpoint responda con un error 500 genérico de API Gateway, mientras que invocar `confirmar-entrega` directamente con `aws lambda invoke` sigue funcionando sin problema; diagnosticalo corriendo `aws lambda get-policy --function-name confirmar-entrega` y confirmando que el `Sid: apigw-entregas` nunca se creó.
-#### Paso 6 · Práctica independiente
-Confirmá el permiso ya otorgado con `aws lambda get-policy --function-name confirmar-entrega`, y ubicá dentro del JSON el `Sid: apigw-entregas` con el `Resource` apuntando a tu `API_ID` — esa es la diferencia concreta entre "configurado" y "autorizado".
-#### Paso 7 · Cierre y evidencia
-Entregá la integración creada, el permiso otorgado y el diagnóstico del error 500 que ocurriría sin ese permiso; explicá por qué ese error no apunta directamente a "falta un permiso". Siguiente paso: modelos. Errores comunes: permisos implícitos y payload incompatible. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html.
+
 **Conceptos clave:** integración proxy (`AWS_PROXY`), integración no proxy (`AWS`), plantilla de mapeo, permisos de invocación.
 
 Una integración es la configuración que le dice a API Gateway qué hacer cuando llega una petición a un método específico: a qué backend reenviarla, y cómo transformar los datos en el camino de ida y de vuelta. La integración proxy con Lambda (identificada internamente como `AWS_PROXY`) es, con diferencia, la más simple y la más usada en la práctica moderna: API Gateway reenvía la petición HTTP completa —método, ruta, cabeceras, parámetros de consulta, cuerpo— empaquetada tal cual dentro del `event` que recibe tu función Lambda, sin ninguna transformación intermedia configurable. A cambio, como viste en el Módulo 5, tu función es responsable de devolver la respuesta ya en el formato exacto que API Gateway espera (`statusCode`, `headers`, `body`).
@@ -245,6 +232,24 @@ implícito que SAM genera a partir del evento `Api:` de `ConfirmarEntregaFn` en
 `examples/rutaflow/cloud/template.yaml` reemplazan en producción los dos comandos manuales
 (`put-integration` y `add-permission`) que ejecutaste arriba.
 **Evidencia de aprendizaje:** entrega el `put-integration` confirmado del Paso 4, el error 500 reproducido sin permiso del Paso 5, y la política con `Sid: apigw-entregas` verificada en el Paso 6.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws apigateway put-integration --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST \
+  --type AWS_PROXY --integration-http-method POST \
+  --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:confirmar-entrega/invocations
+aws lambda add-permission --function-name confirmar-entrega --statement-id apigw-entregas \
+  --action lambda:InvokeFunction --principal apigateway.amazonaws.com \
+  --source-arn "arn:aws:execute-api:us-east-1:000000000000:$API_ID/*/POST/entregas"
+```
+Resultado esperado: `put-integration` confirma `type: AWS_PROXY`; `add-permission` devuelve la política de recurso agregada a `confirmar-entrega` — sin ese segundo comando, API Gateway no tiene autorización para invocar la función aunque la integración esté bien configurada.
+#### Paso 5 · Práctica guiada
+Pista: comentá mentalmente (o probá de verdad) qué pasaría si NO hubieras corrido el `add-permission` del Paso 4 — ese es el fallo real documentado en el laboratorio de este módulo: el `curl` contra el endpoint responde con un error 500 genérico, aunque invocar `confirmar-entrega` directamente con `aws lambda invoke` funcione perfecto. El problema nunca está en la Lambda en sí, está en el permiso que falta entre los dos servicios.
+**Fallo deliberado:** quitá (o nunca corras) el `add-permission` del Paso 4, dejando solo el `put-integration` — provoca que el `curl` contra el endpoint responda con un error 500 genérico de API Gateway, mientras que invocar `confirmar-entrega` directamente con `aws lambda invoke` sigue funcionando sin problema; diagnosticalo corriendo `aws lambda get-policy --function-name confirmar-entrega` y confirmando que el `Sid: apigw-entregas` nunca se creó.
+#### Paso 6 · Práctica independiente
+Confirmá el permiso ya otorgado con `aws lambda get-policy --function-name confirmar-entrega`, y ubicá dentro del JSON el `Sid: apigw-entregas` con el `Resource` apuntando a tu `API_ID` — esa es la diferencia concreta entre "configurado" y "autorizado".
+#### Paso 7 · Cierre y evidencia
+Entregá la integración creada, el permiso otorgado y el diagnóstico del error 500 que ocurriría sin ese permiso; explicá por qué ese error no apunta directamente a "falta un permiso". Siguiente paso: modelos. Errores comunes: permisos implícitos y payload incompatible. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html.
 ### Tema 4: Mapeo de entrada/salida y validación con modelos
 
 #### Paso 1 · Objetivo y preparación
@@ -253,20 +258,7 @@ Al finalizar vas a rechazar un comando de entrega malformado en API Gateway mism
 `confirmar-entrega` ya valida `shipmentId`/`recipientPin` dentro del handler (Módulo 5), pero eso significa pagar una invocación completa de Lambda solo para rechazar un JSON mal formado — un modelo en API Gateway filtra eso una capa antes, gratis.
 #### Paso 3 · Teoría, modelo mental y analogía
 El modelo es un formulario obligatorio en la puerta: si el paquete no cumple el formato mínimo, ni siquiera entra al edificio.
-#### Paso 4 · Demostración guiada
-```bash
-aws apigateway create-model --rest-api-id "$API_ID" --name EntregaModel --content-type application/json --schema \
-  '{"$schema":"http://json-schema.org/draft-04/schema#","title":"EntregaModel","type":"object","required":["shipmentId","recipientPin"],"properties":{"shipmentId":{"type":"string"},"recipientPin":{"type":"string"}}}'
-aws apigateway update-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST \
-  --patch-operations op=replace,path=/requestValidatorId,value="$(aws apigateway create-request-validator --rest-api-id "$API_ID" --name validar-body --validate-request-body --query id --output text)"
-```
-Resultado esperado: `create-model` y `create-request-validator` devuelven sus respectivos JSON sin error; `update-method` confirma que `POST /entregas` ahora tiene un `requestValidatorId` asociado.
-#### Paso 5 · Práctica guiada
-Pista: una vez desplegado (Tema 5), un `curl -X POST .../entregas -d '{"shipmentId":"env-4471"}'` (sin `recipientPin`) es el fallo deliberado — API Gateway responde `400 {"message":"Invalid request body"}` directamente, sin que `confirmar-entrega` se invoque ni una sola vez; compará esto con el 500 del Tema 3, que sí pasaba por la Lambda.
-#### Paso 6 · Práctica independiente
-Confirmá con `aws apigateway get-model --rest-api-id "$API_ID" --model-name EntregaModel` que el esquema sigue intacto, y agregá un patrón de formato al campo `recipientPin` (`"pattern": "^\\d{6}$"`) para que el modelo rechace también un PIN con letras, no solo un PIN ausente.
-#### Paso 7 · Cierre y evidencia
-Entregá el modelo y el validador creados, el 400 del Paso 5 sin invocar la Lambda, y el patrón agregado en el Paso 6; explicá la diferencia entre el 400 de este Tema y el 400 que ya devolvía el propio handler en el Módulo 5. Siguiente paso: despliegue. Errores comunes: validar solo en frontend y aceptar tipos ambiguos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-request-validation.html.
+
 **Conceptos clave:** modelo (model), esquema JSON, validación de petición, mapeo de parámetros.
 
 Un modelo en API Gateway es un esquema (siguiendo la convención de JSON Schema) que define la estructura esperada del cuerpo de una petición: qué campos son obligatorios, de qué tipo debe ser cada uno, y qué restricciones adicionales deben cumplir (por ejemplo, que un campo `email` siga un patrón de formato válido, o que un campo `cantidad` sea un número positivo). Cuando asocias un modelo a un método y activas la validación de petición, API Gateway rechaza automáticamente, antes de siquiera invocar tu Lambda, cualquier petición cuyo cuerpo no cumpla ese esquema, devolviendo un error 400 con detalles de qué campo falló la validación.
@@ -299,6 +291,21 @@ En el proyecto integrador RutaFlow, este `EntregaModel` es el que validaría en 
 mismo payload `{shipmentId, recipientPin}` que `ConfirmarEntregaFn` (en
 `examples/rutaflow/cloud/template.yaml`) ya valida internamente — defensa en profundidad entre
 API Gateway y la propia función.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws apigateway create-model --rest-api-id "$API_ID" --name EntregaModel --content-type application/json --schema \
+  '{"$schema":"http://json-schema.org/draft-04/schema#","title":"EntregaModel","type":"object","required":["shipmentId","recipientPin"],"properties":{"shipmentId":{"type":"string"},"recipientPin":{"type":"string"}}}'
+aws apigateway update-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST \
+  --patch-operations op=replace,path=/requestValidatorId,value="$(aws apigateway create-request-validator --rest-api-id "$API_ID" --name validar-body --validate-request-body --query id --output text)"
+```
+Resultado esperado: `create-model` y `create-request-validator` devuelven sus respectivos JSON sin error; `update-method` confirma que `POST /entregas` ahora tiene un `requestValidatorId` asociado.
+#### Paso 5 · Práctica guiada
+Pista: una vez desplegado (Tema 5), un `curl -X POST .../entregas -d '{"shipmentId":"env-4471"}'` (sin `recipientPin`) es el fallo deliberado — API Gateway responde `400 {"message":"Invalid request body"}` directamente, sin que `confirmar-entrega` se invoque ni una sola vez; compará esto con el 500 del Tema 3, que sí pasaba por la Lambda.
+#### Paso 6 · Práctica independiente
+Confirmá con `aws apigateway get-model --rest-api-id "$API_ID" --model-name EntregaModel` que el esquema sigue intacto, y agregá un patrón de formato al campo `recipientPin` (`"pattern": "^\\d{6}$"`) para que el modelo rechace también un PIN con letras, no solo un PIN ausente.
+#### Paso 7 · Cierre y evidencia
+Entregá el modelo y el validador creados, el 400 del Paso 5 sin invocar la Lambda, y el patrón agregado en el Paso 6; explicá la diferencia entre el 400 de este Tema y el 400 que ya devolvía el propio handler en el Módulo 5. Siguiente paso: despliegue. Errores comunes: validar solo en frontend y aceptar tipos ambiguos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-request-validation.html.
 
 ### Tema 5: Despliegue y variables de stage
 

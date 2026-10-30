@@ -14,35 +14,6 @@ Un desarrollador nuevo se incorpora al proyecto integrador y no tiene claro si d
 #### Paso 3 · Teoría, modelo mental y analogía
 La arquitectura organiza `shared/src/commonMain/kotlin/` en `dominio/` (modelos y casos de uso) y `data/` (repositorios combinando Ktor y SQLDelight), con `commonTest/` verificando esa lógica con fakes; `androidApp/` e `iosApp/` contienen solo la UI específica de cada plataforma. La analogía es una fábrica central que produce el componente común, distribuido hacia dos plantas de ensamblaje final especializadas.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-shared/src/
-  commonMain/kotlin/
-    dominio/        <- modelos + casos de uso (Módulo 4)
-    data/           <- TareaRepositoryImpl (Ktor + SQLDelight, Módulos 5-6)
-  commonTest/        <- tests con fakes (Módulo 9)
-androidApp/           <- UI Compose o Jetpack Compose nativo
-iosApp/                <- UI SwiftUI consumiendo Shared.framework (Módulo 8)
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: cualquier regla de negocio nueva (como una validación de tareas) tiene un lugar inequívoco donde vivir — `dominio/` si es lógica pura, `data/` si involucra persistencia — y ninguna de las dos apps específicas de plataforma necesita reimplementarla.
-
-#### Paso 5 · Práctica guiada
-Pista: cuando el desarrollador nuevo pregunta dónde poner la nueva validación, decile "poné una copia en Android y otra en iOS, así cada equipo controla su propia versión". Ese es el fallo deliberado: ahora existen dos implementaciones independientes de la misma regla de negocio que, inevitablemente, divergen en el primer cambio futuro que solo se aplique a una de las dos copias.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 moviendo la validación a `dominio/` en `commonMain`, escribiendo su test en `commonTest`, y documentando en el README del proyecto el criterio explícito: "toda regla de negocio nueva vive en `commonMain` salvo que dependa genuinamente de una API nativa de plataforma".
-
-#### Paso 7 · Cierre y evidencia
-Entregá la estructura documentada del Paso 4, la duplicación evitable del Paso 5, y el criterio documentado del Paso 6; explicá por qué una decisión de arquitectura sin un criterio explícito y escrito termina resolviéndose caso por caso de forma inconsistente entre desarrolladores. Siguiente paso: implementá la sincronización de datos remotos con caché local dentro de `data/`. Errores comunes: no documentar explícitamente el criterio de qué vive en `commonMain` frente a cada plataforma, dejar que cada desarrollador decida el límite caso por caso sin un criterio compartido, y mezclar lógica de UI dentro de `dominio/`. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-discover-project.html y https://kotlinlang.org/docs/multiplatform-architect-your-app.html.
-**¿Por qué es importante?** El proyecto integrador demuestra el patrón central de KMP en su forma más completa: maximizar código compartido verificado una única vez, aislando en cada plataforma únicamente lo que genuinamente requiere integración nativa específica.
 **Evidencia de aprendizaje:** entrega estructura documentada, duplicación evitable detectada y criterio de capas documentado en el README.
 **Conceptos clave:** capas compartidas frente a UI específica o compartida, tests con fakes.
 
@@ -79,6 +50,36 @@ flowchart TD
     Repo --> IOS[iosApp: solo UI]
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+```text
+shared/src/
+  commonMain/kotlin/
+    dominio/        <- modelos + casos de uso (Módulo 4)
+    data/           <- TareaRepositoryImpl (Ktor + SQLDelight, Módulos 5-6)
+  commonTest/        <- tests con fakes (Módulo 9)
+androidApp/           <- UI Compose o Jetpack Compose nativo
+iosApp/                <- UI SwiftUI consumiendo Shared.framework (Módulo 8)
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: cualquier regla de negocio nueva (como una validación de tareas) tiene un lugar inequívoco donde vivir — `dominio/` si es lógica pura, `data/` si involucra persistencia — y ninguna de las dos apps específicas de plataforma necesita reimplementarla.
+
+#### Paso 5 · Práctica guiada
+Pista: cuando el desarrollador nuevo pregunta dónde poner la nueva validación, decile "poné una copia en Android y otra en iOS, así cada equipo controla su propia versión". Ese es el fallo deliberado: ahora existen dos implementaciones independientes de la misma regla de negocio que, inevitablemente, divergen en el primer cambio futuro que solo se aplique a una de las dos copias.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 moviendo la validación a `dominio/` en `commonMain`, escribiendo su test en `commonTest`, y documentando en el README del proyecto el criterio explícito: "toda regla de negocio nueva vive en `commonMain` salvo que dependa genuinamente de una API nativa de plataforma".
+
+#### Paso 7 · Cierre y evidencia
+Entregá la estructura documentada del Paso 4, la duplicación evitable del Paso 5, y el criterio documentado del Paso 6; explicá por qué una decisión de arquitectura sin un criterio explícito y escrito termina resolviéndose caso por caso de forma inconsistente entre desarrolladores. Siguiente paso: implementá la sincronización de datos remotos con caché local dentro de `data/`. Errores comunes: no documentar explícitamente el criterio de qué vive en `commonMain` frente a cada plataforma, dejar que cada desarrollador decida el límite caso por caso sin un criterio compartido, y mezclar lógica de UI dentro de `dominio/`. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-discover-project.html y https://kotlinlang.org/docs/multiplatform-architect-your-app.html.
+**¿Por qué es importante?** El proyecto integrador demuestra el patrón central de KMP en su forma más completa: maximizar código compartido verificado una única vez, aislando en cada plataforma únicamente lo que genuinamente requiere integración nativa específica.
+
 ### Tema 2: Sincronización de datos remotos con caché local
 
 #### Paso 1 · Objetivo y preparación
@@ -90,40 +91,6 @@ Un usuario de la app de tareas entra a un túnel sin señal y la app muestra una
 #### Paso 3 · Teoría, modelo mental y analogía
 El patrón "red primero, con fallback a caché local" combina ambas capas de persistencia en una única fuente de verdad: si la petición remota tiene éxito, actualiza la caché local antes de leerla; si falla, recurre directamente a los datos ya existentes en la caché. La analogía es un asistente que consulta primero la fuente más actualizada, pero recurre a la última copia confiable si esa fuente no está accesible.
 
-#### Paso 4 · Demostración guiada desde cero
-```kotlin
-class TareaRepositoryImpl(
-    private val api: HttpClient,
-    private val db: Database,
-) : TareaRepository {
-    override suspend fun obtenerTodas(): List<Tarea> = try {
-        val remotas = api.get("/tareas").body<List<TareaDTO>>()
-        db.tareaQueries.transaction { remotas.forEach { guardarLocal(it) } }
-        db.tareaQueries.selectTodas().executeAsList()
-    } catch (e: Exception) {
-        db.tareaQueries.selectTodas().executeAsList() // fallback offline a la caché local
-    }
-}
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: con conexión, `obtenerTodas()` devuelve datos remotos frescos ya persistidos en caché; sin conexión, el mismo método devuelve los últimos datos guardados en caché en vez de propagar la excepción de red hacia la UI.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá el bloque `try/catch` dejando solo la llamada directa a `api.get(...)` "porque simplifica el código". Ese es el fallo deliberado: al simular un corte de red (apagando el servidor Floci local), `obtenerTodas()` ahora propaga la excepción sin capturarla, y la pantalla de tareas muestra un error completo en vez de las tareas ya cacheadas de la sesión anterior.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `try/catch` con fallback a `db.tareaQueries.selectTodas()`, y verificá manualmente el comportamiento apagando el servidor Floci local (Módulo 5) y confirmando que la pantalla sigue mostrando las tareas de la última sincronización exitosa.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el repositorio con fallback del Paso 4, la pantalla de error reproducida del Paso 5, y la verificación manual sin red del Paso 6; explicá por qué "simplificar" eliminando el manejo de errores de red convierte un problema de conectividad temporal en una falla completa de la aplicación. Siguiente paso: cerrá el track reflexionando sobre qué compartir realmente entre Android e iOS. Errores comunes: no implementar ningún fallback offline en el repositorio, decidir compartir la lógica de sincronización pero duplicarla por error en cada plataforma, y no probar manualmente el comportamiento sin conexión antes de confiar en el fallback. Fuentes oficiales: https://ktor.io/docs/client-exceptions.html y https://cashapp.github.io/sqldelight/.
-**¿Por qué es importante?** Combinar Ktor y SQLDelight en el repositorio compartido, con fallback offline a la caché local, hace que ambas plataformas se beneficien exactamente del mismo comportamiento de resiliencia ante conectividad intermitente, sin duplicar esa lógica de sincronización por separado.
 **Evidencia de aprendizaje:** entrega repositorio con fallback funcionando, pantalla de error sin manejo reproducida y verificación manual sin red confirmada.
 **Conceptos clave:** repositorio como única fuente de verdad, fallback offline.
 
@@ -178,6 +145,41 @@ flowchart TD
 El proyecto integrador RutaFlow resuelve el mismo problema desde el otro extremo: en vez de leer con fallback, `SyncEngine.drain()` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) escribe con reintento — cuando `DeliveryApi.send()` falla, el comando queda en el `Outbox` con `scheduleRetry` en vez de perderse, el mismo principio de "la red puede fallar, el dato local no se descarta" aplicado a escrituras en vez de lecturas.
 
 **Cuándo no conviene este patrón:** si los datos cambian con una frecuencia tan alta que una lectura desde caché desactualizada induce al usuario a tomar una decisión incorrecta (precios en una subasta en vivo, por ejemplo), servir un fallback silencioso es peor que mostrar explícitamente un error de conectividad; el trade-off entre disponibilidad (mostrar algo, aunque esté desactualizado) y consistencia (no mostrar nada que no esté confirmado) depende del costo real de un dato obsoleto en ese dominio específico.
+
+#### Paso 4 · Demostración guiada desde cero
+```kotlin
+class TareaRepositoryImpl(
+    private val api: HttpClient,
+    private val db: Database,
+) : TareaRepository {
+    override suspend fun obtenerTodas(): List<Tarea> = try {
+        val remotas = api.get("/tareas").body<List<TareaDTO>>()
+        db.tareaQueries.transaction { remotas.forEach { guardarLocal(it) } }
+        db.tareaQueries.selectTodas().executeAsList()
+    } catch (e: Exception) {
+        db.tareaQueries.selectTodas().executeAsList() // fallback offline a la caché local
+    }
+}
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: con conexión, `obtenerTodas()` devuelve datos remotos frescos ya persistidos en caché; sin conexión, el mismo método devuelve los últimos datos guardados en caché en vez de propagar la excepción de red hacia la UI.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá el bloque `try/catch` dejando solo la llamada directa a `api.get(...)` "porque simplifica el código". Ese es el fallo deliberado: al simular un corte de red (apagando el servidor Floci local), `obtenerTodas()` ahora propaga la excepción sin capturarla, y la pantalla de tareas muestra un error completo en vez de las tareas ya cacheadas de la sesión anterior.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando el `try/catch` con fallback a `db.tareaQueries.selectTodas()`, y verificá manualmente el comportamiento apagando el servidor Floci local (Módulo 5) y confirmando que la pantalla sigue mostrando las tareas de la última sincronización exitosa.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el repositorio con fallback del Paso 4, la pantalla de error reproducida del Paso 5, y la verificación manual sin red del Paso 6; explicá por qué "simplificar" eliminando el manejo de errores de red convierte un problema de conectividad temporal en una falla completa de la aplicación. Siguiente paso: cerrá el track reflexionando sobre qué compartir realmente entre Android e iOS. Errores comunes: no implementar ningún fallback offline en el repositorio, decidir compartir la lógica de sincronización pero duplicarla por error en cada plataforma, y no probar manualmente el comportamiento sin conexión antes de confiar en el fallback. Fuentes oficiales: https://ktor.io/docs/client-exceptions.html y https://cashapp.github.io/sqldelight/.
+**¿Por qué es importante?** Combinar Ktor y SQLDelight en el repositorio compartido, con fallback offline a la caché local, hace que ambas plataformas se beneficien exactamente del mismo comportamiento de resiliencia ante conectividad intermitente, sin duplicar esa lógica de sincronización por separado.
 
 ### Tema 3: Cierre del track — la promesa realista de KMP
 

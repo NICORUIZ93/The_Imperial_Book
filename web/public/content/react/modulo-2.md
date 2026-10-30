@@ -32,6 +32,32 @@ graph TD
     style C fill:#4caf50
 ```
 
+**Evidencia de aprendizaje:** entrega efecto con cancelación, respuesta obsoleta provocada y segundo efecto agregado.
+**Conceptos clave:** sincronización con sistemas externos, array de dependencias, función de limpieza.
+
+`useEffect` es el mecanismo de React para sincronizar un componente con un sistema externo al propio modelo de React: suscribirse a un evento del navegador (`window.addEventListener('resize', handler)`), establecer una conexión (un WebSocket, un temporizador), o cualquier operación que necesite ejecutarse como reacción a que el componente se montó o a que cierto valor cambió, en vez de como parte directa del cálculo de qué renderizar (que pertenece al cuerpo de la función componente en sí, no a un efecto).
+
+El array de dependencias, segundo argumento de `useEffect`, controla exactamente cuándo el efecto se vuelve a ejecutar: sin ningún array (`useEffect(() => {...})`), el efecto se ejecuta después de cada render, sin excepción; con un array vacío (`useEffect(() => {...}, [])`), se ejecuta una única vez, inmediatamente después del primer montaje del componente; con un array que contiene valores específicos (`useEffect(() => {...}, [valor])`), se ejecuta después del montaje inicial y de nuevo cada vez que cualquiera de esos valores listados cambia entre un render y el siguiente, comparando cada valor mediante igualdad referencial (`Object.is`).
+
+La función que un efecto puede devolver opcionalmente es su función de limpieza, ejecutada por React inmediatamente antes de que el efecto se vuelva a ejecutar (si sus dependencias cambiaron) y también cuando el componente se desmonta definitivamente (`return () => window.removeEventListener('resize', handler)`), garantizando que cualquier suscripción, temporizador o conexión establecida por el efecto se libere correctamente antes de establecer una nueva, o antes de que el componente deje de existir, evitando fugas de memoria del mismo tipo conceptual estudiadas para suscripciones de RxJS en el Módulo 6 del track de Angular, aunque aquí aplicado al modelo de efectos de React en vez de a Observables.
+
+**Analogía:** un efecto sin limpieza es como suscribirse a una lista de correo sin nunca darse de baja, incluso después de mudarse de dirección; la función de limpieza es el mecanismo explícito de darse de baja correctamente antes de suscribirse a una nueva lista o de abandonar definitivamente esa dirección.
+
+**¿Por qué es importante?** El array de dependencias controla con precisión cuándo un efecto se re-ejecuta; la función de limpieza evita fugas de recursos externos (suscripciones, temporizadores, conexiones) que sobrevivirían innecesariamente al componente o a un cambio de dependencias.
+
+**Código del ejemplo:**
+
+```jsx
+useEffect(() => {
+  const handler = () => console.log(window.innerWidth);
+  window.addEventListener('resize', handler);
+  return () => window.removeEventListener('resize', handler); // limpieza al desmontar
+}, []); // array vacío: solo se ejecuta al montar
+```
+
+* Ejecutar: `npm test`
+* Proyecto: proyecto integrador RutaFlow
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 useEffect(() => {
@@ -63,31 +89,6 @@ Corregí el Paso 5 restaurando la cancelación, y agregá un segundo `useEffect`
 #### Paso 7 · Cierre y evidencia
 Entregá el efecto con cancelación del Paso 4, la respuesta obsoleta provocada en el Paso 5, y el segundo efecto del Paso 6; explicá por qué un efecto que hace fetch sin cancelar puede mostrar datos de una petición vieja, aunque esa petición ya no le interese a nadie. Siguiente paso: estudia `useRef` para valores que no disparen un render. Errores comunes: un array de dependencias incompleto que omite `zona`, usar un efecto para calcular un dato derivado que podría calcularse directamente en el render, y olvidar la función de limpieza en cualquier efecto que se suscribe a algo. Fuentes oficiales: https://react.dev/reference/react/useEffect y https://react.dev/learn/synchronizing-with-effects.
 **¿Por qué es importante?** Porque los efectos son la frontera donde React toca red, DOM y recursos externos; sin limpieza, una respuesta obsoleta puede sobrescribir silenciosamente el estado actual.
-**Evidencia de aprendizaje:** entrega efecto con cancelación, respuesta obsoleta provocada y segundo efecto agregado.
-**Conceptos clave:** sincronización con sistemas externos, array de dependencias, función de limpieza.
-
-`useEffect` es el mecanismo de React para sincronizar un componente con un sistema externo al propio modelo de React: suscribirse a un evento del navegador (`window.addEventListener('resize', handler)`), establecer una conexión (un WebSocket, un temporizador), o cualquier operación que necesite ejecutarse como reacción a que el componente se montó o a que cierto valor cambió, en vez de como parte directa del cálculo de qué renderizar (que pertenece al cuerpo de la función componente en sí, no a un efecto).
-
-El array de dependencias, segundo argumento de `useEffect`, controla exactamente cuándo el efecto se vuelve a ejecutar: sin ningún array (`useEffect(() => {...})`), el efecto se ejecuta después de cada render, sin excepción; con un array vacío (`useEffect(() => {...}, [])`), se ejecuta una única vez, inmediatamente después del primer montaje del componente; con un array que contiene valores específicos (`useEffect(() => {...}, [valor])`), se ejecuta después del montaje inicial y de nuevo cada vez que cualquiera de esos valores listados cambia entre un render y el siguiente, comparando cada valor mediante igualdad referencial (`Object.is`).
-
-La función que un efecto puede devolver opcionalmente es su función de limpieza, ejecutada por React inmediatamente antes de que el efecto se vuelva a ejecutar (si sus dependencias cambiaron) y también cuando el componente se desmonta definitivamente (`return () => window.removeEventListener('resize', handler)`), garantizando que cualquier suscripción, temporizador o conexión establecida por el efecto se libere correctamente antes de establecer una nueva, o antes de que el componente deje de existir, evitando fugas de memoria del mismo tipo conceptual estudiadas para suscripciones de RxJS en el Módulo 6 del track de Angular, aunque aquí aplicado al modelo de efectos de React en vez de a Observables.
-
-**Analogía:** un efecto sin limpieza es como suscribirse a una lista de correo sin nunca darse de baja, incluso después de mudarse de dirección; la función de limpieza es el mecanismo explícito de darse de baja correctamente antes de suscribirse a una nueva lista o de abandonar definitivamente esa dirección.
-
-**¿Por qué es importante?** El array de dependencias controla con precisión cuándo un efecto se re-ejecuta; la función de limpieza evita fugas de recursos externos (suscripciones, temporizadores, conexiones) que sobrevivirían innecesariamente al componente o a un cambio de dependencias.
-
-**Código del ejemplo:**
-
-```jsx
-useEffect(() => {
-  const handler = () => console.log(window.innerWidth);
-  window.addEventListener('resize', handler);
-  return () => window.removeEventListener('resize', handler); // limpieza al desmontar
-}, []); // array vacío: solo se ejecuta al montar
-```
-
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 2: useRef — valores mutables sin re-render
 
@@ -204,6 +205,28 @@ graph TD
     style H fill:#e8f5e9
 ```
 
+**Evidencia de aprendizaje:** entrega medición del cálculo trivial, useMemo innecesario descartado y medición del Profiler.
+**Conceptos clave:** memoización de valores frente a memoización de funciones, costo real frente a beneficio real.
+
+`useMemo(() => calculoCostoso(datos), [datos])` memoiza el resultado (el valor) de un cálculo, recalculándolo únicamente cuando alguna de las dependencias listadas cambia, en vez de recalcularlo en cada render del componente sin importar si sus entradas relevantes efectivamente cambiaron; `useCallback(() => hacer(id), [id])` es conceptualmente equivalente pero memoiza específicamente una función (una referencia estable a esa función) en vez de un valor arbitrario, siendo `useCallback(fn, deps)` sintácticamente equivalente a `useMemo(() => fn, deps)`.
+
+Ambos hooks solo valen genuinamente la pena en dos escenarios concretos: cuando el cálculo memoizado es realista y mensurablemente costoso en tiempo de ejecución (no una suma trivial de dos números, donde recalcular es más barato que el propio overhead de comparar dependencias), o cuando memoizar una función previene el re-render innecesario de un componente hijo envuelto en `React.memo` (Módulo 9) que de otro modo recibiría una nueva referencia de función distinta en cada render del padre (dado que una función definida dentro del cuerpo del componente se recrea en cada ejecución, con una nueva identidad referencial cada vez, incluso si su lógica interna es idéntica), rompiendo la comparación superficial de props que `React.memo` realiza para decidir si evitar un re-render.
+
+Usar `useMemo`/`useCallback` indiscriminadamente en todo el código, sin evidencia real de que resuelven un problema mensurable de rendimiento (idealmente confirmado con el Profiler, Módulo 9), agrega complejidad de lectura del código y un pequeño overhead de comparación de dependencias en cada render, sin ningún beneficio real a cambio — un antipatrón de optimización prematura que conviene evitar hasta tener evidencia concreta de que el problema que se busca resolver efectivamente existe.
+
+**Analogía:** `useMemo`/`useCallback` son como guardar en el refrigerador solo la comida que realmente sobra y vale la pena conservar, en vez de intentar guardar cada pequeño resto de comida, gastando más esfuerzo en organizar el refrigerador que el que se ahorraría no volviendo a cocinar esos restos triviales.
+
+**Código del ejemplo:**
+
+```jsx
+const resultado = useMemo(() => calculoCostoso(datos), [datos]); // memoiza un VALOR
+const manejarClick = useCallback(() => hacer(id), [id]);          // memoiza una FUNCIÓN
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 console.time('ordenar');
@@ -242,27 +265,6 @@ Corregí el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lu
 #### Paso 7 · Cierre y evidencia
 Entregá la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explicá la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
 **¿Por qué es importante?** `useMemo`/`useCallback` solo aportan beneficio real cuando el cálculo es genuinamente costoso o cuando previenen un re-render mensurable de un hijo memoizado; usarlos sin esa justificación agrega complejidad sin beneficio.
-**Evidencia de aprendizaje:** entrega medición del cálculo trivial, useMemo innecesario descartado y medición del Profiler.
-**Conceptos clave:** memoización de valores frente a memoización de funciones, costo real frente a beneficio real.
-
-`useMemo(() => calculoCostoso(datos), [datos])` memoiza el resultado (el valor) de un cálculo, recalculándolo únicamente cuando alguna de las dependencias listadas cambia, en vez de recalcularlo en cada render del componente sin importar si sus entradas relevantes efectivamente cambiaron; `useCallback(() => hacer(id), [id])` es conceptualmente equivalente pero memoiza específicamente una función (una referencia estable a esa función) en vez de un valor arbitrario, siendo `useCallback(fn, deps)` sintácticamente equivalente a `useMemo(() => fn, deps)`.
-
-Ambos hooks solo valen genuinamente la pena en dos escenarios concretos: cuando el cálculo memoizado es realista y mensurablemente costoso en tiempo de ejecución (no una suma trivial de dos números, donde recalcular es más barato que el propio overhead de comparar dependencias), o cuando memoizar una función previene el re-render innecesario de un componente hijo envuelto en `React.memo` (Módulo 9) que de otro modo recibiría una nueva referencia de función distinta en cada render del padre (dado que una función definida dentro del cuerpo del componente se recrea en cada ejecución, con una nueva identidad referencial cada vez, incluso si su lógica interna es idéntica), rompiendo la comparación superficial de props que `React.memo` realiza para decidir si evitar un re-render.
-
-Usar `useMemo`/`useCallback` indiscriminadamente en todo el código, sin evidencia real de que resuelven un problema mensurable de rendimiento (idealmente confirmado con el Profiler, Módulo 9), agrega complejidad de lectura del código y un pequeño overhead de comparación de dependencias en cada render, sin ningún beneficio real a cambio — un antipatrón de optimización prematura que conviene evitar hasta tener evidencia concreta de que el problema que se busca resolver efectivamente existe.
-
-**Analogía:** `useMemo`/`useCallback` son como guardar en el refrigerador solo la comida que realmente sobra y vale la pena conservar, en vez de intentar guardar cada pequeño resto de comida, gastando más esfuerzo en organizar el refrigerador que el que se ahorraría no volviendo a cocinar esos restos triviales.
-
-**Código del ejemplo:**
-
-```jsx
-const resultado = useMemo(() => calculoCostoso(datos), [datos]); // memoiza un VALOR
-const manejarClick = useCallback(() => hacer(id), [id]);          // memoiza una FUNCIÓN
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 4: Reglas de los hooks, useReducer y useImperativeHandle
 
@@ -275,38 +277,6 @@ Con `useState` separados para `cargando`, `envios` y `error`, nada impide que el
 #### Paso 3 · Teoría, modelo mental y analogía
 `useReducer` modela transiciones de estado mediante una función pura que recibe el estado actual y una acción, devolviendo un nuevo estado completo y consistente — las reglas de los hooks exigen el mismo orden de llamada siempre, porque React asocia cada hook por posición, no por nombre.
 
-#### Paso 4 · Demostración guiada desde cero
-```jsx
-function reducer(estado, accion) {
-  switch (accion.type) {
-    case 'cargando': return { estado: 'cargando', envios: [], error: null };
-    case 'exito': return { estado: 'listo', envios: accion.envios, error: null };
-    case 'error': return { estado: 'error', envios: [], error: accion.error };
-  }
-}
-const [estado, dispatch] = useReducer(reducer, { estado: 'cargando', envios: [], error: null });
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: en cualquier momento, `estado.estado` es exactamente uno de `'cargando'`, `'listo'` o `'error'` — nunca una combinación ambigua de "cargando con error" al mismo tiempo, porque cada `case` del reducer devuelve un objeto completo y consistente, no un parche parcial sobre el estado anterior.
-
-#### Paso 5 · Práctica guiada
-Pista: dentro de un `if (zona === 'norte')`, agregá una llamada a un nuevo `useState` adicional "solo para esa zona" — ese es el fallo deliberado: React reporta un error explícito en desarrollo ("Rendered more hooks than during the previous render") en cuanto `zona` cambia de `'norte'` a cualquier otro valor entre renders, porque la cantidad y posición de hooks llamados dejó de ser consistente.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 moviendo ese `useState` al nivel superior del componente (sin ningún `if` alrededor), usando la condición solo para decidir qué hacer con el valor, no para decidir si llamar al hook; agregá además un `useImperativeHandle` en `PanelEnvios` que exponga únicamente un método `refrescar()` hacia un componente padre con `ref`, sin exponer el nodo DOM completo.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explicá por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
-**¿Por qué es importante?** Respetar las reglas de los hooks garantiza que React asocie correctamente cada hook con su estado interno entre renders; un reducer evita estados mutuamente excluyentes que coexistan por error.
 **Evidencia de aprendizaje:** entrega reducer consistente, error de hooks detectado y useImperativeHandle agregado.
 **Conceptos clave:** orden consistente de llamadas, reducers para estado complejo, exponer una API imperativa controlada.
 
@@ -347,6 +317,39 @@ graph TD
 * Proyecto: proyecto integrador RutaFlow
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+```jsx
+function reducer(estado, accion) {
+  switch (accion.type) {
+    case 'cargando': return { estado: 'cargando', envios: [], error: null };
+    case 'exito': return { estado: 'listo', envios: accion.envios, error: null };
+    case 'error': return { estado: 'error', envios: [], error: accion.error };
+  }
+}
+const [estado, dispatch] = useReducer(reducer, { estado: 'cargando', envios: [], error: null });
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: en cualquier momento, `estado.estado` es exactamente uno de `'cargando'`, `'listo'` o `'error'` — nunca una combinación ambigua de "cargando con error" al mismo tiempo, porque cada `case` del reducer devuelve un objeto completo y consistente, no un parche parcial sobre el estado anterior.
+
+#### Paso 5 · Práctica guiada
+Pista: dentro de un `if (zona === 'norte')`, agregá una llamada a un nuevo `useState` adicional "solo para esa zona" — ese es el fallo deliberado: React reporta un error explícito en desarrollo ("Rendered more hooks than during the previous render") en cuanto `zona` cambia de `'norte'` a cualquier otro valor entre renders, porque la cantidad y posición de hooks llamados dejó de ser consistente.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 moviendo ese `useState` al nivel superior del componente (sin ningún `if` alrededor), usando la condición solo para decidir qué hacer con el valor, no para decidir si llamar al hook; agregá además un `useImperativeHandle` en `PanelEnvios` que exponga únicamente un método `refrescar()` hacia un componente padre con `ref`, sin exponer el nodo DOM completo.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explicá por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
+**¿Por qué es importante?** Respetar las reglas de los hooks garantiza que React asocie correctamente cada hook con su estado interno entre renders; un reducer evita estados mutuamente excluyentes que coexistan por error.
 
 ### Tema 5: Error Boundaries — contener errores de render sin romper toda la app
 

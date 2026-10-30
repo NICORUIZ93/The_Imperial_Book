@@ -68,6 +68,38 @@ graph LR
     style DN3 fill:#bbdefb
 ```
 
+**Evidencia de aprendizaje:** entrega el modelo `Delivery` con campos nullable, el crash reproducido por el `!` forzado, y la lista con ambos casos (con y sin conductor) manejada sin excepciones.
+**Conceptos clave:** garantía verificada en todo el programa, no solo advertencias parciales.
+
+Modelar `Delivery` con campos nullable explícitos es exactamente el hábito que aplicarás en el proyecto integrador (app Flutter completa, Módulo 12): cada dato que puede faltar (una entrega sin conductor asignado, una foto de confirmación aún no subida) se declara `?` desde el modelo, no se descubre en tiempo de ejecución.
+
+**Cuándo no usarlo:** forzar unwrap (`!`) en un valor nullable solo es aceptable cuando el flujo del programa garantiza matemáticamente que ese valor no puede ser `null` en ese punto exacto (por ejemplo, justo después de un `if (valor != null)`); fuera de ese caso, usar `!` reintroduce exactamente el riesgo de crash que null safety existe para prevenir.
+
+```dart
+String nombre = "Ana";       // nunca null
+String? apodo;                  // explícitamente nullable
+
+print(apodo?.length);           // null-aware: null si apodo es null
+print(apodo ?? "Sin apodo");    // valor por defecto
+```
+
+Dart distingue en el sistema de tipos entre `String` (que el compilador garantiza que nunca contendrá `null`) y `String?` (explícitamente nullable), de forma directamente análoga a los optionals de Swift (Módulo 0 del track de iOS): intentar usar un `String?` donde se espera un `String` sin verificar primero produce un error del analizador estático, no un crash en tiempo de ejecución. La calificación "sound" (sólida) es específica y significativa: Dart garantiza esta propiedad de forma consistente en **todo** el programa, incluyendo código de librerías externas ya migradas a null safety, no solo en advertencias parciales o heurísticas que podrían tener excepciones; esto contrasta con el manejo de `null`/`undefined` en JavaScript (Módulo 0 del track de JavaScript), donde no existe ninguna garantía estructural equivalente verificada por el sistema de tipos, y acceder a una propiedad de un valor inesperadamente `undefined` simplemente falla en tiempo de ejecución sin ninguna advertencia previa del lenguaje.
+
+El operador `?.` (null-aware access) accede a una propiedad o método solo si el receptor no es `null`, devolviendo `null` en caso contrario en vez de lanzar una excepción; `??` (nil coalescing, el mismo operador presente en Swift) provee un valor por defecto cuando la expresión de la izquierda es `null`.
+
+**Analogía:** sound null safety es como un sistema de inspección de calidad que garantiza, verificado de punta a punta en toda la línea de producción (incluyendo componentes de proveedores externos ya certificados), que ningún paquete etiquetado como "contenido garantizado" pueda llegar vacío, en vez de una política de "generalmente debería tener contenido" sin verificación estructural completa.
+
+**¿Por qué es importante?** El sound null safety de Dart garantiza, verificado en todo el programa incluyendo librerías externas, que un valor no-nullable nunca será `null`, una garantía estructural que JavaScript no ofrece por defecto en su sistema de tipos.
+
+**Código del ejemplo:**
+
+```dart
+String nombre = "Ana";     // garantizado no-null en TODO el programa
+String? apodo;              // explícitamente nullable
+print(apodo?.length);       // null-aware access
+print(apodo ?? "Sin apodo"); // valor por defecto
+```
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -109,37 +141,6 @@ Corregí el Paso 5 restaurando `conductor ?? "Sin conductor asignado"`, y agreg�
 #### Paso 7 · Cierre y evidencia
 Entregá el modelo `Delivery` con campos nullable del Paso 4, el crash reproducido por el `!` forzado del Paso 5, y la lista con ambos casos del Paso 6; explicá por qué declarar `conductor` como `String?` desde el modelo es mejor que descubrir su ausencia en tiempo de ejecución. Siguiente paso: estudia clases y mixins. Errores comunes: usar `!` por comodidad en vez de `??`/`?.`; declarar un campo como no-nullable cuando en la práctica puede faltar. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.
 **¿Por qué es importante?** Porque declarar explícitamente qué campos pueden faltar desde el modelo evita descubrir esa ausencia como un crash en producción, en vez de como un error detectado durante el desarrollo.
-**Evidencia de aprendizaje:** entrega el modelo `Delivery` con campos nullable, el crash reproducido por el `!` forzado, y la lista con ambos casos (con y sin conductor) manejada sin excepciones.
-**Conceptos clave:** garantía verificada en todo el programa, no solo advertencias parciales.
-
-Modelar `Delivery` con campos nullable explícitos es exactamente el hábito que aplicarás en el proyecto integrador (app Flutter completa, Módulo 12): cada dato que puede faltar (una entrega sin conductor asignado, una foto de confirmación aún no subida) se declara `?` desde el modelo, no se descubre en tiempo de ejecución.
-
-**Cuándo no usarlo:** forzar unwrap (`!`) en un valor nullable solo es aceptable cuando el flujo del programa garantiza matemáticamente que ese valor no puede ser `null` en ese punto exacto (por ejemplo, justo después de un `if (valor != null)`); fuera de ese caso, usar `!` reintroduce exactamente el riesgo de crash que null safety existe para prevenir.
-
-```dart
-String nombre = "Ana";       // nunca null
-String? apodo;                  // explícitamente nullable
-
-print(apodo?.length);           // null-aware: null si apodo es null
-print(apodo ?? "Sin apodo");    // valor por defecto
-```
-
-Dart distingue en el sistema de tipos entre `String` (que el compilador garantiza que nunca contendrá `null`) y `String?` (explícitamente nullable), de forma directamente análoga a los optionals de Swift (Módulo 0 del track de iOS): intentar usar un `String?` donde se espera un `String` sin verificar primero produce un error del analizador estático, no un crash en tiempo de ejecución. La calificación "sound" (sólida) es específica y significativa: Dart garantiza esta propiedad de forma consistente en **todo** el programa, incluyendo código de librerías externas ya migradas a null safety, no solo en advertencias parciales o heurísticas que podrían tener excepciones; esto contrasta con el manejo de `null`/`undefined` en JavaScript (Módulo 0 del track de JavaScript), donde no existe ninguna garantía estructural equivalente verificada por el sistema de tipos, y acceder a una propiedad de un valor inesperadamente `undefined` simplemente falla en tiempo de ejecución sin ninguna advertencia previa del lenguaje.
-
-El operador `?.` (null-aware access) accede a una propiedad o método solo si el receptor no es `null`, devolviendo `null` en caso contrario en vez de lanzar una excepción; `??` (nil coalescing, el mismo operador presente en Swift) provee un valor por defecto cuando la expresión de la izquierda es `null`.
-
-**Analogía:** sound null safety es como un sistema de inspección de calidad que garantiza, verificado de punta a punta en toda la línea de producción (incluyendo componentes de proveedores externos ya certificados), que ningún paquete etiquetado como "contenido garantizado" pueda llegar vacío, en vez de una política de "generalmente debería tener contenido" sin verificación estructural completa.
-
-**¿Por qué es importante?** El sound null safety de Dart garantiza, verificado en todo el programa incluyendo librerías externas, que un valor no-nullable nunca será `null`, una garantía estructural que JavaScript no ofrece por defecto en su sistema de tipos.
-
-**Código del ejemplo:**
-
-```dart
-String nombre = "Ana";     // garantizado no-null en TODO el programa
-String? apodo;              // explícitamente nullable
-print(apodo?.length);       // null-aware access
-print(apodo ?? "Sin apodo"); // valor por defecto
-```
 
 ### Tema 2: Clases y mixins
 
@@ -151,6 +152,52 @@ Tanto un `Conductor` como un `Vehiculo` de RutaFlow necesitan reportar su posici
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Dart no permite herencia múltiple directa; un mixin aplica comportamiento compartido con `with` a clases que no tienen relación de herencia entre sí. La analogía: una habilidad certificada que se añade a la formación de cualquier profesional, sin alterar su especialización principal.
+
+**Evidencia de aprendizaje:** entrega `Conductor` y `Vehiculo` compartiendo `Rastreable` sin heredar entre sí, el error del analizador al quitar el mixin, y la tercera clase `Paquete` agregada.
+**Conceptos clave:** comportamiento reutilizable sin herencia múltiple tradicional.
+
+Un mixin como este es el mecanismo que usarás en el proyecto integrador (app Flutter completa, Módulo 12) para compartir comportamiento transversal entre widgets no relacionados por herencia (por ejemplo, lógica de validación de formularios reutilizada entre pantallas distintas).
+
+**Cuándo no usarlo:** si el comportamiento compartido solo lo necesita una única clase y no hay ninguna otra clase no relacionada que vaya a reutilizarlo, un mixin agrega indirección sin beneficio; resérvalo para comportamiento genuinamente transversal a jerarquías de herencia distintas.
+
+#### `extends`, `implements`, `with` y `@override` no significan lo mismo
+
+`extends` hereda implementación y establece una relación «es un» con una sola superclase; `implements` obliga a satisfacer el contrato público de uno o varios tipos, pero no hereda sus implementaciones; `with` aplica el comportamiento de un mixin compatible. `@override` es una anotación de Dart que comunica al analizador que el miembro pretende reemplazar uno heredado o exigido por un contrato. No realiza el reemplazo: la firma y la jerarquía son las que lo determinan.
+
+Usar `@override` hace visible un error frecuente. Si se escribe mal `build` o cambia la firma, el analizador avisa que no existe ningún miembro compatible para sobrescribir; sin la anotación, el método mal escrito podría quedar como un método nuevo y el framework seguiría llamando al original. En widgets, `build` debe limitarse a describir UI: puede ejecutarse muchas veces y no es el lugar para peticiones HTTP o escrituras persistentes.
+
+```dart
+class Ave extends Animal with Volador implements Rastreable {
+  @override
+  String obtenerId() => 'ave-01';
+}
+```
+
+```dart
+mixin Volador {
+  void volar() => print("Volando");
+}
+
+class Pajaro extends Animal with Volador {}
+```
+
+Dart, como la mayoría de los lenguajes orientados a objetos modernos, no permite herencia múltiple directa (una clase no puede `extends` de dos clases distintas simultáneamente); un mixin resuelve la necesidad de compartir comportamiento entre clases que no comparten una relación de herencia natural, permitiendo que `Pajaro` herede de `Animal` (su relación de herencia principal) **y** obtenga adicionalmente el comportamiento de `Volador` (un comportamiento transversal que también podría aplicarse a otras clases no relacionadas con `Animal`, como un `Avion` o un `Superheroe`), sin necesidad de que `Volador` participe en la jerarquía de herencia principal de `Pajaro`.
+
+Este patrón de composición de comportamiento transversal es conceptualmente similar a los protocolos con extensiones en Swift (Módulo 0 del track de iOS) o a las interfaces con implementación por defecto en Java/Kotlin, todos resolviendo el mismo problema de "compartir comportamiento entre tipos no relacionados por una jerarquía de herencia única", aunque cada lenguaje lo resuelve con una sintaxis y semántica ligeramente distinta.
+
+**Analogía:** un mixin es como una habilidad certificada que se puede añadir a la formación de cualquier profesional independientemente de su especialización principal (un médico y un ingeniero pueden ambos certificarse en primeros auxilios avanzados), sin que esa habilidad transversal altere ni dependa de su especialización de base.
+
+**¿Por qué es importante?** Un mixin permite compartir comportamiento reutilizable entre clases sin depender de herencia múltiple tradicional (no soportada en Dart), resolviendo el mismo problema que protocolos con extensiones en Swift o interfaces con implementación por defecto en otros lenguajes orientados a objetos.
+
+**Código del ejemplo:**
+
+```dart
+mixin Volador {
+  void volar() => print("Volando");
+}
+class Pajaro extends Animal with Volador {}
+// Pajaro hereda de Animal Y obtiene el comportamiento de Volador
+```
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -207,51 +254,6 @@ Corregí el Paso 5 volviendo a `class Vehiculo with Rastreable` (sin `extends`),
 #### Paso 7 · Cierre y evidencia
 Entregá `Conductor` y `Vehiculo` compartiendo `Rastreable` del Paso 4, el error del analizador al quitar `with` del Paso 4/5, y la tercera clase `Paquete` del Paso 6; explicá por qué un mixin resuelve esto mejor que forzar una relación `extends` artificial. Siguiente paso: estudia Futures y async/await. Errores comunes: usar `extends` para obtener comportamiento compartido cuando no hay relación «es un» real; mixins sin un contrato claro de qué esperan de la clase que los usa. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.
 **¿Por qué es importante?** Porque un mixin comparte comportamiento entre clases sin forzar una relación de herencia que no existe conceptualmente, evitando jerarquías artificiales solo para reutilizar código.
-**Evidencia de aprendizaje:** entrega `Conductor` y `Vehiculo` compartiendo `Rastreable` sin heredar entre sí, el error del analizador al quitar el mixin, y la tercera clase `Paquete` agregada.
-**Conceptos clave:** comportamiento reutilizable sin herencia múltiple tradicional.
-
-Un mixin como este es el mecanismo que usarás en el proyecto integrador (app Flutter completa, Módulo 12) para compartir comportamiento transversal entre widgets no relacionados por herencia (por ejemplo, lógica de validación de formularios reutilizada entre pantallas distintas).
-
-**Cuándo no usarlo:** si el comportamiento compartido solo lo necesita una única clase y no hay ninguna otra clase no relacionada que vaya a reutilizarlo, un mixin agrega indirección sin beneficio; resérvalo para comportamiento genuinamente transversal a jerarquías de herencia distintas.
-
-#### `extends`, `implements`, `with` y `@override` no significan lo mismo
-
-`extends` hereda implementación y establece una relación «es un» con una sola superclase; `implements` obliga a satisfacer el contrato público de uno o varios tipos, pero no hereda sus implementaciones; `with` aplica el comportamiento de un mixin compatible. `@override` es una anotación de Dart que comunica al analizador que el miembro pretende reemplazar uno heredado o exigido por un contrato. No realiza el reemplazo: la firma y la jerarquía son las que lo determinan.
-
-Usar `@override` hace visible un error frecuente. Si se escribe mal `build` o cambia la firma, el analizador avisa que no existe ningún miembro compatible para sobrescribir; sin la anotación, el método mal escrito podría quedar como un método nuevo y el framework seguiría llamando al original. En widgets, `build` debe limitarse a describir UI: puede ejecutarse muchas veces y no es el lugar para peticiones HTTP o escrituras persistentes.
-
-```dart
-class Ave extends Animal with Volador implements Rastreable {
-  @override
-  String obtenerId() => 'ave-01';
-}
-```
-
-```dart
-mixin Volador {
-  void volar() => print("Volando");
-}
-
-class Pajaro extends Animal with Volador {}
-```
-
-Dart, como la mayoría de los lenguajes orientados a objetos modernos, no permite herencia múltiple directa (una clase no puede `extends` de dos clases distintas simultáneamente); un mixin resuelve la necesidad de compartir comportamiento entre clases que no comparten una relación de herencia natural, permitiendo que `Pajaro` herede de `Animal` (su relación de herencia principal) **y** obtenga adicionalmente el comportamiento de `Volador` (un comportamiento transversal que también podría aplicarse a otras clases no relacionadas con `Animal`, como un `Avion` o un `Superheroe`), sin necesidad de que `Volador` participe en la jerarquía de herencia principal de `Pajaro`.
-
-Este patrón de composición de comportamiento transversal es conceptualmente similar a los protocolos con extensiones en Swift (Módulo 0 del track de iOS) o a las interfaces con implementación por defecto en Java/Kotlin, todos resolviendo el mismo problema de "compartir comportamiento entre tipos no relacionados por una jerarquía de herencia única", aunque cada lenguaje lo resuelve con una sintaxis y semántica ligeramente distinta.
-
-**Analogía:** un mixin es como una habilidad certificada que se puede añadir a la formación de cualquier profesional independientemente de su especialización principal (un médico y un ingeniero pueden ambos certificarse en primeros auxilios avanzados), sin que esa habilidad transversal altere ni dependa de su especialización de base.
-
-**¿Por qué es importante?** Un mixin permite compartir comportamiento reutilizable entre clases sin depender de herencia múltiple tradicional (no soportada en Dart), resolviendo el mismo problema que protocolos con extensiones en Swift o interfaces con implementación por defecto en otros lenguajes orientados a objetos.
-
-**Código del ejemplo:**
-
-```dart
-mixin Volador {
-  void volar() => print("Volando");
-}
-class Pajaro extends Animal with Volador {}
-// Pajaro hereda de Animal Y obtiene el comportamiento de Volador
-```
 
 ### Tema 3: Futures, async/await y colecciones funcionales
 
@@ -263,6 +265,50 @@ Consultar las entregas pendientes de un conductor tarda un tiempo real (una llam
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `Future<T>` representa un valor que estará disponible más adelante, no inmediatamente; `await` suspende sin bloquear el hilo. `where`/`map`/`fold` transforman una colección en pasos declarativos encadenados. La analogía: un recibo de pedido que garantiza la entrega después, y una línea de ensamblaje con estaciones sucesivas para transformar datos.
+
+**Evidencia de aprendizaje:** entrega la consulta asíncrona con `await` funcionando, el error de tipos reproducido al quitarlo, y las transformaciones `where`/`map`/`fold` encadenadas sobre la lista de entregas.
+**Conceptos clave:** operación asíncrona representada como un valor futuro, transformación declarativa de colecciones.
+
+Cada llamada de red del proyecto integrador (app Flutter completa, Módulo 12) — obtener la lista de entregas, confirmar una recepción — será un `Future` como este, consumido con `FutureBuilder` para mostrar los estados loading/error/datos en la UI.
+
+**Cuándo no usarlo:** para una secuencia de valores que llegan repetidamente en el tiempo (actualizaciones de ubicación en vivo, mensajes de un socket), un `Future` no alcanza porque solo resuelve una vez; ahí corresponde un `Stream`, no un `Future`.
+
+```dart
+Future<Usuario> obtenerUsuario() async {
+  await Future.delayed(Duration(seconds: 1));
+  return Usuario("Ana");
+}
+
+void main() async {
+  final usuario = await obtenerUsuario();
+  print(usuario.nombre);
+}
+```
+
+Un `Future<T>` representa un valor de tipo `T` que estará disponible en algún momento futuro, no inmediatamente; una función marcada `async` puede usar `await` para suspender su ejecución hasta que ese `Future` se resuelva, sin bloquear el hilo de ejecución mientras tanto, permitiendo que el código se lea de forma lineal y secuencial exactamente igual que en `async`/`await` de Swift (Módulo 4 del track de iOS) o `suspend` en Kotlin (Módulo 2 del track de Kotlin Multiplatform): la misma convergencia de múltiples lenguajes hacia el mismo modelo mental de asincronía legible.
+
+```dart
+final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList();
+final total = pedidos.fold<double>(0, (acumulado, p) => acumulado + p.monto);
+```
+
+`where` (filtrar según un predicado), `map` (transformar cada elemento), y `fold`/`reduce` (acumular una colección a un único valor) son las operaciones funcionales fundamentales para transformar colecciones de forma declarativa, encadenables entre sí para expresar transformaciones complejas como una secuencia legible de pasos simples, en vez de un bucle imperativo con una variable acumuladora mutable gestionada manualmente paso a paso.
+
+**Analogía:** un `Future` es como un recibo de un pedido que garantiza la entrega en algún momento posterior, aunque no inmediatamente: se puede seguir haciendo otras cosas mientras se espera, y `await` es simplemente el momento de recoger el pedido cuando efectivamente está listo; encadenar `where`/`map`/`fold` es como una línea de ensamblaje con estaciones sucesivas, cada una aplicando una transformación simple y bien definida, produciendo en conjunto un resultado complejo a partir de pasos individuales fáciles de entender por separado.
+
+**¿Por qué es importante?** `Future` con `async`/`await` permite código asíncrono legible de forma lineal, el mismo modelo convergente que otros lenguajes modernos; encadenar operaciones funcionales sobre colecciones expresa transformaciones complejas de forma declarativa y legible, sin bucles imperativos con estado mutable manual.
+
+**Código del ejemplo:**
+
+```dart
+Future<Usuario> obtenerUsuario() async {
+  await Future.delayed(Duration(seconds: 1));
+  return Usuario("Ana");
+}
+final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList();
+```
+
+---
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -317,49 +363,6 @@ Corregí el Paso 5 restaurando el filtro `where((e) => e.completada)`, y agregá
 #### Paso 7 · Cierre y evidencia
 Entregá la consulta asíncrona con `await` del Paso 4, el error de tipos al quitar `await` del Paso 4, y las transformaciones encadenadas del Paso 6; explicá por qué el analizador detecta el `await` faltante antes de ejecutar el programa, no como un crash en producción. Siguiente paso: estudia widgets. Errores comunes: olvidar `await` sobre un `Future`; sumar colecciones con un bucle mutable en vez de `fold`. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.
 **¿Por qué es importante?** Porque `await` suspende sin bloquear mientras se espera un resultado futuro, y encadenar `where`/`map`/`fold` expresa transformaciones de colecciones como pasos declarativos legibles, sin una variable acumuladora mutable gestionada a mano.
-**Evidencia de aprendizaje:** entrega la consulta asíncrona con `await` funcionando, el error de tipos reproducido al quitarlo, y las transformaciones `where`/`map`/`fold` encadenadas sobre la lista de entregas.
-**Conceptos clave:** operación asíncrona representada como un valor futuro, transformación declarativa de colecciones.
-
-Cada llamada de red del proyecto integrador (app Flutter completa, Módulo 12) — obtener la lista de entregas, confirmar una recepción — será un `Future` como este, consumido con `FutureBuilder` para mostrar los estados loading/error/datos en la UI.
-
-**Cuándo no usarlo:** para una secuencia de valores que llegan repetidamente en el tiempo (actualizaciones de ubicación en vivo, mensajes de un socket), un `Future` no alcanza porque solo resuelve una vez; ahí corresponde un `Stream`, no un `Future`.
-
-```dart
-Future<Usuario> obtenerUsuario() async {
-  await Future.delayed(Duration(seconds: 1));
-  return Usuario("Ana");
-}
-
-void main() async {
-  final usuario = await obtenerUsuario();
-  print(usuario.nombre);
-}
-```
-
-Un `Future<T>` representa un valor de tipo `T` que estará disponible en algún momento futuro, no inmediatamente; una función marcada `async` puede usar `await` para suspender su ejecución hasta que ese `Future` se resuelva, sin bloquear el hilo de ejecución mientras tanto, permitiendo que el código se lea de forma lineal y secuencial exactamente igual que en `async`/`await` de Swift (Módulo 4 del track de iOS) o `suspend` en Kotlin (Módulo 2 del track de Kotlin Multiplatform): la misma convergencia de múltiples lenguajes hacia el mismo modelo mental de asincronía legible.
-
-```dart
-final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList();
-final total = pedidos.fold<double>(0, (acumulado, p) => acumulado + p.monto);
-```
-
-`where` (filtrar según un predicado), `map` (transformar cada elemento), y `fold`/`reduce` (acumular una colección a un único valor) son las operaciones funcionales fundamentales para transformar colecciones de forma declarativa, encadenables entre sí para expresar transformaciones complejas como una secuencia legible de pasos simples, en vez de un bucle imperativo con una variable acumuladora mutable gestionada manualmente paso a paso.
-
-**Analogía:** un `Future` es como un recibo de un pedido que garantiza la entrega en algún momento posterior, aunque no inmediatamente: se puede seguir haciendo otras cosas mientras se espera, y `await` es simplemente el momento de recoger el pedido cuando efectivamente está listo; encadenar `where`/`map`/`fold` es como una línea de ensamblaje con estaciones sucesivas, cada una aplicando una transformación simple y bien definida, produciendo en conjunto un resultado complejo a partir de pasos individuales fáciles de entender por separado.
-
-**¿Por qué es importante?** `Future` con `async`/`await` permite código asíncrono legible de forma lineal, el mismo modelo convergente que otros lenguajes modernos; encadenar operaciones funcionales sobre colecciones expresa transformaciones complejas de forma declarativa y legible, sin bucles imperativos con estado mutable manual.
-
-**Código del ejemplo:**
-
-```dart
-Future<Usuario> obtenerUsuario() async {
-  await Future.delayed(Duration(seconds: 1));
-  return Usuario("Ana");
-}
-final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList();
-```
-
----
 
 ### Tema 4: Lints y estilo con analysis_options.yaml
 

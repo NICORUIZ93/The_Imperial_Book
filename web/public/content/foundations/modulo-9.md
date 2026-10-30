@@ -16,52 +16,6 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 Una precondición es lo que debe cumplirse antes de llamar a `transition`; una postcondición describe el resultado — el contrato de una caja fuerte, no todavía cómo están hechas las bisagras.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```text
-Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
-Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; si no, lanza ValueError
-Post: transition(current, requested) == requested implica requested ∈ ALLOWED_TRANSITIONS[current]
-Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-```python
-from hypothesis import given, strategies as st
-from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS, transition
-
-@given(st.sampled_from(ShipmentStatus), st.sampled_from(ShipmentStatus))
-def test_transition_respeta_el_contrato(current, requested):
-    if requested in ALLOWED_TRANSITIONS[current]:
-        assert transition(current, requested) == requested
-    else:
-        try:
-            transition(current, requested)
-            assert False, "debería haber lanzado ValueError"
-        except ValueError:
-            pass
-```
-Resultado esperado: la prueba generativa corre sobre todas las combinaciones posibles de estados (16 pares) y pasa — confirmando que el contrato descrito arriba coincide exactamente con lo que el código hace, no solo con los casos que alguien pensó a mano.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá la postcondición para afirmar `transition(current, requested) == requested` SIN la condición `if` (es decir, asumí que siempre devuelve lo pedido) — ese es el fallo deliberado: la prueba generativa encuentra un contraejemplo real (por ejemplo `current=DELIVERED, requested=CREATED`) donde `transition` lanza `ValueError` en vez de devolver nada, rompiendo la postcondición mal escrita.
-
-#### Paso 6 · Práctica independiente
-Agregá una quinta transición inválida a mano al diccionario (`ShipmentStatus.DELIVERED: {ShipmentStatus.CREATED}`) y volvé a correr la prueba del Paso 4 — documentá si la prueba generativa la detecta como problema o simplemente la acepta como parte del contrato ahora ampliado (pista: la prueba generativa valida CONSISTENCIA con `ALLOWED_TRANSITIONS`, no que `ALLOWED_TRANSITIONS` en sí sea la regla de negocio correcta).
-
-#### Paso 7 · Cierre y evidencia
-Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contraejemplo real encontrado del Paso 5, y la reflexión sobre qué SÍ y qué NO valida una prueba generativa del Paso 6; explicá por qué una prueba que pasa con casos elegidos a mano no es lo mismo que una que busca activamente contraejemplos. Errores comunes: confundir la condición con el contrato completo, escribir una postcondición que solo describe el camino feliz, y asumir que pasar unos pocos casos a mano prueba lo mismo que una búsqueda activa de contraejemplos. Fuente oficial: https://hypothesis.readthedocs.io/en/latest/.
-**¿Por qué es importante?** Porque una precondición y una postcondición escritas explícitamente convierten un contrato implícito en algo que una prueba generativa puede atacar y confirmar, no solo algo que "se entiende" leyendo el código.
 **Escenario:** RutaFlow permite transiciones: CREATED → ASSIGNED → OUT_FOR_DELIVERY → DELIVERED. Pero una secuencia de updates puede dejar un envío en estado inconsistente si una falla.
 
 **Tu tarea:**
@@ -117,6 +71,53 @@ El contrato formal de este Tema vive directamente sobre el archivo real `example
 
 **Límites y decisión de uso:** Una especificación lógica solo protege las propiedades que expresa. Añade casos límite y supuestos del entorno; una implementación puede satisfacer una condición parcial y seguir siendo incorrecta para requisitos omitidos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```text
+Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
+Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; si no, lanza ValueError
+Post: transition(current, requested) == requested implica requested ∈ ALLOWED_TRANSITIONS[current]
+Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+```python
+from hypothesis import given, strategies as st
+from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS, transition
+
+@given(st.sampled_from(ShipmentStatus), st.sampled_from(ShipmentStatus))
+def test_transition_respeta_el_contrato(current, requested):
+    if requested in ALLOWED_TRANSITIONS[current]:
+        assert transition(current, requested) == requested
+    else:
+        try:
+            transition(current, requested)
+            assert False, "debería haber lanzado ValueError"
+        except ValueError:
+            pass
+```
+Resultado esperado: la prueba generativa corre sobre todas las combinaciones posibles de estados (16 pares) y pasa — confirmando que el contrato descrito arriba coincide exactamente con lo que el código hace, no solo con los casos que alguien pensó a mano.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá la postcondición para afirmar `transition(current, requested) == requested` SIN la condición `if` (es decir, asumí que siempre devuelve lo pedido) — ese es el fallo deliberado: la prueba generativa encuentra un contraejemplo real (por ejemplo `current=DELIVERED, requested=CREATED`) donde `transition` lanza `ValueError` en vez de devolver nada, rompiendo la postcondición mal escrita.
+
+#### Paso 6 · Práctica independiente
+Agregá una quinta transición inválida a mano al diccionario (`ShipmentStatus.DELIVERED: {ShipmentStatus.CREATED}`) y volvé a correr la prueba del Paso 4 — documentá si la prueba generativa la detecta como problema o simplemente la acepta como parte del contrato ahora ampliado (pista: la prueba generativa valida CONSISTENCIA con `ALLOWED_TRANSITIONS`, no que `ALLOWED_TRANSITIONS` en sí sea la regla de negocio correcta).
+
+#### Paso 7 · Cierre y evidencia
+Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contraejemplo real encontrado del Paso 5, y la reflexión sobre qué SÍ y qué NO valida una prueba generativa del Paso 6; explicá por qué una prueba que pasa con casos elegidos a mano no es lo mismo que una que busca activamente contraejemplos. Errores comunes: confundir la condición con el contrato completo, escribir una postcondición que solo describe el camino feliz, y asumir que pasar unos pocos casos a mano prueba lo mismo que una búsqueda activa de contraejemplos. Fuente oficial: https://hypothesis.readthedocs.io/en/latest/.
+**¿Por qué es importante?** Porque una precondición y una postcondición escritas explícitamente convierten un contrato implícito en algo que una prueba generativa puede atacar y confirmar, no solo algo que "se entiende" leyendo el código.
 ### Tema 2: Conjuntos, relaciones, funciones e inducción
 
 #### Paso 1 · Objetivo y preparación
@@ -128,39 +129,6 @@ Al finalizar vas a confirmar que `ALLOWED_TRANSITIONS` de RutaFlow es, matemáti
 #### Paso 3 · Teoría, modelo mental y analogía
 Una relación de equivalencia es reflexiva, simétrica y transitiva; un orden parcial es reflexivo, antisimétrico y transitivo — "es prerrequisito de" debería ser un orden, nunca una equivalencia, porque un envío entregado nunca vuelve a estar creado.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
-
-pares = {(a, b) for a, destinos in ALLOWED_TRANSITIONS.items() for b in destinos}
-simetrica = all((b, a) in pares for (a, b) in pares)
-print("simétrica:", simetrica)
-print("pares:", pares)
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: `simétrica: False` — para cada par `(CREATED, ASSIGNED)` en la relación, el par inverso `(ASSIGNED, CREATED)` NO está, confirmando que esto NO es una relación de equivalencia (que dividiría los estados en clases intercambiables), sino algo con dirección.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá a mano `ALLOWED_TRANSITIONS[ShipmentStatus.ASSIGNED].add(ShipmentStatus.CREATED)` (permitir volver atrás) y repetí el cálculo de `simetrica` para ese par específico — ese es el fallo deliberado: ahora `(ASSIGNED, CREATED)` SÍ existe junto a `(CREATED, ASSIGNED)`, y agregar esa transición de vuelta rompe la propiedad de orden que un pipeline de entregas necesita (un envío "desasignándose" solo no tiene sentido de negocio).
-
-#### Paso 6 · Práctica independiente
-Deshacé el Paso 5, y verificá la propiedad antisimétrica real: para cada par `(a,b)` con `a != b` en la relación, confirmá que `(b,a)` nunca está — documentando por qué esa propiedad es exactamente lo que impide que un envío "entregado" regrese a "creado" sin pasar por un proceso explícito nuevo.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la relación no simétrica confirmada del Paso 4, la transición hacia atrás rota del Paso 5, y la verificación de antisimetría del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como un orden parcial (no una equivalencia) es la razón matemática detrás de la regla de negocio "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
-**¿Por qué es importante?** Porque modelar una regla de negocio como relación matemática (orden parcial, no equivalencia) permite demostrar con precisión qué transiciones son imposibles, en vez de confiar en que el código "simplemente funciona así".
 **Escenario:** ¿Puede un envío transicionar de DELIVERED a DELIVERED (es decir, confirmarse dos veces)?
 
 **Tu tarea:**
@@ -209,6 +177,40 @@ flowchart LR
 
 Esta verificación corre directamente sobre `examples/rutaflow/foundation/domain.py`, el mismo archivo del proyecto integrador que usás desde el Módulo 6: `ALLOWED_TRANSITIONS` es el diccionario real que define ahí la relación de orden parcial entre estados de envío.
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
+
+pares = {(a, b) for a, destinos in ALLOWED_TRANSITIONS.items() for b in destinos}
+simetrica = all((b, a) in pares for (a, b) in pares)
+print("simétrica:", simetrica)
+print("pares:", pares)
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: `simétrica: False` — para cada par `(CREATED, ASSIGNED)` en la relación, el par inverso `(ASSIGNED, CREATED)` NO está, confirmando que esto NO es una relación de equivalencia (que dividiría los estados en clases intercambiables), sino algo con dirección.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá a mano `ALLOWED_TRANSITIONS[ShipmentStatus.ASSIGNED].add(ShipmentStatus.CREATED)` (permitir volver atrás) y repetí el cálculo de `simetrica` para ese par específico — ese es el fallo deliberado: ahora `(ASSIGNED, CREATED)` SÍ existe junto a `(CREATED, ASSIGNED)`, y agregar esa transición de vuelta rompe la propiedad de orden que un pipeline de entregas necesita (un envío "desasignándose" solo no tiene sentido de negocio).
+
+#### Paso 6 · Práctica independiente
+Deshacé el Paso 5, y verificá la propiedad antisimétrica real: para cada par `(a,b)` con `a != b` en la relación, confirmá que `(b,a)` nunca está — documentando por qué esa propiedad es exactamente lo que impide que un envío "entregado" regrese a "creado" sin pasar por un proceso explícito nuevo.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la relación no simétrica confirmada del Paso 4, la transición hacia atrás rota del Paso 5, y la verificación de antisimetría del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como un orden parcial (no una equivalencia) es la razón matemática detrás de la regla de negocio "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
+**¿Por qué es importante?** Porque modelar una regla de negocio como relación matemática (orden parcial, no equivalencia) permite demostrar con precisión qué transiciones son imposibles, en vez de confiar en que el código "simplemente funciona así".
+
 ### Tema 3: Conteo, grafos y estructuras conectadas
 
 #### Paso 1 · Objetivo y preparación
@@ -220,50 +222,6 @@ Si `ALLOWED_TRANSITIONS` tuviera un ciclo (por ejemplo, `DELIVERED` pudiendo vol
 #### Paso 3 · Teoría, modelo mental y analogía
 Un grafo dirigido sin ciclos (DAG) admite un orden topológico — como una lista de tareas donde cada una depende solo de las anteriores, nunca de una futura.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
-
-grafo = {estado.value: {destino.value for destino in destinos} for estado, destinos in ALLOWED_TRANSITIONS.items()}
-
-def tiene_ciclo(grafo):
-    visitados, activos = set(), set()
-    def visitar(nodo):
-        if nodo in activos: return True
-        if nodo in visitados: return False
-        activos.add(nodo)
-        for vecino in grafo.get(nodo, set()):
-            if visitar(vecino): return True
-        activos.remove(nodo); visitados.add(nodo)
-        return False
-    return any(visitar(n) for n in grafo)
-
-print("tiene ciclo:", tiene_ciclo(grafo))
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: `tiene ciclo: False` — `ALLOWED_TRANSITIONS` es un DAG real, usando la misma función `tiene_ciclo` que ya viste en la teoría de este Tema, aplicada ahora al grafo real del dominio de RutaFlow.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá `grafo["delivered"] = {"created"}` (permitir que un envío entregado vuelva a creado) y volvé a correr `tiene_ciclo(grafo)` — ese es el fallo deliberado: ahora devuelve `True`, porque `created → assigned → out_for_delivery → delivered → created` forma un ciclo completo; un envío podría procesarse infinitamente sin que el sistema lo detecte como "terminado" nunca.
-
-#### Paso 6 · Práctica independiente
-Deshacé el Paso 5, y calculá un orden topológico válido de los 4 estados a mano (hay solo uno posible en este caso, por ser una cadena lineal) — documentá qué pasaría con el orden topológico si `ASSIGNED` pudiera ir tanto a `OUT_FOR_DELIVERY` como directamente a un nuevo estado hipotético `CANCELLED`.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la confirmación de DAG del Paso 4, el ciclo introducido y detectado del Paso 5, y el orden topológico del Paso 6; explicá por qué un ciclo en este grafo específico sería un defecto de diseño, no solo una curiosidad matemática. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
-**¿Por qué es importante?** Porque confirmar formalmente que un grafo de dependencias es un DAG es la diferencia entre saber que un pipeline siempre termina y simplemente no haber visto todavía el ciclo que lo cuelga.
 **Escenario:** Tu pipelines de trabajo: ingesta → validación → enriquecimiento → persistencia. Necesitas asegurar que se ejecutan en ese orden (topológico) sin que ciclos bloqueen.
 
 **Tu tarea:**
@@ -323,6 +281,51 @@ flowchart LR
 
 `tiene_ciclo()` se aplicó arriba al grafo real construido desde `examples/rutaflow/foundation/domain.py` — el mismo archivo que sostiene el proyecto integrador Fundamentos desde el Módulo 6, ahora leído como estructura de grafo en vez de solo como función de transición.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
+
+grafo = {estado.value: {destino.value for destino in destinos} for estado, destinos in ALLOWED_TRANSITIONS.items()}
+
+def tiene_ciclo(grafo):
+    visitados, activos = set(), set()
+    def visitar(nodo):
+        if nodo in activos: return True
+        if nodo in visitados: return False
+        activos.add(nodo)
+        for vecino in grafo.get(nodo, set()):
+            if visitar(vecino): return True
+        activos.remove(nodo); visitados.add(nodo)
+        return False
+    return any(visitar(n) for n in grafo)
+
+print("tiene ciclo:", tiene_ciclo(grafo))
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: `tiene ciclo: False` — `ALLOWED_TRANSITIONS` es un DAG real, usando la misma función `tiene_ciclo` que ya viste en la teoría de este Tema, aplicada ahora al grafo real del dominio de RutaFlow.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá `grafo["delivered"] = {"created"}` (permitir que un envío entregado vuelva a creado) y volvé a correr `tiene_ciclo(grafo)` — ese es el fallo deliberado: ahora devuelve `True`, porque `created → assigned → out_for_delivery → delivered → created` forma un ciclo completo; un envío podría procesarse infinitamente sin que el sistema lo detecte como "terminado" nunca.
+
+#### Paso 6 · Práctica independiente
+Deshacé el Paso 5, y calculá un orden topológico válido de los 4 estados a mano (hay solo uno posible en este caso, por ser una cadena lineal) — documentá qué pasaría con el orden topológico si `ASSIGNED` pudiera ir tanto a `OUT_FOR_DELIVERY` como directamente a un nuevo estado hipotético `CANCELLED`.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la confirmación de DAG del Paso 4, el ciclo introducido y detectado del Paso 5, y el orden topológico del Paso 6; explicá por qué un ciclo en este grafo específico sería un defecto de diseño, no solo una curiosidad matemática. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
+**¿Por qué es importante?** Porque confirmar formalmente que un grafo de dependencias es un DAG es la diferencia entre saber que un pipeline siempre termina y simplemente no haber visto todavía el ciclo que lo cuelga.
 ### Tema 4: Probabilidad y evidencia para decisiones técnicas
 
 #### Paso 1 · Objetivo y preparación

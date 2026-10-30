@@ -14,35 +14,6 @@ Distintas pantallas de RutaFlow definieron sus propios colores hardcodeados por 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `ThemeData` centralizado garantiza coherencia visual sin repetir configuración en cada widget; `colorSchemeSeed` deriva automáticamente un esquema completo a partir de un único color base.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-MaterialApp(
-  theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
-  darkTheme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo, brightness: Brightness.dark),
-  themeMode: ThemeMode.system,
-)
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: cada botón "Confirmar" en toda la app usa automáticamente el mismo tono derivado de `Colors.indigo`, sin que ningún widget individual especifique su propio color hardcodeado — cambiar `colorSchemeSeed` en un solo lugar actualiza el color en toda la app.
-
-#### Paso 5 · Práctica guiada
-Pista: en `DetalleEnvio`, usá `Container(color: Color(0xFF3F51B5))` con un valor hexadecimal hardcodeado para el botón de confirmar, en vez de dejar que el `Theme` central lo defina — ese es el fallo deliberado: cambiá `colorSchemeSeed` a `Colors.teal` en el `ThemeData` central, y confirmá que todos los botones de la app cambian de color excepto ese específico, que queda visualmente desincronizado del resto.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el color hardcodeado y usando `Theme.of(context).colorScheme.primary` (o el estilo por defecto de `ElevatedButton`), confirmando que ahora ese botón también sigue los cambios del `ThemeData` central.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el `ThemeData` centralizado del Paso 4, la desincronización por color hardcodeado del Paso 5, y la corrección del Paso 6; explicá por qué hardcodear un color en un widget individual rompe la garantía de coherencia que `ThemeData` centralizado existe para dar. Siguiente paso: estudia cómo adaptar widgets entre Material y Cupertino. Errores comunes: hardcodear colores en widgets individuales en vez de leerlos del tema central, no definir `darkTheme` dejando la app sin un modo oscuro coherente, y no probar que `ThemeMode.system` efectivamente responde al cambio de preferencia del sistema. Fuentes oficiales: https://docs.flutter.dev/ui/design/material y https://api.flutter.dev/flutter/material/ThemeData-class.html.
-**¿Por qué es importante?** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget.
 **Evidencia de aprendizaje:** entrega ThemeData centralizado, desincronización por color hardcodeado detectada y corrección confirmada.
 **Conceptos clave:** un único esquema de diseño centralizado, coherencia visual en toda la app.
 
@@ -82,24 +53,13 @@ flowchart LR
 
 En el proyecto integrador RutaFlow, el `ThemeData` vive en `lib/core/app_theme.dart`, aplicado desde `lib/main.dart`. Límite de la decisión: no conviene centralizar en `ThemeData` un color que es intencionalmente distinto en un único lugar puntual (como un color de marca de un socio externo en una sola pantalla) — ahí definirlo localmente es correcto; `ThemeData` centraliza específicamente lo que debe ser consistente en toda la app.
 
-### Tema 2: Adaptación Material vs Cupertino
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a adaptar el botón "Confirmar entrega" para mostrar `CupertinoButton` en iOS y `ElevatedButton` en Android, detectando la plataforma en tiempo de ejecución. Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Un conductor que usa RutaFlow en un iPhone espera que los controles se comporten y se vean como los del resto de sus apps de iOS; mostrar siempre el mismo botón Material en ambas plataformas hace que la app se sienta genérica en iOS.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Detectar la plataforma en tiempo de ejecución y mostrar el widget correspondiente para un mismo componente lógico hace que la app se sienta nativa en cada sistema.
-
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-import 'dart:io';
-
-Widget botonConfirmar() => Platform.isIOS
-    ? CupertinoButton.filled(child: Text('Confirmar entrega'), onPressed: confirmar)
-    : ElevatedButton(child: Text('Confirmar entrega'), onPressed: confirmar);
+MaterialApp(
+  theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+  darkTheme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo, brightness: Brightness.dark),
+  themeMode: ThemeMode.system,
+)
 ```
 
 **Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
@@ -111,17 +71,29 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: corriendo la app en un simulador de iOS, el botón se ve como un `CupertinoButton` nativo; corriendo exactamente el mismo código Dart en un emulador de Android, el mismo botón lógico se renderiza como `ElevatedButton` con las convenciones de Material.
+Resultado esperado: cada botón "Confirmar" en toda la app usa automáticamente el mismo tono derivado de `Colors.indigo`, sin que ningún widget individual especifique su propio color hardcodeado — cambiar `colorSchemeSeed` en un solo lugar actualiza el color en toda la app.
 
 #### Paso 5 · Práctica guiada
-Pista: envolvé ese widget condicional dentro de un widget test y corré la suite completa en CI (que corre en Linux, donde `Platform.isIOS` siempre es `false`) — ese es el fallo deliberado: el test que verifica específicamente el camino `CupertinoButton` nunca se ejecuta realmente en CI, porque `Platform.isIOS` depende del sistema operativo donde corre el test, dejando ese camino sin cobertura real.
+Pista: en `DetalleEnvio`, usá `Container(color: Color(0xFF3F51B5))` con un valor hexadecimal hardcodeado para el botón de confirmar, en vez de dejar que el `Theme` central lo defina — ese es el fallo deliberado: cambiá `colorSchemeSeed` a `Colors.teal` en el `ThemeData` central, y confirmá que todos los botones de la app cambian de color excepto ese específico, que queda visualmente desincronizado del resto.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 usando `debugDefaultTargetPlatformOverride` dentro del widget test para forzar `TargetPlatform.iOS`, confirmando que ahora el camino `CupertinoButton` sí se ejecuta y se verifica en CI sin importar el sistema operativo real.
+Corregí el Paso 5 quitando el color hardcodeado y usando `Theme.of(context).colorScheme.primary` (o el estilo por defecto de `ElevatedButton`), confirmando que ahora ese botón también sigue los cambios del `ThemeData` central.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el botón adaptativo del Paso 4, el camino sin cobertura real en CI del Paso 5, y el override de plataforma en test del Paso 6; explicá por qué `Platform.isIOS` depende del sistema operativo real de ejecución, y por qué eso exige un mecanismo distinto para testear el camino Cupertino desde una máquina de CI que no es Apple. Siguiente paso: estudia Semantics y dark mode. Errores comunes: no testear ambos caminos de un widget adaptativo, asumir que el mismo estilo visual funciona igual de bien en ambas plataformas, y usar `Platform.isIOS` en código que corre en la web. Fuentes oficiales: https://docs.flutter.dev/platform-integration/ios/platform-adaptations y https://api.flutter.dev/flutter/cupertino/CupertinoButton-class.html.
-**¿Por qué es importante?** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo las expectativas visuales que los usuarios ya tienen formadas.
+Entregá el `ThemeData` centralizado del Paso 4, la desincronización por color hardcodeado del Paso 5, y la corrección del Paso 6; explicá por qué hardcodear un color en un widget individual rompe la garantía de coherencia que `ThemeData` centralizado existe para dar. Siguiente paso: estudia cómo adaptar widgets entre Material y Cupertino. Errores comunes: hardcodear colores en widgets individuales en vez de leerlos del tema central, no definir `darkTheme` dejando la app sin un modo oscuro coherente, y no probar que `ThemeMode.system` efectivamente responde al cambio de preferencia del sistema. Fuentes oficiales: https://docs.flutter.dev/ui/design/material y https://api.flutter.dev/flutter/material/ThemeData-class.html.
+**¿Por qué es importante?** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget.
+
+### Tema 2: Adaptación Material vs Cupertino
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a adaptar el botón "Confirmar entrega" para mostrar `CupertinoButton` en iOS y `ElevatedButton` en Android, detectando la plataforma en tiempo de ejecución. Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Un conductor que usa RutaFlow en un iPhone espera que los controles se comporten y se vean como los del resto de sus apps de iOS; mostrar siempre el mismo botón Material en ambas plataformas hace que la app se sienta genérica en iOS.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Detectar la plataforma en tiempo de ejecución y mostrar el widget correspondiente para un mismo componente lógico hace que la app se sienta nativa en cada sistema.
+
 **Evidencia de aprendizaje:** entrega botón adaptativo, camino sin cobertura en CI detectado y override de plataforma en test confirmado.
 **Conceptos clave:** detectar la plataforma y mostrar el widget nativo correspondiente.
 
@@ -159,6 +131,36 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, `botonConfirmar()` vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene adaptar Material/Cupertino en cada widget individual de la app — eso multiplica el costo de mantenimiento; reservá la adaptación explícita para componentes de alto tránsito donde la diferencia visual realmente importa (botones primarios, navegación), y dejá que el resto use el estilo Material consistente definido en `ThemeData`.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+import 'dart:io';
+
+Widget botonConfirmar() => Platform.isIOS
+    ? CupertinoButton.filled(child: Text('Confirmar entrega'), onPressed: confirmar)
+    : ElevatedButton(child: Text('Confirmar entrega'), onPressed: confirmar);
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: corriendo la app en un simulador de iOS, el botón se ve como un `CupertinoButton` nativo; corriendo exactamente el mismo código Dart en un emulador de Android, el mismo botón lógico se renderiza como `ElevatedButton` con las convenciones de Material.
+
+#### Paso 5 · Práctica guiada
+Pista: envolvé ese widget condicional dentro de un widget test y corré la suite completa en CI (que corre en Linux, donde `Platform.isIOS` siempre es `false`) — ese es el fallo deliberado: el test que verifica específicamente el camino `CupertinoButton` nunca se ejecuta realmente en CI, porque `Platform.isIOS` depende del sistema operativo donde corre el test, dejando ese camino sin cobertura real.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 usando `debugDefaultTargetPlatformOverride` dentro del widget test para forzar `TargetPlatform.iOS`, confirmando que ahora el camino `CupertinoButton` sí se ejecuta y se verifica en CI sin importar el sistema operativo real.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el botón adaptativo del Paso 4, el camino sin cobertura real en CI del Paso 5, y el override de plataforma en test del Paso 6; explicá por qué `Platform.isIOS` depende del sistema operativo real de ejecución, y por qué eso exige un mecanismo distinto para testear el camino Cupertino desde una máquina de CI que no es Apple. Siguiente paso: estudia Semantics y dark mode. Errores comunes: no testear ambos caminos de un widget adaptativo, asumir que el mismo estilo visual funciona igual de bien en ambas plataformas, y usar `Platform.isIOS` en código que corre en la web. Fuentes oficiales: https://docs.flutter.dev/platform-integration/ios/platform-adaptations y https://api.flutter.dev/flutter/cupertino/CupertinoButton-class.html.
+**¿Por qué es importante?** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo las expectativas visuales que los usuarios ya tienen formadas.
 
 ### Tema 3: Accesibilidad con Semantics y dark mode
 

@@ -208,29 +208,6 @@ Una app de entregas recibe cambios de ruta en tiempo real; sin un orden explíci
 #### Paso 3 · Teoría, modelo mental y analogía
 El socket es un teléfono persistente; cada evento necesita contrato, orden e idempotencia. Reconectar restablece la llamada, pero no reproduce lo dicho mientras estaba desconectado — hace falta reanudar desde la última secuencia confirmada.
 
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/realtime/route_gateway.dart` dentro.
-```bash
-flutter create ejemplo
-```
-
-Ejecuta `flutter create ejemplo_socket`, crea `lib/features/realtime/route_gateway.dart` y documenta conexión y reconexión.
-```bash
-flutter create ejemplo_socket
-flutter analyze
-```
-**Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y el evento debe reflejarse una sola vez.
-**Fallo deliberado:** corta la red para observar el diagnóstico, registra el error y restáuralo.
-**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
-#### Paso 5 · Práctica guiada
-Pista: observa el diagnóstico antes de corregirlo, y añade backoff antes de reconectar tras una caída de red.
-
-#### Paso 6 · Práctica independiente
-Ignora eventos duplicados o con `sequence` menor a la última aplicada, y prueba el límite enviando el mismo evento dos veces seguidas.
-
-#### Paso 7 · Cierre y evidencia
-Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: listeners duplicados y mensajes sin versión. Fuentes oficiales: https://socket.io/docs/ y https://docs.flutter.dev/.
-
 **Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
 
 `socket_io_client` conecta con un servidor Socket.IO compatible, autentica el *handshake*, entra en un canal autorizado de la jornada y procesa eventos versionados. Socket.IO aporta negociación, eventos con nombre y reconexión sobre su propio protocolo; no es intercambiable automáticamente con un endpoint WebSocket o STOMP de Spring. El backend debe usar un servidor Socket.IO compatible o debe elegirse deliberadamente STOMP/WebSocket en ambos extremos.
@@ -281,6 +258,29 @@ sequenceDiagram
 ```
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Reconecta el canal de rutas y recupera una instantánea autorizada. Simula eventos repetidos y atrasados y comprueba que la entrega conserva la versión más reciente, no el último paquete recibido.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/realtime/route_gateway.dart` dentro.
+```bash
+flutter create ejemplo
+```
+
+Ejecuta `flutter create ejemplo_socket`, crea `lib/features/realtime/route_gateway.dart` y documenta conexión y reconexión.
+```bash
+flutter create ejemplo_socket
+flutter analyze
+```
+**Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y el evento debe reflejarse una sola vez.
+**Fallo deliberado:** corta la red para observar el diagnóstico, registra el error y restáuralo.
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
+#### Paso 5 · Práctica guiada
+Pista: observa el diagnóstico antes de corregirlo, y añade backoff antes de reconectar tras una caída de red.
+
+#### Paso 6 · Práctica independiente
+Ignora eventos duplicados o con `sequence` menor a la última aplicada, y prueba el límite enviando el mismo evento dos veces seguidas.
+
+#### Paso 7 · Cierre y evidencia
+Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: listeners duplicados y mensajes sin versión. Fuentes oficiales: https://socket.io/docs/ y https://docs.flutter.dev/.
 
 ### Tema 4: Animaciones de localización
 

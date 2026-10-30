@@ -14,44 +14,6 @@ El proyecto integrador Fundamentos (el gestor de tareas por terminal) hasta ahor
 #### Paso 3 · Teoría, modelo mental y analogía
 Modelar relacionalmente significa decidir primero qué hechos existen como entidades independientes (una tarea, una categoría) y qué hechos son solo atributos de esas entidades (el texto de la tarea, el nombre de la categoría). Una clave primaria identifica una fila sin ambigüedad; una clave foránea declara que un valor de una tabla debe corresponder a una fila existente en otra. La cardinalidad describe cuántas filas de un lado se relacionan con cuántas del otro: una categoría tiene muchas tareas, pero cada tarea pertenece a una sola categoría (relación uno a muchos). La analogía: una categoría es como una carpeta física y cada tarea es un papel dentro de ella con el número de esa carpeta escrito en la esquina — el papel no repite el nombre completo de la carpeta, solo su número, y ese número debería corresponder siempre a una carpeta que realmente existe.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/schema.sql`:
-```bash
-mkdir -p fundamentos-sqlite/src
-cd fundamentos-sqlite
-```
-```sql
-CREATE TABLE categorias(
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL UNIQUE
-);
-CREATE TABLE tareas(
-  id INTEGER PRIMARY KEY,
-  titulo TEXT NOT NULL,
-  categoria_id INTEGER NOT NULL REFERENCES categorias(id)
-);
-INSERT INTO categorias(nombre) VALUES ('trabajo'), ('personal');
-INSERT INTO tareas(titulo, categoria_id) VALUES ('Pagar factura', 1), ('Comprar pan', 2);
-DELETE FROM categorias WHERE nombre='trabajo';
-SELECT * FROM tareas;
-```
-
-**Ejecuta el ejemplo** (carga el schema en una base SQLite real y observa el resultado):
-
-```bash
-sqlite3 tareas.db < src/schema.sql
-```
-**Resultado esperado:** la fila de "Pagar factura" sigue existiendo con `categoria_id=1`, aunque esa categoría ya no está en `categorias` — quedó huérfana. **Fallo deliberado:** a diferencia de PostgreSQL, SQLite NO activa las claves foráneas por defecto; aunque declaraste `REFERENCES categorias(id)`, el `DELETE` anterior se ejecutó sin ningún error. Repetí el experimento agregando `PRAGMA foreign_keys = ON;` como primera línea del script, antes del `DELETE`: ahora SQLite lo rechaza con `FOREIGN KEY constraint failed`, porque todavía existe una tarea que referencia esa categoría.
-
-#### Paso 5 · Práctica guiada
-Pista: volvé a crear la tabla `tareas` pero con `categoria_id INTEGER NOT NULL REFERENCES categorias(id) ON DELETE CASCADE`, activá `PRAGMA foreign_keys = ON;` y borrá la misma categoría. Resultado esperado: la tarea desaparece junto con la categoría, en vez de bloquear el `DELETE` o quedar huérfana; anotá los tres comportamientos (sin `PRAGMA`, con `PRAGMA` sin `CASCADE`, con `PRAGMA` y `CASCADE`) en una línea cada uno.
-
-#### Paso 6 · Práctica independiente
-Agregá una tabla `etiquetas` relacionada con `tareas` mediante una tabla intermedia `tarea_etiqueta` (relación muchos a muchos), dibujá el diagrama entidad-relación completo de categorías/tareas/etiquetas, y documentá qué pasa si borrás una etiqueta que todavía tiene tareas asociadas.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el esquema `categorias`/`tareas`, los tres comportamientos del Paso 5 (sin `PRAGMA`, con `PRAGMA`, con `CASCADE`) y el diseño de `etiquetas` del Paso 6. Como siguiente paso, en el Tema 2 vas a escribir las consultas SQL (`INSERT`, `SELECT`, `JOIN`) sobre este mismo esquema. Errores comunes: asumir que declarar `REFERENCES` ya protege la integridad sin activar `PRAGMA foreign_keys`; confundir una relación uno-a-muchos con una muchos-a-muchos. Fuentes oficiales: https://www.sqlite.org/foreignkeys.html y https://www.sqlite.org/lang_createtable.html.
-**¿Por qué es importante?** Porque una clave foránea declarada pero no verificada da una falsa sensación de seguridad: el esquema "se ve" correcto, pero la base permite exactamente lo que la relación debería impedir.
 **Evidencia de aprendizaje:** entregá el esquema `categorias`/`tareas`, la fila huérfana sin `PRAGMA`, el rechazo con `PRAGMA` y el `CASCADE` del Paso 5.
 **Escenario:** Tu base de RutaFlow crece a 50 000 entregas activas. Un conductor deja la empresa y alguien ejecuta `DELETE FROM conductor WHERE id=123`. El sistema debe decidir: ¿eliminar automáticamente sus entregas asignadas o rechazar la eliminación?
 
@@ -109,7 +71,6 @@ erDiagram
     MOVIMIENTO { int id PK int producto_id FK }
 ```
 
-
 #### Profundización · Diseño: normalizar una tabla de tareas con categoría repetida
 
 **Escenario real:** Alguien implementó la tabla de tareas sin separar la categoría en su propia tabla:
@@ -153,6 +114,45 @@ UPDATE en diseño normalizado: afecta _________ fila(s)
 
 </details>
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/schema.sql`:
+```bash
+mkdir -p fundamentos-sqlite/src
+cd fundamentos-sqlite
+```
+```sql
+CREATE TABLE categorias(
+  id INTEGER PRIMARY KEY,
+  nombre TEXT NOT NULL UNIQUE
+);
+CREATE TABLE tareas(
+  id INTEGER PRIMARY KEY,
+  titulo TEXT NOT NULL,
+  categoria_id INTEGER NOT NULL REFERENCES categorias(id)
+);
+INSERT INTO categorias(nombre) VALUES ('trabajo'), ('personal');
+INSERT INTO tareas(titulo, categoria_id) VALUES ('Pagar factura', 1), ('Comprar pan', 2);
+DELETE FROM categorias WHERE nombre='trabajo';
+SELECT * FROM tareas;
+```
+
+**Ejecuta el ejemplo** (carga el schema en una base SQLite real y observa el resultado):
+
+```bash
+sqlite3 tareas.db < src/schema.sql
+```
+**Resultado esperado:** la fila de "Pagar factura" sigue existiendo con `categoria_id=1`, aunque esa categoría ya no está en `categorias` — quedó huérfana. **Fallo deliberado:** a diferencia de PostgreSQL, SQLite NO activa las claves foráneas por defecto; aunque declaraste `REFERENCES categorias(id)`, el `DELETE` anterior se ejecutó sin ningún error. Repetí el experimento agregando `PRAGMA foreign_keys = ON;` como primera línea del script, antes del `DELETE`: ahora SQLite lo rechaza con `FOREIGN KEY constraint failed`, porque todavía existe una tarea que referencia esa categoría.
+
+#### Paso 5 · Práctica guiada
+Pista: volvé a crear la tabla `tareas` pero con `categoria_id INTEGER NOT NULL REFERENCES categorias(id) ON DELETE CASCADE`, activá `PRAGMA foreign_keys = ON;` y borrá la misma categoría. Resultado esperado: la tarea desaparece junto con la categoría, en vez de bloquear el `DELETE` o quedar huérfana; anotá los tres comportamientos (sin `PRAGMA`, con `PRAGMA` sin `CASCADE`, con `PRAGMA` y `CASCADE`) en una línea cada uno.
+
+#### Paso 6 · Práctica independiente
+Agregá una tabla `etiquetas` relacionada con `tareas` mediante una tabla intermedia `tarea_etiqueta` (relación muchos a muchos), dibujá el diagrama entidad-relación completo de categorías/tareas/etiquetas, y documentá qué pasa si borrás una etiqueta que todavía tiene tareas asociadas.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el esquema `categorias`/`tareas`, los tres comportamientos del Paso 5 (sin `PRAGMA`, con `PRAGMA`, con `CASCADE`) y el diseño de `etiquetas` del Paso 6. Como siguiente paso, en el Tema 2 vas a escribir las consultas SQL (`INSERT`, `SELECT`, `JOIN`) sobre este mismo esquema. Errores comunes: asumir que declarar `REFERENCES` ya protege la integridad sin activar `PRAGMA foreign_keys`; confundir una relación uno-a-muchos con una muchos-a-muchos. Fuentes oficiales: https://www.sqlite.org/foreignkeys.html y https://www.sqlite.org/lang_createtable.html.
+**¿Por qué es importante?** Porque una clave foránea declarada pero no verificada da una falsa sensación de seguridad: el esquema "se ve" correcto, pero la base permite exactamente lo que la relación debería impedir.
+
 ### Tema 2: SQL para definir, escribir, consultar y relacionar
 
 #### Paso 1 · Objetivo y preparación
@@ -164,45 +164,6 @@ El proyecto integrador Fundamentos necesita un comando `tarea listar --categoria
 #### Paso 3 · Teoría, modelo mental y analogía
 SQL se divide en DDL (`CREATE`, `ALTER`, `DROP`: define estructura) y DML (`INSERT`, `SELECT`, `UPDATE`, `DELETE`: opera sobre datos). Es un lenguaje declarativo: describís qué filas querés, no el algoritmo para encontrarlas — el motor decide cómo recorrer las tablas. Un `JOIN` combina filas de dos tablas según una condición de igualdad entre claves; sin esa condición, el resultado mezclaría cada fila de una tabla con cada fila de la otra. La analogía: pedís un reporte a alguien que conoce el archivo completo ("dame las tareas de la categoría trabajo, ordenadas por título") en vez de explicarle paso a paso cómo revisar cada carpeta — describís el qué, el motor decide el cómo.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/consultas.py`:
-```bash
-mkdir -p fundamentos-sql/src
-cd fundamentos-sql
-```
-```python
-import sqlite3
-
-# Base nueva en memoria por ejecución: permite repetir y corregir sin borrar archivos.
-
-conexion = sqlite3.connect(":memory:")
-conexion.execute("CREATE TABLE categorias(id INTEGER PRIMARY KEY, nombre TEXT NOT NULL UNIQUE)")
-conexion.execute("CREATE TABLE tareas(id INTEGER PRIMARY KEY, titulo TEXT NOT NULL, categoria_id INTEGER NOT NULL REFERENCES categorias(id))")
-conexion.execute("INSERT INTO categorias(nombre) VALUES ('trabajo'), ('personal')")
-conexion.execute("INSERT INTO tareas(titulo, categoria_id) VALUES ('Pagar factura', 1), ('Comprar pan', 2)")
-conexion.commit()
-
-def listar_por_categoria_insegura(nombre_categoria):
-    consulta = "SELECT t.titulo FROM tareas t JOIN categorias c ON c.id = t.categoria_id WHERE c.nombre = '" + nombre_categoria + "'"
-    return conexion.execute(consulta).fetchall()
-
-print(listar_por_categoria_insegura("trabajo"))
-print(listar_por_categoria_insegura("trabajo' OR '1'='1"))
-```
-```bash
-python3 src/consultas.py
-```
-**Salida esperada:** `listar_por_categoria_insegura("trabajo")` devuelve solo `[('Pagar factura',)]`. **Fallo deliberado:** la segunda llamada, con `"trabajo' OR '1'='1"`, devuelve TODAS las tareas (`[('Pagar factura',), ('Comprar pan',)]`) de cualquier categoría, porque el texto concatenado convirtió el `WHERE` en `c.nombre = 'trabajo' OR '1'='1'`, verdadero para cada fila. Corregilo reemplazando el cuerpo de la función por `conexion.execute("SELECT t.titulo FROM tareas t JOIN categorias c ON c.id = t.categoria_id WHERE c.nombre = ?", (nombre_categoria,)).fetchall()`: con el mismo texto malicioso como argumento, ahora devuelve una lista vacía porque SQLite lo trata como un valor literal, no como código SQL.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí una función equivalente que busque por `titulo` con `LIKE` (por ejemplo, tareas que contengan "factura"), primero concatenando texto y después parametrizada con `?`. Probá qué pasa si alguien busca `%' OR '1'='1' --` en la versión insegura, y confirmá que la versión parametrizada trata ese mismo texto como literal.
-
-#### Paso 6 · Práctica independiente
-Escribí un `UPDATE` parametrizado que cambie el `titulo` de una tarea por `id`, un `DELETE` parametrizado que borre las tareas de una categoría dada, y una consulta con `GROUP BY categoria_id` que cuente, usando `JOIN`, cuántas tareas tiene cada categoría.
-
-#### Paso 7 · Cierre y evidencia
-Entregá las dos versiones (insegura y parametrizada) del Paso 4, la variante con `LIKE` del Paso 5, y el `UPDATE`/`DELETE`/`GROUP BY` del Paso 6. Como siguiente paso, en el Tema 3 vas a crear un índice sobre esta misma tabla `tareas` y vas a medir con `EXPLAIN QUERY PLAN` si realmente acelera las consultas. Errores comunes: concatenar entrada de usuario en SQL aunque la base sea local; asumir que un `JOIN` siempre encuentra una fila coincidente del otro lado. Fuentes oficiales: https://www.sqlite.org/lang.html y https://docs.python.org/es/3/library/sqlite3.html.
-**¿Por qué es importante?** Porque cualquier entrada que llega desde afuera (un argumento de CLI, un formulario) puede contener texto diseñado para alterar tu consulta; parametrizar no es un detalle de estilo, es lo que separa código de dato.
 **Evidencia de aprendizaje:** entregá la inyección reproducida con texto concatenado, la misma entrada neutralizada con parámetros, y las consultas `UPDATE`/`DELETE`/`GROUP BY` del Paso 6.
 
 **Cuándo NO usar:** No uses `LEFT JOIN` si ambas tablas son obligatorias por requisito de negocio. No indexas todas las columnas; indexa solo las que filtras frecuentemente. No escribas SQL concatenado aunque sea una herramienta local: es inseguro y difícil de mantener.
@@ -297,6 +258,46 @@ flowchart LR
     GROUP --> HAVING["HAVING"] --> SELECT["SELECT"] --> ORDER["ORDER BY"] --> LIMIT["LIMIT"]
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/consultas.py`:
+```bash
+mkdir -p fundamentos-sql/src
+cd fundamentos-sql
+```
+```python
+import sqlite3
+
+# Base nueva en memoria por ejecución: permite repetir y corregir sin borrar archivos.
+
+conexion = sqlite3.connect(":memory:")
+conexion.execute("CREATE TABLE categorias(id INTEGER PRIMARY KEY, nombre TEXT NOT NULL UNIQUE)")
+conexion.execute("CREATE TABLE tareas(id INTEGER PRIMARY KEY, titulo TEXT NOT NULL, categoria_id INTEGER NOT NULL REFERENCES categorias(id))")
+conexion.execute("INSERT INTO categorias(nombre) VALUES ('trabajo'), ('personal')")
+conexion.execute("INSERT INTO tareas(titulo, categoria_id) VALUES ('Pagar factura', 1), ('Comprar pan', 2)")
+conexion.commit()
+
+def listar_por_categoria_insegura(nombre_categoria):
+    consulta = "SELECT t.titulo FROM tareas t JOIN categorias c ON c.id = t.categoria_id WHERE c.nombre = '" + nombre_categoria + "'"
+    return conexion.execute(consulta).fetchall()
+
+print(listar_por_categoria_insegura("trabajo"))
+print(listar_por_categoria_insegura("trabajo' OR '1'='1"))
+```
+```bash
+python3 src/consultas.py
+```
+**Salida esperada:** `listar_por_categoria_insegura("trabajo")` devuelve solo `[('Pagar factura',)]`. **Fallo deliberado:** la segunda llamada, con `"trabajo' OR '1'='1"`, devuelve TODAS las tareas (`[('Pagar factura',), ('Comprar pan',)]`) de cualquier categoría, porque el texto concatenado convirtió el `WHERE` en `c.nombre = 'trabajo' OR '1'='1'`, verdadero para cada fila. Corregilo reemplazando el cuerpo de la función por `conexion.execute("SELECT t.titulo FROM tareas t JOIN categorias c ON c.id = t.categoria_id WHERE c.nombre = ?", (nombre_categoria,)).fetchall()`: con el mismo texto malicioso como argumento, ahora devuelve una lista vacía porque SQLite lo trata como un valor literal, no como código SQL.
+
+#### Paso 5 · Práctica guiada
+Pista: escribí una función equivalente que busque por `titulo` con `LIKE` (por ejemplo, tareas que contengan "factura"), primero concatenando texto y después parametrizada con `?`. Probá qué pasa si alguien busca `%' OR '1'='1' --` en la versión insegura, y confirmá que la versión parametrizada trata ese mismo texto como literal.
+
+#### Paso 6 · Práctica independiente
+Escribí un `UPDATE` parametrizado que cambie el `titulo` de una tarea por `id`, un `DELETE` parametrizado que borre las tareas de una categoría dada, y una consulta con `GROUP BY categoria_id` que cuente, usando `JOIN`, cuántas tareas tiene cada categoría.
+
+#### Paso 7 · Cierre y evidencia
+Entregá las dos versiones (insegura y parametrizada) del Paso 4, la variante con `LIKE` del Paso 5, y el `UPDATE`/`DELETE`/`GROUP BY` del Paso 6. Como siguiente paso, en el Tema 3 vas a crear un índice sobre esta misma tabla `tareas` y vas a medir con `EXPLAIN QUERY PLAN` si realmente acelera las consultas. Errores comunes: concatenar entrada de usuario en SQL aunque la base sea local; asumir que un `JOIN` siempre encuentra una fila coincidente del otro lado. Fuentes oficiales: https://www.sqlite.org/lang.html y https://docs.python.org/es/3/library/sqlite3.html.
+**¿Por qué es importante?** Porque cualquier entrada que llega desde afuera (un argumento de CLI, un formulario) puede contener texto diseñado para alterar tu consulta; parametrizar no es un detalle de estilo, es lo que separa código de dato.
+
 ### Tema 3: Índices, restricciones y planes de consulta
 
 #### Paso 1 · Objetivo y preparación
@@ -308,40 +309,6 @@ El comando `tarea listar --estado pendiente` del proyecto integrador Fundamentos
 #### Paso 3 · Teoría, modelo mental y analogía
 Un índice es una estructura auxiliar ordenada que SQLite mantiene junto a la tabla para localizar filas por el valor de una columna sin recorrerlas todas. `EXPLAIN QUERY PLAN` muestra, sin ejecutar realmente la consulta sobre los datos, qué estrategia usaría el motor: `SCAN TABLE` significa "voy a revisar cada fila una por una"; `SEARCH TABLE ... USING INDEX` significa "voy directo a las filas que coinciden". Un índice no es gratis: ocupa espacio en disco y SQLite debe actualizarlo en cada `INSERT`/`UPDATE`/`DELETE` sobre esa columna, no solo en cada lectura. La analogía: buscar un apellido en una guía telefónica ordenada alfabéticamente (índice) es muy distinto de buscarlo en una pila de fichas sueltas sin orden (`SCAN`) — pero si alguien agrega una ficha nueva, mantener la guía ordenada cuesta más trabajo que agregar la ficha al final de la pila.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/indice.sql` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Parte de la base `tareas.db` del Tema 1 y crea `src/indice.sql`:
-```bash
-cd fundamentos-sqlite
-```
-```sql
-ALTER TABLE tareas ADD COLUMN estado TEXT NOT NULL DEFAULT 'pendiente';
-UPDATE tareas SET estado='completada' WHERE id=1;
-
-EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
-
-CREATE INDEX idx_tareas_estado ON tareas(estado);
-
-EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
-```
-```bash
-sqlite3 tareas.db < src/indice.sql
-```
-**Resultado esperado:** el primer `EXPLAIN QUERY PLAN` muestra `SCAN tareas`; el segundo, después de crear el índice, muestra `SEARCH tareas USING INDEX idx_tareas_estado (estado=?)`. **Fallo deliberado:** ejecutá de nuevo `CREATE INDEX idx_tareas_estado ON tareas(estado);` sin borrar el anterior; SQLite responde `index idx_tareas_estado already exists` y la migración se detiene ahí. Corregilo con `CREATE INDEX IF NOT EXISTS idx_tareas_estado ON tareas(estado);`, que no falla si el índice ya fue creado por una ejecución anterior de la misma migración.
-
-#### Paso 5 · Práctica guiada
-Pista: repetí el experimento filtrando por dos columnas (`WHERE estado='pendiente' AND categoria_id=1`): con el índice simple en `estado`, mirá en el `EXPLAIN QUERY PLAN` si SQLite igual necesita revisar filas de más; después creá un índice compuesto `CREATE INDEX idx_tareas_estado_categoria ON tareas(estado, categoria_id);` y compará el plan otra vez.
-
-#### Paso 6 · Práctica independiente
-Generá 5 000 tareas de prueba con un bucle en Python, medí el tiempo de la consulta por `estado` antes y después del índice con el módulo `time`, y documentá si la diferencia es perceptible con ese volumen o si recién se nota con más datos.
-
-#### Paso 7 · Cierre y evidencia
-Entregá los dos `EXPLAIN QUERY PLAN` (antes/después del índice) del Paso 4, el índice compuesto del Paso 5, y la medición de tiempo del Paso 6. Como siguiente paso, en el Tema 4 vas a envolver varias operaciones sobre estas mismas tablas dentro de una transacción para que un fallo a mitad de camino no deje la base a medio actualizar. Errores comunes: crear un índice por columna sin medir si realmente se usa; crear el mismo índice dos veces en una migración sin `IF NOT EXISTS`; medir con pocos datos y concluir que el índice "no sirve". Fuentes oficiales: https://www.sqlite.org/eqp.html y https://www.sqlite.org/lang_createindex.html.
-**¿Por qué es importante?** Porque un índice mal elegido (o la ausencia de uno) es la causa más común de que una consulta que funcionaba bien con pocos datos se vuelva inutilizable cuando el proyecto crece — y `EXPLAIN QUERY PLAN` es la única forma de confirmarlo en vez de adivinarlo.
 **Evidencia de aprendizaje:** entregá los dos planes de consulta, el índice compuesto y la medición con datos generados.
 
 **Cuándo NO usar:** No crees índice en una columna con solo 2 valores (booleano). No indexas todas las columnas; solo las que filtran frecuentemente. No indexas una columna que rara vez se consulta porque ralentiza INSERT.
@@ -422,6 +389,41 @@ flowchart LR
     end
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/indice.sql` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Parte de la base `tareas.db` del Tema 1 y crea `src/indice.sql`:
+```bash
+cd fundamentos-sqlite
+```
+```sql
+ALTER TABLE tareas ADD COLUMN estado TEXT NOT NULL DEFAULT 'pendiente';
+UPDATE tareas SET estado='completada' WHERE id=1;
+
+EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
+
+CREATE INDEX idx_tareas_estado ON tareas(estado);
+
+EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
+```
+```bash
+sqlite3 tareas.db < src/indice.sql
+```
+**Resultado esperado:** el primer `EXPLAIN QUERY PLAN` muestra `SCAN tareas`; el segundo, después de crear el índice, muestra `SEARCH tareas USING INDEX idx_tareas_estado (estado=?)`. **Fallo deliberado:** ejecutá de nuevo `CREATE INDEX idx_tareas_estado ON tareas(estado);` sin borrar el anterior; SQLite responde `index idx_tareas_estado already exists` y la migración se detiene ahí. Corregilo con `CREATE INDEX IF NOT EXISTS idx_tareas_estado ON tareas(estado);`, que no falla si el índice ya fue creado por una ejecución anterior de la misma migración.
+
+#### Paso 5 · Práctica guiada
+Pista: repetí el experimento filtrando por dos columnas (`WHERE estado='pendiente' AND categoria_id=1`): con el índice simple en `estado`, mirá en el `EXPLAIN QUERY PLAN` si SQLite igual necesita revisar filas de más; después creá un índice compuesto `CREATE INDEX idx_tareas_estado_categoria ON tareas(estado, categoria_id);` y compará el plan otra vez.
+
+#### Paso 6 · Práctica independiente
+Generá 5 000 tareas de prueba con un bucle en Python, medí el tiempo de la consulta por `estado` antes y después del índice con el módulo `time`, y documentá si la diferencia es perceptible con ese volumen o si recién se nota con más datos.
+
+#### Paso 7 · Cierre y evidencia
+Entregá los dos `EXPLAIN QUERY PLAN` (antes/después del índice) del Paso 4, el índice compuesto del Paso 5, y la medición de tiempo del Paso 6. Como siguiente paso, en el Tema 4 vas a envolver varias operaciones sobre estas mismas tablas dentro de una transacción para que un fallo a mitad de camino no deje la base a medio actualizar. Errores comunes: crear un índice por columna sin medir si realmente se usa; crear el mismo índice dos veces en una migración sin `IF NOT EXISTS`; medir con pocos datos y concluir que el índice "no sirve". Fuentes oficiales: https://www.sqlite.org/eqp.html y https://www.sqlite.org/lang_createindex.html.
+**¿Por qué es importante?** Porque un índice mal elegido (o la ausencia de uno) es la causa más común de que una consulta que funcionaba bien con pocos datos se vuelva inutilizable cuando el proyecto crece — y `EXPLAIN QUERY PLAN` es la única forma de confirmarlo en vez de adivinarlo.
+
 ### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL
 
 #### Paso 1 · Objetivo y preparación
@@ -433,53 +435,6 @@ El proyecto integrador Fundamentos necesita que marcar una tarea como completada
 #### Paso 3 · Teoría, modelo mental y analogía
 Una transacción agrupa varias sentencias SQL como si fueran una sola unidad indivisible: o se aplican todas (`COMMIT`), o no se aplica ninguna (`ROLLBACK`). Esa garantía se resume en ACID: atomicidad (todo o nada), consistencia (las reglas declaradas — `CHECK`, `UNIQUE`, claves foráneas — se siguen cumpliendo), aislamiento (una transacción no ve resultados a medio terminar de otra) y durabilidad (lo confirmado con `COMMIT` sobrevive incluso a un corte de luz). Elegir SQL o NoSQL no es una cuestión de moda: depende de si tus datos necesitan esas garantías fuertes entre entidades relacionadas (pagos, reservas, un historial de cambios) o si cada registro es independiente y puede vivir sin relaciones estrictas (una sesión de caché, un documento con forma variable). La analogía: una transacción es una transferencia bancaria firmada ante un notario — o se completan todos los pasos del contrato, o el notario rompe el papel entero; no existe un mundo donde el dinero salió de una cuenta pero el contrato quedó "a medias".
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/transaccion.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Parte de la base `tareas.db` de los Temas anteriores y crea `src/transaccion.py`:
-```bash
-cd fundamentos-sqlite
-```
-```python
-import sqlite3
-
-conexion = sqlite3.connect("tareas.db")
-conexion.execute("CREATE TABLE historial(id INTEGER PRIMARY KEY, tarea_id INTEGER NOT NULL, accion TEXT NOT NULL)")
-conexion.commit()
-
-def completar_con_transaccion(tarea_id, simular_fallo=False):
-    try:
-        conexion.execute("BEGIN")
-        conexion.execute("UPDATE tareas SET estado='completada' WHERE id=?", (tarea_id,))
-        if simular_fallo:
-            raise RuntimeError("fallo simulado: el disco se llenó")
-        conexion.execute("INSERT INTO historial(tarea_id, accion) VALUES (?, 'completada')", (tarea_id,))
-        conexion.commit()
-    except Exception as error:
-        conexion.rollback()
-        print("Revertido:", error)
-
-completar_con_transaccion(2, simular_fallo=True)
-print(conexion.execute("SELECT id, estado FROM tareas WHERE id=2").fetchone())
-print(conexion.execute("SELECT * FROM historial WHERE tarea_id=2").fetchall())
-```
-```bash
-python3 src/transaccion.py
-```
-**Resultado esperado:** después del `ROLLBACK`, la tarea 2 sigue con su estado original (no quedó "completada") y `historial` no tiene ninguna fila para esa tarea — el `UPDATE` que sí llegó a ejecutarse se revirtió por completo. **Fallo deliberado:** quitá el `BEGIN`/`try`/`rollback` y ejecutá las mismas dos sentencias sueltas, cada una con su propio `commit()` inmediato, con la excepción simulada entre medio: ahora la tarea 2 QUEDA marcada como "completada" (ese `UPDATE` ya se confirmó solo) pero `historial` sigue vacío para esa tarea — una inconsistencia que ningún `ROLLBACK` puede deshacer porque nunca hubo una transacción que agrupara ambos cambios.
-
-#### Paso 5 · Práctica guiada
-Pista: repetí `completar_con_transaccion` con `simular_fallo=False` para confirmar el camino feliz: la tarea queda completada Y aparece en `historial` en el mismo `COMMIT`. Después agregá una tercera operación dentro de la misma transacción (por ejemplo, decrementar un contador de "tareas pendientes" en otra tabla) y confirmá que un fallo en esa tercera operación también revierte las dos anteriores.
-
-#### Paso 6 · Práctica independiente
-Documentá una comparación de una línea cada caso: qué pasaría con este mismo escenario (completar tarea + historial) en una base de documentos sin transacciones multi-documento, y en qué casos esa falta de garantías sería aceptable para Fundamentos y en cuáles no.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el camino feliz y el `ROLLBACK` del Paso 4, la transacción de tres pasos del Paso 5, y la comparación SQL/NoSQL del Paso 6. Con esto cerrás el Módulo 4; como siguiente paso, en el Módulo 5 (Testing, depuración, Git y CI) vas a escribir tests automatizados y usar Git/CI para que estos mismos cambios de esquema y consultas queden verificados antes de integrarse. Errores comunes: olvidar `BEGIN` y asumir que dos `execute()` consecutivos ya son atómicos; dejar transacciones abiertas por mucho tiempo bloqueando otras escrituras; elegir NoSQL únicamente para evitar diseñar un esquema. Fuentes oficiales: https://www.sqlite.org/lang_transaction.html y https://www.sqlite.org/atomiccommit.html.
-**¿Por qué es importante?** Porque un fallo a mitad de camino no es un caso raro de laboratorio: un proceso puede interrumpirse por cualquier motivo, y sin transacción la base queda en un estado que ninguna de tus validaciones anticipó.
 **Evidencia de aprendizaje:** entregá el camino feliz, el `ROLLBACK` reproducido, la transacción de tres pasos y la comparación SQL/NoSQL.
 
 **Cuándo NO usar:** No uses NoSQL para datos relacionales complejos sin reinventar restricciones. No mantengas transacciones largas (> 1s); fragmenta en operaciones más pequeñas. No assumes `READ COMMITTED` es suficiente para operaciones críticas sin entender race conditions.
@@ -571,6 +526,54 @@ flowchart LR
     SUB -. "fallo" .-> ROLLBACK["ROLLBACK"]
     ADD -. "fallo" .-> ROLLBACK
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/transaccion.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Parte de la base `tareas.db` de los Temas anteriores y crea `src/transaccion.py`:
+```bash
+cd fundamentos-sqlite
+```
+```python
+import sqlite3
+
+conexion = sqlite3.connect("tareas.db")
+conexion.execute("CREATE TABLE historial(id INTEGER PRIMARY KEY, tarea_id INTEGER NOT NULL, accion TEXT NOT NULL)")
+conexion.commit()
+
+def completar_con_transaccion(tarea_id, simular_fallo=False):
+    try:
+        conexion.execute("BEGIN")
+        conexion.execute("UPDATE tareas SET estado='completada' WHERE id=?", (tarea_id,))
+        if simular_fallo:
+            raise RuntimeError("fallo simulado: el disco se llenó")
+        conexion.execute("INSERT INTO historial(tarea_id, accion) VALUES (?, 'completada')", (tarea_id,))
+        conexion.commit()
+    except Exception as error:
+        conexion.rollback()
+        print("Revertido:", error)
+
+completar_con_transaccion(2, simular_fallo=True)
+print(conexion.execute("SELECT id, estado FROM tareas WHERE id=2").fetchone())
+print(conexion.execute("SELECT * FROM historial WHERE tarea_id=2").fetchall())
+```
+```bash
+python3 src/transaccion.py
+```
+**Resultado esperado:** después del `ROLLBACK`, la tarea 2 sigue con su estado original (no quedó "completada") y `historial` no tiene ninguna fila para esa tarea — el `UPDATE` que sí llegó a ejecutarse se revirtió por completo. **Fallo deliberado:** quitá el `BEGIN`/`try`/`rollback` y ejecutá las mismas dos sentencias sueltas, cada una con su propio `commit()` inmediato, con la excepción simulada entre medio: ahora la tarea 2 QUEDA marcada como "completada" (ese `UPDATE` ya se confirmó solo) pero `historial` sigue vacío para esa tarea — una inconsistencia que ningún `ROLLBACK` puede deshacer porque nunca hubo una transacción que agrupara ambos cambios.
+
+#### Paso 5 · Práctica guiada
+Pista: repetí `completar_con_transaccion` con `simular_fallo=False` para confirmar el camino feliz: la tarea queda completada Y aparece en `historial` en el mismo `COMMIT`. Después agregá una tercera operación dentro de la misma transacción (por ejemplo, decrementar un contador de "tareas pendientes" en otra tabla) y confirmá que un fallo en esa tercera operación también revierte las dos anteriores.
+
+#### Paso 6 · Práctica independiente
+Documentá una comparación de una línea cada caso: qué pasaría con este mismo escenario (completar tarea + historial) en una base de documentos sin transacciones multi-documento, y en qué casos esa falta de garantías sería aceptable para Fundamentos y en cuáles no.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el camino feliz y el `ROLLBACK` del Paso 4, la transacción de tres pasos del Paso 5, y la comparación SQL/NoSQL del Paso 6. Con esto cerrás el Módulo 4; como siguiente paso, en el Módulo 5 (Testing, depuración, Git y CI) vas a escribir tests automatizados y usar Git/CI para que estos mismos cambios de esquema y consultas queden verificados antes de integrarse. Errores comunes: olvidar `BEGIN` y asumir que dos `execute()` consecutivos ya son atómicos; dejar transacciones abiertas por mucho tiempo bloqueando otras escrituras; elegir NoSQL únicamente para evitar diseñar un esquema. Fuentes oficiales: https://www.sqlite.org/lang_transaction.html y https://www.sqlite.org/atomiccommit.html.
+**¿Por qué es importante?** Porque un fallo a mitad de camino no es un caso raro de laboratorio: un proceso puede interrumpirse por cualquier motivo, y sin transacción la base queda en un estado que ninguna de tus validaciones anticipó.
 
 ### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana
 

@@ -49,6 +49,31 @@ graph TD
     style D fill:#e8f5e9
 ```
 
+**Evidencia de aprendizaje:** entrega componente, lista, fallo de key y corrección.
+**Conceptos clave:** `createElement`, expresiones embebidas, JSX no es HTML.
+
+`DeliveryCard` es el primer componente real del proyecto integrador de este track (SPA con datos reales, Módulo 12): la misma disciplina de props tipadas y key estable en listas se repetirá en cada componente que muestre datos de la API a lo largo del track.
+
+**Cuándo no usarlo:** JSX y `createElement` son la base de React; si el proyecto no necesita interactividad ni estado (una página completamente estática), generar esa capa de componentes es más complejidad de la que aporta HTML plano — React se justifica en cuanto la UI necesita reaccionar a datos que cambian.
+
+JSX es una extensión de sintaxis de JavaScript que permite escribir marcado similar a HTML directamente dentro de código JavaScript (`<button onClick={onClick}>{texto}</button>`), pero JSX no es HTML ni un lenguaje de plantillas propio: es transformado en tiempo de compilación (por Babel o el compilador integrado en el toolchain del proyecto) a llamadas planas de `React.createElement(tipo, props, ...hijos)`, que a su vez producen objetos JavaScript planos que describen qué debe renderizarse, no el elemento DOM real todavía. Esta transformación explica por qué las llaves `{}` dentro de JSX embeben cualquier expresión JavaScript válida (no solo texto): `{texto}` no es una plantilla de texto especial, es literalmente un argumento pasado a `createElement`, y por lo tanto puede ser cualquier expresión: una variable, una llamada a función, una expresión ternaria, o incluso otro elemento JSX anidado.
+
+Comprender que JSX se convierte en llamadas a función explica comportamientos que de otro modo parecerían mágicos: por qué un componente debe devolver un único elemento raíz (porque `createElement` devuelve un único objeto, no una lista suelta de objetos, de ahí la necesidad de Fragments, Tema 3), por qué los atributos usan `className` en vez de `class` (`class` es una palabra reservada en JavaScript, por lo que no puede usarse como nombre de prop), y por qué JSX permite mezclar libremente lógica JavaScript y marcado, algo que un motor de plantillas tradicional (como los estudiados en frameworks basados en archivos `.html` separados) no permite con la misma naturalidad.
+
+**Analogía:** JSX es como una notación taquigráfica para escribir instrucciones detalladas de ensamblaje: no es el objeto ensamblado en sí, sino una forma más legible de escribir exactamente las mismas instrucciones (`createElement(...)`) que, de escribirse literalmente, serían mucho más verbosas y difíciles de leer a simple vista.
+
+**¿Por qué es importante?** Entender que JSX es azúcar sintáctica sobre `createElement` explica por qué las llaves embeben cualquier expresión JavaScript, por qué un componente devuelve un único elemento raíz, y por qué se usa `className` en vez de `class`.
+
+**Código del ejemplo:**
+
+```jsx
+function Boton({ texto, onClick }) {
+  return <button onClick={onClick}>{texto}</button>;
+}
+// Se transforma en:
+// React.createElement('button', { onClick }, texto)
+```
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -80,30 +105,6 @@ Añade estados vacío/error, composición con Fragment y estilos accesibles; pru
 #### Paso 7 · Cierre y evidencia
 Guarda estructura, comandos, captura y log; como siguiente paso estudia estado. Errores comunes: key aleatoria, componente gigante, HTML inválido y estilos que dependen solo de color. Fuentes oficiales: https://react.dev/learn y https://vite.dev/guide/.
 **¿Por qué es importante?** Porque entender el modelo de renderizado evita bugs sutiles al crecer la interfaz.
-**Evidencia de aprendizaje:** entrega componente, lista, fallo de key y corrección.
-**Conceptos clave:** `createElement`, expresiones embebidas, JSX no es HTML.
-
-`DeliveryCard` es el primer componente real del proyecto integrador de este track (SPA con datos reales, Módulo 12): la misma disciplina de props tipadas y key estable en listas se repetirá en cada componente que muestre datos de la API a lo largo del track.
-
-**Cuándo no usarlo:** JSX y `createElement` son la base de React; si el proyecto no necesita interactividad ni estado (una página completamente estática), generar esa capa de componentes es más complejidad de la que aporta HTML plano — React se justifica en cuanto la UI necesita reaccionar a datos que cambian.
-
-JSX es una extensión de sintaxis de JavaScript que permite escribir marcado similar a HTML directamente dentro de código JavaScript (`<button onClick={onClick}>{texto}</button>`), pero JSX no es HTML ni un lenguaje de plantillas propio: es transformado en tiempo de compilación (por Babel o el compilador integrado en el toolchain del proyecto) a llamadas planas de `React.createElement(tipo, props, ...hijos)`, que a su vez producen objetos JavaScript planos que describen qué debe renderizarse, no el elemento DOM real todavía. Esta transformación explica por qué las llaves `{}` dentro de JSX embeben cualquier expresión JavaScript válida (no solo texto): `{texto}` no es una plantilla de texto especial, es literalmente un argumento pasado a `createElement`, y por lo tanto puede ser cualquier expresión: una variable, una llamada a función, una expresión ternaria, o incluso otro elemento JSX anidado.
-
-Comprender que JSX se convierte en llamadas a función explica comportamientos que de otro modo parecerían mágicos: por qué un componente debe devolver un único elemento raíz (porque `createElement` devuelve un único objeto, no una lista suelta de objetos, de ahí la necesidad de Fragments, Tema 3), por qué los atributos usan `className` en vez de `class` (`class` es una palabra reservada en JavaScript, por lo que no puede usarse como nombre de prop), y por qué JSX permite mezclar libremente lógica JavaScript y marcado, algo que un motor de plantillas tradicional (como los estudiados en frameworks basados en archivos `.html` separados) no permite con la misma naturalidad.
-
-**Analogía:** JSX es como una notación taquigráfica para escribir instrucciones detalladas de ensamblaje: no es el objeto ensamblado en sí, sino una forma más legible de escribir exactamente las mismas instrucciones (`createElement(...)`) que, de escribirse literalmente, serían mucho más verbosas y difíciles de leer a simple vista.
-
-**¿Por qué es importante?** Entender que JSX es azúcar sintáctica sobre `createElement` explica por qué las llaves embeben cualquier expresión JavaScript, por qué un componente devuelve un único elemento raíz, y por qué se usa `className` en vez de `class`.
-
-**Código del ejemplo:**
-
-```jsx
-function Boton({ texto, onClick }) {
-  return <button onClick={onClick}>{texto}</button>;
-}
-// Se transforma en:
-// React.createElement('button', { onClick }, texto)
-```
 
 ### Tema 2: Listas con key estable
 
@@ -136,6 +137,29 @@ graph TD
     style E fill:#ffcdd2
     style F fill:#c8e6c9
 ```
+
+**Evidencia de aprendizaje:** entrega lista con key estable, bug de identidad provocado y prueba de reordenamiento.
+**Conceptos clave:** identidad de elementos entre renders, riesgo del índice como key.
+
+Cuando React renderiza una lista de elementos generada dinámicamente (típicamente con `.map()`), necesita una forma de identificar de forma estable qué elemento de una nueva lista corresponde a cuál elemento de la lista anterior, para decidir eficientemente qué debe actualizar, cuál debe reordenar, y cuál debe crear o eliminar del DOM real, en vez de descartar y recrear la lista completa en cada cambio; la prop especial `key` (`<li key={tarea.id}>{tarea.titulo}</li>`) es exactamente esa identidad estable que React usa para esa comparación entre renders sucesivos.
+
+Usar el índice del array como `key` (`key={indice}`) parece funcionar en casos simples, pero se vuelve problemático en cuanto la lista se reordena, se filtra, o se inserta un elemento en medio: dado que el índice de un elemento cambia cuando la lista cambia de orden o de longitud, React puede terminar asociando el estado interno o las referencias del DOM del elemento equivocado a la posición equivocada (por ejemplo, si un input controlado con estado propio está dentro de cada fila, y la fila se reordena, el valor tecleado en el input puede aparecer asociado a la fila incorrecta tras el reordenamiento, porque React identificó las filas por posición, no por identidad real). Usar un identificador estable e inherente al dato (`tarea.id`, no su posición circunstancial en el array actual) evita completamente este problema, porque esa identidad no cambia sin importar cómo se reordene o filtre la lista.
+
+**Analogía:** usar el índice como key es como identificar a las personas de una fila por su posición ("la tercera persona") en vez de por su nombre: si la fila se reordena, "la tercera persona" pasa a ser alguien completamente distinto, aunque la persona original que ocupaba esa posición siga siendo la misma persona en otra posición nueva de la fila.
+
+**Código del ejemplo:**
+
+```jsx
+{tareas.map(tarea => <li key={tarea.id}>{tarea.titulo}</li>)}
+// key={tarea.id}: estable sin importar el orden
+// key={indice}: riesgoso si la lista se reordena o filtra
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
+**Límites y decisión de uso:** La key identifica hermanos a lo largo de los renders; no debe generarse de nuevo cada vez ni basarse en posición si la lista cambia. Usa identidad persistente según la [guía de listas de React](https://react.dev/learn/rendering-lists).
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -192,28 +216,6 @@ Corregí el Paso 5 devolviendo `key={envio.id}`, y agregá un botón "mover al p
 #### Paso 7 · Cierre y evidencia
 Entregá la lista con key estable del Paso 4, el bug de identidad provocado en el Paso 5, y la prueba de reordenamiento del Paso 6; explicá por qué el índice "funciona" en una lista que nunca cambia de orden ni de longitud, pero falla en cuanto eso deja de ser cierto. Siguiente paso: estudia composición con `children` y Fragments. Errores comunes: usar el índice como key en listas que se reordenan o filtran, generar una key aleatoria en cada render (`key={Math.random()}`), y repetir keys duplicadas dentro de la misma lista. Fuentes oficiales: https://react.dev/learn/rendering-lists y https://react.dev/learn/preserving-and-resetting-state.
 **¿Por qué es importante?** Porque una key inestable asocia estado o referencias del DOM al elemento equivocado en cuanto la lista se reordena, filtra, o modifica.
-**Evidencia de aprendizaje:** entrega lista con key estable, bug de identidad provocado y prueba de reordenamiento.
-**Conceptos clave:** identidad de elementos entre renders, riesgo del índice como key.
-
-Cuando React renderiza una lista de elementos generada dinámicamente (típicamente con `.map()`), necesita una forma de identificar de forma estable qué elemento de una nueva lista corresponde a cuál elemento de la lista anterior, para decidir eficientemente qué debe actualizar, cuál debe reordenar, y cuál debe crear o eliminar del DOM real, en vez de descartar y recrear la lista completa en cada cambio; la prop especial `key` (`<li key={tarea.id}>{tarea.titulo}</li>`) es exactamente esa identidad estable que React usa para esa comparación entre renders sucesivos.
-
-Usar el índice del array como `key` (`key={indice}`) parece funcionar en casos simples, pero se vuelve problemático en cuanto la lista se reordena, se filtra, o se inserta un elemento en medio: dado que el índice de un elemento cambia cuando la lista cambia de orden o de longitud, React puede terminar asociando el estado interno o las referencias del DOM del elemento equivocado a la posición equivocada (por ejemplo, si un input controlado con estado propio está dentro de cada fila, y la fila se reordena, el valor tecleado en el input puede aparecer asociado a la fila incorrecta tras el reordenamiento, porque React identificó las filas por posición, no por identidad real). Usar un identificador estable e inherente al dato (`tarea.id`, no su posición circunstancial en el array actual) evita completamente este problema, porque esa identidad no cambia sin importar cómo se reordene o filtre la lista.
-
-**Analogía:** usar el índice como key es como identificar a las personas de una fila por su posición ("la tercera persona") en vez de por su nombre: si la fila se reordena, "la tercera persona" pasa a ser alguien completamente distinto, aunque la persona original que ocupaba esa posición siga siendo la misma persona en otra posición nueva de la fila.
-
-**Código del ejemplo:**
-
-```jsx
-{tareas.map(tarea => <li key={tarea.id}>{tarea.titulo}</li>)}
-// key={tarea.id}: estable sin importar el orden
-// key={indice}: riesgoso si la lista se reordena o filtra
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-
-**Límites y decisión de uso:** La key identifica hermanos a lo largo de los renders; no debe generarse de nuevo cada vez ni basarse en posición si la lista cambia. Usa identidad persistente según la [guía de listas de React](https://react.dev/learn/rendering-lists).
 
 ### Tema 3: Composición sobre herencia, y Fragments
 
@@ -246,6 +248,34 @@ graph TD
     style F fill:#e3f2fd
     style G fill:#e3f2fd
 ```
+
+**Evidencia de aprendizaje:** entrega Tarjeta con children, error de compilación detectado y segundo caso de uso (ConductorCard).
+**Conceptos clave:** `children`, composición de componentes pequeños, `<> </>`.
+
+React favorece deliberadamente la composición de componentes pequeños sobre la herencia de clases como mecanismo de reutilización de UI: en vez de crear una jerarquía de clases donde un componente "TarjetaEspecial" hereda de un componente "Tarjeta" base y sobreescribe cierto comportamiento (el patrón típico de programación orientada a objetos tradicional), React resuelve el mismo problema componiendo componentes pequeños e independientes entre sí, pasando contenido a través de la prop especial `children` (`function Tarjeta({ children }) { return <div className="tarjeta">{children}</div>; }`, usado como `<Tarjeta><Avatar /><Nombre texto="Ana" /></Tarjeta>`), donde `Tarjeta` no necesita saber nada específico sobre qué contenido recibirá, simplemente lo envuelve en su propio marcado estructural.
+
+Este enfoque de composición evita los problemas clásicos de jerarquías de herencia profundas y rígidas (donde cambiar el comportamiento de una clase base afecta impredeciblemente a todas sus subclases, un problema estudiado de forma más general en el Módulo 4 del track de JavaScript sobre composición frente a herencia), permitiendo en cambio ensamblar interfaces complejas a partir de piezas pequeñas, independientes y fácilmente reemplazables, cada una con una única responsabilidad clara.
+
+Los Fragments (`<> </>`, o explícitamente `<React.Fragment>`) resuelven la restricción de que un componente debe devolver un único elemento raíz (Tema 1) sin necesidad de envolver el contenido en un `<div>` adicional puramente estructural que no tiene ningún propósito semántico ni visual real, evitando anidar el DOM con contenedores vacíos innecesarios que no aportan nada más que cumplir la restricción técnica de un único elemento raíz.
+
+**Analogía:** la composición es como construir con bloques de Lego pequeños e intercambiables, cada uno con una función clara, ensamblados según se necesite; la herencia profunda es como fabricar una pieza única y rígida hecha a medida para un caso específico, difícil de adaptar o reutilizar para un caso ligeramente distinto.
+
+**¿Por qué es importante?** Componer componentes pequeños con `children` produce piezas de UI más reutilizables e independientes entre sí que una jerarquía de herencia rígida; los Fragments evitan contenedores DOM innecesarios que la restricción de un único elemento raíz de otro modo forzaría.
+
+**Código del ejemplo:**
+
+```jsx
+function Tarjeta({ children }) {
+  return <div className="tarjeta">{children}</div>;
+}
+
+<Tarjeta><Avatar /><Nombre texto="Ana" /></Tarjeta>
+// Composición: Tarjeta no sabe qué contenido recibirá, solo lo envuelve
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -301,33 +331,6 @@ Corregí el Paso 5 restaurando el Fragment, y creá una segunda tarjeta (`Conduc
 #### Paso 7 · Cierre y evidencia
 Entregá `Tarjeta` con `children` del Paso 4, el error de compilación del Paso 5, y `ConductorCard` del Paso 6; explicá por qué `Tarjeta` pudo reutilizarse para un contenido completamente distinto sin ninguna modificación, algo que una jerarquía de herencia rígida no ofrece con la misma facilidad. Siguiente paso: estudia renderizado condicional y estilos. Errores comunes: hacer que un componente "contenedor" conozca detalles específicos del contenido que envuelve, olvidar que un componente debe devolver un único elemento raíz, y usar un `<div>` extra en vez de un Fragment cuando no se necesita ningún elemento real. Fuentes oficiales: https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children y https://react.dev/reference/react/Fragment.
 **¿Por qué es importante?** Componer con `children` produce piezas de UI reutilizables e independientes entre sí; los Fragments evitan contenedores DOM innecesarios que la restricción de un único elemento raíz forzaría.
-**Evidencia de aprendizaje:** entrega Tarjeta con children, error de compilación detectado y segundo caso de uso (ConductorCard).
-**Conceptos clave:** `children`, composición de componentes pequeños, `<> </>`.
-
-React favorece deliberadamente la composición de componentes pequeños sobre la herencia de clases como mecanismo de reutilización de UI: en vez de crear una jerarquía de clases donde un componente "TarjetaEspecial" hereda de un componente "Tarjeta" base y sobreescribe cierto comportamiento (el patrón típico de programación orientada a objetos tradicional), React resuelve el mismo problema componiendo componentes pequeños e independientes entre sí, pasando contenido a través de la prop especial `children` (`function Tarjeta({ children }) { return <div className="tarjeta">{children}</div>; }`, usado como `<Tarjeta><Avatar /><Nombre texto="Ana" /></Tarjeta>`), donde `Tarjeta` no necesita saber nada específico sobre qué contenido recibirá, simplemente lo envuelve en su propio marcado estructural.
-
-Este enfoque de composición evita los problemas clásicos de jerarquías de herencia profundas y rígidas (donde cambiar el comportamiento de una clase base afecta impredeciblemente a todas sus subclases, un problema estudiado de forma más general en el Módulo 4 del track de JavaScript sobre composición frente a herencia), permitiendo en cambio ensamblar interfaces complejas a partir de piezas pequeñas, independientes y fácilmente reemplazables, cada una con una única responsabilidad clara.
-
-Los Fragments (`<> </>`, o explícitamente `<React.Fragment>`) resuelven la restricción de que un componente debe devolver un único elemento raíz (Tema 1) sin necesidad de envolver el contenido en un `<div>` adicional puramente estructural que no tiene ningún propósito semántico ni visual real, evitando anidar el DOM con contenedores vacíos innecesarios que no aportan nada más que cumplir la restricción técnica de un único elemento raíz.
-
-**Analogía:** la composición es como construir con bloques de Lego pequeños e intercambiables, cada uno con una función clara, ensamblados según se necesite; la herencia profunda es como fabricar una pieza única y rígida hecha a medida para un caso específico, difícil de adaptar o reutilizar para un caso ligeramente distinto.
-
-**¿Por qué es importante?** Componer componentes pequeños con `children` produce piezas de UI más reutilizables e independientes entre sí que una jerarquía de herencia rígida; los Fragments evitan contenedores DOM innecesarios que la restricción de un único elemento raíz de otro modo forzaría.
-
-**Código del ejemplo:**
-
-```jsx
-function Tarjeta({ children }) {
-  return <div className="tarjeta">{children}</div>;
-}
-
-<Tarjeta><Avatar /><Nombre texto="Ana" /></Tarjeta>
-// Composición: Tarjeta no sabe qué contenido recibirá, solo lo envuelve
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 4: Renderizado condicional y estilos
 

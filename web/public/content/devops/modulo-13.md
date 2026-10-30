@@ -14,44 +14,6 @@ A lo largo del track construiste cada etapa de este pipeline por separado (tests
 #### Paso 3 · Teoría, modelo mental y analogía
 Un pipeline CI/CD maduro encadena etapas donde cada una es un gate real: si una falla, la siguiente no se ejecuta — una línea de ensamblaje donde ningún vehículo avanza sin pasar el control de calidad de la estación anterior.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `.github/workflows/complete-pipeline.yml` dentro.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-
-Crea `.github/workflows/complete-pipeline.yml` en tu repositorio y ejecuta el pipeline completo con `git push`:
-
-```text
-git push → CI: tests → CI: escaneo Trivy → [¿crítica? → STOP]
-                              │ (pasa)
-                              ▼
-                  build + push a registry (tag = hash del commit)
-                              │
-                              ▼
-              helm upgrade (RollingUpdate, liveness/readinessProbe)
-                              │
-                              ▼
-          verificación: métricas Prometheus vs línea base previa
-                              │
-              ┌───────────────┴───────────────┐
-        normal: fin exitoso          anómalo: rollback automático
-```
-Resultado esperado: un commit con una vulnerabilidad crítica introducida deliberadamente detiene el pipeline en la etapa de escaneo, antes de llegar a construir o publicar ninguna imagen; un commit limpio atraviesa las seis etapas y termina con el nuevo `Deployment` corriendo y verificado contra sus métricas reales.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
-```
-#### Paso 5 · Práctica guiada
-Pista: configurá el job de escaneo de Trivy para que imprima el reporte de vulnerabilidades pero sin `exit-code: 1` — ese es el fallo deliberado: el pipeline completo "pasa" en verde aunque Trivy haya encontrado una vulnerabilidad crítica real, porque el job de escaneo nunca falla realmente, solo informa; el gate existe en el papel, pero no bloquea nada en la práctica.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 configurando `exit-code: 1` en Trivy para severidad crítica, y agregá `needs: [scan]` explícito en el job de build/push, confirmando que ahora una vulnerabilidad crítica real detiene el pipeline antes de publicar la imagen.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el pipeline completo trazado del Paso 4, el gate que no bloqueaba realmente del Paso 5, y la corrección verificada del Paso 6; explicá la diferencia entre un gate que "informa" y un gate que efectivamente detiene el flujo. Siguiente paso: estudia cómo cada módulo del track se conecta en este mismo flujo. Errores comunes: un escaneo de seguridad que solo informa sin bloquear, un despliegue sin verificación post-despliegue real, y un rollback documentado pero nunca ejecutado de verdad. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
-**¿Por qué es importante?** Ver el pipeline completo operar de principio a fin, con cada gate realmente funcionando, es la validación final de que el conocimiento del track se combina en un sistema coherente, no solo en técnicas aisladas.
 **Evidencia de aprendizaje:** entrega pipeline completo trazado, gate sin bloqueo real detectado y corrección verificada con una vulnerabilidad crítica real.
 **Conceptos clave:** flujo end-to-end, etapas encadenadas, gates bloqueantes, verificación post-despliegue.
 
@@ -86,6 +48,44 @@ git push ──▶ CI: tests ──▶ CI: escaneo Trivy ──▶ [¿crítica? 
               normal: fin exitoso          anómalo: rollback (Helm/kubectl)
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `.github/workflows/complete-pipeline.yml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
+Crea `.github/workflows/complete-pipeline.yml` en tu repositorio y ejecuta el pipeline completo con `git push`:
+
+```text
+git push → CI: tests → CI: escaneo Trivy → [¿crítica? → STOP]
+                              │ (pasa)
+                              ▼
+                  build + push a registry (tag = hash del commit)
+                              │
+                              ▼
+              helm upgrade (RollingUpdate, liveness/readinessProbe)
+                              │
+                              ▼
+          verificación: métricas Prometheus vs línea base previa
+                              │
+              ┌───────────────┴───────────────┐
+        normal: fin exitoso          anómalo: rollback automático
+```
+Resultado esperado: un commit con una vulnerabilidad crítica introducida deliberadamente detiene el pipeline en la etapa de escaneo, antes de llegar a construir o publicar ninguna imagen; un commit limpio atraviesa las seis etapas y termina con el nuevo `Deployment` corriendo y verificado contra sus métricas reales.
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
+#### Paso 5 · Práctica guiada
+Pista: configurá el job de escaneo de Trivy para que imprima el reporte de vulnerabilidades pero sin `exit-code: 1` — ese es el fallo deliberado: el pipeline completo "pasa" en verde aunque Trivy haya encontrado una vulnerabilidad crítica real, porque el job de escaneo nunca falla realmente, solo informa; el gate existe en el papel, pero no bloquea nada en la práctica.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 configurando `exit-code: 1` en Trivy para severidad crítica, y agregá `needs: [scan]` explícito en el job de build/push, confirmando que ahora una vulnerabilidad crítica real detiene el pipeline antes de publicar la imagen.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el pipeline completo trazado del Paso 4, el gate que no bloqueaba realmente del Paso 5, y la corrección verificada del Paso 6; explicá la diferencia entre un gate que "informa" y un gate que efectivamente detiene el flujo. Siguiente paso: estudia cómo cada módulo del track se conecta en este mismo flujo. Errores comunes: un escaneo de seguridad que solo informa sin bloquear, un despliegue sin verificación post-despliegue real, y un rollback documentado pero nunca ejecutado de verdad. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
+**¿Por qué es importante?** Ver el pipeline completo operar de principio a fin, con cada gate realmente funcionando, es la validación final de que el conocimiento del track se combina en un sistema coherente, no solo en técnicas aisladas.
+
 ### Tema 2: Uniendo cada módulo del track en un solo flujo
 
 #### Paso 1 · Objetivo y preparación
@@ -97,12 +97,41 @@ Tener cada módulo (CI, escaneo, Helm, observabilidad) funcionando por separado 
 #### Paso 3 · Teoría, modelo mental y analogía
 La integración horizontal implica que la salida de una etapa se convierte en la entrada de la siguiente, y que cada etapa deja evidencia trazable (tag con hash del commit, logs con correlation ID) que permite reconstruir la cadena completa ante un incidente.
 
+**Evidencia de aprendizaje:** entrega diseño de conexiones entre etapas, pérdida de trazabilidad detectada y corrección con hash + correlation ID.
+**Conceptos clave:** integración horizontal, dependencias entre etapas, trazabilidad end-to-end.
+
+Construir el proyecto integrador no es simplemente ejecutar cada módulo del track por separado en secuencia, sino diseñar deliberadamente las conexiones entre ellos: la salida de una etapa se convierte en la entrada de la siguiente, y el estado de una etapa determina si la siguiente se ejecuta en absoluto. Por ejemplo, el resultado del escaneo Trivy del Módulo 11 (¿aprobado o rechazado?) determina directamente si la etapa de build/push del Módulo 2 se ejecuta; el resultado de la verificación post-despliegue del Módulo 9 (¿métricas normales o anómalas?) determina si se ejecuta el rollback del Módulo 5.
+
+Esta integración horizontal también implica trazabilidad: dado un incidente en producción, debe ser posible recorrer hacia atrás la cadena completa —¿qué versión de la imagen está corriendo?, ¿de qué commit se construyó?, ¿pasó el escaneo de seguridad y con qué resultado exacto?, ¿qué pipeline lo desplegó y cuándo?— sin lagunas de información entre etapas. Etiquetar las imágenes con el hash del commit (no solo con `latest`, un antipatrón mencionado en el Módulo 2), y registrar logs correlacionables con un `correlation ID` (Módulo 10) en cada etapa, son las dos prácticas concretas que hacen posible esta trazabilidad completa de punta a punta.
+
+Diseñar el proyecto integrador también obliga a resolver decisiones de orden que en los módulos individuales quedaban implícitas: ¿el escaneo de seguridad ocurre antes o después del build de la imagen final? (Después, típicamente, escaneando la imagen ya construida, aunque algunas organizaciones también escanean dependencias antes del build). ¿La verificación post-despliegue espera un tiempo fijo o monitorea continuamente durante una ventana? (Una ventana de monitoreo continuo, típicamente varios minutos, detecta mejor problemas que tardan en manifestarse que una verificación puntual inmediata).
+
+Completar honestamente este ejercicio de integración —no solo enumerar qué módulos se conectan, sino realmente trazar cómo fluye la información y las decisiones entre ellos— es lo que distingue a alguien que "conoce Docker, Kubernetes, Terraform y Prometheus por separado" de alguien que "sabe operar un sistema DevOps completo", que es precisamente el objetivo de este track y de este proyecto final.
+
+**Analogía:** conocer cada módulo por separado es como conocer cada instrumento de una orquesta individualmente; integrarlos en un pipeline completo es como dirigir la orquesta entera tocando junta, donde el valor real no está en cada instrumento aislado sino en cómo se coordinan entre sí en el tiempo correcto.
+
+**¿Por qué es importante?** La mayoría del valor real de un pipeline CI/CD maduro está precisamente en las conexiones entre etapas (gates, verificaciones, rollback automático), no en cada etapa aislada; un pipeline que ejecuta las mismas etapas pero sin gates reales que realmente bloqueen, o sin verificación real que dispare rollback real, ofrece mucha menos protección real que uno donde esas conexiones están genuinamente implementadas y probadas.
+
+**Diagrama:**
+
+```
+Commit (hash) ──▶ Imagen etiquetada con ese hash (no "latest")
+      │                              │
+      └── trazable hacia atrás ──────┘
+                    │
+         logs con correlation ID
+         en CADA etapa del pipeline
+                    │
+      permite reconstruir, ante un incidente:
+      ¿qué commit → qué imagen → pasó qué escaneo →
+      lo desplegó qué pipeline → cuándo?
+```
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/logging/correlation.ts` dentro.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
-
 
 Crea `src/logging/correlation.ts` en tu aplicación Node para propagar el correlation ID, y ejecuta `helm` y `kubectl` para verificar trazabilidad:
 
@@ -138,35 +167,6 @@ Corregí el Paso 5 devolviendo el etiquetado al hash del commit (manteniendo `la
 #### Paso 7 · Cierre y evidencia
 Entregá el diseño de conexiones entre etapas del Paso 4, la pérdida de trazabilidad por usar solo `latest` del Paso 5, y la corrección con hash + correlation ID del Paso 6; explicá por qué la mayoría del valor real de un pipeline maduro está en las conexiones entre etapas, no en cada etapa aislada. Siguiente paso: cerrá el track con el checklist final y la reflexión. Errores comunes: etiquetar imágenes de producción únicamente con `latest`, no propagar un correlation ID entre etapas del pipeline y la aplicación desplegada, y dejar implícitas decisiones de orden sin documentarlas. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
 **¿Por qué es importante?** La mayoría del valor real de un pipeline CI/CD maduro está en las conexiones entre etapas (gates, verificaciones, rollback automático), no en cada etapa aislada.
-**Evidencia de aprendizaje:** entrega diseño de conexiones entre etapas, pérdida de trazabilidad detectada y corrección con hash + correlation ID.
-**Conceptos clave:** integración horizontal, dependencias entre etapas, trazabilidad end-to-end.
-
-Construir el proyecto integrador no es simplemente ejecutar cada módulo del track por separado en secuencia, sino diseñar deliberadamente las conexiones entre ellos: la salida de una etapa se convierte en la entrada de la siguiente, y el estado de una etapa determina si la siguiente se ejecuta en absoluto. Por ejemplo, el resultado del escaneo Trivy del Módulo 11 (¿aprobado o rechazado?) determina directamente si la etapa de build/push del Módulo 2 se ejecuta; el resultado de la verificación post-despliegue del Módulo 9 (¿métricas normales o anómalas?) determina si se ejecuta el rollback del Módulo 5.
-
-Esta integración horizontal también implica trazabilidad: dado un incidente en producción, debe ser posible recorrer hacia atrás la cadena completa —¿qué versión de la imagen está corriendo?, ¿de qué commit se construyó?, ¿pasó el escaneo de seguridad y con qué resultado exacto?, ¿qué pipeline lo desplegó y cuándo?— sin lagunas de información entre etapas. Etiquetar las imágenes con el hash del commit (no solo con `latest`, un antipatrón mencionado en el Módulo 2), y registrar logs correlacionables con un `correlation ID` (Módulo 10) en cada etapa, son las dos prácticas concretas que hacen posible esta trazabilidad completa de punta a punta.
-
-Diseñar el proyecto integrador también obliga a resolver decisiones de orden que en los módulos individuales quedaban implícitas: ¿el escaneo de seguridad ocurre antes o después del build de la imagen final? (Después, típicamente, escaneando la imagen ya construida, aunque algunas organizaciones también escanean dependencias antes del build). ¿La verificación post-despliegue espera un tiempo fijo o monitorea continuamente durante una ventana? (Una ventana de monitoreo continuo, típicamente varios minutos, detecta mejor problemas que tardan en manifestarse que una verificación puntual inmediata).
-
-Completar honestamente este ejercicio de integración —no solo enumerar qué módulos se conectan, sino realmente trazar cómo fluye la información y las decisiones entre ellos— es lo que distingue a alguien que "conoce Docker, Kubernetes, Terraform y Prometheus por separado" de alguien que "sabe operar un sistema DevOps completo", que es precisamente el objetivo de este track y de este proyecto final.
-
-**Analogía:** conocer cada módulo por separado es como conocer cada instrumento de una orquesta individualmente; integrarlos en un pipeline completo es como dirigir la orquesta entera tocando junta, donde el valor real no está en cada instrumento aislado sino en cómo se coordinan entre sí en el tiempo correcto.
-
-**¿Por qué es importante?** La mayoría del valor real de un pipeline CI/CD maduro está precisamente en las conexiones entre etapas (gates, verificaciones, rollback automático), no en cada etapa aislada; un pipeline que ejecuta las mismas etapas pero sin gates reales que realmente bloqueen, o sin verificación real que dispare rollback real, ofrece mucha menos protección real que uno donde esas conexiones están genuinamente implementadas y probadas.
-
-**Diagrama:**
-
-```
-Commit (hash) ──▶ Imagen etiquetada con ese hash (no "latest")
-      │                              │
-      └── trazable hacia atrás ──────┘
-                    │
-         logs con correlation ID
-         en CADA etapa del pipeline
-                    │
-      permite reconstruir, ante un incidente:
-      ¿qué commit → qué imagen → pasó qué escaneo →
-      lo desplegó qué pipeline → cuándo?
-```
 
 ### Tema 3: Cierre del track — checklist final y reflexión
 

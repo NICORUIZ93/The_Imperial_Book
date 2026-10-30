@@ -14,41 +14,6 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 Un criterio de aceptación convierte una intención vaga en ejemplos con entrada y salida esperada — el contrato de resultado de una obra, no una sensación de "que quede bien".
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```text
-Como conductor de RutaFlow
-quiero confirmar la entrega de un envío
-para que el cliente sepa que su paquete llegó.
-
-Criterios:
-- Dado un comando con recipientPin de 6 dígitos y shipmentId válido, cuando se confirma, entonces el envío queda "delivered".
-- Dado un recipientPin de 4 dígitos, cuando se confirma, entonces se rechaza con TypeError, sin cambiar el estado del envío.
-- Dado un commandId ya procesado antes, cuando se reenvía el mismo comando, entonces se devuelve el resultado anterior sin volver a confirmar.
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: tres criterios, cada uno con un "dado/cuando/entonces" verificable — los tres ya están implementados literalmente en `confirmDelivery()`, lo que confirma que la especificación describe el código real, no una aspiración.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí un cuarto criterio deliberadamente vago ("el sistema debe responder rápido") y tratá de convertirlo en una prueba — ese es el fallo deliberado: no podés escribir un `assert` sin una métrica, un umbral y un contexto ("95% de confirmaciones en menos de 200ms con el motor de pruebas local"); sin eso, "rápido" no es un criterio, es una opinión.
-
-#### Paso 6 · Práctica independiente
-Escribe 5 criterios TUYOS que sean verificables, directamente del CLI del proyecto integrador Fundamentos. Por ejemplo: "tarea add 'hacer compras' debe guardar y después listar mostrará esa tarea".
-
-#### Paso 7 · Cierre y evidencia
-Entregá los tres criterios verificables del Paso 4, el criterio vago corregido del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuentes oficiales: https://www.iso.org/standard/72089.html.
-**¿Por qué es importante?** Porque `confirmDelivery()` ya fue programado correctamente contra una regla de 6 dígitos — el riesgo real en este Tema nunca fue el código, sino quedarse con un requisito ambiguo antes de escribirlo.
 **Conceptos clave:** stakeholder, necesidad, requisito funcional, atributo de calidad, restricción, historia, criterio de aceptación, supuesto y trazabilidad.
 
 Software exitoso no es el que contiene más funciones, sino el que satisface necesidades relevantes bajo restricciones explícitas. Un stakeholder puede ser usuario, operador, negocio, auditor o equipo de soporte; sus objetivos pueden entrar en tensión.
@@ -96,6 +61,42 @@ Convertí ese requisito en al menos tres criterios de aceptación (dado/cuando/e
 > "Dado un listado con tareas de prioridad 1 a 5, cuando se invoca `prioritize`, entonces se muestran primero las de prioridad 1, en orden descendente." + "Dado dos tareas con la misma prioridad, cuando se invoca `prioritize`, entonces se ordenan por fecha de creación, la más antigua primero." + "Dado una tarea sin prioridad asignada, cuando se invoca `prioritize`, entonces se trata como prioridad 5, nunca como error."
 
 **¿Por qué importa?** Sin estos criterios, "ayudar a enfocarse en lo urgente" es una frase que cualquier implementación puede reclamar cumplir, incluso una que ordena al azar.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```text
+Como conductor de RutaFlow
+quiero confirmar la entrega de un envío
+para que el cliente sepa que su paquete llegó.
+
+Criterios:
+- Dado un comando con recipientPin de 6 dígitos y shipmentId válido, cuando se confirma, entonces el envío queda "delivered".
+- Dado un recipientPin de 4 dígitos, cuando se confirma, entonces se rechaza con TypeError, sin cambiar el estado del envío.
+- Dado un commandId ya procesado antes, cuando se reenvía el mismo comando, entonces se devuelve el resultado anterior sin volver a confirmar.
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: tres criterios, cada uno con un "dado/cuando/entonces" verificable — los tres ya están implementados literalmente en `confirmDelivery()`, lo que confirma que la especificación describe el código real, no una aspiración.
+
+#### Paso 5 · Práctica guiada
+Pista: escribí un cuarto criterio deliberadamente vago ("el sistema debe responder rápido") y tratá de convertirlo en una prueba — ese es el fallo deliberado: no podés escribir un `assert` sin una métrica, un umbral y un contexto ("95% de confirmaciones en menos de 200ms con el motor de pruebas local"); sin eso, "rápido" no es un criterio, es una opinión.
+
+#### Paso 6 · Práctica independiente
+Escribe 5 criterios TUYOS que sean verificables, directamente del CLI del proyecto integrador Fundamentos. Por ejemplo: "tarea add 'hacer compras' debe guardar y después listar mostrará esa tarea".
+
+#### Paso 7 · Cierre y evidencia
+Entregá los tres criterios verificables del Paso 4, el criterio vago corregido del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuentes oficiales: https://www.iso.org/standard/72089.html.
+**¿Por qué es importante?** Porque `confirmDelivery()` ya fue programado correctamente contra una regla de 6 dígitos — el riesgo real en este Tema nunca fue el código, sino quedarse con un requisito ambiguo antes de escribirlo.
 ### Tema 2: Arquitectura guiada por atributos de calidad
 
 #### Paso 1 · Objetivo y preparación
@@ -107,39 +108,6 @@ El comentario del código real dice: "La implementación SQL debe insertar `comm
 #### Paso 3 · Teoría, modelo mental y analogía
 Un escenario de calidad tiene fuente, estímulo, artefacto, entorno, respuesta y medida — no es un diagrama bonito, es una frase verificable sobre qué pasa cuando algo sale mal.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Crea `escenario.txt` y guarda este escenario de calidad completo:
-```text
-Fuente: red inestable del conductor
-Estímulo: el mismo comando "confirmar entrega" se reenvía dos veces (reintento automático)
-Artefacto: confirmDelivery() + repositorio
-Entorno: operación normal con conexión intermitente
-Respuesta: la segunda llamada devuelve el resultado ya guardado, sin volver a confirmar ni duplicar
-Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
-```
-
-**Comprueba el artefacto de diseño desde la carpeta donde lo guardaste:**
-```bash
-python3 -c "from pathlib import Path; print(Path('escenario.txt').read_text(encoding='utf-8'))"
-```
-Debes observar las partes del escenario que acabas de escribir. Esta lectura verifica el archivo, no demuestra que una base de datos cumpla la durabilidad prometida; esa evidencia requiere un ensayo separado.
-
-Resultado esperado: un escenario completo que explica por qué el código ya revisado en el Tema 1 necesita esa restricción — no es un detalle de implementación arbitrario, responde a un escenario de red real.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá mentalmente la restricción `UNIQUE(command_id)` del diseño y repetí el escenario — ese es el fallo deliberado: sin esa restricción, dos reintentos del mismo comando podrían insertar dos filas de confirmación para el mismo envío, rompiendo exactamente la medida ("cero entregas duplicadas") que el escenario exige.
-
-#### Paso 6 · Práctica independiente
-Escribí un segundo escenario de calidad para un atributo distinto (por ejemplo, rendimiento: "el 95% de las confirmaciones deben procesarse en menos de 200ms con 100 conductores simultáneos") y documentá qué decisión de diseño (no solo de base de datos) ese escenario favorecería.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el escenario de durabilidad del Paso 4, la restricción removida y su consecuencia del Paso 5, y el segundo escenario del Paso 6; explicá por qué los atributos de calidad compiten entre sí (durabilidad vs. velocidad) y la arquitectura hace ese trade-off explícito. Errores comunes: diagramar la arquitectura sin un escenario de calidad medible detrás, tratar una restricción de base de datos como detalle de implementación en vez de una decisión arquitectónica, y agregar una fitness function nueva sin decidir si debe bloquear o solo advertir. Fuentes oficiales: https://c4model.com/.
-**¿Por qué es importante?** Porque la restricción `UNIQUE(command_id)` no es un capricho de la base de datos: es la respuesta directa a un escenario de calidad real (reintentos de red) que, sin documentarlo, parece una regla arbitraria.
 **Escenario:** Tu arquitectura decidió que el dominio NO importa infraestructura. Pasaron 6 meses, un nuevo miembro accidentalmente añade `import sqlite3` en `domain.py`. Sin fitness function, lo merges a main.
 
 **Tu tarea:**
@@ -193,6 +161,40 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Define disponibilidad, facilidad de prueba y recuperación requeridas por el gestor. Compara dos diseños mediante un escenario concreto de archivo corrupto, en vez de elegir capas solo por su nombre.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Crea `escenario.txt` y guarda este escenario de calidad completo:
+```text
+Fuente: red inestable del conductor
+Estímulo: el mismo comando "confirmar entrega" se reenvía dos veces (reintento automático)
+Artefacto: confirmDelivery() + repositorio
+Entorno: operación normal con conexión intermitente
+Respuesta: la segunda llamada devuelve el resultado ya guardado, sin volver a confirmar ni duplicar
+Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
+```
+
+**Comprueba el artefacto de diseño desde la carpeta donde lo guardaste:**
+```bash
+python3 -c "from pathlib import Path; print(Path('escenario.txt').read_text(encoding='utf-8'))"
+```
+Debes observar las partes del escenario que acabas de escribir. Esta lectura verifica el archivo, no demuestra que una base de datos cumpla la durabilidad prometida; esa evidencia requiere un ensayo separado.
+
+Resultado esperado: un escenario completo que explica por qué el código ya revisado en el Tema 1 necesita esa restricción — no es un detalle de implementación arbitrario, responde a un escenario de red real.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá mentalmente la restricción `UNIQUE(command_id)` del diseño y repetí el escenario — ese es el fallo deliberado: sin esa restricción, dos reintentos del mismo comando podrían insertar dos filas de confirmación para el mismo envío, rompiendo exactamente la medida ("cero entregas duplicadas") que el escenario exige.
+
+#### Paso 6 · Práctica independiente
+Escribí un segundo escenario de calidad para un atributo distinto (por ejemplo, rendimiento: "el 95% de las confirmaciones deben procesarse en menos de 200ms con 100 conductores simultáneos") y documentá qué decisión de diseño (no solo de base de datos) ese escenario favorecería.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el escenario de durabilidad del Paso 4, la restricción removida y su consecuencia del Paso 5, y el segundo escenario del Paso 6; explicá por qué los atributos de calidad compiten entre sí (durabilidad vs. velocidad) y la arquitectura hace ese trade-off explícito. Errores comunes: diagramar la arquitectura sin un escenario de calidad medible detrás, tratar una restricción de base de datos como detalle de implementación en vez de una decisión arquitectónica, y agregar una fitness function nueva sin decidir si debe bloquear o solo advertir. Fuentes oficiales: https://c4model.com/.
+**¿Por qué es importante?** Porque la restricción `UNIQUE(command_id)` no es un capricho de la base de datos: es la respuesta directa a un escenario de calidad real (reintentos de red) que, sin documentarlo, parece una regla arbitraria.
 ### Tema 3: Diseño modular, principios, patrones y refactoring
 
 #### Paso 1 · Objetivo y preparación
@@ -204,34 +206,6 @@ Al finalizar vas a leer el puerto `DeliveryRepository` real de RutaFlow y a escr
 #### Paso 3 · Teoría, modelo mental y analogía
 Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del repositorio (dos métodos), nunca cómo esos datos llegan a disco — el mismo principio de "el dominio no importa SQLite" aplicado a un archivo que ya existe.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```bash
-grep -n "interface DeliveryRepository" -A 3 examples/rutaflow/node/confirm-delivery.ts
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: ves `findCommandResult(commandId)` y `confirm(command)` — dos métodos, nada de SQL, DynamoDB ni HTTP en la firma. `confirmDelivery` solo conoce ese contrato.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí un adaptador en memoria (`class RepositorioEnMemoria implements DeliveryRepository`) e inyectalo en `confirmDelivery` dos veces con el mismo `commandId` — en la segunda llamada, el fallo deliberado que buscás NO debería ocurrir: `findCommandResult` debe devolver el resultado ya guardado, y `confirmDelivery` nunca debe volver a llamar `confirm()`. Si tu adaptador en memoria vuelve a confirmar, el bug está en el adaptador, no en el dominio.
-
-#### Paso 6 · Práctica independiente
-Escribí una prueba caracterizadora sobre `confirmDelivery` usando tu adaptador en memoria del Paso 5: documentá el comportamiento actual (qué devuelve con PIN válido, con PIN de 4 dígitos, con `commandId` repetido) antes de proponer ningún cambio al código.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la interfaz real leída del Paso 4, el adaptador en memoria probado del Paso 5, y la prueba caracterizadora del Paso 6; explicá por qué poder escribir ese segundo adaptador sin tocar `confirmDelivery` es la prueba de que el diseño real ya separó dominio de infraestructura. Errores comunes: introducir una interfaz antes de que exista una segunda implementación real, aplicar un patrón de diseño porque "es lo profesional" sin identificar el problema que resuelve, y refactorizar código heredado sin antes escribir una prueba caracterizadora. Fuentes oficiales: https://refactoring.com/catalog/.
-**¿Por qué es importante?** Porque poder cambiar de un repositorio real a uno en memoria sin tocar una línea de `confirmDelivery` es la evidencia concreta de que el dominio no depende de cómo se guardan los datos, no solo una afirmación de buenas intenciones.
 **Escenario:** Tienes `class RepositorioProductos` que usa SQLite. Alguien pide: "¿y si después queremos cambiar a PostgreSQL?" ¿Extraes una interfaz ahora o esperas?
 
 **Tu tarea:**
@@ -286,6 +260,35 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Refactoriza el almacenamiento detrás de un contrato pequeño conservando las pruebas de uso. Sustituye el archivo por un fake y demuestra que crear y completar tareas mantienen su comportamiento.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```bash
+grep -n "interface DeliveryRepository" -A 3 examples/rutaflow/node/confirm-delivery.ts
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: ves `findCommandResult(commandId)` y `confirm(command)` — dos métodos, nada de SQL, DynamoDB ni HTTP en la firma. `confirmDelivery` solo conoce ese contrato.
+
+#### Paso 5 · Práctica guiada
+Pista: escribí un adaptador en memoria (`class RepositorioEnMemoria implements DeliveryRepository`) e inyectalo en `confirmDelivery` dos veces con el mismo `commandId` — en la segunda llamada, el fallo deliberado que buscás NO debería ocurrir: `findCommandResult` debe devolver el resultado ya guardado, y `confirmDelivery` nunca debe volver a llamar `confirm()`. Si tu adaptador en memoria vuelve a confirmar, el bug está en el adaptador, no en el dominio.
+
+#### Paso 6 · Práctica independiente
+Escribí una prueba caracterizadora sobre `confirmDelivery` usando tu adaptador en memoria del Paso 5: documentá el comportamiento actual (qué devuelve con PIN válido, con PIN de 4 dígitos, con `commandId` repetido) antes de proponer ningún cambio al código.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la interfaz real leída del Paso 4, el adaptador en memoria probado del Paso 5, y la prueba caracterizadora del Paso 6; explicá por qué poder escribir ese segundo adaptador sin tocar `confirmDelivery` es la prueba de que el diseño real ya separó dominio de infraestructura. Errores comunes: introducir una interfaz antes de que exista una segunda implementación real, aplicar un patrón de diseño porque "es lo profesional" sin identificar el problema que resuelve, y refactorizar código heredado sin antes escribir una prueba caracterizadora. Fuentes oficiales: https://refactoring.com/catalog/.
+**¿Por qué es importante?** Porque poder cambiar de un repositorio real a uno en memoria sin tocar una línea de `confirmDelivery` es la evidencia concreta de que el dominio no depende de cómo se guardan los datos, no solo una afirmación de buenas intenciones.
 ### Tema 4: Decisiones, documentación, deuda y evolución
 
 #### Paso 1 · Objetivo y preparación

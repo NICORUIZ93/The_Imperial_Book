@@ -11,25 +11,6 @@ Al finalizar vas a desplegar la función `confirmar-entrega` del proyecto integr
 Hoy el proyecto integrador RutaFlow tendría que mantener un worker encendido 24/7 solo para esperar mensajes esporádicos de la cola `DeliveryCommands` (Módulo 3). La función `confirmar-entrega` serverless reemplaza ese worker por una función que solo existe mientras procesa un mensaje, ahorrando costo y complejidad.
 #### Paso 3 · Teoría, modelo mental y analogía
 Serverless es contratar capacidad por evento; la analogía es una cocina que se abre solo cuando llega una orden, y se cierra apenas la entrega.
-#### Paso 4 · Demostración guiada
-```bash
-mkdir -p confirmar-entrega && cd confirmar-entrega
-echo 'exports.handler = async () => ({ mensaje: "ok" });' > index.js
-zip funcion.zip index.js
-aws lambda create-function --function-name confirmar-entrega --runtime nodejs20.x \
-  --handler index.handler --zip-file fileb://funcion.zip \
-  --role arn:aws:iam::000000000000:role/lambda-role
-time aws lambda invoke --function-name confirmar-entrega salida1.json
-time aws lambda invoke --function-name confirmar-entrega salida2.json
-```
-Resultado esperado: el primer `invoke` (cold start, entorno nuevo) tarda notablemente más en `real` que el segundo (entorno reutilizado, todavía "caliente"); ambos `salida*.json` contienen `{"mensaje":"ok"}`.
-#### Paso 5 · Práctica guiada
-Pista: subí un `funcion.zip` vacío (`zip funcion-vacio.zip` sin agregar `index.js`) e intentá `create-function` con ese zip — ese es el fallo deliberado: la invocación falla con `Runtime.HandlerNotFound: index.handler is undefined or not exported`, porque el zip no contiene ningún archivo `index.js`.
-#### Paso 6 · Práctica independiente
-Invocá `confirmar-entrega` tres veces seguidas y cronometrá cada una con `time`; confirmá que, a partir de la segunda, los tiempos son consistentemente más bajos que el primero.
-#### Paso 7 · Cierre y evidencia
-Entregá los tiempos de las tres invocaciones y el error del zip vacío del Paso 5; explicá cuál invocación fue el cold start y por qué. Siguiente paso: la estructura del handler. Errores comunes: asumir estado persistente y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html.
-### Fallo Deliberado: Runtime.HandlerNotFound en Lambda
 
 **Error real:**
 ```error-output
@@ -163,6 +144,26 @@ flowchart LR
     B["Serverless (Lambda)\nSin capacidad reservada\nSe aprovisiona por invocación,\ncoste solo mientras se ejecuta"]
 ```
 
+#### Paso 4 · Demostración guiada
+```bash
+mkdir -p confirmar-entrega && cd confirmar-entrega
+echo 'exports.handler = async () => ({ mensaje: "ok" });' > index.js
+zip funcion.zip index.js
+aws lambda create-function --function-name confirmar-entrega --runtime nodejs20.x \
+  --handler index.handler --zip-file fileb://funcion.zip \
+  --role arn:aws:iam::000000000000:role/lambda-role
+time aws lambda invoke --function-name confirmar-entrega salida1.json
+time aws lambda invoke --function-name confirmar-entrega salida2.json
+```
+Resultado esperado: el primer `invoke` (cold start, entorno nuevo) tarda notablemente más en `real` que el segundo (entorno reutilizado, todavía "caliente"); ambos `salida*.json` contienen `{"mensaje":"ok"}`.
+#### Paso 5 · Práctica guiada
+Pista: subí un `funcion.zip` vacío (`zip funcion-vacio.zip` sin agregar `index.js`) e intentá `create-function` con ese zip — ese es el fallo deliberado: la invocación falla con `Runtime.HandlerNotFound: index.handler is undefined or not exported`, porque el zip no contiene ningún archivo `index.js`.
+#### Paso 6 · Práctica independiente
+Invocá `confirmar-entrega` tres veces seguidas y cronometrá cada una con `time`; confirmá que, a partir de la segunda, los tiempos son consistentemente más bajos que el primero.
+#### Paso 7 · Cierre y evidencia
+Entregá los tiempos de las tres invocaciones y el error del zip vacío del Paso 5; explicá cuál invocación fue el cold start y por qué. Siguiente paso: la estructura del handler. Errores comunes: asumir estado persistente y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html.
+### Fallo Deliberado: Runtime.HandlerNotFound en Lambda
+
 ### Tema 2: Estructura de una función Lambda
 
 #### Paso 1 · Objetivo y preparación
@@ -171,28 +172,7 @@ Al finalizar vas a hacer que `confirmar-entrega` reciba y valide un comando real
 Un comando real de `DeliveryCommands` (Módulo 3) del proyecto integrador RutaFlow trae `shipmentId` y `recipientPin` (el PIN de 6 dígitos que el destinatario confirma al recibir). El handler necesita leer eso de `event`, no inventarlo — debe seguir el contrato exacto que RutaFlow define.
 #### Paso 3 · Teoría, modelo mental y analogía
 `event` es el pedido que llega; `context` es el reloj y los límites del turno; el valor de retorno es el comprobante que se entrega de vuelta.
-#### Paso 4 · Demostración guiada
-```bash
-cat > index.js <<'EOF'
-exports.handler = async (event) => {
-  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin)) {
-    throw new TypeError('comando de entrega inválido');
-  }
-  return { shipmentId: event.shipmentId, status: 'delivered' };
-};
-EOF
-zip funcion.zip index.js
-aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
-aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
-  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
-```
-Resultado esperado: `salida.json` contiene `{"shipmentId":"env-4471","status":"delivered"}` — exactamente el mismo contrato que devuelve `confirmDelivery` en `confirm-delivery.ts`, ahora corriendo dentro de un handler Lambda real.
-#### Paso 5 · Práctica guiada
-Pista: invocá con `recipientPin` de solo 4 dígitos (`"1234"`) para provocar el fallo deliberado — `salida.json` no va a tener `shipmentId`, va a tener `errorMessage` y `errorType: "TypeError"`, la misma validación que ya existe en el código TypeScript de RutaFlow.
-#### Paso 6 · Práctica independiente
-Invocá sin `shipmentId` en el payload y confirmá que también falla, con un `errorMessage` distinto al del Paso 5 — las dos validaciones del `if` son independientes.
-#### Paso 7 · Cierre y evidencia
-Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId` ausente; explicá qué parte de `event` corresponde a cada validación. Siguiente paso: runtimes. Errores comunes: depender de memoria global y no validar event. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html.
+
 **Evidencia de aprendizaje:** entrega el `salida.json` exitoso del Paso 4, el `errorMessage` de PIN corto del Paso 5 y el de `shipmentId` ausente del Paso 6, con una explicación de qué parte del `if` disparó cada uno.
 #### Profundización · Verificación: Pruebas unitarias
 
@@ -315,6 +295,29 @@ Invocación de una Lambda
 └──────────────────────────────────────────────┘
 ```
 
+#### Paso 4 · Demostración guiada
+```bash
+cat > index.js <<'EOF'
+exports.handler = async (event) => {
+  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin)) {
+    throw new TypeError('comando de entrega inválido');
+  }
+  return { shipmentId: event.shipmentId, status: 'delivered' };
+};
+EOF
+zip funcion.zip index.js
+aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
+aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+Resultado esperado: `salida.json` contiene `{"shipmentId":"env-4471","status":"delivered"}` — exactamente el mismo contrato que devuelve `confirmDelivery` en `confirm-delivery.ts`, ahora corriendo dentro de un handler Lambda real.
+#### Paso 5 · Práctica guiada
+Pista: invocá con `recipientPin` de solo 4 dígitos (`"1234"`) para provocar el fallo deliberado — `salida.json` no va a tener `shipmentId`, va a tener `errorMessage` y `errorType: "TypeError"`, la misma validación que ya existe en el código TypeScript de RutaFlow.
+#### Paso 6 · Práctica independiente
+Invocá sin `shipmentId` en el payload y confirmá que también falla, con un `errorMessage` distinto al del Paso 5 — las dos validaciones del `if` son independientes.
+#### Paso 7 · Cierre y evidencia
+Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId` ausente; explicá qué parte de `event` corresponde a cada validación. Siguiente paso: runtimes. Errores comunes: depender de memoria global y no validar event. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html.
+
 ### Tema 3: Runtimes — Node.js, Python, Java, Go
 
 #### Paso 1 · Objetivo y preparación
@@ -323,6 +326,65 @@ Al finalizar vas a comprobar en vivo qué pasa cuando el código de `confirmar-e
 El handler real del proyecto integrador RutaFlow (`examples/rutaflow/cloud/functions/confirmar-entrega/`) usa `@aws-sdk/client-dynamodb` para escribir en `ShipmentEvents` (la misma tabla que estudiaste en Módulo 4) — una dependencia externa que el runtime `nodejs20.x` no incluye por defecto. Sin empaquetar correctamente esta dependencia, tu código no puede acceder a DynamoDB.
 #### Paso 3 · Teoría, modelo mental y analogía
 El runtime es el motor; las dependencias externas son el combustible que ese motor no trae de fábrica — si no las empaquetás junto a tu código, el motor arranca pero se queda sin combustible a mitad de camino.
+
+**Conceptos clave:** runtime, lenguaje de programación soportado, empaquetado de dependencias, runtime personalizado.
+
+Un runtime en Lambda es el entorno de ejecución que sabe cómo cargar tu código y traducir el ciclo de vida de una invocación (recibir el evento, ejecutar tu handler, devolver la respuesta) al lenguaje concreto en que escribiste tu función. AWS Lambda ofrece runtimes gestionados oficialmente para varios lenguajes populares, entre ellos Node.js, Python, Java, Go, .NET y Ruby, cada uno con distintas versiones soportadas que se actualizan periódicamente conforme cada lenguaje evoluciona.
+
+La elección de runtime tiene implicaciones prácticas más allá de la simple preferencia de lenguaje. Node.js y Python suelen tener tiempos de arranque en frío (cold start) más rápidos que Java, debido a que la máquina virtual de Java (JVM) requiere más tiempo de inicialización que un intérprete de JavaScript o Python. Go, al compilarse a un binario nativo sin una máquina virtual intermedia, suele tener de los tiempos de arranque en frío más rápidos entre los runtimes gestionados. Esta diferencia puede ser irrelevante para funciones que se invocan con frecuencia (donde el entorno se mantiene "caliente" entre invocaciones), pero puede ser un factor de diseño importante para funciones sensibles a la latencia que se invocan de forma esporádica.
+
+Cada runtime también determina cómo empaquetas tus dependencias externas. En Node.js, empaquetas la carpeta `node_modules` junto a tu código; en Python, empaquetas las librerías instaladas junto a tu script; en Java, normalmente empaquetas un `.jar` con todas las dependencias incluidas (un "fat jar" o "uber jar"). Más allá de un cierto tamaño de dependencias, Lambda también soporta capas (Lambda Layers), que permiten compartir dependencias comunes entre múltiples funciones sin duplicarlas en cada paquete de despliegue individual, aunque ese es un tema que excede el alcance de este módulo introductorio.
+
+Además de los runtimes gestionados oficialmente, Lambda soporta runtimes personalizados mediante la interfaz "Runtime API", que permite ejecutar prácticamente cualquier lenguaje (incluyendo Rust o PHP) implementando una capa fina que traduce entre el protocolo interno de Lambda y ese lenguaje. Este curso, en el laboratorio de este módulo, usa Node.js por su sencillez de empaquetado (sin necesidad de compilación) y por ser uno de los runtimes más comunes en la práctica, pero los mismos conceptos —handler, event, context, statelessness— aplican exactamente igual sin importar el runtime elegido.
+
+**Analogía:** el runtime es como el traductor que necesitas contratar según el idioma en que llega un visitante extranjero a una oficina de atención: si el visitante habla japonés (Node.js), necesitas un traductor de japonés; si habla alemán (Java), necesitas uno de alemán. La oficina en sí (la infraestructura de Lambda, el concepto de evento/contexto/respuesta) funciona igual sin importar el idioma, pero cada traductor (runtime) tiene sus propias particularidades de velocidad y de cómo prepara los documentos (dependencias) que el visitante trae consigo.
+
+**¿Por qué es importante?** Elegir un runtime no es solo una decisión de qué lenguaje prefieres escribir: tiene consecuencias reales de rendimiento (cold start), de cómo empaquetas y mantienes tus dependencias, y de qué librerías del ecosistema de ese lenguaje tienes disponibles. Para equipos que ya tienen experiencia establecida en un lenguaje concreto, normalmente es más pragmático usar ese mismo lenguaje en Lambda que introducir uno nuevo solo por una ventaja marginal de cold start.
+
+#### Profundización · Diseño: Tamaño de dependencias vs cold start
+
+**Escenario:** RutaFlow necesita una segunda función `procesar-fotos` que usa:
+- `sharp` (3MB) para redimensionar fotos
+- vs solo `@aws-sdk/client-s3` (2MB) que ya usas
+
+**Tu tarea:**
+
+1. Mide tamaño actual: `du -sh node_modules/` en `confirmar-entrega`
+2. Estima: Si añadís `sharp`, ¿cuál sería el nuevo tamaño?
+3. Impacto en cold start: (+1MB en zip = ~?ms adicionales)
+4. Decisión: ¿En la misma función o crear Lambda separada?
+
+[SOLUCIÓN]
+
+> **Tamaño típico:**  
+> - Base (@aws-sdk/client-dynamodb): ~3MB
+> - Con sharp: +3MB = 6MB total
+>
+> **Impacto:** Cada ~1MB = +100-150ms en cold start
+> - Función actual (3MB): ~1500ms cold start
+> - Con sharp (6MB): ~1800ms cold start (+300ms)
+>
+> **Decisión:**  
+> - Si `procesar-fotos` se invoca pocas veces: Lambda separada evita aumentar tamaño a todas las invocaciones
+> - Si se invoca frecuente: Zip compartido (Layers) reducidría duración
+
+**Conceptos clave:** runtime, empaquetado, tamaño de zip, optimización de dependencias.
+
+**Diagrama:**
+
+```
+Tu código (handler + dependencias)
+          │
+          ▼
+┌───────────────────────────────────┐
+│  Runtime de Lambda (Node.js/Python/ │
+│  Java/Go/...) traduce el evento      │
+│  entrante a tu lenguaje, invoca tu    │
+│  handler, y traduce tu respuesta       │
+│  de vuelta al formato esperado         │
+└───────────────────────────────────┘
+```
+
 #### Paso 4 · Demostración guiada
 ```bash
 # Primero, crea el handler que ESÍ ESCRIBE EN DYNAMODB (como RutaFlow real)
@@ -384,63 +446,6 @@ Pista: antes de empaquetar en Paso 4, intenta correr `aws lambda invoke` SIN hab
 Confirmá con `unzip -l funcion.zip` que `node_modules/@aws-sdk/client-dynamodb` quedó dentro del paquete, y volvé a invocar para confirmar que la función ejecuta sin error y escribe en ShipmentEvents.
 #### Paso 7 · Cierre y evidencia
 Entregá el error `Import ModuleError` del Paso 5, la confirmación de `unzip` del Paso 6 y el resultado exitoso de la Lambda escribiendo en ShipmentEvents; explicá por qué el empaquetado correcto de dependencias es lo que conecta esta función con Módulo 4. Siguiente paso: payload. Errores comunes: versiones flotantes y tamaños de zip muy grandes. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html.
-**Conceptos clave:** runtime, lenguaje de programación soportado, empaquetado de dependencias, runtime personalizado.
-
-Un runtime en Lambda es el entorno de ejecución que sabe cómo cargar tu código y traducir el ciclo de vida de una invocación (recibir el evento, ejecutar tu handler, devolver la respuesta) al lenguaje concreto en que escribiste tu función. AWS Lambda ofrece runtimes gestionados oficialmente para varios lenguajes populares, entre ellos Node.js, Python, Java, Go, .NET y Ruby, cada uno con distintas versiones soportadas que se actualizan periódicamente conforme cada lenguaje evoluciona.
-
-La elección de runtime tiene implicaciones prácticas más allá de la simple preferencia de lenguaje. Node.js y Python suelen tener tiempos de arranque en frío (cold start) más rápidos que Java, debido a que la máquina virtual de Java (JVM) requiere más tiempo de inicialización que un intérprete de JavaScript o Python. Go, al compilarse a un binario nativo sin una máquina virtual intermedia, suele tener de los tiempos de arranque en frío más rápidos entre los runtimes gestionados. Esta diferencia puede ser irrelevante para funciones que se invocan con frecuencia (donde el entorno se mantiene "caliente" entre invocaciones), pero puede ser un factor de diseño importante para funciones sensibles a la latencia que se invocan de forma esporádica.
-
-Cada runtime también determina cómo empaquetas tus dependencias externas. En Node.js, empaquetas la carpeta `node_modules` junto a tu código; en Python, empaquetas las librerías instaladas junto a tu script; en Java, normalmente empaquetas un `.jar` con todas las dependencias incluidas (un "fat jar" o "uber jar"). Más allá de un cierto tamaño de dependencias, Lambda también soporta capas (Lambda Layers), que permiten compartir dependencias comunes entre múltiples funciones sin duplicarlas en cada paquete de despliegue individual, aunque ese es un tema que excede el alcance de este módulo introductorio.
-
-Además de los runtimes gestionados oficialmente, Lambda soporta runtimes personalizados mediante la interfaz "Runtime API", que permite ejecutar prácticamente cualquier lenguaje (incluyendo Rust o PHP) implementando una capa fina que traduce entre el protocolo interno de Lambda y ese lenguaje. Este curso, en el laboratorio de este módulo, usa Node.js por su sencillez de empaquetado (sin necesidad de compilación) y por ser uno de los runtimes más comunes en la práctica, pero los mismos conceptos —handler, event, context, statelessness— aplican exactamente igual sin importar el runtime elegido.
-
-**Analogía:** el runtime es como el traductor que necesitas contratar según el idioma en que llega un visitante extranjero a una oficina de atención: si el visitante habla japonés (Node.js), necesitas un traductor de japonés; si habla alemán (Java), necesitas uno de alemán. La oficina en sí (la infraestructura de Lambda, el concepto de evento/contexto/respuesta) funciona igual sin importar el idioma, pero cada traductor (runtime) tiene sus propias particularidades de velocidad y de cómo prepara los documentos (dependencias) que el visitante trae consigo.
-
-**¿Por qué es importante?** Elegir un runtime no es solo una decisión de qué lenguaje prefieres escribir: tiene consecuencias reales de rendimiento (cold start), de cómo empaquetas y mantienes tus dependencias, y de qué librerías del ecosistema de ese lenguaje tienes disponibles. Para equipos que ya tienen experiencia establecida en un lenguaje concreto, normalmente es más pragmático usar ese mismo lenguaje en Lambda que introducir uno nuevo solo por una ventaja marginal de cold start.
-
-#### Profundización · Diseño: Tamaño de dependencias vs cold start
-
-**Escenario:** RutaFlow necesita una segunda función `procesar-fotos` que usa:
-- `sharp` (3MB) para redimensionar fotos
-- vs solo `@aws-sdk/client-s3` (2MB) que ya usas
-
-**Tu tarea:**
-
-1. Mide tamaño actual: `du -sh node_modules/` en `confirmar-entrega`
-2. Estima: Si añadís `sharp`, ¿cuál sería el nuevo tamaño?
-3. Impacto en cold start: (+1MB en zip = ~?ms adicionales)
-4. Decisión: ¿En la misma función o crear Lambda separada?
-
-[SOLUCIÓN]
-
-> **Tamaño típico:**  
-> - Base (@aws-sdk/client-dynamodb): ~3MB
-> - Con sharp: +3MB = 6MB total
->
-> **Impacto:** Cada ~1MB = +100-150ms en cold start
-> - Función actual (3MB): ~1500ms cold start
-> - Con sharp (6MB): ~1800ms cold start (+300ms)
->
-> **Decisión:**  
-> - Si `procesar-fotos` se invoca pocas veces: Lambda separada evita aumentar tamaño a todas las invocaciones
-> - Si se invoca frecuente: Zip compartido (Layers) reducidría duración
-
-**Conceptos clave:** runtime, empaquetado, tamaño de zip, optimización de dependencias.
-
-**Diagrama:**
-
-```
-Tu código (handler + dependencias)
-          │
-          ▼
-┌───────────────────────────────────┐
-│  Runtime de Lambda (Node.js/Python/ │
-│  Java/Go/...) traduce el evento      │
-│  entrante a tu lenguaje, invoca tu    │
-│  handler, y traduce tu respuesta       │
-│  de vuelta al formato esperado         │
-└───────────────────────────────────┘
-```
 
 ### Tema 4: Payload de entrada y respuesta
 
@@ -450,28 +455,6 @@ Al finalizar vas a envolver `confirmar-entrega` en el formato de respuesta que v
 Cuando `confirmar-entrega` se conecte a API Gateway (Módulo 6) como parte del proyecto integrador, quien hace la petición HTTP necesita `statusCode` y `body`, no el objeto de negocio suelto — devolver el objeto directo rompería esa integración en silencio.
 #### Paso 3 · Teoría, modelo mental y analogía
 El payload de entrada es el formulario que rellenás; `statusCode` es el semáforo (verde/rojo) de la respuesta; `body` es el comprobante que viaja dentro de un sobre con ese semáforo pegado afuera.
-#### Paso 4 · Demostración guiada
-```bash
-cat > index.js <<'EOF'
-exports.handler = async (event) => {
-  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin || '')) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'comando inválido' }) };
-  }
-  return { statusCode: 200, body: JSON.stringify({ shipmentId: event.shipmentId, status: 'delivered' }) };
-};
-EOF
-zip funcion.zip index.js
-aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
-aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
-  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
-```
-Resultado esperado: `salida.json` trae `{"statusCode":200,"body":"{\"shipmentId\":\"env-4471\",\"status\":\"delivered\"}"}` — `body` es una cadena de texto (`JSON.stringify`), no un objeto JSON anidado directo.
-#### Paso 5 · Práctica guiada
-Pista: invocá con `recipientPin` de 4 dígitos (`"1234"`) para provocar el fallo deliberado — esa vez, a diferencia de Tema 2, tu función NO lanza excepción sino que devuelve un `statusCode: 400` con un mensaje de error estructurado en el `body`. La diferencia es que en Tema 2 el fallo era una excepción (error fatal), pero acá en Tema 4 la función sigue ejecutándose y responde "gracefully" con un error HTTP, exactamente como lo hará cuando se conecte a API Gateway en Módulo 6.
-#### Paso 6 · Práctica independiente
-Invocá con `recipientPin` de 4 dígitos y confirmá que esta vez la función sí responde (no falla como en el Tema 2), pero con `statusCode: 400` en vez de 200 — la diferencia entre un error de tu lógica y un error de formato de entrada.
-#### Paso 7 · Cierre y evidencia
-Entregá la respuesta 200, el error de parseo de payload del Paso 5 y la respuesta 400 del Paso 6; explicá la diferencia entre los tres. Siguiente paso: versiones. Errores comunes: mensajes ambiguos y no distinguir 4xx de 5xx. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html.
 
 #### Profundización · Manejo profesional de errores (Producción)
 
@@ -573,6 +556,29 @@ return {"saludo": "Hola Ana"}              ▼
                                         }
 ```
 
+#### Paso 4 · Demostración guiada
+```bash
+cat > index.js <<'EOF'
+exports.handler = async (event) => {
+  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin || '')) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'comando inválido' }) };
+  }
+  return { statusCode: 200, body: JSON.stringify({ shipmentId: event.shipmentId, status: 'delivered' }) };
+};
+EOF
+zip funcion.zip index.js
+aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
+aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+Resultado esperado: `salida.json` trae `{"statusCode":200,"body":"{\"shipmentId\":\"env-4471\",\"status\":\"delivered\"}"}` — `body` es una cadena de texto (`JSON.stringify`), no un objeto JSON anidado directo.
+#### Paso 5 · Práctica guiada
+Pista: invocá con `recipientPin` de 4 dígitos (`"1234"`) para provocar el fallo deliberado — esa vez, a diferencia de Tema 2, tu función NO lanza excepción sino que devuelve un `statusCode: 400` con un mensaje de error estructurado en el `body`. La diferencia es que en Tema 2 el fallo era una excepción (error fatal), pero acá en Tema 4 la función sigue ejecutándose y responde "gracefully" con un error HTTP, exactamente como lo hará cuando se conecte a API Gateway en Módulo 6.
+#### Paso 6 · Práctica independiente
+Invocá con `recipientPin` de 4 dígitos y confirmá que esta vez la función sí responde (no falla como en el Tema 2), pero con `statusCode: 400` en vez de 200 — la diferencia entre un error de tu lógica y un error de formato de entrada.
+#### Paso 7 · Cierre y evidencia
+Entregá la respuesta 200, el error de parseo de payload del Paso 5 y la respuesta 400 del Paso 6; explicá la diferencia entre los tres. Siguiente paso: versiones. Errores comunes: mensajes ambiguos y no distinguir 4xx de 5xx. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html.
+
 ### Tema 5: Versionado y alias
 
 #### Paso 1 · Objetivo y preparación
@@ -581,21 +587,6 @@ Al finalizar vas a publicar una versión fija de `confirmar-entrega` y a mover u
 Antes de conectar `confirmar-entrega` a la cola real del proyecto integrador RutaFlow (Tema 6), conviene fijar una versión conocida como "producción" — si una corrección futura rompe algo, revertir debe ser mover un puntero, no volver a desplegar código a mano. Los operadores de RutaFlow necesitan rollbacks rápidos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada versión numerada es una fotografía inmutable del código en ese momento; un alias es un puntero con nombre que podés mover de una fotografía a otra cuando quieras.
-#### Paso 4 · Demostración guiada
-```bash
-aws lambda publish-version --function-name confirmar-entrega --description "payload con statusCode/body"
-aws lambda create-alias --function-name confirmar-entrega --name produccion --function-version 1
-aws lambda invoke --function-name confirmar-entrega:produccion \
-  --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
-  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
-```
-Resultado esperado: `publish-version` devuelve `"Version": "1"`; invocar `confirmar-entrega:produccion` responde igual que invocar la función directamente, porque el alias apunta a esa versión 1.
-#### Paso 5 · Práctica guiada
-Pista: corré `aws lambda update-alias --function-name confirmar-entrega --name produccion --function-version 9` (una versión que no existe) para provocar el fallo deliberado — `ResourceNotFoundException: Version 9 does not exist`. El alias no se mueve a una versión inexistente, protegiendo de un rollback roto.
-#### Paso 6 · Práctica independiente
-Modificá `index.js` otra vez (cualquier cambio chico), `update-function-code`, publicá una versión 2, y simulá un rollback: moveé `produccion` a la versión 2 con `update-alias`, confirmá con `invoke`, y después volvé a moverlo a la versión 1 — sin volver a desplegar ningún código.
-#### Paso 7 · Cierre y evidencia
-Entregá la publicación de la versión 1, el error de versión inexistente del Paso 5 y el rollback del Paso 6; explicá por qué mover un alias es más seguro que editar `$LATEST` directamente en producción. Siguiente paso: triggers. Errores comunes: editar $LATEST en producción y no registrar cambios. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html.
 
 #### Profundización · Diseño: Canary deployment con routing ponderado
 
@@ -663,6 +654,22 @@ Versión 1 (fija)   Versión 2 (fija)   Versión 3 (fija, la más reciente publi
 ```
 
 **Límites y decisión de uso:** Cambiar un alias no revierte datos que una versión ya escribió. Antes de distribuir tráfico entre versiones, verifica compatibilidad de eventos y esquema; conserva una estrategia separada para cambios de datos que no sean reversibles.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws lambda publish-version --function-name confirmar-entrega --description "payload con statusCode/body"
+aws lambda create-alias --function-name confirmar-entrega --name produccion --function-version 1
+aws lambda invoke --function-name confirmar-entrega:produccion \
+  --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+Resultado esperado: `publish-version` devuelve `"Version": "1"`; invocar `confirmar-entrega:produccion` responde igual que invocar la función directamente, porque el alias apunta a esa versión 1.
+#### Paso 5 · Práctica guiada
+Pista: corré `aws lambda update-alias --function-name confirmar-entrega --name produccion --function-version 9` (una versión que no existe) para provocar el fallo deliberado — `ResourceNotFoundException: Version 9 does not exist`. El alias no se mueve a una versión inexistente, protegiendo de un rollback roto.
+#### Paso 6 · Práctica independiente
+Modificá `index.js` otra vez (cualquier cambio chico), `update-function-code`, publicá una versión 2, y simulá un rollback: moveé `produccion` a la versión 2 con `update-alias`, confirmá con `invoke`, y después volvé a moverlo a la versión 1 — sin volver a desplegar ningún código.
+#### Paso 7 · Cierre y evidencia
+Entregá la publicación de la versión 1, el error de versión inexistente del Paso 5 y el rollback del Paso 6; explicá por qué mover un alias es más seguro que editar `$LATEST` directamente en producción. Siguiente paso: triggers. Errores comunes: editar $LATEST en producción y no registrar cambios. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html.
 
 ### Tema 6: Integración con S3, DynamoDB Streams y API Gateway
 

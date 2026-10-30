@@ -17,41 +17,6 @@ Un navegador puede interpretar una respuesta de manera peligrosa si faltan restr
 
 Helmet agrupa middleware que establece políticas como CSP, HSTS y `X-Content-Type-Options`. Son señales para el navegador, no un sustituto de autorización; funcionan como barandillas en una carretera.
 
-#### Paso 4 · Demostración guiada desde cero
-
-Implementa `src/audit-notes.md` para registrar la dependencia afectada, severidad, versión corregida y decisión del equipo.
-
-```bash
-mkdir ejemplo-helmet
-cd ejemplo-helmet
-npm init -y
-npm install express helmet
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import express from "express";
-import helmet from "helmet";
-const app = express();
-app.use(helmet());
-app.get("/", (_req, res) => res.json({ ok: true }));
-app.listen(3000, () => console.log("seguro en 3000"));
-```
-
-Ejecuta `node src/server.js` y `curl -I http://127.0.0.1:3000`. **Resultado esperado:** aparecen `x-content-type-options`, `content-security-policy` y otras cabeceras. **Fallo deliberado y diagnóstico:** elimina `helmet()` y compara; la ausencia demuestra una regresión observable, no un error de Express.
-
-#### Paso 5 · Práctica guiada
-
-Configura una CSP mínima para una respuesta sin scripts. **Pista:** prueba primero en modo reporte para no bloquear contenido legítimo.
-
-#### Paso 6 · Práctica independiente
-
-Documenta qué cabeceras aplican a navegador y cuáles no protegen una llamada server-to-server.
-
-#### Paso 7 · Cierre y conexión
-
 Ya verificas cabeceras desde el cliente. El siguiente tema limitará abuso por IP y usuario.
 
 **Errores comunes:** copiar CSP sin probar; activar HSTS local sin HTTPS; creer que Helmet valida entradas; ocultar cabeceras de diagnóstico.
@@ -103,6 +68,41 @@ app.use(helmet()); // agrega X-Content-Type-Options, Strict-Transport-Security, 
 // verificar: curl -I http://localhost:3000/tareas
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+
+Implementa `src/audit-notes.md` para registrar la dependencia afectada, severidad, versión corregida y decisión del equipo.
+
+```bash
+mkdir ejemplo-helmet
+cd ejemplo-helmet
+npm init -y
+npm install express helmet
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+import helmet from "helmet";
+const app = express();
+app.use(helmet());
+app.get("/", (_req, res) => res.json({ ok: true }));
+app.listen(3000, () => console.log("seguro en 3000"));
+```
+
+Ejecuta `node src/server.js` y `curl -I http://127.0.0.1:3000`. **Resultado esperado:** aparecen `x-content-type-options`, `content-security-policy` y otras cabeceras. **Fallo deliberado y diagnóstico:** elimina `helmet()` y compara; la ausencia demuestra una regresión observable, no un error de Express.
+
+#### Paso 5 · Práctica guiada
+
+Configura una CSP mínima para una respuesta sin scripts. **Pista:** prueba primero en modo reporte para no bloquear contenido legítimo.
+
+#### Paso 6 · Práctica independiente
+
+Documenta qué cabeceras aplican a navegador y cuáles no protegen una llamada server-to-server.
+
+#### Paso 7 · Cierre y conexión
+
 ### Tema 2: Rate limiting
 
 #### Paso 1 · Objetivo y preparación
@@ -116,6 +116,36 @@ Login, búsqueda y recuperación de contraseña son objetivos de abuso. Un lími
 #### Paso 3 · Teoría y analogía aplicada
 
 Una ventana fija cuenta solicitudes por intervalo; token bucket permite ráfagas controladas. Es el torniquete de una estación: deja pasar un flujo y frena la saturación.
+
+Ya proteges una superficie concreta y conoces sus límites distribuidos. El siguiente tema tratará inyección y XSS.
+
+**Errores comunes:** confiar en IP detrás de proxy sin configurarlo; bloquear usuarios legítimos; no informar `Retry-After`; limitar solo en frontend; usar memoria local en clúster.
+
+**Fuentes oficiales:** [express-rate-limit](https://express-rate-limit.mintlify.app/), [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) y [OWASP API4](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/).
+
+**Evidencia de aprendizaje:** entrega la salida de las cuatro respuestas y sus cabeceras de límite.
+
+**Conceptos clave:** límite de peticiones por ventana de tiempo, prevención de abuso y fuerza bruta.
+
+Sin ningún límite en la tasa de peticiones que un cliente puede realizar, un solo cliente (deliberadamente malicioso, o simplemente un bug de un cliente legítimo que reintenta sin control) puede saturar una API con volumen excesivo de peticiones, degradando el servicio para todos los demás usuarios legítimos, o realizar ataques de fuerza bruta contra un endpoint de login (probando sistemáticamente miles de combinaciones de contraseña por segundo contra la misma cuenta) sin ninguna fricción que lo dificulte. `express-rate-limit` (u otras bibliotecas equivalentes) limita el número de peticiones aceptadas desde una misma IP (u otro identificador de cliente) dentro de una ventana de tiempo configurable, respondiendo con `429` (Too Many Requests) una vez que ese límite se excede dentro de la ventana.
+
+Configurar el límite apropiado (`{windowMs: 60_000, max: 100}`, por ejemplo, 100 peticiones por minuto) requiere equilibrar la protección real contra abuso con no penalizar injustamente a usuarios legítimos con patrones de uso normales pero de volumen relativamente alto; límites más estrictos son apropiados específicamente para endpoints sensibles como login (donde incluso un puñado de intentos fallidos en poco tiempo es sospechoso de un ataque de fuerza bruta) frente a límites más generosos para endpoints de consulta general de uso normal y esperado con mayor frecuencia legítima.
+
+Rate limiting no es solo una medida "para verse profesional": resuelve un problema real y concreto de disponibilidad del servicio (protegiendo contra saturación, ya sea maliciosa o accidental) y de seguridad específica (dificultando significativamente ataques de fuerza bruta contra credenciales, que dependen fundamentalmente de poder probar un volumen muy alto de intentos en poco tiempo; limitar ese volumen posible reduce directamente la viabilidad práctica de ese tipo de ataque, sin necesidad de ninguna otra medida adicional específica contra fuerza bruta).
+
+**Analogía:** rate limiting es como un torniquete de entrada que permite pasar solo un número limitado de personas por minuto, evitando tanto que una multitud descontrolada sature un espacio con capacidad limitada, como que alguien intente probar sistemáticamente y a alta velocidad miles de credenciales falsas contra un único punto de control de seguridad en poco tiempo.
+
+**¿Por qué es importante?** Rate limiting protege tanto la disponibilidad del servicio ante saturación (maliciosa o accidental) como la seguridad de endpoints sensibles como login, dificultando significativamente ataques de fuerza bruta al limitar el volumen posible de intentos en un período de tiempo dado.
+
+**Código del ejemplo:**
+
+```js
+import rateLimit from "express-rate-limit";
+app.use(rateLimit({ windowMs: 60_000, max: 100 })); // máx 100 requests/minuto por IP
+// tras excederlo: respuesta 429 Too Many Requests
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Limita intentos de consulta o autenticación según la política definida. Prueba el umbral y su recuperación temporal; el rechazo debe ser explícito y no bloquear indiscriminadamente usuarios detrás de una misma red.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -150,36 +180,6 @@ Compara memoria local con un store Redis para dos procesos y documenta por qué 
 
 #### Paso 7 · Cierre y conexión
 
-Ya proteges una superficie concreta y conoces sus límites distribuidos. El siguiente tema tratará inyección y XSS.
-
-**Errores comunes:** confiar en IP detrás de proxy sin configurarlo; bloquear usuarios legítimos; no informar `Retry-After`; limitar solo en frontend; usar memoria local en clúster.
-
-**Fuentes oficiales:** [express-rate-limit](https://express-rate-limit.mintlify.app/), [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) y [OWASP API4](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/).
-
-**Evidencia de aprendizaje:** entrega la salida de las cuatro respuestas y sus cabeceras de límite.
-
-**Conceptos clave:** límite de peticiones por ventana de tiempo, prevención de abuso y fuerza bruta.
-
-Sin ningún límite en la tasa de peticiones que un cliente puede realizar, un solo cliente (deliberadamente malicioso, o simplemente un bug de un cliente legítimo que reintenta sin control) puede saturar una API con volumen excesivo de peticiones, degradando el servicio para todos los demás usuarios legítimos, o realizar ataques de fuerza bruta contra un endpoint de login (probando sistemáticamente miles de combinaciones de contraseña por segundo contra la misma cuenta) sin ninguna fricción que lo dificulte. `express-rate-limit` (u otras bibliotecas equivalentes) limita el número de peticiones aceptadas desde una misma IP (u otro identificador de cliente) dentro de una ventana de tiempo configurable, respondiendo con `429` (Too Many Requests) una vez que ese límite se excede dentro de la ventana.
-
-Configurar el límite apropiado (`{windowMs: 60_000, max: 100}`, por ejemplo, 100 peticiones por minuto) requiere equilibrar la protección real contra abuso con no penalizar injustamente a usuarios legítimos con patrones de uso normales pero de volumen relativamente alto; límites más estrictos son apropiados específicamente para endpoints sensibles como login (donde incluso un puñado de intentos fallidos en poco tiempo es sospechoso de un ataque de fuerza bruta) frente a límites más generosos para endpoints de consulta general de uso normal y esperado con mayor frecuencia legítima.
-
-Rate limiting no es solo una medida "para verse profesional": resuelve un problema real y concreto de disponibilidad del servicio (protegiendo contra saturación, ya sea maliciosa o accidental) y de seguridad específica (dificultando significativamente ataques de fuerza bruta contra credenciales, que dependen fundamentalmente de poder probar un volumen muy alto de intentos en poco tiempo; limitar ese volumen posible reduce directamente la viabilidad práctica de ese tipo de ataque, sin necesidad de ninguna otra medida adicional específica contra fuerza bruta).
-
-**Analogía:** rate limiting es como un torniquete de entrada que permite pasar solo un número limitado de personas por minuto, evitando tanto que una multitud descontrolada sature un espacio con capacidad limitada, como que alguien intente probar sistemáticamente y a alta velocidad miles de credenciales falsas contra un único punto de control de seguridad en poco tiempo.
-
-**¿Por qué es importante?** Rate limiting protege tanto la disponibilidad del servicio ante saturación (maliciosa o accidental) como la seguridad de endpoints sensibles como login, dificultando significativamente ataques de fuerza bruta al limitar el volumen posible de intentos en un período de tiempo dado.
-
-**Código del ejemplo:**
-
-```js
-import rateLimit from "express-rate-limit";
-app.use(rateLimit({ windowMs: 60_000, max: 100 })); // máx 100 requests/minuto por IP
-// tras excederlo: respuesta 429 Too Many Requests
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Limita intentos de consulta o autenticación según la política definida. Prueba el umbral y su recuperación temporal; el rechazo debe ser explícito y no bloquear indiscriminadamente usuarios detrás de una misma red.
-
 ### Tema 3: Inyección SQL y sanitización contra XSS
 
 #### Paso 1 · Objetivo y preparación
@@ -193,6 +193,39 @@ Una búsqueda con texto del usuario puede alterar una consulta o ejecutar markup
 #### Paso 3 · Teoría y analogía aplicada
 
 Los parámetros separan datos de instrucciones, como escribir un valor en un formulario en vez de pegarlo en las órdenes. Escapar HTML convierte símbolos peligrosos en texto visible.
+
+Ya distingues parametrización, validación y escape. El siguiente tema reunirá controles en una auditoría OWASP.
+
+**Errores comunes:** usar blacklist SQL; escapar para SQL en vez de parametrizar; confiar en validación frontend; insertar HTML sin escape; loggear payloads sensibles.
+
+**Fuentes oficiales:** [node-postgres queries](https://node-postgres.com/features/queries), [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection) y [OWASP XSS](https://owasp.org/www-community/attacks/xss/).
+
+**Evidencia de aprendizaje:** entrega la salida de una consulta parametrizada y un payload XSS escapado.
+
+**Conceptos clave:** consultas parametrizadas, escape automático, sanitización de HTML.
+
+La inyección SQL, mencionada ya en el Módulo 5 al estudiar el driver `pg`, ocurre cuando un valor de entrada del usuario se concatena directamente dentro de un string SQL sin ningún escape (`` `SELECT * FROM usuarios WHERE email = '${email}'` ``), permitiendo que un atacante que controla el valor de `email` inyecte fragmentos de SQL adicionales que alteran completamente la estructura y el significado de la consulta original ejecutada (por ejemplo, incluyendo una condición que siempre es verdadera, devolviendo todos los usuarios de la tabla en vez de uno específico, o peor, ejecutando comandos SQL destructivos adicionales). La solución, ya estudiada, es usar siempre consultas parametrizadas (`pool.query("... WHERE email = $1", [email])`), donde el driver escapa automáticamente el valor, neutralizando cualquier intento de inyección sin requerir ningún esfuerzo manual adicional del desarrollador en cada consulta individual.
+
+Este mismo principio de "nunca concatenar directamente entrada no confiable" se extiende, con un mecanismo distinto pero un espíritu equivalente, al problema de XSS almacenado (Cross-Site Scripting): si contenido generado por un usuario (por ejemplo, un comentario en un formulario) se almacena y posteriormente se renderiza directamente como HTML en otra aplicación (típicamente un frontend, estudiado en los tracks de Angular y React) sin ningún escape o sanitización, un usuario malicioso podría incluir en su comentario un fragmento `<script>` que se ejecutaría en el navegador de cualquier otro usuario que visualice ese comentario después, potencialmente robando sus credenciales de sesión o realizando acciones no autorizadas en su nombre.
+
+Escapar o sanitizar contenido generado por usuarios antes de renderizarlo como HTML (usando `textContent` en vez de `innerHTML` del lado del navegador, como se estudió en el Módulo 8 del track de JavaScript, o bibliotecas de sanitización específicas del lado del servidor si el contenido debe permitir cierto HTML controlado, como negritas o enlaces en un editor de texto enriquecido) es la defensa fundamental contra este vector. Auditar el flujo completo de cualquier dato que un usuario pueda controlar, desde su entrada inicial hasta cualquier punto donde eventualmente se renderiza o se usa en una consulta, identificando cada punto donde ese dato cruza un límite de confianza (de entrada de usuario hacia SQL, o de almacenamiento hacia renderizado HTML), es la disciplina sistemática que previene tanto inyección SQL como XSS de forma consistente.
+
+**Analogía:** tanto la inyección SQL como el XSS son variantes del mismo problema fundamental: tratar datos de entrada no confiable como si fueran instrucciones confiables a ejecutar directamente, en vez de tratarlos siempre como datos puros a manejar con cuidado. Es como recibir una nota de un desconocido y, en vez de simplemente leer su contenido como texto, seguir literalmente cualquier instrucción que contenga como si viniera de una fuente autorizada y confiable.
+
+**¿Por qué es importante?** Concatenar directamente entrada de usuario en SQL o renderizarla sin escape como HTML son las dos formas más comunes y con mayor impacto potencial de comprometer una aplicación, y ambas se previenen sistemáticamente con la misma disciplina: nunca tratar entrada no confiable como instrucciones ejecutables directas.
+
+**Código del ejemplo:**
+
+```js
+// PELIGROSO: concatenación directa (inyección SQL)
+const query = `SELECT * FROM usuarios WHERE email = '${email}'`;
+// SEGURO: parámetros, el driver escapa automáticamente
+const { rows } = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
+
+// XSS: nunca renderizar contenido de usuario como HTML sin sanitizar/escapar
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Parametriza la búsqueda de guías y trata observaciones como datos no confiables. Prueba caracteres especiales e instrucciones aparentes: deben almacenarse o rechazarse según el contrato, sin convertirse en SQL o HTML ejecutable.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -228,39 +261,6 @@ Añade una prueba que intente `<img src=x onerror=alert(1)>` y entrega el texto 
 
 #### Paso 7 · Cierre y conexión
 
-Ya distingues parametrización, validación y escape. El siguiente tema reunirá controles en una auditoría OWASP.
-
-**Errores comunes:** usar blacklist SQL; escapar para SQL en vez de parametrizar; confiar en validación frontend; insertar HTML sin escape; loggear payloads sensibles.
-
-**Fuentes oficiales:** [node-postgres queries](https://node-postgres.com/features/queries), [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection) y [OWASP XSS](https://owasp.org/www-community/attacks/xss/).
-
-**Evidencia de aprendizaje:** entrega la salida de una consulta parametrizada y un payload XSS escapado.
-
-**Conceptos clave:** consultas parametrizadas, escape automático, sanitización de HTML.
-
-La inyección SQL, mencionada ya en el Módulo 5 al estudiar el driver `pg`, ocurre cuando un valor de entrada del usuario se concatena directamente dentro de un string SQL sin ningún escape (`` `SELECT * FROM usuarios WHERE email = '${email}'` ``), permitiendo que un atacante que controla el valor de `email` inyecte fragmentos de SQL adicionales que alteran completamente la estructura y el significado de la consulta original ejecutada (por ejemplo, incluyendo una condición que siempre es verdadera, devolviendo todos los usuarios de la tabla en vez de uno específico, o peor, ejecutando comandos SQL destructivos adicionales). La solución, ya estudiada, es usar siempre consultas parametrizadas (`pool.query("... WHERE email = $1", [email])`), donde el driver escapa automáticamente el valor, neutralizando cualquier intento de inyección sin requerir ningún esfuerzo manual adicional del desarrollador en cada consulta individual.
-
-Este mismo principio de "nunca concatenar directamente entrada no confiable" se extiende, con un mecanismo distinto pero un espíritu equivalente, al problema de XSS almacenado (Cross-Site Scripting): si contenido generado por un usuario (por ejemplo, un comentario en un formulario) se almacena y posteriormente se renderiza directamente como HTML en otra aplicación (típicamente un frontend, estudiado en los tracks de Angular y React) sin ningún escape o sanitización, un usuario malicioso podría incluir en su comentario un fragmento `<script>` que se ejecutaría en el navegador de cualquier otro usuario que visualice ese comentario después, potencialmente robando sus credenciales de sesión o realizando acciones no autorizadas en su nombre.
-
-Escapar o sanitizar contenido generado por usuarios antes de renderizarlo como HTML (usando `textContent` en vez de `innerHTML` del lado del navegador, como se estudió en el Módulo 8 del track de JavaScript, o bibliotecas de sanitización específicas del lado del servidor si el contenido debe permitir cierto HTML controlado, como negritas o enlaces en un editor de texto enriquecido) es la defensa fundamental contra este vector. Auditar el flujo completo de cualquier dato que un usuario pueda controlar, desde su entrada inicial hasta cualquier punto donde eventualmente se renderiza o se usa en una consulta, identificando cada punto donde ese dato cruza un límite de confianza (de entrada de usuario hacia SQL, o de almacenamiento hacia renderizado HTML), es la disciplina sistemática que previene tanto inyección SQL como XSS de forma consistente.
-
-**Analogía:** tanto la inyección SQL como el XSS son variantes del mismo problema fundamental: tratar datos de entrada no confiable como si fueran instrucciones confiables a ejecutar directamente, en vez de tratarlos siempre como datos puros a manejar con cuidado. Es como recibir una nota de un desconocido y, en vez de simplemente leer su contenido como texto, seguir literalmente cualquier instrucción que contenga como si viniera de una fuente autorizada y confiable.
-
-**¿Por qué es importante?** Concatenar directamente entrada de usuario en SQL o renderizarla sin escape como HTML son las dos formas más comunes y con mayor impacto potencial de comprometer una aplicación, y ambas se previenen sistemáticamente con la misma disciplina: nunca tratar entrada no confiable como instrucciones ejecutables directas.
-
-**Código del ejemplo:**
-
-```js
-// PELIGROSO: concatenación directa (inyección SQL)
-const query = `SELECT * FROM usuarios WHERE email = '${email}'`;
-// SEGURO: parámetros, el driver escapa automáticamente
-const { rows } = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-
-// XSS: nunca renderizar contenido de usuario como HTML sin sanitizar/escapar
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Parametriza la búsqueda de guías y trata observaciones como datos no confiables. Prueba caracteres especiales e instrucciones aparentes: deben almacenarse o rechazarse según el contrato, sin convertirse en SQL o HTML ejecutable.
-
 ### Tema 4: OWASP API Security Top 10 y auditoría de dependencias
 
 #### Paso 1 · Objetivo y preparación
@@ -274,34 +274,6 @@ Una API puede estar vulnerable aunque su código propio parezca correcto: depend
 #### Paso 3 · Teoría y analogía aplicada
 
 OWASP es una lista de clases de fallos, no un certificado. `npm audit` detecta avisos conocidos, pero no reemplaza threat modeling. Es una inspección de extintores, no una garantía de que el edificio sea seguro.
-
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `audit.json` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-```bash
-mkdir ejemplo-auditoria-api
-cd ejemplo-auditoria-api
-npm init -y
-npm install express
-npm audit --json > audit.json
-```
-
-`--json` es la bandera que hace que `npm audit` imprima el reporte en formato estructurado en vez de texto legible, apropiado para redirigir a un archivo o procesar con otro programa.
-
-Crea `audit-notes.md` para registrar dependencia afectada, severidad, versión corregida y decisión del equipo. Ese archivo es la evidencia que acompaña al código de la auditoría.
-
-Abre `audit.json` y ejecuta `npm audit`. **Resultado esperado:** un reporte con vulnerabilidades o el mensaje de árbol limpio; ambos son resultados válidos que debes interpretar. **Fallo deliberado y diagnóstico:** instala una versión vulnerable conocida en un proyecto temporal; `npm audit` marca severidad y dependencia transitiva. No ejecutes exploits.
-
-#### Paso 5 · Práctica guiada
-
-Clasifica un aviso como producción o desarrollo y decide si actualizar, reemplazar o aceptar temporalmente. **Pista:** revisa ruta de dependencia y versión corregida.
-
-#### Paso 6 · Práctica independiente
-
-Construye una matriz con autenticación, autorización por objeto, consumo de recursos y SSRF; entrega amenaza, evidencia y mitigación.
-
-#### Paso 7 · Cierre y conexión
 
 Ya conviertes un reporte técnico en decisiones priorizadas. El siguiente módulo tratará despliegue y contenedores.
 
@@ -333,6 +305,33 @@ npm audit fix       # aplica actualizaciones automáticas seguras cuando es posi
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Revisa una operación sensible frente a autorización por recurso y consumo de recursos. Añade una prueba negativa con otra identidad y registra la política de actualización de dependencias que protege ese endpoint.
+
+#### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `audit.json` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
+```bash
+mkdir ejemplo-auditoria-api
+cd ejemplo-auditoria-api
+npm init -y
+npm install express
+npm audit --json > audit.json
+```
+
+`--json` es la bandera que hace que `npm audit` imprima el reporte en formato estructurado en vez de texto legible, apropiado para redirigir a un archivo o procesar con otro programa.
+
+Crea `audit-notes.md` para registrar dependencia afectada, severidad, versión corregida y decisión del equipo. Ese archivo es la evidencia que acompaña al código de la auditoría.
+
+Abre `audit.json` y ejecuta `npm audit`. **Resultado esperado:** un reporte con vulnerabilidades o el mensaje de árbol limpio; ambos son resultados válidos que debes interpretar. **Fallo deliberado y diagnóstico:** instala una versión vulnerable conocida en un proyecto temporal; `npm audit` marca severidad y dependencia transitiva. No ejecutes exploits.
+
+#### Paso 5 · Práctica guiada
+
+Clasifica un aviso como producción o desarrollo y decide si actualizar, reemplazar o aceptar temporalmente. **Pista:** revisa ruta de dependencia y versión corregida.
+
+#### Paso 6 · Práctica independiente
+
+Construye una matriz con autenticación, autorización por objeto, consumo de recursos y SSRF; entrega amenaza, evidencia y mitigación.
+
+#### Paso 7 · Cierre y conexión
 
 ### Tema 5: CVE, CWE y npm audit en el pipeline
 

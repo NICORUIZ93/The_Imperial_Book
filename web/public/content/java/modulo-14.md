@@ -16,34 +16,6 @@ Un `WorkerControl` con una bandera `stopped` sin `volatile` puede nunca deteners
 #### Paso 3 · Teoría, modelo mental y analogía
 El Java Memory Model no garantiza que una escritura en un hilo sea visible para otro hilo sin una relación happens-before explícita (orden dentro del mismo hilo, un monitor, un `volatile`, o `Thread.join`). La analogía: dos pizarras privadas no se sincronizan solas; `happens-before` es el protocolo de entrega que confirma que la segunda persona recibió la versión más reciente antes de leer.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-visibilidad-volatile
-cd ejemplo-visibilidad-volatile
-mkdir -p src/main/java/academia/concurrencia
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `src/main/java/academia/concurrencia/WorkerControl.java` con el campo `stopped` **sin** `volatile` (`private boolean stopped;`), y un `Main.java` que lance un hilo ejecutando `runLoop()`, espere un segundo con `Thread.sleep(1000)`, llame `stop()` desde el hilo principal, y luego mida cuánto tarda el hilo en detenerse.
-
-#### Paso 5 · Práctica guiada
-Pista: ejecuta el programa sin `volatile` en modo release (`java -server`) repetidas veces para provocar deliberadamente que el hilo nunca vea la actualización de `stopped` y quede en bucle infinito; interrumpe con Ctrl+C y observa el síntoma. Resultado esperado: agregar `volatile` a `stopped` hace que el hilo se detenga de forma confiable y rápida.
-
-#### Paso 6 · Práctica independiente
-Reemplaza el `boolean stopped` por un contador `counter++` incrementado desde dos hilos simultáneamente sin sincronización, cuenta cuántas veces el resultado final es menor al esperado, y corrígelo con `AtomicLong` en vez de con `volatile` (que no basta para operaciones read-modify-write).
-
-#### Paso 7 · Cierre y evidencia
-Guarda la versión sin `volatile` (con el bloqueo observado), la versión corregida, y el experimento con `AtomicLong` para el contador concurrente; como siguiente paso mide con JMH en vez de con relojes ingenuos. Errores comunes: marcar todo `volatile` pensando que resuelve invariantes compuestos, y confundir visibilidad con atomicidad. Fuentes oficiales: https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html.
-**¿Por qué es importante?** porque los defectos de visibilidad dependen de optimizaciones, arquitectura y timing; pueden desaparecer al agregar logs o debugger y reaparecer bajo carga.
 **Evidencia de aprendizaje:** entrega el bloqueo observado sin `volatile`, la corrección, y el experimento de atomicidad con `AtomicLong`.
 **Conceptos clave:** Java Memory Model, action, read, write, data race, happens-before, monitor, synchronized, volatile, atomicidad, visibilidad, orden, final, safe publication, inmutabilidad y jcstress.
 
@@ -103,6 +75,35 @@ sequenceDiagram
 El procesador concurrente del Proyecto integrador (Módulo 13) es exactamente donde este tipo de defecto de visibilidad aparecería bajo carga real de producción.
 
 **Cuándo no usarlo:** marcar un campo `volatile` no resuelve invariantes compuestos como `counter++`; para operaciones read-modify-write usa `AtomicLong` o un lock que proteja el invariante completo.
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-visibilidad-volatile
+cd ejemplo-visibilidad-volatile
+mkdir -p src/main/java/academia/concurrencia
+```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+Crea `src/main/java/academia/concurrencia/WorkerControl.java` con el campo `stopped` **sin** `volatile` (`private boolean stopped;`), y un `Main.java` que lance un hilo ejecutando `runLoop()`, espere un segundo con `Thread.sleep(1000)`, llame `stop()` desde el hilo principal, y luego mida cuánto tarda el hilo en detenerse.
+
+#### Paso 5 · Práctica guiada
+Pista: ejecuta el programa sin `volatile` en modo release (`java -server`) repetidas veces para provocar deliberadamente que el hilo nunca vea la actualización de `stopped` y quede en bucle infinito; interrumpe con Ctrl+C y observa el síntoma. Resultado esperado: agregar `volatile` a `stopped` hace que el hilo se detenga de forma confiable y rápida.
+
+#### Paso 6 · Práctica independiente
+Reemplaza el `boolean stopped` por un contador `counter++` incrementado desde dos hilos simultáneamente sin sincronización, cuenta cuántas veces el resultado final es menor al esperado, y corrígelo con `AtomicLong` en vez de con `volatile` (que no basta para operaciones read-modify-write).
+
+#### Paso 7 · Cierre y evidencia
+Guarda la versión sin `volatile` (con el bloqueo observado), la versión corregida, y el experimento con `AtomicLong` para el contador concurrente; como siguiente paso mide con JMH en vez de con relojes ingenuos. Errores comunes: marcar todo `volatile` pensando que resuelve invariantes compuestos, y confundir visibilidad con atomicidad. Fuentes oficiales: https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html.
+**¿Por qué es importante?** porque los defectos de visibilidad dependen de optimizaciones, arquitectura y timing; pueden desaparecer al agregar logs o debugger y reaparecer bajo carga.
 
 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
 
@@ -197,33 +198,6 @@ Un sistema legacy recibe un `ImportBatch` serializado con `ObjectInputStream` de
 #### Paso 3 · Teoría, modelo mental y analogía
 Deserializar no es leer una carta; es aceptar un kit que puede ensamblar máquinas y ejecutar instrucciones durante el desembalaje. Un `ObjectInputFilter` restringe qué clases, qué profundidad y qué tamaño se permiten antes de que el objeto termine de construirse, en vez de validar después (cuando ya podría ser tarde).
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-objectinputfilter
-cd ejemplo-objectinputfilter
-mkdir -p src/main/java/academia/dto
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `academia.dto.ImportBatch implements Serializable` con un campo `List<String> items`. Escribe un `Main.java` que serialice una instancia con `ObjectOutputStream` a un archivo, y luego la deserialice con `ObjectInputStream` **sin** ningún filtro configurado.
-
-#### Paso 5 · Práctica guiada
-Pista: modifica deliberadamente los bytes serializados (o construye un flujo con una clase distinta a `ImportBatch`) para provocar que la deserialización sin filtro acepte un tipo inesperado; observa que `ObjectInputStream` no rechaza nada por sí solo. Resultado esperado: agregar `input.setObjectInputFilter(...)` con una allowlist (`academia.dto.*;java.base/java.lang.*;!*`) hace que el flujo con tipo inesperado sea rechazado con `InvalidClassException`.
-#### Paso 6 · Práctica independiente
-Agrega límites de `maxdepth`, `maxrefs` y `maxbytes` al filtro, y prueba deliberadamente con un `ImportBatch` que contenga una lista anormalmente grande para confirmar que el filtro la rechaza antes de terminar de construir el objeto.
-
-#### Paso 7 · Cierre y evidencia
-Guarda la deserialización sin filtro (aceptando cualquier tipo), la versión con `ObjectInputFilter` y allowlist, y la prueba del límite de tamaño rechazado; como siguiente paso empaqueta el runtime mínimo con `jlink`. Errores comunes: activar un filtro global demasiado amplio, y validar invariantes solo después de construir el objeto completo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html.
-**¿Por qué es importante?** porque la frontera convierte bytes controlados externamente en objetos con métodos, memoria y acceso al proceso.
 **Evidencia de aprendizaje:** entrega la deserialización sin filtro, la corrección con allowlist y la prueba de límite de tamaño rechazado.
 **Conceptos clave:** frontera de confianza, allowlist, serialización nativa, ObjectInputStream, gadget, ObjectInputFilter, profundidad, referencias, bytes, JSON schema, polymorphic typing, secreto, criptografía, dependencia, SBOM y firma.
 
@@ -269,6 +243,34 @@ flowchart LR
 El endurecimiento de la deserialización de este tema es uno de los pasos explícitos del proyecto de endurecimiento medible descrito al final de este módulo, sobre el procesador concurrente del Proyecto integrador.
 
 **Cuándo no usarlo:** si el formato de entrada siempre es JSON con un DTO cerrado (sin serialización nativa de Java involucrada), un `ObjectInputFilter` no aplica; valida el JSON con su propio esquema en su lugar.
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-objectinputfilter
+cd ejemplo-objectinputfilter
+mkdir -p src/main/java/academia/dto
+```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+Crea `academia.dto.ImportBatch implements Serializable` con un campo `List<String> items`. Escribe un `Main.java` que serialice una instancia con `ObjectOutputStream` a un archivo, y luego la deserialice con `ObjectInputStream` **sin** ningún filtro configurado.
+
+#### Paso 5 · Práctica guiada
+Pista: modifica deliberadamente los bytes serializados (o construye un flujo con una clase distinta a `ImportBatch`) para provocar que la deserialización sin filtro acepte un tipo inesperado; observa que `ObjectInputStream` no rechaza nada por sí solo. Resultado esperado: agregar `input.setObjectInputFilter(...)` con una allowlist (`academia.dto.*;java.base/java.lang.*;!*`) hace que el flujo con tipo inesperado sea rechazado con `InvalidClassException`.
+#### Paso 6 · Práctica independiente
+Agrega límites de `maxdepth`, `maxrefs` y `maxbytes` al filtro, y prueba deliberadamente con un `ImportBatch` que contenga una lista anormalmente grande para confirmar que el filtro la rechaza antes de terminar de construir el objeto.
+
+#### Paso 7 · Cierre y evidencia
+Guarda la deserialización sin filtro (aceptando cualquier tipo), la versión con `ObjectInputFilter` y allowlist, y la prueba del límite de tamaño rechazado; como siguiente paso empaqueta el runtime mínimo con `jlink`. Errores comunes: activar un filtro global demasiado amplio, y validar invariantes solo después de construir el objeto completo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html.
+**¿Por qué es importante?** porque la frontera convierte bytes controlados externamente en objetos con métodos, memoria y acceso al proceso.
 
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
 

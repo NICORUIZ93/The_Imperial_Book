@@ -14,6 +14,29 @@ Una aplicación de entregas que mezcla directamente lógica de negocio con detal
 #### Paso 3 · Teoría, modelo mental y analogía
 Separar el código en `dominio/` (conceptos centrales sin dependencias externas), `servicio/` (lógica de negocio) e `infraestructura/` (persistencia, clientes externos) da a cada capa una razón de cambio distinta y bien delimitada. La analogía: una empresa organizada en departamentos con responsabilidades claramente delimitadas, donde un cambio en el proveedor logístico externo no debería requerir que el departamento de diseño de producto cambie nada de su propio trabajo.
 
+**Evidencia de aprendizaje:** entrega la estructura de `dominio/`, `servicio/` e `infraestructura/`, y la confirmación de que el dominio no depende de ningún detalle de infraestructura concreta.
+**Conceptos clave:** separación dominio/servicio/infraestructura, cohesión por responsabilidad.
+
+El proyecto integrador organiza el código en capas claramente separadas: `dominio/` contiene los modelos de datos inmutables usando records y sealed interfaces (Módulo 7), representando los conceptos centrales del negocio sin ninguna dependencia hacia detalles de infraestructura; `servicio/` contiene la lógica de negocio propiamente dicha, incluyendo el procesamiento concurrente de tareas usando virtual threads (Módulo 5) para operaciones con I/O; `infraestructura/` contiene los detalles concretos de persistencia y clientes externos, la capa más propensa a cambiar según decisiones técnicas específicas (qué base de datos usar, qué API externa consumir) sin que ese cambio deba afectar la lógica de negocio central en `servicio/`.
+
+Esta separación por capas refleja el mismo principio de cohesión y responsabilidad única estudiado en el Módulo 12: cada capa tiene una razón de cambio distinta y bien delimitada (el modelo de dominio cambia cuando cambian los conceptos del negocio en sí; el servicio cambia cuando cambian las reglas de negocio; la infraestructura cambia cuando cambian las decisiones técnicas de implementación), y estructurar el código según esas fronteras facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin tener que rastrear ese impacto a través de código mezclado sin una separación clara de responsabilidades.
+
+**Analogía:** la arquitectura por capas es como una empresa organizada en departamentos con responsabilidades claramente delimitadas: diseño de producto (dominio), operaciones (servicio) y logística externa (infraestructura), donde un cambio en el proveedor logístico externo no debería requerir que el departamento de diseño de producto cambie nada de su propio trabajo.
+
+**¿Por qué es importante?** Separar el código en capas con responsabilidades bien delimitadas (dominio, servicio, infraestructura) facilita razonar sobre el impacto de un cambio específico, aislando las razones de cambio de cada capa.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    MAIN["Bootstrap"] --> APP["application: casos de uso"]
+    APP --> DOMAIN["domain: reglas y valores"]
+    INFRA["infrastructure: DB y mapas"] --> APP
+    MAIN --> INFRA
+```
+
+**Cuándo no usarlo:** para un script de un solo uso o un prototipo descartable sin ninguna regla de negocio real que proteger, separar en tres módulos de build distintos es ceremonia sin beneficio; la diferencia frente a mezclar todo en un único paquete solo se justifica cuando el dominio tiene reglas propias que de verdad conviene aislar de la infraestructura.
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -38,28 +61,6 @@ Agregá una segunda regla de negocio a `DeliveryService` (por ejemplo, exigir un
 #### Paso 7 · Cierre y evidencia
 Guarda el árbol de capas, el `module-info` o estructura de paquetes, y una prueba que confirme que el dominio compila sin ninguna dependencia de infraestructura; como siguiente paso integra concurrencia y testing en esa misma estructura. Errores comunes: filtrar lógica de negocio dentro de un controlador o adaptador, acceder a infraestructura directamente desde el dominio, y mezclar las tres capas en un único paquete plano "por simplicidad". Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
 **¿Por qué es importante?** Porque separar el código en capas con razones de cambio distintas y bien delimitadas facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin rastrear ese impacto a través de código mezclado.
-**Evidencia de aprendizaje:** entrega la estructura de `dominio/`, `servicio/` e `infraestructura/`, y la confirmación de que el dominio no depende de ningún detalle de infraestructura concreta.
-**Conceptos clave:** separación dominio/servicio/infraestructura, cohesión por responsabilidad.
-
-El proyecto integrador organiza el código en capas claramente separadas: `dominio/` contiene los modelos de datos inmutables usando records y sealed interfaces (Módulo 7), representando los conceptos centrales del negocio sin ninguna dependencia hacia detalles de infraestructura; `servicio/` contiene la lógica de negocio propiamente dicha, incluyendo el procesamiento concurrente de tareas usando virtual threads (Módulo 5) para operaciones con I/O; `infraestructura/` contiene los detalles concretos de persistencia y clientes externos, la capa más propensa a cambiar según decisiones técnicas específicas (qué base de datos usar, qué API externa consumir) sin que ese cambio deba afectar la lógica de negocio central en `servicio/`.
-
-Esta separación por capas refleja el mismo principio de cohesión y responsabilidad única estudiado en el Módulo 12: cada capa tiene una razón de cambio distinta y bien delimitada (el modelo de dominio cambia cuando cambian los conceptos del negocio en sí; el servicio cambia cuando cambian las reglas de negocio; la infraestructura cambia cuando cambian las decisiones técnicas de implementación), y estructurar el código según esas fronteras facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin tener que rastrear ese impacto a través de código mezclado sin una separación clara de responsabilidades.
-
-**Analogía:** la arquitectura por capas es como una empresa organizada en departamentos con responsabilidades claramente delimitadas: diseño de producto (dominio), operaciones (servicio) y logística externa (infraestructura), donde un cambio en el proveedor logístico externo no debería requerir que el departamento de diseño de producto cambie nada de su propio trabajo.
-
-**¿Por qué es importante?** Separar el código en capas con responsabilidades bien delimitadas (dominio, servicio, infraestructura) facilita razonar sobre el impacto de un cambio específico, aislando las razones de cambio de cada capa.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    MAIN["Bootstrap"] --> APP["application: casos de uso"]
-    APP --> DOMAIN["domain: reglas y valores"]
-    INFRA["infrastructure: DB y mapas"] --> APP
-    MAIN --> INFRA
-```
-
-**Cuándo no usarlo:** para un script de un solo uso o un prototipo descartable sin ninguna regla de negocio real que proteger, separar en tres módulos de build distintos es ceremonia sin beneficio; la diferencia frente a mezclar todo en un único paquete solo se justifica cuando el dominio tiene reglas propias que de verdad conviene aislar de la infraestructura.
 
 ### Tema 2: Integrando concurrencia, modelado y testing
 
@@ -72,29 +73,6 @@ Procesar cientos de tareas de entrega concurrentemente, donde algunas fallan y o
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada tarea se envía a un `Executors.newVirtualThreadPerTaskExecutor()` (Módulo 5), y su resultado se modela como `sealed interface ResultadoProcesamiento permits Exito, Error {}` (Módulo 7), con el compilador garantizando que el código que procesa esos resultados maneje explícitamente ambos casos. La analogía: una línea de producción con múltiples estaciones simultáneas donde cada producto terminado se etiqueta explícitamente como aprobado o rechazado, nunca como "desconocido".
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-procesamiento-concurrente
-cd ejemplo-procesamiento-concurrente
-mkdir -p src/main/java/academia/procesamiento
-```
-Crea `src/main/java/academia/procesamiento/ProcesadorLote.java` con `sealed interface ResultadoProcesamiento permits Exito, Error {}`, sus dos `record` (`Exito(String datos)`, `Error(String motivo)`), y un método que procese una lista de 10 tareas usando `Executors.newVirtualThreadPerTaskExecutor()`, donde 2 de las 10 tareas simuladas fallan deliberadamente (lanzan una excepción capturada y convertida en `Error`). Ejecuta:
-```bash
-javac -d out src/main/java/academia/procesamiento/ProcesadorLote.java
-java -cp out academia.procesamiento.ProcesadorLote
-```
-**Resultado esperado:** el programa imprime 8 resultados `Exito` y 2 `Error`, y el procesamiento completo termina sin que ninguna excepción se propague fuera del `main` (las 2 tareas fallidas no interrumpieron a las otras 8).
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá el manejo de errores por tarea para que, en vez de capturar la excepción y convertirla en `Error`, la deje propagarse sin capturar. Ese es el fallo deliberado: la primera tarea que falla interrumpe también la recolección de resultados de las tareas restantes que sí habían tenido éxito, perdiendo esos resultados válidos por el fallo de una sola tarea no relacionada. Resultado esperado: restaurar el `try/catch` que convierte la excepción en `Error` corrige el comportamiento.
-
-#### Paso 6 · Práctica independiente
-Agregá una prueba con Mockito que mockee el colaborador que decide si una tarea específica falla, y verificá con JUnit 5 que el lote completo de 10 resultados (8 `Exito` + 2 `Error`) se recolecta aunque las tareas fallidas no sean las mismas en cada corrida.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el procesamiento con virtual threads, el `ResultadoProcesamiento` sellado con sus casos `Exito`/`Error`, y las pruebas con Mockito aislando la lógica de negocio; como siguiente paso configura el build reproducible que cierra el track. Errores comunes: lanzar virtual threads sin ningún límite de concurrencia real hacia un recurso externo, usar excepciones para un fallo individual esperado en vez de modelarlo como resultado explícito, y mockear la clase bajo prueba en vez de sus dependencias. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
-**¿Por qué es importante?** Porque modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar éxito y error explícitamente, con el compilador garantizando que ningún caso quede sin cubrir, sin recurrir a excepciones para un fallo individual esperado.
 **Evidencia de aprendizaje:** entrega el procesamiento concurrente con `ResultadoProcesamiento`, y las pruebas que verifican la lógica de negocio con mocks, sin infraestructura real.
 **Conceptos clave:** procesamiento paralelo con resultado modelado como sealed interface, tests aislados con mocks.
 
@@ -121,6 +99,30 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
         .toList();
 }
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-procesamiento-concurrente
+cd ejemplo-procesamiento-concurrente
+mkdir -p src/main/java/academia/procesamiento
+```
+Crea `src/main/java/academia/procesamiento/ProcesadorLote.java` con `sealed interface ResultadoProcesamiento permits Exito, Error {}`, sus dos `record` (`Exito(String datos)`, `Error(String motivo)`), y un método que procese una lista de 10 tareas usando `Executors.newVirtualThreadPerTaskExecutor()`, donde 2 de las 10 tareas simuladas fallan deliberadamente (lanzan una excepción capturada y convertida en `Error`). Ejecuta:
+```bash
+javac -d out src/main/java/academia/procesamiento/ProcesadorLote.java
+java -cp out academia.procesamiento.ProcesadorLote
+```
+**Resultado esperado:** el programa imprime 8 resultados `Exito` y 2 `Error`, y el procesamiento completo termina sin que ninguna excepción se propague fuera del `main` (las 2 tareas fallidas no interrumpieron a las otras 8).
+
+#### Paso 5 · Práctica guiada
+Pista: reemplazá el manejo de errores por tarea para que, en vez de capturar la excepción y convertirla en `Error`, la deje propagarse sin capturar. Ese es el fallo deliberado: la primera tarea que falla interrumpe también la recolección de resultados de las tareas restantes que sí habían tenido éxito, perdiendo esos resultados válidos por el fallo de una sola tarea no relacionada. Resultado esperado: restaurar el `try/catch` que convierte la excepción en `Error` corrige el comportamiento.
+
+#### Paso 6 · Práctica independiente
+Agregá una prueba con Mockito que mockee el colaborador que decide si una tarea específica falla, y verificá con JUnit 5 que el lote completo de 10 resultados (8 `Exito` + 2 `Error`) se recolecta aunque las tareas fallidas no sean las mismas en cada corrida.
+
+#### Paso 7 · Cierre y evidencia
+Guarda el procesamiento con virtual threads, el `ResultadoProcesamiento` sellado con sus casos `Exito`/`Error`, y las pruebas con Mockito aislando la lógica de negocio; como siguiente paso configura el build reproducible que cierra el track. Errores comunes: lanzar virtual threads sin ningún límite de concurrencia real hacia un recurso externo, usar excepciones para un fallo individual esperado en vez de modelarlo como resultado explícito, y mockear la clase bajo prueba en vez de sus dependencias. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
+**¿Por qué es importante?** Porque modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar éxito y error explícitamente, con el compilador garantizando que ningún caso quede sin cubrir, sin recurrir a excepciones para un fallo individual esperado.
 
 ### Tema 3: Build reproducible y cierre del track
 

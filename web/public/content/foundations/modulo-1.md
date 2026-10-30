@@ -22,51 +22,6 @@ CONTAR_PENDIENTES(tareas):
 ```
 Este algoritmo no dice nada todavía sobre Python: funciona igual si `tareas` tiene 0, 1 o 1000 elementos, y eso es justo lo que hay que comprobar con casos de prueba antes de confiar en la traducción a código. La analogía: diseñar un algoritmo sin pensar en sus bordes es como planear una ruta de reparto sin preguntar qué pasa si la lista de paradas viene vacía: el camión sale de todos modos, pero nadie sabe qué hace.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/pendientes.py`:
-```bash
-mkdir ejemplo-algoritmo
-cd ejemplo-algoritmo
-mkdir src
-```
-```python
-def contar_pendientes(tareas):
-    contador = 0
-    for tarea in tareas:
-        if tarea["estado"] == "pendiente":
-            contador += 1
-    return contador
-
-tareas = [
-    {"descripcion": "comprar pan", "estado": "pendiente"},
-    {"descripcion": "pagar luz", "estado": "hecho"},
-    {"descripcion": "llamar al dentista", "estado": "pendiente"},
-]
-print(contar_pendientes(tareas))
-print(contar_pendientes([]))
-```
-```bash
-python src/pendientes.py
-```
-**Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en cero sin necesitar ningún caso especial. **Fallo deliberado:** agregá esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar en la lista vacía:
-```python
-def porcentaje_pendientes(tareas):
-    return contar_pendientes(tareas) / len(tareas) * 100
-
-print(porcentaje_pendientes([]))
-```
-Python lanza `ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque divide por `len(tareas)` sin comprobar que sea distinto de cero. Corregilo agregando `if not tareas: return 0.0` antes de dividir.
-
-#### Paso 5 · Práctica guiada
-Pista: antes de escribir cualquier función sobre una lista de tareas, preguntate primero qué debería devolver con cero tareas; si no podés responder esa pregunta en una frase, todavía no terminaste de diseñar el algoritmo, mucho menos el código.
-
-#### Paso 6 · Práctica independiente
-Escribí la tabla de casos de prueba para `contar_pendientes` ANTES de tocar el código: una lista con tareas mixtas (caso normal), una lista vacía (caso límite), una lista donde todas están pendientes, y una lista con un `estado` inesperado como `"archivada"` (caso inválido). Para cada fila anotá la entrada y la salida esperada, y después confirmá que el código las cumple todas.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el algoritmo en pseudocódigo del Paso 3, la tabla de casos del Paso 6, el código de `contar_pendientes` y `porcentaje_pendientes`, y el `ZeroDivisionError` reproducido y corregido del Paso 4; explicá por qué una función puede ser correcta en el caso que probaste primero y romperse en un borde que nunca ejecutaste. Como siguiente paso, en el Tema 2 vas a ver qué pasa cuando esos mismos datos —por ejemplo, una prioridad escrita por el usuario— llegan con el tipo equivocado. Errores comunes: probar solo el caso feliz; dividir o indexar sin comprobar que la colección no esté vacía; escribir código antes de tener la tabla de casos. Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/library/unittest.html.
-**¿Por qué es importante?** Porque el conteo de pendientes funcionó a la primera con datos de ejemplo, y ese falso éxito es exactamente lo que oculta el bug hasta que un usuario real se queda sin tareas.
-
 **Cuándo NO usar:** No programes sin definir requisitos. No intentes casos límite sin pseudocódigo primero.
 
 **Evidencia de aprendizaje:** entregá el pseudocódigo de `contar_pendientes`, la tabla de casos con el borde de la lista vacía, el código de ambas funciones y el `ZeroDivisionError` diagnosticado y corregido.
@@ -149,6 +104,51 @@ Función validadora: redondea_a_centavos(resultado) _________
 
 </details>
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/pendientes.py`:
+```bash
+mkdir ejemplo-algoritmo
+cd ejemplo-algoritmo
+mkdir src
+```
+```python
+def contar_pendientes(tareas):
+    contador = 0
+    for tarea in tareas:
+        if tarea["estado"] == "pendiente":
+            contador += 1
+    return contador
+
+tareas = [
+    {"descripcion": "comprar pan", "estado": "pendiente"},
+    {"descripcion": "pagar luz", "estado": "hecho"},
+    {"descripcion": "llamar al dentista", "estado": "pendiente"},
+]
+print(contar_pendientes(tareas))
+print(contar_pendientes([]))
+```
+```bash
+python src/pendientes.py
+```
+**Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en cero sin necesitar ningún caso especial. **Fallo deliberado:** agregá esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar en la lista vacía:
+```python
+def porcentaje_pendientes(tareas):
+    return contar_pendientes(tareas) / len(tareas) * 100
+
+print(porcentaje_pendientes([]))
+```
+Python lanza `ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque divide por `len(tareas)` sin comprobar que sea distinto de cero. Corregilo agregando `if not tareas: return 0.0` antes de dividir.
+
+#### Paso 5 · Práctica guiada
+Pista: antes de escribir cualquier función sobre una lista de tareas, preguntate primero qué debería devolver con cero tareas; si no podés responder esa pregunta en una frase, todavía no terminaste de diseñar el algoritmo, mucho menos el código.
+
+#### Paso 6 · Práctica independiente
+Escribí la tabla de casos de prueba para `contar_pendientes` ANTES de tocar el código: una lista con tareas mixtas (caso normal), una lista vacía (caso límite), una lista donde todas están pendientes, y una lista con un `estado` inesperado como `"archivada"` (caso inválido). Para cada fila anotá la entrada y la salida esperada, y después confirmá que el código las cumple todas.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el algoritmo en pseudocódigo del Paso 3, la tabla de casos del Paso 6, el código de `contar_pendientes` y `porcentaje_pendientes`, y el `ZeroDivisionError` reproducido y corregido del Paso 4; explicá por qué una función puede ser correcta en el caso que probaste primero y romperse en un borde que nunca ejecutaste. Como siguiente paso, en el Tema 2 vas a ver qué pasa cuando esos mismos datos —por ejemplo, una prioridad escrita por el usuario— llegan con el tipo equivocado. Errores comunes: probar solo el caso feliz; dividir o indexar sin comprobar que la colección no esté vacía; escribir código antes de tener la tabla de casos. Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/library/unittest.html.
+**¿Por qué es importante?** Porque el conteo de pendientes funcionó a la primera con datos de ejemplo, y ese falso éxito es exactamente lo que oculta el bug hasta que un usuario real se queda sin tareas.
+
 ### Tema 2: Variables, tipos, expresiones y cambios de estado
 
 #### Paso 1 · Objetivo y preparación
@@ -159,42 +159,6 @@ El gestor de tareas CLI va a leer la prioridad de una tarea desde la terminal co
 
 #### Paso 3 · Teoría, modelo mental y analogía
 En Python cada valor tiene un tipo (`int`, `float`, `str`, `bool`, `list`...) y ese tipo decide qué operaciones son válidas: `3 + 2` suma, pero `"3" + "2"` concatena y da `"32"`, no `5`. Una variable es apenas una etiqueta que apunta a un valor; reasignarla (`prioridad = 5`) no modifica el valor anterior, solo hace que la etiqueta apunte a otro. Pero si DOS variables apuntan al mismo objeto mutable —una lista, por ejemplo— modificar esa lista a través de una de las dos etiquetas se ve reflejado en la otra, porque ambas señalan el mismo objeto en memoria, no dos copias independientes. La analogía: un valor es una casa y una variable es una dirección postal que apunta a ella; reasignar la variable es cambiar a qué casa apunta la dirección, pero si dos direcciones apuntan a la misma casa, pintarla desde una de ellas la deja pintada también para la otra.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/prioridad.py`:
-```bash
-mkdir ejemplo-variables
-cd ejemplo-variables
-mkdir src
-```
-```python
-def tarea_mas_urgente(prioridad_a, prioridad_b):
-    return "a" if prioridad_a > prioridad_b else "b"
-
-prioridad_a = int("9")
-prioridad_b = int("10")
-print(tarea_mas_urgente(prioridad_a, prioridad_b))
-```
-```bash
-python src/prioridad.py
-```
-**Resultado esperado:** `b`; la tarea con prioridad 10 es la más urgente, como corresponde numéricamente. **Fallo deliberado:** quitá los dos `int(...)` y dejá las prioridades como las entrega `input()`, es decir como texto:
-```python
-prioridad_a = "9"
-prioridad_b = "10"
-print(tarea_mas_urgente(prioridad_a, prioridad_b))
-```
-Esto imprime `a`. Python no lanza ningún error, porque comparar dos strings con `>` es válido: compara carácter por carácter, y `"9" > "1"` es cierto, así que `"9" > "10"` también lo es. El resultado es numéricamente incorrecto —10 es mayor que 9— pero no hay ningún traceback que lo delate. Corregilo convirtiendo ambas prioridades con `int(...)` antes de compararlas.
-
-#### Paso 5 · Práctica guiada
-Pista: cuando algo se ejecuta sin ningún error pero el resultado está mal, sospechá primero de los tipos; imprimí `type(prioridad_a)` y `type(prioridad_b)` antes de comparar, no asumas que porque "se ven como números" Python los está tratando como números.
-
-#### Paso 6 · Práctica independiente
-Agregá una tercera prioridad `"100"` y predecí, ANTES de ejecutar, si `"100" > "9"` da `True` o `False` tratándolas como texto; después comprobalo y escribí en una línea por qué la comparación de textos puede contradecir la comparación numérica incluso con más de un dígito de diferencia.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la versión correcta con `int(...)` del Paso 4, la comparación de strings que da `a` en vez de `b`, y la predicción escrita del Paso 6 sobre `"100" > "9"`; explicá por qué un programa sin errores ni advertencias puede estar devolviendo una respuesta incorrecta. Como siguiente paso, en el Tema 3 vas a recorrer todas las tareas con un bucle, donde este mismo descuido se puede repetir en cada vuelta sin que lo notes. Errores comunes: comparar o calcular con un valor que todavía es texto porque vino de `input()`; asumir que "no hay error" significa "el resultado es correcto". Fuentes oficiales: https://docs.python.org/es/3/library/stdtypes.html y https://docs.python.org/es/3/reference/expressions.html.
-**¿Por qué es importante?** Porque `"9" > "10"` se ejecuta sin ninguna queja de Python: el intérprete no sabe que vos querías comparar números, y un programa que falla en silencio es más peligroso que uno que explota con un traceback.
 
 **Cuándo NO usar:** No uses variables sin saber su tipo. No cambies tipos sin conversión explícita.
 
@@ -278,6 +242,42 @@ Ruta segura: float() o Decimal() antes de int()? _________
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Representa título, prioridad y estado de una tarea con tipos coherentes. Traza sus valores antes y después de completarla y prueba que un texto vacío no se interpreta como una tarea válida.
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/prioridad.py`:
+```bash
+mkdir ejemplo-variables
+cd ejemplo-variables
+mkdir src
+```
+```python
+def tarea_mas_urgente(prioridad_a, prioridad_b):
+    return "a" if prioridad_a > prioridad_b else "b"
+
+prioridad_a = int("9")
+prioridad_b = int("10")
+print(tarea_mas_urgente(prioridad_a, prioridad_b))
+```
+```bash
+python src/prioridad.py
+```
+**Resultado esperado:** `b`; la tarea con prioridad 10 es la más urgente, como corresponde numéricamente. **Fallo deliberado:** quitá los dos `int(...)` y dejá las prioridades como las entrega `input()`, es decir como texto:
+```python
+prioridad_a = "9"
+prioridad_b = "10"
+print(tarea_mas_urgente(prioridad_a, prioridad_b))
+```
+Esto imprime `a`. Python no lanza ningún error, porque comparar dos strings con `>` es válido: compara carácter por carácter, y `"9" > "1"` es cierto, así que `"9" > "10"` también lo es. El resultado es numéricamente incorrecto —10 es mayor que 9— pero no hay ningún traceback que lo delate. Corregilo convirtiendo ambas prioridades con `int(...)` antes de compararlas.
+
+#### Paso 5 · Práctica guiada
+Pista: cuando algo se ejecuta sin ningún error pero el resultado está mal, sospechá primero de los tipos; imprimí `type(prioridad_a)` y `type(prioridad_b)` antes de comparar, no asumas que porque "se ven como números" Python los está tratando como números.
+
+#### Paso 6 · Práctica independiente
+Agregá una tercera prioridad `"100"` y predecí, ANTES de ejecutar, si `"100" > "9"` da `True` o `False` tratándolas como texto; después comprobalo y escribí en una línea por qué la comparación de textos puede contradecir la comparación numérica incluso con más de un dígito de diferencia.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la versión correcta con `int(...)` del Paso 4, la comparación de strings que da `a` en vez de `b`, y la predicción escrita del Paso 6 sobre `"100" > "9"`; explicá por qué un programa sin errores ni advertencias puede estar devolviendo una respuesta incorrecta. Como siguiente paso, en el Tema 3 vas a recorrer todas las tareas con un bucle, donde este mismo descuido se puede repetir en cada vuelta sin que lo notes. Errores comunes: comparar o calcular con un valor que todavía es texto porque vino de `input()`; asumir que "no hay error" significa "el resultado es correcto". Fuentes oficiales: https://docs.python.org/es/3/library/stdtypes.html y https://docs.python.org/es/3/reference/expressions.html.
+**¿Por qué es importante?** Porque `"9" > "10"` se ejecuta sin ninguna queja de Python: el intérprete no sabe que vos querías comparar números, y un programa que falla en silencio es más peligroso que uno que explota con un traceback.
+
 ### Tema 3: Decisiones, repeticiones y trazado de ejecución
 
 #### Paso 1 · Objetivo y preparación
@@ -289,39 +289,6 @@ El gestor de tareas CLI necesita recorrer todas las tareas guardadas para marcar
 #### Paso 3 · Teoría, modelo mental y analogía
 Una condición (`if`) elige un camino según si una expresión es `True` o `False`; un bucle (`for`, `while`) repite un bloque de instrucciones una cantidad de veces que puede depender de una lista, un contador o otra condición. El punto donde más errores se esconden es el límite del bucle: `range(len(tareas))` recorre exactamente los índices válidos, pero `range(len(tareas) - 1)` se queda un índice corto, y `range(len(tareas) + 1)` se pasa uno de más y revienta con `IndexError`. Trazar la ejecución a mano —anotar en una tabla el valor de cada variable después de cada vuelta— es la única forma confiable de detectar un límite mal puesto, porque el código "se ve bien" aunque esté iterando una vuelta de menos. La analogía: repasar un bucle sin trazarlo es como contar personas en una fila mirando de lejos: si te saltás a la última porque "ya viste suficientes", la fila sigue pareciendo completa aunque falte alguien.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/vencidas.py`:
-```bash
-mkdir ejemplo-control-flujo
-cd ejemplo-control-flujo
-mkdir src
-```
-```python
-tareas = [
-    {"descripcion": "comprar pan", "dias_pendiente": 1},
-    {"descripcion": "pagar luz", "dias_pendiente": 5},
-    {"descripcion": "llamar al dentista", "dias_pendiente": 4},
-]
-
-for i in range(len(tareas)):
-    tarea = tareas[i]
-    if tarea["dias_pendiente"] > 3:
-        print(f"VENCIDA: {tarea['descripcion']}")
-```
-```bash
-python src/vencidas.py
-```
-**Resultado esperado:** imprime `VENCIDA: pagar luz` y `VENCIDA: llamar al dentista`: dos tareas vencidas sobre tres. **Fallo deliberado:** cambiá `range(len(tareas))` por `range(len(tareas) - 1)`. Ahora solo imprime `VENCIDA: pagar luz`; "llamar al dentista", que es el último elemento (índice 2), nunca se revisa, porque con 3 tareas `range(len(tareas) - 1)` genera `0, 1` y se detiene antes de llegar a `2`. No hay ningún error: la tarea vencida simplemente queda sin alertar. Corregilo devolviendo el límite a `range(len(tareas))`.
-
-#### Paso 5 · Práctica guiada
-Pista: antes de ejecutar, armá una tabla con columnas `i`, `tarea` y `¿se revisó?` y completala a mano siguiendo `range(len(tareas) - 1)` paso por paso; vas a ver en la tabla, antes de correr el código, que el índice 2 nunca aparece.
-
-#### Paso 6 · Práctica independiente
-Reescribí el bucle como un `while` con contador manual (`i = 0`, `i += 1` dentro del bucle) que logre el mismo resultado correcto que el `for` del Paso 4, y después rompelo cambiando la condición de corte de `i < len(tareas)` a `i <= len(tareas)`; tracealo a mano y explicá en una línea qué error concreto produce esta vez.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el recorrido correcto del Paso 4, la versión con `range(len(tareas) - 1)` que se saltea la última tarea vencida, y la versión `while` con `i <= len(tareas)` del Paso 6 junto con el error que produce; explicá por qué un bucle con el límite mal puesto no avisa nada: simplemente procesa de menos o se pasa un paso más allá del final. Como siguiente paso, en el Tema 4 vas a dividir este mismo recorrido en funciones más chicas para que cada una se pueda probar por separado. Errores comunes: calcular el límite de un bucle sumando o restando uno sin verificarlo contra una tabla trazada a mano; confundir "no hay error" con "recorrió todo". Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/library/stdtypes.html.
-**¿Por qué es importante?** Porque `range(len(tareas) - 1)` no lanza ningún error ni advertencia: el programa corre, imprime algo razonable, y la única pista de que algo falta es contar a mano cuántas tareas vencidas había en realidad.
 **Evidencia de aprendizaje:** entregá el recorrido correcto, la versión con el índice de más que se saltea la última tarea, la versión `while` con su error de corte, y la tabla trazada a mano.
 **Conceptos clave:** booleano, comparación, condición, rama, bucle, iteración, acumulador e invariante.
 
@@ -414,6 +381,40 @@ for i in range(0): entra _________ vez(ces)
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Recorre tareas y selecciona las pendientes de prioridad alta. Construye una tabla de casos con lista vacía, ninguna coincidencia y varias coincidencias, prediciendo el resultado antes de ejecutar.
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/vencidas.py`:
+```bash
+mkdir ejemplo-control-flujo
+cd ejemplo-control-flujo
+mkdir src
+```
+```python
+tareas = [
+    {"descripcion": "comprar pan", "dias_pendiente": 1},
+    {"descripcion": "pagar luz", "dias_pendiente": 5},
+    {"descripcion": "llamar al dentista", "dias_pendiente": 4},
+]
+
+for i in range(len(tareas)):
+    tarea = tareas[i]
+    if tarea["dias_pendiente"] > 3:
+        print(f"VENCIDA: {tarea['descripcion']}")
+```
+```bash
+python src/vencidas.py
+```
+**Resultado esperado:** imprime `VENCIDA: pagar luz` y `VENCIDA: llamar al dentista`: dos tareas vencidas sobre tres. **Fallo deliberado:** cambiá `range(len(tareas))` por `range(len(tareas) - 1)`. Ahora solo imprime `VENCIDA: pagar luz`; "llamar al dentista", que es el último elemento (índice 2), nunca se revisa, porque con 3 tareas `range(len(tareas) - 1)` genera `0, 1` y se detiene antes de llegar a `2`. No hay ningún error: la tarea vencida simplemente queda sin alertar. Corregilo devolviendo el límite a `range(len(tareas))`.
+
+#### Paso 5 · Práctica guiada
+Pista: antes de ejecutar, armá una tabla con columnas `i`, `tarea` y `¿se revisó?` y completala a mano siguiendo `range(len(tareas) - 1)` paso por paso; vas a ver en la tabla, antes de correr el código, que el índice 2 nunca aparece.
+
+#### Paso 6 · Práctica independiente
+Reescribí el bucle como un `while` con contador manual (`i = 0`, `i += 1` dentro del bucle) que logre el mismo resultado correcto que el `for` del Paso 4, y después rompelo cambiando la condición de corte de `i < len(tareas)` a `i <= len(tareas)`; tracealo a mano y explicá en una línea qué error concreto produce esta vez.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el recorrido correcto del Paso 4, la versión con `range(len(tareas) - 1)` que se saltea la última tarea vencida, y la versión `while` con `i <= len(tareas)` del Paso 6 junto con el error que produce; explicá por qué un bucle con el límite mal puesto no avisa nada: simplemente procesa de menos o se pasa un paso más allá del final. Como siguiente paso, en el Tema 4 vas a dividir este mismo recorrido en funciones más chicas para que cada una se pueda probar por separado. Errores comunes: calcular el límite de un bucle sumando o restando uno sin verificarlo contra una tabla trazada a mano; confundir "no hay error" con "recorrió todo". Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/library/stdtypes.html.
+**¿Por qué es importante?** Porque `range(len(tareas) - 1)` no lanza ningún error ni advertencia: el programa corre, imprime algo razonable, y la única pista de que algo falta es contar a mano cuántas tareas vencidas había en realidad.
+
 ### Tema 4: Funciones y descomposición de problemas
 
 #### Paso 1 · Objetivo y preparación
@@ -425,53 +426,6 @@ El gestor de tareas CLI va a crecer: cargar tareas desde un archivo, filtrarlas,
 #### Paso 3 · Teoría, modelo mental y analogía
 Una función con una sola responsabilidad hace una cosa, la hace bien, y su nombre describe exactamente esa cosa, ni más ni menos. El problema aparece cuando una función hace algo que su nombre NO anuncia: un **efecto secundario** oculto, como modificar una lista que recibió por parámetro, imprimir algo en pantalla, o escribir a un archivo, cuando quien la llama solo esperaba un valor de vuelta. Separar "calcular" de "mostrar" y de "guardar" en funciones distintas no es una regla estética: permite llamar a `contar(tareas)` cien veces en una prueba sin que eso imprima nada ni toque el disco. La analogía: una función con un efecto secundario oculto es como un cajero automático que, además de darte el saldo que pediste, le manda un mensaje a otra persona sin avisarte: técnicamente respondió tu pregunta, pero hizo algo más que vos no pediste ni esperabas.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/descomposicion.py`:
-```bash
-mkdir ejemplo-funciones
-cd ejemplo-funciones
-mkdir src
-```
-```python
-def filtrar_pendientes(tareas):
-    return [tarea for tarea in tareas if tarea["estado"] == "pendiente"]
-
-def contar(tareas):
-    return len(tareas)
-
-tareas = [
-    {"descripcion": "comprar pan", "estado": "pendiente"},
-    {"descripcion": "pagar luz", "estado": "hecho"},
-]
-pendientes = filtrar_pendientes(tareas)
-print(contar(pendientes))
-```
-```bash
-python src/descomposicion.py
-```
-**Resultado esperado:** `1`. Cada función hace una sola cosa —`filtrar_pendientes` filtra, `contar` cuenta— y ninguna imprime ni modifica la lista original: `tareas` sigue teniendo sus 2 elementos después de llamarlas. **Fallo deliberado:** reemplazá `contar` por esta versión que "de paso" también vacía la lista:
-```python
-def contar_pendientes(tareas):
-    print(f"Hay {len(tareas)} pendientes")
-    cantidad = len(tareas)
-    tareas.clear()
-    return cantidad
-
-pendientes = filtrar_pendientes(tareas)
-total = contar_pendientes(pendientes)
-print(pendientes)
-```
-`total` da el valor correcto, pero la última línea imprime `[]`: `contar_pendientes` vació la lista que recibió, aunque su nombre solo prometía contar. Quien la llamó no tenía forma de adivinar, por el nombre, que `pendientes` iba a quedar vacía después. Corregilo quitando el `print` y el `.clear()`, dejándola pura: recibe una lista y devuelve un número, sin tocar nada más.
-
-#### Paso 5 · Práctica guiada
-Pista: para confirmar que una función es pura, llamala dos veces seguidas con el mismo argumento; si `contar_pendientes(pendientes)` cambia lo que devuelve la segunda vez —o la lista misma cambió—, algo además de "contar" está pasando ahí adentro.
-
-#### Paso 6 · Práctica independiente
-Escribí `cargar_tareas()` que devuelva una lista fija en memoria (simulando un archivo), sin filtrar ni contar nada adentro; después encadená `cargar_tareas() → filtrar_pendientes() → contar()` y confirmá que podés probar cada una por separado, pasándole datos armados a mano, sin necesitar las otras dos.
-
-#### Paso 7 · Cierre y evidencia
-Entregá las tres funciones puras (`cargar_tareas`, `filtrar_pendientes`, `contar`) de los Pasos 4 y 6, la versión con el efecto secundario oculto que vacía la lista, y la explicación de por qué el nombre de una función es una promesa que el código debe cumplir sin sorpresas. Con esto cerrás el Módulo 1; como siguiente paso, en el Módulo 2 (Estructuras de datos, algoritmos y complejidad) vas a usar estas mismas funciones chicas sobre listas, diccionarios, pilas y colas más grandes. Errores comunes: una función que calcula y además imprime o guarda; nombrar una función con un verbo que no describe todo lo que hace. Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/reference/compound_stmts.html.
-**¿Por qué es importante?** Porque `contar_pendientes` devolvió el número correcto: el bug no está en el resultado que mirás, sino en el efecto secundario que nadie pidió y que solo se nota revisando la lista después.
 **Evidencia de aprendizaje:** entregá las funciones puras encadenadas (`cargar_tareas`, `filtrar_pendientes`, `contar`), la versión con el efecto secundario que vacía la lista, y la explicación de por qué el nombre de una función debe cumplir lo que promete.
 **Conceptos clave:** función, parámetro, argumento, retorno, alcance, contrato, responsabilidad y composición.
 
@@ -559,6 +513,54 @@ Función más fácil de testear: _________ (¿por qué?)
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Separa validar, almacenar y presentar una tarea en funciones pequeñas. Prueba cada contrato y demuestra que cambiar la presentación no modifica el conteo de pendientes.
 
 **Límites y decisión de uso:** Una función demasiado fragmentada puede ocultar el flujo tanto como una función enorme. Extrae responsabilidades con un contrato comprensible y evita dependencias globales; no crees envoltorios que solo cambian el nombre de una línea.
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/descomposicion.py`:
+```bash
+mkdir ejemplo-funciones
+cd ejemplo-funciones
+mkdir src
+```
+```python
+def filtrar_pendientes(tareas):
+    return [tarea for tarea in tareas if tarea["estado"] == "pendiente"]
+
+def contar(tareas):
+    return len(tareas)
+
+tareas = [
+    {"descripcion": "comprar pan", "estado": "pendiente"},
+    {"descripcion": "pagar luz", "estado": "hecho"},
+]
+pendientes = filtrar_pendientes(tareas)
+print(contar(pendientes))
+```
+```bash
+python src/descomposicion.py
+```
+**Resultado esperado:** `1`. Cada función hace una sola cosa —`filtrar_pendientes` filtra, `contar` cuenta— y ninguna imprime ni modifica la lista original: `tareas` sigue teniendo sus 2 elementos después de llamarlas. **Fallo deliberado:** reemplazá `contar` por esta versión que "de paso" también vacía la lista:
+```python
+def contar_pendientes(tareas):
+    print(f"Hay {len(tareas)} pendientes")
+    cantidad = len(tareas)
+    tareas.clear()
+    return cantidad
+
+pendientes = filtrar_pendientes(tareas)
+total = contar_pendientes(pendientes)
+print(pendientes)
+```
+`total` da el valor correcto, pero la última línea imprime `[]`: `contar_pendientes` vació la lista que recibió, aunque su nombre solo prometía contar. Quien la llamó no tenía forma de adivinar, por el nombre, que `pendientes` iba a quedar vacía después. Corregilo quitando el `print` y el `.clear()`, dejándola pura: recibe una lista y devuelve un número, sin tocar nada más.
+
+#### Paso 5 · Práctica guiada
+Pista: para confirmar que una función es pura, llamala dos veces seguidas con el mismo argumento; si `contar_pendientes(pendientes)` cambia lo que devuelve la segunda vez —o la lista misma cambió—, algo además de "contar" está pasando ahí adentro.
+
+#### Paso 6 · Práctica independiente
+Escribí `cargar_tareas()` que devuelva una lista fija en memoria (simulando un archivo), sin filtrar ni contar nada adentro; después encadená `cargar_tareas() → filtrar_pendientes() → contar()` y confirmá que podés probar cada una por separado, pasándole datos armados a mano, sin necesitar las otras dos.
+
+#### Paso 7 · Cierre y evidencia
+Entregá las tres funciones puras (`cargar_tareas`, `filtrar_pendientes`, `contar`) de los Pasos 4 y 6, la versión con el efecto secundario oculto que vacía la lista, y la explicación de por qué el nombre de una función es una promesa que el código debe cumplir sin sorpresas. Con esto cerrás el Módulo 1; como siguiente paso, en el Módulo 2 (Estructuras de datos, algoritmos y complejidad) vas a usar estas mismas funciones chicas sobre listas, diccionarios, pilas y colas más grandes. Errores comunes: una función que calcula y además imprime o guarda; nombrar una función con un verbo que no describe todo lo que hace. Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/reference/compound_stmts.html.
+**¿Por qué es importante?** Porque `contar_pendientes` devolvió el número correcto: el bug no está en el resultado que mirás, sino en el efecto secundario que nadie pidió y que solo se nota revisando la lista después.
 
 ### Tema 5: Cómo la computadora representa los datos — binario, texto y decimales
 

@@ -16,39 +16,6 @@ El equipo expuso directamente desde `commonMain` todos los tipos internos del re
 #### Paso 3 · Teoría, modelo mental y analogía
 `expect/actual` funciona bien para primitivas pequeñas (reloj, UUID); para servicios complejos, una interfaz en common con adaptación inyectada hace las dependencias visibles y testeables. Una facade exportada evita que tipos internos se conviertan accidentalmente en contrato Swift. La analogía es un tratado entre países: cuantas más reglas locales intenta imponer, más traductores y excepciones necesita.
 
-#### Paso 4 · Demostración guiada desde cero
-```kotlin
-public interface TaskClient {
-    public suspend fun task(id: TaskId): TaskResult
-    public fun observeTasks(): Flow<List<TaskSummary>>
-}
-
-public sealed interface TaskResult {
-    public data class Found(val task: Task) : TaskResult
-    public data object NotFound : TaskResult
-    public data object Unauthorized : TaskResult
-    public data class Unavailable(val retryable: Boolean) : TaskResult
-}
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: Swift consume únicamente `TaskClient`, `TaskResult` y `TaskSummary` — ningún tipo interno del repositorio, del cliente Ktor ni de SQLDelight aparece en la superficie exportada, de modo que un refactor interno de esas capas no rompe la compilación de la app iOS.
-
-#### Paso 5 · Práctica guiada
-Pista: marcá como `public` (en vez de `internal`) la clase `TareaRepositoryImpl` completa del Módulo 11, para que el equipo iOS "pueda acceder directamente a los detalles si los necesita". Ese es el fallo deliberado: ahora `TareaRepositoryImpl`, `HttpClient` y los tipos de SQLDelight forman parte de la API pública exportada a Swift, y el día que el equipo reemplaza Ktor internamente por otra librería HTTP, ese cambio "interno" rompe la compilación del proyecto iOS.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo únicamente la interfaz `TaskClient` como facade pública, e inspeccionando la API exportada (`apiDump`, Tema 3 de este módulo) para confirmar que ningún tipo de infraestructura aparece en la superficie pública.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
-**¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
 **Evidencia de aprendizaje:** entrega facade mínima, superficie filtrada con tipos internos expuestos detectada, y corrección con internal verificada en el apiDump.
 **Conceptos clave:** shared kernel, platform boundary, expect/actual, interface, DTO, domain model, Swift export, Objective-C interop, suspend, Flow, cancellation, error mapping, facade y semantic ownership.
 
@@ -120,6 +87,40 @@ flowchart LR
 
 **Cuándo no conviene** una facade tan estricta: en un prototipo de un solo desarrollador sin consumidor Swift todavío, exponer directamente los tipos del repositorio ahorra una capa de traducción que nadie va a usar todavía; la frontera mínima paga su costo de diseño recién cuando existe un segundo consumidor real (otra plataforma, otro equipo) del que proteger ese cambio interno — es el mismo trade-off de "YAGNI" frente a diseñar para un futuro consumidor que todavía no existe.
 
+#### Paso 4 · Demostración guiada desde cero
+```kotlin
+public interface TaskClient {
+    public suspend fun task(id: TaskId): TaskResult
+    public fun observeTasks(): Flow<List<TaskSummary>>
+}
+
+public sealed interface TaskResult {
+    public data class Found(val task: Task) : TaskResult
+    public data object NotFound : TaskResult
+    public data object Unauthorized : TaskResult
+    public data class Unavailable(val retryable: Boolean) : TaskResult
+}
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: Swift consume únicamente `TaskClient`, `TaskResult` y `TaskSummary` — ningún tipo interno del repositorio, del cliente Ktor ni de SQLDelight aparece en la superficie exportada, de modo que un refactor interno de esas capas no rompe la compilación de la app iOS.
+
+#### Paso 5 · Práctica guiada
+Pista: marcá como `public` (en vez de `internal`) la clase `TareaRepositoryImpl` completa del Módulo 11, para que el equipo iOS "pueda acceder directamente a los detalles si los necesita". Ese es el fallo deliberado: ahora `TareaRepositoryImpl`, `HttpClient` y los tipos de SQLDelight forman parte de la API pública exportada a Swift, y el día que el equipo reemplaza Ktor internamente por otra librería HTTP, ese cambio "interno" rompe la compilación del proyecto iOS.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo únicamente la interfaz `TaskClient` como facade pública, e inspeccionando la API exportada (`apiDump`, Tema 3 de este módulo) para confirmar que ningún tipo de infraestructura aparece en la superficie pública.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
+**¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
+
 ### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos
 
 #### Paso 1 · Objetivo y preparación
@@ -131,40 +132,6 @@ Después de navegar repetidamente hacia y desde la pantalla de tareas en la app 
 #### Paso 3 · Teoría, modelo mental y analogía
 Swift usa ARC y Kotlin usa un GC trazador; un ciclo puede cruzar runtimes (el modelo Swift retiene el wrapper Kotlin, Kotlin conserva un callback, la closure captura fuertemente el modelo) y cada runtime ve referencias válidas por separado, así que ninguno libera nada. La analogía es dos administradores de edificios que eliminan habitaciones sin ocupantes, pero un pasillo entre ambos edificios puede mantenerlos ocupados sin que ninguno sepa que el ciclo ya no sirve.
 
-#### Paso 4 · Demostración guiada desde cero
-```kotlin
-public class TaskSubscription internal constructor(
-    private val job: Job,
-) : AutoCloseable {
-    override fun close() = job.cancel()
-}
-
-public fun TaskClient.subscribe(
-    scope: CoroutineScope,
-    listener: (List<TaskSummary>) -> Unit,
-): TaskSubscription = TaskSubscription(
-    scope.launch { observeTasks().collect(listener) },
-)
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: llamar a `subscription.close()` desde el `deinit` de Swift cancela explícitamente el `Job` de Kotlin, deteniendo la colección del `Flow` y rompiendo el ciclo de referencias cruzado entre ambos runtimes, en vez de esperar a que algún recolector de basura lo resuelva por su cuenta.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá la llamada a `observation?.cancel()` del `deinit` de `TaskScreenModel` en Swift "porque ARC debería limpiar todo solo al liberar el objeto". Ese es el fallo deliberado: al navegar repetidamente hacia y desde la pantalla 100 veces, cada `TaskSubscription` sigue activa indefinidamente porque la closure del callback sigue capturando fuertemente el modelo Swift, y el heap de la app crece de forma medible y sostenida con cada navegación.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `observation?.cancel()` en el `deinit`, y repetí la navegación 100 veces midiendo el conteo de objetos activos antes y después del cambio (con Instruments o los logs del GC de Kotlin/Native) para confirmar que ya no crece de forma sostenida.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reproducida 100 veces del Paso 5, y la medición de objetos activos del Paso 6; explicá por qué compilar exitosamente para iOS no prueba que el ownership de recursos cruzados entre runtimes sea correcto. Siguiente paso: asegurate de que un artefacto publicado con esta API sea binariamente compatible con versiones futuras. Errores comunes: confiar en que GC/ARC cierran sockets, drivers SQL o handles nativos sin una llamada explícita de cierre, usar `GlobalScope` para suscripciones que deberían vivir y morir con una pantalla, y no medir con una prueba repetida antes de descartar una fuga como "poco probable". Fuentes oficiales: https://kotlinlang.org/docs/native-memory-manager.html y https://developer.apple.com/documentation/swift/automaticreferencecounting.
-**¿Por qué es importante?** Las fugas cross-runtime aparecen tras navegación repetida y son difíciles de atribuir; compilar para iOS no prueba ownership correcto.
 **Evidencia de aprendizaje:** entrega TaskSubscription con cierre explícito, fuga de 100 navegaciones reproducida y medición de objetos activos confirmada.
 **Conceptos clave:** shared heap, tracing GC, root, stable reference, callback, closure, ARC, retain cycle, resource ownership, Closeable, pinning, C pointer, dispatcher, thread confinement y leak test.
 
@@ -222,6 +189,41 @@ flowchart LR
 
 Este mismo cuidado con el ciclo de vida de recursos es el que exige el proyecto integrador RutaFlow al consumir `SyncEngine.drain()`: si la pantalla que inició el `drain()` desaparece sin cancelar su `CoroutineScope`, el intento de sincronización sigue corriendo en segundo plano aunque ya nadie observe el resultado, el mismo tipo de fuga que `TaskSubscription.close()` evita explícitamente aquí.
 
+#### Paso 4 · Demostración guiada desde cero
+```kotlin
+public class TaskSubscription internal constructor(
+    private val job: Job,
+) : AutoCloseable {
+    override fun close() = job.cancel()
+}
+
+public fun TaskClient.subscribe(
+    scope: CoroutineScope,
+    listener: (List<TaskSummary>) -> Unit,
+): TaskSubscription = TaskSubscription(
+    scope.launch { observeTasks().collect(listener) },
+)
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: llamar a `subscription.close()` desde el `deinit` de Swift cancela explícitamente el `Job` de Kotlin, deteniendo la colección del `Flow` y rompiendo el ciclo de referencias cruzado entre ambos runtimes, en vez de esperar a que algún recolector de basura lo resuelva por su cuenta.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá la llamada a `observation?.cancel()` del `deinit` de `TaskScreenModel` en Swift "porque ARC debería limpiar todo solo al liberar el objeto". Ese es el fallo deliberado: al navegar repetidamente hacia y desde la pantalla 100 veces, cada `TaskSubscription` sigue activa indefinidamente porque la closure del callback sigue capturando fuertemente el modelo Swift, y el heap de la app crece de forma medible y sostenida con cada navegación.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `observation?.cancel()` en el `deinit`, y repetí la navegación 100 veces midiendo el conteo de objetos activos antes y después del cambio (con Instruments o los logs del GC de Kotlin/Native) para confirmar que ya no crece de forma sostenida.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reproducida 100 veces del Paso 5, y la medición de objetos activos del Paso 6; explicá por qué compilar exitosamente para iOS no prueba que el ownership de recursos cruzados entre runtimes sea correcto. Siguiente paso: asegurate de que un artefacto publicado con esta API sea binariamente compatible con versiones futuras. Errores comunes: confiar en que GC/ARC cierran sockets, drivers SQL o handles nativos sin una llamada explícita de cierre, usar `GlobalScope` para suscripciones que deberían vivir y morir con una pantalla, y no medir con una prueba repetida antes de descartar una fuga como "poco probable". Fuentes oficiales: https://kotlinlang.org/docs/native-memory-manager.html y https://developer.apple.com/documentation/swift/automaticreferencecounting.
+**¿Por qué es importante?** Las fugas cross-runtime aparecen tras navegación repetida y son difíciles de atribuir; compilar para iOS no prueba ownership correcto.
+
 ### Tema 3: Un artefacto compatible necesita más que el mismo número de versión
 
 #### Paso 1 · Objetivo y preparación
@@ -233,39 +235,6 @@ El equipo publicó una nueva versión del módulo compartido con el mismo númer
 #### Paso 3 · Teoría, modelo mental y analogía
 La compatibilidad de fuente significa que el consumidor recompila; la binaria, que un binario ya compilado enlaza; la conductual, que obtiene el significado esperado — podés conservar la firma y romper el comportamiento cambiando orden, threading o un valor default. La analogía es mantener el mismo conector físico sin garantizar el mismo voltaje ni protocolo.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-gradle init --type kotlin-application
-```
-
-```kotlin
-kotlin {
-    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
-    abiValidation {
-        enabled.set(true)
-    }
-}
-```
-
-**Ejecuta el ejemplo** (añade el bloque a `shared/build.gradle.kts`, genera el dump de referencia y valida):
-
-```bash
-./gradlew :shared:updateLegacyAbi
-./gradlew :shared:check
-```
-
-Resultado esperado: `./gradlew :shared:check` compara la API pública actual contra el dump aprobado previamente, y falla explícitamente si alguien modifica una firma pública sin actualizar ese dump de forma consciente.
-
-#### Paso 5 · Práctica guiada
-Pista: dejá `abiValidation { enabled.set(false) }` (o no lo actives) "porque todavía no tenemos tiempo de revisar el dump completo". Ese es el fallo deliberado: un cambio que agrega un parámetro sin valor default a una función pública pasa `check` sin ninguna advertencia, y recién se descubre que rompió la compatibilidad binaria cuando el consumidor iOS (que todavía no recompiló contra la nueva versión) falla en producción.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 activando `abiValidation`, generando el dump inicial aprobado del estado actual de la API, y agregando `./gradlew :shared:apiCheck` como paso obligatorio del pipeline de CI (Módulo 10) antes de publicar cualquier versión nueva.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la validación binaria activada del Paso 4, el cambio de API no detectado del Paso 5, y el `apiCheck` integrado a CI del Paso 6; explicá por qué un `check` en verde sin validación de ABI no es evidencia de compatibilidad binaria real. Siguiente paso: preparate para diagnosticar un fallo compartido que se manifiesta distinto en cada plataforma. Errores comunes: confiar en el número de versión semántica sin validar ABI automáticamente, tratar un `check` verde como garantía de compatibilidad conductual (no solo binaria), y no ejecutar consumidores reales de Android e iOS contra el artefacto publicado antes de confirmar un release. Fuentes oficiales: https://kotlinlang.org/docs/jvm-api-guidelines-backward-compatibility.html y https://github.com/Kotlin/binary-compatibility-validator.
-**¿Por qué es importante?** Android/iOS no actualizan juntos, y un SDK roto bloquea equipos distintos o falla solo después de instalar una migración antigua.
 **Evidencia de aprendizaje:** entrega abiValidation activado, cambio de API no detectado reproducido y apiCheck integrado al pipeline de CI.
 **Conceptos clave:** source compatibility, binary compatibility, behavioral compatibility, API dump, KLib, ABI, semantic versioning, XCFramework, Maven publication, checksum, schema, migration, serialization y deprecation.
 
@@ -316,6 +285,40 @@ flowchart TD
 ```
 
 El proyecto integrador RutaFlow ilustra el mismo riesgo sin `abiValidation`: si `SyncEngine` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) cambiara el orden de los parámetros de `drain()` sin que ningún check lo detecte, un consumidor Android que todavía no recompiló contra la nueva versión podría enlazar en runtime contra una firma distinta a la que espera. **Cuándo no conviene** activar `abiValidation` desde el primer commit: en un módulo compartido que todavía no tiene ningún consumidor externo publicado (solo se consume por fuente, dentro del mismo build), el dump de API es puro overhead de mantenimiento sin ningún consumidor al que proteger — conviene activarlo recién cuando el artefacto se publica como dependencia binaria real, no antes.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+gradle init --type kotlin-application
+```
+
+```kotlin
+kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation {
+        enabled.set(true)
+    }
+}
+```
+
+**Ejecuta el ejemplo** (añade el bloque a `shared/build.gradle.kts`, genera el dump de referencia y valida):
+
+```bash
+./gradlew :shared:updateLegacyAbi
+./gradlew :shared:check
+```
+
+Resultado esperado: `./gradlew :shared:check` compara la API pública actual contra el dump aprobado previamente, y falla explícitamente si alguien modifica una firma pública sin actualizar ese dump de forma consciente.
+
+#### Paso 5 · Práctica guiada
+Pista: dejá `abiValidation { enabled.set(false) }` (o no lo actives) "porque todavía no tenemos tiempo de revisar el dump completo". Ese es el fallo deliberado: un cambio que agrega un parámetro sin valor default a una función pública pasa `check` sin ninguna advertencia, y recién se descubre que rompió la compatibilidad binaria cuando el consumidor iOS (que todavía no recompiló contra la nueva versión) falla en producción.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 activando `abiValidation`, generando el dump inicial aprobado del estado actual de la API, y agregando `./gradlew :shared:apiCheck` como paso obligatorio del pipeline de CI (Módulo 10) antes de publicar cualquier versión nueva.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la validación binaria activada del Paso 4, el cambio de API no detectado del Paso 5, y el `apiCheck` integrado a CI del Paso 6; explicá por qué un `check` en verde sin validación de ABI no es evidencia de compatibilidad binaria real. Siguiente paso: preparate para diagnosticar un fallo compartido que se manifiesta distinto en cada plataforma. Errores comunes: confiar en el número de versión semántica sin validar ABI automáticamente, tratar un `check` verde como garantía de compatibilidad conductual (no solo binaria), y no ejecutar consumidores reales de Android e iOS contra el artefacto publicado antes de confirmar un release. Fuentes oficiales: https://kotlinlang.org/docs/jvm-api-guidelines-backward-compatibility.html y https://github.com/Kotlin/binary-compatibility-validator.
+**¿Por qué es importante?** Android/iOS no actualizan juntos, y un SDK roto bloquea equipos distintos o falla solo después de instalar una migración antigua.
 
 ### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas
 

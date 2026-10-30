@@ -11,21 +11,6 @@ Al finalizar podrás almacenar un objeto desde cero. Prerrequisitos: Docker y AW
 Una entrega necesita conservar archivos con nombre, contenido y permisos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un bucket es un almacén y la key es la etiqueta única de cada paquete.
-#### Paso 4 · Demostración guiada
-Crea `src/upload.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-s3
-aws --version
-node --version
-```
-Resultado esperado: CLI disponible.
-#### Paso 5 · Práctica guiada
-Pista: usa un bucket inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Sube, descarga y verifica un archivo.
-#### Paso 7 · Cierre y evidencia
-Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: claves y metadatos. Errores comunes: confundir key y ruta local. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html.
-### Fallo Deliberado: NoSuchBucket — Bucket no existe
 
 **Error real:**
 ```error-output
@@ -97,6 +82,22 @@ No hay carpetas reales: "fotos/2024/" es solo texto dentro de cada clave, no una
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Define nombres y separación de buckets para evidencias públicas y privadas. Sube dos objetos con la misma clave en buckets distintos y comprueba que cada lectura devuelve el contenido correspondiente.
 
+#### Paso 4 · Demostración guiada
+Crea `src/upload.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-s3
+aws --version
+node --version
+```
+Resultado esperado: CLI disponible.
+#### Paso 5 · Práctica guiada
+Pista: usa un bucket inexistente para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Sube, descarga y verifica un archivo.
+#### Paso 7 · Cierre y evidencia
+Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: claves y metadatos. Errores comunes: confundir key y ruta local. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html.
+### Fallo Deliberado: NoSuchBucket — Bucket no existe
+
 ### Tema 2: Claves y metadatos
 
 #### Paso 1 · Objetivo y preparación
@@ -109,33 +110,7 @@ cliente no la muestra como imagen — la ofrece para descargar.
 #### Paso 3 · Teoría, modelo mental y analogía
 La key es la etiqueta del paquete; Content-Type y ETag son la ficha técnica y la huella que van
 pegadas a esa etiqueta, no al contenido en sí.
-#### Paso 4 · Demostración guiada
-```bash
-aws s3 mb s3://pruebas-entrega
-echo "contenido-simulado-de-foto" > entrega-001.jpg
-aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg \
-  --content-type image/jpeg --metadata conductor=c-891,envioId=4471
-aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg
-```
-Resultado esperado: el `head-object` muestra `"ContentType": "image/jpeg"` y, dentro de
-`"Metadata"`, `"conductor": "c-891"` y `"envioid": "4471"` (S3 normaliza las claves de
-metadato a minúsculas).
-#### Paso 5 · Práctica guiada
-Subí el mismo archivo otra vez, esta vez SIN `--content-type`:
-```bash
-aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001-sin-tipo.jpg
-aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001-sin-tipo.jpg
-```
-Ese es el fallo deliberado: vas a ver `"ContentType": "binary/octet-stream"` aunque el archivo
-se llame `.jpg` — la CLI no siempre infiere el tipo. Un `<img>` que apunte a ese objeto fallaría.
-Pista: compará los dos `head-object` (con y sin `--content-type`) campo por campo — `"Metadata"` sigue idéntico en ambos, así que el único responsable del `ContentType` roto es la bandera que faltó, no el contenido del archivo ni sus metadatos personalizados.
-#### Paso 6 · Práctica independiente
-Corregí el objeto sin volver a subir el archivo: usá `aws s3 cp` del objeto a sí mismo con
-`--metadata-directive REPLACE` y el `--content-type image/jpeg` correcto.
-#### Paso 7 · Cierre y evidencia
-Entregá el `head-object` de antes y después del arreglo, mostrando el cambio de `ContentType`.
-Siguiente paso: versionado. Errores comunes: confiar en la extensión del archivo en vez de
-declarar el tipo explícito. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html.
+
 **Conceptos clave:** clave (key), metadatos del sistema, metadatos personalizados, Content-Type, ETag.
 
 **Definición.** La clave de un objeto es su identificador único dentro de un bucket: dos objetos del mismo bucket no pueden compartir clave —subir un archivo bajo una clave ya existente sobrescribe el objeto anterior, salvo que el versionado esté activo (Tema 3). La clave es una cadena de texto de hasta 1024 bytes, sin estructura obligatoria más allá de esa longitud; el uso de barras para simular una jerarquía de carpetas es una convención de nomenclatura ampliamente adoptada, no una restricción del formato.
@@ -165,6 +140,34 @@ flowchart TD
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Asigna a una evidencia una clave que incluya la guía y un identificador de captura. Verifica sus metadatos sin convertir un nombre de archivo proporcionado por el usuario en una ruta confiable.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws s3 mb s3://pruebas-entrega
+echo "contenido-simulado-de-foto" > entrega-001.jpg
+aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg \
+  --content-type image/jpeg --metadata conductor=c-891,envioId=4471
+aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg
+```
+Resultado esperado: el `head-object` muestra `"ContentType": "image/jpeg"` y, dentro de
+`"Metadata"`, `"conductor": "c-891"` y `"envioid": "4471"` (S3 normaliza las claves de
+metadato a minúsculas).
+#### Paso 5 · Práctica guiada
+Subí el mismo archivo otra vez, esta vez SIN `--content-type`:
+```bash
+aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001-sin-tipo.jpg
+aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001-sin-tipo.jpg
+```
+Ese es el fallo deliberado: vas a ver `"ContentType": "binary/octet-stream"` aunque el archivo
+se llame `.jpg` — la CLI no siempre infiere el tipo. Un `<img>` que apunte a ese objeto fallaría.
+Pista: compará los dos `head-object` (con y sin `--content-type`) campo por campo — `"Metadata"` sigue idéntico en ambos, así que el único responsable del `ContentType` roto es la bandera que faltó, no el contenido del archivo ni sus metadatos personalizados.
+#### Paso 6 · Práctica independiente
+Corregí el objeto sin volver a subir el archivo: usá `aws s3 cp` del objeto a sí mismo con
+`--metadata-directive REPLACE` y el `--content-type image/jpeg` correcto.
+#### Paso 7 · Cierre y evidencia
+Entregá el `head-object` de antes y después del arreglo, mostrando el cambio de `ContentType`.
+Siguiente paso: versionado. Errores comunes: confiar en la extensión del archivo en vez de
+declarar el tipo explícito. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html.
+
 ### Tema 3: Versionado y ciclo de vida
 
 #### Paso 1 · Objetivo y preparación
@@ -175,36 +178,7 @@ Un conductor resube por error la foto equivocada sobre la misma clave
 `envio-4471/entrega-001.jpg`, sobrescribiendo la prueba de entrega real.
 #### Paso 3 · Teoría, modelo mental y analogía
 Versionar es conservar cada edición con su propio identificador, no sobrescribir la historia.
-#### Paso 4 · Demostración guiada
-```bash
-aws s3api put-bucket-versioning --bucket pruebas-entrega --versioning-configuration Status=Enabled
-echo "foto-correcta-envio-4471" > correcta.jpg
-aws s3 cp correcta.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
-echo "foto-equivocada-de-otro-envio" > equivocada.jpg
-aws s3 cp equivocada.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
-aws s3api list-object-versions --bucket pruebas-entrega --prefix envio-4471/entrega-001.jpg
-```
-Resultado esperado: `list-object-versions` muestra 2 entradas en `Versions`, cada una con un
-`VersionId` distinto — la foto equivocada quedó como versión más reciente, pero la correcta
-sigue existiendo.
-#### Paso 5 · Práctica guiada
-Ese es el fallo real: la versión "actual" de la clave ahora es la foto equivocada. Tomá el
-`VersionId` de la PRIMERA versión (la correcta) de la salida anterior y descargala por ese ID:
-```bash
-aws s3api get-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg \
-  --version-id <VersionId-de-la-correcta> recuperada.jpg
-cat recuperada.jpg
-```
-**Fallo deliberado:** en el `get-object` de arriba, truncá el `--version-id` a solo los primeros caracteres del `VersionId` real antes de ejecutarlo — provoca un error `NoSuchVersion`, porque S3 valida el ID completo contra las versiones reales de esa clave, no un prefijo.
-Pista: diagnosticalo comparando el ID roto contra la salida completa de `list-object-versions` del Paso 4 — el `VersionId` verdadero es más largo que lo que pegaste.
-#### Paso 6 · Práctica independiente
-Restaurá la versión correcta como versión actual subiéndola de nuevo con `aws s3 cp`, y
-confirmá con `list-object-versions` que ahora hay 3 versiones — ninguna se borró.
-#### Paso 7 · Cierre y evidencia
-Entregá las 2 salidas de `list-object-versions` (antes y después de restaurar) y el contenido
-de `recuperada.jpg`. Siguiente paso: clases de almacenamiento. Errores comunes: creer que sin
-versionado activo la foto equivocada se podría haber recuperado — sin este paso, la
-sobrescritura es irreversible. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html.
+
 **Conceptos clave:** versionado, ID de versión, marcador de borrado (delete marker), reglas de ciclo de vida (lifecycle rules).
 
 **Definición.** Por defecto, al subir un objeto bajo una clave ya existente, S3 sobrescribe el contenido anterior sin conservar rastro: la versión previa se pierde de forma irrecuperable. El versionado modifica este comportamiento: una vez activado sobre un bucket, cada subida a una clave existente conserva ambas versiones —la anterior y la nueva—, identificadas cada una por un ID de versión único, en lugar de sobrescribir. El mecanismo permite listar el historial completo de versiones de una clave, recuperar cualquier versión anterior, o restaurar una versión antigua como versión "actual" mediante una nueva subida.
@@ -235,6 +209,37 @@ ejecutado por CLI: el bucket `PruebasEntrega` de `examples/rutaflow/cloud/templa
 `VersioningConfiguration: { Status: Enabled }`, así que cualquier entorno desplegado desde ese
 archivo nace con el versionado activo que acabás de probar a mano.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws s3api put-bucket-versioning --bucket pruebas-entrega --versioning-configuration Status=Enabled
+echo "foto-correcta-envio-4471" > correcta.jpg
+aws s3 cp correcta.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
+echo "foto-equivocada-de-otro-envio" > equivocada.jpg
+aws s3 cp equivocada.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
+aws s3api list-object-versions --bucket pruebas-entrega --prefix envio-4471/entrega-001.jpg
+```
+Resultado esperado: `list-object-versions` muestra 2 entradas en `Versions`, cada una con un
+`VersionId` distinto — la foto equivocada quedó como versión más reciente, pero la correcta
+sigue existiendo.
+#### Paso 5 · Práctica guiada
+Ese es el fallo real: la versión "actual" de la clave ahora es la foto equivocada. Tomá el
+`VersionId` de la PRIMERA versión (la correcta) de la salida anterior y descargala por ese ID:
+```bash
+aws s3api get-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg \
+  --version-id <VersionId-de-la-correcta> recuperada.jpg
+cat recuperada.jpg
+```
+**Fallo deliberado:** en el `get-object` de arriba, truncá el `--version-id` a solo los primeros caracteres del `VersionId` real antes de ejecutarlo — provoca un error `NoSuchVersion`, porque S3 valida el ID completo contra las versiones reales de esa clave, no un prefijo.
+Pista: diagnosticalo comparando el ID roto contra la salida completa de `list-object-versions` del Paso 4 — el `VersionId` verdadero es más largo que lo que pegaste.
+#### Paso 6 · Práctica independiente
+Restaurá la versión correcta como versión actual subiéndola de nuevo con `aws s3 cp`, y
+confirmá con `list-object-versions` que ahora hay 3 versiones — ninguna se borró.
+#### Paso 7 · Cierre y evidencia
+Entregá las 2 salidas de `list-object-versions` (antes y después de restaurar) y el contenido
+de `recuperada.jpg`. Siguiente paso: clases de almacenamiento. Errores comunes: creer que sin
+versionado activo la foto equivocada se podría haber recuperado — sin este paso, la
+sobrescritura es irreversible. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html.
+
 ### Tema 4: Transición entre capas de almacenamiento
 
 #### Paso 1 · Objetivo y preparación
@@ -246,6 +251,30 @@ clientes) y casi nunca después — mantenerlas todas en la capa más cara para 
 sentido. Por eso `PruebasEntrega` en `template.yaml` ya declara esta misma regla.
 #### Paso 3 · Teoría, modelo mental y analogía
 Es elegir entre una bodega cercana y cara, y otra barata pero lenta para sacar la mercadería.
+
+**Conceptos clave:** clase de almacenamiento (storage class), Standard, Infrequent Access, Glacier, coste frente a latencia de acceso.
+
+**Definición.** S3 ofrece varias clases de almacenamiento, cada una con un equilibrio distinto entre coste por gigabyte, coste por operación de acceso y tiempo de recuperación. La clase Standard es de propósito general, orientada a datos consultados con frecuencia y que requieren recuperación inmediata. Las clases de acceso infrecuente reducen el coste por gigabyte almacenado a cambio de un coste mayor por operación de lectura, orientadas a datos consultados rara vez pero sin tolerancia a demora cuando se necesitan. Las clases de archivo profundo —Glacier, en la nomenclatura de AWS— reducen sustancialmente el coste por gigabyte, con un tiempo de recuperación medido en horas en lugar de milisegundos, dado que el dato se almacena optimizado para coste, no para acceso inmediato.
+
+Esta variedad responde a que el patrón de acceso a un dato varía a lo largo de su ciclo de vida. Un archivo de registro recién generado se consulta con frecuencia durante sus primeros días —típicamente para depurar un incidente reciente—, con una caída pronunciada de consultas transcurridas unas semanas, hasta llegar, tras un año, a conservarse casi exclusivamente por requisitos de auditoría o cumplimiento normativo, sin expectativa realista de consulta activa. Mantener ese archivo en la capa Standard durante todo ese período representa un gasto de almacenamiento no justificado por el patrón de acceso real.
+
+Las reglas de ciclo de vida introducidas en el tema anterior son, precisamente, el mecanismo que automatiza esta transición: una regla puede especificar que, transcurridos 30 días, los objetos se trasladen a la capa de acceso infrecuente, y que a los 90 días se trasladen a archivo profundo — S3 ejecuta estas transiciones automáticamente, sin intervención manual ni un proceso externo dedicado.
+
+La evaluación del patrón de acceso real resulta indispensable antes de aplicar transiciones agresivas: trasladar a archivo profundo datos que en la práctica requieren consulta periódica puede generar un coste de recuperación superior al ahorro en almacenamiento, además de introducir la latencia de recuperación —horas, no milisegundos— como una limitación operativa real ante una necesidad urgente.
+
+**¿Por qué es importante?** El coste de almacenamiento a gran escala en la nube puede representar una de las partidas de gasto más significativas en una aplicación con volumen considerable de datos históricos. El diseño correcto de reglas de transición de ciclo de vida, frente a mantener todo indefinidamente en la capa más costosa, constituye una de las optimizaciones de coste de mayor impacto directo en arquitecturas cloud de producción.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    D0["Día 0\nStandard\n(rápido, caro)"] --> D30["Día 30\nAcceso infrecuente\n(más barato, algo más de coste por acceso)"]
+    D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
+```
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Propón una política de ciclo de vida para evidencias antiguas. Registra edad, coste de acceso y retención requerida; diferencia lo que valida el emulador de la transición y facturación que exigirán una prueba real.
+**Evidencia de aprendizaje:** entrega la salida de `get-bucket-lifecycle-configuration` del Paso 4, el fallo de `StorageClass` inválida del Paso 5, y la configuración ya corregida con `GLACIER` del Paso 6.
+
 #### Paso 4 · Demostración guiada
 ```bash
 cat > lifecycle.json << 'EOF'
@@ -274,28 +303,6 @@ con `get-bucket-lifecycle-configuration`.
 Entregá la regla JSON, el error del valor inválido y la configuración final corregida.
 Siguiente paso: seguridad. Errores comunes: optimizar solo el costo de almacenamiento sin
 considerar el costo y tiempo de recuperación. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html.
-**Conceptos clave:** clase de almacenamiento (storage class), Standard, Infrequent Access, Glacier, coste frente a latencia de acceso.
-
-**Definición.** S3 ofrece varias clases de almacenamiento, cada una con un equilibrio distinto entre coste por gigabyte, coste por operación de acceso y tiempo de recuperación. La clase Standard es de propósito general, orientada a datos consultados con frecuencia y que requieren recuperación inmediata. Las clases de acceso infrecuente reducen el coste por gigabyte almacenado a cambio de un coste mayor por operación de lectura, orientadas a datos consultados rara vez pero sin tolerancia a demora cuando se necesitan. Las clases de archivo profundo —Glacier, en la nomenclatura de AWS— reducen sustancialmente el coste por gigabyte, con un tiempo de recuperación medido en horas en lugar de milisegundos, dado que el dato se almacena optimizado para coste, no para acceso inmediato.
-
-Esta variedad responde a que el patrón de acceso a un dato varía a lo largo de su ciclo de vida. Un archivo de registro recién generado se consulta con frecuencia durante sus primeros días —típicamente para depurar un incidente reciente—, con una caída pronunciada de consultas transcurridas unas semanas, hasta llegar, tras un año, a conservarse casi exclusivamente por requisitos de auditoría o cumplimiento normativo, sin expectativa realista de consulta activa. Mantener ese archivo en la capa Standard durante todo ese período representa un gasto de almacenamiento no justificado por el patrón de acceso real.
-
-Las reglas de ciclo de vida introducidas en el tema anterior son, precisamente, el mecanismo que automatiza esta transición: una regla puede especificar que, transcurridos 30 días, los objetos se trasladen a la capa de acceso infrecuente, y que a los 90 días se trasladen a archivo profundo — S3 ejecuta estas transiciones automáticamente, sin intervención manual ni un proceso externo dedicado.
-
-La evaluación del patrón de acceso real resulta indispensable antes de aplicar transiciones agresivas: trasladar a archivo profundo datos que en la práctica requieren consulta periódica puede generar un coste de recuperación superior al ahorro en almacenamiento, además de introducir la latencia de recuperación —horas, no milisegundos— como una limitación operativa real ante una necesidad urgente.
-
-**¿Por qué es importante?** El coste de almacenamiento a gran escala en la nube puede representar una de las partidas de gasto más significativas en una aplicación con volumen considerable de datos históricos. El diseño correcto de reglas de transición de ciclo de vida, frente a mantener todo indefinidamente en la capa más costosa, constituye una de las optimizaciones de coste de mayor impacto directo en arquitecturas cloud de producción.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    D0["Día 0\nStandard\n(rápido, caro)"] --> D30["Día 30\nAcceso infrecuente\n(más barato, algo más de coste por acceso)"]
-    D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
-```
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Propón una política de ciclo de vida para evidencias antiguas. Registra edad, coste de acceso y retención requerida; diferencia lo que valida el emulador de la transición y facturación que exigirán una prueba real.
-**Evidencia de aprendizaje:** entrega la salida de `get-bucket-lifecycle-configuration` del Paso 4, el fallo de `StorageClass` inválida del Paso 5, y la configuración ya corregida con `GLACIER` del Paso 6.
 ### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas
 
 #### Paso 1 · Objetivo y preparación

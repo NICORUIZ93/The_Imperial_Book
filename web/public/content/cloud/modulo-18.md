@@ -11,20 +11,7 @@ Al finalizar vas a registrar un conductor real de RutaFlow en Cognito, en vez de
 Antes de que un conductor pueda confirmar una entrega vía `POST /entregas` (Módulo 6), RutaFlow necesita saber con certeza quién es esa persona — y reinventar el manejo de contraseñas para eso es exactamente el tipo de componente de seguridad que no conviene construir a mano.
 #### Paso 3 · Teoría, modelo mental y analogía
 Autenticar es comprobar que este conductor es quien dice ser; autorizar (Módulo 7, IAM) es comprobar qué puede hacer una vez identificado — dos preguntas distintas que Cognito resuelve para la primera.
-#### Paso 4 · Demostración guiada
-```bash
-POOL_ID=$(aws cognito-idp create-user-pool --pool-name RutaFlowConductores --auto-verified-attributes email --query UserPool.Id --output text)
-CLIENT_ID=$(aws cognito-idp create-user-pool-client --user-pool-id "$POOL_ID" --client-name app-conductor --no-generate-secret --query UserPoolClient.ClientId --output text)
-aws cognito-idp sign-up --client-id "$CLIENT_ID" --username conductor-c891@rutaflow.com --password "Segura123!" \
-  --user-attributes Name=email,Value=conductor-c891@rutaflow.com
-```
-Resultado esperado: `sign-up` responde con `UserConfirmed: false` y un `UserSub` — el conductor ya existe en el directorio de RutaFlow, pendiente de confirmar su email, sin que ninguna línea de este proyecto tuviera que implementar hashing de contraseñas ni envío de códigos.
-#### Paso 5 · Práctica guiada
-Pista: confirmá el registro con un código inventado (`aws cognito-idp confirm-sign-up --client-id "$CLIENT_ID" --username conductor-c891@rutaflow.com --confirmation-code "000000"`) — ese es el fallo deliberado: `CodeMismatchException`, porque Cognito rechaza explícitamente cualquier código que no sea el que realmente envió, sin dar pistas sobre cuál sería el correcto.
-#### Paso 6 · Práctica independiente
-Intentá `initiate-auth` con ese mismo conductor antes de confirmar su registro, y después de confirmarlo (usando el código real que Floci expone en local) — comparando el error `UserNotConfirmedException` del primer intento contra el login exitoso del segundo.
-#### Paso 7 · Cierre y evidencia
-Entregá el registro del conductor, el código inválido del Paso 5 y la diferencia confirmado/no confirmado del Paso 6; explicá qué parte de este flujo habrías tenido que construir a mano sin Cognito. Siguiente paso: JWT. Errores comunes: confiar solo en frontend y mensajes que revelan usuarios. Fuente oficial: https://owasp.org/www-project-authentication-cheat-sheet/.
+
 **Conceptos clave:** autenticación es un problema resuelto con implicaciones de seguridad severas si se hace incorrectamente.
 
 ```bash
@@ -64,6 +51,21 @@ producción, protegería el mismo endpoint `POST /entregas` declarado hoy sin au
 `examples/rutaflow/cloud/template.yaml` — agregarle un Cognito Authorizer ahí es el siguiente
 paso natural una vez que este módulo confirma que el conductor existe y está verificado.
 
+#### Paso 4 · Demostración guiada
+```bash
+POOL_ID=$(aws cognito-idp create-user-pool --pool-name RutaFlowConductores --auto-verified-attributes email --query UserPool.Id --output text)
+CLIENT_ID=$(aws cognito-idp create-user-pool-client --user-pool-id "$POOL_ID" --client-name app-conductor --no-generate-secret --query UserPoolClient.ClientId --output text)
+aws cognito-idp sign-up --client-id "$CLIENT_ID" --username conductor-c891@rutaflow.com --password "Segura123!" \
+  --user-attributes Name=email,Value=conductor-c891@rutaflow.com
+```
+Resultado esperado: `sign-up` responde con `UserConfirmed: false` y un `UserSub` — el conductor ya existe en el directorio de RutaFlow, pendiente de confirmar su email, sin que ninguna línea de este proyecto tuviera que implementar hashing de contraseñas ni envío de códigos.
+#### Paso 5 · Práctica guiada
+Pista: confirmá el registro con un código inventado (`aws cognito-idp confirm-sign-up --client-id "$CLIENT_ID" --username conductor-c891@rutaflow.com --confirmation-code "000000"`) — ese es el fallo deliberado: `CodeMismatchException`, porque Cognito rechaza explícitamente cualquier código que no sea el que realmente envió, sin dar pistas sobre cuál sería el correcto.
+#### Paso 6 · Práctica independiente
+Intentá `initiate-auth` con ese mismo conductor antes de confirmar su registro, y después de confirmarlo (usando el código real que Floci expone en local) — comparando el error `UserNotConfirmedException` del primer intento contra el login exitoso del segundo.
+#### Paso 7 · Cierre y evidencia
+Entregá el registro del conductor, el código inválido del Paso 5 y la diferencia confirmado/no confirmado del Paso 6; explicá qué parte de este flujo habrías tenido que construir a mano sin Cognito. Siguiente paso: JWT. Errores comunes: confiar solo en frontend y mensajes que revelan usuarios. Fuente oficial: https://owasp.org/www-project-authentication-cheat-sheet/.
+
 ### Tema 2: Access Token, ID Token y Refresh Token
 
 #### Paso 1 · Objetivo y preparación
@@ -72,25 +74,7 @@ Al finalizar vas a loguear al conductor del Tema 1 y a distinguir cuál de los t
 `POST /entregas` (Módulo 6) necesita saber que quien llama tiene permiso para confirmar entregas (Access Token), mientras que la app del conductor necesita mostrar "Hola, conductor c-891" en su UI (ID Token) — mezclarlos es el error típico al integrar Cognito con una API.
 #### Paso 3 · Teoría, modelo mental y analogía
 Son tres pases distintos: el Access Token es la credencial que abre la puerta de la API; el ID Token es la ficha de identidad; el Refresh Token es el comprobante para pedir pases nuevos sin volver a mostrar documentos.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.tf` dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow USER_PASSWORD_AUTH \
-  --auth-parameters USERNAME=conductor-c891@rutaflow.com,PASSWORD="Segura123!" \
-  --query 'AuthenticationResult.{Access:AccessToken,Id:IdToken,Refresh:RefreshToken}'
-```
-Resultado esperado: tres JWT distintos — decodificá el `IdToken` (solo la parte del medio, separada por puntos, en base64) y vas a ver `email: conductor-c891@rutaflow.com`; decodificá el `AccessToken` y vas a ver `scope`, pero nunca el email. Ese es exactamente el token que `POST /entregas` debería exigir en su cabecera `Authorization`.
-#### Paso 5 · Práctica guiada
-Pista: ese es el error real que advierte este Tema — si `POST /entregas` validara el `IdToken` en vez del `AccessToken` (un error de integración común), estaría usando un token diseñado para comunicar identidad al cliente, no para autorizar acceso a una API; documentá por escrito qué información le faltaría a un autorizador que solo revisa `scope` si le llega un `IdToken` en su lugar.
-**Fallo deliberado:** en el `--query` del comando del Paso 4, cambiá `Access:AccessToken` por `Access:IdToken` y usá ese valor como `Authorization: Bearer <token>` contra un autorizador que solo revisa `scope` — provoca un error de autorización, porque el `IdToken` nunca trae ese claim; diagnosticalo decodificando el token rechazado y confirmando que trae `email` pero ningún `scope`.
-#### Paso 6 · Práctica independiente
-Guardá el `RefreshToken`, esperá a que el `AccessToken` esté cerca de expirar (o simulá la espera), y corré `aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow REFRESH_TOKEN_AUTH --auth-parameters REFRESH_TOKEN=<refresh-token>` para confirmar que el conductor obtiene un `AccessToken` nuevo sin volver a escribir su contraseña.
-#### Paso 7 · Cierre y evidencia
-Entregá los tres tokens decodificados del Paso 4, la explicación del error de confundirlos del Paso 5, y la renovación del Paso 6; explicá por qué `POST /entregas` debe validar específicamente el Access Token. Siguiente paso: OAuth. Errores comunes: guardar refresh en local inseguro y no rotar. Fuente oficial: https://datatracker.ietf.org/doc/html/rfc7519.
 **Conceptos clave:** tres tokens JWT con propósitos distintos, no intercambiables entre sí.
 
 ```bash
@@ -120,6 +104,26 @@ En el proyecto integrador RutaFlow, el Access Token de este Tema es el que un Co
 Authorizer validaría en `POST /entregas` antes de invocar `ConfirmarEntregaFn`
 (`examples/rutaflow/cloud/template.yaml`) — nunca el ID Token, aunque ambos salgan del mismo
 `initiate-auth`.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.tf` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow USER_PASSWORD_AUTH \
+  --auth-parameters USERNAME=conductor-c891@rutaflow.com,PASSWORD="Segura123!" \
+  --query 'AuthenticationResult.{Access:AccessToken,Id:IdToken,Refresh:RefreshToken}'
+```
+Resultado esperado: tres JWT distintos — decodificá el `IdToken` (solo la parte del medio, separada por puntos, en base64) y vas a ver `email: conductor-c891@rutaflow.com`; decodificá el `AccessToken` y vas a ver `scope`, pero nunca el email. Ese es exactamente el token que `POST /entregas` debería exigir en su cabecera `Authorization`.
+#### Paso 5 · Práctica guiada
+Pista: ese es el error real que advierte este Tema — si `POST /entregas` validara el `IdToken` en vez del `AccessToken` (un error de integración común), estaría usando un token diseñado para comunicar identidad al cliente, no para autorizar acceso a una API; documentá por escrito qué información le faltaría a un autorizador que solo revisa `scope` si le llega un `IdToken` en su lugar.
+**Fallo deliberado:** en el `--query` del comando del Paso 4, cambiá `Access:AccessToken` por `Access:IdToken` y usá ese valor como `Authorization: Bearer <token>` contra un autorizador que solo revisa `scope` — provoca un error de autorización, porque el `IdToken` nunca trae ese claim; diagnosticalo decodificando el token rechazado y confirmando que trae `email` pero ningún `scope`.
+#### Paso 6 · Práctica independiente
+Guardá el `RefreshToken`, esperá a que el `AccessToken` esté cerca de expirar (o simulá la espera), y corré `aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow REFRESH_TOKEN_AUTH --auth-parameters REFRESH_TOKEN=<refresh-token>` para confirmar que el conductor obtiene un `AccessToken` nuevo sin volver a escribir su contraseña.
+#### Paso 7 · Cierre y evidencia
+Entregá los tres tokens decodificados del Paso 4, la explicación del error de confundirlos del Paso 5, y la renovación del Paso 6; explicá por qué `POST /entregas` debe validar específicamente el Access Token. Siguiente paso: OAuth. Errores comunes: guardar refresh en local inseguro y no rotar. Fuente oficial: https://datatracker.ietf.org/doc/html/rfc7519.
 
 ### Tema 3: OAuth 2.0 y PKCE
 

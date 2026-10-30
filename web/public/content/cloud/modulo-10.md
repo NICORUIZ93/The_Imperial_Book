@@ -13,19 +13,7 @@ Al finalizar vas a sacar una clave real de RutaFlow de un archivo versionado y m
 Un gestor de secretos es una caja fuerte con registro, rotación y acceso limitado — no un cajón sin cerradura donde cualquiera con acceso al código puede mirar.
 
 **Diagrama interactivo:** [Secrets Manager vs. variables de entorno hardcodeadas](/visuals/temas/cloud/modulo-10-tema-1-secrets-manager.html)
-#### Paso 4 · Demostración guiada
-```bash
-echo "SMS_GATEWAY_API_KEY=sk_live_rutaflow_demo_12345" > .env
-grep SMS_GATEWAY_API_KEY .env
-aws secretsmanager create-secret --name /rutaflow/sms-gateway-api-key --secret-string "sk_live_rutaflow_demo_12345"
-```
-Resultado esperado: el `grep` confirma que la clave está ahí, en texto plano, en un archivo que un `git add .` descuidado versionaría sin pensarlo dos veces; `create-secret` la guarda cifrada en reposo, en un servicio separado del código.
-#### Paso 5 · Práctica guiada
-Pista: ese `.env` del Paso 4 ES el fallo deliberado — corré `git log --all --oneline -- .env` (si llegaste a commitearlo alguna vez) para confirmar que, aunque borres el archivo ahora, el historial de Git seguiría teniendo la clave para siempre. Corregilo borrando el archivo (`rm .env`) y confirmando con `aws secretsmanager get-secret-value --secret-id /rutaflow/sms-gateway-api-key --query SecretString --output text` que la aplicación puede seguir obteniendo la clave sin que exista en ningún archivo local.
-#### Paso 6 · Práctica independiente
-Documentá, en una frase, cada cuánto correspondería rotar `/rutaflow/sms-gateway-api-key` si el proveedor de SMS sufriera una filtración, y qué comando usarías para revisar quién accedió a ese secreto en los últimos días (pista: es un servicio distinto de Secrets Manager, el mismo que audita accesos IAM en general).
-#### Paso 7 · Cierre y evidencia
-Entregá la clave expuesta en `.env`, su migración a Secrets Manager, y la respuesta del Paso 6; explicá por qué borrar un archivo no borra su historial de Git. Siguiente paso: cifrado. Errores comunes: secretos en logs y acceso global. Fuente oficial: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html.
+
 **Conceptos clave:** un secreto centralizado, auditable y rotable, no disperso en archivos de configuración.
 
 ```bash
@@ -52,6 +40,20 @@ aws secretsmanager get-secret-value --secret-id /app/db-password --query SecretS
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Extrae la credencial del proveedor de notificaciones del código. Sustitúyela por una referencia al secreto y verifica que un fallo de recuperación no imprime su contenido ni inicia con un valor inseguro.
 
+#### Paso 4 · Demostración guiada
+```bash
+echo "SMS_GATEWAY_API_KEY=sk_live_rutaflow_demo_12345" > .env
+grep SMS_GATEWAY_API_KEY .env
+aws secretsmanager create-secret --name /rutaflow/sms-gateway-api-key --secret-string "sk_live_rutaflow_demo_12345"
+```
+Resultado esperado: el `grep` confirma que la clave está ahí, en texto plano, en un archivo que un `git add .` descuidado versionaría sin pensarlo dos veces; `create-secret` la guarda cifrada en reposo, en un servicio separado del código.
+#### Paso 5 · Práctica guiada
+Pista: ese `.env` del Paso 4 ES el fallo deliberado — corré `git log --all --oneline -- .env` (si llegaste a commitearlo alguna vez) para confirmar que, aunque borres el archivo ahora, el historial de Git seguiría teniendo la clave para siempre. Corregilo borrando el archivo (`rm .env`) y confirmando con `aws secretsmanager get-secret-value --secret-id /rutaflow/sms-gateway-api-key --query SecretString --output text` que la aplicación puede seguir obteniendo la clave sin que exista en ningún archivo local.
+#### Paso 6 · Práctica independiente
+Documentá, en una frase, cada cuánto correspondería rotar `/rutaflow/sms-gateway-api-key` si el proveedor de SMS sufriera una filtración, y qué comando usarías para revisar quién accedió a ese secreto en los últimos días (pista: es un servicio distinto de Secrets Manager, el mismo que audita accesos IAM en general).
+#### Paso 7 · Cierre y evidencia
+Entregá la clave expuesta en `.env`, su migración a Secrets Manager, y la respuesta del Paso 6; explicá por qué borrar un archivo no borra su historial de Git. Siguiente paso: cifrado. Errores comunes: secretos en logs y acceso global. Fuente oficial: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html.
+
 ### Tema 2: KMS y envelope encryption
 
 #### Paso 1 · Objetivo y preparación
@@ -60,21 +62,7 @@ Al finalizar vas a cifrar un respaldo local de la clave del Tema 1 con KMS, y a 
 RutaFlow necesita guardar un respaldo exportado de `/rutaflow/sms-gateway-api-key` fuera de Secrets Manager (por ejemplo, para un proceso de recuperación ante desastres) — ese respaldo no puede quedar en texto plano en ningún disco.
 #### Paso 3 · Teoría, modelo mental y analogía
 Se cifra el contenido con una llave de datos efímera, y esa llave de datos se cifra a su vez con una llave maestra que nunca sale de KMS.
-#### Paso 4 · Demostración guiada
-```bash
-aws kms create-key --description "Clave de respaldo RutaFlow" --query KeyMetadata.KeyId --output text
-aws kms create-alias --alias-name alias/rutaflow-backup --target-key-id "$(aws kms list-keys --query 'Keys[-1].KeyId' --output text)"
-echo "sk_live_rutaflow_demo_12345" > respaldo-secreto.txt
-aws kms encrypt --key-id alias/rutaflow-backup --plaintext fileb://respaldo-secreto.txt --query CiphertextBlob --output text | base64 -d > respaldo-secreto.enc
-aws kms decrypt --ciphertext-blob fileb://respaldo-secreto.enc --query Plaintext --output text | base64 -d
-```
-Resultado esperado: el `decrypt` final devuelve exactamente `sk_live_rutaflow_demo_12345` — el archivo `.enc` en disco nunca es legible por sí solo, necesita pasar siempre por KMS para recuperar el valor real.
-#### Paso 5 · Práctica guiada
-Pista: creá una política que deniegue `kms:Decrypt` sobre `alias/rutaflow-backup` para el rol `RutaFlowConfirmarEntregaRole` (Módulo 7), simulala con `aws iam simulate-custom-policy`, y confirmá `implicitDeny` — ese es el fallo deliberado que corresponde: `confirmar-entrega` nunca debería poder descifrar el respaldo completo, solo leer el secreto puntual que ya tiene permitido en Secrets Manager.
-#### Paso 6 · Práctica independiente
-Documentá por escrito qué pasaría si perdieras `respaldo-secreto.enc` sin haber guardado nunca la clave KMS que lo cifró (pista: sin la clave maestra, ese archivo queda irrecuperable para siempre, no solo "difícil de leer").
-#### Paso 7 · Cierre y evidencia
-Entregá el ciclo completo de cifrado/descifrado, la denegación simulada del Paso 5 y la reflexión del Paso 6; explicá por qué cifrar el respaldo completo con la clave maestra sería más lento que usar una clave de datos efímera. Siguiente paso: parámetros. Errores comunes: compartir claves maestras y perder contexto. Fuente oficial: https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html.
+
 **Conceptos clave:** cifrar la clave que cifra los datos, no solo los datos directamente.
 
 ```bash
@@ -105,6 +93,22 @@ En el proyecto integrador RutaFlow, el `Policies: - DynamoDBWritePolicy` de `Con
 en `examples/rutaflow/cloud/template.yaml` es exactamente la pieza que, de necesitar esta clave
 KMS, declararía además un `KMSDecryptPolicy` explícito — mínimo privilegio significa que el rol
 nunca hereda `kms:Decrypt` por defecto solo por existir.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws kms create-key --description "Clave de respaldo RutaFlow" --query KeyMetadata.KeyId --output text
+aws kms create-alias --alias-name alias/rutaflow-backup --target-key-id "$(aws kms list-keys --query 'Keys[-1].KeyId' --output text)"
+echo "sk_live_rutaflow_demo_12345" > respaldo-secreto.txt
+aws kms encrypt --key-id alias/rutaflow-backup --plaintext fileb://respaldo-secreto.txt --query CiphertextBlob --output text | base64 -d > respaldo-secreto.enc
+aws kms decrypt --ciphertext-blob fileb://respaldo-secreto.enc --query Plaintext --output text | base64 -d
+```
+Resultado esperado: el `decrypt` final devuelve exactamente `sk_live_rutaflow_demo_12345` — el archivo `.enc` en disco nunca es legible por sí solo, necesita pasar siempre por KMS para recuperar el valor real.
+#### Paso 5 · Práctica guiada
+Pista: creá una política que deniegue `kms:Decrypt` sobre `alias/rutaflow-backup` para el rol `RutaFlowConfirmarEntregaRole` (Módulo 7), simulala con `aws iam simulate-custom-policy`, y confirmá `implicitDeny` — ese es el fallo deliberado que corresponde: `confirmar-entrega` nunca debería poder descifrar el respaldo completo, solo leer el secreto puntual que ya tiene permitido en Secrets Manager.
+#### Paso 6 · Práctica independiente
+Documentá por escrito qué pasaría si perdieras `respaldo-secreto.enc` sin haber guardado nunca la clave KMS que lo cifró (pista: sin la clave maestra, ese archivo queda irrecuperable para siempre, no solo "difícil de leer").
+#### Paso 7 · Cierre y evidencia
+Entregá el ciclo completo de cifrado/descifrado, la denegación simulada del Paso 5 y la reflexión del Paso 6; explicá por qué cifrar el respaldo completo con la clave maestra sería más lento que usar una clave de datos efímera. Siguiente paso: parámetros. Errores comunes: compartir claves maestras y perder contexto. Fuente oficial: https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html.
 
 ### Tema 3: SSM Parameter Store vs Secrets Manager
 

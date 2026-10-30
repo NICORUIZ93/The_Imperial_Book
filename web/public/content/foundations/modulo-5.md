@@ -14,42 +14,6 @@ El proyecto integrador Fundamentos que vas a construir en este track ya guarda t
 #### Paso 3 · Teoría, modelo mental y analogía
 Depurar con evidencia significa tres cosas en orden: reproducir el fallo con el caso más pequeño posible, escribir una hipótesis verificable sobre la causa ANTES de cambiar nada, y modificar una sola variable por intento para saber con certeza qué fue lo que corrigió (o no corrigió) el problema. Un cambio que "podría ayudar" pero no ataca la hipótesis es una pista falsa: puede incluso parecer una mejora y aun así dejar el bug intacto. La analogía es la de un perito: no reordena la escena antes de fotografiarla, la documenta, propone una explicación y prueba solo esa explicación.
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-Partí de una carpeta vacía y reproducí un bug real de filtrado de tareas:
-```bash
-mkdir depuracion-tareas
-cd depuracion-tareas
-python3 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
-```
-Guardá `tareas.py` con un defecto deliberado: la función promete "pendientes" pero filtra por el estado contrario.
-
-```python
-def listar_pendientes(tareas):
-    # Defecto: compara contra "hecho" en vez de "pendiente".
-    return [t for t in tareas if t["estado"] == "hecho"]
-
-tareas = [
-    {"descripcion": "comprar pan", "estado": "pendiente"},
-    {"descripcion": "pagar luz", "estado": "hecho"},
-    {"descripcion": "llamar al dentista", "estado": "pendiente"},
-]
-print(listar_pendientes(tareas))
-```
-
-Ejecutá `python3 tareas.py`. **Resultado esperado del defecto:** imprime `[{'descripcion': 'pagar luz', 'estado': 'hecho'}]` — la única tarea YA HECHA, justo lo opuesto de lo que el nombre `listar_pendientes` promete. Ese caso de tres tareas es tu reproducción mínima; con ella podés formular la hipótesis por escrito: "la comparación usa 'hecho' donde debería usar 'pendiente'". **Fallo deliberado (pista falsa):** antes de tocar esa línea, probá "arreglarlo" ordenando la lista con `tareas.sort(key=lambda t: t["descripcion"])` antes del `return`. Volvé a ejecutar: el resultado sigue siendo la tarea hecha — ordenar no tocó la condición que causa el bug, así que el síntoma no cambió en absoluto. Recién ahora hacés el único cambio que ataca la hipótesis: `t["estado"] == "pendiente"`. Ejecutá de nuevo: aparecen las dos tareas pendientes, confirmando la hipótesis original.
-
-#### Paso 5 · Práctica guiada
-Pista: antes de declarar "arreglado", volvé a correr EXACTAMENTE el mismo caso de tres tareas del Paso 4 y compará la salida con la que esperabas por escrito — si solo "se ve mejor" pero no coincide con tu hipótesis, todavía no terminaste.
-
-#### Paso 6 · Práctica independiente
-Elegí una función real de tu propio `tareas.py` (no inventada) que sospeches que tiene un comportamiento incorrecto. Reproducí el caso mínimo que lo muestra, escribí la hipótesis en una línea ANTES de cambiar código, hacé un solo cambio y confirmá ejecutando de nuevo el mismo caso.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la reproducción del bug de `listar_pendientes`, la hipótesis escrita antes de corregir, la pista falsa que no cambió el síntoma y la corrección real confirmada; como siguiente paso, en el Tema 2 vas a convertir ese mismo caso mínimo en una prueba automatizada para que nadie tenga que reproducirlo a mano otra vez. Errores comunes: cambiar varias cosas a la vez antes de confirmar cuál funcionó; aceptar un cambio como "arreglo" sin volver a ejecutar el caso que fallaba; depurar sin escribir la hipótesis, lo que impide saber después qué se estaba probando. Fuentes oficiales: https://docs.python.org/es/3/library/pdb.html y https://docs.python.org/es/3/howto/logging.html.
-**¿Por qué es importante?** Porque sin un caso mínimo reproducible y una hipótesis escrita, "arreglar" un bug es indistinguible de cambiar cosas hasta que el síntoma visible desaparezca, aunque la causa real siga ahí.
 **Evidencia de aprendizaje:** entrega el caso mínimo reproducido, la hipótesis escrita, la pista falsa descartada con su salida y la corrección confirmada.
 
 **Cuándo NO usar:** No cambies varias líneas a la vez "a ver si ahora funciona"; si el síntoma desaparece no vas a saber cuál cambio fue. No aceptes un cambio como corrección sin volver a ejecutar el caso mínimo que fallaba. No depures a fuerza de `print()` disperso sin una hipótesis escrita: perdés la capacidad de saber qué estabas probando.
@@ -116,6 +80,43 @@ flowchart LR
     H --> E["experimento"] --> C["causa"] --> T["prueba de regresión"] --> F["corrección"]
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
+Partí de una carpeta vacía y reproducí un bug real de filtrado de tareas:
+```bash
+mkdir depuracion-tareas
+cd depuracion-tareas
+python3 -m venv .venv
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+```
+Guardá `tareas.py` con un defecto deliberado: la función promete "pendientes" pero filtra por el estado contrario.
+
+```python
+def listar_pendientes(tareas):
+    # Defecto: compara contra "hecho" en vez de "pendiente".
+    return [t for t in tareas if t["estado"] == "hecho"]
+
+tareas = [
+    {"descripcion": "comprar pan", "estado": "pendiente"},
+    {"descripcion": "pagar luz", "estado": "hecho"},
+    {"descripcion": "llamar al dentista", "estado": "pendiente"},
+]
+print(listar_pendientes(tareas))
+```
+
+Ejecutá `python3 tareas.py`. **Resultado esperado del defecto:** imprime `[{'descripcion': 'pagar luz', 'estado': 'hecho'}]` — la única tarea YA HECHA, justo lo opuesto de lo que el nombre `listar_pendientes` promete. Ese caso de tres tareas es tu reproducción mínima; con ella podés formular la hipótesis por escrito: "la comparación usa 'hecho' donde debería usar 'pendiente'". **Fallo deliberado (pista falsa):** antes de tocar esa línea, probá "arreglarlo" ordenando la lista con `tareas.sort(key=lambda t: t["descripcion"])` antes del `return`. Volvé a ejecutar: el resultado sigue siendo la tarea hecha — ordenar no tocó la condición que causa el bug, así que el síntoma no cambió en absoluto. Recién ahora hacés el único cambio que ataca la hipótesis: `t["estado"] == "pendiente"`. Ejecutá de nuevo: aparecen las dos tareas pendientes, confirmando la hipótesis original.
+
+#### Paso 5 · Práctica guiada
+Pista: antes de declarar "arreglado", volvé a correr EXACTAMENTE el mismo caso de tres tareas del Paso 4 y compará la salida con la que esperabas por escrito — si solo "se ve mejor" pero no coincide con tu hipótesis, todavía no terminaste.
+
+#### Paso 6 · Práctica independiente
+Elegí una función real de tu propio `tareas.py` (no inventada) que sospeches que tiene un comportamiento incorrecto. Reproducí el caso mínimo que lo muestra, escribí la hipótesis en una línea ANTES de cambiar código, hacé un solo cambio y confirmá ejecutando de nuevo el mismo caso.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la reproducción del bug de `listar_pendientes`, la hipótesis escrita antes de corregir, la pista falsa que no cambió el síntoma y la corrección real confirmada; como siguiente paso, en el Tema 2 vas a convertir ese mismo caso mínimo en una prueba automatizada para que nadie tenga que reproducirlo a mano otra vez. Errores comunes: cambiar varias cosas a la vez antes de confirmar cuál funcionó; aceptar un cambio como "arreglo" sin volver a ejecutar el caso que fallaba; depurar sin escribir la hipótesis, lo que impide saber después qué se estaba probando. Fuentes oficiales: https://docs.python.org/es/3/library/pdb.html y https://docs.python.org/es/3/howto/logging.html.
+**¿Por qué es importante?** Porque sin un caso mínimo reproducible y una hipótesis escrita, "arreglar" un bug es indistinguible de cambiar cosas hasta que el síntoma visible desaparezca, aunque la causa real siga ahí.
+
 ### Tema 2: Pruebas con propósito y niveles adecuados
 
 #### Paso 1 · Objetivo y preparación
@@ -127,65 +128,6 @@ Desde el Módulo 4, el proyecto Fundamentos no solo cuenta pendientes en memoria
 #### Paso 3 · Teoría, modelo mental y analogía
 Una prueba unitaria aísla una pieza pequeña y rápida: en este caso, `contar_pendientes(tareas)` operando sobre una lista en memoria, sin tocar disco. Una prueba de integración comprueba la colaboración real entre piezas: la misma regla de negocio, pero ejecutada contra una base SQLite real, con la consulta SQL real. Un doble de prueba (fake, stub o mock) reemplaza una pieza lenta o no determinista; el riesgo es que, si el doble es demasiado simple, deja de importar qué hace la pieza real que reemplaza — la prueba sigue en verde aunque esa pieza esté rota. La analogía: un simulador de vuelo que ignora el viento no te prepara para aterrizar con viento real, aunque todas sus lecciones salgan perfectas.
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-Partí de una carpeta vacía y construí las dos capas que el Módulo 4 ya dejó instaladas: la función pura y la consulta SQL.
-```bash
-mkdir pruebas-tareas
-cd pruebas-tareas
-python3 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
-python3 -m pip install pytest
-mkdir src tests
-```
-Guardá `src/tareas.py`:
-```python
-def contar_pendientes(tareas):
-    return len([t for t in tareas if t["estado"] == "pendiente"])
-
-def contar_pendientes_bd(conexion):
-    cursor = conexion.execute("SELECT COUNT(*) FROM tareas WHERE estado = 'pendiente'")
-    return cursor.fetchone()[0]
-```
-Guardá `tests/test_tareas.py` con una unitaria real y una unitaria "sobresimulada" que usa un doble demasiado simple:
-```python
-import sqlite3
-from src.tareas import contar_pendientes, contar_pendientes_bd
-
-def test_contar_pendientes_unitaria():
-    tareas = [{"estado": "pendiente"}, {"estado": "hecho"}, {"estado": "pendiente"}]
-    assert contar_pendientes(tareas) == 2
-
-class ConexionFalsa:
-    def execute(self, consulta_sql):
-        class Cursor:
-            def fetchone(self):
-                return (2,)  # valor fijo: no ejecuta ninguna consulta real
-        return Cursor()
-
-def test_contar_pendientes_bd_con_fake():
-    assert contar_pendientes_bd(ConexionFalsa()) == 2
-```
-Ejecutá `python3 -m pytest -q`. **Resultado esperado:** `2 passed` — ambas pruebas están en verde. **Fallo deliberado:** rompé la consulta real en `src/tareas.py` cambiando `WHERE estado = 'pendiente'` por `WHERE estado = 'completada'` (un valor que no existe) y volvé a correr `pytest -q`: el fake sigue dando `2 passed`, porque `ConexionFalsa.execute` ignora por completo el texto de la consulta y siempre devuelve `(2,)` — la prueba no detecta que la base real ahora devolvería `0`. Agregá entonces una prueba de integración real con SQLite en memoria:
-```python
-def test_contar_pendientes_bd_integracion():
-    conexion = sqlite3.connect(":memory:")
-    conexion.execute("CREATE TABLE tareas(estado TEXT)")
-    conexion.executemany("INSERT INTO tareas VALUES (?)", [("pendiente",), ("hecho",), ("pendiente",)])
-    assert contar_pendientes_bd(conexion) == 2
-```
-Con la consulta rota, esta prueba de integración falla con `assert 0 == 2` — ahí sí se detecta el defecto. Revertí el `WHERE` a `'pendiente'` y confirmá que las tres pruebas pasan.
-
-#### Paso 5 · Práctica guiada
-Pista: antes de confiar en que una prueba "cubre" la base de datos, preguntate si ejecutó la consulta SQL real contra datos reales, o si solo llamó a una función que la rodea con un doble que inventa la respuesta.
-
-#### Paso 6 · Práctica independiente
-Agregá una prueba de integración real (con `sqlite3.connect(":memory:")`) para otra función de tu capa de almacenamiento, y una prueba unitaria para la misma regla que no toque la base. Rompé a propósito la consulta SQL real y confirmá cuál de las dos pruebas lo detecta.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la prueba unitaria de `contar_pendientes`, la prueba con el fake que no detectó la consulta rota, y la prueba de integración que sí la detectó; como siguiente paso, en el Tema 3 vas a usar Git para dejar registrado POR QUÉ agregaste esa prueba de integración, no solo que la agregaste. Errores comunes: confiar en una prueba unitaria para cubrir la base de datos; usar un doble tan simple que ignora el comportamiento real que debería simular; medir éxito solo por cobertura y no por qué detecta cada prueba. Fuentes oficiales: https://docs.pytest.org/en/stable/ y https://docs.python.org/es/3/library/sqlite3.html.
-**¿Por qué es importante?** Porque una suite en verde no garantiza nada por sí sola: garantiza solo lo que sus pruebas realmente ejecutaron, y un doble demasiado simple puede ejecutar menos de lo que parece.
 **Evidencia de aprendizaje:** entrega la unitaria real, el fake que no detectó la consulta rota, y la integración que sí la detectó, con ambas corridas de `pytest -q`.
 
 **Cuándo NO usar:** No reemplaces tu base de datos con un doble en la única prueba que debería validar tu consulta real; usalo solo donde la base sea lenta o no determinista y haya otra prueba de integración cubriendo lo real. No escribas pruebas solo para subir cobertura sin una aserción que realmente pueda fallar. No uses E2E para validar una regla que una unitaria ya prueba más rápido.
@@ -258,6 +200,66 @@ flowchart BT
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Prueba reglas de tareas como unidades y guardado como integración. Introduce una regresión en cada capa y verifica que la prueba correspondiente falla con un mensaje que identifica el comportamiento roto.
 
+#### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
+Partí de una carpeta vacía y construí las dos capas que el Módulo 4 ya dejó instaladas: la función pura y la consulta SQL.
+```bash
+mkdir pruebas-tareas
+cd pruebas-tareas
+python3 -m venv .venv
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+python3 -m pip install pytest
+mkdir src tests
+```
+Guardá `src/tareas.py`:
+```python
+def contar_pendientes(tareas):
+    return len([t for t in tareas if t["estado"] == "pendiente"])
+
+def contar_pendientes_bd(conexion):
+    cursor = conexion.execute("SELECT COUNT(*) FROM tareas WHERE estado = 'pendiente'")
+    return cursor.fetchone()[0]
+```
+Guardá `tests/test_tareas.py` con una unitaria real y una unitaria "sobresimulada" que usa un doble demasiado simple:
+```python
+import sqlite3
+from src.tareas import contar_pendientes, contar_pendientes_bd
+
+def test_contar_pendientes_unitaria():
+    tareas = [{"estado": "pendiente"}, {"estado": "hecho"}, {"estado": "pendiente"}]
+    assert contar_pendientes(tareas) == 2
+
+class ConexionFalsa:
+    def execute(self, consulta_sql):
+        class Cursor:
+            def fetchone(self):
+                return (2,)  # valor fijo: no ejecuta ninguna consulta real
+        return Cursor()
+
+def test_contar_pendientes_bd_con_fake():
+    assert contar_pendientes_bd(ConexionFalsa()) == 2
+```
+Ejecutá `python3 -m pytest -q`. **Resultado esperado:** `2 passed` — ambas pruebas están en verde. **Fallo deliberado:** rompé la consulta real en `src/tareas.py` cambiando `WHERE estado = 'pendiente'` por `WHERE estado = 'completada'` (un valor que no existe) y volvé a correr `pytest -q`: el fake sigue dando `2 passed`, porque `ConexionFalsa.execute` ignora por completo el texto de la consulta y siempre devuelve `(2,)` — la prueba no detecta que la base real ahora devolvería `0`. Agregá entonces una prueba de integración real con SQLite en memoria:
+```python
+def test_contar_pendientes_bd_integracion():
+    conexion = sqlite3.connect(":memory:")
+    conexion.execute("CREATE TABLE tareas(estado TEXT)")
+    conexion.executemany("INSERT INTO tareas VALUES (?)", [("pendiente",), ("hecho",), ("pendiente",)])
+    assert contar_pendientes_bd(conexion) == 2
+```
+Con la consulta rota, esta prueba de integración falla con `assert 0 == 2` — ahí sí se detecta el defecto. Revertí el `WHERE` a `'pendiente'` y confirmá que las tres pruebas pasan.
+
+#### Paso 5 · Práctica guiada
+Pista: antes de confiar en que una prueba "cubre" la base de datos, preguntate si ejecutó la consulta SQL real contra datos reales, o si solo llamó a una función que la rodea con un doble que inventa la respuesta.
+
+#### Paso 6 · Práctica independiente
+Agregá una prueba de integración real (con `sqlite3.connect(":memory:")`) para otra función de tu capa de almacenamiento, y una prueba unitaria para la misma regla que no toque la base. Rompé a propósito la consulta SQL real y confirmá cuál de las dos pruebas lo detecta.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la prueba unitaria de `contar_pendientes`, la prueba con el fake que no detectó la consulta rota, y la prueba de integración que sí la detectó; como siguiente paso, en el Tema 3 vas a usar Git para dejar registrado POR QUÉ agregaste esa prueba de integración, no solo que la agregaste. Errores comunes: confiar en una prueba unitaria para cubrir la base de datos; usar un doble tan simple que ignora el comportamiento real que debería simular; medir éxito solo por cobertura y no por qué detecta cada prueba. Fuentes oficiales: https://docs.pytest.org/en/stable/ y https://docs.python.org/es/3/library/sqlite3.html.
+**¿Por qué es importante?** Porque una suite en verde no garantiza nada por sí sola: garantiza solo lo que sus pruebas realmente ejecutaron, y un doble demasiado simple puede ejecutar menos de lo que parece.
+
 ### Tema 3: Git como historial de decisiones y colaboración
 
 #### Paso 1 · Objetivo y preparación
@@ -269,43 +271,6 @@ El proyecto integrador Fundamentos acumula commits en `tareas.py` a medida que a
 #### Paso 3 · Teoría, modelo mental y analogía
 Git guarda snapshots del proyecto conectados en una línea de commits; cada commit puede tener un mensaje corto y, opcionalmente, un cuerpo más largo. El mensaje corto debería decir QUÉ cambió en modo imperativo ("corrige", no "corregido"); el cuerpo debería decir POR QUÉ, con el contexto que el diff por sí solo no muestra. `git log` solo es útil como historial de decisiones si cada mensaje realmente registra una decisión. La analogía es un cuaderno de laboratorio: anotar solo "experimento 4" no te dice, meses después, qué hipótesis probaba ese experimento ni por qué cambiaste el procedimiento.
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, reproducí el problema de un mensaje de commit inútil y después corregí el hábito:
-```bash
-mkdir historial-tareas
-cd historial-tareas
-git init
-git config user.name "Estudiante"
-git config user.email "estudiante@example.com"
-printf 'ESTADO_INICIAL = "pendiente"\n' > tareas.py
-git add tareas.py
-git commit -m "fix"
-git log --oneline
-```
-
-**Comprueba el repositorio:** ejecuta `git status --short`. Tras el commit no debe listar cambios pendientes. No necesitas ejecutar un archivo Python para inspeccionar el historial.
-
-**Resultado esperado:** `git log --oneline` muestra una sola línea con el hash y la palabra `fix` — nada más. **Fallo deliberado:** imaginá que pasaron tres semanas y necesitás saber por qué existe ese commit. Ejecutá `git show --stat HEAD`: ves qué archivo cambió, pero ni el mensaje ni el comando te dicen si "fix" arreglaba un typo, una regresión de `contar_pendientes` o algo urgente. El diagnóstico es que el único lugar donde el motivo podía sobrevivir —el mensaje del commit— nunca lo registró; el código ya está ahí, pero el porqué se perdió para siempre. Corregí el hábito con un commit nuevo que sí explica la decisión:
-```bash
-printf 'ESTADO_INICIAL = "pendiente"  # valor por defecto al crear una tarea sin estado explícito\n' > tareas.py
-git add tareas.py
-git commit -m "Documenta por qué una tarea nueva arranca en 'pendiente'
-
-Sin este comentario, alguien podía cambiar ESTADO_INICIAL a otro valor
-sin saber que contar_pendientes() depende exactamente de ese string."
-git log --oneline
-```
-Ahora `git log --oneline` muestra dos líneas: la vieja `fix` sigue siendo tan inútil como antes (no la reescribimos, porque reescribir historial ya compartido no es seguro), pero la nueva explica QUÉ cambió y POR QUÉ sin necesitar abrir el diff.
-
-#### Paso 5 · Práctica guiada
-Pista: leé tu propio `git log --oneline` de los últimos días. Si no podés explicar, solo con el mensaje y sin abrir el diff, por qué se hizo cada commit, ese mensaje no está cumpliendo su función.
-
-#### Paso 6 · Práctica independiente
-Elegí 3 commits reales de tu proyecto (de este módulo o de uno anterior) y reescribí sus mensajes como si los fuera a leer alguien dentro de un año: qué cambió y por qué, no solo qué archivo. Si alguno dice "fix", "cambios" o "wip", es tu candidato prioritario.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnosticarlo tres semanas después, y el commit de reemplazo con mensaje que explica el motivo; como siguiente paso, en el Tema 4 vas a automatizar en CI los controles de calidad que hasta ahora corriste a mano. Errores comunes: escribir "fix" o "cambios" confiando en que "ya se entiende"; mezclar en un commit un refactor con una corrección de bug, lo que oscurece cuál de las dos cosas motivó el cambio; reescribir con `git commit --amend` un commit que ya compartiste con otra persona. Fuentes oficiales: https://git-scm.com/book/es/v2 y https://docs.github.com/es/pull-requests.
-**¿Por qué es importante?** Porque el código muestra QUÉ existe hoy, pero solo el historial de commits puede explicar POR QUÉ se llegó hasta ahí — y esa información se pierde para siempre si el mensaje no la registra.
 **Evidencia de aprendizaje:** entrega el commit "fix" original, la explicación de por qué no alcanza, y el commit de reemplazo con mensaje que sí comunica la decisión.
 
 **Cuándo NO usar:** No hagas rebase ni `commit --amend` en ramas ya compartidas; reescribís historia que otra persona ya tiene clonada. No mezcles en un commit un refactor con una corrección de bug; separá ambas intenciones. No confíes en que el nombre del archivo modificado reemplaza al mensaje: un `git log --stat` nunca explica el motivo.
@@ -384,6 +349,44 @@ gitGraph
     checkout main
     merge feature id: "E"
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+Desde una **carpeta vacía**, reproducí el problema de un mensaje de commit inútil y después corregí el hábito:
+```bash
+mkdir historial-tareas
+cd historial-tareas
+git init
+git config user.name "Estudiante"
+git config user.email "estudiante@example.com"
+printf 'ESTADO_INICIAL = "pendiente"\n' > tareas.py
+git add tareas.py
+git commit -m "fix"
+git log --oneline
+```
+
+**Comprueba el repositorio:** ejecuta `git status --short`. Tras el commit no debe listar cambios pendientes. No necesitas ejecutar un archivo Python para inspeccionar el historial.
+
+**Resultado esperado:** `git log --oneline` muestra una sola línea con el hash y la palabra `fix` — nada más. **Fallo deliberado:** imaginá que pasaron tres semanas y necesitás saber por qué existe ese commit. Ejecutá `git show --stat HEAD`: ves qué archivo cambió, pero ni el mensaje ni el comando te dicen si "fix" arreglaba un typo, una regresión de `contar_pendientes` o algo urgente. El diagnóstico es que el único lugar donde el motivo podía sobrevivir —el mensaje del commit— nunca lo registró; el código ya está ahí, pero el porqué se perdió para siempre. Corregí el hábito con un commit nuevo que sí explica la decisión:
+```bash
+printf 'ESTADO_INICIAL = "pendiente"  # valor por defecto al crear una tarea sin estado explícito\n' > tareas.py
+git add tareas.py
+git commit -m "Documenta por qué una tarea nueva arranca en 'pendiente'
+
+Sin este comentario, alguien podía cambiar ESTADO_INICIAL a otro valor
+sin saber que contar_pendientes() depende exactamente de ese string."
+git log --oneline
+```
+Ahora `git log --oneline` muestra dos líneas: la vieja `fix` sigue siendo tan inútil como antes (no la reescribimos, porque reescribir historial ya compartido no es seguro), pero la nueva explica QUÉ cambió y POR QUÉ sin necesitar abrir el diff.
+
+#### Paso 5 · Práctica guiada
+Pista: leé tu propio `git log --oneline` de los últimos días. Si no podés explicar, solo con el mensaje y sin abrir el diff, por qué se hizo cada commit, ese mensaje no está cumpliendo su función.
+
+#### Paso 6 · Práctica independiente
+Elegí 3 commits reales de tu proyecto (de este módulo o de uno anterior) y reescribí sus mensajes como si los fuera a leer alguien dentro de un año: qué cambió y por qué, no solo qué archivo. Si alguno dice "fix", "cambios" o "wip", es tu candidato prioritario.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnosticarlo tres semanas después, y el commit de reemplazo con mensaje que explica el motivo; como siguiente paso, en el Tema 4 vas a automatizar en CI los controles de calidad que hasta ahora corriste a mano. Errores comunes: escribir "fix" o "cambios" confiando en que "ya se entiende"; mezclar en un commit un refactor con una corrección de bug, lo que oscurece cuál de las dos cosas motivó el cambio; reescribir con `git commit --amend` un commit que ya compartiste con otra persona. Fuentes oficiales: https://git-scm.com/book/es/v2 y https://docs.github.com/es/pull-requests.
+**¿Por qué es importante?** Porque el código muestra QUÉ existe hoy, pero solo el historial de commits puede explicar POR QUÉ se llegó hasta ahí — y esa información se pierde para siempre si el mensaje no la registra.
 
 ### Tema 4: Calidad estática, revisión e integración continua
 

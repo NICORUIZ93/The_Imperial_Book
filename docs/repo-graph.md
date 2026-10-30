@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 16:08 UTC
+Generated: 2026-10-30 16:17 UTC
 Root: `Academia_Floci`
-Indexed files: 921
+Indexed files: 922
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -21,13 +21,13 @@ For automated lookups, use `docs/repo-graph.json`.
 - `documentation`: 54 files
 - `example`: 467 files
 - `local-infra`: 1 files
-- `project-file`: 54 files
+- `project-file`: 55 files
 
 ## File Types
 
 - `.md`: 312
 - `.py`: 161
-- `.json`: 67
+- `.json`: 68
 - `.ts`: 66
 - `.java`: 54
 - `.js`: 54
@@ -270,20 +270,20 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
+- `docs/app-flow-inspection-devops.json` (1617 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2884 lines)
+- `docs/code-visual-quality.json` (2156 lines)
 - `docs/course-depth-review.json` (12460 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10571 lines)
+- `docs/lesson-substance.json` (10130 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
 - `docs/prerequisite-graph.json` (12086 lines)
-- `docs/requested-master-topics.json` (189 lines)
-- ... 36 more files
+- ... 37 more files

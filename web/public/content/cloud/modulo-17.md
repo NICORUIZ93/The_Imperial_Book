@@ -11,21 +11,7 @@ Al finalizar vas a transmitir la ubicación GPS real de un conductor de RutaFlow
 La ubicación de un conductor debe alimentar el mapa en vivo del cliente Y un proceso de analítica de rutas al mismo tiempo — con SQS (Módulo 3), solo uno de los dos podría leer cada ping antes de que desapareciera de la cola.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un stream de Kinesis es un cuaderno append-only: cada lector lo recorre a su propio ritmo sin borrar nada para los demás, a diferencia de una cola SQS donde leer un mensaje lo retira.
-#### Paso 4 · Demostración guiada
-```bash
-aws kinesis create-stream --stream-name rutaflow-ubicacion-conductores --shard-count 1
-aws kinesis put-record --stream-name rutaflow-ubicacion-conductores --partition-key conductor-c891 --data $(echo -n '{"conductorId":"c-891","lat":4.6097,"lon":-74.0817}' | base64)
-SHARD_ID=$(aws kinesis describe-stream --stream-name rutaflow-ubicacion-conductores --query 'StreamDescription.Shards[0].ShardId' --output text)
-ITERATOR=$(aws kinesis get-shard-iterator --stream-name rutaflow-ubicacion-conductores --shard-id "$SHARD_ID" --shard-iterator-type TRIM_HORIZON --query ShardIterator --output text)
-aws kinesis get-records --shard-iterator "$ITERATOR"
-```
-Resultado esperado: `get-records` devuelve el ping GPS que publicaste, con su `Data` codificado en base64 — ese mismo registro va a seguir disponible para un segundo consumidor completamente distinto que lea el stream con su propio iterador.
-#### Paso 5 · Práctica guiada
-Pista: pedí un nuevo iterador con `--shard-iterator-type LATEST` (en vez de `TRIM_HORIZON`) después de publicar un segundo ping — ese es el fallo deliberado: un consumidor que "reinicia" sin guardar su posición anterior y usa `LATEST` se salta todo lo publicado antes de pedir ese iterador nuevo, perdiendo pings de ubicación que sí estaban disponibles.
-#### Paso 6 · Práctica independiente
-Pedí un segundo iterador independiente con `TRIM_HORIZON` (simulando el consumidor de analítica, separado del mapa en vivo) y confirmá que lee exactamente los mismos registros desde el principio, sin que el primer consumidor haya "gastado" ninguno.
-#### Paso 7 · Cierre y evidencia
-Entregá el ping leído con `TRIM_HORIZON`, el ping perdido por `LATEST` del Paso 5, y la lectura independiente del Paso 6; explicá por qué SQS no podría alimentar dos consumidores independientes con el mismo ping. Siguiente paso: offsets. Errores comunes: borrar eventos y confundir stream con cola. Fuente oficial: https://docs.aws.amazon.com/streams/latest/dev/introduction.html.
+
 **Conceptos clave:** un registro persistente leído por múltiples consumidores independientes, no un mensaje que se elimina al consumirse.
 
 ```bash
@@ -56,6 +42,22 @@ agregarse junto a `ShipmentEvents` en `examples/rutaflow/cloud/template.yaml` el
 mapa en vivo del cliente necesite leer independientemente del proceso de analítica de rutas —
 algo que la cola `DeliveryCommands` (SQS, un solo consumidor por mensaje) no podría resolver.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws kinesis create-stream --stream-name rutaflow-ubicacion-conductores --shard-count 1
+aws kinesis put-record --stream-name rutaflow-ubicacion-conductores --partition-key conductor-c891 --data $(echo -n '{"conductorId":"c-891","lat":4.6097,"lon":-74.0817}' | base64)
+SHARD_ID=$(aws kinesis describe-stream --stream-name rutaflow-ubicacion-conductores --query 'StreamDescription.Shards[0].ShardId' --output text)
+ITERATOR=$(aws kinesis get-shard-iterator --stream-name rutaflow-ubicacion-conductores --shard-id "$SHARD_ID" --shard-iterator-type TRIM_HORIZON --query ShardIterator --output text)
+aws kinesis get-records --shard-iterator "$ITERATOR"
+```
+Resultado esperado: `get-records` devuelve el ping GPS que publicaste, con su `Data` codificado en base64 — ese mismo registro va a seguir disponible para un segundo consumidor completamente distinto que lea el stream con su propio iterador.
+#### Paso 5 · Práctica guiada
+Pista: pedí un nuevo iterador con `--shard-iterator-type LATEST` (en vez de `TRIM_HORIZON`) después de publicar un segundo ping — ese es el fallo deliberado: un consumidor que "reinicia" sin guardar su posición anterior y usa `LATEST` se salta todo lo publicado antes de pedir ese iterador nuevo, perdiendo pings de ubicación que sí estaban disponibles.
+#### Paso 6 · Práctica independiente
+Pedí un segundo iterador independiente con `TRIM_HORIZON` (simulando el consumidor de analítica, separado del mapa en vivo) y confirmá que lee exactamente los mismos registros desde el principio, sin que el primer consumidor haya "gastado" ninguno.
+#### Paso 7 · Cierre y evidencia
+Entregá el ping leído con `TRIM_HORIZON`, el ping perdido por `LATEST` del Paso 5, y la lectura independiente del Paso 6; explicá por qué SQS no podría alimentar dos consumidores independientes con el mismo ping. Siguiente paso: offsets. Errores comunes: borrar eventos y confundir stream con cola. Fuente oficial: https://docs.aws.amazon.com/streams/latest/dev/introduction.html.
+
 ### Tema 2: MSK (Kafka gestionado) y consumer groups
 
 #### Paso 1 · Objetivo y preparación
@@ -64,22 +66,7 @@ Al finalizar vas a modelar el mismo topic de ubicaciones del Tema 1 sobre MSK, c
 El grupo "mapa-en-vivo" y el grupo "alertas-desvio" deben procesar los mismos pings de ubicación de forma completamente aislada — si uno se reinicia, no debería perder su propio progreso ni afectar al otro.
 #### Paso 3 · Teoría, modelo mental y analogía
 El offset es un separador que marca hasta dónde leyó cada consumer group específico, no un marcador global del topic ni por consumidor individual aislado.
-#### Paso 4 · Demostración guiada
-```bash
-aws kafka create-cluster --cluster-name rutaflow-ubicacion-kafka \
-  --broker-node-group-info '{"InstanceType":"kafka.m5.large","ClientSubnets":["subnet-local"]}' \
-  --number-of-broker-nodes 1 --kafka-version "3.5.1"
-kafka-topics.sh --create --topic ubicacion-conductores --bootstrap-server localhost:9092
-kafka-console-consumer.sh --topic ubicacion-conductores --group mapa-en-vivo --bootstrap-server localhost:9092 --from-beginning --max-messages 1
-kafka-consumer-groups.sh --describe --group mapa-en-vivo --bootstrap-server localhost:9092
-```
-Resultado esperado: `--describe` muestra el offset actual del grupo `mapa-en-vivo` para el topic `ubicacion-conductores` — ese número es exclusivo de ese grupo, ningún otro grupo lo comparte ni lo modifica.
-#### Paso 5 · Práctica guiada
-Pista: corré `kafka-consumer-groups.sh --reset-offsets --group mapa-en-vivo --topic ubicacion-conductores --to-offset 0 --execute --bootstrap-server localhost:9092` por error (pensando que afectaría solo mensajes nuevos) — ese es el fallo deliberado: el grupo entero vuelve a leer desde el principio del topic en su próxima lectura, reprocesando pings de ubicación que el mapa en vivo ya había mostrado hace rato.
-#### Paso 6 · Práctica independiente
-Creá el grupo `alertas-desvio` leyendo el mismo topic `ubicacion-conductores`, confirmá con `kafka-consumer-groups.sh --describe --group alertas-desvio` que su offset es completamente independiente del de `mapa-en-vivo` (incluso después del reset accidental del Paso 5), y documentá por qué eso es exactamente lo que se espera.
-#### Paso 7 · Cierre y evidencia
-Entregá el offset por grupo del Paso 4, el reset accidental del Paso 5 y la independencia confirmada en el Paso 6; explicá por qué un offset compartido entre grupos rompería el aislamiento que este Tema busca demostrar. Siguiente paso: Firehose. Errores comunes: compartir offset entre grupos y no hacer commit. Fuente oficial: https://docs.aws.amazon.com/kinesis/latest/dev/key-concepts.html.
+
 **Conceptos clave:** posición de lectura persistida por grupo de consumidores, no por consumidor individual aislado.
 
 ```bash
@@ -118,6 +105,23 @@ groups separados sobre el mismo topic de ubicaciones; igual que `ConfirmarEntreg
 necesitaría su propio permiso de lectura sobre MSK, sin compartir ni el offset ni el acceso.
 
 **Límites y decisión de uso:** Dentro de un grupo, aumentar consumidores por encima de las particiones no aumenta el paralelismo útil de ese topic. El orden está ligado a la partición; una confirmación externa requiere además idempotencia y una política explícita de offsets.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws kafka create-cluster --cluster-name rutaflow-ubicacion-kafka \
+  --broker-node-group-info '{"InstanceType":"kafka.m5.large","ClientSubnets":["subnet-local"]}' \
+  --number-of-broker-nodes 1 --kafka-version "3.5.1"
+kafka-topics.sh --create --topic ubicacion-conductores --bootstrap-server localhost:9092
+kafka-console-consumer.sh --topic ubicacion-conductores --group mapa-en-vivo --bootstrap-server localhost:9092 --from-beginning --max-messages 1
+kafka-consumer-groups.sh --describe --group mapa-en-vivo --bootstrap-server localhost:9092
+```
+Resultado esperado: `--describe` muestra el offset actual del grupo `mapa-en-vivo` para el topic `ubicacion-conductores` — ese número es exclusivo de ese grupo, ningún otro grupo lo comparte ni lo modifica.
+#### Paso 5 · Práctica guiada
+Pista: corré `kafka-consumer-groups.sh --reset-offsets --group mapa-en-vivo --topic ubicacion-conductores --to-offset 0 --execute --bootstrap-server localhost:9092` por error (pensando que afectaría solo mensajes nuevos) — ese es el fallo deliberado: el grupo entero vuelve a leer desde el principio del topic en su próxima lectura, reprocesando pings de ubicación que el mapa en vivo ya había mostrado hace rato.
+#### Paso 6 · Práctica independiente
+Creá el grupo `alertas-desvio` leyendo el mismo topic `ubicacion-conductores`, confirmá con `kafka-consumer-groups.sh --describe --group alertas-desvio` que su offset es completamente independiente del de `mapa-en-vivo` (incluso después del reset accidental del Paso 5), y documentá por qué eso es exactamente lo que se espera.
+#### Paso 7 · Cierre y evidencia
+Entregá el offset por grupo del Paso 4, el reset accidental del Paso 5 y la independencia confirmada en el Paso 6; explicá por qué un offset compartido entre grupos rompería el aislamiento que este Tema busca demostrar. Siguiente paso: Firehose. Errores comunes: compartir offset entre grupos y no hacer commit. Fuente oficial: https://docs.aws.amazon.com/kinesis/latest/dev/key-concepts.html.
 
 ### Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka
 

@@ -11,6 +11,58 @@ Al finalizar vas a conectar `TarjetaEnvio` (Módulo 1) a un interruptor de estad
 Si la pantalla de detalle de un envío y la lista de envíos mostraran cada una su propia copia del estado "entregado", marcar la entrega en el detalle nunca actualizaría la lista — exactamente el bug que `@Binding` existe para evitar.
 #### Paso 3 · Teoría, modelo mental y analogía
 `@State` pertenece a la vista que lo declara; `@Binding` es una referencia hacia el estado de otra vista, nunca una copia — un apoderado con autorización para modificar la casa de otro, sin ser dueño de ella.
+
+**Evidencia de aprendizaje:** entrega el `@Binding` compartido funcionando, el estado divergente provocado al reemplazarlo por un `@State` propio, y las tres vistas sincronizadas sin copia.
+**Conceptos clave:** estado propio de una vista vs referencia mutable al estado de otra.
+
+#### Cómo leer `@State`, `@Binding` y el prefijo `$`
+
+En Swift, `@State` y `@Binding` son **property wrappers**, no decoradores genéricos. Un wrapper define cómo se almacena y se accede a una propiedad mediante `wrappedValue`; el compilador reescribe la declaración y sintetiza almacenamiento auxiliar. En `@State private var contador = 0`, leer o asignar `contador` opera sobre el valor envuelto. La expresión `$contador` accede al `projectedValue` que `State` expone: un `Binding<Int>` capaz de leer y escribir el mismo origen de verdad.
+
+`@Binding var valor: Int` no crea almacenamiento ni copia el entero. Declara que la vista necesita recibir dos operaciones coordinadas —lectura y escritura— sobre un valor poseído en otro lugar. Por eso el inicializador espera `Binding<Int>` y se llama con `$contador`, no con `contador`. El error «Cannot convert value of type 'Int' to expected argument type 'Binding<Int>'» indica precisamente que se pasó el valor actual cuando el hijo necesitaba el vínculo proyectado.
+
+**Decisión:** usa `@State` solo para estado transitorio que la vista posee; usa `@Binding` cuando el hijo debe modificar una fuente de verdad externa. No copies datos de dominio en otro `@State` para “sincronizarlos”: aparecerán dos fuentes de verdad que pueden divergir.
+
+```swift
+struct PantallaContador: View {
+    @State private var contador = 0 // estado propio de esta vista
+    var body: some View {
+        BotonContador(valor: $contador) // $ crea un Binding hacia el estado del padre
+    }
+}
+
+struct BotonContador: View {
+    @Binding var valor: Int // referencia al estado del padre, no una copia
+    var body: some View {
+        Button("Sumar: \(valor)") { valor += 1 }
+    }
+}
+```
+
+`@State` declara una propiedad cuyo valor pertenece exclusivamente a esa vista específica, y cuyo cambio dispara automáticamente un redibujado de esa vista (y de cualquier sub-vista que dependa de ese valor); SwiftUI gestiona el almacenamiento persistente de ese valor entre redibujados por su cuenta, un mecanismo conceptualmente equivalente a `remember { mutableStateOf(...) }` en Jetpack Compose (Módulo 2 del track de Android), ambos resolviendo el mismo problema de "preservar estado local entre recomposiciones/redibujados sucesivos" en sus respectivos frameworks de UI declarativa.
+
+`@Binding`, en contraste, no posee el valor sino que mantiene una referencia hacia el estado de otra vista (típicamente el padre, pasado con el prefijo `$` que crea el Binding a partir de un `@State`): modificar `valor` dentro de `BotonContador` efectivamente modifica el `@State` original en `PantallaContador`, exactamente el mismo principio de state hoisting estudiado en Jetpack Compose (Módulo 2 de Android) y en React (Módulo 2 de React), donde un componente hijo recibe el valor y una forma de notificar cambios, sin poseer el estado él mismo.
+
+**Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
+
+**Código del ejemplo:**
+
+```swift
+struct PantallaContador: View {
+    @State private var contador = 0
+    var body: some View { BotonContador(valor: $contador) }
+}
+struct BotonContador: View {
+    @Binding var valor: Int
+}
+```
+
+* Código: `examples/rutaflow/ios/ContentView.swift`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
+
+**Límites y decisión de uso:** State conserva estado ligado a la identidad de la vista, no almacenamiento durable. Usa Binding para editar la fuente existente y persistencia para datos que deben sobrevivir al cierre; copiar valores en otra fuente puede desincronizarlos.
+
 #### Paso 4 · Demostración guiada desde cero
 
 Crea un proyecto SwiftUI desde cero. En macOS con Xcode instalado, créalo por línea de comandos y ábrelo:
@@ -63,56 +115,6 @@ Corregí el Paso 5 volviendo a `@Binding`, y agregá una tercera vista (`Resumen
 #### Paso 7 · Cierre y evidencia
 Entregá el `@Binding` compartido funcionando del Paso 4, el estado divergente del Paso 5, y las tres vistas sincronizadas del Paso 6; explicá por qué "copiar el valor a otro `@State` para tenerlo a mano" crea exactamente el bug que acabás de provocar. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque copiar un valor compartido en un `@State` propio "para tenerlo a mano" crea dos fuentes de verdad que pueden divergir, exactamente el bug que `@Binding` existe para evitar al referenciar el estado del padre en vez de copiarlo.
-**Evidencia de aprendizaje:** entrega el `@Binding` compartido funcionando, el estado divergente provocado al reemplazarlo por un `@State` propio, y las tres vistas sincronizadas sin copia.
-**Conceptos clave:** estado propio de una vista vs referencia mutable al estado de otra.
-
-#### Cómo leer `@State`, `@Binding` y el prefijo `$`
-
-En Swift, `@State` y `@Binding` son **property wrappers**, no decoradores genéricos. Un wrapper define cómo se almacena y se accede a una propiedad mediante `wrappedValue`; el compilador reescribe la declaración y sintetiza almacenamiento auxiliar. En `@State private var contador = 0`, leer o asignar `contador` opera sobre el valor envuelto. La expresión `$contador` accede al `projectedValue` que `State` expone: un `Binding<Int>` capaz de leer y escribir el mismo origen de verdad.
-
-`@Binding var valor: Int` no crea almacenamiento ni copia el entero. Declara que la vista necesita recibir dos operaciones coordinadas —lectura y escritura— sobre un valor poseído en otro lugar. Por eso el inicializador espera `Binding<Int>` y se llama con `$contador`, no con `contador`. El error «Cannot convert value of type 'Int' to expected argument type 'Binding<Int>'» indica precisamente que se pasó el valor actual cuando el hijo necesitaba el vínculo proyectado.
-
-**Decisión:** usa `@State` solo para estado transitorio que la vista posee; usa `@Binding` cuando el hijo debe modificar una fuente de verdad externa. No copies datos de dominio en otro `@State` para “sincronizarlos”: aparecerán dos fuentes de verdad que pueden divergir.
-
-```swift
-struct PantallaContador: View {
-    @State private var contador = 0 // estado propio de esta vista
-    var body: some View {
-        BotonContador(valor: $contador) // $ crea un Binding hacia el estado del padre
-    }
-}
-
-struct BotonContador: View {
-    @Binding var valor: Int // referencia al estado del padre, no una copia
-    var body: some View {
-        Button("Sumar: \(valor)") { valor += 1 }
-    }
-}
-```
-
-`@State` declara una propiedad cuyo valor pertenece exclusivamente a esa vista específica, y cuyo cambio dispara automáticamente un redibujado de esa vista (y de cualquier sub-vista que dependa de ese valor); SwiftUI gestiona el almacenamiento persistente de ese valor entre redibujados por su cuenta, un mecanismo conceptualmente equivalente a `remember { mutableStateOf(...) }` en Jetpack Compose (Módulo 2 del track de Android), ambos resolviendo el mismo problema de "preservar estado local entre recomposiciones/redibujados sucesivos" en sus respectivos frameworks de UI declarativa.
-
-`@Binding`, en contraste, no posee el valor sino que mantiene una referencia hacia el estado de otra vista (típicamente el padre, pasado con el prefijo `$` que crea el Binding a partir de un `@State`): modificar `valor` dentro de `BotonContador` efectivamente modifica el `@State` original en `PantallaContador`, exactamente el mismo principio de state hoisting estudiado en Jetpack Compose (Módulo 2 de Android) y en React (Módulo 2 de React), donde un componente hijo recibe el valor y una forma de notificar cambios, sin poseer el estado él mismo.
-
-**Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
-
-**Código del ejemplo:**
-
-```swift
-struct PantallaContador: View {
-    @State private var contador = 0
-    var body: some View { BotonContador(valor: $contador) }
-}
-struct BotonContador: View {
-    @Binding var valor: Int
-}
-```
-
-* Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
-
-**Límites y decisión de uso:** State conserva estado ligado a la identidad de la vista, no almacenamiento durable. Usa Binding para editar la fuente existente y persistencia para datos que deben sobrevivir al cierre; copiar valores en otra fuente puede desincronizarlos.
 
 ### Tema 2: @Observable
 

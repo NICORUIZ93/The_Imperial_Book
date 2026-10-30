@@ -32,34 +32,6 @@ graph LR
     style F fill:#ffcccc
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-final dio = Dio();
-final cancelToken = CancelToken();
-final respuesta = await dio.get('/envios', queryParameters: {'guia': guia}, cancelToken: cancelToken);
-// al escribir una nueva guía: cancelToken.cancel('nueva búsqueda');
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: al escribir una guía nueva antes de que la búsqueda anterior complete, llamar a `cancelToken.cancel()` cancela efectivamente esa petición en curso — la respuesta vieja nunca llega a sobrescribir el resultado de la búsqueda más reciente.
-
-#### Paso 5 · Práctica guiada
-Pista: seguí usando `http.get(Uri.parse(...))` para esta búsqueda, sin ningún mecanismo de cancelación — ese es el fallo deliberado: escribí dos guías rápido seguidas y confirmá que, si la primera petición responde después de la segunda, sus resultados sobrescriben los de la búsqueda más reciente en pantalla, mostrando envíos que no corresponden a lo que el operador realmente buscó al final.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 migrando esa búsqueda a `dio` con `CancelToken`, y confirmá explícitamente que la respuesta de una búsqueda cancelada nunca llega a actualizar el estado de la pantalla.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la búsqueda cancelable con `dio` del Paso 4, la respuesta obsoleta sobrescribiendo resultados del Paso 5, y la confirmación del Paso 6; explicá por qué `http` básico, al no ofrecer cancelación nativa, exigiría construir manualmente esa infraestructura si se insistiera en usarlo para este caso. Siguiente paso: estudia json_serializable para deserializar la respuesta de forma tipada. Errores comunes: usar `http` para casos que necesitan cancelación o interceptores sin medir el costo de construir eso manualmente, no cancelar peticiones obsoletas antes de disparar una nueva, y olvidar manejar el error específico de cancelación. Fuentes oficiales: https://pub.dev/packages/dio y https://pub.dev/packages/http.
-**¿Por qué es importante?** `dio` ofrece interceptores, cancelación y timeouts configurables como parte de su API central, capacidades que una app de tamaño real necesita y que `http` no ofrece nativamente.
 **Evidencia de aprendizaje:** entrega búsqueda cancelable con dio, respuesta obsoleta detectada y confirmación de cancelación efectiva.
 **Conceptos clave:** simplicidad básica frente a un cliente HTTP completo para apps de tamaño real.
 
@@ -91,26 +63,12 @@ final respuesta = await dio.get('/tareas');
 
 En el proyecto integrador RutaFlow, el cliente `dio` vive en `lib/core/api_client.dart`. Práctica: migrá una segunda llamada de tu proyecto propio de `http` a `dio` con `CancelToken`.
 
-### Tema 2: json_serializable
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a generar el modelo `Envio` con `json_serializable`, detectando en tiempo de deserialización si la API devuelve un campo faltante o mal tipado. Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Parsear la respuesta de `/envios` manualmente accediendo a `json['guia']` como `Map<String, dynamic>` sin verificación de tipo deja pasar silenciosamente un campo faltante como `null`, que solo causa un error confuso mucho más adelante en el código, lejos de donde realmente se originó el problema.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-`json_serializable` genera en tiempo de compilación el código de parsing hacia una instancia tipada; un campo faltante o mal tipado produce un error claro al deserializar, no un `null` silencioso.
-
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-@JsonSerializable()
-class Envio {
-  final String guia;
-  final String estado;
-  Envio({required this.guia, required this.estado});
-  factory Envio.fromJson(Map<String, dynamic> json) => _$EnvioFromJson(json);
-}
+final dio = Dio();
+final cancelToken = CancelToken();
+final respuesta = await dio.get('/envios', queryParameters: {'guia': guia}, cancelToken: cancelToken);
+// al escribir una nueva guía: cancelToken.cancel('nueva búsqueda');
 ```
 
 **Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
@@ -122,17 +80,29 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: deserializar una respuesta de la API que le falte el campo `estado` lanza un error explícito y claro en el punto exacto de `Envio.fromJson(json)` — no un `null` silencioso que recién falla mucho más adelante al intentar mostrar `envio.estado` en pantalla.
+Resultado esperado: al escribir una guía nueva antes de que la búsqueda anterior complete, llamar a `cancelToken.cancel()` cancela efectivamente esa petición en curso — la respuesta vieja nunca llega a sobrescribir el resultado de la búsqueda más reciente.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá el modelo para parsear `estado` manualmente con `json['estado'] as String? ?? ''` "para evitar el error" — ese es el fallo deliberado: ahora un envío con el campo `estado` faltante en la respuesta real de la API se parsea silenciosamente como un string vacío, sin ningún error ni advertencia, y la UI simplemente muestra una tarjeta de envío sin estado visible.
+Pista: seguí usando `http.get(Uri.parse(...))` para esta búsqueda, sin ningún mecanismo de cancelación — ese es el fallo deliberado: escribí dos guías rápido seguidas y confirmá que, si la primera petición responde después de la segunda, sus resultados sobrescriben los de la búsqueda más reciente en pantalla, mostrando envíos que no corresponden a lo que el operador realmente buscó al final.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el campo a `required this.estado` tipado estrictamente, y agregá un test que confirme que deserializar un JSON sin el campo `estado` lanza una excepción, en vez de producir un `Envio` con datos incompletos silenciosos.
+Corregí el Paso 5 migrando esa búsqueda a `dio` con `CancelToken`, y confirmá explícitamente que la respuesta de una búsqueda cancelada nunca llega a actualizar el estado de la pantalla.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el modelo generado del Paso 4, el error silenciado por el valor por defecto del Paso 5, y el test de deserialización del Paso 6; explicá por qué "evitar el error" con un valor por defecto en este caso oculta un problema real de datos en vez de resolverlo. Siguiente paso: estudia interceptores y estados explícitos. Errores comunes: usar valores por defecto para "evitar" errores de deserialización que en realidad señalan datos incompletos reales, parsear JSON manualmente sin ninguna verificación de tipo centralizada, y olvidar correr `build_runner` después de modificar un modelo anotado. Fuentes oficiales: https://pub.dev/packages/json_serializable y https://docs.flutter.dev/data-and-backend/serialization/json.
-**¿Por qué es importante?** Generar modelos con `json_serializable` es más seguro que parsear JSON manualmente porque un campo faltante o mal tipado falla de forma clara y explícita, en vez de propagar un error silencioso.
+Entregá la búsqueda cancelable con `dio` del Paso 4, la respuesta obsoleta sobrescribiendo resultados del Paso 5, y la confirmación del Paso 6; explicá por qué `http` básico, al no ofrecer cancelación nativa, exigiría construir manualmente esa infraestructura si se insistiera en usarlo para este caso. Siguiente paso: estudia json_serializable para deserializar la respuesta de forma tipada. Errores comunes: usar `http` para casos que necesitan cancelación o interceptores sin medir el costo de construir eso manualmente, no cancelar peticiones obsoletas antes de disparar una nueva, y olvidar manejar el error específico de cancelación. Fuentes oficiales: https://pub.dev/packages/dio y https://pub.dev/packages/http.
+**¿Por qué es importante?** `dio` ofrece interceptores, cancelación y timeouts configurables como parte de su API central, capacidades que una app de tamaño real necesita y que `http` no ofrece nativamente.
+
+### Tema 2: json_serializable
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a generar el modelo `Envio` con `json_serializable`, detectando en tiempo de deserialización si la API devuelve un campo faltante o mal tipado. Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Parsear la respuesta de `/envios` manualmente accediendo a `json['guia']` como `Map<String, dynamic>` sin verificación de tipo deja pasar silenciosamente un campo faltante como `null`, que solo causa un error confuso mucho más adelante en el código, lejos de donde realmente se originó el problema.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`json_serializable` genera en tiempo de compilación el código de parsing hacia una instancia tipada; un campo faltante o mal tipado produce un error claro al deserializar, no un `null` silencioso.
+
 **Evidencia de aprendizaje:** entrega modelo generado, error silenciado detectado y test de deserialización estricta.
 **Conceptos clave:** generación de código en tiempo de compilación, parsing tipado y verificado.
 
@@ -175,6 +145,38 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, el modelo `Envio` vive en `lib/core/models.dart`. Límite de la decisión: no conviene usar `json_serializable` para un payload de un solo campo primitivo consumido una sola vez — ahí parsear manualmente es más simple que agregar generación de código; la decisión cambia frente a un modelo con varios campos tipados reutilizado en múltiples pantallas.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+@JsonSerializable()
+class Envio {
+  final String guia;
+  final String estado;
+  Envio({required this.guia, required this.estado});
+  factory Envio.fromJson(Map<String, dynamic> json) => _$EnvioFromJson(json);
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: deserializar una respuesta de la API que le falte el campo `estado` lanza un error explícito y claro en el punto exacto de `Envio.fromJson(json)` — no un `null` silencioso que recién falla mucho más adelante al intentar mostrar `envio.estado` en pantalla.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá el modelo para parsear `estado` manualmente con `json['estado'] as String? ?? ''` "para evitar el error" — ese es el fallo deliberado: ahora un envío con el campo `estado` faltante en la respuesta real de la API se parsea silenciosamente como un string vacío, sin ningún error ni advertencia, y la UI simplemente muestra una tarjeta de envío sin estado visible.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo el campo a `required this.estado` tipado estrictamente, y agregá un test que confirme que deserializar un JSON sin el campo `estado` lanza una excepción, en vez de producir un `Envio` con datos incompletos silenciosos.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el modelo generado del Paso 4, el error silenciado por el valor por defecto del Paso 5, y el test de deserialización del Paso 6; explicá por qué "evitar el error" con un valor por defecto en este caso oculta un problema real de datos en vez de resolverlo. Siguiente paso: estudia interceptores y estados explícitos. Errores comunes: usar valores por defecto para "evitar" errores de deserialización que en realidad señalan datos incompletos reales, parsear JSON manualmente sin ninguna verificación de tipo centralizada, y olvidar correr `build_runner` después de modificar un modelo anotado. Fuentes oficiales: https://pub.dev/packages/json_serializable y https://docs.flutter.dev/data-and-backend/serialization/json.
+**¿Por qué es importante?** Generar modelos con `json_serializable` es más seguro que parsear JSON manualmente porque un campo faltante o mal tipado falla de forma clara y explícita, en vez de propagar un error silencioso.
 
 ### Tema 3: Interceptores y estados explícitos
 

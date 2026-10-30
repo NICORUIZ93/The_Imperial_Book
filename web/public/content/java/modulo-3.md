@@ -14,28 +14,6 @@ Leer un archivo de configuración puede fallar por una condición externa previs
 #### Paso 3 · Teoría, modelo mental y analogía
 Las checked exceptions obligan al compilador a verificar que el código las declare o las maneje; las unchecked no imponen esa obligación porque típicamente señalan errores de programación. La analogía: un formulario de aduana obligatorio (checked) frente a una alarma de incendio que puede activarse sin aviso (unchecked).
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-checked-unchecked
-cd ejemplo-checked-unchecked
-mkdir -p src/main/java/academia/excepciones
-```
-Crea `LectorConfig.java` con un método `leer(String ruta) throws IOException` (checked) y una clase `Main` que además provoque una `IndexOutOfBoundsException` (unchecked) accediendo a una lista vacía. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/excepciones/LectorConfig.java
-java -cp out academia.excepciones.Main config.properties
-```
-
-#### Paso 5 · Práctica guiada
-Pista: quita deliberadamente `throws IOException` del método `leer` para provocar un fallo de compilación; el compilador exige declararla o manejarla. Resultado esperado: confirmas que el mismo `try/catch` no es exigido para la `IndexOutOfBoundsException`.
-
-#### Paso 6 · Práctica independiente
-Clasifica en una tabla tres excepciones más de la biblioteca estándar (`FileNotFoundException`, `NullPointerException`, `NumberFormatException`) como checked o unchecked, y explica en una frase por qué esa clasificación tiene sentido para cada una.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el código, la salida del `throws` obligatorio y la excepción unchecked no declarada; como siguiente paso estudia try-with-resources. Errores comunes: declarar `throws Exception` genérico en vez de la excepción checked específica, envolver cada excepción unchecked en un `try/catch` "por si acaso" sin que exista una recuperación real posible, y tratar una `NullPointerException` como si fuera una condición externa recuperable en vez de un bug a corregir. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
-**¿Por qué es importante?** Porque forzar al compilador a verificar una excepción checked solo tiene sentido para condiciones externas genuinamente recuperables; aplicar esa misma obligación a algo que en realidad es un bug de programación solo ensucia la firma de los métodos sin ganar nada.
 **Evidencia de aprendizaje:** entrega `LectorConfig` con su `throws IOException` declarado, el error de compilación al quitarlo, y la `IndexOutOfBoundsException` unchecked propagándose sin declaración.
 **Conceptos clave:** obligación de manejo verificada en compilación, indicación de bug.
 
@@ -61,6 +39,29 @@ void leerArchivo() throws IOException { ... }
 int x = lista.get(100); // IndexOutOfBoundsException si la lista tiene menos elementos
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-checked-unchecked
+cd ejemplo-checked-unchecked
+mkdir -p src/main/java/academia/excepciones
+```
+Crea `LectorConfig.java` con un método `leer(String ruta) throws IOException` (checked) y una clase `Main` que además provoque una `IndexOutOfBoundsException` (unchecked) accediendo a una lista vacía. Compila y ejecuta:
+```bash
+javac -d out src/main/java/academia/excepciones/LectorConfig.java
+java -cp out academia.excepciones.Main config.properties
+```
+
+#### Paso 5 · Práctica guiada
+Pista: quita deliberadamente `throws IOException` del método `leer` para provocar un fallo de compilación; el compilador exige declararla o manejarla. Resultado esperado: confirmas que el mismo `try/catch` no es exigido para la `IndexOutOfBoundsException`.
+
+#### Paso 6 · Práctica independiente
+Clasifica en una tabla tres excepciones más de la biblioteca estándar (`FileNotFoundException`, `NullPointerException`, `NumberFormatException`) como checked o unchecked, y explica en una frase por qué esa clasificación tiene sentido para cada una.
+
+#### Paso 7 · Cierre y evidencia
+Guarda el código, la salida del `throws` obligatorio y la excepción unchecked no declarada; como siguiente paso estudia try-with-resources. Errores comunes: declarar `throws Exception` genérico en vez de la excepción checked específica, envolver cada excepción unchecked en un `try/catch` "por si acaso" sin que exista una recuperación real posible, y tratar una `NullPointerException` como si fuera una condición externa recuperable en vez de un bug a corregir. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
+**¿Por qué es importante?** Porque forzar al compilador a verificar una excepción checked solo tiene sentido para condiciones externas genuinamente recuperables; aplicar esa misma obligación a algo que en realidad es un bug de programación solo ensucia la firma de los métodos sin ganar nada.
+
 ### Tema 2: try-with-resources
 
 #### Paso 1 · Objetivo y preparación
@@ -71,6 +72,29 @@ Un lector de reportes de entregas abre un archivo grande; si el procesamiento fa
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Declarar el recurso dentro del paréntesis del `try` garantiza `close()` automático al salir del bloque, sea por finalización normal o por excepción. La analogía: un sistema de préstamo de bicicletas que garantiza la devolución automática a su estación, incluso si el ciclista tuvo un percance en el camino.
+
+**Evidencia de aprendizaje:** entrega la clase `AutoCloseable` propia, la salida que confirma el cierre con y sin excepción, y el orden inverso de cierre al declarar dos recursos en el mismo `try`.
+**Conceptos clave:** `AutoCloseable`, cierre garantizado incluso ante error.
+
+Cualquier recurso propio del proyecto integrador de este track (una conexión, un archivo temporal) que necesite liberarse siempre debe implementar `AutoCloseable` y abrirse dentro de un try-with-resources, nunca con un `finally` manual.
+
+**Cuándo no usarlo:** try-with-resources requiere que el recurso implemente `AutoCloseable`; para un objeto que no gestiona ningún recurso externo (memoria, archivos, conexiones) y que el recolector de basura puede liberar normalmente, no hay nada que cerrar y esta técnica no aplica.
+
+`try (BufferedReader reader = Files.newBufferedReader(ruta)) { String linea = reader.readLine(); }` declara un recurso dentro del propio paréntesis del `try`, garantizando que Java invoque automáticamente `reader.close()` al finalizar el bloque, sin necesidad de un bloque `finally` manual explícito para ese propósito, y crucialmente incluso si ocurre una excepción dentro del bloque `try`: el cierre del recurso está garantizado sin importar cómo se abandone el bloque (normalmente, o mediante una excepción propagada).
+
+Cualquier clase que implemente la interfaz `AutoCloseable` (que declara un único método `close()`) puede usarse dentro de un try-with-resources, no solo las clases estándar de manejo de archivos: escribir una clase propia que gestione algún recurso externo (una conexión, un handle del sistema operativo) e implementar `AutoCloseable` en ella permite que también se beneficie de esta garantía automática de cierre, sin tener que escribir manualmente el patrón repetitivo de un bloque `finally` que verifica si el recurso no es nulo antes de cerrarlo, un patrón considerablemente más verboso y propenso a errores que el equivalente moderno con try-with-resources.
+
+**Analogía:** try-with-resources es como un sistema de préstamo de bicicletas que garantiza automáticamente que la bicicleta se devuelva a su estación correspondiente al finalizar el recorrido, incluso si el ciclista tuvo un percance en el camino, sin depender de que el ciclista recuerde manualmente devolverla por su cuenta en cada situación posible.
+
+**¿Por qué es importante?** try-with-resources garantiza el cierre correcto de un recurso incluso ante una excepción, eliminando la necesidad de un bloque `finally` manual repetitivo y propenso a errores de omisión.
+
+**Código del ejemplo:**
+
+```java
+try (BufferedReader reader = Files.newBufferedReader(ruta)) {
+    String linea = reader.readLine();
+} // reader.close() se llama automáticamente, incluso si hay una excepción
+```
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -94,28 +118,6 @@ Declara dos recursos en el mismo try-with-resources y confirma, mirando el orden
 #### Paso 7 · Cierre y evidencia
 Guarda la clase `AutoCloseable`, la salida con y sin excepción, y el orden de cierre de dos recursos; como siguiente paso estudia excepciones personalizadas. Errores comunes: cerrar un recurso manualmente en un `finally` que se salta si el `try` lanza una excepción antes de llegar ahí, olvidar que los recursos se cierran en orden inverso al que se abrieron, y envolver un recurso que no implementa `AutoCloseable` esperando que try-with-resources lo cierre igual. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
 **¿Por qué es importante?** Porque un recurso que no se cierra ante una excepción (un archivo, una conexión) se queda abierto indefinidamente, y un `finally` manual escrito a mano es fácil de olvidar o de escribir mal, mientras que try-with-resources garantiza el cierre sin ese riesgo.
-**Evidencia de aprendizaje:** entrega la clase `AutoCloseable` propia, la salida que confirma el cierre con y sin excepción, y el orden inverso de cierre al declarar dos recursos en el mismo `try`.
-**Conceptos clave:** `AutoCloseable`, cierre garantizado incluso ante error.
-
-Cualquier recurso propio del proyecto integrador de este track (una conexión, un archivo temporal) que necesite liberarse siempre debe implementar `AutoCloseable` y abrirse dentro de un try-with-resources, nunca con un `finally` manual.
-
-**Cuándo no usarlo:** try-with-resources requiere que el recurso implemente `AutoCloseable`; para un objeto que no gestiona ningún recurso externo (memoria, archivos, conexiones) y que el recolector de basura puede liberar normalmente, no hay nada que cerrar y esta técnica no aplica.
-
-`try (BufferedReader reader = Files.newBufferedReader(ruta)) { String linea = reader.readLine(); }` declara un recurso dentro del propio paréntesis del `try`, garantizando que Java invoque automáticamente `reader.close()` al finalizar el bloque, sin necesidad de un bloque `finally` manual explícito para ese propósito, y crucialmente incluso si ocurre una excepción dentro del bloque `try`: el cierre del recurso está garantizado sin importar cómo se abandone el bloque (normalmente, o mediante una excepción propagada).
-
-Cualquier clase que implemente la interfaz `AutoCloseable` (que declara un único método `close()`) puede usarse dentro de un try-with-resources, no solo las clases estándar de manejo de archivos: escribir una clase propia que gestione algún recurso externo (una conexión, un handle del sistema operativo) e implementar `AutoCloseable` en ella permite que también se beneficie de esta garantía automática de cierre, sin tener que escribir manualmente el patrón repetitivo de un bloque `finally` que verifica si el recurso no es nulo antes de cerrarlo, un patrón considerablemente más verboso y propenso a errores que el equivalente moderno con try-with-resources.
-
-**Analogía:** try-with-resources es como un sistema de préstamo de bicicletas que garantiza automáticamente que la bicicleta se devuelva a su estación correspondiente al finalizar el recorrido, incluso si el ciclista tuvo un percance en el camino, sin depender de que el ciclista recuerde manualmente devolverla por su cuenta en cada situación posible.
-
-**¿Por qué es importante?** try-with-resources garantiza el cierre correcto de un recurso incluso ante una excepción, eliminando la necesidad de un bloque `finally` manual repetitivo y propenso a errores de omisión.
-
-**Código del ejemplo:**
-
-```java
-try (BufferedReader reader = Files.newBufferedReader(ruta)) {
-    String linea = reader.readLine();
-} // reader.close() se llama automáticamente, incluso si hay una excepción
-```
 
 ### Tema 3: Excepciones personalizadas y no tragar excepciones
 

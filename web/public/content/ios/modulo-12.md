@@ -14,34 +14,6 @@ A lo largo del track construiste piezas sueltas de RutaFlow (vistas, ViewModels,
 #### Paso 3 · Teoría, modelo mental y analogía
 El proyecto integra capas con ownership claro (vista, ViewModel, servicio, persistencia, dominio) — una central móvil donde cada estación tiene un contrato y una responsabilidad distinta, no una mezcla de todo en un solo lugar.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-Vistas/         ← SwiftUI puro (Módulos 1-3)
-ViewModels/      ← @Observable, orquesta servicios (Módulo 8)
-Servicios/        ← URLSession + async/await (Módulo 5)
-Persistencia/      ← SwiftData (Módulo 6)
-Dominio/            ← structs/enums puros (Módulo 0)
-Tests/                ← Swift Testing sobre dominio (Módulo 9)
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: recorriendo el código fuente de RutaFlow carpeta por carpeta, cada archivo vive exactamente en la capa que le corresponde — ninguna vista en `Vistas/` importa `URLSession` ni `ModelContext` directamente, y ningún archivo en `Dominio/` importa nada de `Servicios/` ni `Persistencia/`.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá temporalmente una llamada directa a `ServicioAPI().obtenerEnvios()` dentro del `body` de `ListaEnvios`, "solo para probar algo rápido" — ese es el fallo deliberado: ahora la vista conoce directamente el servicio de red, rompiendo la separación de capas que el Módulo 8 estableció, y cualquier test de `ListaEnvios` necesitaría de nuevo renderizar la vista completa.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el resto del código fuente de RutaFlow buscando otras violaciones similares de capas (una vista que importe SwiftData directamente, o un ViewModel que importe SwiftUI) — documentá cualquiera que encuentres y corregila.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
-**¿Por qué es importante?** Porque integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
 **Evidencia de aprendizaje:** entrega diagrama de capas, violación provocada y resultado de la revisión completa.
 **Conceptos clave:** cada módulo del track como una pieza que encaja en un sistema mayor coherente.
 
@@ -87,6 +59,35 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, `EnviosViewModel` vive en `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`. Límite de la decisión: esta separación estricta en capas no conviene para un prototipo descartable de una sola pantalla — ahí el costo de las carpetas y protocolos intermedios supera el beneficio; se justifica específicamente cuando el proyecto, como RutaFlow, crece a varios módulos que varios desarrolladores tocan en paralelo.
 
+#### Paso 4 · Demostración guiada desde cero
+```text
+Vistas/         ← SwiftUI puro (Módulos 1-3)
+ViewModels/      ← @Observable, orquesta servicios (Módulo 8)
+Servicios/        ← URLSession + async/await (Módulo 5)
+Persistencia/      ← SwiftData (Módulo 6)
+Dominio/            ← structs/enums puros (Módulo 0)
+Tests/                ← Swift Testing sobre dominio (Módulo 9)
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: recorriendo el código fuente de RutaFlow carpeta por carpeta, cada archivo vive exactamente en la capa que le corresponde — ninguna vista en `Vistas/` importa `URLSession` ni `ModelContext` directamente, y ningún archivo en `Dominio/` importa nada de `Servicios/` ni `Persistencia/`.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá temporalmente una llamada directa a `ServicioAPI().obtenerEnvios()` dentro del `body` de `ListaEnvios`, "solo para probar algo rápido" — ese es el fallo deliberado: ahora la vista conoce directamente el servicio de red, rompiendo la separación de capas que el Módulo 8 estableció, y cualquier test de `ListaEnvios` necesitaría de nuevo renderizar la vista completa.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el resto del código fuente de RutaFlow buscando otras violaciones similares de capas (una vista que importe SwiftData directamente, o un ViewModel que importe SwiftUI) — documentá cualquiera que encuentres y corregila.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
+**¿Por qué es importante?** Porque integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
+
 ### Tema 2: Sincronización entre red y persistencia local
 
 #### Paso 1 · Objetivo y preparación
@@ -98,40 +99,6 @@ Si un conductor pierde señal en medio de una ruta, `ListaEnvios` no debería qu
 #### Paso 3 · Teoría, modelo mental y analogía
 El ViewModel orquesta ambas fuentes sin que la vista conozca ninguna de las dos directamente — un gerente de logística que coordina almacén local y proveedores externos sin que el personal de ventas trate directamente con ninguno.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-@Observable
-class EnviosViewModel {
-    var envios: [EnvioLocal] = []
-    private let servicio: ServicioAPI
-    private let context: ModelContext
-
-    func sincronizar() async {
-        guard let remotos = try? await servicio.obtenerEnvios() else { return }
-        remotos.forEach { context.insert($0) }
-        try? context.save()
-    }
-}
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: `ListaEnvios` observa `envios` (poblado desde SwiftData), y llamar a `sincronizar()` actualiza esos datos locales con lo que responda `ServicioAPI`; si `ServicioAPI` falla, `sincronizar()` simplemente no actualiza nada, y la vista sigue mostrando los últimos envíos guardados localmente.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `try?` por `try` (sin el `?`) en la llamada a `servicio.obtenerEnvios()` dentro de una función que no declaraste como `throws` — ese es el fallo deliberado: el proyecto deja de compilar, porque propagar el error sin manejarlo exige que `sincronizar()` también sea `throws`, y entonces quien la llama necesitaría decidir qué hacer con ese error.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `try?`, y agregá un log (no una propagación a la UI) cuando `obtenerEnvios()` falle, para poder diagnosticar fallas de sincronización sin interrumpir al conductor con un error intrusivo por cada corte de señal.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: cerrá el track con una retrospectiva. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
-**¿Por qué es importante?** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
 **Evidencia de aprendizaje:** entrega ViewModel orquestando ambas fuentes, error de compilación detectado y log de diagnóstico agregado.
 **Conceptos clave:** el ViewModel orquesta ambas fuentes, sin que la vista conozca ninguna de las dos directamente.
 
@@ -167,6 +134,41 @@ flowchart LR
 ```
 
 El ViewModel de carga comprobable está en `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`. El método `sincronizar()` mostrado aquí es una ampliación que debes implementar en tu proyecto iOS: requiere inyectar servicio y ModelContext, convertir DTOs a EnvioLocal y actualizar por ID; no copies el fragmento como una clase completa ni insertes duplicados en cada refresco. Límite de la decisión: degradar silenciosamente con `try?` no conviene para un error que ocurre durante una acción directa del conductor (como un PIN incorrecto al confirmar una entrega) — ahí el error debe propagarse y mostrarse explícitamente; `try?` se reserva específicamente para sincronización de background no crítica, como este caso.
+
+#### Paso 4 · Demostración guiada desde cero
+```swift
+@Observable
+class EnviosViewModel {
+    var envios: [EnvioLocal] = []
+    private let servicio: ServicioAPI
+    private let context: ModelContext
+
+    func sincronizar() async {
+        guard let remotos = try? await servicio.obtenerEnvios() else { return }
+        remotos.forEach { context.insert($0) }
+        try? context.save()
+    }
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: `ListaEnvios` observa `envios` (poblado desde SwiftData), y llamar a `sincronizar()` actualiza esos datos locales con lo que responda `ServicioAPI`; si `ServicioAPI` falla, `sincronizar()` simplemente no actualiza nada, y la vista sigue mostrando los últimos envíos guardados localmente.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá `try?` por `try` (sin el `?`) en la llamada a `servicio.obtenerEnvios()` dentro de una función que no declaraste como `throws` — ese es el fallo deliberado: el proyecto deja de compilar, porque propagar el error sin manejarlo exige que `sincronizar()` también sea `throws`, y entonces quien la llama necesitaría decidir qué hacer con ese error.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `try?`, y agregá un log (no una propagación a la UI) cuando `obtenerEnvios()` falle, para poder diagnosticar fallas de sincronización sin interrumpir al conductor con un error intrusivo por cada corte de señal.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: cerrá el track con una retrospectiva. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
+**¿Por qué es importante?** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
 
 ### Tema 3: Cierre del track
 

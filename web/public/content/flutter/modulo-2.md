@@ -14,41 +14,6 @@ En la versión tablet de RutaFlow, `PanelEnvios` vive al lado de un mapa, ocupan
 #### Paso 3 · Teoría, modelo mental y analogía
 `MediaQuery` da el tamaño de la pantalla completa; `LayoutBuilder` da las constraints del espacio específicamente disponible para ese widget en su posición actual — preguntar por el edificio completo, no por la habitación en la que estás.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-Row(children: [
-  Expanded(
-    flex: 1,
-    child: LayoutBuilder(builder: (context, constraints) {
-      return constraints.maxWidth > 400
-          ? ListaEnviosExpandida()
-          : ListaEnviosCompacta();
-    }),
-  ),
-  Expanded(flex: 2, child: MapaRuta()),
-])
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: `LayoutBuilder` dentro del panel reporta correctamente que su espacio disponible es solo un tercio del ancho total de la pantalla (porque comparte la fila con `MapaRuta`), permitiendo elegir `ListaEnviosCompacta` incluso en una tablet ancha, donde `MediaQuery` hubiera reportado un ancho total mucho mayor y elegido incorrectamente la versión expandida.
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá el `LayoutBuilder` por `MediaQuery.of(context).size.width > 400` para decidir qué lista mostrar — ese es el fallo deliberado: en una tablet ancha, `MediaQuery` reporta el ancho total de la pantalla (por ejemplo 1024), eligiendo `ListaEnviosExpandida` aunque el panel en realidad solo tenga un tercio de ese espacio real disponible, produciendo overflow de texto dentro del panel angosto.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el `LayoutBuilder`, y agregá un tercer caso de layout (`ListaEnviosMuyCompacta`) para cuando `constraints.maxWidth` sea menor a 250, confirmando que cada variante responde al espacio real del panel, no al de la pantalla.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el `LayoutBuilder` correctamente usado del Paso 4, el overflow provocado por `MediaQuery` del Paso 5, y la tercera variante del Paso 6; explicá cuándo el ancho total de la pantalla y el espacio disponible de un widget específico dejan de ser el mismo número. Siguiente paso: estudia cómo Flutter calcula tamaños con constraints. Errores comunes: usar `MediaQuery` para decidir el layout de un widget anidado que no ocupa toda la pantalla, anidar `LayoutBuilder` innecesariamente en widgets que sí ocupan la pantalla completa, y no probar el layout en al menos dos proporciones de pantalla distintas. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/LayoutBuilder-class.html y https://docs.flutter.dev/ui/layout/constraints.
-**¿Por qué es importante?** `LayoutBuilder` es más preciso que `MediaQuery` cuando el widget que decide su layout no ocupa toda la pantalla, dado que refleja el espacio real disponible para ese widget en su posición actual del árbol.
 **Evidencia de aprendizaje:** entrega LayoutBuilder correctamente usado, overflow por MediaQuery detectado y tercera variante de layout confirmada.
 **Conceptos clave:** tamaño de la pantalla completa frente a espacio disponible para un widget específico.
 
@@ -89,24 +54,18 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, `PanelEnvios` vive en `lib/features/deliveries/presentation/panel_envios.dart`. Práctica: corré `flutter test test/panel_envios_test.dart` después de cada cambio de breakpoint para confirmar que el panel elige la variante compacta cuando comparte fila con el mapa.
 
-### Tema 2: Cómo Flutter calcula tamaños
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a diagnosticar un error de "unbounded height" en `ListaEnvios` causado por anidar una `Column` dentro de otra sin límites, entendiendo el protocolo "constraints go down, sizes go up". Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Anidar `ListView` (que intenta ocupar todo el alto disponible) dentro de una `Column` (que no impone un alto máximo a sus hijos) produce una excepción en tiempo de ejecución sobre constraints no acotadas, un error que confunde a quien no entiende cómo fluyen las constraints.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Un padre comunica a cada hijo un rango de tamaños permitido; el hijo decide su tamaño final dentro de ese rango y lo informa de vuelta — un `ListView` sin alto máximo recibido no sabe cuánto espacio ocupar.
-
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Column(children: [
-  Text('Envíos de hoy'),
-  Expanded(          // da un alto máximo finito al ListView
-    child: ListView(children: envios.map((e) => TarjetaEnvio(envio: e)).toList()),
+Row(children: [
+  Expanded(
+    flex: 1,
+    child: LayoutBuilder(builder: (context, constraints) {
+      return constraints.maxWidth > 400
+          ? ListaEnviosExpandida()
+          : ListaEnviosCompacta();
+    }),
   ),
+  Expanded(flex: 2, child: MapaRuta()),
 ])
 ```
 
@@ -119,17 +78,29 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: envolver el `ListView` en `Expanded` le comunica una constraint de alto máximo finito (el espacio restante de la `Column` después de `Text`), permitiendo que el `ListView` decida su tamaño dentro de ese límite y haga scroll internamente sin romper el layout.
+Resultado esperado: `LayoutBuilder` dentro del panel reporta correctamente que su espacio disponible es solo un tercio del ancho total de la pantalla (porque comparte la fila con `MapaRuta`), permitiendo elegir `ListaEnviosCompacta` incluso en una tablet ancha, donde `MediaQuery` hubiera reportado un ancho total mucho mayor y elegido incorrectamente la versión expandida.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `Expanded` y dejá el `ListView` directamente como hijo de `Column` — ese es el fallo deliberado: Flutter lanza una excepción en tiempo de ejecución porque `Column` no impone ningún límite de alto máximo a sus hijos por defecto, y `ListView` recibe una constraint de alto infinito que no puede satisfacer.
+Pista: reemplazá el `LayoutBuilder` por `MediaQuery.of(context).size.width > 400` para decidir qué lista mostrar — ese es el fallo deliberado: en una tablet ancha, `MediaQuery` reporta el ancho total de la pantalla (por ejemplo 1024), eligiendo `ListaEnviosExpandida` aunque el panel en realidad solo tenga un tercio de ese espacio real disponible, produciendo overflow de texto dentro del panel angosto.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `Expanded`, y explicá por escrito, en tus propias palabras, por qué el error específico menciona constraints no acotadas y de dónde debería haber venido el límite faltante.
+Corregí el Paso 5 devolviendo el `LayoutBuilder`, y agregá un tercer caso de layout (`ListaEnviosMuyCompacta`) para cuando `constraints.maxWidth` sea menor a 250, confirmando que cada variante responde al espacio real del panel, no al de la pantalla.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el layout corregido con `Expanded` del Paso 4, el error de constraints no acotadas del Paso 5, y tu explicación escrita del Paso 6; explicá por qué entender el protocolo "constraints go down, sizes go up" permite diagnosticar este tipo de error leyendo el mensaje de la excepción, en vez de probar soluciones al azar. Siguiente paso: estudia breakpoints propios y SafeArea. Errores comunes: anidar un widget que ocupa todo el espacio disponible dentro de un padre que no impone límites, usar `Expanded` fuera de un `Row`/`Column`/`Flex`, y asumir que un `Container` sin tamaño explícito siempre se comporta igual sin importar su padre. Fuentes oficiales: https://docs.flutter.dev/ui/layout/constraints y https://docs.flutter.dev/ui/layout/box-constraints.
-**¿Por qué es importante?** Entender el protocolo "constraints go down, sizes go up" explica de forma predecible por qué un widget termina con el tamaño final que tiene, permitiendo diagnosticar errores de layout leyendo el mensaje real de la excepción.
+Entregá el `LayoutBuilder` correctamente usado del Paso 4, el overflow provocado por `MediaQuery` del Paso 5, y la tercera variante del Paso 6; explicá cuándo el ancho total de la pantalla y el espacio disponible de un widget específico dejan de ser el mismo número. Siguiente paso: estudia cómo Flutter calcula tamaños con constraints. Errores comunes: usar `MediaQuery` para decidir el layout de un widget anidado que no ocupa toda la pantalla, anidar `LayoutBuilder` innecesariamente en widgets que sí ocupan la pantalla completa, y no probar el layout en al menos dos proporciones de pantalla distintas. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/LayoutBuilder-class.html y https://docs.flutter.dev/ui/layout/constraints.
+**¿Por qué es importante?** `LayoutBuilder` es más preciso que `MediaQuery` cuando el widget que decide su layout no ocupa toda la pantalla, dado que refleja el espacio real disponible para ese widget en su posición actual del árbol.
+
+### Tema 2: Cómo Flutter calcula tamaños
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a diagnosticar un error de "unbounded height" en `ListaEnvios` causado por anidar una `Column` dentro de otra sin límites, entendiendo el protocolo "constraints go down, sizes go up". Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Anidar `ListView` (que intenta ocupar todo el alto disponible) dentro de una `Column` (que no impone un alto máximo a sus hijos) produce una excepción en tiempo de ejecución sobre constraints no acotadas, un error que confunde a quien no entiende cómo fluyen las constraints.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un padre comunica a cada hijo un rango de tamaños permitido; el hijo decide su tamaño final dentro de ese rango y lo informa de vuelta — un `ListView` sin alto máximo recibido no sabe cuánto espacio ocupar.
+
 **Evidencia de aprendizaje:** entrega layout corregido con Expanded, error de constraints no acotadas detectado y explicación escrita del protocolo.
 **Conceptos clave:** constraints fluyen hacia abajo, tamaños fluyen hacia arriba.
 
@@ -162,6 +133,37 @@ sequenceDiagram
 ```
 
 En el proyecto integrador RutaFlow, este patrón vive en `lib/features/deliveries/presentation/lista_envios.dart`. Práctica: corré `flutter analyze lib/features/deliveries/presentation/lista_envios.dart` tras cada cambio de layout para detectar este tipo de error antes de ejecutar la app.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+Column(children: [
+  Text('Envíos de hoy'),
+  Expanded(          // da un alto máximo finito al ListView
+    child: ListView(children: envios.map((e) => TarjetaEnvio(envio: e)).toList()),
+  ),
+])
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: envolver el `ListView` en `Expanded` le comunica una constraint de alto máximo finito (el espacio restante de la `Column` después de `Text`), permitiendo que el `ListView` decida su tamaño dentro de ese límite y haga scroll internamente sin romper el layout.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `Expanded` y dejá el `ListView` directamente como hijo de `Column` — ese es el fallo deliberado: Flutter lanza una excepción en tiempo de ejecución porque `Column` no impone ningún límite de alto máximo a sus hijos por defecto, y `ListView` recibe una constraint de alto infinito que no puede satisfacer.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `Expanded`, y explicá por escrito, en tus propias palabras, por qué el error específico menciona constraints no acotadas y de dónde debería haber venido el límite faltante.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el layout corregido con `Expanded` del Paso 4, el error de constraints no acotadas del Paso 5, y tu explicación escrita del Paso 6; explicá por qué entender el protocolo "constraints go down, sizes go up" permite diagnosticar este tipo de error leyendo el mensaje de la excepción, en vez de probar soluciones al azar. Siguiente paso: estudia breakpoints propios y SafeArea. Errores comunes: anidar un widget que ocupa todo el espacio disponible dentro de un padre que no impone límites, usar `Expanded` fuera de un `Row`/`Column`/`Flex`, y asumir que un `Container` sin tamaño explícito siempre se comporta igual sin importar su padre. Fuentes oficiales: https://docs.flutter.dev/ui/layout/constraints y https://docs.flutter.dev/ui/layout/box-constraints.
+**¿Por qué es importante?** Entender el protocolo "constraints go down, sizes go up" explica de forma predecible por qué un widget termina con el tamaño final que tiene, permitiendo diagnosticar errores de layout leyendo el mensaje real de la excepción.
 
 ### Tema 3: Breakpoints propios y SafeArea
 

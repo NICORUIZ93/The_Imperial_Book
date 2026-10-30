@@ -52,13 +52,44 @@ flowchart TD
     style F fill:#ffcccc
 ```
 
-
-
 #### Paso 2 · Contexto y caso real
 Al etiquetar un paquete para entrega, el nombre del destinatario puede no estar disponible todavía (un pedido recién creado, sin asignar); el código que etiqueta la caja debe expresar esa ausencia sin crashear.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `String?` es un tipo formalmente distinto de `String` para el compilador: Swift obliga a desenvolver el optional antes de usarlo, convirtiendo en error de compilación lo que en otros lenguajes sería un crash en producción. La analogía: una etiqueta de paquete que declara explícitamente si el campo puede estar vacío, en vez de asumir que siempre hay un valor.
+
+**Evidencia de aprendizaje:** entrega la función con guard let, el crash reproducido por force unwrap, y el caso de nombre con solo espacios documentado.
+**Conceptos clave:** ausencia de valor modelada en el sistema de tipos, no como un valor especial oculto.
+
+Modelar cada dato que puede faltar (`nombre: String?`, un conductor aún no asignado) con optionals explícitos es el hábito base del proyecto integrador (app SwiftUI completa, Módulo 12): cada vista de ese proyecto desenvolverá datos de red con `guard let`/`if let`, nunca con force unwrap.
+
+**Cuándo no usarlo:** el force unwrap (`!`) solo es aceptable cuando el flujo del programa garantiza matemáticamente que el valor no puede ser `nil` en ese punto exacto (por ejemplo, un recurso empaquetado en el propio bundle de la app); fuera de ese caso, reintroduce exactamente el riesgo de crash que los optionals existen para eliminar.
+
+```swift
+var nombre: String? = nil // explícitamente puede no tener valor
+
+if let nombreDesenvuelto = nombre {
+    print(nombreDesenvuelto) // solo accesible aquí dentro, ya seguro
+}
+
+let saludo = nombre ?? "Invitado" // nil coalescing: valor por defecto
+```
+
+Swift incorpora la ausencia de valor directamente en el sistema de tipos mediante el modificador `?`: `String?` y `String` son tipos formalmente distintos para el compilador, de modo que intentar usar un `String?` donde se espera un `String` sin desenvolverlo primero produce un error de compilación, no un crash en tiempo de ejecución. Esta decisión de diseño previene por completo la categoría de errores conocida en otros lenguajes como `NullPointerException` (Java, estudiado en el Módulo 3 de ese track) o `undefined is not a function` (JavaScript): en Swift, el compilador rechaza el código antes de que pueda ejecutarse, en vez de descubrir el problema en producción cuando un valor inesperadamente ausente causa un fallo.
+
+`if let` desenvuelve el optional de forma segura y condicional (el bloque solo se ejecuta si hay un valor presente); `guard let` desenvuelve de forma temprana con una salida obligatoria en caso de `nil` (apropiado para validaciones al inicio de una función); `??` (nil coalescing) provee un valor por defecto en una única expresión cuando el optional es `nil`. Todas estas son alternativas seguras al "force unwrap" (`nombre!`), que sí puede provocar un crash en tiempo de ejecución si el valor resulta ser `nil`, y que por eso se reserva para casos donde se tiene certeza absoluta (verificada por el propio programador, no por el compilador) de que el valor nunca será `nil` en ese punto específico del código.
+
+**Analogía:** un optional es como una caja que declara explícitamente en su etiqueta si puede estar vacía o no; abrirla con `if let` es revisar con cuidado antes de asumir que contiene algo, mientras que forzar la apertura con `!` es asumir a ciegas que hay contenido, arriesgándose a una sorpresa desagradable si la caja resulta estar vacía.
+
+**¿Por qué es importante?** El sistema de optionals de Swift previene la categoría completa de errores de "acceder a un valor ausente" detectándolos en tiempo de compilación, en vez de dejar que se manifiesten como crashes en producción como ocurre en lenguajes sin este mecanismo incorporado al sistema de tipos.
+
+**Código del ejemplo:**
+
+```swift
+var nombre: String? = nil
+if let nombreDesenvuelto = nombre { print(nombreDesenvuelto) }
+let saludo = nombre ?? "Invitado"
+```
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una **carpeta vacía** y crea un ejecutable dedicado a valores ausentes:
@@ -96,38 +127,6 @@ Corregí el Paso 5 restaurando `guard let`, y agregá un tercer caso de prueba c
 #### Paso 7 · Cierre y evidencia
 Entregá la función con `guard let` del Paso 4, el crash por force unwrap del Paso 5, y el caso de nombre vacío del Paso 6; explicá por qué Swift convierte en error de compilación lo que en otros lenguajes sería un crash en producción. Siguiente paso: modelá identidad compartida frente a copia con struct y class. Errores comunes: usar force unwrap (`!`) por comodidad en vez de `guard let`/`if let`; confiar en `isEmpty` sin recortar espacios cuando el dato viene de un formulario de usuario real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/the-basics/#Optionals y https://developer.apple.com/documentation/swift/optional.
 **¿Por qué es importante?** Porque modelar la ausencia de valor en el sistema de tipos convierte en error de compilación lo que en otros lenguajes es un crash en producción cuando un dato esperado no llegó.
-**Evidencia de aprendizaje:** entrega la función con guard let, el crash reproducido por force unwrap, y el caso de nombre con solo espacios documentado.
-**Conceptos clave:** ausencia de valor modelada en el sistema de tipos, no como un valor especial oculto.
-
-Modelar cada dato que puede faltar (`nombre: String?`, un conductor aún no asignado) con optionals explícitos es el hábito base del proyecto integrador (app SwiftUI completa, Módulo 12): cada vista de ese proyecto desenvolverá datos de red con `guard let`/`if let`, nunca con force unwrap.
-
-**Cuándo no usarlo:** el force unwrap (`!`) solo es aceptable cuando el flujo del programa garantiza matemáticamente que el valor no puede ser `nil` en ese punto exacto (por ejemplo, un recurso empaquetado en el propio bundle de la app); fuera de ese caso, reintroduce exactamente el riesgo de crash que los optionals existen para eliminar.
-
-```swift
-var nombre: String? = nil // explícitamente puede no tener valor
-
-if let nombreDesenvuelto = nombre {
-    print(nombreDesenvuelto) // solo accesible aquí dentro, ya seguro
-}
-
-let saludo = nombre ?? "Invitado" // nil coalescing: valor por defecto
-```
-
-Swift incorpora la ausencia de valor directamente en el sistema de tipos mediante el modificador `?`: `String?` y `String` son tipos formalmente distintos para el compilador, de modo que intentar usar un `String?` donde se espera un `String` sin desenvolverlo primero produce un error de compilación, no un crash en tiempo de ejecución. Esta decisión de diseño previene por completo la categoría de errores conocida en otros lenguajes como `NullPointerException` (Java, estudiado en el Módulo 3 de ese track) o `undefined is not a function` (JavaScript): en Swift, el compilador rechaza el código antes de que pueda ejecutarse, en vez de descubrir el problema en producción cuando un valor inesperadamente ausente causa un fallo.
-
-`if let` desenvuelve el optional de forma segura y condicional (el bloque solo se ejecuta si hay un valor presente); `guard let` desenvuelve de forma temprana con una salida obligatoria en caso de `nil` (apropiado para validaciones al inicio de una función); `??` (nil coalescing) provee un valor por defecto en una única expresión cuando el optional es `nil`. Todas estas son alternativas seguras al "force unwrap" (`nombre!`), que sí puede provocar un crash en tiempo de ejecución si el valor resulta ser `nil`, y que por eso se reserva para casos donde se tiene certeza absoluta (verificada por el propio programador, no por el compilador) de que el valor nunca será `nil` en ese punto específico del código.
-
-**Analogía:** un optional es como una caja que declara explícitamente en su etiqueta si puede estar vacía o no; abrirla con `if let` es revisar con cuidado antes de asumir que contiene algo, mientras que forzar la apertura con `!` es asumir a ciegas que hay contenido, arriesgándose a una sorpresa desagradable si la caja resulta estar vacía.
-
-**¿Por qué es importante?** El sistema de optionals de Swift previene la categoría completa de errores de "acceder a un valor ausente" detectándolos en tiempo de compilación, en vez de dejar que se manifiesten como crashes en producción como ocurre en lenguajes sin este mecanismo incorporado al sistema de tipos.
-
-**Código del ejemplo:**
-
-```swift
-var nombre: String? = nil
-if let nombreDesenvuelto = nombre { print(nombreDesenvuelto) }
-let saludo = nombre ?? "Invitado"
-```
 
 ### Tema 2: struct vs class
 
@@ -166,13 +165,40 @@ flowchart LR
     style C2_Ref fill:#ffcccc
 ```
 
-
-
 #### Paso 2 · Contexto y caso real
 Al pasar los datos de una sesión de conductor activa entre dos partes del código, si el tipo elegido es el equivocado (struct cuando se necesita identidad compartida, o class cuando se necesita independencia), un cambio en un lugar inesperado termina afectando a otro que no debería verse alterado.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `struct` es un value type — cada asignación crea una copia independiente; una `class` es un reference type — una asignación equivalente comparte la misma instancia. La analogía: fotocopiar un documento antes de entregarlo (struct) frente a entregar el original directamente (class).
+
+**Evidencia de aprendizaje:** entrega la comparación copia/referencia del Paso 4, el error de mutación sobre let reproducido, y la decisión documentada de no cambiar a class.
+**Conceptos clave:** copia independiente vs instancia compartida.
+
+```swift
+struct Punto { var x: Int; var y: Int }     // value type: se copia al asignar
+class Contador { var valor = 0 }              // reference type: se comparte la misma instancia
+
+var p1 = Punto(x: 1, y: 1)
+var p2 = p1
+p2.x = 99 // p1.x sigue siendo 1 — son copias independientes
+```
+
+Un `struct` es un value type: cada asignación (`var p2 = p1`) crea una copia completamente independiente, de modo que modificar `p2` nunca afecta a `p1`; una `class` es un reference type: una asignación equivalente simplemente copia una referencia hacia la misma instancia subyacente en memoria, de modo que modificar el objeto a través de cualquiera de las dos variables afecta a ambas por igual, dado que en realidad apuntan al mismo objeto. Esta distinción, poco común como default en otros lenguajes mainstream (donde todo objeto es típicamente reference type salvo tipos primitivos), es una decisión de diseño deliberada de Swift que empuja hacia modelos de datos inmutables y predecibles por defecto (usando `struct` para la mayoría de los modelos de dominio) reservando `class` específicamente para casos donde la identidad compartida y la mutación observada desde múltiples lugares es intencional (como un `ViewModel` observado por varias vistas).
+
+Esta elección tiene consecuencias prácticas directas en el razonamiento sobre el código: un `struct` pasado a una función nunca puede ser mutado inesperadamente por esa función de forma que afecte al llamador (a menos que se declare explícitamente como `inout`), mientras que una `class` pasada de la misma forma sí podría ser mutada por la función receptora, afectando también al llamador original, dado que ambos comparten la misma instancia subyacente.
+
+**Analogía:** un `struct` es como fotocopiar un documento antes de entregarlo: cualquier anotación que el receptor haga en su copia nunca aparece en el original; una `class` es como entregar el documento original directamente: cualquier anotación que el receptor haga sí modifica ese mismo documento que el remitente sigue teniendo en su poder.
+
+**¿Por qué es importante?** Elegir `struct` para un modelo de datos previene mutaciones inesperadas compartidas entre distintas partes del código, mientras que `class` es apropiada cuando la identidad compartida y la observación de mutaciones desde múltiples lugares es exactamente el comportamiento deseado.
+
+**Código del ejemplo:**
+
+```swift
+struct Punto { var x: Int; var y: Int }   // value type: copia independiente
+class Contador { var valor = 0 }            // reference type: instancia compartida
+```
+
+**Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Representa la entrega como valor y el coordinador de sincronización como objeto con identidad. Prueba copiar una entrega y cambiar su estado sin modificar el snapshot que muestra otra pantalla.
 
 #### Paso 4 · Demostración guiada desde cero
 Desde una **carpeta vacía**, crea un ejemplo que haga visible copia frente a identidad:
@@ -211,34 +237,6 @@ Corregí el Paso 5 decidiendo explícitamente si `original` debe ser mutable (`v
 #### Paso 7 · Cierre y evidencia
 Entregá la copia independiente y la referencia compartida del Paso 4, el error de mutación sobre `let` del Paso 5, y la decisión documentada del Paso 6; explicá por qué Swift elige `struct` como default para la mayoría de los modelos de dominio, reservando `class` para identidad compartida intencional. Siguiente paso: modelá contratos de comportamiento con protocolos y estados con enums. Errores comunes: usar `class` por defecto para modelos de datos simples; cambiar un tipo de `struct` a `class` para evitar un error de mutabilidad en vez de resolver la causa real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/ y https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes.
 **¿Por qué es importante?** Porque elegir struct o class según identidad compartida (y no por costumbre) evita que un cambio en un lugar inesperado del código afecte a datos que debían permanecer independientes.
-**Evidencia de aprendizaje:** entrega la comparación copia/referencia del Paso 4, el error de mutación sobre let reproducido, y la decisión documentada de no cambiar a class.
-**Conceptos clave:** copia independiente vs instancia compartida.
-
-```swift
-struct Punto { var x: Int; var y: Int }     // value type: se copia al asignar
-class Contador { var valor = 0 }              // reference type: se comparte la misma instancia
-
-var p1 = Punto(x: 1, y: 1)
-var p2 = p1
-p2.x = 99 // p1.x sigue siendo 1 — son copias independientes
-```
-
-Un `struct` es un value type: cada asignación (`var p2 = p1`) crea una copia completamente independiente, de modo que modificar `p2` nunca afecta a `p1`; una `class` es un reference type: una asignación equivalente simplemente copia una referencia hacia la misma instancia subyacente en memoria, de modo que modificar el objeto a través de cualquiera de las dos variables afecta a ambas por igual, dado que en realidad apuntan al mismo objeto. Esta distinción, poco común como default en otros lenguajes mainstream (donde todo objeto es típicamente reference type salvo tipos primitivos), es una decisión de diseño deliberada de Swift que empuja hacia modelos de datos inmutables y predecibles por defecto (usando `struct` para la mayoría de los modelos de dominio) reservando `class` específicamente para casos donde la identidad compartida y la mutación observada desde múltiples lugares es intencional (como un `ViewModel` observado por varias vistas).
-
-Esta elección tiene consecuencias prácticas directas en el razonamiento sobre el código: un `struct` pasado a una función nunca puede ser mutado inesperadamente por esa función de forma que afecte al llamador (a menos que se declare explícitamente como `inout`), mientras que una `class` pasada de la misma forma sí podría ser mutada por la función receptora, afectando también al llamador original, dado que ambos comparten la misma instancia subyacente.
-
-**Analogía:** un `struct` es como fotocopiar un documento antes de entregarlo: cualquier anotación que el receptor haga en su copia nunca aparece en el original; una `class` es como entregar el documento original directamente: cualquier anotación que el receptor haga sí modifica ese mismo documento que el remitente sigue teniendo en su poder.
-
-**¿Por qué es importante?** Elegir `struct` para un modelo de datos previene mutaciones inesperadas compartidas entre distintas partes del código, mientras que `class` es apropiada cuando la identidad compartida y la observación de mutaciones desde múltiples lugares es exactamente el comportamiento deseado.
-
-**Código del ejemplo:**
-
-```swift
-struct Punto { var x: Int; var y: Int }   // value type: copia independiente
-class Contador { var valor = 0 }            // reference type: instancia compartida
-```
-
-**Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Representa la entrega como valor y el coordinador de sincronización como objeto con identidad. Prueba copiar una entrega y cambiar su estado sin modificar el snapshot que muestra otra pantalla.
 
 ### Tema 3: Protocolos y enums con valores asociados
 
@@ -251,47 +249,6 @@ El estado de una entrega (creada, en ruta con un conductor, fallida con un motiv
 #### Paso 3 · Teoría, modelo mental y analogía
 Un enum con valores asociados modela un conjunto cerrado de casos posibles, cada uno con sus propios datos; el compilador verifica que un `switch` sobre ese enum sea exhaustivo. La analogía: un formulario con un menú desplegable de opciones fijas, donde cada opción revela campos adicionales específicos de esa elección.
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea un contrato y un estado imposible de representar mal:
-```bash
-mkdir swift-protocolos-estados
-cd swift-protocolos-estados
-swift package init --type executable
-swift run
-```
-Guarda `Sources/main.swift`:
-
-```swift
-protocol Describible { var descripcion: String { get } }
-
-enum EstadoEntrega: Describible {
-    case creada
-    case enRuta(conductor: String)
-    case fallida(motivo: String)
-
-    var descripcion: String {
-        switch self {
-        case .creada: return "Creada"
-        case .enRuta(let conductor): return "En ruta con \(conductor)"
-        case .fallida(let motivo): return "Fallida: \(motivo)"
-        }
-    }
-}
-
-print(EstadoEntrega.enRuta(conductor: "Ana").descripcion)
-```
-
-Ejecuta `swift run`. **Resultado esperado:** `En ruta con Ana`. **Fallo deliberado:** añade `case entregada` y no modifiques el `switch`; el compilador informa que no es exhaustivo. Agrega el caso de manera consciente y evita un `default` que oculte futuros estados.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá el caso `case entregada` al enum `EstadoEntrega` sin modificar el `switch` de `descripcion`. Ese es el fallo deliberado: el compilador reporta que el `switch` ya no es exhaustivo, señalando exactamente el caso nuevo sin cubrir, en vez de dejar que ese estado produzca silenciosamente un comportamiento indefinido en producción.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando el caso `entregada` al `switch` de forma consciente (no con un `default` genérico), y agregá un segundo `switch` en otra función (por ejemplo, para decidir si una entrega todavía puede cancelarse) confirmando que el compilador también exige cubrir `entregada` ahí.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el enum exhaustivo del Paso 4, el error de exhaustividad al agregar `entregada` del Paso 5, y el segundo `switch` corregido del Paso 6; explicá por qué un `default` genérico en un `switch` sobre un enum propio oculta exactamente la protección que la exhaustividad del compilador existe para dar. Siguiente paso: reutilizá comportamiento con closures y genéricos. Errores comunes: agregar un `default` genérico a un switch sobre un enum propio, ocultando casos nuevos sin manejar; modelar un estado con múltiples banderas booleanas sueltas en vez de un enum con valores asociados. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/ y https://developer.apple.com/documentation/swift/protocol.
-**¿Por qué es importante?** Porque la exhaustividad del `switch` sobre un enum propio obliga a decidir conscientemente qué hacer con cada caso nuevo, en vez de que un `default` genérico lo oculte silenciosamente en producción.
 **Evidencia de aprendizaje:** entrega el enum exhaustivo del Paso 4, el error de exhaustividad reproducido al agregar un caso nuevo, y el segundo switch corregido sin default genérico.
 **Conceptos clave:** contrato de comportamiento compartido entre tipos no relacionados; estado modelado como un conjunto cerrado de casos con datos propios.
 
@@ -336,6 +293,48 @@ enum Resultado {
 ```
 
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Modela el resultado de confirmar como enum con éxito y errores explícitos. Prueba cada variante y verifica que el consumidor no confunde falta de red con falta de autorización.
+
+#### Paso 4 · Demostración guiada desde cero
+Desde una **carpeta vacía**, crea un contrato y un estado imposible de representar mal:
+```bash
+mkdir swift-protocolos-estados
+cd swift-protocolos-estados
+swift package init --type executable
+swift run
+```
+Guarda `Sources/main.swift`:
+
+```swift
+protocol Describible { var descripcion: String { get } }
+
+enum EstadoEntrega: Describible {
+    case creada
+    case enRuta(conductor: String)
+    case fallida(motivo: String)
+
+    var descripcion: String {
+        switch self {
+        case .creada: return "Creada"
+        case .enRuta(let conductor): return "En ruta con \(conductor)"
+        case .fallida(let motivo): return "Fallida: \(motivo)"
+        }
+    }
+}
+
+print(EstadoEntrega.enRuta(conductor: "Ana").descripcion)
+```
+
+Ejecuta `swift run`. **Resultado esperado:** `En ruta con Ana`. **Fallo deliberado:** añade `case entregada` y no modifiques el `switch`; el compilador informa que no es exhaustivo. Agrega el caso de manera consciente y evita un `default` que oculte futuros estados.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá el caso `case entregada` al enum `EstadoEntrega` sin modificar el `switch` de `descripcion`. Ese es el fallo deliberado: el compilador reporta que el `switch` ya no es exhaustivo, señalando exactamente el caso nuevo sin cubrir, en vez de dejar que ese estado produzca silenciosamente un comportamiento indefinido en producción.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 agregando el caso `entregada` al `switch` de forma consciente (no con un `default` genérico), y agregá un segundo `switch` en otra función (por ejemplo, para decidir si una entrega todavía puede cancelarse) confirmando que el compilador también exige cubrir `entregada` ahí.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el enum exhaustivo del Paso 4, el error de exhaustividad al agregar `entregada` del Paso 5, y el segundo `switch` corregido del Paso 6; explicá por qué un `default` genérico en un `switch` sobre un enum propio oculta exactamente la protección que la exhaustividad del compilador existe para dar. Siguiente paso: reutilizá comportamiento con closures y genéricos. Errores comunes: agregar un `default` genérico a un switch sobre un enum propio, ocultando casos nuevos sin manejar; modelar un estado con múltiples banderas booleanas sueltas en vez de un enum con valores asociados. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/ y https://developer.apple.com/documentation/swift/protocol.
+**¿Por qué es importante?** Porque la exhaustividad del `switch` sobre un enum propio obliga a decidir conscientemente qué hacer con cada caso nuevo, en vez de que un `default` genérico lo oculte silenciosamente en producción.
 
 ### Tema 4: Closures, colecciones y genéricos con propósito
 

@@ -32,47 +32,6 @@ graph TD
     style F fill:#fff3e0
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-class TarjetaEnvio extends StatelessWidget {
-  final String guia;
-  final String estado;
-  const TarjetaEnvio({required this.guia, required this.estado, super.key});
-  Widget build(BuildContext context) => ListTile(title: Text(guia), subtitle: Text(estado));
-}
-
-class ContadorIntentos extends StatefulWidget {
-  State<ContadorIntentos> createState() => _ContadorIntentosState();
-}
-class _ContadorIntentosState extends State<ContadorIntentos> {
-  int intentos = 0;
-  Widget build(BuildContext context) => ElevatedButton(
-    onPressed: () => setState(() => intentos++),
-    child: Text("Intentos: $intentos"),
-  );
-}
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: `TarjetaEnvio` nunca necesita reconstruirse por sí misma (no tiene ningún `setState`); `ContadorIntentos` incrementa visualmente su contador cada vez que se toca el botón, porque `setState()` dispara la reconstrucción de `_ContadorIntentosState`.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá `int vecesConstruido = 0; vecesConstruido++;` directamente dentro del método `build` de `TarjetaEnvio`, esperando que cuente cuántas veces se reconstruyó — ese es el fallo deliberado: como `TarjetaEnvio` no tiene ningún `State` asociado, esa variable se reinicializa a 0 en cada reconstrucción, nunca acumula nada entre reconstrucciones.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 explicando por qué un `StatelessWidget` no puede acumular ese contador, y convertí ese caso específico en un `StatefulWidget` con un campo `int vecesConstruido = 0;` dentro de su `State`, confirmando que ahora sí persiste y se incrementa correctamente.
-
-#### Paso 7 · Cierre y evidencia
-Entregá `TarjetaEnvio` y `ContadorIntentos` del Paso 4, el contador que nunca acumula del Paso 5, y la conversión a StatefulWidget del Paso 6; explicá por qué una variable local dentro de `build()` nunca puede servir como memoria persistente, sin importar en qué tipo de widget se declare. Siguiente paso: estudia Row, Column, Stack y el ciclo de vida de un StatefulWidget. Errores comunes: intentar mantener estado mutable con una variable local de `build()`, convertir un widget a `StatefulWidget` cuando nunca necesita estado propio, y mutar un campo fuera de `setState()` esperando que la UI se actualice igual. Fuentes oficiales: https://docs.flutter.dev/ui/widgets y https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html.
-**¿Por qué es importante?** La distinción entre StatelessWidget y StatefulWidget determina si un widget puede mantener estado mutable propio persistente entre reconstrucciones; una variable local de `build()` nunca cumple ese rol.
 **Evidencia de aprendizaje:** entrega TarjetaEnvio y ContadorIntentos, el contador que no acumula detectado y la conversión correcta a StatefulWidget.
 **Conceptos clave:** widget sin estado propio frente a widget con estado mutable y ciclo de vida.
 
@@ -117,6 +76,48 @@ class _ContadorState extends State<Contador> {
 ```
 
 En el proyecto integrador RutaFlow, `TarjetaEnvio` vive en `lib/features/deliveries/presentation/tarjeta_envio.dart` y `ContadorIntentos` en `lib/features/deliveries/presentation/contador_intentos.dart`; practicá este mismo patrón extrayendo un widget propio en tu proyecto propio antes de seguir al próximo tema.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+class TarjetaEnvio extends StatelessWidget {
+  final String guia;
+  final String estado;
+  const TarjetaEnvio({required this.guia, required this.estado, super.key});
+  Widget build(BuildContext context) => ListTile(title: Text(guia), subtitle: Text(estado));
+}
+
+class ContadorIntentos extends StatefulWidget {
+  State<ContadorIntentos> createState() => _ContadorIntentosState();
+}
+class _ContadorIntentosState extends State<ContadorIntentos> {
+  int intentos = 0;
+  Widget build(BuildContext context) => ElevatedButton(
+    onPressed: () => setState(() => intentos++),
+    child: Text("Intentos: $intentos"),
+  );
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: `TarjetaEnvio` nunca necesita reconstruirse por sí misma (no tiene ningún `setState`); `ContadorIntentos` incrementa visualmente su contador cada vez que se toca el botón, porque `setState()` dispara la reconstrucción de `_ContadorIntentosState`.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá `int vecesConstruido = 0; vecesConstruido++;` directamente dentro del método `build` de `TarjetaEnvio`, esperando que cuente cuántas veces se reconstruyó — ese es el fallo deliberado: como `TarjetaEnvio` no tiene ningún `State` asociado, esa variable se reinicializa a 0 en cada reconstrucción, nunca acumula nada entre reconstrucciones.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 explicando por qué un `StatelessWidget` no puede acumular ese contador, y convertí ese caso específico en un `StatefulWidget` con un campo `int vecesConstruido = 0;` dentro de su `State`, confirmando que ahora sí persiste y se incrementa correctamente.
+
+#### Paso 7 · Cierre y evidencia
+Entregá `TarjetaEnvio` y `ContadorIntentos` del Paso 4, el contador que nunca acumula del Paso 5, y la conversión a StatefulWidget del Paso 6; explicá por qué una variable local dentro de `build()` nunca puede servir como memoria persistente, sin importar en qué tipo de widget se declare. Siguiente paso: estudia Row, Column, Stack y el ciclo de vida de un StatefulWidget. Errores comunes: intentar mantener estado mutable con una variable local de `build()`, convertir un widget a `StatefulWidget` cuando nunca necesita estado propio, y mutar un campo fuera de `setState()` esperando que la UI se actualice igual. Fuentes oficiales: https://docs.flutter.dev/ui/widgets y https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html.
+**¿Por qué es importante?** La distinción entre StatelessWidget y StatefulWidget determina si un widget puede mantener estado mutable propio persistente entre reconstrucciones; una variable local de `build()` nunca cumple ese rol.
 
 ### Tema 2: Layout con Row, Column y Stack, y ciclo de vida
 
@@ -173,6 +174,35 @@ graph TD
     style I fill:#ffccbc
 ```
 
+**Evidencia de aprendizaje:** entrega layout con Stack, timers sin cancelar detectados y verificación de mounted agregada.
+**Conceptos clave:** contenedores de layout combinables, hooks del ciclo de vida de un StatefulWidget.
+
+```dart
+Column(children: [
+  Row(children: [Text("Izquierda"), Spacer(), Text("Derecha")]),
+  Stack(children: [Image.asset("fondo.png"), Text("Superpuesto")]),
+])
+```
+
+`Row`, `Column` y `Stack` son los tres contenedores de layout fundamentales de Flutter: apilan hijos horizontalmente, verticalmente, y superpuestos entre sí respectivamente, exactamente el mismo conjunto mínimo de primitivas de layout estudiado en Jetpack Compose (`Row`/`Column`/`Box`, Módulo 2 del track de Android) y en SwiftUI (`HStack`/`VStack`/`ZStack`, Módulo 1 del track de iOS), reflejando una convergencia consistente entre los frameworks de UI declarativa móvil más importantes hacia el mismo conjunto de primitivas combinables.
+
+`initState()` se ejecuta una única vez cuando el `State` se inserta por primera vez en el árbol, apropiado para inicializar recursos (suscripciones, controladores de animación); `dispose()` se ejecuta cuando el `State` se remueve permanentemente del árbol, apropiado para liberar esos mismos recursos, evitando fugas de memoria; `didUpdateWidget()` se ejecuta cuando el widget se reconstruye con una nueva configuración (nuevos parámetros del constructor) pero el mismo objeto `State` persiste, permitiendo reaccionar a cambios de configuración sin perder el estado interno acumulado hasta ese momento. `Expanded` y `Flexible` distribuyen espacio disponible proporcionalmente entre hijos de un `Row`/`Column`; `SizedBox` fija dimensiones exactas; `AspectRatio` mantiene una proporción específica entre ancho y alto.
+
+**Analogía:** `Row`, `Column` y `Stack` son como los tres tipos básicos de disposición de mobiliario en una habitación (en fila, apilado, superpuesto), combinables para construir cualquier distribución compleja; `initState()`/`dispose()` son como el protocolo de apertura y cierre de un local comercial (encender/apagar sistemas al inicio y fin de operación), mientras `didUpdateWidget()` es como ajustar la configuración interna del local ante un cambio de horario sin cerrar y reabrir el negocio por completo.
+
+**¿Por qué es importante?** `Row`/`Column`/`Stack` son las primitivas combinables de cualquier layout Flutter, compartidas conceptualmente con Compose y SwiftUI; los hooks del ciclo de vida (`initState`, `dispose`, `didUpdateWidget`) son el mecanismo correcto para gestionar recursos y reaccionar a cambios de configuración sin fugas de memoria.
+
+**Código del ejemplo:**
+
+```dart
+Column(children: [
+  Row(children: [Text("Izquierda"), Spacer(), Text("Derecha")]),
+  Stack(children: [Image.asset("fondo.png"), Text("Superpuesto")]),
+])
+```
+
+En el proyecto integrador RutaFlow, este layout y los hooks de ciclo de vida viven en `lib/features/deliveries/presentation/lista_envios.dart`; replicá el timer con `initState`/`dispose` en tu proyecto propio como práctica antes de avanzar.
+
 #### Paso 4 · Demostración guiada desde cero
 ```dart
 Stack(children: [
@@ -215,34 +245,6 @@ Corregí el Paso 5 restaurando `_timer?.cancel()` en `dispose()`, y agregá una 
 #### Paso 7 · Cierre y evidencia
 Entregá el layout con Stack del Paso 4, los timers acumulados sin cancelar del Paso 5, y la verificación de `mounted` del Paso 6; explicá por qué todo recurso iniciado en `initState()` debe liberarse explícitamente en `dispose()`, sin excepciones. Siguiente paso: estudia Keys para listas reordenables. Errores comunes: iniciar un recurso en `initState()` sin liberarlo en `dispose()`, llamar `setState()` después de que el widget se desmontó, y anidar `Column` dentro de `Column` sin límites de altura. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/State-class.html y https://docs.flutter.dev/ui/widgets/layout.
 **¿Por qué es importante?** Los hooks del ciclo de vida son el mecanismo correcto para gestionar recursos sin fugas de memoria; omitir `dispose()` acumula recursos que siguen corriendo después de que la pantalla ya no existe.
-**Evidencia de aprendizaje:** entrega layout con Stack, timers sin cancelar detectados y verificación de mounted agregada.
-**Conceptos clave:** contenedores de layout combinables, hooks del ciclo de vida de un StatefulWidget.
-
-```dart
-Column(children: [
-  Row(children: [Text("Izquierda"), Spacer(), Text("Derecha")]),
-  Stack(children: [Image.asset("fondo.png"), Text("Superpuesto")]),
-])
-```
-
-`Row`, `Column` y `Stack` son los tres contenedores de layout fundamentales de Flutter: apilan hijos horizontalmente, verticalmente, y superpuestos entre sí respectivamente, exactamente el mismo conjunto mínimo de primitivas de layout estudiado en Jetpack Compose (`Row`/`Column`/`Box`, Módulo 2 del track de Android) y en SwiftUI (`HStack`/`VStack`/`ZStack`, Módulo 1 del track de iOS), reflejando una convergencia consistente entre los frameworks de UI declarativa móvil más importantes hacia el mismo conjunto de primitivas combinables.
-
-`initState()` se ejecuta una única vez cuando el `State` se inserta por primera vez en el árbol, apropiado para inicializar recursos (suscripciones, controladores de animación); `dispose()` se ejecuta cuando el `State` se remueve permanentemente del árbol, apropiado para liberar esos mismos recursos, evitando fugas de memoria; `didUpdateWidget()` se ejecuta cuando el widget se reconstruye con una nueva configuración (nuevos parámetros del constructor) pero el mismo objeto `State` persiste, permitiendo reaccionar a cambios de configuración sin perder el estado interno acumulado hasta ese momento. `Expanded` y `Flexible` distribuyen espacio disponible proporcionalmente entre hijos de un `Row`/`Column`; `SizedBox` fija dimensiones exactas; `AspectRatio` mantiene una proporción específica entre ancho y alto.
-
-**Analogía:** `Row`, `Column` y `Stack` son como los tres tipos básicos de disposición de mobiliario en una habitación (en fila, apilado, superpuesto), combinables para construir cualquier distribución compleja; `initState()`/`dispose()` son como el protocolo de apertura y cierre de un local comercial (encender/apagar sistemas al inicio y fin de operación), mientras `didUpdateWidget()` es como ajustar la configuración interna del local ante un cambio de horario sin cerrar y reabrir el negocio por completo.
-
-**¿Por qué es importante?** `Row`/`Column`/`Stack` son las primitivas combinables de cualquier layout Flutter, compartidas conceptualmente con Compose y SwiftUI; los hooks del ciclo de vida (`initState`, `dispose`, `didUpdateWidget`) son el mecanismo correcto para gestionar recursos y reaccionar a cambios de configuración sin fugas de memoria.
-
-**Código del ejemplo:**
-
-```dart
-Column(children: [
-  Row(children: [Text("Izquierda"), Spacer(), Text("Derecha")]),
-  Stack(children: [Image.asset("fondo.png"), Text("Superpuesto")]),
-])
-```
-
-En el proyecto integrador RutaFlow, este layout y los hooks de ciclo de vida viven en `lib/features/deliveries/presentation/lista_envios.dart`; replicá el timer con `initState`/`dispose` en tu proyecto propio como práctica antes de avanzar.
 
 ### Tema 3: Keys
 

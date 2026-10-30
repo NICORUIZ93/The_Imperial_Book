@@ -11,23 +11,7 @@ Al finalizar vas a usar Bedrock para redactar el texto del SMS de confirmación 
 En vez de un SMS con texto fijo, RutaFlow quiere que un LLM redacte un mensaje breve y natural por cada entrega ("Tu pedido env-4471 llegó a las 14:32") — pero ese texto va a cambiar entre invocaciones reales, así que el código que lo consume no puede depender de un contenido exacto.
 #### Paso 3 · Teoría, modelo mental y analogía
 El contrato (la forma del JSON de entrada y salida) es el formulario; el contenido generado puede variar y se evalúa por separado, nunca con un `assert` de texto exacto.
-#### Paso 4 · Demostración guiada
-```bash
-aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
-  --body '{"prompt":"Redacta un SMS breve confirmando la entrega del envío env-4471","max_tokens":50}' \
-  --cli-binary-format raw-in-base64-out salida1.json
-aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
-  --body '{"prompt":"Redacta un SMS breve confirmando la entrega del envío env-4471","max_tokens":50}' \
-  --cli-binary-format raw-in-base64-out salida2.json
-diff salida1.json salida2.json
-```
-Resultado esperado: `diff` no muestra ninguna diferencia — Floci devuelve exactamente la misma respuesta stub para el mismo prompt, algo que un modelo real jamás garantizaría. Esto te deja probar con confianza que tu código parsea bien la respuesta, no que el texto generado es bueno.
-#### Paso 5 · Práctica guiada
-Pista: escribí el código que lee la respuesta asumiendo un campo `completion` (en vez del campo real que Floci devuelve en su stub) — ese es el fallo deliberado: tu parseo falla con un valor `undefined`, no porque Bedrock haya cambiado nada, sino porque asumiste la forma del contrato sin confirmarla primero contra la respuesta real del stub.
-#### Paso 6 · Práctica independiente
-Probá qué pasa si el prompt pide explícitamente algo fuera del `max_tokens` configurado (un mensaje mucho más largo que 50 tokens), y documentá cómo tu código debería manejar una respuesta truncada sin que el SMS le llegue cortado a la mitad al cliente.
-#### Paso 7 · Cierre y evidencia
-Entregá el stub determinista del Paso 4, el error de contrato mal asumido del Paso 5, y el manejo de truncamiento del Paso 6; explicá qué de todo esto seguiría siendo cierto contra el Bedrock real, y qué no. Siguiente paso: extracción. Errores comunes: probar solo texto feliz y filtrar datos sensibles. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html.
+
 **Conceptos clave:** probar la estructura del contrato de integración, no el contenido generativo real.
 
 ```bash
@@ -54,6 +38,24 @@ aws bedrock-runtime invoke-model --model-id ... --body '{"prompt":"Hola"}' ...
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Consume una respuesta determinista del asistente de incidencias en el entorno local. Prueba el contrato de entrada y salida y deja explícito que ese resultado no mide precisión ni seguridad de un modelo real.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"Redacta un SMS breve confirmando la entrega del envío env-4471","max_tokens":50}' \
+  --cli-binary-format raw-in-base64-out salida1.json
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"Redacta un SMS breve confirmando la entrega del envío env-4471","max_tokens":50}' \
+  --cli-binary-format raw-in-base64-out salida2.json
+diff salida1.json salida2.json
+```
+Resultado esperado: `diff` no muestra ninguna diferencia — Floci devuelve exactamente la misma respuesta stub para el mismo prompt, algo que un modelo real jamás garantizaría. Esto te deja probar con confianza que tu código parsea bien la respuesta, no que el texto generado es bueno.
+#### Paso 5 · Práctica guiada
+Pista: escribí el código que lee la respuesta asumiendo un campo `completion` (en vez del campo real que Floci devuelve en su stub) — ese es el fallo deliberado: tu parseo falla con un valor `undefined`, no porque Bedrock haya cambiado nada, sino porque asumiste la forma del contrato sin confirmarla primero contra la respuesta real del stub.
+#### Paso 6 · Práctica independiente
+Probá qué pasa si el prompt pide explícitamente algo fuera del `max_tokens` configurado (un mensaje mucho más largo que 50 tokens), y documentá cómo tu código debería manejar una respuesta truncada sin que el SMS le llegue cortado a la mitad al cliente.
+#### Paso 7 · Cierre y evidencia
+Entregá el stub determinista del Paso 4, el error de contrato mal asumido del Paso 5, y el manejo de truncamiento del Paso 6; explicá qué de todo esto seguiría siendo cierto contra el Bedrock real, y qué no. Siguiente paso: extracción. Errores comunes: probar solo texto feliz y filtrar datos sensibles. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html.
+
 ### Tema 2: Textract y Transcribe
 
 #### Paso 1 · Objetivo y preparación
@@ -62,20 +64,7 @@ Al finalizar vas a extraer automáticamente cliente y monto de una factura escan
 Facturación recibe fotos de facturas en papel que hoy alguien transcribe a mano a la tabla `facturas` (Módulo 13); y un conductor reporta incidencias por nota de voz que nadie escucha hasta el día siguiente.
 #### Paso 3 · Teoría, modelo mental y analogía
 La extracción es pasar de una imagen de factura a un formulario estructurado con campos nombrados, en vez de que un humano la transcriba línea por línea.
-#### Paso 4 · Demostración guiada
-```bash
-aws s3 cp factura-escaneada.jpg s3://adjuntos-tareas/facturas/factura-001.jpg
-aws textract analyze-document --document '{"S3Object":{"Bucket":"adjuntos-tareas","Name":"facturas/factura-001.jpg"}}' --feature-types FORMS
-aws transcribe start-transcription-job --transcription-job-name reporte-conductor-c891 \
-  --media '{"MediaFileUri":"s3://adjuntos-tareas/audios/reporte-c891.mp3"}' --output-bucket-name adjuntos-tareas
-```
-Resultado esperado: `analyze-document` devuelve pares clave-valor (`Cliente: ...`, `Monto: ...`) que podrías insertar directamente en la tabla `facturas` del Módulo 13; `start-transcription-job` arranca un trabajo asíncrono cuyo resultado vas a consultar después, no de inmediato.
-#### Paso 5 · Práctica guiada
-Pista: subí una foto borrosa o con el monto tapado y repetí `analyze-document` — ese es el fallo deliberado: Textract puede devolver el campo `Monto` con un `Confidence` bajo (o directamente no detectarlo), y aceptar ese valor sin revisar la confianza significaría cargar un monto incorrecto a la tabla `facturas` sin que nadie lo note.
-#### Paso 6 · Práctica independiente
-Escribí la regla de negocio que faltaría en el código: si `Confidence` de cualquier campo extraído es menor a un umbral (por ejemplo 80%), la factura se marca para revisión humana en vez de insertarse directamente en `facturas`.
-#### Paso 7 · Cierre y evidencia
-Entregá la extracción exitosa del Paso 4, el campo de baja confianza del Paso 5, y la regla de revisión humana del Paso 6; explicá por qué "Textract respondió algo" no es lo mismo que "Textract respondió algo confiable". Siguiente paso: límites. Errores comunes: aceptar extracción sin confianza y no conservar original. Fuente oficial: https://docs.aws.amazon.com/textract/latest/dg/what-is.html.
+
 **Conceptos clave:** extracción estructurada de información desde formatos no estructurados (imágenes, audio).
 
 ```bash
@@ -110,6 +99,21 @@ En el proyecto integrador RutaFlow, la regla de revisión humana por baja confia
 viviría en la misma función que escribe en la tabla `facturas` (Módulo 13) — una extensión
 natural de `ConfirmarEntregaFn` o una Lambda hermana, siguiendo el patrón de
 `examples/rutaflow/cloud/template.yaml`, nunca insertando directo sin ese chequeo.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws s3 cp factura-escaneada.jpg s3://adjuntos-tareas/facturas/factura-001.jpg
+aws textract analyze-document --document '{"S3Object":{"Bucket":"adjuntos-tareas","Name":"facturas/factura-001.jpg"}}' --feature-types FORMS
+aws transcribe start-transcription-job --transcription-job-name reporte-conductor-c891 \
+  --media '{"MediaFileUri":"s3://adjuntos-tareas/audios/reporte-c891.mp3"}' --output-bucket-name adjuntos-tareas
+```
+Resultado esperado: `analyze-document` devuelve pares clave-valor (`Cliente: ...`, `Monto: ...`) que podrías insertar directamente en la tabla `facturas` del Módulo 13; `start-transcription-job` arranca un trabajo asíncrono cuyo resultado vas a consultar después, no de inmediato.
+#### Paso 5 · Práctica guiada
+Pista: subí una foto borrosa o con el monto tapado y repetí `analyze-document` — ese es el fallo deliberado: Textract puede devolver el campo `Monto` con un `Confidence` bajo (o directamente no detectarlo), y aceptar ese valor sin revisar la confianza significaría cargar un monto incorrecto a la tabla `facturas` sin que nadie lo note.
+#### Paso 6 · Práctica independiente
+Escribí la regla de negocio que faltaría en el código: si `Confidence` de cualquier campo extraído es menor a un umbral (por ejemplo 80%), la factura se marca para revisión humana en vez de insertarse directamente en `facturas`.
+#### Paso 7 · Cierre y evidencia
+Entregá la extracción exitosa del Paso 4, el campo de baja confianza del Paso 5, y la regla de revisión humana del Paso 6; explicá por qué "Textract respondió algo" no es lo mismo que "Textract respondió algo confiable". Siguiente paso: límites. Errores comunes: aceptar extracción sin confianza y no conservar original. Fuente oficial: https://docs.aws.amazon.com/textract/latest/dg/what-is.html.
 
 ### Tema 3: Stub vs mock, y qué probar localmente
 

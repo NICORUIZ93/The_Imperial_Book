@@ -33,6 +33,34 @@ graph TD
     style G fill:#e8f5e9
 ```
 
+**Evidencia de aprendizaje:** entrega formulario sin re-renders por tecla, campo controlado mezclado detectado y campo adicional confirmado.
+**Conceptos clave:** registro no controlado por debajo, rendimiento en formularios grandes.
+
+Manejar cada campo de un formulario con su propio `useState` individual (el enfoque controlado estudiado en el Módulo 1) funciona perfectamente bien para formularios pequeños, pero en formularios con muchos campos, cada tecla presionada en cualquier campo dispara un re-render de todo el componente formulario completo (dado que el estado vive en ese componente padre), un costo que se vuelve mensurable cuando el formulario tiene decenas de campos, cada uno re-renderizándose innecesariamente cada vez que cualquier otro campo cambia, no solo el que efectivamente recibió la tecla.
+
+React Hook Form (`const { register, handleSubmit, formState: { errors } } = useForm();`) resuelve este problema registrando cada input de forma "no controlada" por debajo (similar en espíritu al enfoque no controlado mencionado en el Módulo 1, gestionado internamente mediante referencias del DOM en vez de estado de React sincronizado en cada tecla): `{...register('email', { required: 'El email es obligatorio' })}` conecta el input directamente al sistema interno de la librería sin que cada tecla dispare un re-render de React, permitiendo que formularios con muchos campos permanezcan responsivos incluso a gran escala, mientras React Hook Form gestiona la validación y el estado de errores internamente y de forma eficiente.
+
+`handleSubmit(datos => crearUsuario(datos))` recolecta todos los valores actuales del formulario solo en el momento del envío (no en cada tecla), ejecutando primero cualquier validación configurada y solo invocando la función de envío proporcionada si esa validación pasa exitosamente, con `errors` reflejando de forma reactiva cualquier error de validación encontrado, disponible para mostrarse condicionalmente junto a cada campo correspondiente.
+
+**Analogía:** manejar cada campo con `useState` individual es como anunciar en voz alta a toda la sala cada letra que alguien escribe en cualquier formulario de la sala; React Hook Form es como dejar que cada persona escriba en su propio papel privado, y solo recolectar y anunciar el contenido completo cuando alguien efectivamente entrega su formulario terminado.
+
+**Código del ejemplo:**
+
+```jsx
+const { register, handleSubmit, formState: { errors } } = useForm();
+
+<form onSubmit={handleSubmit(datos => crearUsuario(datos))}>
+  <input {...register('email', { required: 'El email es obligatorio' })} />
+  {errors.email && <span>{errors.email.message}</span>}
+</form>
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+
+**Límites y decisión de uso:** Evitar renders por tecla no elimina validación costosa ni asegura buena interacción. Elige campos controlados cuando su comportamiento lo requiera y mide el formulario real antes de introducir complejidad solo para reducir un contador.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const { register, handleSubmit, formState: { errors } } = useForm();
@@ -63,33 +91,6 @@ Corregí el Paso 5 devolviendo `destinatario` a `register`, y agregá un campo n
 #### Paso 7 · Cierre y evidencia
 Entregá el formulario sin re-renders por tecla del Paso 4, el campo controlado mezclado del Paso 5, y el campo adicional del Paso 6; explicá por qué mezclar un campo controlado dentro de un formulario de React Hook Form reintroduce exactamente el costo que React Hook Form existe para evitar. Siguiente paso: estudia cómo validar ese formulario con un schema de zod. Errores comunes: mezclar campos controlados y no controlados en el mismo formulario sin necesidad, no medir realmente el costo de render antes de migrar a React Hook Form, y olvidar `{...register(...)}` en algún input dejándolo sin conectar. Fuentes oficiales: https://react-hook-form.com/get-started y https://react.dev/learn/sharing-state-between-components.
 **¿Por qué es importante?** React Hook Form evita el costo de re-renderizar el formulario completo en cada tecla, un problema de rendimiento mensurable en formularios con muchos campos.
-**Evidencia de aprendizaje:** entrega formulario sin re-renders por tecla, campo controlado mezclado detectado y campo adicional confirmado.
-**Conceptos clave:** registro no controlado por debajo, rendimiento en formularios grandes.
-
-Manejar cada campo de un formulario con su propio `useState` individual (el enfoque controlado estudiado en el Módulo 1) funciona perfectamente bien para formularios pequeños, pero en formularios con muchos campos, cada tecla presionada en cualquier campo dispara un re-render de todo el componente formulario completo (dado que el estado vive en ese componente padre), un costo que se vuelve mensurable cuando el formulario tiene decenas de campos, cada uno re-renderizándose innecesariamente cada vez que cualquier otro campo cambia, no solo el que efectivamente recibió la tecla.
-
-React Hook Form (`const { register, handleSubmit, formState: { errors } } = useForm();`) resuelve este problema registrando cada input de forma "no controlada" por debajo (similar en espíritu al enfoque no controlado mencionado en el Módulo 1, gestionado internamente mediante referencias del DOM en vez de estado de React sincronizado en cada tecla): `{...register('email', { required: 'El email es obligatorio' })}` conecta el input directamente al sistema interno de la librería sin que cada tecla dispare un re-render de React, permitiendo que formularios con muchos campos permanezcan responsivos incluso a gran escala, mientras React Hook Form gestiona la validación y el estado de errores internamente y de forma eficiente.
-
-`handleSubmit(datos => crearUsuario(datos))` recolecta todos los valores actuales del formulario solo en el momento del envío (no en cada tecla), ejecutando primero cualquier validación configurada y solo invocando la función de envío proporcionada si esa validación pasa exitosamente, con `errors` reflejando de forma reactiva cualquier error de validación encontrado, disponible para mostrarse condicionalmente junto a cada campo correspondiente.
-
-**Analogía:** manejar cada campo con `useState` individual es como anunciar en voz alta a toda la sala cada letra que alguien escribe en cualquier formulario de la sala; React Hook Form es como dejar que cada persona escriba en su propio papel privado, y solo recolectar y anunciar el contenido completo cuando alguien efectivamente entrega su formulario terminado.
-
-**Código del ejemplo:**
-
-```jsx
-const { register, handleSubmit, formState: { errors } } = useForm();
-
-<form onSubmit={handleSubmit(datos => crearUsuario(datos))}>
-  <input {...register('email', { required: 'El email es obligatorio' })} />
-  {errors.email && <span>{errors.email.message}</span>}
-</form>
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-
-**Límites y decisión de uso:** Evitar renders por tecla no elimina validación costosa ni asegura buena interacción. Elige campos controlados cuando su comportamiento lo requiera y mide el formulario real antes de introducir complejidad solo para reducir un contador.
 
 ### Tema 2: Validación con zod y formularios multi-paso
 
@@ -101,6 +102,34 @@ El peso de un envío debe ser un número positivo y la dirección no puede estar
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un schema de zod describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, conectado a React Hook Form mediante `zodResolver` — una plantilla de aduana que especifica qué documentos son válidos para pasar.
+
+**Evidencia de aprendizaje:** entrega schema con validación, pérdida de datos detectada y paso de confirmación con resumen completo.
+**Conceptos clave:** schema declarativo, `zodResolver`, estado compartido entre pasos.
+
+Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, de forma similar en espíritu a los validadores declarativos de Reactive Forms estudiados en el Módulo 5 del track de Angular, pero expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
+
+Un formulario multi-paso mantiene el estado combinado de todos los pasos en un componente padre compartido (`const [datos, setDatos] = useState({})`), donde cada paso individual es un sub-formulario independiente que, al completarse, fusiona sus propios datos con el estado acumulado existente (`setDatos(prev => ({ ...prev, ...datosDelPaso }))`) antes de avanzar al siguiente paso (`setPaso(p => p + 1)`); al retroceder a un paso anterior, ese estado combinado ya existente permite prellenar nuevamente los campos con los valores previamente ingresados, en vez de perderlos y forzar al usuario a reescribirlos desde cero.
+
+**Analogía:** un schema de zod es como una plantilla de aduana que especifica exactamente qué documentos y en qué formato son válidos para pasar, rechazando automáticamente cualquier envío que no cumpla esos requisitos declarados; un formulario multi-paso es como llenar un formulario largo en varias hojas separadas que se van acumulando en la misma carpeta, permitiendo volver a una hoja anterior sin perder lo ya escrito en las demás.
+
+**Código del ejemplo:**
+
+```jsx
+const schema = z.object({ email: z.string().email(), edad: z.number().min(18) });
+useForm({ resolver: zodResolver(schema) });
+
+const [paso, setPaso] = useState(1);
+const [datos, setDatos] = useState({});
+function siguientePaso(datosDelPaso) {
+  setDatos(prev => ({ ...prev, ...datosDelPaso }));
+  setPaso(p => p + 1);
+}
+```
+
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
+
+**Límites y decisión de uso:** El esquema del cliente puede omitirse o quedar desactualizado; el servidor debe validar también. En pasos múltiples conserva datos válidos y errores por campo, sin perder el borrador ni enviar campos ocultos que ya no corresponden.
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -138,33 +167,6 @@ Corregí el Paso 5 restaurando el spread, y agregá un tercer paso (confirmació
 #### Paso 7 · Cierre y evidencia
 Entregá el schema con validación del Paso 4, la pérdida de datos provocada en el Paso 5, y el paso de confirmación del Paso 6; explicá por qué `setDatos(prev => ({ ...prev, ...datosDelPaso }))` es necesario, dado que cada paso solo conoce sus propios campos, no los de los demás pasos. Siguiente paso: estudia cómo React normaliza los eventos del formulario. Errores comunes: sobrescribir el estado acumulado en vez de fusionarlo al avanzar de paso, duplicar reglas de validación entre el schema y código manual adicional, y no validar un paso antes de permitir avanzar al siguiente. Fuentes oficiales: https://zod.dev/ y https://react-hook-form.com/docs/useform.
 **¿Por qué es importante?** Un schema de zod centraliza y hace reutilizable la lógica de validación; conservar el estado combinado entre pasos evita que el usuario pierda datos ya ingresados al navegar entre pasos.
-**Evidencia de aprendizaje:** entrega schema con validación, pérdida de datos detectada y paso de confirmación con resumen completo.
-**Conceptos clave:** schema declarativo, `zodResolver`, estado compartido entre pasos.
-
-Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, de forma similar en espíritu a los validadores declarativos de Reactive Forms estudiados en el Módulo 5 del track de Angular, pero expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
-
-Un formulario multi-paso mantiene el estado combinado de todos los pasos en un componente padre compartido (`const [datos, setDatos] = useState({})`), donde cada paso individual es un sub-formulario independiente que, al completarse, fusiona sus propios datos con el estado acumulado existente (`setDatos(prev => ({ ...prev, ...datosDelPaso }))`) antes de avanzar al siguiente paso (`setPaso(p => p + 1)`); al retroceder a un paso anterior, ese estado combinado ya existente permite prellenar nuevamente los campos con los valores previamente ingresados, en vez de perderlos y forzar al usuario a reescribirlos desde cero.
-
-**Analogía:** un schema de zod es como una plantilla de aduana que especifica exactamente qué documentos y en qué formato son válidos para pasar, rechazando automáticamente cualquier envío que no cumpla esos requisitos declarados; un formulario multi-paso es como llenar un formulario largo en varias hojas separadas que se van acumulando en la misma carpeta, permitiendo volver a una hoja anterior sin perder lo ya escrito en las demás.
-
-**Código del ejemplo:**
-
-```jsx
-const schema = z.object({ email: z.string().email(), edad: z.number().min(18) });
-useForm({ resolver: zodResolver(schema) });
-
-const [paso, setPaso] = useState(1);
-const [datos, setDatos] = useState({});
-function siguientePaso(datosDelPaso) {
-  setDatos(prev => ({ ...prev, ...datosDelPaso }));
-  setPaso(p => p + 1);
-}
-```
-
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
-
-**Límites y decisión de uso:** El esquema del cliente puede omitirse o quedar desactualizado; el servidor debe validar también. En pasos múltiples conserva datos válidos y errores por campo, sin perder el borrador ni enviar campos ocultos que ya no corresponden.
 
 ### Tema 3: Eventos sintéticos
 

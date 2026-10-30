@@ -14,39 +14,6 @@ El equipo de tareas tiene duplicada la prueba del filtro de pendientes: una suit
 #### Paso 3 · Teoría, modelo mental y analogía
 `kotlin.test` ofrece aserciones (`assertEquals`, `assertTrue`) que se compilan contra la implementación de testing de cada target, permitiendo escribir un único test en `commonTest` que corre de forma nativa en ambas plataformas. La analogía es una única inspección de calidad aplicada automáticamente a dos fábricas que siguen el mismo plano.
 
-#### Paso 4 · Demostración guiada desde cero
-```kotlin
-class ObtenerTareasPendientesUseCaseTest {
-    @Test
-    fun filtraSoloPendientes() = runTest {
-        val repoFake = TareaRepositoryFake(listOf(
-            Tarea("1", "A", completada = false),
-            Tarea("2", "B", completada = true),
-        ))
-        val resultado = ObtenerTareasPendientesUseCase(repoFake)()
-        assertEquals(1, resultado.size)
-    }
-}
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: `./gradlew :shared:allTests` compila y ejecuta este mismo test contra el target de Android y contra el target de iOS (Kotlin/Native) de forma independiente, confirmando que ambos targets filtran exactamente 1 tarea pendiente sin ninguna diferencia de comportamiento entre plataformas.
-
-#### Paso 5 · Práctica guiada
-Pista: dejá la suite JUnit duplicada en `androidApp/src/test` y la suite XCTest duplicada en `iosApp` activas además de la nueva en `commonTest`. Ese es el fallo deliberado: ahora existen tres pruebas distintas de la misma regla, y cuando alguien corrige un bug en `ObtenerTareasPendientesUseCase`, solo actualiza dos de las tres, dejando una suite verde que verifica un comportamiento ya obsoleto.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 eliminando las dos suites duplicadas específicas de plataforma, dejando `commonTest` como la única fuente de verdad para esta regla, y confirmá con `./gradlew :shared:allTests` que ambos targets siguen pasando con una sola suite.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el test en `commonTest` del Paso 4, la triple duplicación detectada en el Paso 5, y la eliminación de las suites redundantes del Paso 6; explicá por qué una prueba de lógica compartida vive naturalmente en `commonTest` y no en cada plataforma. Siguiente paso: reemplazá cualquier mock específico de JVM por un fake compatible con todos los targets. Errores comunes: escribir el mismo test por separado en cada plataforma "por las dudas", no ejecutar `allTests` contra ambos targets antes de confiar en un cambio, y dejar pruebas obsoletas verdes que ya no reflejan el comportamiento real. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/api/latest/kotlin.test/.
-**¿Por qué es importante?** Porque las pruebas compartidas reducen duplicación y detectan regresiones en todas las plataformas.
 **Evidencia de aprendizaje:** entrega test en commonTest ejecutado contra ambos targets, triple duplicación detectada y suites redundantes eliminadas.
 **Conceptos clave:** un único test, ejecutado contra ambos targets.
 
@@ -95,6 +62,40 @@ class ObtenerTareasPendientesUseCaseTest {
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Prueba en commonTest las reglas de confirmación con datos válidos, duplicados e incompletos. Ejecuta los targets disponibles y documenta las pruebas nativas adicionales que commonTest no sustituye.
 
+#### Paso 4 · Demostración guiada desde cero
+```kotlin
+class ObtenerTareasPendientesUseCaseTest {
+    @Test
+    fun filtraSoloPendientes() = runTest {
+        val repoFake = TareaRepositoryFake(listOf(
+            Tarea("1", "A", completada = false),
+            Tarea("2", "B", completada = true),
+        ))
+        val resultado = ObtenerTareasPendientesUseCase(repoFake)()
+        assertEquals(1, resultado.size)
+    }
+}
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: `./gradlew :shared:allTests` compila y ejecuta este mismo test contra el target de Android y contra el target de iOS (Kotlin/Native) de forma independiente, confirmando que ambos targets filtran exactamente 1 tarea pendiente sin ninguna diferencia de comportamiento entre plataformas.
+
+#### Paso 5 · Práctica guiada
+Pista: dejá la suite JUnit duplicada en `androidApp/src/test` y la suite XCTest duplicada en `iosApp` activas además de la nueva en `commonTest`. Ese es el fallo deliberado: ahora existen tres pruebas distintas de la misma regla, y cuando alguien corrige un bug en `ObtenerTareasPendientesUseCase`, solo actualiza dos de las tres, dejando una suite verde que verifica un comportamiento ya obsoleto.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 eliminando las dos suites duplicadas específicas de plataforma, dejando `commonTest` como la única fuente de verdad para esta regla, y confirmá con `./gradlew :shared:allTests` que ambos targets siguen pasando con una sola suite.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el test en `commonTest` del Paso 4, la triple duplicación detectada en el Paso 5, y la eliminación de las suites redundantes del Paso 6; explicá por qué una prueba de lógica compartida vive naturalmente en `commonTest` y no en cada plataforma. Siguiente paso: reemplazá cualquier mock específico de JVM por un fake compatible con todos los targets. Errores comunes: escribir el mismo test por separado en cada plataforma "por las dudas", no ejecutar `allTests` contra ambos targets antes de confiar en un cambio, y dejar pruebas obsoletas verdes que ya no reflejan el comportamiento real. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/api/latest/kotlin.test/.
+**¿Por qué es importante?** Porque las pruebas compartidas reducen duplicación y detectan regresiones en todas las plataformas.
+
 ### Tema 2: Fakes en vez de mocks
 
 #### Paso 1 · Objetivo y preparación
@@ -106,31 +107,6 @@ Alguien del equipo intenta reusar en `commonTest` una librería de mocking que e
 #### Paso 3 · Teoría, modelo mental y analogía
 Un fake es una implementación real y completa de la interfaz (`TareaRepository`) con comportamiento simplificado apropiado para pruebas; un mock generado dinámicamente depende de mecanismos específicos de la JVM (proxies dinámicos, bytecode) no disponibles en Kotlin/Native. La analogía es un maniquí de práctica funcional hecho con materiales universales, frente a un simulador que depende de tecnología de un laboratorio específico.
 
-#### Paso 4 · Demostración guiada desde cero
-```kotlin
-class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
-    override suspend fun obtenerTodas() = datos
-}
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: este fake compila y funciona de forma idéntica en el target Android y en el target iOS porque es código Kotlin ordinario sin ninguna dependencia de un runtime particular, a diferencia de un mock generado dinámicamente.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá una dependencia de una librería de mocking típica de JVM al módulo `shared` para reemplazar el fake "y ahorrar código repetitivo". Ese es el fallo deliberado: `./gradlew :shared:compileKotlinIosArm64` falla porque esa librería no tiene implementación para el target de Kotlin/Native, bloqueando la compilación completa del módulo compartido para iOS.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando esa dependencia del módulo `shared` y restaurando el `TareaRepositoryFake` escrito a mano, y verificá que `./gradlew :shared:compileKotlinIosArm64` vuelve a compilar sin errores.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el fake del Paso 4, el fallo de compilación de iOS del Paso 5, y la corrección del Paso 6; explicá por qué una dependencia de testing "conveniente" en un módulo `shared` puede bloquear la compilación de un target completo. Siguiente paso: usá `runTest` para probar específicamente la parte asíncrona de ese mismo repositorio. Errores comunes: agregar dependencias de testing específicas de JVM al módulo `shared`, escribir fakes con lógica tan compleja que necesitan sus propias pruebas, y no verificar la compilación de todos los targets después de agregar una dependencia nueva. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/docs/multiplatform-set-up-targets.html.
-**¿Por qué es importante?** Porque un fake escrito a mano es código Kotlin ordinario compatible con todos los targets, mientras que un mock generado dinámicamente depende de mecanismos específicos de la JVM que pueden bloquear la compilación completa de un target como iOS.
 **Evidencia de aprendizaje:** entrega fake funcionando en ambos targets, fallo de compilación de iOS reproducido y corrección verificada.
 **Conceptos clave:** implementación real y simple, compatibilidad con todos los targets.
 
@@ -168,6 +144,32 @@ flowchart LR
 ```
 
 Esta regla de "fake por encima de mock" es la misma que aplica el proyecto integrador RutaFlow: `SyncEngine` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) se prueba con un `Outbox` y un `DeliveryApi` fake, nunca con un mock de JVM, precisamente porque `SyncEngine` también debe compilar en el target iOS. Ejercicio de cierre: ejecutá `./gradlew :shared:compileKotlinIosArm64` después de restaurar el fake y confirmá en la salida que ya no aparece el error de bytecode.
+
+#### Paso 4 · Demostración guiada desde cero
+```kotlin
+class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
+    override suspend fun obtenerTodas() = datos
+}
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: este fake compila y funciona de forma idéntica en el target Android y en el target iOS porque es código Kotlin ordinario sin ninguna dependencia de un runtime particular, a diferencia de un mock generado dinámicamente.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá una dependencia de una librería de mocking típica de JVM al módulo `shared` para reemplazar el fake "y ahorrar código repetitivo". Ese es el fallo deliberado: `./gradlew :shared:compileKotlinIosArm64` falla porque esa librería no tiene implementación para el target de Kotlin/Native, bloqueando la compilación completa del módulo compartido para iOS.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 quitando esa dependencia del módulo `shared` y restaurando el `TareaRepositoryFake` escrito a mano, y verificá que `./gradlew :shared:compileKotlinIosArm64` vuelve a compilar sin errores.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el fake del Paso 4, el fallo de compilación de iOS del Paso 5, y la corrección del Paso 6; explicá por qué una dependencia de testing "conveniente" en un módulo `shared` puede bloquear la compilación de un target completo. Siguiente paso: usá `runTest` para probar específicamente la parte asíncrona de ese mismo repositorio. Errores comunes: agregar dependencias de testing específicas de JVM al módulo `shared`, escribir fakes con lógica tan compleja que necesitan sus propias pruebas, y no verificar la compilación de todos los targets después de agregar una dependencia nueva. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/docs/multiplatform-set-up-targets.html.
+**¿Por qué es importante?** Porque un fake escrito a mano es código Kotlin ordinario compatible con todos los targets, mientras que un mock generado dinámicamente depende de mecanismos específicos de la JVM que pueden bloquear la compilación completa de un target como iOS.
 
 ### Tema 3: runTest para coroutines
 

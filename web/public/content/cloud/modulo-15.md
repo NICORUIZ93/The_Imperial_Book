@@ -11,19 +11,7 @@ Al finalizar podrás declarar infraestructura desde cero. Prerrequisitos: Terraf
 Una plataforma de entregas necesita repetir ambientes sin configurarlos a mano.
 #### Paso 3 · Teoría, modelo mental y analogía
 IaC es un plano versionado: el motor compara deseo y realidad.
-#### Paso 4 · Demostración guiada
-Crea `main.tf` desde una carpeta vacía.
-```bash
-mkdir ejemplo-terraform
-terraform --version
-```
-Resultado esperado: Terraform disponible.
-#### Paso 5 · Práctica guiada
-Pista: declara un recurso inválido para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Añade variables, outputs y un módulo.
-#### Paso 7 · Cierre y evidencia
-Entrega archivos, salida, fallo y corrección; explica el resultado. Siguiente paso: plan. Errores comunes: estado local perdido y secretos en variables. Fuente oficial: https://developer.hashicorp.com/terraform/docs.
+
 **Conceptos clave:** estado deseado declarado una vez, reproducible y versionable.
 
 ```yaml
@@ -63,6 +51,20 @@ Outputs:
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Describe bucket, cola y función de entregas en un template versionado. Crea el stack de prueba, consulta sus recursos y elimina el stack comprobando qué datos requieren una política de conservación.
 
+#### Paso 4 · Demostración guiada
+Crea `main.tf` desde una carpeta vacía.
+```bash
+mkdir ejemplo-terraform
+terraform --version
+```
+Resultado esperado: Terraform disponible.
+#### Paso 5 · Práctica guiada
+Pista: declara un recurso inválido para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Añade variables, outputs y un módulo.
+#### Paso 7 · Cierre y evidencia
+Entrega archivos, salida, fallo y corrección; explica el resultado. Siguiente paso: plan. Errores comunes: estado local perdido y secretos en variables. Fuente oficial: https://developer.hashicorp.com/terraform/docs.
+
 ### Tema 2: Change sets
 
 #### Paso 1 · Objetivo y preparación
@@ -71,19 +73,6 @@ Al finalizar podrás revisar un plan desde cero. Prerrequisitos: Terraform y Doc
 Antes de cambiar producción necesitas conocer recursos que se crearán o destruirán.
 #### Paso 3 · Teoría, modelo mental y analogía
 Plan es ensayo general: muestra consecuencias sin tocar el escenario.
-#### Paso 4 · Demostración guiada
-Crea `main.tf` y `variables.tf` desde una carpeta vacía.
-```bash
-mkdir ejemplo-plan
-terraform --version
-```
-Resultado esperado: Terraform disponible.
-#### Paso 5 · Práctica guiada
-Pista: modifica una variable para provocar un fallo deliberado de validación y corrígelo.
-#### Paso 6 · Práctica independiente
-Guarda plan y revisa cambios peligrosos.
-#### Paso 7 · Cierre y evidencia
-Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: drift. Errores comunes: aplicar sin revisar y no fijar versiones. Fuente oficial: https://developer.hashicorp.com/terraform/cli/commands/plan.
 
 Revisar el plan/change set antes de aplicarlo es exactamente la disciplina que exigirás en el proyecto integrador (API multi-nube con AWS, Azure y GCP): cualquier cambio de infraestructura ahí pasa primero por una previsualización explícita, nunca se aplica a ciegas.
 
@@ -114,6 +103,20 @@ create-change-set   → calcula el impacto SIN aplicar el cambio
 describe-change-set → revisa exactamente qué se crearía/modificaría/eliminaría
 execute-change-set  → aplica el cambio YA revisado y aprobado
 ```
+
+#### Paso 4 · Demostración guiada
+Crea `main.tf` y `variables.tf` desde una carpeta vacía.
+```bash
+mkdir ejemplo-plan
+terraform --version
+```
+Resultado esperado: Terraform disponible.
+#### Paso 5 · Práctica guiada
+Pista: modifica una variable para provocar un fallo deliberado de validación y corrígelo.
+#### Paso 6 · Práctica independiente
+Guarda plan y revisa cambios peligrosos.
+#### Paso 7 · Cierre y evidencia
+Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: drift. Errores comunes: aplicar sin revisar y no fijar versiones. Fuente oficial: https://developer.hashicorp.com/terraform/cli/commands/plan.
 
 ### Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta
 

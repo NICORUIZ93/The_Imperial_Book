@@ -11,35 +11,7 @@ Al finalizar vas a decidir, con el caso real del panel de seguimiento de RutaFlo
 El panel de seguimiento consulta la posición GPS más reciente de cada conductor cada pocos segundos para refrescar el mapa — repetir esa consulta contra `ShipmentEvents` (Módulo 4) en cada refresco de cada cliente conectado sobrecargaría la tabla sin necesidad.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cache-aside es una estantería de consulta rápida con vencimiento: preguntás primero ahí, y solo vas al almacén completo (la base de datos) si no está.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-PUERTO=$(aws elasticache describe-replication-groups --replication-group-id demo-cache \
-  --query 'ReplicationGroups[0].NodeGroups[0].PrimaryEndpoint.Port' --output text)
-redis-cli -h localhost -p "$PUERTO" get posicion:c-891 || \
-  redis-cli -h localhost -p "$PUERTO" set posicion:c-891 '{"lat":4.6097,"lon":-74.0817}' EX 10
-redis-cli -h localhost -p "$PUERTO" get posicion:c-891
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: la primera lectura falla (cache miss, nadie cacheó esa posición todavía), así que el script la guarda con TTL de 10 segundos; la segunda lectura la devuelve directamente (cache hit) sin volver a consultar `ShipmentEvents`.
-#### Paso 5 · Práctica guiada
-Pista: guardá la misma posición con `EX 0` (TTL cero) — ese es el fallo deliberado de rendimiento: la clave expira (o nunca llega a existir de forma útil) de inmediato, así que CADA lectura vuelve a ser un cache miss, forzando una consulta a la base de datos en cada refresco del mapa — exactamente lo que el caché debía evitar.
-#### Paso 6 · Práctica independiente
-Repetí la lectura después de que pasen los 10 segundos del Paso 4 y confirmá el cache miss; medí (con `time`) cuánto tarda un `GET` que sí encuentra la clave contra uno que no, para ver la diferencia real de latencia entre hit y miss.
-#### Paso 7 · Cierre y evidencia
-Entregá el ciclo completo de miss→set→hit del Paso 4, el TTL cero roto del Paso 5, y la medición de latencia del Paso 6; explicá por qué la posición GPS de un conductor es un buen candidato para cache-aside y el saldo de una factura (Módulo 13) no lo sería. Siguiente paso: Valkey. Errores comunes: datos obsoletos y cachear errores. Fuente oficial: https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/database-caching-strategies-using-redis.html.
 **Conceptos clave:** latencia de lectura, cache-aside, cache hit / cache miss, TTL.
 
 Una base de datos como RDS o DynamoDB, por bien indexada que esté, sigue siendo más lenta que leer un valor directamente desde memoria RAM: una consulta a RDS puede tardar varios milisegundos, mientras que una lectura en Redis/Valkey típicamente tarda menos de un milisegundo. Cuando una aplicación consulta el mismo dato con mucha frecuencia y ese dato no cambia todo el tiempo —el perfil de un usuario, el catálogo de productos, un conteo de "me gusta"—, guardarlo en un caché en memoria evita repetir la consulta costosa una y otra vez.
@@ -73,6 +45,36 @@ redis-cli -h localhost -p "$PUERTO" get usuario:1
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Cachea una consulta de seguimiento y mide aciertos, fallos y antigüedad. Actualiza la entrega y comprueba cómo se invalida la entrada; una respuesta rápida con estado obsoleto no cuenta como éxito.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+PUERTO=$(aws elasticache describe-replication-groups --replication-group-id demo-cache \
+  --query 'ReplicationGroups[0].NodeGroups[0].PrimaryEndpoint.Port' --output text)
+redis-cli -h localhost -p "$PUERTO" get posicion:c-891 || \
+  redis-cli -h localhost -p "$PUERTO" set posicion:c-891 '{"lat":4.6097,"lon":-74.0817}' EX 10
+redis-cli -h localhost -p "$PUERTO" get posicion:c-891
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: la primera lectura falla (cache miss, nadie cacheó esa posición todavía), así que el script la guarda con TTL de 10 segundos; la segunda lectura la devuelve directamente (cache hit) sin volver a consultar `ShipmentEvents`.
+#### Paso 5 · Práctica guiada
+Pista: guardá la misma posición con `EX 0` (TTL cero) — ese es el fallo deliberado de rendimiento: la clave expira (o nunca llega a existir de forma útil) de inmediato, así que CADA lectura vuelve a ser un cache miss, forzando una consulta a la base de datos en cada refresco del mapa — exactamente lo que el caché debía evitar.
+#### Paso 6 · Práctica independiente
+Repetí la lectura después de que pasen los 10 segundos del Paso 4 y confirmá el cache miss; medí (con `time`) cuánto tarda un `GET` que sí encuentra la clave contra uno que no, para ver la diferencia real de latencia entre hit y miss.
+#### Paso 7 · Cierre y evidencia
+Entregá el ciclo completo de miss→set→hit del Paso 4, el TTL cero roto del Paso 5, y la medición de latencia del Paso 6; explicá por qué la posición GPS de un conductor es un buen candidato para cache-aside y el saldo de una factura (Módulo 13) no lo sería. Siguiente paso: Valkey. Errores comunes: datos obsoletos y cachear errores. Fuente oficial: https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/database-caching-strategies-using-redis.html.
+
 ### Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación
 
 #### Paso 1 · Objetivo y preparación
@@ -81,18 +83,7 @@ Al finalizar vas a crear `demo-cache` y confirmar que es un servidor Valkey real
 Varios nodos de reparto (Módulo 21) van a necesitar leer y escribir posiciones GPS en el mismo almacén compartido — no uno por instancia, sino uno centralizado al que todos se conectan.
 #### Paso 3 · Teoría, modelo mental y analogía
 Valkey es un almacén en memoria real; el proxy TCP de Floci conecta tu cliente Redis normal con ese mismo servidor, sin ninguna traducción intermedia.
-#### Paso 4 · Demostración guiada
-```bash
-aws elasticache create-replication-group --replication-group-id demo-cache --replication-group-description "Cache del proyecto"
-docker ps | grep valkey
-```
-Resultado esperado: `docker ps` muestra un contenedor real `valkey/valkey:8` corriendo — la prueba de que `CreateReplicationGroup` lanzó un servidor Redis/Valkey de verdad, no un registro simulado en la base de datos interna de Floci.
-#### Paso 5 · Práctica guiada
-Pista: conectate con `redis-cli -h localhost -p 6379` sin consultar primero qué puerto real le tocó a `demo-cache` — ese es el fallo deliberado: si ese puerto fijo no es el que Floci asignó de verdad, la conexión falla o, peor, conecta accidentalmente a OTRO clúster que sí esté en el puerto 6379.
-#### Paso 6 · Práctica independiente
-Conectate con `docker exec -it <container-id> valkey-cli info server` y confirmá el campo `redis_version` real, y probá `SET`/`GET`/`EXPIRE` directamente para confirmar que el motor responde exactamente como un Redis real, no una reimplementación aproximada.
-#### Paso 7 · Cierre y evidencia
-Entregá el contenedor real confirmado del Paso 4, el error de puerto fijo del Paso 5, y la verificación de versión del Paso 6; explicá por qué que el motor sea real (no simulado) importa para confiar en el comportamiento de comandos avanzados. Siguiente paso: descubrimiento. Errores comunes: tratar caché como fuente permanente y no limitar memoria. Fuente oficial: https://docs.aws.amazon.com/elasticache/latest/dg/WhatIs.html.
+
 **Conceptos clave:** contenedor Valkey/Redis real, proxy TCP, `CreateReplicationGroup`.
 
 A diferencia de servicios donde Floci simula el comportamiento en proceso, ElastiCache gestiona contenedores Docker reales de Valkey (el fork open-source de Redis) y expone conexiones proxy TCP hacia ellos: cuando llamas a `CreateReplicationGroup`, Floci realmente lanza un contenedor `valkey/valkey:8` y lo conecta a un puerto del host dentro del rango configurado (por defecto 6379–6399, el mismo rango de puertos que usa Redis por convención). El resultado es que cualquier cliente Redis estándar —`redis-cli`, la librería de Redis en tu lenguaje favorito— funciona sin ninguna adaptación especial, porque estás hablando el protocolo RESP real contra un servidor Redis/Valkey real.
@@ -123,6 +114,19 @@ docker ps | grep valkey
 **Cómo crece tu proyecto:** `demo-cache` es el clúster que usará el resto del track para cachear consultas repetidas del panel de seguimiento.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Conecta el cliente de caché del proyecto al servicio local y verifica escritura, lectura y expiración. Reinicia el contenedor y registra qué persiste realmente en la configuración usada.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws elasticache create-replication-group --replication-group-id demo-cache --replication-group-description "Cache del proyecto"
+docker ps | grep valkey
+```
+Resultado esperado: `docker ps` muestra un contenedor real `valkey/valkey:8` corriendo — la prueba de que `CreateReplicationGroup` lanzó un servidor Redis/Valkey de verdad, no un registro simulado en la base de datos interna de Floci.
+#### Paso 5 · Práctica guiada
+Pista: conectate con `redis-cli -h localhost -p 6379` sin consultar primero qué puerto real le tocó a `demo-cache` — ese es el fallo deliberado: si ese puerto fijo no es el que Floci asignó de verdad, la conexión falla o, peor, conecta accidentalmente a OTRO clúster que sí esté en el puerto 6379.
+#### Paso 6 · Práctica independiente
+Conectate con `docker exec -it <container-id> valkey-cli info server` y confirmá el campo `redis_version` real, y probá `SET`/`GET`/`EXPIRE` directamente para confirmar que el motor responde exactamente como un Redis real, no una reimplementación aproximada.
+#### Paso 7 · Cierre y evidencia
+Entregá el contenedor real confirmado del Paso 4, el error de puerto fijo del Paso 5, y la verificación de versión del Paso 6; explicá por qué que el motor sea real (no simulado) importa para confiar en el comportamiento de comandos avanzados. Siguiente paso: descubrimiento. Errores comunes: tratar caché como fuente permanente y no limitar memoria. Fuente oficial: https://docs.aws.amazon.com/elasticache/latest/dg/WhatIs.html.
 
 ### Tema 3: Creación de clústeres y conexión con clientes estándar
 

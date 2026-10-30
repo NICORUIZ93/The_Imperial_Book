@@ -138,6 +138,33 @@ El botón de confirmar entrega se ve bien con el tamaño de texto por defecto, p
 #### Paso 3 · Teoría, modelo mental y analogía
 Dynamic Type escala el texto según la configuración del usuario; HIG documenta convenciones (como el área táctil mínima de 44x44 puntos) que hacen que una app se sienta nativa — un código de vestimenta esperado en un ambiente profesional.
 
+**Evidencia de aprendizaje:** entrega prueba con Dynamic Type grande, bloqueo detectado y revisión de áreas táctiles.
+**Conceptos clave:** convenciones documentadas que hacen que una app se sienta nativa, más allá de usar SwiftUI.
+
+Apple documenta convenciones esperadas de comportamiento e interacción en sus Human Interface Guidelines (HIG): tamaño mínimo de áreas táctiles (44x44 puntos, garantizando que elementos interactivos sean cómodamente presionables sin errores de precisión), iconografía consistente mediante SF Symbols (el sistema de íconos nativo de Apple, ya integrado visualmente con la tipografía del sistema), y patrones de navegación estándar (los estudiados en el Módulo 3); seguir estas convenciones documentadas hace que una app "se sienta nativa" de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza automáticamente si las decisiones de diseño e interacción se apartan de esas convenciones esperadas por el usuario habitual de iOS.
+
+```swift
+Text("Título").font(.title) // escala automáticamente con la configuración de tamaño de texto del usuario
+.preferredColorScheme(.dark) // para previsualizar dark mode explícitamente
+```
+
+Dynamic Type permite que el texto de la app escale automáticamente según la configuración de tamaño de texto que el usuario eligió en Ajustes de Accesibilidad, y probar la app específicamente en el tamaño de texto más grande disponible revela rápidamente layouts que se rompen con texto considerablemente más largo de lo esperado (etiquetas truncadas, botones desbordados); `UIViewRepresentable` y `UIViewControllerRepresentable` permiten embeber Views y ViewControllers de UIKit (el framework de UI imperativo anterior a SwiftUI) dentro de un árbol SwiftUI, útil durante una migración incremental o para integrar componentes de terceros que aún no ofrecen una versión SwiftUI nativa, el mismo patrón que `AndroidView`/`ComposeView` en Android (Módulo 10 de ese track).
+
+**Analogía:** las Human Interface Guidelines son como el código de vestimenta y protocolo esperado en un ambiente profesional específico: seguirlas hace que alguien se perciba genuinamente parte de ese ambiente, mientras que ignorarlas, aun con las mejores intenciones y herramientas modernas disponibles, produce una impresión de no pertenecer del todo al contexto esperado.
+
+**Diagrama:**
+
+```
+UIViewRepresentable            → embebe una View de UIKit DENTRO de SwiftUI
+UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de SwiftUI
+```
+
+* Código: `examples/rutaflow/ios/ContentView.swift`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
+
+**Límites y decisión de uso:** Seguir una guía visual no garantiza legibilidad con texto ampliado o idiomas largos. Prueba tamaños de accesibilidad y el ciclo de vida del componente UIKit incorporado, evitando supuestos de altura fija.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 Text(envio.direccion)
@@ -165,32 +192,6 @@ Corregí el Paso 5 volviendo a `.font(.body)`, y revisá cada botón interactivo
 #### Paso 7 · Cierre y evidencia
 Entregá la prueba con Dynamic Type grande del Paso 4, el bloqueo detectado en el Paso 5, y la revisión de áreas táctiles del Paso 6; explicá por qué usar SwiftUI por sí solo no garantiza automáticamente que una app respete las HIG. Siguiente paso: estudia UIKit desde cero para mantener pantallas existentes. Errores comunes: usar tamaños de fuente fijos en puntos, botones con área táctil menor a 44x44, y no probar con el tamaño de texto más grande disponible. Fuentes oficiales: https://developer.apple.com/design/human-interface-guidelines/ y https://developer.apple.com/documentation/swiftui/text.
 **¿Por qué es importante?** Porque seguir las HIG hace que una app se sienta nativa de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza.
-**Evidencia de aprendizaje:** entrega prueba con Dynamic Type grande, bloqueo detectado y revisión de áreas táctiles.
-**Conceptos clave:** convenciones documentadas que hacen que una app se sienta nativa, más allá de usar SwiftUI.
-
-Apple documenta convenciones esperadas de comportamiento e interacción en sus Human Interface Guidelines (HIG): tamaño mínimo de áreas táctiles (44x44 puntos, garantizando que elementos interactivos sean cómodamente presionables sin errores de precisión), iconografía consistente mediante SF Symbols (el sistema de íconos nativo de Apple, ya integrado visualmente con la tipografía del sistema), y patrones de navegación estándar (los estudiados en el Módulo 3); seguir estas convenciones documentadas hace que una app "se sienta nativa" de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza automáticamente si las decisiones de diseño e interacción se apartan de esas convenciones esperadas por el usuario habitual de iOS.
-
-```swift
-Text("Título").font(.title) // escala automáticamente con la configuración de tamaño de texto del usuario
-.preferredColorScheme(.dark) // para previsualizar dark mode explícitamente
-```
-
-Dynamic Type permite que el texto de la app escale automáticamente según la configuración de tamaño de texto que el usuario eligió en Ajustes de Accesibilidad, y probar la app específicamente en el tamaño de texto más grande disponible revela rápidamente layouts que se rompen con texto considerablemente más largo de lo esperado (etiquetas truncadas, botones desbordados); `UIViewRepresentable` y `UIViewControllerRepresentable` permiten embeber Views y ViewControllers de UIKit (el framework de UI imperativo anterior a SwiftUI) dentro de un árbol SwiftUI, útil durante una migración incremental o para integrar componentes de terceros que aún no ofrecen una versión SwiftUI nativa, el mismo patrón que `AndroidView`/`ComposeView` en Android (Módulo 10 de ese track).
-
-**Analogía:** las Human Interface Guidelines son como el código de vestimenta y protocolo esperado en un ambiente profesional específico: seguirlas hace que alguien se perciba genuinamente parte de ese ambiente, mientras que ignorarlas, aun con las mejores intenciones y herramientas modernas disponibles, produce una impresión de no pertenecer del todo al contexto esperado.
-
-**Diagrama:**
-
-```
-UIViewRepresentable            → embebe una View de UIKit DENTRO de SwiftUI
-UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de SwiftUI
-```
-
-* Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
-
-**Límites y decisión de uso:** Seguir una guía visual no garantiza legibilidad con texto ampliado o idiomas largos. Prueba tamaños de accesibilidad y el ciclo de vida del componente UIKit incorporado, evitando supuestos de altura fija.
 
 ### Tema 4: UIKit desde cero para mantener aplicaciones reales
 

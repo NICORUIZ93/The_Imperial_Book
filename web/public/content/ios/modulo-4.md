@@ -11,43 +11,7 @@ Al finalizar vas a cargar el detalle de un envío de RutaFlow con `async`/`await
 Si `DetalleEnvio` tarda un segundo en traer los datos de `ShipmentEvents` y el conductor vuelve atrás antes de que termine, esa carga no debería seguir corriendo ni intentar actualizar una vista que ya no existe.
 #### Paso 3 · Teoría, modelo mental y analogía
 `async`/`await` deja leer código asíncrono en el orden natural en que ocurre, sin callbacks anidados; `.task` vinculado al ciclo de vida cancela automáticamente si la vista desaparece, como cancelar un pedido si el cliente ya se fue del restaurante.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-func obtenerEnvio(guia: String) async throws -> Envio {
-    try await Task.sleep(for: .seconds(1)) // simula la consulta real a ShipmentEvents
-    return Envio(guia: guia)
-}
 
-struct DetalleEnvio: View {
-    let guia: String
-    @State private var envio: Envio?
-    var body: some View {
-        Group {
-            if let envio { Text("Envío: \(envio.guia)") } else { ProgressView() }
-        }
-        .task {
-            do { envio = try await obtenerEnvio(guia: guia) }
-            catch { print("error: \(error)") }
-        }
-    }
-}
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: la vista muestra un `ProgressView` mientras espera, y el texto del envío apenas termina `obtenerEnvio` — si el conductor navega hacia atrás antes del segundo de espera, SwiftUI cancela automáticamente esa `Task` sin que `envio` llegue a asignarse sobre una vista que ya no existe.
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `.task { ... }` por `Task { ... }` suelto (sin vincularlo al ciclo de vida de la vista) dentro de `onAppear` — ese es el fallo deliberado: si el conductor sale de `DetalleEnvio` antes de que termine `obtenerEnvio`, esa tarea sigue corriendo de fondo sin que nadie la cancele, y cuando termine va a intentar asignar `envio` sobre una vista que ya no está en pantalla.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `.task`, y agregá un timeout real con `Task.sleep` + `race` manual (o `withTimeout` si tu versión de Swift lo soporta) para que `obtenerEnvio` falle explícitamente si tarda más de 3 segundos, en vez de esperar indefinidamente.
-#### Paso 7 · Cierre y evidencia
-Entregá la carga cancelable del Paso 4, la tarea huérfana del Paso 5, y el timeout agregado del Paso 6; explicá por qué `.task` resuelve un problema que `Task` suelto dentro de `onAppear` no resuelve. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
-**¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
 **Evidencia de aprendizaje:** entrega la carga cancelable con `.task`, la tarea huérfana reproducida con `Task` suelto, y el timeout agregado.
 **Conceptos clave:** código asíncrono que se lee como si fuera síncrono, cancelación automática vinculada al ciclo de vida.
 
@@ -85,6 +49,44 @@ func obtenerUsuario(id: String) async throws -> Usuario {
 * Visualización: concepto mostrado en diagrama
 
 **Límites y decisión de uso:** Async permite suspender, pero no hace que cualquier cálculo deje de bloquear el contexto donde se ejecuta. La cancelación es cooperativa: compruébala y libera recursos en las operaciones largas, sin asumir que cancelar mata trabajo arbitrario.
+
+#### Paso 4 · Demostración guiada desde cero
+```swift
+func obtenerEnvio(guia: String) async throws -> Envio {
+    try await Task.sleep(for: .seconds(1)) // simula la consulta real a ShipmentEvents
+    return Envio(guia: guia)
+}
+
+struct DetalleEnvio: View {
+    let guia: String
+    @State private var envio: Envio?
+    var body: some View {
+        Group {
+            if let envio { Text("Envío: \(envio.guia)") } else { ProgressView() }
+        }
+        .task {
+            do { envio = try await obtenerEnvio(guia: guia) }
+            catch { print("error: \(error)") }
+        }
+    }
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: la vista muestra un `ProgressView` mientras espera, y el texto del envío apenas termina `obtenerEnvio` — si el conductor navega hacia atrás antes del segundo de espera, SwiftUI cancela automáticamente esa `Task` sin que `envio` llegue a asignarse sobre una vista que ya no existe.
+#### Paso 5 · Práctica guiada
+Pista: reemplazá `.task { ... }` por `Task { ... }` suelto (sin vincularlo al ciclo de vida de la vista) dentro de `onAppear` — ese es el fallo deliberado: si el conductor sale de `DetalleEnvio` antes de que termine `obtenerEnvio`, esa tarea sigue corriendo de fondo sin que nadie la cancele, y cuando termine va a intentar asignar `envio` sobre una vista que ya no está en pantalla.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a `.task`, y agregá un timeout real con `Task.sleep` + `race` manual (o `withTimeout` si tu versión de Swift lo soporta) para que `obtenerEnvio` falle explícitamente si tarda más de 3 segundos, en vez de esperar indefinidamente.
+#### Paso 7 · Cierre y evidencia
+Entregá la carga cancelable del Paso 4, la tarea huérfana del Paso 5, y el timeout agregado del Paso 6; explicá por qué `.task` resuelve un problema que `Task` suelto dentro de `onAppear` no resuelve. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
+**¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
 
 ### Tema 2: Actors para estado mutable seguro
 

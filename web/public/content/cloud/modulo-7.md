@@ -11,27 +11,7 @@ Al finalizar vas a escribir la política real que necesita el rol de `confirmar-
 `confirmar-entrega` solo hace dos cosas: leer mensajes de `DeliveryCommands` y escribir en `ShipmentEvents`. No necesita borrar tablas, no necesita acceso a `PruebasEntrega`, no necesita nada de IAM ni de EC2 — cualquier permiso más allá de eso es exceso, no "por si acaso".
 #### Paso 3 · Teoría, modelo mental y analogía
 Mínimo privilegio es entregar solo la llave de la habitación necesaria: todo lo demás está denegado por defecto, no hay que "quitarlo" después.
-#### Paso 4 · Demostración guiada
-```bash
-cat > politica-minima.json <<'EOF'
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    { "Effect": "Allow", "Action": "dynamodb:PutItem", "Resource": "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents" },
-    { "Effect": "Allow", "Action": ["sqs:ReceiveMessage","sqs:DeleteMessage"], "Resource": "arn:aws:sqs:us-east-1:000000000000:delivery-commands" }
-  ]
-}
-EOF
-POLICY_ARN=$(aws iam create-policy --policy-name RutaFlowMinimoPrivilegio --policy-document file://politica-minima.json --query Policy.Arn --output text)
-aws iam simulate-custom-policy --policy-input-list file://politica-minima.json --action-names dynamodb:PutItem --resource-arns arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents
-```
-Resultado esperado: el simulador devuelve `EvalDecision: "allowed"` solo para esa acción sobre esa tabla exacta — nada en la política menciona `PruebasEntrega`, `DeleteTable` ni ningún otro servicio.
-#### Paso 5 · Práctica guiada
-Pista: agregá un statement de más a `politica-minima.json` (`"Action": "dynamodb:*", "Resource": "*"`) y volvé a correr `simulate-custom-policy`, esta vez pidiendo `dynamodb:DeleteTable` sobre una tabla distinta (`arn:...table/ShipmentEvents` de otro ambiente, por ejemplo) — ese es el fallo deliberado: ahora el simulador responde `"allowed"` para borrar una tabla que `confirmar-entrega` nunca debería poder tocar. Quitá ese statement para corregirlo.
-#### Paso 6 · Práctica independiente
-Corré `simulate-custom-policy` pidiendo `s3:GetObject` sobre `arn:aws:s3:::pruebas-entrega/*` contra la política ya corregida, y confirmá que la respuesta es `implicitDeny` — documentá por qué esa denegación es correcta y esperada, no un bug.
-#### Paso 7 · Cierre y evidencia
-Entregá la política mínima, el permiso excesivo del Paso 5 y su corrección, y la denegación esperada del Paso 6; explicá por qué "denegado por defecto" es más seguro que empezar permisivo e ir restringiendo. Siguiente paso: modelo de responsabilidad. Errores comunes: usar * y olvidar recursos. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html.
+
 **Conceptos clave:** mínimo privilegio, superficie de ataque, permisos por defecto denegados.
 
 El principio de mínimo privilegio establece que cualquier identidad —una persona, una aplicación, un servicio— debe tener únicamente los permisos estrictamente necesarios para realizar su función, y ningún permiso adicional "por si acaso" o "por comodidad". En IAM, este principio se refuerza con un comportamiento por defecto importante: cualquier acción sobre cualquier recurso está denegada de forma implícita a menos que exista una política que la permita explícitamente. No existe un estado inicial de "todo permitido" que debas ir restringiendo; el punto de partida es "nada permitido", y vas concediendo permisos específicos según se necesitan.
@@ -63,6 +43,28 @@ Si se compromete:                       Si se compromete:
 
 **Límites y decisión de uso:** Una prueba local permitida o denegada no demuestra la evaluación completa de IAM real. Revisa acciones, recursos y condiciones en el entorno objetivo; ampliar a comodines para hacer pasar el laboratorio elimina precisamente la restricción que necesitas comprobar.
 
+#### Paso 4 · Demostración guiada
+```bash
+cat > politica-minima.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Effect": "Allow", "Action": "dynamodb:PutItem", "Resource": "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents" },
+    { "Effect": "Allow", "Action": ["sqs:ReceiveMessage","sqs:DeleteMessage"], "Resource": "arn:aws:sqs:us-east-1:000000000000:delivery-commands" }
+  ]
+}
+EOF
+POLICY_ARN=$(aws iam create-policy --policy-name RutaFlowMinimoPrivilegio --policy-document file://politica-minima.json --query Policy.Arn --output text)
+aws iam simulate-custom-policy --policy-input-list file://politica-minima.json --action-names dynamodb:PutItem --resource-arns arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents
+```
+Resultado esperado: el simulador devuelve `EvalDecision: "allowed"` solo para esa acción sobre esa tabla exacta — nada en la política menciona `PruebasEntrega`, `DeleteTable` ni ningún otro servicio.
+#### Paso 5 · Práctica guiada
+Pista: agregá un statement de más a `politica-minima.json` (`"Action": "dynamodb:*", "Resource": "*"`) y volvé a correr `simulate-custom-policy`, esta vez pidiendo `dynamodb:DeleteTable` sobre una tabla distinta (`arn:...table/ShipmentEvents` de otro ambiente, por ejemplo) — ese es el fallo deliberado: ahora el simulador responde `"allowed"` para borrar una tabla que `confirmar-entrega` nunca debería poder tocar. Quitá ese statement para corregirlo.
+#### Paso 6 · Práctica independiente
+Corré `simulate-custom-policy` pidiendo `s3:GetObject` sobre `arn:aws:s3:::pruebas-entrega/*` contra la política ya corregida, y confirmá que la respuesta es `implicitDeny` — documentá por qué esa denegación es correcta y esperada, no un bug.
+#### Paso 7 · Cierre y evidencia
+Entregá la política mínima, el permiso excesivo del Paso 5 y su corrección, y la denegación esperada del Paso 6; explicá por qué "denegado por defecto" es más seguro que empezar permisivo e ir restringiendo. Siguiente paso: modelo de responsabilidad. Errores comunes: usar * y olvidar recursos. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html.
+
 ### Tema 2: Modelo de responsabilidad compartida
 
 #### Paso 1 · Objetivo y preparación
@@ -71,26 +73,7 @@ Al finalizar vas a comprobar, con un error real provocado a propósito, qué par
 AWS (y Floci emulándolo) garantiza que DynamoDB en sí funciona de forma segura. Que la política de `confirmar-entrega` sea exactamente la mínima necesaria, y no más, es responsabilidad exclusiva de RutaFlow — nadie del lado del proveedor te va a avisar si te pasás de permisos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Es como alquilar un edificio con portero: el edificio es responsable de la estructura y la entrada principal; tú eres responsable de cerrar con llave tu propia oficina.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-cat > politica-excesiva.json <<'EOF'
-{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"dynamodb:*","Resource":"*"}]}
-EOF
-aws iam simulate-custom-policy --policy-input-list file://politica-excesiva.json \
-  --action-names dynamodb:DeleteTable --resource-arns "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents"
-```
-Resultado esperado: `EvalDecision: "allowed"` — AWS/Floci no impide que escribas esta política; el motor de evaluación hace exactamente lo que la política dice, sin juzgar si es una buena idea. Que sea una mala idea es 100% responsabilidad del cliente.
-#### Paso 5 · Práctica guiada
-Pista: ese `dynamodb:*`/`Resource: "*"` del Paso 4 ES el fallo deliberado — una política así, atada por error al rol real de `confirmar-entrega`, le daría a una función que solo debería escribir eventos la capacidad de borrar cualquier tabla DynamoDB de la cuenta. Corregilo reemplazándola por `politica-minima.json` del Tema 1 y repetí la simulación: ahora `EvalDecision` es `implicitDeny`.
-#### Paso 6 · Práctica independiente
-Listá, en una tabla de dos columnas, qué cubre Floci/AWS (que DynamoDB funcione, que los datos no se corrompan a nivel de infraestructura) frente a qué cubre RutaFlow (qué política se le asigna a cada rol, qué tablas son accesibles desde cuál función) — usando los dos resultados de `simulate-custom-policy` de este Tema como evidencia de cada lado.
-#### Paso 7 · Cierre y evidencia
-Entregá los dos resultados del simulador (permitido con la política excesiva, denegado con la mínima) y la tabla de responsabilidades; explicá por qué ninguno de los dos resultados es un fallo de Floci/AWS. Siguiente paso: usuarios y roles. Errores comunes: asumir que el proveedor configura tu bucket. Fuente oficial: https://aws.amazon.com/compliance/shared-responsibility-model/.
 **Conceptos clave:** responsabilidad del proveedor, responsabilidad del cliente, seguridad "de" la nube vs seguridad "en" la nube.
 
 El modelo de responsabilidad compartida define, con una línea explícita, qué aspectos de seguridad son responsabilidad del proveedor de nube y cuáles son responsabilidad de quien usa esos servicios. El proveedor es responsable de la seguridad "de" la nube: la infraestructura física de los centros de datos, la virtualización subyacente, la disponibilidad del hardware, y la seguridad del software base de cada servicio gestionado. El cliente es responsable de la seguridad "en" la nube: cómo configura esos servicios, qué datos guarda en ellos, quién tiene acceso, y cómo gestiona sus propias credenciales.
@@ -121,6 +104,27 @@ Entender este modelo evita dos malentendidos comunes: asumir que "está en la nu
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Construye una matriz de responsabilidades para las evidencias: proveedor, equipo y repartidor. Asigna quién configura acceso, retención y recuperación, y adjunta una comprobación operativa para cada responsabilidad del equipo.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+cat > politica-excesiva.json <<'EOF'
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"dynamodb:*","Resource":"*"}]}
+EOF
+aws iam simulate-custom-policy --policy-input-list file://politica-excesiva.json \
+  --action-names dynamodb:DeleteTable --resource-arns "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents"
+```
+Resultado esperado: `EvalDecision: "allowed"` — AWS/Floci no impide que escribas esta política; el motor de evaluación hace exactamente lo que la política dice, sin juzgar si es una buena idea. Que sea una mala idea es 100% responsabilidad del cliente.
+#### Paso 5 · Práctica guiada
+Pista: ese `dynamodb:*`/`Resource: "*"` del Paso 4 ES el fallo deliberado — una política así, atada por error al rol real de `confirmar-entrega`, le daría a una función que solo debería escribir eventos la capacidad de borrar cualquier tabla DynamoDB de la cuenta. Corregilo reemplazándola por `politica-minima.json` del Tema 1 y repetí la simulación: ahora `EvalDecision` es `implicitDeny`.
+#### Paso 6 · Práctica independiente
+Listá, en una tabla de dos columnas, qué cubre Floci/AWS (que DynamoDB funcione, que los datos no se corrompan a nivel de infraestructura) frente a qué cubre RutaFlow (qué política se le asigna a cada rol, qué tablas son accesibles desde cuál función) — usando los dos resultados de `simulate-custom-policy` de este Tema como evidencia de cada lado.
+#### Paso 7 · Cierre y evidencia
+Entregá los dos resultados del simulador (permitido con la política excesiva, denegado con la mínima) y la tabla de responsabilidades; explicá por qué ninguno de los dos resultados es un fallo de Floci/AWS. Siguiente paso: usuarios y roles. Errores comunes: asumir que el proveedor configura tu bucket. Fuente oficial: https://aws.amazon.com/compliance/shared-responsibility-model/.
+
 ### Tema 3: Usuarios, grupos y roles
 
 #### Paso 1 · Objetivo y preparación
@@ -129,22 +133,7 @@ Al finalizar vas a crear el rol real que `confirmar-entrega` debería usar, en v
 `confirmar-entrega` no es una persona que inicia sesión: es un servicio que necesita credenciales que expiren solas. Un usuario IAM con claves de acceso embebidas en el código sería exactamente el error que este Tema busca evitar.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un usuario es una persona con llave fija en el bolsillo; un grupo es una copia de esa llave para varios miembros; un rol es la llave de un casillero de hotel, válida solo durante la estancia.
-#### Paso 4 · Demostración guiada
-```bash
-cat > trust-lambda.json <<'EOF'
-{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}
-EOF
-ROLE_ARN=$(aws iam create-role --role-name RutaFlowConfirmarEntregaRole --assume-role-policy-document file://trust-lambda.json --query Role.Arn --output text)
-aws iam attach-role-policy --role-name RutaFlowConfirmarEntregaRole --policy-arn "$POLICY_ARN"
-aws lambda update-function-configuration --function-name confirmar-entrega --role "$ROLE_ARN"
-```
-Resultado esperado: `create-role` devuelve el rol con su `trust policy` restringida a `lambda.amazonaws.com` (ningún usuario humano puede asumirlo directamente); `update-function-configuration` confirma que `confirmar-entrega` ahora usa `RoleArn: $ROLE_ARN`, con la política mínima del Tema 1 adjunta, en vez de ningún usuario con claves fijas.
-#### Paso 5 · Práctica guiada
-Pista: creá un usuario IAM normal (`aws iam create-user --user-name usuario-de-prueba`) y probá `aws lambda update-function-configuration --function-name confirmar-entrega --role <Arn-del-usuario>` — ese es el fallo deliberado: `InvalidParameterValueException`, porque el campo `--role` de Lambda exige un rol que el servicio `lambda.amazonaws.com` pueda asumir, no el ARN de un usuario.
-#### Paso 6 · Práctica independiente
-Confirmá con `aws lambda get-function-configuration --function-name confirmar-entrega --query Role` que el rol asignado sigue siendo `RutaFlowConfirmarEntregaRole`, y documentá por escrito cuánto dura una credencial temporal obtenida al asumir ese rol frente a una clave de usuario IAM que nunca expira sola.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación del rol, su asignación a la función, y el error al intentar usar un usuario en su lugar; explicá por qué el `trust policy` restringido a `lambda.amazonaws.com` es parte de la seguridad, no un detalle de sintaxis. Siguiente paso: políticas. Errores comunes: claves largas en repositorio y no rotar. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html.
+
 **Conceptos clave:** usuario IAM, grupo IAM, rol IAM, credenciales de larga duración vs temporales, asunción de rol.
 
 Un usuario IAM representa una identidad individual y persistente dentro de tu cuenta, típicamente asociada a una persona real (aunque también se usa, con menos frecuencia recomendada, para aplicaciones). Un usuario tiene credenciales de larga duración: una contraseña para acceso a la consola, y/o un par de claves de acceso (access key ID y secret access key) para acceso programático, que permanecen válidas hasta que se rotan o revocan manualmente. Esta persistencia es, a la vez, su utilidad principal (una persona necesita poder autenticarse repetidamente a lo largo del tiempo) y su mayor riesgo (una credencial de larga duración filtrada sigue siendo válida hasta que alguien la revoque activamente).
@@ -174,6 +163,23 @@ Usuario IAM                    Grupo IAM                    Rol IAM
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Define roles distintos para despliegue, consulta y procesamiento de entregas. Explica cómo se obtienen credenciales temporales y verifica que el consumidor no necesita las facultades administrativas del despliegue.
 
+#### Paso 4 · Demostración guiada
+```bash
+cat > trust-lambda.json <<'EOF'
+{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}
+EOF
+ROLE_ARN=$(aws iam create-role --role-name RutaFlowConfirmarEntregaRole --assume-role-policy-document file://trust-lambda.json --query Role.Arn --output text)
+aws iam attach-role-policy --role-name RutaFlowConfirmarEntregaRole --policy-arn "$POLICY_ARN"
+aws lambda update-function-configuration --function-name confirmar-entrega --role "$ROLE_ARN"
+```
+Resultado esperado: `create-role` devuelve el rol con su `trust policy` restringida a `lambda.amazonaws.com` (ningún usuario humano puede asumirlo directamente); `update-function-configuration` confirma que `confirmar-entrega` ahora usa `RoleArn: $ROLE_ARN`, con la política mínima del Tema 1 adjunta, en vez de ningún usuario con claves fijas.
+#### Paso 5 · Práctica guiada
+Pista: creá un usuario IAM normal (`aws iam create-user --user-name usuario-de-prueba`) y probá `aws lambda update-function-configuration --function-name confirmar-entrega --role <Arn-del-usuario>` — ese es el fallo deliberado: `InvalidParameterValueException`, porque el campo `--role` de Lambda exige un rol que el servicio `lambda.amazonaws.com` pueda asumir, no el ARN de un usuario.
+#### Paso 6 · Práctica independiente
+Confirmá con `aws lambda get-function-configuration --function-name confirmar-entrega --query Role` que el rol asignado sigue siendo `RutaFlowConfirmarEntregaRole`, y documentá por escrito cuánto dura una credencial temporal obtenida al asumir ese rol frente a una clave de usuario IAM que nunca expira sola.
+#### Paso 7 · Cierre y evidencia
+Entregá la creación del rol, su asignación a la función, y el error al intentar usar un usuario en su lugar; explicá por qué el `trust policy` restringido a `lambda.amazonaws.com` es parte de la seguridad, no un detalle de sintaxis. Siguiente paso: políticas. Errores comunes: claves largas en repositorio y no rotar. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html.
+
 ### Tema 4: Estructura de una política — acciones, recursos y condiciones
 
 #### Paso 1 · Objetivo y preparación
@@ -182,28 +188,7 @@ Al finalizar podrás leer una policy desde cero. Prerrequisitos: AWS CLI y Node.
 Una policy traduce una regla de negocio en autorización evaluable.
 #### Paso 3 · Teoría, modelo mental y analogía
 Effect decide, Action describe operación, Resource delimita objeto y Condition añade contexto.
-#### Paso 4 · Demostración guiada
-Crea `src/policy.json` desde una carpeta vacía.
-```bash
-mkdir ejemplo-policy
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
-#### Paso 5 · Práctica guiada
-Pista: cambia Allow por Deny para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Escribe una policy de lectura de un bucket.
-#### Paso 7 · Cierre y evidencia
-Entrega JSON, salida, fallo y corrección; explica el resultado. Siguiente paso: auditoría. Errores comunes: Resource *, Deny inesperado y ARN mal formado. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html.
 **Conceptos clave:** documento de política JSON, `Effect` (Allow/Deny), `Action`, `Resource`, `Condition`, ARN.
 
 Una política IAM es un documento JSON que describe qué está permitido o denegado. Su estructura básica gira en torno a declaraciones (statements), cada una con al menos tres componentes: `Effect`, que es `Allow` o `Deny`; `Action`, que especifica qué operaciones concretas cubre esa declaración (por ejemplo, `s3:GetObject`, `dynamodb:PutItem`), usando el formato `servicio:Accion`; y `Resource`, que especifica sobre qué recursos concretos aplica, normalmente usando el ARN (Amazon Resource Name) exacto o un patrón con comodines (como `arn:aws:s3:::mi-bucket/*` para "cualquier objeto dentro de `mi-bucket`").
@@ -242,6 +227,29 @@ Esta jerarquía —`Deny` explícito siempre gana— es una herramienta de segur
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Redacta una política para el prefijo de evidencias autorizado. Revisa acciones, recurso y condiciones con ejemplos concretos de claves aceptadas y rechazadas; evita ampliar recursos para ocultar un error de ARN.
+
+#### Paso 4 · Demostración guiada
+Crea `src/policy.json` desde una carpeta vacía.
+```bash
+mkdir ejemplo-policy
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Node disponible.
+#### Paso 5 · Práctica guiada
+Pista: cambia Allow por Deny para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Escribe una policy de lectura de un bucket.
+#### Paso 7 · Cierre y evidencia
+Entrega JSON, salida, fallo y corrección; explica el resultado. Siguiente paso: auditoría. Errores comunes: Resource *, Deny inesperado y ARN mal formado. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html.
 
 ### Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales
 

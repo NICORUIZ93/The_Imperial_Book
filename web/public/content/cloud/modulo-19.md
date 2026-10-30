@@ -11,27 +11,7 @@ Al finalizar vas a catalogar, sin moverlos, los archivos de ubicación históric
 Esos archivos ya existen en S3 desde el Módulo 17 — el equipo de analítica de RutaFlow necesita consultarlos con SQL sin que nadie los copie a ninguna base de datos nueva.
 #### Paso 3 · Teoría, modelo mental y analogía
 Es como consultar un archivo sin trasladarlo a otra oficina: los datos se quedan en `rutaflow-ubicaciones-historico`, y el esquema que describe sus columnas vive aparte, en Glue Catalog.
-#### Paso 4 · Demostración guiada
-```bash
-aws glue create-database --database-input '{"Name":"rutaflow_analytics"}'
-aws glue create-table --database-name rutaflow_analytics --table-input '{
-  "Name":"ubicaciones",
-  "StorageDescriptor":{
-    "Columns":[{"Name":"conductorId","Type":"string"},{"Name":"lat","Type":"double"},{"Name":"lon","Type":"double"}],
-    "Location":"s3://rutaflow-ubicaciones-historico/",
-    "InputFormat":"org.apache.hadoop.mapred.TextInputFormat"
-  }
-}'
-aws athena start-query-execution --query-string "SELECT conductorId, lat, lon FROM rutaflow_analytics.ubicaciones LIMIT 5" \
-  --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/
-```
-Resultado esperado: Athena devuelve filas reales leídas directamente de los objetos que Firehose ya escribió — ni Glue ni Athena movieron un solo byte de `rutaflow-ubicaciones-historico`, solo le agregaron una descripción consultable con SQL.
-#### Paso 5 · Práctica guiada
-Pista: declará la tabla con una columna `velocidad` que ningún archivo real tiene, y corré `SELECT velocidad FROM rutaflow_analytics.ubicaciones` — ese es el fallo deliberado: la consulta puede devolver `NULL` para todas las filas (o fallar, según el formato) porque el esquema declarado no coincide con lo que realmente hay en los archivos; Glue Catalog describe lo que vos le dijiste, no lo que los archivos contienen de verdad.
-#### Paso 6 · Práctica independiente
-Corregí la tabla quitando `velocidad` y agregando solo las columnas reales (`conductorId`, `lat`, `lon`), y conservá la salida de una consulta exitosa como evidencia de que el esquema ahora coincide con los datos reales.
-#### Paso 7 · Cierre y evidencia
-Entregá la tabla catalogada, la consulta con la columna inventada del Paso 5, y la corrección del Paso 6; explicá por qué "schema-on-read" significa que el esquema puede mentir si nadie lo mantiene sincronizado. Siguiente paso: formato. Errores comunes: esquema desactualizado y permisos excesivos. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/what-is.html.
+
 **Conceptos clave:** los datos permanecen en su ubicación original de almacenamiento de objetos, el esquema se define por separado.
 
 ```bash
@@ -63,6 +43,28 @@ Glue no conviene hacerlo copiando los datos a otra tabla — el límite real de 
 que el esquema declarado puede desincronizarse de los archivos reales si nadie lo mantiene, a
 diferencia de una tabla RDS (Módulo 13) donde la propia base impone el esquema en cada escritura.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws glue create-database --database-input '{"Name":"rutaflow_analytics"}'
+aws glue create-table --database-name rutaflow_analytics --table-input '{
+  "Name":"ubicaciones",
+  "StorageDescriptor":{
+    "Columns":[{"Name":"conductorId","Type":"string"},{"Name":"lat","Type":"double"},{"Name":"lon","Type":"double"}],
+    "Location":"s3://rutaflow-ubicaciones-historico/",
+    "InputFormat":"org.apache.hadoop.mapred.TextInputFormat"
+  }
+}'
+aws athena start-query-execution --query-string "SELECT conductorId, lat, lon FROM rutaflow_analytics.ubicaciones LIMIT 5" \
+  --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/
+```
+Resultado esperado: Athena devuelve filas reales leídas directamente de los objetos que Firehose ya escribió — ni Glue ni Athena movieron un solo byte de `rutaflow-ubicaciones-historico`, solo le agregaron una descripción consultable con SQL.
+#### Paso 5 · Práctica guiada
+Pista: declará la tabla con una columna `velocidad` que ningún archivo real tiene, y corré `SELECT velocidad FROM rutaflow_analytics.ubicaciones` — ese es el fallo deliberado: la consulta puede devolver `NULL` para todas las filas (o fallar, según el formato) porque el esquema declarado no coincide con lo que realmente hay en los archivos; Glue Catalog describe lo que vos le dijiste, no lo que los archivos contienen de verdad.
+#### Paso 6 · Práctica independiente
+Corregí la tabla quitando `velocidad` y agregando solo las columnas reales (`conductorId`, `lat`, `lon`), y conservá la salida de una consulta exitosa como evidencia de que el esquema ahora coincide con los datos reales.
+#### Paso 7 · Cierre y evidencia
+Entregá la tabla catalogada, la consulta con la columna inventada del Paso 5, y la corrección del Paso 6; explicá por qué "schema-on-read" significa que el esquema puede mentir si nadie lo mantiene sincronizado. Siguiente paso: formato. Errores comunes: esquema desactualizado y permisos excesivos. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/what-is.html.
+
 ### Tema 2: Glue Crawler y Athena
 
 #### Paso 1 · Objetivo y preparación
@@ -71,20 +73,7 @@ Al finalizar vas a dejar que un Glue Crawler descubra solo el esquema real de `r
 Si RutaFlow agrega un campo nuevo a los pings de ubicación (por ejemplo, `velocidad`) más adelante, nadie debería tener que recordar actualizar manualmente la tabla de Glue cada vez — el crawler puede detectarlo solo.
 #### Paso 3 · Teoría, modelo mental y analogía
 El crawler es un inspector que examina muestras reales de los archivos y propone la estructura, en vez de confiar en lo que un humano cree que debería haber ahí.
-#### Paso 4 · Demostración guiada
-```bash
-aws glue create-crawler --name crawler-ubicaciones --role arn:aws:iam::000000000000:role/glue-crawler-role \
-  --targets '{"S3Targets":[{"Path":"s3://rutaflow-ubicaciones-historico/"}]}' --database-name rutaflow_analytics
-aws glue start-crawler --name crawler-ubicaciones
-aws glue get-table --database-name rutaflow_analytics --name ubicaciones_historico --query 'Table.StorageDescriptor.Columns'
-```
-Resultado esperado: `get-table` muestra las columnas que el crawler encontró de verdad en los archivos (`conductorId`, `lat`, `lon`), sin la columna `velocidad` inventada del Tema 1 — porque esta vez nadie la declaró, el crawler solo reporta lo que existe.
-#### Paso 5 · Práctica guiada
-Pista: subí manualmente a `rutaflow-ubicaciones-historico` un archivo con una fila en formato JSON junto a los que Firehose ya depositó en CSV — ese es el fallo deliberado de inferencia: el crawler, al encontrar formatos mezclados en la misma ruta, puede fallar en inferir un esquema único consistente, o crear más de una tabla donde esperabas una sola.
-#### Paso 6 · Práctica independiente
-Compará, en una tabla de dos columnas, el esquema que declaraste a mano en el Tema 1 contra el que el crawler descubrió en este Tema — identificá cualquier diferencia y documentá cuál de los dos confiarías más si los archivos cambiaran sin avisarte.
-#### Paso 7 · Cierre y evidencia
-Entregá el esquema descubierto por el crawler, el problema de formatos mezclados del Paso 5, y la comparación del Paso 6; explicá cuándo conviene declarar el esquema a mano y cuándo dejar que el crawler lo infiera. Siguiente paso: particiones. Errores comunes: confiar ciegamente en inferencia y no versionar esquema. Fuente oficial: https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html.
+
 **Conceptos clave:** descubrimiento automático de esquema, consulta SQL directa sobre archivos en S3.
 
 ```bash
@@ -131,6 +120,21 @@ En el proyecto integrador RutaFlow, este crawler reemplazaría la declaración m
 cada vez que `examples/rutaflow/cloud/template.yaml` cambie el formato de lo que Firehose
 deposita en `rutaflow-ubicaciones-historico`, sin que nadie tenga que acordarse de actualizar
 la tabla a mano.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws glue create-crawler --name crawler-ubicaciones --role arn:aws:iam::000000000000:role/glue-crawler-role \
+  --targets '{"S3Targets":[{"Path":"s3://rutaflow-ubicaciones-historico/"}]}' --database-name rutaflow_analytics
+aws glue start-crawler --name crawler-ubicaciones
+aws glue get-table --database-name rutaflow_analytics --name ubicaciones_historico --query 'Table.StorageDescriptor.Columns'
+```
+Resultado esperado: `get-table` muestra las columnas que el crawler encontró de verdad en los archivos (`conductorId`, `lat`, `lon`), sin la columna `velocidad` inventada del Tema 1 — porque esta vez nadie la declaró, el crawler solo reporta lo que existe.
+#### Paso 5 · Práctica guiada
+Pista: subí manualmente a `rutaflow-ubicaciones-historico` un archivo con una fila en formato JSON junto a los que Firehose ya depositó en CSV — ese es el fallo deliberado de inferencia: el crawler, al encontrar formatos mezclados en la misma ruta, puede fallar en inferir un esquema único consistente, o crear más de una tabla donde esperabas una sola.
+#### Paso 6 · Práctica independiente
+Compará, en una tabla de dos columnas, el esquema que declaraste a mano en el Tema 1 contra el que el crawler descubrió en este Tema — identificá cualquier diferencia y documentá cuál de los dos confiarías más si los archivos cambiaran sin avisarte.
+#### Paso 7 · Cierre y evidencia
+Entregá el esquema descubierto por el crawler, el problema de formatos mezclados del Paso 5, y la comparación del Paso 6; explicá cuándo conviene declarar el esquema a mano y cuándo dejar que el crawler lo infiera. Siguiente paso: particiones. Errores comunes: confiar ciegamente en inferencia y no versionar esquema. Fuente oficial: https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html.
 
 ### Tema 3: Parquet vs CSV, y partition pruning
 

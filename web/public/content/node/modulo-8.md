@@ -17,6 +17,37 @@ Una API que calcula rutas o genera un informe puede bloquear todas las solicitud
 
 El hilo principal coordina; un Worker ejecuta JavaScript en otro hilo con memoria aislada. Es como entregar una tarea pesada a otro especialista y recibir un resultado por mensajería, no compartir variables mágicamente.
 
+Ya separas I/O de CPU. El siguiente tema distribuirá procesos completos con `cluster` desde otra carpeta.
+
+**Errores comunes:** crear un Worker por petición sin límite; compartir estado como si fuera global; olvidar escuchar `error`; enviar objetos enormes; usar Worker para I/O simple.
+
+**Fuentes oficiales:** [Worker Threads](https://nodejs.org/api/worker_threads.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+
+**Evidencia de aprendizaje:** entrega la salida del Worker, un input rechazado y la comparación de tiempos.
+
+**Conceptos clave:** hilo separado con su propia instancia de V8, `workerData`, paso de mensajes.
+
+Un Worker Thread de Node ejecuta JavaScript en un hilo genuinamente separado, cada uno con su propia instancia completa de V8 (a diferencia de los Web Workers del navegador estudiados en el Módulo 10 del track de JavaScript, que comparten conceptualmente el mismo principio de aislamiento pero en un contexto distinto), permitiendo ejecutar cómputo intensivo de CPU (procesar una imagen grande, realizar cálculos matemáticos pesados, comprimir datos) sin bloquear el Event Loop del hilo principal, que permanece libre para seguir atendiendo otras peticiones concurrentes de la aplicación mientras el Worker procesa en paralelo.
+
+Crear un Worker (`new Worker("./procesar-imagen.js", { workerData: {...} })`) le pasa datos iniciales mediante `workerData`, y la comunicación posterior entre el hilo principal y el Worker ocurre mediante paso de mensajes asíncronos (`worker.postMessage()` para enviar, el evento `message` para recibir), exactamente el mismo modelo de comunicación que los Web Workers del navegador, reflejando que ambos comparten el mismo principio fundamental: sin memoria compartida por defecto entre hilos (salvo mediante `SharedArrayBuffer` para casos avanzados específicos que requieren compartir memoria explícitamente), cada hilo opera de forma aislada, comunicándose exclusivamente mediante mensajes serializables.
+
+Identificar correctamente qué trabajo es genuinamente CPU-bound (y por tanto candidato apropiado para un Worker Thread) frente a I/O-bound (que ya se beneficia del modelo no bloqueante nativo de Node sin necesitar ningún Worker adicional, como se estudió en el Módulo 0) es la decisión de diseño central: mover trabajo de I/O (como una consulta a base de datos) a un Worker Thread no aporta ningún beneficio real, porque ese trabajo ya no bloquea el hilo principal en absoluto gracias a libuv; los Worker Threads solo aportan valor real para cómputo síncrono y pesado que, de otro modo, monopolizaría el único hilo de JavaScript disponible durante toda su ejecución.
+
+**Analogía:** un Worker Thread es como contratar temporalmente a un especialista externo con su propio taller completo y separado para realizar una tarea de manufactura pesada específica, comunicándose con la oficina principal únicamente mediante pedidos y entregas formales (mensajes), sin que el especialista tenga acceso directo a los archivos internos de la oficina principal, y sin que su trabajo pesado interrumpa la atención normal a los clientes que la oficina principal sigue recibiendo mientras tanto.
+
+**¿Por qué es importante?** Los Worker Threads son la herramienta correcta y específica para cómputo pesado CPU-bound que, de otro modo, bloquearía perceptiblemente el Event Loop principal, sin aportar ningún beneficio para trabajo I/O-bound que Node ya maneja de forma no bloqueante de forma nativa.
+
+**Código del ejemplo:**
+
+```js
+import { Worker } from "node:worker_threads";
+const worker = new Worker("./procesar-imagen.js", { workerData: { ruta: "foto.png" } });
+worker.on("message", (resultado) => console.log("listo:", resultado));
+// El event loop principal NUNCA se bloquea; el trabajo pesado corre en otro hilo
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Mueve un cálculo pesado de asignación a un Worker y mantén consultas ligeras disponibles. Prueba fallo del Worker y plazo agotado con una respuesta controlada al cliente.
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
@@ -51,37 +82,6 @@ Mide un cálculo en el hilo principal y otro en Worker, entregando duración y c
 
 #### Paso 7 · Cierre y conexión
 
-Ya separas I/O de CPU. El siguiente tema distribuirá procesos completos con `cluster` desde otra carpeta.
-
-**Errores comunes:** crear un Worker por petición sin límite; compartir estado como si fuera global; olvidar escuchar `error`; enviar objetos enormes; usar Worker para I/O simple.
-
-**Fuentes oficiales:** [Worker Threads](https://nodejs.org/api/worker_threads.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
-
-**Evidencia de aprendizaje:** entrega la salida del Worker, un input rechazado y la comparación de tiempos.
-
-**Conceptos clave:** hilo separado con su propia instancia de V8, `workerData`, paso de mensajes.
-
-Un Worker Thread de Node ejecuta JavaScript en un hilo genuinamente separado, cada uno con su propia instancia completa de V8 (a diferencia de los Web Workers del navegador estudiados en el Módulo 10 del track de JavaScript, que comparten conceptualmente el mismo principio de aislamiento pero en un contexto distinto), permitiendo ejecutar cómputo intensivo de CPU (procesar una imagen grande, realizar cálculos matemáticos pesados, comprimir datos) sin bloquear el Event Loop del hilo principal, que permanece libre para seguir atendiendo otras peticiones concurrentes de la aplicación mientras el Worker procesa en paralelo.
-
-Crear un Worker (`new Worker("./procesar-imagen.js", { workerData: {...} })`) le pasa datos iniciales mediante `workerData`, y la comunicación posterior entre el hilo principal y el Worker ocurre mediante paso de mensajes asíncronos (`worker.postMessage()` para enviar, el evento `message` para recibir), exactamente el mismo modelo de comunicación que los Web Workers del navegador, reflejando que ambos comparten el mismo principio fundamental: sin memoria compartida por defecto entre hilos (salvo mediante `SharedArrayBuffer` para casos avanzados específicos que requieren compartir memoria explícitamente), cada hilo opera de forma aislada, comunicándose exclusivamente mediante mensajes serializables.
-
-Identificar correctamente qué trabajo es genuinamente CPU-bound (y por tanto candidato apropiado para un Worker Thread) frente a I/O-bound (que ya se beneficia del modelo no bloqueante nativo de Node sin necesitar ningún Worker adicional, como se estudió en el Módulo 0) es la decisión de diseño central: mover trabajo de I/O (como una consulta a base de datos) a un Worker Thread no aporta ningún beneficio real, porque ese trabajo ya no bloquea el hilo principal en absoluto gracias a libuv; los Worker Threads solo aportan valor real para cómputo síncrono y pesado que, de otro modo, monopolizaría el único hilo de JavaScript disponible durante toda su ejecución.
-
-**Analogía:** un Worker Thread es como contratar temporalmente a un especialista externo con su propio taller completo y separado para realizar una tarea de manufactura pesada específica, comunicándose con la oficina principal únicamente mediante pedidos y entregas formales (mensajes), sin que el especialista tenga acceso directo a los archivos internos de la oficina principal, y sin que su trabajo pesado interrumpa la atención normal a los clientes que la oficina principal sigue recibiendo mientras tanto.
-
-**¿Por qué es importante?** Los Worker Threads son la herramienta correcta y específica para cómputo pesado CPU-bound que, de otro modo, bloquearía perceptiblemente el Event Loop principal, sin aportar ningún beneficio para trabajo I/O-bound que Node ya maneja de forma no bloqueante de forma nativa.
-
-**Código del ejemplo:**
-
-```js
-import { Worker } from "node:worker_threads";
-const worker = new Worker("./procesar-imagen.js", { workerData: { ruta: "foto.png" } });
-worker.on("message", (resultado) => console.log("listo:", resultado));
-// El event loop principal NUNCA se bloquea; el trabajo pesado corre en otro hilo
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Mueve un cálculo pesado de asignación a un Worker y mantén consultas ligeras disponibles. Prueba fallo del Worker y plazo agotado con una respuesta controlada al cliente.
-
 ### Tema 2: Cluster module y balanceo entre procesos
 
 #### Paso 1 · Objetivo y preparación
@@ -95,6 +95,41 @@ Un servidor necesita aprovechar varios núcleos y aislar un fallo de proceso. `c
 #### Paso 3 · Teoría y analogía aplicada
 
 El proceso primario coordina; cada worker tiene memoria y event loop propios. Es un equipo de ventanillas: una caída no comparte variables con las demás, y el balanceo debe observarse.
+
+Ya entiendes memoria aislada y balanceo básico. El siguiente tema usará una cola para desacoplar trabajos.
+
+**Errores comunes:** compartir estado en memoria; multiplicar workers sin medir; no cerrar conexiones; reiniciar fallos infinitamente; confundir cluster con threads.
+
+**Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
+
+**Evidencia de aprendizaje:** entrega la salida con PIDs de dos respuestas y el diagnóstico de un worker detenido.
+
+**Conceptos clave:** un proceso por núcleo, memoria aislada, balanceo automático de conexiones.
+
+El módulo `cluster` permite bifurcar múltiples procesos Node completamente independientes (cada uno ejecutando una copia idéntica de la aplicación), típicamente uno por núcleo de CPU disponible (`os.availableParallelism()`), aprovechando así todos los núcleos del servidor, algo que un único proceso Node de un solo hilo no puede hacer por sí solo (recordando que el hilo único de JavaScript de un proceso Node individual, por diseño, solo puede aprovechar un núcleo de CPU a la vez para ejecutar código JavaScript, aunque libuv internamente use un pool de hilos para I/O). El proceso primario (`cluster.isPrimary`) bifurca los procesos trabajadores con `cluster.fork()`, y cada proceso trabajador ejecuta de forma independiente la aplicación completa (por ejemplo, arrancando su propia instancia del servidor Express).
+
+A diferencia de los Worker Threads del Tema 1, cada proceso de `cluster` tiene memoria completamente aislada del sistema operativo (son procesos genuinamente separados, no hilos dentro del mismo proceso), lo que significa que no pueden compartir estado en memoria directamente entre sí (una variable global en un proceso trabajador no es visible para otro proceso trabajador distinto): cualquier estado que necesite compartirse entre los procesos trabajadores del cluster (como una sesión de usuario, o una caché compartida) debe externalizarse hacia un almacén compartido accesible por todos, como Redis, en vez de asumir que el estado en memoria de un proceso trabajador es accesible desde otro.
+
+Node balancea automáticamente las conexiones entrantes entre los procesos trabajadores del cluster (típicamente mediante un algoritmo round-robin en la mayoría de sistemas operativos), permitiendo que una aplicación aproveche efectivamente todos los núcleos de CPU disponibles del servidor para atender tráfico concurrente, multiplicando la capacidad de throughput total del servidor de forma proporcional (aproximadamente) al número de núcleos disponibles, especialmente beneficioso quando la carga incluye trabajo de cómputo real además de I/O puro.
+
+**Analogía:** el cluster module es como abrir múltiples sucursales idénticas de la misma tienda, cada una con su propio personal y su propio inventario completamente independiente, con un sistema central que dirige automáticamente a cada cliente entrante hacia una sucursal disponible; a diferencia de un Worker Thread (como un especialista dentro de la misma sucursal), estas sucursales no comparten directamente su inventario interno entre sí, requiriendo un almacén central compartido si necesitan coordinar información entre ellas.
+
+**¿Por qué es importante?** El módulo cluster permite que una aplicación Node aproveche todos los núcleos de CPU de un servidor, multiplicando su capacidad de throughput, a costa de requerir externalizar cualquier estado compartido hacia un almacén accesible por todos los procesos, dado el aislamiento completo de memoria entre ellos.
+
+**Código del ejemplo:**
+
+```js
+import cluster from "node:cluster";
+import { availableParallelism } from "node:os";
+
+if (cluster.isPrimary) {
+  for (let i = 0; i < availableParallelism(); i++) cluster.fork(); // un proceso por núcleo
+} else {
+  arrancarServidorExpress(); // cada worker corre su propia copia, con memoria AISLADA
+}
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Ejecuta dos procesos de API y verifica que no dependen de una sesión almacenada solo en memoria. Una petición atendida por otro proceso debe conservar autorización y estado consistente.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -131,41 +166,6 @@ Registra `cluster.on("exit")` y crea un reemplazo limitado. **Pista:** evita un 
 Compara una instancia y dos workers bajo carga ligera; entrega PIDs y latencia, sin afirmar que más procesos siempre es mejor.
 
 #### Paso 7 · Cierre y conexión
-
-Ya entiendes memoria aislada y balanceo básico. El siguiente tema usará una cola para desacoplar trabajos.
-
-**Errores comunes:** compartir estado en memoria; multiplicar workers sin medir; no cerrar conexiones; reiniciar fallos infinitamente; confundir cluster con threads.
-
-**Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
-
-**Evidencia de aprendizaje:** entrega la salida con PIDs de dos respuestas y el diagnóstico de un worker detenido.
-
-**Conceptos clave:** un proceso por núcleo, memoria aislada, balanceo automático de conexiones.
-
-El módulo `cluster` permite bifurcar múltiples procesos Node completamente independientes (cada uno ejecutando una copia idéntica de la aplicación), típicamente uno por núcleo de CPU disponible (`os.availableParallelism()`), aprovechando así todos los núcleos del servidor, algo que un único proceso Node de un solo hilo no puede hacer por sí solo (recordando que el hilo único de JavaScript de un proceso Node individual, por diseño, solo puede aprovechar un núcleo de CPU a la vez para ejecutar código JavaScript, aunque libuv internamente use un pool de hilos para I/O). El proceso primario (`cluster.isPrimary`) bifurca los procesos trabajadores con `cluster.fork()`, y cada proceso trabajador ejecuta de forma independiente la aplicación completa (por ejemplo, arrancando su propia instancia del servidor Express).
-
-A diferencia de los Worker Threads del Tema 1, cada proceso de `cluster` tiene memoria completamente aislada del sistema operativo (son procesos genuinamente separados, no hilos dentro del mismo proceso), lo que significa que no pueden compartir estado en memoria directamente entre sí (una variable global en un proceso trabajador no es visible para otro proceso trabajador distinto): cualquier estado que necesite compartirse entre los procesos trabajadores del cluster (como una sesión de usuario, o una caché compartida) debe externalizarse hacia un almacén compartido accesible por todos, como Redis, en vez de asumir que el estado en memoria de un proceso trabajador es accesible desde otro.
-
-Node balancea automáticamente las conexiones entrantes entre los procesos trabajadores del cluster (típicamente mediante un algoritmo round-robin en la mayoría de sistemas operativos), permitiendo que una aplicación aproveche efectivamente todos los núcleos de CPU disponibles del servidor para atender tráfico concurrente, multiplicando la capacidad de throughput total del servidor de forma proporcional (aproximadamente) al número de núcleos disponibles, especialmente beneficioso quando la carga incluye trabajo de cómputo real además de I/O puro.
-
-**Analogía:** el cluster module es como abrir múltiples sucursales idénticas de la misma tienda, cada una con su propio personal y su propio inventario completamente independiente, con un sistema central que dirige automáticamente a cada cliente entrante hacia una sucursal disponible; a diferencia de un Worker Thread (como un especialista dentro de la misma sucursal), estas sucursales no comparten directamente su inventario interno entre sí, requiriendo un almacén central compartido si necesitan coordinar información entre ellas.
-
-**¿Por qué es importante?** El módulo cluster permite que una aplicación Node aproveche todos los núcleos de CPU de un servidor, multiplicando su capacidad de throughput, a costa de requerir externalizar cualquier estado compartido hacia un almacén accesible por todos los procesos, dado el aislamiento completo de memoria entre ellos.
-
-**Código del ejemplo:**
-
-```js
-import cluster from "node:cluster";
-import { availableParallelism } from "node:os";
-
-if (cluster.isPrimary) {
-  for (let i = 0; i < availableParallelism(); i++) cluster.fork(); // un proceso por núcleo
-} else {
-  arrancarServidorExpress(); // cada worker corre su propia copia, con memoria AISLADA
-}
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Ejecuta dos procesos de API y verifica que no dependen de una sesión almacenada solo en memoria. Una petición atendida por otro proceso debe conservar autorización y estado consistente.
 
 ### Tema 3: Colas de trabajo con BullMQ
 
@@ -245,38 +245,6 @@ Una API que retiene arrays por cada solicitud se degrada lentamente. Reiniciar e
 
 El garbage collector libera objetos sin referencias. Una fuga conserva referencias vivas innecesarias, como guardar todas las cajas entregadas en una bodega “temporal”.
 
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-memory-leak
-cd ejemplo-memory-leak
-npm init -y
-mkdir src
-```
-
-Crea `src/leak.js`:
-
-```js
-const retenidos = [];
-setInterval(() => {
-  retenidos.push(Buffer.alloc(1024 * 100));
-  const { heapUsed } = process.memoryUsage();
-  console.log(`objetos=${retenidos.length} heap=${Math.round(heapUsed / 1024)}KB`);
-}, 100);
-```
-
-Ejecuta `node --inspect=0.0.0.0:9229 src/leak.js` y observa memoria. **Resultado esperado:** la cantidad retenida crece. **Fallo deliberado y diagnóstico:** comenta la referencia `retenidos`; el heap deja de crecer de la misma forma. Detén con `Ctrl+C`.
-
-#### Paso 5 · Práctica guiada
-
-Captura un snapshot con `node --heapsnapshot-signal=SIGUSR2` en macOS/Linux. **Pista:** realiza la captura solo en un proceso de prueba.
-
-#### Paso 6 · Práctica independiente
-
-Reescribe el ejemplo con una caché de tamaño limitado y entrega una comparación antes/después.
-
-#### Paso 7 · Cierre y conexión
-
 Ya puedes observar una fuga en vez de reiniciar a ciegas. El siguiente tema usará Redis para caché e idempotencia.
 
 **Errores comunes:** medir solo RSS; tomar snapshots en producción sin plan; cachear sin límite; confundir Buffer externo con heap; reiniciar sin corregir.
@@ -308,6 +276,38 @@ node --max-old-space-size=4096 servidor.js   # ajusta el límite de memoria de V
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Obtén snapshots del servicio antes y después de una carga repetible. Localiza referencias retenidas de peticiones terminadas y demuestra con la misma carga que la corrección reduce el crecimiento.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-memory-leak
+cd ejemplo-memory-leak
+npm init -y
+mkdir src
+```
+
+Crea `src/leak.js`:
+
+```js
+const retenidos = [];
+setInterval(() => {
+  retenidos.push(Buffer.alloc(1024 * 100));
+  const { heapUsed } = process.memoryUsage();
+  console.log(`objetos=${retenidos.length} heap=${Math.round(heapUsed / 1024)}KB`);
+}, 100);
+```
+
+Ejecuta `node --inspect=0.0.0.0:9229 src/leak.js` y observa memoria. **Resultado esperado:** la cantidad retenida crece. **Fallo deliberado y diagnóstico:** comenta la referencia `retenidos`; el heap deja de crecer de la misma forma. Detén con `Ctrl+C`.
+
+#### Paso 5 · Práctica guiada
+
+Captura un snapshot con `node --heapsnapshot-signal=SIGUSR2` en macOS/Linux. **Pista:** realiza la captura solo en un proceso de prueba.
+
+#### Paso 6 · Práctica independiente
+
+Reescribe el ejemplo con una caché de tamaño limitado y entrega una comparación antes/después.
+
+#### Paso 7 · Cierre y conexión
 
 ### Tema 5: Redis para caché, idempotencia y Pub/Sub
 

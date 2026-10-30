@@ -34,20 +34,7 @@ Al finalizar podrás usar una terminal desde cero. Prerrequisitos: Windows, macO
 Una persona que opera servicios cloud debe repetir comandos y diagnosticar rutas sin depender de una interfaz gráfica.
 #### Paso 3 · Teoría, modelo mental y analogía
 La terminal es una conversación precisa con el sistema operativo; la analogía es dictar una orden exacta a una cocina.
-#### Paso 4 · Demostración guiada
-Crea `ejemplo-terminal/README.md` desde una carpeta vacía y ejecuta los comandos del bloque de instalación.
-```bash
-mkdir ejemplo-terminal
-cd ejemplo-terminal
-python --version
-```
-Resultado esperado: carpeta creada y versión visible.
-#### Paso 5 · Práctica guiada
-Pista: escribe deliberadamente una ruta inexistente para provocar un fallo deliberado, lee el mensaje y corrígelo.
-#### Paso 6 · Práctica independiente
-Repite el flujo en tu sistema operativo, añade un archivo y documenta la salida.
-#### Paso 7 · Cierre y evidencia
-Entrega árbol, comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: redes. Errores comunes: no comprobar el directorio actual, mezclar shells y copiar comandos sin entenderlos. Fuente oficial: https://docs.docker.com/get-started/.
+
 **Conceptos clave:** sistema operativo, terminal (línea de comandos), shell, comando, directorio de trabajo.
 
 Un sistema operativo (Windows, macOS o Linux) es el programa que gestiona el hardware de tu computadora —procesador, memoria, disco— y permite que otros programas se ejecuten sobre él. Normalmente interactúas con él haciendo clic en íconos y ventanas: eso es una interfaz gráfica. Una terminal es una forma alternativa de interactuar con el sistema operativo escribiendo instrucciones de texto en vez de hacer clic. Cada instrucción que escribes se llama comando, y el programa que lee ese texto, lo interpreta y lo ejecuta se llama shell (`bash` y `zsh` en macOS/Linux, PowerShell en Windows).
@@ -73,6 +60,21 @@ flowchart TD
 
 **Límites y decisión de uso:** Un comando interpretado por Bash puede tener otra sintaxis en PowerShell; rutas, variables y comillas no son intercambiables. Ejecuta primero operaciones de inspección y confirma directorio y entorno antes de aplicar una instrucción que modifica recursos.
 
+#### Paso 4 · Demostración guiada
+Crea `ejemplo-terminal/README.md` desde una carpeta vacía y ejecuta los comandos del bloque de instalación.
+```bash
+mkdir ejemplo-terminal
+cd ejemplo-terminal
+python --version
+```
+Resultado esperado: carpeta creada y versión visible.
+#### Paso 5 · Práctica guiada
+Pista: escribe deliberadamente una ruta inexistente para provocar un fallo deliberado, lee el mensaje y corrígelo.
+#### Paso 6 · Práctica independiente
+Repite el flujo en tu sistema operativo, añade un archivo y documenta la salida.
+#### Paso 7 · Cierre y evidencia
+Entrega árbol, comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: redes. Errores comunes: no comprobar el directorio actual, mezclar shells y copiar comandos sin entenderlos. Fuente oficial: https://docs.docker.com/get-started/.
+
 ### Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs
 
 #### Paso 1 · Objetivo y preparación
@@ -81,6 +83,39 @@ Al finalizar podrás diagnosticar una conexión local desde cero. Prerrequisitos
 Un servicio cloud local puede fallar por puerto, proceso o contrato HTTP incorrecto.
 #### Paso 3 · Teoría, modelo mental y analogía
 IP es edificio, puerto es apartamento y HTTP es el idioma de la solicitud.
+
+**Conceptos clave:** dirección IP, `localhost`, puerto, protocolo HTTP, API, modelo cliente-servidor.
+
+Una dirección IP identifica de forma única a una computadora dentro de una red, de forma parecida a como una dirección postal identifica una casa. `localhost` (o la dirección `127.0.0.1`) es una dirección IP especial que siempre significa "esta misma computadora": cuando ejecutas `curl http://localhost:4566`, le estás hablando a un programa que corre en tu propia máquina, no a internet. Una misma computadora puede correr muchos programas que escuchan peticiones de red al mismo tiempo, así que necesita una forma de distinguir a cuál de ellos va dirigida cada petición: ese es el puerto, un número (de 0 a 65535) que funciona como el número de apartamento dentro del edificio que es tu computadora. Cuando Floci "escucha en el puerto 4566", significa que hay un programa dentro de tu máquina esperando peticiones específicamente en esa "puerta numerada".
+
+HTTP es el protocolo —el conjunto de reglas de formato y vocabulario— que usan la mayoría de los programas para pedirse cosas entre sí a través de una red: un cliente envía una petición (`request`) especificando qué quiere (por ejemplo, "dame la lista de objetos de este bucket"), y un servidor responde con una respuesta (`response`) que incluye un código de estado (200 significa éxito, 404 significa "no encontrado", 500 significa error del servidor) y normalmente datos en un formato como JSON. Una API (interfaz de programación de aplicaciones) es, en este contexto, el conjunto específico de peticiones que un servidor entiende y sabe responder: la "API de S3" es el vocabulario específico de peticiones HTTP que entiende un servicio de almacenamiento de objetos, ya sea AWS real o Floci emulándolo.
+
+Cuando ejecutas `aws s3 ls --endpoint-url http://localhost:4566`, en realidad está pasando esto: la AWS CLI traduce tu comando a una petición HTTP con el formato exacto que entiende la API de S3, la envía a la dirección `localhost` en el puerto `4566` (donde escucha Floci), Floci procesa esa petición como si fuera el servicio S3 real, y devuelve una respuesta HTTP que la AWS CLI vuelve a traducir a texto legible en tu terminal. Todo lo que vas a hacer en este curso —cada comando de cada módulo— es, por debajo, exactamente este mismo patrón: petición HTTP, puerto, respuesta.
+
+**Analogía:** una dirección IP es la dirección de un edificio; un puerto es el número de apartamento dentro de ese edificio; HTTP es el idioma y la etiqueta que usas cuando tocas la puerta y pides algo ("buenas tardes, ¿podría darme...?"); una API es la lista específica de cosas que ese apartamento en particular sabe entregarte si se las pides correctamente.
+
+`node` es el ejecutable de Node.js, el entorno de ejecución que corre JavaScript fuera del navegador (en tu terminal, o en un servidor); en este curso lo vas a usar sobre todo para escribir funciones Lambda en el Módulo 5 y para el SDK de AWS en JavaScript.
+
+**¿Por qué es importante?** Entender que un comando de AWS CLI no es magia, sino una petición HTTP a una dirección y puerto específicos, es lo que te permite diagnosticar el 90% de los errores de conexión de este curso: si un comando falla con un error de conexión, casi siempre es porque el puerto no coincide, el programa no está corriendo, o la dirección apunta al lugar equivocado — no porque el concepto de "nube" en sí sea complicado.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant Tú as Tu terminal
+  participant CLI as AWS CLI
+  participant Floci as Floci (localhost:4566)
+
+  Tú->>CLI: aws s3 ls
+  CLI->>Floci: Petición HTTP GET (API de S3)
+  Floci-->>CLI: Respuesta HTTP 200 + lista de buckets (JSON)
+  CLI-->>Tú: Texto legible en tu terminal
+```
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Registra host, puerto y respuesta HTTP del entorno local de entregas. Detén su proceso y compara conexión rechazada con un 404; el diagnóstico debe distinguir transporte de contrato HTTP.
+
+**Límites y decisión de uso:** Una respuesta HTTP satisfactoria solo verifica esa petición; no demuestra disponibilidad continua ni permisos sobre otras operaciones. Un ping tampoco comprueba el puerto de la API: diagnostica nombre, conexión y contrato por separado.
+
 #### Paso 4 · Demostración guiada
 Crea `src/main.mjs` desde una carpeta vacía:
 ```bash
@@ -117,37 +152,6 @@ Pista: usa un puerto incorrecto para provocar un fallo deliberado, identifica el
 Levanta un servidor local, prueba respuesta válida y documenta un 404.
 #### Paso 7 · Cierre y evidencia
 Entrega comandos, respuesta, fallo y corrección; explica el resultado. Siguiente paso: servicios emulados. Errores comunes: confundir host y puerto, ignorar códigos HTTP y probar solo con navegador. Fuente oficial: https://developer.mozilla.org/es/docs/Web/HTTP.
-**Conceptos clave:** dirección IP, `localhost`, puerto, protocolo HTTP, API, modelo cliente-servidor.
-
-Una dirección IP identifica de forma única a una computadora dentro de una red, de forma parecida a como una dirección postal identifica una casa. `localhost` (o la dirección `127.0.0.1`) es una dirección IP especial que siempre significa "esta misma computadora": cuando ejecutas `curl http://localhost:4566`, le estás hablando a un programa que corre en tu propia máquina, no a internet. Una misma computadora puede correr muchos programas que escuchan peticiones de red al mismo tiempo, así que necesita una forma de distinguir a cuál de ellos va dirigida cada petición: ese es el puerto, un número (de 0 a 65535) que funciona como el número de apartamento dentro del edificio que es tu computadora. Cuando Floci "escucha en el puerto 4566", significa que hay un programa dentro de tu máquina esperando peticiones específicamente en esa "puerta numerada".
-
-HTTP es el protocolo —el conjunto de reglas de formato y vocabulario— que usan la mayoría de los programas para pedirse cosas entre sí a través de una red: un cliente envía una petición (`request`) especificando qué quiere (por ejemplo, "dame la lista de objetos de este bucket"), y un servidor responde con una respuesta (`response`) que incluye un código de estado (200 significa éxito, 404 significa "no encontrado", 500 significa error del servidor) y normalmente datos en un formato como JSON. Una API (interfaz de programación de aplicaciones) es, en este contexto, el conjunto específico de peticiones que un servidor entiende y sabe responder: la "API de S3" es el vocabulario específico de peticiones HTTP que entiende un servicio de almacenamiento de objetos, ya sea AWS real o Floci emulándolo.
-
-Cuando ejecutas `aws s3 ls --endpoint-url http://localhost:4566`, en realidad está pasando esto: la AWS CLI traduce tu comando a una petición HTTP con el formato exacto que entiende la API de S3, la envía a la dirección `localhost` en el puerto `4566` (donde escucha Floci), Floci procesa esa petición como si fuera el servicio S3 real, y devuelve una respuesta HTTP que la AWS CLI vuelve a traducir a texto legible en tu terminal. Todo lo que vas a hacer en este curso —cada comando de cada módulo— es, por debajo, exactamente este mismo patrón: petición HTTP, puerto, respuesta.
-
-**Analogía:** una dirección IP es la dirección de un edificio; un puerto es el número de apartamento dentro de ese edificio; HTTP es el idioma y la etiqueta que usas cuando tocas la puerta y pides algo ("buenas tardes, ¿podría darme...?"); una API es la lista específica de cosas que ese apartamento en particular sabe entregarte si se las pides correctamente.
-
-`node` es el ejecutable de Node.js, el entorno de ejecución que corre JavaScript fuera del navegador (en tu terminal, o en un servidor); en este curso lo vas a usar sobre todo para escribir funciones Lambda en el Módulo 5 y para el SDK de AWS en JavaScript.
-
-**¿Por qué es importante?** Entender que un comando de AWS CLI no es magia, sino una petición HTTP a una dirección y puerto específicos, es lo que te permite diagnosticar el 90% de los errores de conexión de este curso: si un comando falla con un error de conexión, casi siempre es porque el puerto no coincide, el programa no está corriendo, o la dirección apunta al lugar equivocado — no porque el concepto de "nube" en sí sea complicado.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant Tú as Tu terminal
-  participant CLI as AWS CLI
-  participant Floci as Floci (localhost:4566)
-
-  Tú->>CLI: aws s3 ls
-  CLI->>Floci: Petición HTTP GET (API de S3)
-  Floci-->>CLI: Respuesta HTTP 200 + lista de buckets (JSON)
-  CLI-->>Tú: Texto legible en tu terminal
-```
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Registra host, puerto y respuesta HTTP del entorno local de entregas. Detén su proceso y compara conexión rechazada con un 404; el diagnóstico debe distinguir transporte de contrato HTTP.
-
-**Límites y decisión de uso:** Una respuesta HTTP satisfactoria solo verifica esa petición; no demuestra disponibilidad continua ni permisos sobre otras operaciones. Un ping tampoco comprueba el puerto de la API: diagnostica nombre, conexión y contrato por separado.
 
 ### Tema 3: Qué vas a aprender y cómo está estructurado el curso
 
@@ -157,28 +161,7 @@ Al finalizar podrás seguir el curso desde cero. Prerrequisitos: terminal y edit
 Una ruta clara evita saltos de dificultad en un proyecto cloud.
 #### Paso 3 · Teoría, modelo mental y analogía
 La ruta es un mapa con hitos; cada módulo deja evidencia antes del siguiente.
-#### Paso 4 · Demostración guiada
-Crea `src/learning-plan.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-plan
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: versión visible.
-#### Paso 5 · Práctica guiada
-Pista: salta un prerrequisito para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Ordena tres tareas y justifica la secuencia.
-#### Paso 7 · Cierre y evidencia
-Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: conocer Floci. Errores comunes: estudiar sin práctica y no guardar evidencia. Fuente oficial: https://docs.aws.amazon.com/.
 **Conceptos clave:** ruta de aprendizaje, módulo, nivel de dificultad progresivo, entregable.
 
 El curso está organizado en 35 módulos numerados del 0 al 34, y cada uno se apoya en el anterior. La ruta base (Módulos 0-9) te lleva desde la preparación del entorno hasta un primer proyecto integrador, cubriendo Docker, S3, SQS, DynamoDB, Lambda, API Gateway, IAM y una introducción a Azure/GCP. A partir del Módulo 10, el curso continúa con contenido avanzado —Secrets Manager, mensajería Pub/Sub, observabilidad, bases de datos relacionales, contenedores gestionados, infraestructura como código, streaming, autenticación y analítica de datos (Módulos 10-20)— y después con los servicios adicionales que completan la paridad con Floci —cómputo elástico, balanceo de carga y CDN, caché, CI/CD nativo, gobierno de cuenta, FinOps y más (Módulos 21-30)—. El Módulo 31 integra lo aprendido en un proyecto multi-nube. Los módulos 32–34 complementan ese recorrido con actualización de plataforma, contenidos avanzados y recorrido oficial de Floci. Una operación que funciona en el emulador no acredita cuotas, identidad, rendimiento ni comportamiento idéntico en una cuenta real; comprueba el soporte de cada operación antes de trasladar el laboratorio.
@@ -205,6 +188,29 @@ flowchart LR
 
 **Límites y decisión de uso:** Completar una lectura no acredita operación en producción. Antes de avanzar, repite el laboratorio y explica su fallo; reserva permisos, límites y recuperación reales para pruebas específicas fuera del emulador.
 
+#### Paso 4 · Demostración guiada
+Crea `src/learning-plan.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-plan
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: versión visible.
+#### Paso 5 · Práctica guiada
+Pista: salta un prerrequisito para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Ordena tres tareas y justifica la secuencia.
+#### Paso 7 · Cierre y evidencia
+Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: conocer Floci. Errores comunes: estudiar sin práctica y no guardar evidencia. Fuente oficial: https://docs.aws.amazon.com/.
+
 ### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack
 
 #### Paso 1 · Objetivo y preparación
@@ -213,19 +219,7 @@ Al finalizar podrás levantar un emulador desde cero. Prerrequisitos: Docker y t
 Practicar localmente reduce riesgo y coste antes de usar una cuenta real.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un emulador es un aeropuerto de entrenamiento: imita procedimientos, no todos los detalles.
-#### Paso 4 · Demostración guiada
-Crea `src/floci-check.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-floci
-docker --version
-```
-Resultado esperado: Docker disponible.
-#### Paso 5 · Práctica guiada
-Pista: detén el contenedor para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Levanta un servicio y documenta una limitación.
-#### Paso 7 · Cierre y evidencia
-Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: catálogo. Errores comunes: asumir paridad total y usar credenciales reales. Fuente oficial: https://docs.docker.com/.
+
 **Conceptos clave:** emulador de nube, API-compatible, LocalStack, entorno local, coste cero.
 
 Floci es un emulador de servicios de nube que corre en tu propia máquina, dentro de un contenedor Docker, y que responde a los mismos comandos y llamadas de API que usarías contra una cuenta real de AWS, Azure o GCP. Cuando ejecutas `aws s3 mb s3://mi-bucket --endpoint-url http://localhost:4566`, Floci recibe esa petición, la procesa como si fuera el servicio S3 real, y te devuelve una respuesta con el mismo formato que devolvería AWS. La única diferencia visible es el `--endpoint-url`: en vez de apuntar a los servidores de Amazon, apunta a un puerto de tu propio ordenador.
@@ -253,6 +247,20 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Levanta el emulador elegido y crea un bucket de evidencias con credenciales locales. Documenta endpoint y versión, y comprueba que la prueba no depende de una cuenta cloud real.
 
+#### Paso 4 · Demostración guiada
+Crea `src/floci-check.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-floci
+docker --version
+```
+Resultado esperado: Docker disponible.
+#### Paso 5 · Práctica guiada
+Pista: detén el contenedor para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Levanta un servicio y documenta una limitación.
+#### Paso 7 · Cierre y evidencia
+Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: catálogo. Errores comunes: asumir paridad total y usar credenciales reales. Fuente oficial: https://docs.docker.com/.
+
 ### Tema 5: Servicios que emula Floci — AWS, Azure y GCP
 
 #### Paso 1 · Objetivo y preparación
@@ -261,19 +269,7 @@ Al finalizar podrás identificar endpoints desde cero. Prerrequisitos: Docker y 
 Una plataforma multi-cloud necesita distinguir proveedor, endpoint y contrato.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada endpoint es una ventanilla con catálogo y reglas propias.
-#### Paso 4 · Demostración guiada
-Crea `src/endpoints.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-endpoints
-docker compose version
-```
-Resultado esperado: Compose disponible.
-#### Paso 5 · Práctica guiada
-Pista: usa un endpoint equivocado para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Lista un servicio por proveedor y prueba su respuesta.
-#### Paso 7 · Cierre y evidencia
-Entrega tabla, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: mezclar regiones y endpoints. Fuente oficial: https://docs.aws.amazon.com/.
+
 **Conceptos clave:** floci (AWS), floci-az (Azure), floci-gcp (GCP), catálogo de servicios, endpoint por proveedor.
 
 Floci no es un único contenedor: es una familia de tres imágenes, una por proveedor de nube, pensadas para usarse de forma independiente o en conjunto según lo que necesites practicar. La imagen principal, a la que llamamos simplemente Floci, emula servicios de AWS: S3 (almacenamiento de objetos), SQS (colas de mensajes), DynamoDB (base de datos NoSQL), Lambda (funciones serverless), API Gateway (APIs HTTP) e IAM (identidad y acceso), además de los servicios avanzados que verás en módulos posteriores al proyecto final, como Secrets Manager, SNS, EventBridge, CloudWatch, RDS, ECR/ECS y otros.
@@ -327,6 +323,20 @@ flowchart TB
   GCP --> Tools3["gcloud CLI / SDKs apuntando al emulador local"]
 ```
 
+#### Paso 4 · Demostración guiada
+Crea `src/endpoints.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-endpoints
+docker compose version
+```
+Resultado esperado: Compose disponible.
+#### Paso 5 · Práctica guiada
+Pista: usa un endpoint equivocado para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Lista un servicio por proveedor y prueba su respuesta.
+#### Paso 7 · Cierre y evidencia
+Entrega tabla, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: mezclar regiones y endpoints. Fuente oficial: https://docs.aws.amazon.com/.
+
 ### Tema 6: Ventajas y limitaciones de practicar con un emulador local
 
 #### Paso 1 · Objetivo y preparación
@@ -335,19 +345,7 @@ Al finalizar podrás evaluar fidelidad desde cero. Prerrequisitos: Docker y term
 Una prueba local debe declarar qué garantiza y qué no.
 #### Paso 3 · Teoría, modelo mental y analogía
 La paridad es un puente con límites conocidos; no es una copia perfecta.
-#### Paso 4 · Demostración guiada
-Crea `src/parity-check.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-paridad
-docker --version
-```
-Resultado esperado: herramienta disponible.
-#### Paso 5 · Práctica guiada
-Pista: usa una operación no emulada para provocar un fallo deliberado y corrígelo documentando el límite.
-#### Paso 6 · Práctica independiente
-Compara local y documentación oficial.
-#### Paso 7 · Cierre y evidencia
-Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: metodología. Errores comunes: extrapolar resultados locales a producción. Fuente oficial: https://docs.aws.amazon.com/.
+
 **Conceptos clave:** paridad de comportamiento, fidelidad parcial, límites del emulador, transferencia de conocimiento.
 
 Ningún emulador es una copia perfecta del servicio real, y es importante que empieces el curso con expectativas correctas sobre esto. Floci reproduce con fidelidad alta el comportamiento funcional de cada servicio: la forma de los comandos, las respuestas, los códigos de error más comunes, y el flujo de trabajo típico. Eso es suficiente para aprender el 90% de lo que necesitas para usar estos servicios en el mundo real. Lo que un emulador no reproduce, y no puede reproducir, es el comportamiento a gran escala: cómo se comporta DynamoDB con mil millones de items, cómo escala Lambda ante diez mil invocaciones simultáneas, o los tiempos de latencia reales entre regiones geográficas distintas.
@@ -381,6 +379,20 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Clasifica las pruebas de almacenamiento del proyecto entre contrato local y validación pendiente en nube real. Conserva una prueba de lectura y escritura y explica qué no demuestra sobre IAM, durabilidad o latencia de producción.
+
+#### Paso 4 · Demostración guiada
+Crea `src/parity-check.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-paridad
+docker --version
+```
+Resultado esperado: herramienta disponible.
+#### Paso 5 · Práctica guiada
+Pista: usa una operación no emulada para provocar un fallo deliberado y corrígelo documentando el límite.
+#### Paso 6 · Práctica independiente
+Compara local y documentación oficial.
+#### Paso 7 · Cierre y evidencia
+Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: metodología. Errores comunes: extrapolar resultados locales a producción. Fuente oficial: https://docs.aws.amazon.com/.
 
 ### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo
 

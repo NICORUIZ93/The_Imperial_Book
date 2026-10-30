@@ -11,34 +11,7 @@ Al finalizar vas a reconocer, con el caso real de sugerir repartidores de respal
 RutaFlow necesita responder "¿qué repartidores cubrieron alguna vez la misma zona que Ana?" — una cadena de relaciones, no una búsqueda por clave como las que ya resolvés con `ShipmentEvents`.
 #### Paso 3 · Teoría, modelo mental y analogía
 El vértice es la entidad (un repartidor, una zona); la arista es la relación entre ellos (`cubrio_zona`); un recorrido es seguir esos enlaces, salto a salto.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-pregunta_por_clave="SELECT * FROM entregas WHERE guia = 'RF-001'"
-pregunta_multi_salto="g.V().has('nombre','Ana').out('cubrio_zona').in('cubrio_zona').dedup()"
-echo "clave: $pregunta_por_clave"
-echo "grafo: $pregunta_multi_salto"
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: las dos preguntas quedan lado a lado — la primera es exactamente lo que `ShipmentEvents` resuelve bien (Módulo 4); la segunda no tiene una forma natural y eficiente como JOIN repetido en SQL ni como escaneo en DynamoDB.
-#### Paso 5 · Práctica guiada
-Pista: intentá resolver la pregunta multi-salto con `ShipmentEvents` usando `Query` por `shipmentId` — ese es el fallo deliberado: no hay ningún `shipmentId` en la pregunta "repartidores que cubrieron la misma zona que Ana", porque la pregunta nunca fue sobre una clave conocida, es sobre seguir una cadena de relaciones que DynamoDB no modela como ciudadano de primera clase.
-#### Paso 6 · Práctica independiente
-Escribí una tercera pregunta puramente de clave (por ejemplo, "el nombre del repartidor con id c-891") y clasificala junto a las otras dos, confirmando que esa sí encaja perfecto en DynamoDB.
-#### Paso 7 · Cierre y evidencia
-Entregá las dos preguntas comparadas del Paso 4, el intento fallido de forzarla en DynamoDB del Paso 5, y la pregunta de clave del Paso 6; explicá por qué forzar una consulta multi-salto dentro de una base relacional o NoSQL simple sería deuda técnica, no una solución. Siguiente paso: motor. Errores comunes: ciclos no controlados y recorridos sin límite. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/intro.html.
 **Conceptos clave:** vértice, arista, recorrido de grafo, consulta multi-salto.
 
 Una base de datos relacional o de documentos modela relaciones mediante claves foráneas o referencias, pero seguir una cadena de relaciones —"amigos de mis amigos que también siguieron a esta cuenta"— requiere múltiples consultas o JOINs costosos que se vuelven progresivamente más lentos cuantos más "saltos" de relación necesitas recorrer. Una base de datos de grafos invierte esta prioridad: almacena vértices (entidades, como personas o productos) y aristas (las relaciones entre ellos, como "sigue a" o "compró") como ciudadanos de primera clase, optimizada específicamente para recorrer cadenas de relaciones de forma eficiente sin importar cuántos saltos tenga la consulta.
@@ -73,6 +46,35 @@ print("grafo:", pregunta_multi_salto)
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Modela almacenes, rutas y conexiones como un grafo pequeño. Consulta una relación de varios saltos y compara el resultado con una lista esperada de nodos, no solo con un conteo total.
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+pregunta_por_clave="SELECT * FROM entregas WHERE guia = 'RF-001'"
+pregunta_multi_salto="g.V().has('nombre','Ana').out('cubrio_zona').in('cubrio_zona').dedup()"
+echo "clave: $pregunta_por_clave"
+echo "grafo: $pregunta_multi_salto"
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: las dos preguntas quedan lado a lado — la primera es exactamente lo que `ShipmentEvents` resuelve bien (Módulo 4); la segunda no tiene una forma natural y eficiente como JOIN repetido en SQL ni como escaneo en DynamoDB.
+#### Paso 5 · Práctica guiada
+Pista: intentá resolver la pregunta multi-salto con `ShipmentEvents` usando `Query` por `shipmentId` — ese es el fallo deliberado: no hay ningún `shipmentId` en la pregunta "repartidores que cubrieron la misma zona que Ana", porque la pregunta nunca fue sobre una clave conocida, es sobre seguir una cadena de relaciones que DynamoDB no modela como ciudadano de primera clase.
+#### Paso 6 · Práctica independiente
+Escribí una tercera pregunta puramente de clave (por ejemplo, "el nombre del repartidor con id c-891") y clasificala junto a las otras dos, confirmando que esa sí encaja perfecto en DynamoDB.
+#### Paso 7 · Cierre y evidencia
+Entregá las dos preguntas comparadas del Paso 4, el intento fallido de forzarla en DynamoDB del Paso 5, y la pregunta de clave del Paso 6; explicá por qué forzar una consulta multi-salto dentro de una base relacional o NoSQL simple sería deuda técnica, no una solución. Siguiente paso: motor. Errores comunes: ciclos no controlados y recorridos sin límite. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/intro.html.
+
 ### Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación
 
 #### Paso 1 · Objetivo y preparación
@@ -81,20 +83,7 @@ Al finalizar vas a crear el clúster real donde RutaFlow modela qué repartidore
 Para responder la pregunta multi-salto del Tema 1 de verdad, hace falta un motor de grafos real que sepa recorrer aristas eficientemente, no una simulación que solo gestione metadatos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Gremlin es el lenguaje de recorrido (`g.V().out(...)`); el proxy WebSocket mantiene el canal de consulta abierto contra un servidor Gremlin real.
-#### Paso 4 · Demostración guiada
-```bash
-aws neptune create-db-cluster --db-cluster-identifier demo-grafo --engine neptune
-PUERTO=$(aws neptune describe-db-clusters --db-cluster-identifier demo-grafo \
-  --query 'DBClusters[0].Port' --output text)
-docker ps | grep gremlin
-```
-Resultado esperado: `docker ps` muestra un contenedor real de Apache TinkerPop Gremlin Server corriendo — el mismo motor que usarías contra un Neptune real, no una reimplementación aproximada.
-#### Paso 5 · Práctica guiada
-Pista: conectate con `gremlin-python` al puerto devuelto y probá una consulta mal formada, como `g.V().has('nombre','Ana').outt('cubrio_zona')` (con el verbo `out` mal escrito) — ese es el fallo deliberado: el servidor Gremlin real rechaza la consulta con un error de sintaxis, exactamente igual que lo haría un Neptune real, porque es el mismo motor de ejecución.
-#### Paso 6 · Práctica independiente
-Corregí la consulta y ejecutá `g.V().count()` contra el clúster recién creado — confirmá que devuelve `0` (grafo vacío, listo para poblar con los vértices de repartidores y zonas del Tema 1).
-#### Paso 7 · Cierre y evidencia
-Entregá el contenedor Gremlin real confirmado del Paso 4, el error de sintaxis del Paso 5, y el grafo vacío confirmado del Paso 6; explicá por qué que el motor sea real te deja aprender el lenguaje de consulta sin riesgo de que se comporte distinto contra un Neptune real. Siguiente paso: emulación. Errores comunes: conexiones abiertas y traversals costosos. Fuente oficial: https://tinkerpop.apache.org/gremlin.html.
+
 **Conceptos clave:** Apache TinkerPop Gremlin Server, `CreateDBCluster`, proxy WebSocket.
 
 Igual que ElastiCache con Valkey, Neptune en Floci no simula el comportamiento de una base de grafos: gestiona un contenedor Docker real de Apache TinkerPop Gremlin Server —el motor de grafos de código abierto que Neptune usa internamente— y expone una conexión proxy hacia él en un puerto del rango configurado (por defecto 8182–8282, siguiendo el puerto estándar de Gremlin). Cuando creas un clúster con `CreateDBCluster`, Floci lanza este contenedor real; `DescribeDBClusters` te devuelve el endpoint y puerto donde conectarte con cualquier cliente Gremlin estándar, como la librería `gremlin-python`.
@@ -127,6 +116,21 @@ docker ps | grep gremlin
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Conecta el cliente Gremlin al entorno de laboratorio e inserta dos almacenes y una conexión. Consulta desde ambos extremos y registra qué persistencia ofrece el despliegue local utilizado.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws neptune create-db-cluster --db-cluster-identifier demo-grafo --engine neptune
+PUERTO=$(aws neptune describe-db-clusters --db-cluster-identifier demo-grafo \
+  --query 'DBClusters[0].Port' --output text)
+docker ps | grep gremlin
+```
+Resultado esperado: `docker ps` muestra un contenedor real de Apache TinkerPop Gremlin Server corriendo — el mismo motor que usarías contra un Neptune real, no una reimplementación aproximada.
+#### Paso 5 · Práctica guiada
+Pista: conectate con `gremlin-python` al puerto devuelto y probá una consulta mal formada, como `g.V().has('nombre','Ana').outt('cubrio_zona')` (con el verbo `out` mal escrito) — ese es el fallo deliberado: el servidor Gremlin real rechaza la consulta con un error de sintaxis, exactamente igual que lo haría un Neptune real, porque es el mismo motor de ejecución.
+#### Paso 6 · Práctica independiente
+Corregí la consulta y ejecutá `g.V().count()` contra el clúster recién creado — confirmá que devuelve `0` (grafo vacío, listo para poblar con los vértices de repartidores y zonas del Tema 1).
+#### Paso 7 · Cierre y evidencia
+Entregá el contenedor Gremlin real confirmado del Paso 4, el error de sintaxis del Paso 5, y el grafo vacío confirmado del Paso 6; explicá por qué que el motor sea real te deja aprender el lenguaje de consulta sin riesgo de que se comporte distinto contra un Neptune real. Siguiente paso: emulación. Errores comunes: conexiones abiertas y traversals costosos. Fuente oficial: https://tinkerpop.apache.org/gremlin.html.
+
 ### Tema 3: OpenSearch — modo simulado y modo real
 
 #### Paso 1 · Objetivo y preparación
@@ -135,23 +139,7 @@ Al finalizar vas a indexar la descripción de un paquete real de RutaFlow en Ope
 El panel de soporte de RutaFlow necesita buscar paquetes por texto libre ("caja frágil") — y antes de medir eso de verdad, hay que confirmar si el dominio está corriendo en modo simulado (solo metadatos) o en modo real (motor completo).
 #### Paso 3 · Teoría, modelo mental y analogía
 El modo mock es una maqueta que no abre la llave de agua; `/_cluster/health` es el semáforo que confirma si el motor real ya está listo para recibir tráfico.
-#### Paso 4 · Demostración guiada
-```bash
-aws opensearch create-domain --domain-name demo-busqueda --engine-version "OpenSearch_2.11" \
-  --cluster-config InstanceType=m5.large.search,InstanceCount=1 \
-  --ebs-options EBSEnabled=true,VolumeType=gp2,VolumeSize=10
-ENDPOINT=$(aws opensearch describe-domain --domain-name demo-busqueda --query 'DomainStatus.Endpoint' --output text)
-curl -X POST "http://$ENDPOINT/paquetes/_doc/1" -H "Content-Type: application/json" \
-  -d '{"guia": "RF-001", "descripcion": "caja fragil electronica"}'
-curl "http://$ENDPOINT/paquetes/_search?q=fragil"
-```
-Resultado esperado: la búsqueda por `fragil` devuelve el documento indexado — el plano de datos completo respondiendo de verdad, porque el dominio corre en modo real (el valor por defecto).
-#### Paso 5 · Práctica guiada
-Pista: exportá `FLOCI_SERVICES_OPENSEARCH_MOCK=true` y repetí la creación del dominio y la búsqueda — ese es el fallo deliberado si lo hacés sin darte cuenta: `_search` no responde en absoluto, porque en modo simulado solo el plano de gestión (crear/describir/eliminar dominios) está disponible, no el plano de datos.
-#### Paso 6 · Práctica independiente
-Consultá `/_cluster/health` contra el dominio en modo real y registrá el estado (`green`/`yellow`) junto con la versión del motor reportada; documentá por qué un pipeline de CI que solo valida que Terraform crea el dominio correctamente debería usar el modo simulado, no el real.
-#### Paso 7 · Cierre y evidencia
-Entregá la búsqueda real exitosa del Paso 4, el `_search` sin respuesta en modo mock del Paso 5, y el health/versión registrados del Paso 6; explicá cuándo cada modo es la herramienta con el costo justo para la pregunta que estás respondiendo. Siguiente paso: patrones. Errores comunes: asumir que mock cubre latencia real y no verificar salud. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/health-status.html.
+
 **Conceptos clave:** modo `mock`, dominio, versión de motor, `/_cluster/health`.
 
 OpenSearch resuelve un problema distinto: búsqueda de texto completo (encontrar documentos que contienen ciertas palabras, con relevancia y tolerancia a errores tipográficos) y agregaciones analíticas sobre grandes volúmenes de documentos — piensa en la barra de búsqueda de un sitio de e-commerce, o en un panel de analítica de logs. Floci ofrece dos modos controlados por `FLOCI_SERVICES_OPENSEARCH_MOCK`: en modo simulado (`true`), solo se gestionan los metadatos del dominio en proceso, sin lanzar ningún contenedor — perfecto para pruebas de integración en CI donde solo te interesa validar que tu código de infraestructura crea el dominio correctamente, sin pagar el costo de tiempo de arranque de un motor de búsqueda completo. En modo real (`false`, el valor por defecto), Floci lanza un contenedor Docker completo de OpenSearch, eligiendo la imagen según la versión de motor solicitada, y espera a que `/_cluster/health` reporte un estado saludable antes de marcar el dominio como creado, momento en el cual puedes indexar y buscar documentos de verdad.
@@ -186,6 +174,24 @@ curl "http://$ENDPOINT/paquetes/_search?q=fragil"
 **Cómo crece tu proyecto:** este dominio indexa la descripción de cada paquete para que el panel de soporte del proyecto pueda buscarlos por texto libre.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Indexa en OpenSearch la descripción de cada paquete de RutaFlow en modo real, y usa modo simulado específicamente en el pipeline de CI que solo valida que la infraestructura de búsqueda se crea correctamente, sin pagar el costo de arrancar el motor completo en cada corrida.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws opensearch create-domain --domain-name demo-busqueda --engine-version "OpenSearch_2.11" \
+  --cluster-config InstanceType=m5.large.search,InstanceCount=1 \
+  --ebs-options EBSEnabled=true,VolumeType=gp2,VolumeSize=10
+ENDPOINT=$(aws opensearch describe-domain --domain-name demo-busqueda --query 'DomainStatus.Endpoint' --output text)
+curl -X POST "http://$ENDPOINT/paquetes/_doc/1" -H "Content-Type: application/json" \
+  -d '{"guia": "RF-001", "descripcion": "caja fragil electronica"}'
+curl "http://$ENDPOINT/paquetes/_search?q=fragil"
+```
+Resultado esperado: la búsqueda por `fragil` devuelve el documento indexado — el plano de datos completo respondiendo de verdad, porque el dominio corre en modo real (el valor por defecto).
+#### Paso 5 · Práctica guiada
+Pista: exportá `FLOCI_SERVICES_OPENSEARCH_MOCK=true` y repetí la creación del dominio y la búsqueda — ese es el fallo deliberado si lo hacés sin darte cuenta: `_search` no responde en absoluto, porque en modo simulado solo el plano de gestión (crear/describir/eliminar dominios) está disponible, no el plano de datos.
+#### Paso 6 · Práctica independiente
+Consultá `/_cluster/health` contra el dominio en modo real y registrá el estado (`green`/`yellow`) junto con la versión del motor reportada; documentá por qué un pipeline de CI que solo valida que Terraform crea el dominio correctamente debería usar el modo simulado, no el real.
+#### Paso 7 · Cierre y evidencia
+Entregá la búsqueda real exitosa del Paso 4, el `_search` sin respuesta en modo mock del Paso 5, y el health/versión registrados del Paso 6; explicá cuándo cada modo es la herramienta con el costo justo para la pregunta que estás respondiendo. Siguiente paso: patrones. Errores comunes: asumir que mock cubre latencia real y no verificar salud. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/health-status.html.
 
 ### Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB
 

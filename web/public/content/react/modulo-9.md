@@ -102,6 +102,30 @@ Al finalizar vas a envolver `EncabezadoPanel` (identificado en el Tema 1 con el 
 #### Paso 3 · Teoría, modelo mental y analogía
 `React.memo` compara superficialmente las props entre renders; si son referencialmente iguales, React se salta la re-ejecución — un guardia que compara la lista de invitados antes de repetir el mismo trabajo.
 
+**Evidencia de aprendizaje:** entrega EncabezadoPanel memoizado, memo desperdiciado detectado y limpieza confirmada con el Profiler.
+**Conceptos clave:** comparación superficial de props, overhead de comparación, cuándo realmente ayuda.
+
+`React.memo(function Fila({ item }) { return <li>{item.nombre}</li>; })` envuelve un componente para que React realice una comparación superficial de sus props entre el render anterior y el actual antes de volver a ejecutar la función del componente: si todas las props son referencialmente iguales al render anterior, React se salta completamente la re-ejecución de ese componente y reutiliza el resultado anterior, en vez de volver a calcular un árbol de elementos idéntico innecesariamente.
+
+`React.memo` solo aporta un beneficio real cuando el componente efectivamente recibe las mismas props en renders sucesivos con una frecuencia significativa (por ejemplo, una fila de una lista larga que se re-renderiza cada vez que el componente padre se actualiza por una razón no relacionada con esa fila específica): envolver absolutamente todos los componentes de la aplicación con `React.memo` de forma indiscriminada agrega el overhead de esa comparación superficial de props en cada render, sin ningún beneficio real en componentes que de todas formas reciben props distintas en la mayoría de sus renders (donde la comparación superficial siempre determinaría que sí hay que re-renderizar, agregando el costo de la comparación sin evitar ningún trabajo real).
+
+**Analogía:** `React.memo` es como un guardia que compara una lista de invitados exacta antes de dejar pasar a un evento que ya ocurrió con la misma lista, ahorrando repetir el mismo trabajo; pedirle a ese guardia que revise la lista incluso cuando la lista prácticamente siempre cambia agrega el costo de la revisión sin ahorrar ningún trabajo real, dado que casi siempre habrá que dejar pasar de todas formas.
+
+**¿Por qué es importante?** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real en componentes que de todas formas cambian de props frecuentemente.
+
+**Código del ejemplo:**
+
+```jsx
+const Fila = React.memo(function Fila({ item }) {
+  return <li>{item.nombre}</li>;
+}); // solo se re-renderiza si `item` cambia (comparación superficial)
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const EncabezadoPanel = React.memo(function EncabezadoPanel({ titulo }) {
@@ -140,29 +164,6 @@ Corregí el Paso 5 quitando `React.memo` de `BotonFiltro` (que no lo necesita, p
 #### Paso 7 · Cierre y evidencia
 Entregá `EncabezadoPanel` memoizado del Paso 4, el memo desperdiciado en `BotonFiltro` del Paso 5, y la limpieza del Paso 6; explicá por qué `React.memo` solo aporta beneficio cuando las props de un componente son estables con frecuencia significativa, no en cualquier componente "por si acaso". Siguiente paso: estudia virtualización para listas largas. Errores comunes: envolver indiscriminadamente todos los componentes en `React.memo`, memoizar un componente cuyas props cambian en casi todos los renders, y no confirmar con el Profiler que la memoización efectivamente eliminó un render real. Fuentes oficiales: https://react.dev/reference/react/memo y https://react.dev/reference/react/memo#minimizing-props-changes.
 **¿Por qué es importante?** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real.
-**Evidencia de aprendizaje:** entrega EncabezadoPanel memoizado, memo desperdiciado detectado y limpieza confirmada con el Profiler.
-**Conceptos clave:** comparación superficial de props, overhead de comparación, cuándo realmente ayuda.
-
-`React.memo(function Fila({ item }) { return <li>{item.nombre}</li>; })` envuelve un componente para que React realice una comparación superficial de sus props entre el render anterior y el actual antes de volver a ejecutar la función del componente: si todas las props son referencialmente iguales al render anterior, React se salta completamente la re-ejecución de ese componente y reutiliza el resultado anterior, en vez de volver a calcular un árbol de elementos idéntico innecesariamente.
-
-`React.memo` solo aporta un beneficio real cuando el componente efectivamente recibe las mismas props en renders sucesivos con una frecuencia significativa (por ejemplo, una fila de una lista larga que se re-renderiza cada vez que el componente padre se actualiza por una razón no relacionada con esa fila específica): envolver absolutamente todos los componentes de la aplicación con `React.memo` de forma indiscriminada agrega el overhead de esa comparación superficial de props en cada render, sin ningún beneficio real en componentes que de todas formas reciben props distintas en la mayoría de sus renders (donde la comparación superficial siempre determinaría que sí hay que re-renderizar, agregando el costo de la comparación sin evitar ningún trabajo real).
-
-**Analogía:** `React.memo` es como un guardia que compara una lista de invitados exacta antes de dejar pasar a un evento que ya ocurrió con la misma lista, ahorrando repetir el mismo trabajo; pedirle a ese guardia que revise la lista incluso cuando la lista prácticamente siempre cambia agrega el costo de la revisión sin ahorrar ningún trabajo real, dado que casi siempre habrá que dejar pasar de todas formas.
-
-**¿Por qué es importante?** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real en componentes que de todas formas cambian de props frecuentemente.
-
-**Código del ejemplo:**
-
-```jsx
-const Fila = React.memo(function Fila({ item }) {
-  return <li>{item.nombre}</li>;
-}); // solo se re-renderiza si `item` cambia (comparación superficial)
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 3: Virtualización y code-splitting
 
@@ -174,6 +175,34 @@ La pantalla de historial de RutaFlow puede mostrar más de 10,000 envíos acumul
 
 #### Paso 3 · Teoría, modelo mental y analogía
 La virtualización renderiza únicamente los elementos visibles en el viewport (más un pequeño margen), reciclando los mismos nodos DOM al hacer scroll — un teatro que solo construye los asientos de la sección visible, no el estadio completo.
+
+**Evidencia de aprendizaje:** entrega lista virtualizada, medición sin virtualizar y code-splitting de Reportes confirmado.
+**Conceptos clave:** renderizar solo lo visible, dividir el bundle en chunks.
+
+Renderizar una lista de 10,000 elementos completos en el DOM, incluso si la mayoría no son visibles en la pantalla en un momento dado, es costoso tanto en tiempo de renderizado inicial como en memoria consumida por nodos DOM que el usuario nunca ve directamente; la virtualización (`<FixedSizeList height={600} itemCount={10000} itemSize={40}>{({ index, style }) => <div style={style}>{datos[index].nombre}</div>}</FixedSizeList>` con `react-window`) renderiza únicamente los elementos actualmente visibles en el viewport (más un pequeño margen para un scroll suave), reciclando los mismos nodos DOM a medida que el usuario hace scroll, en vez de mantener los 10,000 nodos completos existiendo simultáneamente en el DOM real.
+
+`React.lazy(() => import('./Reportes'))` combinado con `Suspense` (estudiado en profundidad en el Módulo 5 para code-splitting por ruta) divide el bundle de JavaScript en chunks separados descargados bajo demanda, reduciendo el tamaño del bundle inicial que la aplicación necesita descargar y ejecutar antes de volverse interactiva, una técnica de reducción de trabajo inicial complementaria (pero distinta) a la virtualización, que reduce el trabajo de renderizado continuo de listas largas ya cargadas.
+
+**Analogía:** la virtualización es como un teatro que solo construye físicamente los asientos de la sección actualmente visible desde donde alguien mira, en vez de construir las 10,000 butacas completas de un estadio entero de una sola vez; el code-splitting es como entregar solo el capítulo del manual que el usuario necesita en este momento, en vez del libro completo de antemano.
+
+**¿Por qué es importante?** La virtualización reduce drásticamente el costo de renderizar listas largas al mantener en el DOM solo los elementos visibles; el code-splitting reduce el bundle inicial descargado, mejorando el tiempo hasta que la aplicación se vuelve interactiva.
+
+**Código del ejemplo:**
+
+```jsx
+import { FixedSizeList } from 'react-window';
+<FixedSizeList height={600} itemCount={10000} itemSize={40}>
+  {({ index, style }) => <div style={style}>{datos[index].nombre}</div>}
+</FixedSizeList>
+
+const Reportes = lazy(() => import('./Reportes'));
+<Suspense fallback={<Spinner />}><Reportes /></Suspense>
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -203,33 +232,6 @@ Corregí el Paso 5 restaurando `FixedSizeList`, y agregá `React.lazy` para la p
 #### Paso 7 · Cierre y evidencia
 Entregá la lista virtualizada del Paso 4, la medición del render completo sin virtualizar del Paso 5, y el code-splitting de Reportes del Paso 6; explicá la diferencia entre lo que resuelve la virtualización (renderizado continuo de una lista ya cargada) y lo que resuelve el code-splitting (descarga inicial del bundle). Siguiente paso: estudia useTransition para mantener la interfaz responsiva durante cálculos costosos. Errores comunes: virtualizar una lista pequeña que no lo necesita, usar un índice de array en vez de un id estable como key dentro de la lista virtualizada, y confundir virtualización con code-splitting. Fuentes oficiales: https://github.com/bvaughn/react-window y https://react.dev/reference/react/lazy.
 **¿Por qué es importante?** La virtualización reduce drásticamente el costo de renderizar listas largas; el code-splitting reduce el bundle inicial descargado — dos optimizaciones distintas para dos problemas distintos.
-**Evidencia de aprendizaje:** entrega lista virtualizada, medición sin virtualizar y code-splitting de Reportes confirmado.
-**Conceptos clave:** renderizar solo lo visible, dividir el bundle en chunks.
-
-Renderizar una lista de 10,000 elementos completos en el DOM, incluso si la mayoría no son visibles en la pantalla en un momento dado, es costoso tanto en tiempo de renderizado inicial como en memoria consumida por nodos DOM que el usuario nunca ve directamente; la virtualización (`<FixedSizeList height={600} itemCount={10000} itemSize={40}>{({ index, style }) => <div style={style}>{datos[index].nombre}</div>}</FixedSizeList>` con `react-window`) renderiza únicamente los elementos actualmente visibles en el viewport (más un pequeño margen para un scroll suave), reciclando los mismos nodos DOM a medida que el usuario hace scroll, en vez de mantener los 10,000 nodos completos existiendo simultáneamente en el DOM real.
-
-`React.lazy(() => import('./Reportes'))` combinado con `Suspense` (estudiado en profundidad en el Módulo 5 para code-splitting por ruta) divide el bundle de JavaScript en chunks separados descargados bajo demanda, reduciendo el tamaño del bundle inicial que la aplicación necesita descargar y ejecutar antes de volverse interactiva, una técnica de reducción de trabajo inicial complementaria (pero distinta) a la virtualización, que reduce el trabajo de renderizado continuo de listas largas ya cargadas.
-
-**Analogía:** la virtualización es como un teatro que solo construye físicamente los asientos de la sección actualmente visible desde donde alguien mira, en vez de construir las 10,000 butacas completas de un estadio entero de una sola vez; el code-splitting es como entregar solo el capítulo del manual que el usuario necesita en este momento, en vez del libro completo de antemano.
-
-**¿Por qué es importante?** La virtualización reduce drásticamente el costo de renderizar listas largas al mantener en el DOM solo los elementos visibles; el code-splitting reduce el bundle inicial descargado, mejorando el tiempo hasta que la aplicación se vuelve interactiva.
-
-**Código del ejemplo:**
-
-```jsx
-import { FixedSizeList } from 'react-window';
-<FixedSizeList height={600} itemCount={10000} itemSize={40}>
-  {({ index, style }) => <div style={style}>{datos[index].nombre}</div>}
-</FixedSizeList>
-
-const Reportes = lazy(() => import('./Reportes'));
-<Suspense fallback={<Spinner />}><Reportes /></Suspense>
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 4: useTransition, useDeferredValue y Fiber
 
@@ -242,37 +244,6 @@ Filtrar la lista completa de 10,000 envíos cada vez que el operador escribe una
 #### Paso 3 · Teoría, modelo mental y analogía
 `useTransition` marca una actualización como no urgente, permitiendo que React la posponga en favor de actualizaciones más urgentes — gracias a Fiber, que hace que el trabajo de renderizado sea interrumpible y priorizable.
 
-#### Paso 4 · Demostración guiada desde cero
-```jsx
-const [isPending, startTransition] = useTransition();
-function manejarCambioFiltro(texto) {
-  setTextoInput(texto); // urgente: el input responde de inmediato
-  startTransition(() => {
-    setEnviosFiltrados(filtrarEnvios(envios, texto)); // no urgente: puede esperar
-  });
-}
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: el input de filtro muestra cada letra tecleada instantáneamente (porque `setTextoInput` no está dentro de la transición), mientras la lista filtrada se actualiza con una prioridad menor, sin bloquear la respuesta del input; `isPending` permite mostrar un indicador sutil mientras esa actualización no urgente está en curso.
-
-#### Paso 5 · Práctica guiada
-Pista: metés ambos `setTextoInput` y `setEnviosFiltrados` dentro de `startTransition` — ese es el fallo deliberado: ahora el propio texto visible del input también se trata como no urgente, y al escribir rápido, las letras tardan en aparecer en el campo.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `setTextoInput` fuera de la transición (urgente) y dejando solo `setEnviosFiltrados` dentro de `startTransition` (no urgente), y agregá un indicador visual sutil basado en `isPending` mientras la lista filtrada todavía se está recalculando.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la transición correctamente dividida del Paso 4, el bloqueo del input provocado en el Paso 5, y el indicador de `isPending` del Paso 6; explicá por qué solo el cálculo derivado costoso (no la actualización del propio input) debería marcarse como no urgente, y cómo Fiber hace posible que React interrumpa ese trabajo para atender la tecla siguiente. Siguiente paso: cerrá el módulo integrando Profiler, memo, virtualización y transitions en el panel completo de RutaFlow. Errores comunes: marcar como no urgente la actualización que debería sentirse instantánea, no usar `isPending` para comunicar que hay trabajo en curso, y aplicar `useTransition` a actualizaciones que ya son baratas y no lo necesitan. Fuentes oficiales: https://react.dev/reference/react/useTransition y https://react.dev/reference/react/useDeferredValue.
-**¿Por qué es importante?** `useTransition`/`useDeferredValue` mantienen la interfaz responsiva ante actualizaciones costosas al priorizar el trabajo urgente sobre el no urgente, gracias a la arquitectura Fiber.
 **Evidencia de aprendizaje:** entrega transición dividida correctamente, bloqueo del input detectado y indicador de pending agregado.
 **Conceptos clave:** actualizaciones no urgentes, arquitectura de trabajo interrumpible.
 
@@ -308,6 +279,38 @@ graph LR
 * Proyecto: proyecto integrador RutaFlow
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+```jsx
+const [isPending, startTransition] = useTransition();
+function manejarCambioFiltro(texto) {
+  setTextoInput(texto); // urgente: el input responde de inmediato
+  startTransition(() => {
+    setEnviosFiltrados(filtrarEnvios(envios, texto)); // no urgente: puede esperar
+  });
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: el input de filtro muestra cada letra tecleada instantáneamente (porque `setTextoInput` no está dentro de la transición), mientras la lista filtrada se actualiza con una prioridad menor, sin bloquear la respuesta del input; `isPending` permite mostrar un indicador sutil mientras esa actualización no urgente está en curso.
+
+#### Paso 5 · Práctica guiada
+Pista: metés ambos `setTextoInput` y `setEnviosFiltrados` dentro de `startTransition` — ese es el fallo deliberado: ahora el propio texto visible del input también se trata como no urgente, y al escribir rápido, las letras tardan en aparecer en el campo.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `setTextoInput` fuera de la transición (urgente) y dejando solo `setEnviosFiltrados` dentro de `startTransition` (no urgente), y agregá un indicador visual sutil basado en `isPending` mientras la lista filtrada todavía se está recalculando.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la transición correctamente dividida del Paso 4, el bloqueo del input provocado en el Paso 5, y el indicador de `isPending` del Paso 6; explicá por qué solo el cálculo derivado costoso (no la actualización del propio input) debería marcarse como no urgente, y cómo Fiber hace posible que React interrumpa ese trabajo para atender la tecla siguiente. Siguiente paso: cerrá el módulo integrando Profiler, memo, virtualización y transitions en el panel completo de RutaFlow. Errores comunes: marcar como no urgente la actualización que debería sentirse instantánea, no usar `isPending` para comunicar que hay trabajo en curso, y aplicar `useTransition` a actualizaciones que ya son baratas y no lo necesitan. Fuentes oficiales: https://react.dev/reference/react/useTransition y https://react.dev/reference/react/useDeferredValue.
+**¿Por qué es importante?** `useTransition`/`useDeferredValue` mantienen la interfaz responsiva ante actualizaciones costosas al priorizar el trabajo urgente sobre el no urgente, gracias a la arquitectura Fiber.
 
 ### Tema 5: Suspense y React.lazy — carga diferida del lado cliente
 

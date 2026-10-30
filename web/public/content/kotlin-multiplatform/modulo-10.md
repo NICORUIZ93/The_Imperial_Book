@@ -14,39 +14,6 @@ Un cambio en `commonMain` compiló perfectamente en el pipeline que solo corría
 #### Paso 3 · Teoría, modelo mental y analogía
 Un build exitoso en un target no garantiza éxito en el otro: un cambio puede usar accidentalmente una API no disponible para todos los targets desde `commonMain` (Módulo 3). Validar ambos targets en cada push detecta la regresión con el contexto todavía fresco. La analogía es probar un vehículo en ciudad y en montaña cada vez que se modifica el motor, no solo en el terreno más cómodo de probar.
 
-#### Paso 4 · Demostración guiada desde cero
-```yaml
-jobs:
-  test-common:
-    steps:
-      - run: ./gradlew :shared:allTests
-  build-android:
-    steps:
-      - run: ./gradlew :androidApp:assembleDebug
-  build-ios:
-    runs-on: macos-latest
-    steps:
-      - run: ./gradlew :shared:linkDebugFrameworkIosArm64
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: el job `build-ios` corre específicamente en un runner `macos-latest` (porque el toolchain de Apple solo está disponible en macOS) y falla el pipeline completo si `commonMain` rompe la compilación de iOS, incluso si `build-android` pasó sin problemas.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá el job `build-ios` del workflow "para ahorrar minutos de runner macOS, que son más caros". Ese es el fallo deliberado: un cambio en `commonMain` que rompe la compilación de iOS ahora pasa el pipeline completo en verde (porque solo se valida Android), y el equipo se entera del build roto recién cuando alguien intenta compilar la app de iOS localmente, días después del merge.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el job `build-ios` con `runs-on: macos-latest`, y agregá el job `test-common` como requisito previo (`needs:`) de ambos builds de plataforma, para que ninguno corra si la lógica compartida ya falla.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el workflow con los tres jobs del Paso 4, el pipeline verde engañoso del Paso 5, y la corrección con `needs:` del Paso 6; explicá por qué ahorrar minutos de runner quitando un target de la validación traslada el costo real a un descubrimiento tardío y más caro. Siguiente paso: automatizá la firma y distribución de cada build con Fastlane. Errores comunes: validar solo un target asumiendo que el otro compilará igual, usar un runner Linux estándar para builds de iOS, y no declarar dependencias explícitas (`needs:`) entre el test de lógica compartida y los builds de plataforma. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ci-cd.html y https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners.
-**¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
 **Evidencia de aprendizaje:** entrega workflow con los tres jobs, pipeline verde engañoso reproducido y dependencias needs corregidas.
 **Conceptos clave:** validar ambos targets en cada push, runner macOS requerido para iOS.
 
@@ -104,6 +71,40 @@ flowchart TD
 
 El proyecto integrador RutaFlow aplica exactamente esta estructura: su módulo `shared` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) se valida en `test-common` antes de que corran los builds de Android e iOS, para que un cambio roto en `SyncEngine` nunca llegue a compilarse como app completa en ninguna de las dos plataformas.
 
+#### Paso 4 · Demostración guiada desde cero
+```yaml
+jobs:
+  test-common:
+    steps:
+      - run: ./gradlew :shared:allTests
+  build-android:
+    steps:
+      - run: ./gradlew :androidApp:assembleDebug
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - run: ./gradlew :shared:linkDebugFrameworkIosArm64
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: el job `build-ios` corre específicamente en un runner `macos-latest` (porque el toolchain de Apple solo está disponible en macOS) y falla el pipeline completo si `commonMain` rompe la compilación de iOS, incluso si `build-android` pasó sin problemas.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá el job `build-ios` del workflow "para ahorrar minutos de runner macOS, que son más caros". Ese es el fallo deliberado: un cambio en `commonMain` que rompe la compilación de iOS ahora pasa el pipeline completo en verde (porque solo se valida Android), y el equipo se entera del build roto recién cuando alguien intenta compilar la app de iOS localmente, días después del merge.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando el job `build-ios` con `runs-on: macos-latest`, y agregá el job `test-common` como requisito previo (`needs:`) de ambos builds de plataforma, para que ninguno corra si la lógica compartida ya falla.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el workflow con los tres jobs del Paso 4, el pipeline verde engañoso del Paso 5, y la corrección con `needs:` del Paso 6; explicá por qué ahorrar minutos de runner quitando un target de la validación traslada el costo real a un descubrimiento tardío y más caro. Siguiente paso: automatizá la firma y distribución de cada build con Fastlane. Errores comunes: validar solo un target asumiendo que el otro compilará igual, usar un runner Linux estándar para builds de iOS, y no declarar dependencias explícitas (`needs:`) entre el test de lógica compartida y los builds de plataforma. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ci-cd.html y https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners.
+**¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
+
 ### Tema 2: Fastlane
 
 #### Paso 1 · Objetivo y preparación
@@ -115,34 +116,6 @@ Cada release a TestFlight se hacía manualmente: alguien del equipo seguía una 
 #### Paso 3 · Teoría, modelo mental y analogía
 Fastlane reduce una secuencia de pasos manuales de release (firma, incremento de build, subida) a un único comando (`fastlane beta`) ejecutado de forma consistente cada vez. La analogía es un asistente automatizado que ejecuta una checklist compleja en el orden correcto, sin depender de que una persona la recuerde.
 
-#### Paso 4 · Demostración guiada desde cero
-```ruby
-# fastlane/Fastfile
-lane :beta do
-  increment_build_number
-  build_app(scheme: "MiApp")
-  upload_to_testflight
-end
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: `fastlane beta` incrementa automáticamente el número de build, compila el scheme correcto, y sube el `.ipa` resultante a TestFlight sin que nadie tenga que recordar manualmente el orden ni el número de build anterior.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá la línea `increment_build_number` del lane "porque ya lo hacíamos a mano antes". Ese es el fallo deliberado: la siguiente vez que alguien corre `fastlane beta` sin recordar incrementar el número de build manualmente antes, la subida falla con el mismo error de "build number ya utilizado" que Fastlane estaba destinado a eliminar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `increment_build_number` al inicio del lane, y agregá una verificación: corré `fastlane beta` dos veces seguidas y confirmá que la segunda subida tiene un número de build distinto a la primera sin intervención manual.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el lane completo del Paso 4, el error de build number duplicado del Paso 5, y la verificación de dos ejecuciones consecutivas del Paso 6; explicá por qué automatizar "casi todos" los pasos de una checklist manual no elimina el riesgo del paso que queda afuera. Siguiente paso: sincronizá el número de versión entre ambas plataformas para evitar confusión al diagnosticar bugs. Errores comunes: automatizar solo algunos pasos de la checklist manual original, firmar con el certificate/provisioning profile equivocado por tener múltiples configurados, y no verificar el resultado de la subida antes de notificar al equipo que el release está listo. Fuentes oficiales: https://docs.fastlane.tools/ y https://docs.fastlane.tools/actions/upload_to_testflight/.
-**¿Por qué es importante?** Fastlane automatiza pasos de release tediosos y propensos a error humano en un único comando consistente y repetible, pero solo elimina el riesgo de los pasos que efectivamente automatiza.
 **Evidencia de aprendizaje:** entrega lane completo, error de build number duplicado reproducido y verificación de dos ejecuciones consecutivas.
 **Conceptos clave:** automatización de pasos de release tediosos y propensos a error.
 
@@ -191,6 +164,35 @@ sequenceDiagram
 ```
 
 **Cuándo no conviene:** si el equipo libera a producción una vez por trimestre y con un solo certificado, el costo de mantener lanes, certificados y perfiles de aprovisionamiento actualizados puede superar el ahorro frente a ejecutar esos pocos pasos a mano desde Xcode; Fastlane paga su propio mantenimiento recién cuando la frecuencia de release es alta. Es un trade-off entre automatizar el pipeline y mantener el propio Fastfile actualizado con cada cambio de Xcode o de las APIs de las tiendas.
+
+#### Paso 4 · Demostración guiada desde cero
+```ruby
+# fastlane/Fastfile
+lane :beta do
+  increment_build_number
+  build_app(scheme: "MiApp")
+  upload_to_testflight
+end
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: `fastlane beta` incrementa automáticamente el número de build, compila el scheme correcto, y sube el `.ipa` resultante a TestFlight sin que nadie tenga que recordar manualmente el orden ni el número de build anterior.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá la línea `increment_build_number` del lane "porque ya lo hacíamos a mano antes". Ese es el fallo deliberado: la siguiente vez que alguien corre `fastlane beta` sin recordar incrementar el número de build manualmente antes, la subida falla con el mismo error de "build number ya utilizado" que Fastlane estaba destinado a eliminar.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `increment_build_number` al inicio del lane, y agregá una verificación: corré `fastlane beta` dos veces seguidas y confirmá que la segunda subida tiene un número de build distinto a la primera sin intervención manual.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el lane completo del Paso 4, el error de build number duplicado del Paso 5, y la verificación de dos ejecuciones consecutivas del Paso 6; explicá por qué automatizar "casi todos" los pasos de una checklist manual no elimina el riesgo del paso que queda afuera. Siguiente paso: sincronizá el número de versión entre ambas plataformas para evitar confusión al diagnosticar bugs. Errores comunes: automatizar solo algunos pasos de la checklist manual original, firmar con el certificate/provisioning profile equivocado por tener múltiples configurados, y no verificar el resultado de la subida antes de notificar al equipo que el release está listo. Fuentes oficiales: https://docs.fastlane.tools/ y https://docs.fastlane.tools/actions/upload_to_testflight/.
+**¿Por qué es importante?** Fastlane automatiza pasos de release tediosos y propensos a error humano en un único comando consistente y repetible, pero solo elimina el riesgo de los pasos que efectivamente automatiza.
 
 ### Tema 3: Versionado compartido
 

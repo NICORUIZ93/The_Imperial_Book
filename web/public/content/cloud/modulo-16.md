@@ -11,37 +11,7 @@ Al finalizar vas a declarar como state machine el mismo flujo que `confirmar-ent
 Hoy, si `confirmar-entrega` falla a mitad de camino (guardó en `ShipmentEvents` pero no llegó a publicar en SNS), lo único que tenés son los logs de CloudWatch del Módulo 12 para reconstruir qué pasó — una state machine lo haría visible por diseño.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una state machine es un tablero de estados con transiciones visibles: `ValidarComando → GuardarEvento → Notificar`, en vez de esa misma secuencia escondida dentro del código imperativo de una sola función.
-#### Paso 4 · Demostración guiada
-```bash
-cat > maquina-confirmar.json <<'EOF'
-{
-  "StartAt": "GuardarEvento",
-  "States": {
-    "GuardarEvento": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::dynamodb:putItem",
-      "Parameters": {"TableName": "ShipmentEvents", "Item": {"shipmentId": {"S.$": "$.shipmentId"}, "sequence": {"N": "1"}, "estado": {"S": "entregado"}}},
-      "Next": "Notificar"
-    },
-    "Notificar": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sns:publish",
-      "Parameters": {"TopicArn": "arn:aws:sns:us-east-1:000000000000:rutaflow-envio-entregado", "Message.$": "$.shipmentId"},
-      "End": true
-    }
-  }
-}
-EOF
-aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --definition file://maquina-confirmar.json --role-arn arn:aws:iam::000000000000:role/sfn-role
-aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:ConfirmarEntregaFlow --input '{"shipmentId":"env-7001"}'
-```
-Resultado esperado: `describe-execution` sobre esa ejecución muestra claramente que pasó por `GuardarEvento` y después por `Notificar` — la misma secuencia que `confirmar-entrega` hace en código, ahora visible como un historial de transiciones, no como líneas de log dispersas.
-#### Paso 5 · Práctica guiada
-Pista: quitá el estado `Notificar` del JSON (dejá `GuardarEvento` con `"End": true`) y volvé a crear la state machine con otro nombre — ese es el fallo deliberado: el flujo "funciona" (guarda el evento), pero la notificación al cliente desaparece silenciosamente porque el estado que la ejecutaba nunca llegó a declararse.
-#### Paso 6 · Práctica independiente
-Agregale un `TimeoutSeconds: 10` al estado `GuardarEvento`, y documentá qué pasaría si DynamoDB tardara más de eso en responder (pista: Step Functions marcaría la ejecución como fallida por `States.Timeout`, no se quedaría esperando indefinidamente).
-#### Paso 7 · Cierre y evidencia
-Entregá la state machine completa ejecutándose, el estado faltante del Paso 5 y el timeout del Paso 6; explicá qué visibilidad ganaste frente a la misma lógica escrita como código imperativo en `confirmar-entrega`. Siguiente paso: errores. Errores comunes: estados sin timeout y efectos duplicados. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html.
+
 **Conceptos clave:** flujo declarado explícitamente como una secuencia de estados, no código imperativo disperso.
 
 ```bash
@@ -73,6 +43,38 @@ Observar una ejecución específica con `describe-execution` muestra exactamente
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Modela validar, asignar y notificar una entrega como estados observables. Ejecuta una entrada válida y otra rechazada, y conserva el historial que identifica qué tarea falló.
+
+#### Paso 4 · Demostración guiada
+```bash
+cat > maquina-confirmar.json <<'EOF'
+{
+  "StartAt": "GuardarEvento",
+  "States": {
+    "GuardarEvento": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {"TableName": "ShipmentEvents", "Item": {"shipmentId": {"S.$": "$.shipmentId"}, "sequence": {"N": "1"}, "estado": {"S": "entregado"}}},
+      "Next": "Notificar"
+    },
+    "Notificar": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {"TopicArn": "arn:aws:sns:us-east-1:000000000000:rutaflow-envio-entregado", "Message.$": "$.shipmentId"},
+      "End": true
+    }
+  }
+}
+EOF
+aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --definition file://maquina-confirmar.json --role-arn arn:aws:iam::000000000000:role/sfn-role
+aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:ConfirmarEntregaFlow --input '{"shipmentId":"env-7001"}'
+```
+Resultado esperado: `describe-execution` sobre esa ejecución muestra claramente que pasó por `GuardarEvento` y después por `Notificar` — la misma secuencia que `confirmar-entrega` hace en código, ahora visible como un historial de transiciones, no como líneas de log dispersas.
+#### Paso 5 · Práctica guiada
+Pista: quitá el estado `Notificar` del JSON (dejá `GuardarEvento` con `"End": true`) y volvé a crear la state machine con otro nombre — ese es el fallo deliberado: el flujo "funciona" (guarda el evento), pero la notificación al cliente desaparece silenciosamente porque el estado que la ejecutaba nunca llegó a declararse.
+#### Paso 6 · Práctica independiente
+Agregale un `TimeoutSeconds: 10` al estado `GuardarEvento`, y documentá qué pasaría si DynamoDB tardara más de eso en responder (pista: Step Functions marcaría la ejecución como fallida por `States.Timeout`, no se quedaría esperando indefinidamente).
+#### Paso 7 · Cierre y evidencia
+Entregá la state machine completa ejecutándose, el estado faltante del Paso 5 y el timeout del Paso 6; explicá qué visibilidad ganaste frente a la misma lógica escrita como código imperativo en `confirmar-entrega`. Siguiente paso: errores. Errores comunes: estados sin timeout y efectos duplicados. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html.
 
 ### Tema 2: Choice state, Retry y Catch
 

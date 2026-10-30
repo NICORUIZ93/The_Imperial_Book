@@ -11,21 +11,7 @@ Al finalizar vas a usar `shipmentId` como correlation ID real para seguir una en
 Una confirmación de entrega cruza API Gateway, la Lambda y, en el flujo asíncrono, la cola `DeliveryCommands` — sin un identificador común, diagnosticar por qué una entrega específica falló significa adivinar basándose en timestamps.
 #### Paso 3 · Teoría, modelo mental y analogía
 `shipmentId` ya es, sin que lo hayas planeado como tal, el correlation ID natural de RutaFlow: el número de guía que debería aparecer en cada línea de log de cada servicio que toca ese envío.
-#### Paso 4 · Demostración guiada
-```bash
-aws logs create-log-group --log-group-name /rutaflow/confirmar-entrega
-aws logs create-log-stream --log-group-name /rutaflow/confirmar-entrega --log-stream-name invocacion-001
-aws logs put-log-events --log-group-name /rutaflow/confirmar-entrega --log-stream-name invocacion-001 \
-  --log-events "[{\"timestamp\":$(date +%s000),\"message\":\"shipmentId=env-4471 accion=confirmar status=delivered\"}]"
-aws logs filter-log-events --log-group-name /rutaflow/confirmar-entrega --filter-pattern "env-4471"
-```
-Resultado esperado: `filter-log-events` devuelve exactamente la línea que mencionaba `env-4471` — con un envío real cruzando varios servicios, este mismo filtro encontraría su rastro completo en cualquiera de ellos, siempre que todos loguearan el mismo `shipmentId`.
-#### Paso 5 · Práctica guiada
-Pista: emití un segundo evento de log SIN `shipmentId` (`"message":"accion=confirmar status=delivered"`) — ese es el fallo deliberado: `filter-log-events --filter-pattern "env-5002"` sobre ese log nunca lo va a encontrar, aunque sea la línea correcta, porque nunca incluyó el identificador que necesitabas para correlacionarlo.
-#### Paso 6 · Práctica independiente
-Emití logs para dos envíos distintos (`env-4471` y `env-5002`) intercalados en el mismo stream, y confirmá que `filter-log-events --filter-pattern "env-5002"` devuelve solo las líneas de ese envío, sin mezclarse con las de `env-4471` aunque estén en el mismo log group.
-#### Paso 7 · Cierre y evidencia
-Entregá el log correlacionado por `shipmentId`, el log sin ID del Paso 5 y su diagnóstico, y la separación limpia del Paso 6; explicá por qué `shipmentId` es un correlation ID mejor que un UUID genérico para este caso. Siguiente paso: métricas. Errores comunes: datos sensibles en logs y texto no estructurado. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html.
+
 **Conceptos clave:** logs centralizados y correlacionables entre servicios distintos.
 
 ```bash
@@ -74,6 +60,22 @@ más útil para buscar directamente en la tabla.
 
 **Límites y decisión de uso:** Un identificador de correlación relaciona eventos, pero no asegura que todos se hayan registrado ni reemplaza una traza completa. Define retención y acceso a logs y evita incluir datos privados solo para facilitar búsquedas.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws logs create-log-group --log-group-name /rutaflow/confirmar-entrega
+aws logs create-log-stream --log-group-name /rutaflow/confirmar-entrega --log-stream-name invocacion-001
+aws logs put-log-events --log-group-name /rutaflow/confirmar-entrega --log-stream-name invocacion-001 \
+  --log-events "[{\"timestamp\":$(date +%s000),\"message\":\"shipmentId=env-4471 accion=confirmar status=delivered\"}]"
+aws logs filter-log-events --log-group-name /rutaflow/confirmar-entrega --filter-pattern "env-4471"
+```
+Resultado esperado: `filter-log-events` devuelve exactamente la línea que mencionaba `env-4471` — con un envío real cruzando varios servicios, este mismo filtro encontraría su rastro completo en cualquiera de ellos, siempre que todos loguearan el mismo `shipmentId`.
+#### Paso 5 · Práctica guiada
+Pista: emití un segundo evento de log SIN `shipmentId` (`"message":"accion=confirmar status=delivered"`) — ese es el fallo deliberado: `filter-log-events --filter-pattern "env-5002"` sobre ese log nunca lo va a encontrar, aunque sea la línea correcta, porque nunca incluyó el identificador que necesitabas para correlacionarlo.
+#### Paso 6 · Práctica independiente
+Emití logs para dos envíos distintos (`env-4471` y `env-5002`) intercalados en el mismo stream, y confirmá que `filter-log-events --filter-pattern "env-5002"` devuelve solo las líneas de ese envío, sin mezclarse con las de `env-4471` aunque estén en el mismo log group.
+#### Paso 7 · Cierre y evidencia
+Entregá el log correlacionado por `shipmentId`, el log sin ID del Paso 5 y su diagnóstico, y la separación limpia del Paso 6; explicá por qué `shipmentId` es un correlation ID mejor que un UUID genérico para este caso. Siguiente paso: métricas. Errores comunes: datos sensibles en logs y texto no estructurado. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html.
+
 ### Tema 2: Metric filters y alarmas
 
 #### Paso 1 · Objetivo y preparación
@@ -82,23 +84,7 @@ Al finalizar vas a convertir el error de validación real de `confirmar-entrega`
 RutaFlow necesita saber si los comandos de entrega inválidos empiezan a dispararse en volumen (señal de un bug en la app del conductor) sin que nadie tenga que leer logs manualmente todo el día.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un metric filter transforma una marca de texto repetida en los logs en un contador numérico observable, sin que tengas que instrumentar manualmente cada punto del código.
-#### Paso 4 · Demostración guiada
-```bash
-aws logs put-metric-filter --log-group-name /rutaflow/confirmar-entrega --filter-name ComandosInvalidos \
-  --filter-pattern "\"comando de entrega inválido\"" \
-  --metric-transformations metricName=ComandosInvalidos,metricNamespace=RutaFlow,metricValue=1
-aws logs put-log-events --log-group-name /rutaflow/confirmar-entrega --log-stream-name invocacion-001 \
-  --log-events "[{\"timestamp\":$(date +%s000),\"message\":\"shipmentId=env-6001 comando de entrega inválido\"}]"
-aws cloudwatch get-metric-statistics --namespace RutaFlow --metric-name ComandosInvalidos \
-  --start-time "$(date -u -v-5M +%Y-%m-%dT%H:%M:%S)" --end-time "$(date -u +%Y-%m-%dT%H:%M:%S)" --period 60 --statistics Sum
-```
-Resultado esperado: `get-metric-statistics` muestra `Sum: 1` — la línea de log con exactamente ese texto incrementó la métrica `ComandosInvalidos` sin que ninguna Lambda tuviera que llamar explícitamente a `put-metric-data`.
-#### Paso 5 · Práctica guiada
-Pista: emití un log con un error distinto (`"message":"shipmentId=env-6002 recipientPin invalido"`, sin la frase exacta "comando de entrega inválido") — ese es el fallo deliberado: la métrica `ComandosInvalidos` NO sube, porque el filtro compara el patrón de texto literal, no el significado del error; un error real de validación puede pasar completamente desapercibido si el mensaje no coincide con el patrón exacto configurado.
-#### Paso 6 · Práctica independiente
-Creá una alarma sobre `ComandosInvalidos` con `aws cloudwatch put-metric-alarm --alarm-name RutaFlowComandosInvalidos --namespace RutaFlow --metric-name ComandosInvalidos --statistic Sum --period 300 --threshold 5 --comparison-operator GreaterThanThreshold --evaluation-periods 1`, y documentá qué umbral tendría sentido real (¿5 en 5 minutos es demasiado sensible o demasiado laxo para esta alarma?).
-#### Paso 7 · Cierre y evidencia
-Entregá el metric filter funcionando, el error que no coincidió en el Paso 5, y la alarma del Paso 6; explicá por qué el patrón de texto exacto es tanto la fortaleza como el punto débil de un metric filter. Siguiente paso: trazas. Errores comunes: umbral sin objetivo y alarmas ruidosas. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Metric_Streams.html.
+
 **Conceptos clave:** convertir patrones de texto en logs a métricas numéricas monitoreables, más económico que métricas custom manuales.
 
 ```bash
@@ -125,6 +111,24 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Genera un error controlado al confirmar una entrega y haz que active el filtro y la alarma definidos. Registra la demora observada y el enlace al diagnóstico que recibirá la persona de guardia.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws logs put-metric-filter --log-group-name /rutaflow/confirmar-entrega --filter-name ComandosInvalidos \
+  --filter-pattern "\"comando de entrega inválido\"" \
+  --metric-transformations metricName=ComandosInvalidos,metricNamespace=RutaFlow,metricValue=1
+aws logs put-log-events --log-group-name /rutaflow/confirmar-entrega --log-stream-name invocacion-001 \
+  --log-events "[{\"timestamp\":$(date +%s000),\"message\":\"shipmentId=env-6001 comando de entrega inválido\"}]"
+aws cloudwatch get-metric-statistics --namespace RutaFlow --metric-name ComandosInvalidos \
+  --start-time "$(date -u -v-5M +%Y-%m-%dT%H:%M:%S)" --end-time "$(date -u +%Y-%m-%dT%H:%M:%S)" --period 60 --statistics Sum
+```
+Resultado esperado: `get-metric-statistics` muestra `Sum: 1` — la línea de log con exactamente ese texto incrementó la métrica `ComandosInvalidos` sin que ninguna Lambda tuviera que llamar explícitamente a `put-metric-data`.
+#### Paso 5 · Práctica guiada
+Pista: emití un log con un error distinto (`"message":"shipmentId=env-6002 recipientPin invalido"`, sin la frase exacta "comando de entrega inválido") — ese es el fallo deliberado: la métrica `ComandosInvalidos` NO sube, porque el filtro compara el patrón de texto literal, no el significado del error; un error real de validación puede pasar completamente desapercibido si el mensaje no coincide con el patrón exacto configurado.
+#### Paso 6 · Práctica independiente
+Creá una alarma sobre `ComandosInvalidos` con `aws cloudwatch put-metric-alarm --alarm-name RutaFlowComandosInvalidos --namespace RutaFlow --metric-name ComandosInvalidos --statistic Sum --period 300 --threshold 5 --comparison-operator GreaterThanThreshold --evaluation-periods 1`, y documentá qué umbral tendría sentido real (¿5 en 5 minutos es demasiado sensible o demasiado laxo para esta alarma?).
+#### Paso 7 · Cierre y evidencia
+Entregá el metric filter funcionando, el error que no coincidió en el Paso 5, y la alarma del Paso 6; explicá por qué el patrón de texto exacto es tanto la fortaleza como el punto débil de un metric filter. Siguiente paso: trazas. Errores comunes: umbral sin objetivo y alarmas ruidosas. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Metric_Streams.html.
 
 ### Tema 3: Diagnóstico sistemático y X-Ray
 

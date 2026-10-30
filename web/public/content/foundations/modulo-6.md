@@ -14,29 +14,6 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 Un activo es lo que hay que proteger (que el estado de un envío no se corrompa); una amenaza es lo que podría romperlo (un operador que fuerza una transición inválida); STRIDE es la checklist que te hace preguntar por seis formas distintas de ataque, no solo la obvia.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```bash
-python3 -c "
-from examples.rutaflow.foundation.domain import ShipmentStatus, transition
-transition(ShipmentStatus.CREATED, ShipmentStatus.DELIVERED)
-"
-```
-Resultado esperado: `ValueError: invalid shipment transition: ShipmentStatus.CREATED -> ShipmentStatus.DELIVERED` — el código ya rechaza saltarse `ASSIGNED` y `OUT_FOR_DELIVERY`. Esa excepción es, en los términos de este Tema, un **control** real contra la amenaza de **Tampering** (manipulación del estado del envío).
-
-#### Paso 5 · Práctica guiada
-Pista: editá `ALLOWED_TRANSITIONS` para agregar `ShipmentStatus.CREATED: {ShipmentStatus.DELIVERED}` — ese es el fallo deliberado: ahora cualquiera puede marcar un envío como entregado sin que nunca haya sido asignado a un conductor ni haya salido a reparto, exactamente la amenaza de Tampering que el diseño original evitaba.
-
-#### Paso 6 · Práctica independiente
-Revertí el cambio del Paso 5, y completá un threat model mínimo de `domain.py`: por cada una de las 6 letras de STRIDE, escribí si aplica o no a `transition()` y por qué (pista: Repudiation aplica si nadie registra quién pidió el cambio de estado — `domain.py` no lo hace hoy, es un hallazgo real).
-
-#### Paso 7 · Cierre y evidencia
-Entregá la excepción real del Paso 4, el control roto del Paso 5, y el threat model STRIDE del Paso 6; explicá qué amenaza real previene `ALLOWED_TRANSITIONS` y cuál NO cubre todavía. Errores comunes: tratar un control existente como mitigación completa sin medir el riesgo residual, modelar solo el camino feliz y olvidar actores internos (un operador, no solo un atacante externo), y listar amenazas STRIDE sin asignarles impacto, probabilidad ni dueño. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html.
-**¿Por qué es importante?** Porque un control que nadie ligó a una amenaza concreta, como `ALLOWED_TRANSITIONS`, es indistinguible de una regla arbitraria: sin el modelo STRIDE no se sabe qué riesgo real reduce ni cuál deja sin cubrir.
 **Escenario:** Modelaste STRIDE sobre entregas. Tampering (alterar envío de CREATED a DELIVERED sin pasar por ASSIGNED) tiene impacto alto; Repudiation (negar que un operador confirmó) es probable pero menor. ¿Cuál amenaza ataca primero?
 
 **Tu tarea:**
@@ -80,6 +57,30 @@ flowchart LR
     RISK --> CONTROL["control y propietario"] --> RESIDUAL["riesgo residual"]
 ```
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```bash
+python3 -c "
+from examples.rutaflow.foundation.domain import ShipmentStatus, transition
+transition(ShipmentStatus.CREATED, ShipmentStatus.DELIVERED)
+"
+```
+Resultado esperado: `ValueError: invalid shipment transition: ShipmentStatus.CREATED -> ShipmentStatus.DELIVERED` — el código ya rechaza saltarse `ASSIGNED` y `OUT_FOR_DELIVERY`. Esa excepción es, en los términos de este Tema, un **control** real contra la amenaza de **Tampering** (manipulación del estado del envío).
+
+#### Paso 5 · Práctica guiada
+Pista: editá `ALLOWED_TRANSITIONS` para agregar `ShipmentStatus.CREATED: {ShipmentStatus.DELIVERED}` — ese es el fallo deliberado: ahora cualquiera puede marcar un envío como entregado sin que nunca haya sido asignado a un conductor ni haya salido a reparto, exactamente la amenaza de Tampering que el diseño original evitaba.
+
+#### Paso 6 · Práctica independiente
+Revertí el cambio del Paso 5, y completá un threat model mínimo de `domain.py`: por cada una de las 6 letras de STRIDE, escribí si aplica o no a `transition()` y por qué (pista: Repudiation aplica si nadie registra quién pidió el cambio de estado — `domain.py` no lo hace hoy, es un hallazgo real).
+
+#### Paso 7 · Cierre y evidencia
+Entregá la excepción real del Paso 4, el control roto del Paso 5, y el threat model STRIDE del Paso 6; explicá qué amenaza real previene `ALLOWED_TRANSITIONS` y cuál NO cubre todavía. Errores comunes: tratar un control existente como mitigación completa sin medir el riesgo residual, modelar solo el camino feliz y olvidar actores internos (un operador, no solo un atacante externo), y listar amenazas STRIDE sin asignarles impacto, probabilidad ni dueño. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html.
+**¿Por qué es importante?** Porque un control que nadie ligó a una amenaza concreta, como `ALLOWED_TRANSITIONS`, es indistinguible de una regla arbitraria: sin el modelo STRIDE no se sabe qué riesgo real reduce ni cuál deja sin cubrir.
 ### Tema 2: Identidad, contraseñas, sesiones y autorización
 
 #### Paso 1 · Objetivo y preparación
@@ -91,40 +92,6 @@ Que un conductor haya iniciado sesión correctamente (autenticación) no signifi
 #### Paso 3 · Teoría, modelo mental y analogía
 Autenticación responde "¿quién eres?"; autorización responde "¿podés hacer esto sobre ESTE recurso puntual?" — mostrar tu identificación en la puerta del edificio no te da llave de todas las oficinas.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-def confirmar_entrega(conductor_id: str, envio: dict, repositorio):
-    if envio["conductor_asignado"] != conductor_id:
-        raise PermissionError(f"{conductor_id} no está asignado a este envío")
-    repositorio.marcar_entregado(envio["id"])
-
-envio = {"id": "RF-4471", "conductor_asignado": "c-891"}
-confirmar_entrega("c-891", envio, repositorio=FakeRepo())
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: la llamada con `c-891` (el conductor real asignado) se ejecuta sin error — la autorización depende del dato del envío, no solo de que el conductor haya iniciado sesión.
-
-#### Paso 5 · Práctica guiada
-Pista: llamá `confirmar_entrega("c-999", envio, repositorio)` (un conductor autenticado, pero distinto al asignado) — ese es el fallo deliberado: `PermissionError`, aunque `c-999` tenga una sesión válida como cualquier otro conductor. Estar autenticado nunca implica estar autorizado para este envío puntual.
-
-#### Paso 6 · Práctica independiente
-Probá tres casos: conductor asignado (debe pasar), conductor distinto (debe fallar), y conductor vacío/`None` (caso límite — decidí y documentá si debería fallar igual que el caso anterior o con un error distinto).
-
-#### Paso 7 · Cierre y evidencia
-Entregá la confirmación exitosa del Paso 4, el `PermissionError` del Paso 5, y los tres casos del Paso 6; explicá por qué "ocultar el botón de confirmar en la app" nunca sustituiría esta verificación en el servidor. Errores comunes: confundir autenticación con autorización (asumir que estar logueado alcanza), ocultar la opción en la interfaz en vez de verificar en el servidor, y comparar contraseñas o tokens sin una función de tiempo constante. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html.
-**¿Por qué es importante?** Porque un conductor autenticado que puede confirmar la entrega de cualquier envío, no solo la suya, es una falla de autorización real, con fraude e impacto operativo concretos, no un detalle de implementación.
 **Escenario:** Un conductor confirmó 200 entregas falsas. Necesitas revertir exactamente esas entregas, probar que fue por ese conductor, y que nadie más accedió con sus credenciales en ese período.
 
 **Tu tarea:**
@@ -190,6 +157,41 @@ flowchart LR
 
 El proyecto integrador Fundamentos aplica la misma separación: en el gestor de tareas CLI, `tareas.py` guarda qué usuario creó cada tarea, y una futura función `completar(tarea_id, usuario)` tendría que verificar autorización (¿esta tarea es del usuario que la pide completar?) exactamente igual que `confirmar_entrega` verifica que el conductor sea el asignado — autenticarse para usar el CLI nunca implica poder modificar la tarea de otra persona.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+def confirmar_entrega(conductor_id: str, envio: dict, repositorio):
+    if envio["conductor_asignado"] != conductor_id:
+        raise PermissionError(f"{conductor_id} no está asignado a este envío")
+    repositorio.marcar_entregado(envio["id"])
+
+envio = {"id": "RF-4471", "conductor_asignado": "c-891"}
+confirmar_entrega("c-891", envio, repositorio=FakeRepo())
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: la llamada con `c-891` (el conductor real asignado) se ejecuta sin error — la autorización depende del dato del envío, no solo de que el conductor haya iniciado sesión.
+
+#### Paso 5 · Práctica guiada
+Pista: llamá `confirmar_entrega("c-999", envio, repositorio)` (un conductor autenticado, pero distinto al asignado) — ese es el fallo deliberado: `PermissionError`, aunque `c-999` tenga una sesión válida como cualquier otro conductor. Estar autenticado nunca implica estar autorizado para este envío puntual.
+
+#### Paso 6 · Práctica independiente
+Probá tres casos: conductor asignado (debe pasar), conductor distinto (debe fallar), y conductor vacío/`None` (caso límite — decidí y documentá si debería fallar igual que el caso anterior o con un error distinto).
+
+#### Paso 7 · Cierre y evidencia
+Entregá la confirmación exitosa del Paso 4, el `PermissionError` del Paso 5, y los tres casos del Paso 6; explicá por qué "ocultar el botón de confirmar en la app" nunca sustituiría esta verificación en el servidor. Errores comunes: confundir autenticación con autorización (asumir que estar logueado alcanza), ocultar la opción en la interfaz en vez de verificar en el servidor, y comparar contraseñas o tokens sin una función de tiempo constante. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html.
+**¿Por qué es importante?** Porque un conductor autenticado que puede confirmar la entrega de cualquier envío, no solo la suya, es una falla de autorización real, con fraude e impacto operativo concretos, no un detalle de implementación.
 ### Tema 3: Criptografía aplicada, TLS, claves y secretos
 
 #### Paso 1 · Objetivo y preparación
@@ -201,41 +203,6 @@ El comando `{"shipmentId": "RF-4471", "recipientPin": "837201"}` viaja por una c
 #### Paso 3 · Teoría, modelo mental y analogía
 Un MAC (HMAC) usa un secreto compartido para producir una "huella" ligada al contenido exacto: si el contenido cambia una sola letra, la huella ya no coincide — es un sello de lacre con una firma secreta, no un simple hash público que cualquiera podría recalcular.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Crea `ejemplo.py` con el siguiente código completo y guárdalo en la carpeta del laboratorio:
-```python
-import hmac, hashlib, json
-
-SECRET = b"clave-compartida-rutaflow"
-comando = {"shipmentId": "RF-4471", "recipientPin": "837201"}
-payload = json.dumps(comando, sort_keys=True).encode()
-firma = hmac.new(SECRET, payload, hashlib.sha256).hexdigest()
-print(hmac.compare_digest(firma, hmac.new(SECRET, payload, hashlib.sha256).hexdigest()))
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: `True` — la firma calculada sobre el payload exacto coincide, confirmando que nadie lo modificó entre que se firmó y que se verificó.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `recipientPin` a `"999999"` DESPUÉS de calcular `firma`, y volvé a verificar contra el payload modificado — ese es el fallo deliberado: `compare_digest` devuelve `False`, porque la firma quedó ligada al contenido original, no al campo `shipmentId` solamente; cualquier cambio, aunque sea de un dígito, rompe la verificación.
-
-#### Paso 6 · Práctica independiente
-Repetí el Paso 4 pero calculando la firma con `hashlib.sha256(payload).hexdigest()` (un hash simple, sin `SECRET`) — documentá por qué cualquiera que intercepte el comando podría recalcular ESA firma y falsificar un comando nuevo, algo que no puede hacer sin conocer `SECRET` en la versión HMAC.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la verificación exitosa del Paso 4, la detección de manipulación del Paso 5, y la comparación hash-vs-HMAC del Paso 6; explicá por qué "Base64" o un hash simple no sirven como sustituto de un MAC cuando necesitás autenticidad, no solo detección de cambios. Errores comunes: confundir codificación (Base64) con cifrado, usar un hash sin secreto donde se necesita autenticidad, y guardar la clave de firma junto al dato que protege. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html.
-**¿Por qué es importante?** Porque una firma HMAC calculada con la clave correcta es la diferencia entre un comando de entrega verificable y uno que cualquiera en el camino podría falsificar sin que nadie lo note.
 **Escenario:** Tu aplicación necesita acceder a DynamoDB. ¿Dónde guardas la credencial de AWS?
 
 **Tu tarea:**
@@ -283,6 +250,42 @@ flowchart LR
 
 Esta misma técnica HMAC es la que protegería al proyecto integrador Fundamentos si su CLI alguna vez enviara comandos a un servicio remoto: la firma viviría junto a `almacenamiento.py`, nunca como una constante pegada en `cli.py`, y `SECRET` nunca se versiona en el repositorio — se lee desde una variable de entorno, igual que `database_url` en el ejemplo de este Tema.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Crea `ejemplo.py` con el siguiente código completo y guárdalo en la carpeta del laboratorio:
+```python
+import hmac, hashlib, json
+
+SECRET = b"clave-compartida-rutaflow"
+comando = {"shipmentId": "RF-4471", "recipientPin": "837201"}
+payload = json.dumps(comando, sort_keys=True).encode()
+firma = hmac.new(SECRET, payload, hashlib.sha256).hexdigest()
+print(hmac.compare_digest(firma, hmac.new(SECRET, payload, hashlib.sha256).hexdigest()))
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: `True` — la firma calculada sobre el payload exacto coincide, confirmando que nadie lo modificó entre que se firmó y que se verificó.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá `recipientPin` a `"999999"` DESPUÉS de calcular `firma`, y volvé a verificar contra el payload modificado — ese es el fallo deliberado: `compare_digest` devuelve `False`, porque la firma quedó ligada al contenido original, no al campo `shipmentId` solamente; cualquier cambio, aunque sea de un dígito, rompe la verificación.
+
+#### Paso 6 · Práctica independiente
+Repetí el Paso 4 pero calculando la firma con `hashlib.sha256(payload).hexdigest()` (un hash simple, sin `SECRET`) — documentá por qué cualquiera que intercepte el comando podría recalcular ESA firma y falsificar un comando nuevo, algo que no puede hacer sin conocer `SECRET` en la versión HMAC.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la verificación exitosa del Paso 4, la detección de manipulación del Paso 5, y la comparación hash-vs-HMAC del Paso 6; explicá por qué "Base64" o un hash simple no sirven como sustituto de un MAC cuando necesitás autenticidad, no solo detección de cambios. Errores comunes: confundir codificación (Base64) con cifrado, usar un hash sin secreto donde se necesita autenticidad, y guardar la clave de firma junto al dato que protege. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html.
+**¿Por qué es importante?** Porque una firma HMAC calculada con la clave correcta es la diferencia entre un comando de entrega verificable y uno que cualquiera en el camino podría falsificar sin que nadie lo note.
 ### Tema 4: Validación, vulnerabilidades web, privacidad y respuesta
 
 #### Paso 1 · Objetivo y preparación
@@ -294,38 +297,6 @@ Cuando un conductor escribe "dejado con el portero" como nota de una entrega, es
 #### Paso 3 · Teoría, modelo mental y analogía
 Validar decide qué entra; el encoding contextual decide cómo se interpreta al mostrarlo — `textContent` trata el valor siempre como texto, `innerHTML` lo interpreta como marcado ejecutable si lo dejás pasar.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Crea `index.html` con el contenido siguiente y guárdalo en la carpeta del laboratorio:
-```html
-<div id="nota"></div>
-<script>
-  const notaDelConductor = "dejado con el portero";
-  document.getElementById("nota").textContent = notaDelConductor;
-</script>
-```
-
-**Ejecuta el servidor de archivos desde esa carpeta:**
-```bash
-python3 -m http.server 8000
-```
-Abre `http://localhost:8000/index.html`. Observa el texto y revisa el DOM con DevTools; el navegador interpreta HTML, no el intérprete Python. Detén el servidor con Ctrl+C.
-
-Resultado esperado: el `div` muestra literalmente el texto "dejado con el portero" — `textContent` nunca interpreta el contenido como HTML, sin importar qué caracteres incluya.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá la nota a `"<img src=x onerror=alert('xss')>"` y reemplazá `textContent` por `innerHTML` en la misma línea — ese es el fallo deliberado: el navegador ejecuta el `onerror` apenas la imagen falla en cargar, demostrando una inyección XSS real a partir de una nota de entrega que nadie validó ni codificó correctamente al mostrarla.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `textContent`, y además agregá una validación de longitud/formato en el servidor (por ejemplo, máximo 200 caracteres, sin etiquetas `<` ni `>`) antes de guardar la nota — documentá por qué ambas capas (validar al guardar, codificar al mostrar) son necesarias y ninguna sustituye a la otra.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la nota mostrada de forma segura del Paso 4, la ejecución de XSS provocada del Paso 5, y las dos capas de defensa del Paso 6; explicá por qué "eliminar caracteres malos" de forma genérica no es lo mismo que validar según el dominio real del campo. Errores comunes: validar con una lista negra genérica de caracteres en vez del dominio real del campo, usar `innerHTML` para mostrar contenido no confiable, y tratar CORS como si fuera autenticación. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html.
-**¿Por qué es importante?** Porque una nota de entrega mostrada con `innerHTML` en vez de `textContent` convierte un campo de texto inocuo en una vía real de ejecución de código en el navegador del cliente.
 **Escenario:** Tu Angular app carga scripts de `analytics.example.com`. Un atacante cambia el DNS local e inyecta `<script>robar datos</script>`.
 
 **Tu tarea:**
@@ -373,6 +344,39 @@ flowchart LR
 
 El proyecto integrador Fundamentos aplica esta misma validación de entrada en `tareas.py`: antes de guardar una descripción de tarea ejecutando el CLI con Python 3 (`python3 cli.py add "<descripción>"`), el código debe rechazar descripciones vacías o con longitud excesiva en el servidor/lógica (no solo en la interfaz), exactamente la misma regla de "validar según el dominio real del campo" que aplica a la nota de entrega de RutaFlow de este Tema.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Crea `index.html` con el contenido siguiente y guárdalo en la carpeta del laboratorio:
+```html
+<div id="nota"></div>
+<script>
+  const notaDelConductor = "dejado con el portero";
+  document.getElementById("nota").textContent = notaDelConductor;
+</script>
+```
+
+**Ejecuta el servidor de archivos desde esa carpeta:**
+```bash
+python3 -m http.server 8000
+```
+Abre `http://localhost:8000/index.html`. Observa el texto y revisa el DOM con DevTools; el navegador interpreta HTML, no el intérprete Python. Detén el servidor con Ctrl+C.
+
+Resultado esperado: el `div` muestra literalmente el texto "dejado con el portero" — `textContent` nunca interpreta el contenido como HTML, sin importar qué caracteres incluya.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá la nota a `"<img src=x onerror=alert('xss')>"` y reemplazá `textContent` por `innerHTML` en la misma línea — ese es el fallo deliberado: el navegador ejecuta el `onerror` apenas la imagen falla en cargar, demostrando una inyección XSS real a partir de una nota de entrega que nadie validó ni codificó correctamente al mostrarla.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a `textContent`, y además agregá una validación de longitud/formato en el servidor (por ejemplo, máximo 200 caracteres, sin etiquetas `<` ni `>`) antes de guardar la nota — documentá por qué ambas capas (validar al guardar, codificar al mostrar) son necesarias y ninguna sustituye a la otra.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la nota mostrada de forma segura del Paso 4, la ejecución de XSS provocada del Paso 5, y las dos capas de defensa del Paso 6; explicá por qué "eliminar caracteres malos" de forma genérica no es lo mismo que validar según el dominio real del campo. Errores comunes: validar con una lista negra genérica de caracteres en vez del dominio real del campo, usar `innerHTML` para mostrar contenido no confiable, y tratar CORS como si fuera autenticación. Fuentes oficiales: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html.
+**¿Por qué es importante?** Porque una nota de entrega mostrada con `innerHTML` en vez de `textContent` convierte un campo de texto inocuo en una vía real de ejecución de código en el navegador del cliente.
 
 ### Tema 5: Ingeniería social y phishing: detectar señales en enlaces y remitentes
 

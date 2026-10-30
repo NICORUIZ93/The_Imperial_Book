@@ -99,6 +99,33 @@ Testear `DetalleEnvio` end-to-end exigiría tener un backend real corriendo con 
 #### Paso 3 · Teoría, modelo mental y analogía
 MSW intercepta peticiones a nivel de red; el código de producción hace sus peticiones exactamente igual que en producción, sin saber que está siendo interceptado — un servidor de pruebas que se hace pasar transparentemente por el real.
 
+**Evidencia de aprendizaje:** entrega handler de éxito, fuga de handler sin reset detectada y prueba del caso de error.
+**Conceptos clave:** interceptación a nivel de red, sin conocimiento del código de producción.
+
+MSW intercepta peticiones HTTP a nivel de red (registrando un service worker o, en entornos de prueba, interceptando directamente las llamadas de red del entorno de ejecución) en vez de parchear directamente la función `fetch` global del código de la aplicación (`vi.fn()` o un mock manual de `fetch`, un enfoque alternativo pero más frágil, dado que requiere que el mock replique exactamente la forma en que el código de producción invoca `fetch`); con MSW, el código de producción realiza sus peticiones exactamente igual que en producción real, sin ninguna modificación ni conocimiento de que está siendo interceptado, siendo el propio MSW el que intercepta esas peticiones a nivel de red antes de que lleguen a un servidor real.
+
+`setupServer(http.get('/api/usuarios', () => HttpResponse.json([{ id: 1, nombre: 'Ana' }])))` define un manejador que responde a peticiones GET hacia esa ruta específica con datos simulados; `server.listen()` activa la interceptación antes de que las pruebas corran, `server.resetHandlers()` restaura los manejadores por defecto entre pruebas individuales (evitando que un manejador personalizado definido en una prueba específica afecte accidentalmente a pruebas posteriores), y `server.close()` detiene la interceptación al finalizar toda la suite.
+
+**Analogía:** MSW es como un servidor de pruebas que se hace pasar de forma completamente transparente por el servidor real en una red aislada, de modo que el código bajo prueba nunca se entera de que está hablando con un impostor, en vez de reemplazar directamente la línea telefónica del código bajo prueba con un cable falso que requiere modificar el propio código para usarlo.
+
+**Código del ejemplo:**
+
+```js
+const server = setupServer(
+  http.get('/api/usuarios', () => HttpResponse.json([{ id: 1, nombre: 'Ana' }]))
+);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+* Ejecutar: `npm test`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
+
+**Límites y decisión de uso:** MSW controla la red de la prueba, pero no demuestra que el backend real cumpla el contrato. Mantén pruebas contractuales o de integración y configura handlers que rechacen solicitudes no previstas para no ocultar rutas equivocadas.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const server = setupServer(
@@ -129,32 +156,6 @@ Corregí el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agre
 #### Paso 7 · Cierre y evidencia
 Entregá el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explicá por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
 **¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo probar el código de producción exactamente como se ejecutaría en producción real, sin mockear `fetch` de forma frágil.
-**Evidencia de aprendizaje:** entrega handler de éxito, fuga de handler sin reset detectada y prueba del caso de error.
-**Conceptos clave:** interceptación a nivel de red, sin conocimiento del código de producción.
-
-MSW intercepta peticiones HTTP a nivel de red (registrando un service worker o, en entornos de prueba, interceptando directamente las llamadas de red del entorno de ejecución) en vez de parchear directamente la función `fetch` global del código de la aplicación (`vi.fn()` o un mock manual de `fetch`, un enfoque alternativo pero más frágil, dado que requiere que el mock replique exactamente la forma en que el código de producción invoca `fetch`); con MSW, el código de producción realiza sus peticiones exactamente igual que en producción real, sin ninguna modificación ni conocimiento de que está siendo interceptado, siendo el propio MSW el que intercepta esas peticiones a nivel de red antes de que lleguen a un servidor real.
-
-`setupServer(http.get('/api/usuarios', () => HttpResponse.json([{ id: 1, nombre: 'Ana' }])))` define un manejador que responde a peticiones GET hacia esa ruta específica con datos simulados; `server.listen()` activa la interceptación antes de que las pruebas corran, `server.resetHandlers()` restaura los manejadores por defecto entre pruebas individuales (evitando que un manejador personalizado definido en una prueba específica afecte accidentalmente a pruebas posteriores), y `server.close()` detiene la interceptación al finalizar toda la suite.
-
-**Analogía:** MSW es como un servidor de pruebas que se hace pasar de forma completamente transparente por el servidor real en una red aislada, de modo que el código bajo prueba nunca se entera de que está hablando con un impostor, en vez de reemplazar directamente la línea telefónica del código bajo prueba con un cable falso que requiere modificar el propio código para usarlo.
-
-**Código del ejemplo:**
-
-```js
-const server = setupServer(
-  http.get('/api/usuarios', () => HttpResponse.json([{ id: 1, nombre: 'Ana' }]))
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-```
-
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
-
-**Límites y decisión de uso:** MSW controla la red de la prueba, pero no demuestra que el backend real cumpla el contrato. Mantén pruebas contractuales o de integración y configura handlers que rechacen solicitudes no previstas para no ocultar rutas equivocadas.
 
 ### Tema 3: Testing de hooks personalizados
 

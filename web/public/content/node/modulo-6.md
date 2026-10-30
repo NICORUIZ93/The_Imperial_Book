@@ -17,6 +17,34 @@ En una aplicación real, una fuga de la base de usuarios no debe revelar contras
 
 Hashing no es cifrado reversible: se guarda una huella y se compara otra huella. `scrypt` deriva una clave con trabajo configurable; el salt hace que dos usuarios con la misma contraseña produzcan valores distintos. Es como una cerradura que se puede comprobar, pero no abrir leyendo el registro.
 
+Ya puedes separar almacenamiento de credenciales y verificación. El siguiente tema creará tokens firmados en otra carpeta.
+
+**Errores comunes:** usar `md5`; reutilizar salt; cifrar esperando descifrar; aceptar contraseñas triviales; imprimir el hash en logs de producción.
+
+**Fuentes oficiales:** [`node:crypto`](https://nodejs.org/api/crypto.html) y [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
+
+**Conceptos clave:** hashing frente a cifrado, funciones lentas deliberadamente, `bcrypt`/`argon2`.
+
+Una contraseña nunca debe almacenarse en texto plano, ni siquiera cifrada (encriptada) de forma reversible: debe almacenarse hasheada, un proceso unidireccional que transforma la contraseña en una cadena de longitud fija que no puede revertirse matemáticamente de vuelta a la contraseña original. La distinción entre hashing y cifrado es crucial: el cifrado está diseñado para ser reversible (existe una clave que permite recuperar el texto original), apropiado para datos que legítimamente necesitan recuperarse; el hashing está diseñado deliberadamente para ser irreversible, apropiado precisamente para contraseñas, donde el sistema nunca necesita "recordar" la contraseña original, solo verificar si un intento de login coincide con ella.
+
+`bcrypt` y `argon2` son algoritmos de hashing diseñados específicamente para contraseñas, con una propiedad deliberada y contraintuitiva: son lentos a propósito, y ese costo computacional es ajustable mediante un parámetro de "factor de costo" (el `10` en `bcrypt.hash(contraseña, 10)`) que se puede aumentar con el tiempo a medida que el hardware se vuelve más rápido, manteniendo el costo de un ataque de fuerza bruta (probar millones de contraseñas candidatas) prohibitivamente alto incluso con hardware moderno especializado en cómputo paralelo masivo. Esto contrasta directamente con funciones hash de propósito general como SHA-256, diseñadas para ser extremadamente rápidas (apropiado para verificar integridad de archivos, por ejemplo), una propiedad que las hace inadecuadas específicamente para contraseñas, porque esa misma velocidad facilita enormemente los ataques de fuerza bruta.
+
+`bcrypt.compare(contraseñaIngresada, hashAlmacenado)` verifica un intento de login sin necesitar revertir el hash almacenado: internamente, hashea la contraseña ingresada con los mismos parámetros usados originalmente (incluyendo la "sal" aleatoria embebida en el propio hash almacenado, que previene que dos usuarios con la misma contraseña produzcan el mismo hash) y compara el resultado con el hash almacenado. Nunca construir un algoritmo propio de hashing de contraseñas, ni siquiera "solo por curiosidad" en un proyecto pequeño, es una recomendación categórica de la industria: diseñar criptografía segura requiere experiencia especializada extremadamente profunda para evitar vulnerabilidades sutiles que un atacante experimentado explotaría, y bibliotecas como bcrypt/argon2 ya han sido revisadas y probadas exhaustivamente por la comunidad de seguridad durante años.
+
+**Analogía:** hashear una contraseña es como triturar un documento en una trituradora industrial de alta seguridad: es fácil verificar que un fragmento específico coincide con el resultado esperado de triturar un documento particular, pero es prácticamente imposible reconstruir el documento original completo a partir de los fragmentos resultantes. Que bcrypt sea deliberadamente lento es como usar una trituradora que además funciona más despacio a propósito, dificultando que alguien pueda triturar (y probar) millones de documentos candidatos por segundo.
+
+**¿Por qué es importante?** El hashing correcto de contraseñas es la defensa fundamental contra el robo masivo de credenciales en caso de una brecha de la base de datos; usar bcrypt/argon2 en vez de una implementación propia es una decisión de seguridad no negociable en cualquier sistema de autenticación real.
+
+**Código del ejemplo:**
+
+```js
+import bcrypt from "bcrypt";
+const hash = await bcrypt.hash(contraseñaPlano, 10); // lento a propósito, con sal embebida
+const esValida = await bcrypt.compare(contraseñaIngresada, hash); // verifica sin revertir
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Guarda contraseñas mediante una función de derivación apropiada, nunca texto directo. Prueba verificación válida e inválida y confirma que los logs y respuestas no exponen contraseña ni hash.
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
@@ -61,34 +89,6 @@ Verifica una contraseña incorrecta. **Pista:** debe devolver `false` sin revela
 Añade un registro de intento fallido sin guardar la contraseña. Entrega la salida de éxito y fallo, y explica por qué comparar hashes con `===` puede requerir una comparación resistente al tiempo en un sistema de alto riesgo.
 
 #### Paso 7 · Cierre y conexión
-
-Ya puedes separar almacenamiento de credenciales y verificación. El siguiente tema creará tokens firmados en otra carpeta.
-
-**Errores comunes:** usar `md5`; reutilizar salt; cifrar esperando descifrar; aceptar contraseñas triviales; imprimir el hash en logs de producción.
-
-**Fuentes oficiales:** [`node:crypto`](https://nodejs.org/api/crypto.html) y [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
-
-**Conceptos clave:** hashing frente a cifrado, funciones lentas deliberadamente, `bcrypt`/`argon2`.
-
-Una contraseña nunca debe almacenarse en texto plano, ni siquiera cifrada (encriptada) de forma reversible: debe almacenarse hasheada, un proceso unidireccional que transforma la contraseña en una cadena de longitud fija que no puede revertirse matemáticamente de vuelta a la contraseña original. La distinción entre hashing y cifrado es crucial: el cifrado está diseñado para ser reversible (existe una clave que permite recuperar el texto original), apropiado para datos que legítimamente necesitan recuperarse; el hashing está diseñado deliberadamente para ser irreversible, apropiado precisamente para contraseñas, donde el sistema nunca necesita "recordar" la contraseña original, solo verificar si un intento de login coincide con ella.
-
-`bcrypt` y `argon2` son algoritmos de hashing diseñados específicamente para contraseñas, con una propiedad deliberada y contraintuitiva: son lentos a propósito, y ese costo computacional es ajustable mediante un parámetro de "factor de costo" (el `10` en `bcrypt.hash(contraseña, 10)`) que se puede aumentar con el tiempo a medida que el hardware se vuelve más rápido, manteniendo el costo de un ataque de fuerza bruta (probar millones de contraseñas candidatas) prohibitivamente alto incluso con hardware moderno especializado en cómputo paralelo masivo. Esto contrasta directamente con funciones hash de propósito general como SHA-256, diseñadas para ser extremadamente rápidas (apropiado para verificar integridad de archivos, por ejemplo), una propiedad que las hace inadecuadas específicamente para contraseñas, porque esa misma velocidad facilita enormemente los ataques de fuerza bruta.
-
-`bcrypt.compare(contraseñaIngresada, hashAlmacenado)` verifica un intento de login sin necesitar revertir el hash almacenado: internamente, hashea la contraseña ingresada con los mismos parámetros usados originalmente (incluyendo la "sal" aleatoria embebida en el propio hash almacenado, que previene que dos usuarios con la misma contraseña produzcan el mismo hash) y compara el resultado con el hash almacenado. Nunca construir un algoritmo propio de hashing de contraseñas, ni siquiera "solo por curiosidad" en un proyecto pequeño, es una recomendación categórica de la industria: diseñar criptografía segura requiere experiencia especializada extremadamente profunda para evitar vulnerabilidades sutiles que un atacante experimentado explotaría, y bibliotecas como bcrypt/argon2 ya han sido revisadas y probadas exhaustivamente por la comunidad de seguridad durante años.
-
-**Analogía:** hashear una contraseña es como triturar un documento en una trituradora industrial de alta seguridad: es fácil verificar que un fragmento específico coincide con el resultado esperado de triturar un documento particular, pero es prácticamente imposible reconstruir el documento original completo a partir de los fragmentos resultantes. Que bcrypt sea deliberadamente lento es como usar una trituradora que además funciona más despacio a propósito, dificultando que alguien pueda triturar (y probar) millones de documentos candidatos por segundo.
-
-**¿Por qué es importante?** El hashing correcto de contraseñas es la defensa fundamental contra el robo masivo de credenciales en caso de una brecha de la base de datos; usar bcrypt/argon2 en vez de una implementación propia es una decisión de seguridad no negociable en cualquier sistema de autenticación real.
-
-**Código del ejemplo:**
-
-```js
-import bcrypt from "bcrypt";
-const hash = await bcrypt.hash(contraseñaPlano, 10); // lento a propósito, con sal embebida
-const esValida = await bcrypt.compare(contraseñaIngresada, hash); // verifica sin revertir
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Guarda contraseñas mediante una función de derivación apropiada, nunca texto directo. Prueba verificación válida e inválida y confirma que los logs y respuestas no exponen contraseña ni hash.
 
 ### Tema 2: JWT — access y refresh tokens
 
@@ -168,6 +168,41 @@ Una ruta pública puede consultar el estado de un envío, mientras que cancelar 
 
 El middleware es un control en la entrada: valida el token y añade un usuario confiable a la solicitud. El siguiente control comprueba permisos. Nunca uses el `role` enviado por el cliente sin verificar la firma.
 
+Ya separas autenticación y autorización. El siguiente tema explicará OAuth y proveedores externos desde una carpeta nueva.
+
+**Evidencia de aprendizaje:** entrega tres respuestas (`401`, `403` y `200`) y explica qué comprobación produjo cada una.
+
+**Errores comunes:** devolver 403 cuando falta identidad; confiar en headers de rol; imprimir tokens; olvidar `return` tras responder; permitir algoritmos inesperados.
+
+**Fuentes oficiales:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html), [RFC 6750 Bearer](https://www.rfc-editor.org/rfc/rfc6750) y [OWASP Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
+
+**Conceptos clave:** verificación de JWT, `req.usuario`, autorización basada en roles.
+
+Un middleware de autenticación centraliza la verificación de JWT para cualquier ruta que requiera un usuario autenticado: extrae el token de la cabecera `Authorization`, lo verifica con `jwt.verify(token, secreto)` (que lanza una excepción si el token es inválido, expiró, o fue firmado con un secreto distinto), y si la verificación tiene éxito, adjunta la información decodificada del usuario a `req.usuario` para que las rutas posteriores en la cadena puedan acceder a ella directamente, sin necesidad de repetir la verificación en cada ruta individual. Si la verificación falla, el middleware responde inmediatamente con `401` (No autorizado), deteniendo la cadena sin invocar `next()`, protegiendo efectivamente cualquier ruta que dependa de este middleware.
+
+El control de acceso basado en roles añade una capa adicional sobre la autenticación: no basta con verificar que el usuario está autenticado (sabe quién es), sino también que tiene el rol o permiso específico necesario para la acción solicitada. Un middleware `requireRole(rolNecesario)` (una función de orden superior que devuelve un middleware específico configurado para ese rol, un patrón directamente relacionado con las funciones de orden superior estudiadas en el Módulo 1 del track de JavaScript) verifica que `req.usuario.rol` coincida con el rol requerido, respondiendo con `403` (Prohibido, distinto semánticamente de `401`: el usuario está autenticado pero no tiene permiso suficiente) si no coincide.
+
+Encadenar ambos middleware en una ruta específica (`app.delete("/tareas/:id", requireAuth, requireRole("admin"), borrarTarea)`) expresa declarativamente los requisitos exactos de esa ruta: primero verificar autenticación, luego verificar el rol específico, y solo entonces ejecutar la lógica real de borrado, un patrón legible y fácilmente auditable que deja explícito, con solo leer la declaración de la ruta, exactamente qué se requiere para acceder a ella.
+
+**Analogía:** el middleware de autenticación es como un guardia de seguridad que verifica la identificación de cualquiera que intente entrar a un edificio; el middleware de control de roles es como un guardia adicional en un piso específico del edificio que, además de confirmar que la persona ya fue identificada por el guardia de entrada, verifica que tenga la credencial específica de acceso a esa área restringida particular.
+
+**¿Por qué es importante?** Separar la verificación de autenticación (quién eres) del control de roles (qué puedes hacer) en middleware independientes y componibles permite expresar declarativamente los requisitos exactos de cada ruta, facilitando la auditoría de seguridad de una API completa.
+
+**Código del ejemplo:**
+
+```js
+function requireAuth(req, res, next) {
+  try { req.usuario = jwt.verify(req.headers.authorization?.split(" ")[1], SECRETO); next(); }
+  catch { res.status(401).json({ error: "No autorizado" }); }
+}
+function requireRole(rol) {
+  return (req, res, next) => req.usuario.rol === rol ? next() : res.status(403).end();
+}
+app.delete("/tareas/:id", requireAuth, requireRole("admin"), borrarTarea);
+```
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** Comprueba identidad y pertenencia de la entrega antes de modificarla. Una prueba con dos repartidores debe rechazar acceso cruzado aunque ambos tengan el mismo rol general.
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
@@ -215,41 +250,6 @@ Registra un identificador de correlación, nunca el token completo, y entrega re
 
 #### Paso 7 · Cierre y conexión
 
-Ya separas autenticación y autorización. El siguiente tema explicará OAuth y proveedores externos desde una carpeta nueva.
-
-**Evidencia de aprendizaje:** entrega tres respuestas (`401`, `403` y `200`) y explica qué comprobación produjo cada una.
-
-**Errores comunes:** devolver 403 cuando falta identidad; confiar en headers de rol; imprimir tokens; olvidar `return` tras responder; permitir algoritmos inesperados.
-
-**Fuentes oficiales:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html), [RFC 6750 Bearer](https://www.rfc-editor.org/rfc/rfc6750) y [OWASP Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
-
-**Conceptos clave:** verificación de JWT, `req.usuario`, autorización basada en roles.
-
-Un middleware de autenticación centraliza la verificación de JWT para cualquier ruta que requiera un usuario autenticado: extrae el token de la cabecera `Authorization`, lo verifica con `jwt.verify(token, secreto)` (que lanza una excepción si el token es inválido, expiró, o fue firmado con un secreto distinto), y si la verificación tiene éxito, adjunta la información decodificada del usuario a `req.usuario` para que las rutas posteriores en la cadena puedan acceder a ella directamente, sin necesidad de repetir la verificación en cada ruta individual. Si la verificación falla, el middleware responde inmediatamente con `401` (No autorizado), deteniendo la cadena sin invocar `next()`, protegiendo efectivamente cualquier ruta que dependa de este middleware.
-
-El control de acceso basado en roles añade una capa adicional sobre la autenticación: no basta con verificar que el usuario está autenticado (sabe quién es), sino también que tiene el rol o permiso específico necesario para la acción solicitada. Un middleware `requireRole(rolNecesario)` (una función de orden superior que devuelve un middleware específico configurado para ese rol, un patrón directamente relacionado con las funciones de orden superior estudiadas en el Módulo 1 del track de JavaScript) verifica que `req.usuario.rol` coincida con el rol requerido, respondiendo con `403` (Prohibido, distinto semánticamente de `401`: el usuario está autenticado pero no tiene permiso suficiente) si no coincide.
-
-Encadenar ambos middleware en una ruta específica (`app.delete("/tareas/:id", requireAuth, requireRole("admin"), borrarTarea)`) expresa declarativamente los requisitos exactos de esa ruta: primero verificar autenticación, luego verificar el rol específico, y solo entonces ejecutar la lógica real de borrado, un patrón legible y fácilmente auditable que deja explícito, con solo leer la declaración de la ruta, exactamente qué se requiere para acceder a ella.
-
-**Analogía:** el middleware de autenticación es como un guardia de seguridad que verifica la identificación de cualquiera que intente entrar a un edificio; el middleware de control de roles es como un guardia adicional en un piso específico del edificio que, además de confirmar que la persona ya fue identificada por el guardia de entrada, verifica que tenga la credencial específica de acceso a esa área restringida particular.
-
-**¿Por qué es importante?** Separar la verificación de autenticación (quién eres) del control de roles (qué puedes hacer) en middleware independientes y componibles permite expresar declarativamente los requisitos exactos de cada ruta, facilitando la auditoría de seguridad de una API completa.
-
-**Código del ejemplo:**
-
-```js
-function requireAuth(req, res, next) {
-  try { req.usuario = jwt.verify(req.headers.authorization?.split(" ")[1], SECRETO); next(); }
-  catch { res.status(401).json({ error: "No autorizado" }); }
-}
-function requireRole(rol) {
-  return (req, res, next) => req.usuario.rol === rol ? next() : res.status(403).end();
-}
-app.delete("/tareas/:id", requireAuth, requireRole("admin"), borrarTarea);
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Comprueba identidad y pertenencia de la entrega antes de modificarla. Una prueba con dos repartidores debe rechazar acceso cruzado aunque ambos tengan el mismo rol general.
-
 ### Tema 4: OAuth 2.0 y Passport.js
 
 #### Paso 1 · Objetivo y preparación
@@ -263,39 +263,6 @@ Una aplicación móvil quiere iniciar sesión con un proveedor externo sin conoc
 #### Paso 3 · Teoría y analogía aplicada
 
 OAuth delega autorización, no define por sí mismo identidad. PKCE añade un secreto temporal que ata la solicitud al cliente que inició el flujo: es un comprobante que solo puede canjear quien conserva la mitad privada.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-oauth-pkce
-cd ejemplo-oauth-pkce
-npm init -y
-mkdir src
-```
-
-Crea `src/pkce.js`:
-
-```js
-import { randomBytes, createHash } from "node:crypto";
-const verifier = randomBytes(32).toString("base64url");
-const challenge = createHash("sha256").update(verifier).digest("base64url");
-const url = new URL("https://provider.example/authorize");
-url.searchParams.set("code_challenge", challenge);
-url.searchParams.set("code_challenge_method", "S256");
-console.log({ verifierGenerado: verifier.length > 0, url: url.toString() });
-```
-
-Ejecuta `node src/pkce.js`. **Resultado esperado:** URL con `code_challenge` y método `S256`. **Fallo deliberado y diagnóstico:** elimina `code_challenge`; un proveedor correcto rechaza el intercambio porque no puede vincularlo al cliente.
-
-#### Paso 5 · Práctica guiada
-
-Añade `state` aleatorio y verifica que el callback coincida con el valor guardado. **Pista:** un `state` inesperado indica posible CSRF de login.
-
-#### Paso 6 · Práctica independiente
-
-Dibuja en Mermaid la secuencia navegador → proveedor → callback → API y etiqueta quién posee cada token. Entrega el diagrama y explica por qué el access token no debe ir a logs.
-
-#### Paso 7 · Cierre y conexión
 
 Ya distingues delegación, PKCE y autenticación. El siguiente tema tratará sesiones y cookies desde cero.
 
@@ -331,6 +298,39 @@ Aplicación consulta perfil autorizado del usuario con ese token
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Integra el proveedor de identidad en un entorno de prueba y valida el retorno de autorización. Comprueba estado inválido y sesión rechazada sin aceptar datos del perfil como autorización sobre una guía.
 
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-oauth-pkce
+cd ejemplo-oauth-pkce
+npm init -y
+mkdir src
+```
+
+Crea `src/pkce.js`:
+
+```js
+import { randomBytes, createHash } from "node:crypto";
+const verifier = randomBytes(32).toString("base64url");
+const challenge = createHash("sha256").update(verifier).digest("base64url");
+const url = new URL("https://provider.example/authorize");
+url.searchParams.set("code_challenge", challenge);
+url.searchParams.set("code_challenge_method", "S256");
+console.log({ verifierGenerado: verifier.length > 0, url: url.toString() });
+```
+
+Ejecuta `node src/pkce.js`. **Resultado esperado:** URL con `code_challenge` y método `S256`. **Fallo deliberado y diagnóstico:** elimina `code_challenge`; un proveedor correcto rechaza el intercambio porque no puede vincularlo al cliente.
+
+#### Paso 5 · Práctica guiada
+
+Añade `state` aleatorio y verifica que el callback coincida con el valor guardado. **Pista:** un `state` inesperado indica posible CSRF de login.
+
+#### Paso 6 · Práctica independiente
+
+Dibuja en Mermaid la secuencia navegador → proveedor → callback → API y etiqueta quién posee cada token. Entrega el diagrama y explica por qué el access token no debe ir a logs.
+
+#### Paso 7 · Cierre y conexión
+
 ### Tema 5: Sesiones, cookies seguras y protección CSRF
 
 #### Paso 1 · Objetivo y preparación
@@ -344,46 +344,6 @@ Un panel web mantiene una sesión después del login; como el navegador envía c
 #### Paso 3 · Teoría y analogía aplicada
 
 `HttpOnly` evita acceso JavaScript, `Secure` exige HTTPS y `SameSite` reduce envío cross-site. El token CSRF funciona como una contraseña que el atacante no puede leer.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-sesion-csrf
-cd ejemplo-sesion-csrf
-npm init -y
-npm install express cookie-parser
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import express from "express";
-import cookieParser from "cookie-parser";
-import { randomBytes } from "node:crypto";
-const app = express(); app.use(cookieParser()); app.use(express.urlencoded({ extended: false }));
-app.get("/login", (_req, res) => {
-  const csrf = randomBytes(16).toString("hex");
-  res.cookie("session", "sesion-demo", { httpOnly: true, sameSite: "lax" });
-  res.cookie("csrf", csrf, { sameSite: "lax" });
-  res.send(`<form method="post" action="/transfer"><input name="csrf" value="${csrf}"><button>Enviar</button></form>`);
-});
-app.post("/transfer", (req, res) => req.body.csrf === req.cookies.csrf
-  ? res.send("Operación aceptada") : res.status(403).send("CSRF inválido"));
-app.listen(3000, () => console.log("http://127.0.0.1:3000/login"));
-```
-
-Ejecuta `node src/server.js`, abre `/login` y envía el formulario. **Resultado esperado:** operación aceptada. **Fallo deliberado y diagnóstico:** elimina el campo `csrf`; recibirás `403`, porque la cookie de sesión por sí sola no prueba intención.
-
-#### Paso 5 · Práctica guiada
-
-Configura `SameSite: "strict"` y compara el comportamiento. **Pista:** documenta el impacto en retornos OAuth legítimos.
-
-#### Paso 6 · Práctica independiente
-
-Reemplaza la sesión fija por un identificador aleatorio con expiración. Entrega una prueba de expiración y otra de CSRF rechazado.
-
-#### Paso 7 · Cierre y conexión
 
 Ya puedes explicar cookies, sesión y CSRF como controles distintos. El siguiente módulo aplicará autorización a una API completa.
 
@@ -490,6 +450,46 @@ SESSION_SECRET='cambia-este-secreto-local' npm test -- session
 **Transferencia al proyecto integrador «API operativa de entregas»:** Define cookies, expiración y defensa CSRF según el transporte de sesión. Prueba una mutación legítima y una solicitud sin la protección requerida; cerrar sesión debe invalidar el acceso posterior.
 
 **Límites y decisión de uso:** CSRF depende de credenciales que el navegador adjunta automáticamente, no del nombre JWT o sesión. Revisa dónde viaja la credencial, combina protección de mutaciones y cookies apropiadas, y mantén controles separados contra XSS y acceso a recursos ajenos.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-sesion-csrf
+cd ejemplo-sesion-csrf
+npm init -y
+npm install express cookie-parser
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+import cookieParser from "cookie-parser";
+import { randomBytes } from "node:crypto";
+const app = express(); app.use(cookieParser()); app.use(express.urlencoded({ extended: false }));
+app.get("/login", (_req, res) => {
+  const csrf = randomBytes(16).toString("hex");
+  res.cookie("session", "sesion-demo", { httpOnly: true, sameSite: "lax" });
+  res.cookie("csrf", csrf, { sameSite: "lax" });
+  res.send(`<form method="post" action="/transfer"><input name="csrf" value="${csrf}"><button>Enviar</button></form>`);
+});
+app.post("/transfer", (req, res) => req.body.csrf === req.cookies.csrf
+  ? res.send("Operación aceptada") : res.status(403).send("CSRF inválido"));
+app.listen(3000, () => console.log("http://127.0.0.1:3000/login"));
+```
+
+Ejecuta `node src/server.js`, abre `/login` y envía el formulario. **Resultado esperado:** operación aceptada. **Fallo deliberado y diagnóstico:** elimina el campo `csrf`; recibirás `403`, porque la cookie de sesión por sí sola no prueba intención.
+
+#### Paso 5 · Práctica guiada
+
+Configura `SameSite: "strict"` y compara el comportamiento. **Pista:** documenta el impacto en retornos OAuth legítimos.
+
+#### Paso 6 · Práctica independiente
+
+Reemplaza la sesión fija por un identificador aleatorio con expiración. Entrega una prueba de expiración y otra de CSRF rechazado.
+
+#### Paso 7 · Cierre y conexión
 
 ### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 

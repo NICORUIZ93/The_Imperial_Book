@@ -16,42 +16,6 @@ El body de una petición HTTP llega como `unknown` en tiempo de ejecución, sin 
 #### Paso 3 · Teoría, modelo mental y analogía
 Los datos de HTTP, variables de entorno y colas empiezan como `unknown` y deben cruzar un parser explícito antes de convertirse en un tipo del dominio — TypeScript revisa el plano dentro de la fábrica, pero el muelle de recepción necesita inspeccionar cada cargamento igual.
 
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `src/schemas/create-envio.ts` en tu proyecto Node y ejecuta npm para validar. El parser con zod de forma explícita valida en tiempo de ejecución:
-
-```typescript
-import { z } from 'zod';
-
-const CreateEnvioInput = z.object({
-  guia: z.string().regex(/^RF-\d+$/),
-  direccion: z.string().trim().min(1).max(200),
-}).strict();
-
-function parseCreateEnvio(value: unknown) {
-  return CreateEnvioInput.parse(value);
-}
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
-
-```bash
-npm init -y && npm install
-node index.js
-```
-Para las pruebas: `npm test`.
-
-Resultado esperado: llamar a `parseCreateEnvio({ guia: 'RF-4471', direccion: 'Calle 10' })` devuelve el objeto tipado; llamar con `{ guia: 'XX', direccion: '' }` lanza un error de zod detallando qué campo falló, antes de que ese dato toque ninguna lógica de negocio real. Prueba ejecutando `npm test` con este parser.
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `CreateEnvioInput.parse(value)` por `value as CreateEnvioInput` directamente en el handler — ese es el fallo deliberado: enviá un body `{ guia: 123, direccion: null }`; el cast compila sin error, y el código sigue ejecutándose con `guia` siendo un número y `direccion` siendo `null`, un comportamiento incorrecto silencioso en vez de un rechazo explícito con `400`.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `CreateEnvioInput.parse(value)`, y agregá una unión discriminada (`CrearEnvioResultado`) que modele explícitamente los casos `creado`, `guia-duplicada` y `direccion-invalida`, con un `switch` exhaustivo que el compilador verifique.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el parser con zod del Paso 4, el cast silencioso que oculta datos corruptos del Paso 5, y la unión discriminada exhaustiva del Paso 6; explicá por qué un cast de TypeScript nunca reemplaza la validación en tiempo de ejecución que un parser real sí hace. Siguiente paso: estudia por qué un contrato HTTP es comportamiento, no solo documentación. Errores comunes: usar `any` o un cast amplio para "resolver" un error de tipos sin validar realmente, confiar en que el frontend ya validó el mismo dato, y no distinguir entre un error de formato y una regla de negocio. Fuentes oficiales: https://zod.dev/ y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables.
-
 **¿Por qué es importante?** Muchas APIs "tipadas" fallan con datos reales porque el compilador nunca observó el JSON, la configuración o la respuesta externa que efectivamente llega en producción.
 **Conceptos clave:** TypeScript, strict, unknown, any, narrowing, discriminated union, branded type, Result, exhaustividad, validación runtime, DTO, dominio y frontera.
 
@@ -120,37 +84,21 @@ flowchart LR
 
 En el proyecto integrador RutaFlow (`src/schemas/create-envio.ts`), este parser es exactamente el punto único de validación para `POST /envios`: todo el resto del backend de RutaFlow confía en el tipo `CreateEnvioInput` ya validado, sin volver a parsear ese mismo dato en el caso de uso ni en el repositorio.
 
-### Tema 2: Un contrato HTTP es comportamiento, no solo documentación
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir el contrato OpenAPI de `POST /envios` de RutaFlow, incluyendo la respuesta de error con Problem Details, y a verificarlo contra la implementación real. Prerrequisitos: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-El equipo de frontend de RutaFlow generó un cliente a partir de un documento OpenAPI escrito hace meses — nadie confirmó todavía que ese documento sigue describiendo lo que la API realmente devuelve hoy.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-OpenAPI describe rutas, cuerpos y respuestas, pero debe verificarse contra la aplicación real; un documento desactualizado es más peligroso que no tener documento, porque induce confianza falsa.
-
 #### Paso 4 · Demostración guiada desde cero
 
-Crea `docs/openapi.yaml` en la raíz de tu proyecto Node y ejecuta npm para ejecutar pruebas de contrato:
+Crea `src/schemas/create-envio.ts` en tu proyecto Node y ejecuta npm para validar. El parser con zod de forma explícita valida en tiempo de ejecución:
 
-```yaml
-/envios:
-  post:
-    operationId: crearEnvio
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/CreateEnvioInput' }
-    responses:
-      '201': { description: Creado }
-      '400':
-        description: Entrada inválida
-        content:
-          application/problem+json:
-            schema: { $ref: '#/components/schemas/Problem' }
+```typescript
+import { z } from 'zod';
+
+const CreateEnvioInput = z.object({
+  guia: z.string().regex(/^RF-\d+$/),
+  direccion: z.string().trim().min(1).max(200),
+}).strict();
+
+function parseCreateEnvio(value: unknown) {
+  return CreateEnvioInput.parse(value);
+}
 ```
 
 **Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
@@ -161,16 +109,27 @@ node index.js
 ```
 Para las pruebas: `npm test`.
 
-Resultado esperado: un test de contrato que envía requests reales contra la API y compara la respuesta contra este documento pasa en verde mientras ambos coincidan — y falla explícitamente en CI en cuanto alguien cambia la forma real de la respuesta sin actualizar el documento. Ejecuta `npm run test:contract` para validar.
+Resultado esperado: llamar a `parseCreateEnvio({ guia: 'RF-4471', direccion: 'Calle 10' })` devuelve el objeto tipado; llamar con `{ guia: 'XX', direccion: '' }` lanza un error de zod detallando qué campo falló, antes de que ese dato toque ninguna lógica de negocio real. Prueba ejecutando `npm test` con este parser.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá la implementación real para que `POST /envios` devuelva `200` en vez de `201` al crear exitosamente, sin actualizar el documento OpenAPI — ese es el fallo deliberado: el documento sigue "describiendo" `201`, un SDK generado a partir de él puede manejar incorrectamente la respuesta real `200`, y nadie lo nota hasta que un cliente específico falla en producción.
+Pista: reemplazá `CreateEnvioInput.parse(value)` por `value as CreateEnvioInput` directamente en el handler — ese es el fallo deliberado: enviá un body `{ guia: 123, direccion: null }`; el cast compila sin error, y el código sigue ejecutándose con `guia` siendo un número y `direccion` siendo `null`, un comportamiento incorrecto silencioso en vez de un rechazo explícito con `400`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando una prueba de contrato en CI que contraste la respuesta real contra el OpenAPI en cada build, confirmando que ahora esa divergencia rompe el build inmediatamente.
+Corregí el Paso 5 devolviendo `CreateEnvioInput.parse(value)`, y agregá una unión discriminada (`CrearEnvioResultado`) que modele explícitamente los casos `creado`, `guia-duplicada` y `direccion-invalida`, con un `switch` exhaustivo que el compilador verifique.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el contrato OpenAPI del Paso 4, la divergencia silenciosa entre código real y documento del Paso 5, y la prueba de contrato en CI del Paso 6; explicá por qué "escribir el documento" no es suficiente sin un mecanismo que lo verifique continuamente contra el comportamiento real. Siguiente paso: estudia cómo reintentar sin duplicar el efecto. Errores comunes: generar OpenAPI y nunca verificarlo contra tráfico real, cambiar el comportamiento de un endpoint sin actualizar su contrato, y reutilizar un campo existente con un significado nuevo en vez de agregar uno nuevo. Fuentes oficiales: https://swagger.io/specification/ y https://www.rfc-editor.org/rfc/rfc9457.
+Entregá el parser con zod del Paso 4, el cast silencioso que oculta datos corruptos del Paso 5, y la unión discriminada exhaustiva del Paso 6; explicá por qué un cast de TypeScript nunca reemplaza la validación en tiempo de ejecución que un parser real sí hace. Siguiente paso: estudia por qué un contrato HTTP es comportamiento, no solo documentación. Errores comunes: usar `any` o un cast amplio para "resolver" un error de tipos sin validar realmente, confiar en que el frontend ya validó el mismo dato, y no distinguir entre un error de formato y una regla de negocio. Fuentes oficiales: https://zod.dev/ y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables.
+
+### Tema 2: Un contrato HTTP es comportamiento, no solo documentación
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a escribir el contrato OpenAPI de `POST /envios` de RutaFlow, incluyendo la respuesta de error con Problem Details, y a verificarlo contra la implementación real. Prerrequisitos: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+El equipo de frontend de RutaFlow generó un cliente a partir de un documento OpenAPI escrito hace meses — nadie confirmó todavía que ese documento sigue describiendo lo que la API realmente devuelve hoy.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+OpenAPI describe rutas, cuerpos y respuestas, pero debe verificarse contra la aplicación real; un documento desactualizado es más peligroso que no tener documento, porque induce confianza falsa.
 
 **¿Por qué es importante?** Equipos despliegan independientemente; sin un contrato ejecutable y verificado, un cambio local "verde" puede romper aplicaciones que no están en el mismo repositorio.
 **Conceptos clave:** OpenAPI, schema, operación, status, content type, Problem Details, versionado, compatibilidad hacia atrás, consumer, provider, contract test, deprecación y sunset.
@@ -231,32 +190,26 @@ flowchart TD
 
 En el proyecto integrador RutaFlow (`docs/openapi.yaml`), este contrato describe exactamente `POST /envios`, y el test de contrato en CI lo verifica contra la implementación real en cada build, antes de que el frontend de RutaFlow consuma un SDK generado a partir de un documento que podría estar desactualizado.
 
-### Tema 3: Reintentar sin duplicar el efecto
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a implementar una clave de idempotencia para `POST /envios` de RutaFlow, confirmando que reintentar la misma petición tras un timeout no crea un segundo envío duplicado. Prerrequisitos: Tema 2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Si el servidor crea el envío en la base de datos pero la respuesta se pierde en la red, el cliente (la app del conductor) ve un timeout y, razonablemente, reintenta — sin una clave de idempotencia, ese reintento crea un segundo envío idéntico.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Una clave de idempotencia identifica la misma intención a través de reintentos, vinculada al actor, la operación y un hash del payload; la comprobación y el efecto deben ser atómicos dentro de la misma transacción.
-
 #### Paso 4 · Demostración guiada desde cero
 
-Crea `src/db/idempotency.sql` en tu proyecto Node y ejecuta la transacción sobre tu base de datos:
+Crea `docs/openapi.yaml` en la raíz de tu proyecto Node y ejecuta npm para ejecutar pruebas de contrato:
 
-```sql
-BEGIN;
-INSERT INTO idempotency_keys(owner_id, operation, key, request_hash, status)
-VALUES ($1, 'create-envio', $2, $3, 'processing')
-ON CONFLICT DO NOTHING;
--- solo el propietario que insertó ejecuta el cambio
-INSERT INTO envios(id, owner_id, guia, direccion) VALUES ($4, $1, $5, $6);
-UPDATE idempotency_keys
-SET status = 'completed', response_status = 201, resource_id = $4
-WHERE owner_id = $1 AND operation = 'create-envio' AND key = $2;
-COMMIT;
+```yaml
+/envios:
+  post:
+    operationId: crearEnvio
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/CreateEnvioInput' }
+    responses:
+      '201': { description: Creado }
+      '400':
+        description: Entrada inválida
+        content:
+          application/problem+json:
+            schema: { $ref: '#/components/schemas/Problem' }
 ```
 
 **Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
@@ -267,16 +220,27 @@ node index.js
 ```
 Para las pruebas: `npm test`.
 
-Resultado esperado: enviar la misma petición de creación de envío dos veces con la misma clave de idempotencia produce un único envío real en la base de datos; la segunda llamada recibe la misma respuesta `201` registrada la primera vez.
+Resultado esperado: un test de contrato que envía requests reales contra la API y compara la respuesta contra este documento pasa en verde mientras ambos coincidan — y falla explícitamente en CI en cuanto alguien cambia la forma real de la respuesta sin actualizar el documento. Ejecuta `npm run test:contract` para validar.
 
 #### Paso 5 · Práctica guiada
-Pista: implementá la verificación como "buscar la clave, y si no existe, insertar el envío" en dos pasos separados, sin `ON CONFLICT` ni transacción — ese es el fallo deliberado: lanzá dos requests en paralelo con la misma clave; ambos "buscan" antes de que ninguno haya insertado todavía, ambos concluyen que la clave no existe, y ambos insertan el envío, produciendo dos registros duplicados.
+Pista: cambiá la implementación real para que `POST /envios` devuelva `200` en vez de `201` al crear exitosamente, sin actualizar el documento OpenAPI — ese es el fallo deliberado: el documento sigue "describiendo" `201`, un SDK generado a partir de él puede manejar incorrectamente la respuesta real `200`, y nadie lo nota hasta que un cliente específico falla en producción.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo la verificación e inserción a una única transacción con restricción única, y repetí la prueba de dos requests en paralelo, confirmando que ahora solo uno de los dos efectivamente crea el envío.
+Corregí el Paso 5 agregando una prueba de contrato en CI que contraste la respuesta real contra el OpenAPI en cada build, confirmando que ahora esa divergencia rompe el build inmediatamente.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la transacción atómica del Paso 4, la condición de carrera provocada en el Paso 5, y la corrección verificada en paralelo del Paso 6; explicá por qué "buscar y luego insertar" en dos pasos separados nunca es seguro ante requests concurrentes, sin importar cuán rápido parezca en pruebas secuenciales. Siguiente paso: estudia webhooks verificables y recuperación por reconciliación. Errores comunes: verificar y efectuar el cambio en pasos no atómicos, reintentar con una clave nueva en vez de reutilizar la original, y no definir una expiración razonable para las claves de idempotencia. Fuentes oficiales: https://docs.stripe.com/idempotency y https://node-postgres.com/features/transactions.
+Entregá el contrato OpenAPI del Paso 4, la divergencia silenciosa entre código real y documento del Paso 5, y la prueba de contrato en CI del Paso 6; explicá por qué "escribir el documento" no es suficiente sin un mecanismo que lo verifique continuamente contra el comportamiento real. Siguiente paso: estudia cómo reintentar sin duplicar el efecto. Errores comunes: generar OpenAPI y nunca verificarlo contra tráfico real, cambiar el comportamiento de un endpoint sin actualizar su contrato, y reutilizar un campo existente con un significado nuevo en vez de agregar uno nuevo. Fuentes oficiales: https://swagger.io/specification/ y https://www.rfc-editor.org/rfc/rfc9457.
+
+### Tema 3: Reintentar sin duplicar el efecto
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a implementar una clave de idempotencia para `POST /envios` de RutaFlow, confirmando que reintentar la misma petición tras un timeout no crea un segundo envío duplicado. Prerrequisitos: Tema 2 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Si el servidor crea el envío en la base de datos pero la respuesta se pierde en la red, el cliente (la app del conductor) ve un timeout y, razonablemente, reintenta — sin una clave de idempotencia, ese reintento crea un segundo envío idéntico.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una clave de idempotencia identifica la misma intención a través de reintentos, vinculada al actor, la operación y un hash del payload; la comprobación y el efecto deben ser atómicos dentro de la misma transacción.
 
 **¿Por qué es importante?** Timeout y reentrega son normales en sistemas distribuidos; sin identidad estable y atomicidad, las técnicas de recuperación producen corrupción precisamente durante los fallos que debían resolver.
 **Conceptos clave:** timeout, resultado ambiguo, idempotency key, unicidad, transacción, lock, atomicidad, deduplicación, outbox, relay, at-least-once e invariante.
@@ -340,6 +304,42 @@ sequenceDiagram
 **Cuándo NO conviene una clave de idempotencia:** en operaciones de solo lectura (`GET`) o en operaciones que ya son naturalmente idempotentes por diseño (`PUT` que reemplaza el recurso completo con el mismo valor), agregar una tabla de claves de idempotencia es trabajo innecesario — el límite correcto es aplicarla únicamente a operaciones que crean o mutan estado de forma no repetible (`POST` que crea un recurso nuevo, cobros, envíos).
 
 En el proyecto integrador RutaFlow (`src/db/idempotency.sql`), esta tabla protege específicamente `POST /envios`: la app del conductor reintenta automáticamente ante cualquier timeout de red, y sin esta clave cada reintento generaría un envío físico duplicado en el almacén.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `src/db/idempotency.sql` en tu proyecto Node y ejecuta la transacción sobre tu base de datos:
+
+```sql
+BEGIN;
+INSERT INTO idempotency_keys(owner_id, operation, key, request_hash, status)
+VALUES ($1, 'create-envio', $2, $3, 'processing')
+ON CONFLICT DO NOTHING;
+-- solo el propietario que insertó ejecuta el cambio
+INSERT INTO envios(id, owner_id, guia, direccion) VALUES ($4, $1, $5, $6);
+UPDATE idempotency_keys
+SET status = 'completed', response_status = 201, resource_id = $4
+WHERE owner_id = $1 AND operation = 'create-envio' AND key = $2;
+COMMIT;
+```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+Resultado esperado: enviar la misma petición de creación de envío dos veces con la misma clave de idempotencia produce un único envío real en la base de datos; la segunda llamada recibe la misma respuesta `201` registrada la primera vez.
+
+#### Paso 5 · Práctica guiada
+Pista: implementá la verificación como "buscar la clave, y si no existe, insertar el envío" en dos pasos separados, sin `ON CONFLICT` ni transacción — ese es el fallo deliberado: lanzá dos requests en paralelo con la misma clave; ambos "buscan" antes de que ninguno haya insertado todavía, ambos concluyen que la clave no existe, y ambos insertan el envío, produciendo dos registros duplicados.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo la verificación e inserción a una única transacción con restricción única, y repetí la prueba de dos requests en paralelo, confirmando que ahora solo uno de los dos efectivamente crea el envío.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la transacción atómica del Paso 4, la condición de carrera provocada en el Paso 5, y la corrección verificada en paralelo del Paso 6; explicá por qué "buscar y luego insertar" en dos pasos separados nunca es seguro ante requests concurrentes, sin importar cuán rápido parezca en pruebas secuenciales. Siguiente paso: estudia webhooks verificables y recuperación por reconciliación. Errores comunes: verificar y efectuar el cambio en pasos no atómicos, reintentar con una clave nueva en vez de reutilizar la original, y no definir una expiración razonable para las claves de idempotencia. Fuentes oficiales: https://docs.stripe.com/idempotency y https://node-postgres.com/features/transactions.
 
 ### Tema 4: Webhooks verificables y recuperación por reconciliación
 

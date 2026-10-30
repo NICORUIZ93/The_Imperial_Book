@@ -11,24 +11,7 @@ Al finalizar vas a distribuir el evento real "envío entregado" de RutaFlow a do
 Cuando `confirmar-entrega` marca un envío como `entregado`, RutaFlow necesita avisar al cliente por SMS Y registrar el evento para analítica — dos acciones independientes sobre el mismo hecho, sin que `confirmar-entrega` tenga que conocer ni coordinar ninguna de las dos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un topic SNS es un altavoz: una publicación llega a varias bandejas independientes al mismo tiempo, sin que el publicador sepa cuántas hay escuchando.
-#### Paso 4 · Demostración guiada
-```bash
-TOPIC_ARN=$(aws sns create-topic --name rutaflow-envio-entregado --query TopicArn --output text)
-NOTIF_Q=$(aws sqs create-queue --queue-name notificaciones-cliente --query QueueUrl --output text)
-ANALYTICS_Q=$(aws sqs create-queue --queue-name analitica-entregas --query QueueUrl --output text)
-aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
-aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$ANALYTICS_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
-aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-4471","estado":"entregado"}'
-aws sqs receive-message --queue-url "$NOTIF_Q"
-aws sqs receive-message --queue-url "$ANALYTICS_Q"
-```
-Resultado esperado: AMBAS colas reciben su propia copia del mismo mensaje — `confirmar-entrega` publicó una sola vez, y ni `notificaciones-cliente` ni `analitica-entregas` sabían de la existencia de la otra.
-#### Paso 5 · Práctica guiada
-Pista: desuscribí `analitica-entregas` (`aws sns unsubscribe --subscription-arn <arn-de-esa-suscripción>`) y publicá un segundo mensaje — ese es el fallo deliberado: `notificaciones-cliente` sigue recibiendo todo con normalidad, pero `analitica-entregas` nunca va a ver ese segundo mensaje, porque ya no está suscrita, sin que `confirmar-entrega` se entere de que algo cambió del lado de los consumidores.
-#### Paso 6 · Práctica independiente
-Agregá una tercera cola `auditoria-entregas`, suscribila al mismo topic, publicá un tercer mensaje, y confirmá que las tres colas activas (`notificaciones-cliente`, `auditoria-entregas`, y `analitica-entregas` si la volviste a suscribir) reciben copia, cada una de forma completamente aislada de las demás.
-#### Paso 7 · Cierre y evidencia
-Entregá las dos colas recibiendo el mismo mensaje del Paso 4, la desuscripción silenciosa del Paso 5, y la tercera cola del Paso 6; explicá por qué `confirmar-entrega` nunca necesitó cambiar su código al agregar o quitar consumidores. Siguiente paso: filtrado. Errores comunes: asumir orden global y no monitorizar suscriptores. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/welcome.html.
+
 **Conceptos clave:** un único mensaje publicado, múltiples suscriptores lo reciben independientemente.
 
 ```bash
@@ -63,6 +46,25 @@ natural para `ConfirmarEntregaFn`: hoy esa función (declarada en
 `sns:Publish` a este topic permitiría notificar al cliente y a analítica sin tocar su lógica de
 escritura actual.
 
+#### Paso 4 · Demostración guiada
+```bash
+TOPIC_ARN=$(aws sns create-topic --name rutaflow-envio-entregado --query TopicArn --output text)
+NOTIF_Q=$(aws sqs create-queue --queue-name notificaciones-cliente --query QueueUrl --output text)
+ANALYTICS_Q=$(aws sqs create-queue --queue-name analitica-entregas --query QueueUrl --output text)
+aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
+aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$ANALYTICS_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
+aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-4471","estado":"entregado"}'
+aws sqs receive-message --queue-url "$NOTIF_Q"
+aws sqs receive-message --queue-url "$ANALYTICS_Q"
+```
+Resultado esperado: AMBAS colas reciben su propia copia del mismo mensaje — `confirmar-entrega` publicó una sola vez, y ni `notificaciones-cliente` ni `analitica-entregas` sabían de la existencia de la otra.
+#### Paso 5 · Práctica guiada
+Pista: desuscribí `analitica-entregas` (`aws sns unsubscribe --subscription-arn <arn-de-esa-suscripción>`) y publicá un segundo mensaje — ese es el fallo deliberado: `notificaciones-cliente` sigue recibiendo todo con normalidad, pero `analitica-entregas` nunca va a ver ese segundo mensaje, porque ya no está suscrita, sin que `confirmar-entrega` se entere de que algo cambió del lado de los consumidores.
+#### Paso 6 · Práctica independiente
+Agregá una tercera cola `auditoria-entregas`, suscribila al mismo topic, publicá un tercer mensaje, y confirmá que las tres colas activas (`notificaciones-cliente`, `auditoria-entregas`, y `analitica-entregas` si la volviste a suscribir) reciben copia, cada una de forma completamente aislada de las demás.
+#### Paso 7 · Cierre y evidencia
+Entregá las dos colas recibiendo el mismo mensaje del Paso 4, la desuscripción silenciosa del Paso 5, y la tercera cola del Paso 6; explicá por qué `confirmar-entrega` nunca necesitó cambiar su código al agregar o quitar consumidores. Siguiente paso: filtrado. Errores comunes: asumir orden global y no monitorizar suscriptores. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/welcome.html.
+
 ### Tema 2: EventBridge: bus de eventos con filtrado declarativo
 
 #### Paso 1 · Objetivo y preparación
@@ -71,21 +73,7 @@ Al finalizar vas a filtrar los eventos de `ShipmentEvents` (Módulo 4) para que 
 RutaFlow emite eventos para cada cambio de estado de un envío, pero el SMS al cliente solo debe salir cuando `estado` es `entregado` — mandar un SMS en cada evento intermedio sería spam, no notificación.
 #### Paso 3 · Teoría, modelo mental y analogía
 El filtro de EventBridge es un clasificador que lee el contenido del evento (`detail.estado`), no una ruta fija por tipo de suscriptor como en SNS.
-#### Paso 4 · Demostración guiada
-```bash
-aws events create-event-bus --name rutaflow-eventos
-aws events put-rule --name SoloEntregados --event-bus-name rutaflow-eventos \
-  --event-pattern '{"source":["rutaflow.envios"],"detail":{"estado":["entregado"]}}'
-aws events put-events --entries '[{"Source":"rutaflow.envios","DetailType":"CambioEstado","Detail":"{\"shipmentId\":\"env-4471\",\"estado\":\"entregado\"}","EventBusName":"rutaflow-eventos"}]'
-aws events put-events --entries '[{"Source":"rutaflow.envios","DetailType":"CambioEstado","Detail":"{\"shipmentId\":\"env-4471\",\"estado\":\"en_ruta\"}","EventBusName":"rutaflow-eventos"}]'
-```
-Resultado esperado: ambos `put-events` responden con éxito (EventBridge siempre acepta el evento en el bus), pero solo el primero (estado `entregado`) coincide con el patrón `SoloEntregados` y dispararía su destino configurado; el segundo (`en_ruta`) entra al bus y se pierde sin disparar nada, exactamente como se espera.
-#### Paso 5 · Práctica guiada
-Pista: probá `aws events put-rule --name ReglaRota --event-bus-name rutaflow-eventos --event-pattern '{"detail":{"estado": "entregado"}}'` (sin los corchetes de array alrededor de `"entregado"`) — ese es el fallo deliberado: `InvalidEventPatternException`, porque EventBridge exige que los valores de un patrón vengan siempre dentro de un array, aunque sea de un solo elemento.
-#### Paso 6 · Práctica independiente
-Definí tres eventos de prueba con `estado`: `"entregado"` (válido, dispara la regla), `"ENTREGADO"` en mayúsculas (límite: EventBridge compara el string exacto, así que esto NO dispara la regla aunque el significado de negocio sea el mismo), y `"cancelado"` (claramente inválido para esta regla) — confirmá el comportamiento de cada uno con `put-events`.
-#### Paso 7 · Cierre y evidencia
-Entregá la regla creada, el evento filtrado correctamente del Paso 4, el patrón inválido del Paso 5, y los tres casos del Paso 6; explicá por qué EventBridge compara el string exacto y no el significado. Siguiente paso: combinar SNS y SQS. Errores comunes: filtros demasiado amplios y eventos sin versión. Fuente oficial: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html.
+
 **Conceptos clave:** enrutamiento basado en el contenido del evento, no solo en el destino fijo de una suscripción.
 
 ```bash
@@ -126,6 +114,22 @@ En el proyecto integrador RutaFlow, esta regla reemplazaría la lógica de filtr
 viviría dentro de `ConfirmarEntregaFn` (`examples/rutaflow/cloud/template.yaml`): en vez de que
 la función decida en código si notificar o no, EventBridge filtra declarativamente antes de que
 cualquier consumidor se entere del evento.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws events create-event-bus --name rutaflow-eventos
+aws events put-rule --name SoloEntregados --event-bus-name rutaflow-eventos \
+  --event-pattern '{"source":["rutaflow.envios"],"detail":{"estado":["entregado"]}}'
+aws events put-events --entries '[{"Source":"rutaflow.envios","DetailType":"CambioEstado","Detail":"{\"shipmentId\":\"env-4471\",\"estado\":\"entregado\"}","EventBusName":"rutaflow-eventos"}]'
+aws events put-events --entries '[{"Source":"rutaflow.envios","DetailType":"CambioEstado","Detail":"{\"shipmentId\":\"env-4471\",\"estado\":\"en_ruta\"}","EventBusName":"rutaflow-eventos"}]'
+```
+Resultado esperado: ambos `put-events` responden con éxito (EventBridge siempre acepta el evento en el bus), pero solo el primero (estado `entregado`) coincide con el patrón `SoloEntregados` y dispararía su destino configurado; el segundo (`en_ruta`) entra al bus y se pierde sin disparar nada, exactamente como se espera.
+#### Paso 5 · Práctica guiada
+Pista: probá `aws events put-rule --name ReglaRota --event-bus-name rutaflow-eventos --event-pattern '{"detail":{"estado": "entregado"}}'` (sin los corchetes de array alrededor de `"entregado"`) — ese es el fallo deliberado: `InvalidEventPatternException`, porque EventBridge exige que los valores de un patrón vengan siempre dentro de un array, aunque sea de un solo elemento.
+#### Paso 6 · Práctica independiente
+Definí tres eventos de prueba con `estado`: `"entregado"` (válido, dispara la regla), `"ENTREGADO"` en mayúsculas (límite: EventBridge compara el string exacto, así que esto NO dispara la regla aunque el significado de negocio sea el mismo), y `"cancelado"` (claramente inválido para esta regla) — confirmá el comportamiento de cada uno con `put-events`.
+#### Paso 7 · Cierre y evidencia
+Entregá la regla creada, el evento filtrado correctamente del Paso 4, el patrón inválido del Paso 5, y los tres casos del Paso 6; explicá por qué EventBridge compara el string exacto y no el significado. Siguiente paso: combinar SNS y SQS. Errores comunes: filtros demasiado amplios y eventos sin versión. Fuente oficial: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html.
 
 ### Tema 3: SNS + SQS juntos, y Azure Event Hubs
 

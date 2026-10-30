@@ -14,28 +14,6 @@ Un sistema de entregas debe insertar miles de registros al inicio de una cola de
 #### Paso 3 · Teoría, modelo mental y analogía
 `ArrayList` accede a cualquier índice al instante pero desplaza todo al insertar al inicio; `LinkedList` inserta al inicio sin desplazar nada pero debe recorrer nodo por nodo para acceder por índice. La analogía: un estante numerado (rápido para buscar por número, lento para insertar al frente) frente a una cadena de personas tomadas de la mano (rápido para insertar en cualquier punto, lento para llegar a la posición 500).
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-listas-rendimiento
-cd ejemplo-listas-rendimiento
-mkdir -p src/main/java/academia/colecciones
-```
-Crea `ComparacionListas.java` que inserte 100 000 elementos al inicio de un `ArrayList` y de un `LinkedList`, midiendo el tiempo de cada uno con `System.nanoTime()`. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/colecciones/ComparacionListas.java
-java -cp out academia.colecciones.ComparacionListas
-```
-
-#### Paso 5 · Práctica guiada
-Pista: reduce el tamaño a 100 elementos para provocar un fallo deliberado de expectativa (la diferencia se vuelve casi imperceptible); sube de nuevo a 100 000 y confirma que `LinkedList` gana claramente en inserciones al inicio. Resultado esperado: la diferencia de rendimiento solo se manifiesta con volumen suficiente.
-
-#### Paso 6 · Práctica independiente
-Agrega una comparación equivalente entre `HashSet` y `TreeSet` insertando guías duplicadas: confirma que ambos eliminan duplicados, pero solo `TreeSet` conserva orden al iterar.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cuándo cada estructura gana; como siguiente paso estudia genéricos. Errores comunes: usar `ArrayList` cuando en realidad se necesita unicidad garantizada (debería ser un `Set`), usar un objeto mutable como clave de `HashMap`/`HashSet` (si su hash cambia después de insertarlo, deja de encontrarse), y asumir que `HashSet` conserva algún orden solo porque en una prueba particular pareció hacerlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
 **Evidencia de aprendizaje:** entrega el código de medición `ArrayList` vs `LinkedList`, los tiempos obtenidos con 100&nbsp;000 elementos, y la comparación `HashSet` vs `TreeSet` con guías duplicadas.
 **Conceptos clave:** acceso indexado vs inserción eficiente, unicidad, orden.
 
@@ -66,6 +44,29 @@ Map<String, Integer> edades = new HashMap<>();
 edades.put("Ana", 28);
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-listas-rendimiento
+cd ejemplo-listas-rendimiento
+mkdir -p src/main/java/academia/colecciones
+```
+Crea `ComparacionListas.java` que inserte 100 000 elementos al inicio de un `ArrayList` y de un `LinkedList`, midiendo el tiempo de cada uno con `System.nanoTime()`. Compila y ejecuta:
+```bash
+javac -d out src/main/java/academia/colecciones/ComparacionListas.java
+java -cp out academia.colecciones.ComparacionListas
+```
+
+#### Paso 5 · Práctica guiada
+Pista: reduce el tamaño a 100 elementos para provocar un fallo deliberado de expectativa (la diferencia se vuelve casi imperceptible); sube de nuevo a 100 000 y confirma que `LinkedList` gana claramente en inserciones al inicio. Resultado esperado: la diferencia de rendimiento solo se manifiesta con volumen suficiente.
+
+#### Paso 6 · Práctica independiente
+Agrega una comparación equivalente entre `HashSet` y `TreeSet` insertando guías duplicadas: confirma que ambos eliminan duplicados, pero solo `TreeSet` conserva orden al iterar.
+
+#### Paso 7 · Cierre y evidencia
+Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cuándo cada estructura gana; como siguiente paso estudia genéricos. Errores comunes: usar `ArrayList` cuando en realidad se necesita unicidad garantizada (debería ser un `Set`), usar un objeto mutable como clave de `HashMap`/`HashSet` (si su hash cambia después de insertarlo, deja de encontrarse), y asumir que `HashSet` conserva algún orden solo porque en una prueba particular pareció hacerlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
+**¿Por qué es importante?** Porque elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
+
 ### Tema 2: Genéricos, wildcards y type erasure
 
 #### Paso 1 · Objetivo y preparación
@@ -77,28 +78,6 @@ Un almacén temporal necesita guardar y devolver un valor de cualquier tipo (una
 #### Paso 3 · Teoría, modelo mental y analogía
 `<T>` es un parámetro de tipo verificado en compilación; el type erasure borra esa información específica del bytecode final, dejando una única clase compartida en tiempo de ejecución. La analogía: una plantilla de formulario que se ajusta según el tipo de dato durante el llenado, pero el archivo final guardado no conserva ninguna etiqueta indicando para qué tipo fue diseñada.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-genericos-caja
-cd ejemplo-genericos-caja
-mkdir -p src/main/java/academia/generico
-```
-Crea `Caja.java` con la clase genérica `Caja<T>` (código en "Código del ejemplo") y una clase `Main` que instancie `Caja<String>` y `Caja<Integer>`, imprimiendo `getClass()` de ambas instancias. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/generico/Caja.java
-java -cp out academia.generico.Main
-```
-
-#### Paso 5 · Práctica guiada
-Pista: intenta guardar un `Integer` en una `Caja<String>` para provocar un fallo deliberado de compilación; el compilador lo rechaza aunque en tiempo de ejecución ambas cajas sean la misma clase `Caja`. Resultado esperado: confirmas que `getClass()` de `Caja<String>` y `Caja<Integer>` imprime el mismo nombre de clase.
-
-#### Paso 6 · Práctica independiente
-Escribe un método `mostrarTodos(List<? extends Number> lista)` usando un wildcard, y prueba que acepta tanto `List<Integer>` como `List<Double>` sin necesitar sobrecargas separadas para cada tipo.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación provocado; como siguiente paso estudia Comparable y Comparator. Errores comunes: usar raw types (`Caja` sin `<T>`) perdiendo toda verificación de tipos, y asumir que la información genérica está disponible por reflexión en runtime. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque el type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
 **Evidencia de aprendizaje:** entrega `Caja<T>` genérica, la prueba de que `getClass()` imprime el mismo nombre para `Caja<String>` y `Caja<Integer>`, y el error de compilación al intentar guardar un `Integer` en una `Caja<String>`.
 **Conceptos clave:** `<T>`, seguridad de tipos en compilación, borrado de tipos en tiempo de ejecución.
 
@@ -134,6 +113,29 @@ class Caja<T> {
 Caja<String> cajaTexto = new Caja<>();
 // En tiempo de ejecución: type erasure borra <String>, solo queda Caja
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-genericos-caja
+cd ejemplo-genericos-caja
+mkdir -p src/main/java/academia/generico
+```
+Crea `Caja.java` con la clase genérica `Caja<T>` (código en "Código del ejemplo") y una clase `Main` que instancie `Caja<String>` y `Caja<Integer>`, imprimiendo `getClass()` de ambas instancias. Compila y ejecuta:
+```bash
+javac -d out src/main/java/academia/generico/Caja.java
+java -cp out academia.generico.Main
+```
+
+#### Paso 5 · Práctica guiada
+Pista: intenta guardar un `Integer` en una `Caja<String>` para provocar un fallo deliberado de compilación; el compilador lo rechaza aunque en tiempo de ejecución ambas cajas sean la misma clase `Caja`. Resultado esperado: confirmas que `getClass()` de `Caja<String>` y `Caja<Integer>` imprime el mismo nombre de clase.
+
+#### Paso 6 · Práctica independiente
+Escribe un método `mostrarTodos(List<? extends Number> lista)` usando un wildcard, y prueba que acepta tanto `List<Integer>` como `List<Double>` sin necesitar sobrecargas separadas para cada tipo.
+
+#### Paso 7 · Cierre y evidencia
+Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación provocado; como siguiente paso estudia Comparable y Comparator. Errores comunes: usar raw types (`Caja` sin `<T>`) perdiendo toda verificación de tipos, y asumir que la información genérica está disponible por reflexión en runtime. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
+**¿Por qué es importante?** Porque el type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
 
 ### Tema 3: Comparable vs Comparator, e iteración
 

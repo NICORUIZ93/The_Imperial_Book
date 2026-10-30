@@ -286,6 +286,14 @@
       ]
     },
     {
+      "path": "docs/app-flow-inspection-devops.json",
+      "lines": 1617,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/app-flow-inspection.json",
       "lines": 13830,
       "kind": "project-file",
@@ -560,7 +568,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2884,
+      "lines": 2156,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -727,7 +735,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10571,
+      "lines": 10130,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6871,7 +6879,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-0.md",
-      "lines": 486,
+      "lines": 498,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6892,7 +6900,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-1.md",
-      "lines": 372,
+      "lines": 380,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6913,7 +6921,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-10.md",
-      "lines": 182,
+      "lines": 186,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6934,7 +6942,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-11.md",
-      "lines": 202,
+      "lines": 206,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6955,7 +6963,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-12.md",
-      "lines": 208,
+      "lines": 212,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6966,17 +6974,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# El mismo correlation_id se propaga a trav\u00e9s de CADA servicio que procesa esta solicitud",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# El mismo correlation_id se propaga a trav\u00e9s de CADA servicio que procesa esta solicitud",
         "### Tema 2: Metric filters y alarmas"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-13.md",
-      "lines": 227,
+      "lines": 231,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6997,7 +7005,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-14.md",
-      "lines": 192,
+      "lines": 196,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7018,7 +7026,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-15.md",
-      "lines": 188,
+      "lines": 191,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7039,7 +7047,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-16.md",
-      "lines": 213,
+      "lines": 215,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7060,7 +7068,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-17.md",
-      "lines": 195,
+      "lines": 199,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7081,7 +7089,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-18.md",
-      "lines": 226,
+      "lines": 230,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7102,7 +7110,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-19.md",
-      "lines": 213,
+      "lines": 217,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7123,7 +7131,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-2.md",
-      "lines": 483,
+      "lines": 490,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7134,17 +7142,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Fallo Deliberado: NoSuchBucket \u2014 Bucket no existe",
-        "# \u274c INCORRECTO: bucket no existe"
+        "# \u274c INCORRECTO: bucket no existe",
+        "# NoSuchBucket error",
+        "# \u2705 CORRECTO: crear bucket primero",
+        "# 1. Revisar si bucket existe",
+        "# 2. Si no existe, crearlo",
+        "# 3. Luego s\u00ed, subir"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-20.md",
-      "lines": 183,
+      "lines": 187,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7155,17 +7163,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# cloud local: MISMA entrada \u2192 SIEMPRE la misma salida stub (determinista)",
+        "# AWS real: misma entrada \u2192 puede variar entre invocaciones (no determinista)",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# cloud local: MISMA entrada \u2192 SIEMPRE la misma salida stub (determinista)",
-        "# AWS real: misma entrada \u2192 puede variar entre invocaciones (no determinista)"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-21.md",
-      "lines": 406,
+      "lines": 416,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7176,17 +7184,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-21/tema-1-ciclo-de-vida.sh \u2014 ejecutar con: bash tema-1-ciclo-de-vida.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-21/tema-1-ciclo-de-vida.sh \u2014 ejecutar con: bash tema-1-ciclo-de-vida.sh",
         "### Tema 2: AMIs, grupos de seguridad y claves SSH"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-22.md",
-      "lines": 360,
+      "lines": 368,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7197,17 +7205,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-22/tema-1-alb.sh \u2014 ejecutar con: bash tema-1-alb.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-22/tema-1-alb.sh \u2014 ejecutar con: bash tema-1-alb.sh",
         "### Tema 2: ACM \u2014 certificados TLS con criptograf\u00eda real"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-23.md",
-      "lines": 280,
+      "lines": 284,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7218,17 +7226,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-23/tema-1-cache-aside.sh \u2014 ejecutar con: bash tema-1-cache-aside.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-23/tema-1-cache-aside.sh \u2014 ejecutar con: bash tema-1-cache-aside.sh",
         "### Tema 2: Arquitectura de ElastiCache en Floci \u2014 contenedores reales, no simulaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-24.md",
-      "lines": 364,
+      "lines": 370,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7239,17 +7247,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-24/tema-1-codebuild-real.sh \u2014 ejecutar con: bash tema-1-codebuild-real.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-24/tema-1-codebuild-real.sh \u2014 ejecutar con: bash tema-1-codebuild-real.sh",
         "### Tema 2: buildspec.yml \u2014 fases y artefactos"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-25.md",
-      "lines": 402,
+      "lines": 410,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7260,17 +7268,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-25/tema-1-config-rule.sh \u2014 ejecutar con: bash tema-1-config-rule.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-25/tema-1-config-rule.sh \u2014 ejecutar con: bash tema-1-config-rule.sh",
         "### Tema 2: AppConfig \u2014 desplegar configuraci\u00f3n sin redeployar c\u00f3digo"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-26.md",
-      "lines": 271,
+      "lines": 277,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7281,17 +7289,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-26/tema-1-firehose.sh \u2014 ejecutar con: bash tema-1-firehose.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-26/tema-1-firehose.sh \u2014 ejecutar con: bash tema-1-firehose.sh",
         "### Tema 2: Firehose vs Kinesis Data Streams \u2014 qui\u00e9n consume los datos"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-27.md",
-      "lines": 278,
+      "lines": 284,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7302,17 +7310,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-27/tema-1-appsync-api.sh \u2014 ejecutar con: bash tema-1-appsync-api.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-27/tema-1-appsync-api.sh \u2014 ejecutar con: bash tema-1-appsync-api.sh",
         "### Tema 2: Fuentes de datos y resolvers"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-28.md",
-      "lines": 290,
+      "lines": 296,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7323,17 +7331,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
         "# archivo: src/labs/modulo-28/tema-1-por-que-un-grafo.py \u2014 ejecutar con: python tema-1-por-que-un-grafo.py",
-        "# Compara mentalmente: recuperar \"qui\u00e9n entreg\u00f3 el pedido RF-001\" es una"
+        "# Compara mentalmente: recuperar \"qui\u00e9n entreg\u00f3 el pedido RF-001\" es una",
+        "# consulta por clave (DynamoDB). Recuperar \"todos los repartidores que",
+        "# alguna vez cubrieron la misma zona que Ana\" es un recorrido multi-salto:",
+        "# exactamente el tipo de pregunta que justifica una base de grafos.",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-29.md",
-      "lines": 329,
+      "lines": 337,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7344,17 +7352,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-29/tema-1-cost-explorer.sh \u2014 ejecutar con: bash tema-1-cost-explorer.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-29/tema-1-cost-explorer.sh \u2014 ejecutar con: bash tema-1-cost-explorer.sh",
         "### Tema 2: Pricing \u2014 cat\u00e1logo de tarifas de referencia"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-3.md",
-      "lines": 323,
+      "lines": 329,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7375,7 +7383,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-30.md",
-      "lines": 263,
+      "lines": 269,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7386,17 +7394,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# archivo: src/labs/modulo-30/tema-1-por-que-transfer-family.sh \u2014 ejecutar con: bash tema-1-por-que-transfer-family.sh",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "# archivo: src/labs/modulo-30/tema-1-por-que-transfer-family.sh \u2014 ejecutar con: bash tema-1-por-que-transfer-family.sh",
         "### Tema 2: Ciclo de vida del servidor y modelo de usuarios"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-31.md",
-      "lines": 361,
+      "lines": 365,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7438,7 +7446,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-33.md",
-      "lines": 388,
+      "lines": 394,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7459,7 +7467,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-34.md",
-      "lines": 777,
+      "lines": 783,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7480,7 +7488,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-4.md",
-      "lines": 721,
+      "lines": 727,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7491,17 +7499,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "# \u274c INCORRECTO: falta 'sequence'",
+        "# \u2705 CORRECTO: ambas claves presentes",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Fallo Deliberado: Missing Key Attribute en DynamoDB",
-        "# \u274c INCORRECTO: falta 'sequence'"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-5.md",
-      "lines": 849,
+      "lines": 856,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7512,17 +7520,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Fallo Deliberado: Runtime.HandlerNotFound en Lambda",
-        "# \u274c INCORRECTO: ZIP vac\u00edo"
+        "# \u274c INCORRECTO: ZIP vac\u00edo",
+        "# Sin agregar index.js",
+        "# create-function FUNCIONA (sin error)",
+        "# Pero invoke FALLA con Runtime.HandlerNotFound",
+        "# \u2192 Runtime.HandlerNotFound en salida.json",
+        "# \u2705 CORRECTO: Crear el archivo ANTES del ZIP"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-6.md",
-      "lines": 397,
+      "lines": 404,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7543,7 +7551,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-7.md",
-      "lines": 337,
+      "lines": 345,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7564,7 +7572,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-8.md",
-      "lines": 288,
+      "lines": 292,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7585,7 +7593,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-9.md",
-      "lines": 469,
+      "lines": 477,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7732,7 +7740,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 401,
+      "lines": 402,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8025,7 +8033,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-0.md",
-      "lines": 503,
+      "lines": 506,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8046,7 +8054,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-1.md",
-      "lines": 405,
+      "lines": 407,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8067,7 +8075,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-10.md",
-      "lines": 270,
+      "lines": 272,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8088,7 +8096,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-11.md",
-      "lines": 399,
+      "lines": 402,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8109,7 +8117,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-12.md",
-      "lines": 288,
+      "lines": 290,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8130,7 +8138,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-13.md",
-      "lines": 410,
+      "lines": 411,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8193,7 +8201,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-2.md",
-      "lines": 283,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8214,7 +8222,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-3.md",
-      "lines": 285,
+      "lines": 287,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8235,7 +8243,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-4.md",
-      "lines": 704,
+      "lines": 708,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8256,7 +8264,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-5.md",
-      "lines": 340,
+      "lines": 342,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8277,7 +8285,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-6.md",
-      "lines": 375,
+      "lines": 377,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8298,7 +8306,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-7.md",
-      "lines": 457,
+      "lines": 460,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8319,7 +8327,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-8.md",
-      "lines": 498,
+      "lines": 501,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8340,7 +8348,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-9.md",
-      "lines": 301,
+      "lines": 303,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8382,7 +8390,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-1.md",
-      "lines": 648,
+      "lines": 650,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8393,17 +8401,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Casos l\u00edmite con n\u00fameros flotantes (99.99)",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Casos l\u00edmite con n\u00fameros flotantes (99.99)",
         "### Tema 2: Variables, tipos, expresiones y cambios de estado"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 724,
+      "lines": 728,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8414,17 +8422,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Backoff y jitter en reintentos",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Consistencia eventual en sistemas distribuidos",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Backoff y jitter en reintentos",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Consistencia eventual en sistemas distribuidos"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-11.md",
-      "lines": 605,
+      "lines": 604,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8436,11 +8444,11 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Round Robin con prioridades y coste de cambio de contexto",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Round Robin con prioridades y coste de cambio de contexto"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
@@ -8529,7 +8537,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-2.md",
-      "lines": 934,
+      "lines": 938,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8540,17 +8548,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Estructura \u00f3ptima para \"b\u00fasqueda frecuente, inserci\u00f3n rara\"",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Estructura \u00f3ptima para \"b\u00fasqueda frecuente, inserci\u00f3n rara\"",
         "### Tema 2: Pilas, colas y abstracciones de comportamiento"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-3.md",
-      "lines": 710,
+      "lines": 713,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8561,17 +8569,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Rutas 404 vs 500 en servidor Fundamentos",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Rutas 404 vs 500 en servidor Fundamentos",
         "### Tema 2: HTTP como contrato observable"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-4.md",
-      "lines": 1006,
+      "lines": 1009,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8582,17 +8590,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: normalizar una tabla de tareas con categor\u00eda repetida",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: normalizar una tabla de tareas con categor\u00eda repetida",
         "### Tema 2: SQL para definir, escribir, consultar y relacionar"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-5.md",
-      "lines": 561,
+      "lines": 564,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8603,17 +8611,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Depuraci\u00f3n en Fundamentos CLI sin salida",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dise\u00f1o: Depuraci\u00f3n en Fundamentos CLI sin salida",
         "### Tema 2: Pruebas con prop\u00f3sito y niveles adecuados"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-6.md",
-      "lines": 529,
+      "lines": 533,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8634,7 +8642,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 485,
+      "lines": 488,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8645,17 +8653,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 De requisito vago a criterio verificable en el CLI",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 De requisito vago a criterio verificable en el CLI",
         "### Tema 2: Arquitectura guiada por atributos de calidad"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-8.md",
-      "lines": 543,
+      "lines": 547,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8666,17 +8674,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Profundizaci\u00f3n \u00b7 Dos instancias del CLI, dos procesos distintos",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Profundizaci\u00f3n \u00b7 Dos instancias del CLI, dos procesos distintos",
         "### Tema 2: Memoria y concurrencia sin magia"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-9.md",
-      "lines": 450,
+      "lines": 453,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8697,7 +8705,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-0.md",
-      "lines": 538,
+      "lines": 537,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8718,7 +8726,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-1.md",
-      "lines": 436,
+      "lines": 439,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8739,7 +8747,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-10.md",
-      "lines": 403,
+      "lines": 404,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8781,7 +8789,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-12.md",
-      "lines": 271,
+      "lines": 273,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8802,7 +8810,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-13.md",
-      "lines": 628,
+      "lines": 636,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8844,7 +8852,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 326,
+      "lines": 328,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8855,12 +8863,12 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### C\u00f3mo leer `@State`, `@Binding` y el prefijo `$`",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "# Genera un paquete Swift ejecutable (no requiere plantilla de Xcode)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### C\u00f3mo leer `@State`, `@Binding` y el prefijo `$`"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
@@ -8886,7 +8894,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 340,
+      "lines": 342,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9012,7 +9020,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 613,
+      "lines": 618,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9033,7 +9041,7 @@
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 299,
+      "lines": 300,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9054,7 +9062,7 @@
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 227,
+      "lines": 229,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9075,7 +9083,7 @@
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 309,
+      "lines": 312,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9096,7 +9104,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 431,
+      "lines": 433,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9117,7 +9125,7 @@
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 188,
+      "lines": 190,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9138,7 +9146,7 @@
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 416,
+      "lines": 418,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9264,7 +9272,7 @@
     },
     {
       "path": "web/public/content/java/modulo-2.md",
-      "lines": 225,
+      "lines": 227,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9306,7 +9314,7 @@
     },
     {
       "path": "web/public/content/java/modulo-3.md",
-      "lines": 211,
+      "lines": 213,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9327,7 +9335,7 @@
     },
     {
       "path": "web/public/content/java/modulo-4.md",
-      "lines": 275,
+      "lines": 278,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9348,7 +9356,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 483,
+      "lines": 487,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9369,7 +9377,7 @@
     },
     {
       "path": "web/public/content/java/modulo-6.md",
-      "lines": 266,
+      "lines": 268,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9390,7 +9398,7 @@
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 316,
+      "lines": 319,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9411,7 +9419,7 @@
     },
     {
       "path": "web/public/content/java/modulo-8.md",
-      "lines": 280,
+      "lines": 281,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9432,7 +9440,7 @@
     },
     {
       "path": "web/public/content/java/modulo-9.md",
-      "lines": 216,
+      "lines": 217,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9810,7 +9818,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 281,
+      "lines": 283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9831,7 +9839,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "lines": 273,
+      "lines": 275,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9852,7 +9860,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-12.md",
-      "lines": 462,
+      "lines": 465,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10020,7 +10028,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-8.md",
-      "lines": 286,
+      "lines": 288,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10041,7 +10049,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-9.md",
-      "lines": 274,
+      "lines": 276,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10104,7 +10112,7 @@
     },
     {
       "path": "web/public/content/node/modulo-10.md",
-      "lines": 459,
+      "lines": 458,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10377,7 +10385,7 @@
     },
     {
       "path": "web/public/content/react/modulo-0.md",
-      "lines": 465,
+      "lines": 468,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10398,7 +10406,7 @@
     },
     {
       "path": "web/public/content/react/modulo-1.md",
-      "lines": 410,
+      "lines": 413,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10409,17 +10417,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Por qu\u00e9 los Hooks dependen del orden de llamada",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "#### Por qu\u00e9 los Hooks dependen del orden de llamada",
         "### Tema 2: Render frente a commit"
       ]
     },
     {
       "path": "web/public/content/react/modulo-10.md",
-      "lines": 326,
+      "lines": 328,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10440,7 +10448,7 @@
     },
     {
       "path": "web/public/content/react/modulo-11.md",
-      "lines": 307,
+      "lines": 308,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10461,7 +10469,7 @@
     },
     {
       "path": "web/public/content/react/modulo-12.md",
-      "lines": 289,
+      "lines": 290,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10482,7 +10490,7 @@
     },
     {
       "path": "web/public/content/react/modulo-13.md",
-      "lines": 478,
+      "lines": 481,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10524,7 +10532,7 @@
     },
     {
       "path": "web/public/content/react/modulo-2.md",
-      "lines": 538,
+      "lines": 541,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10545,7 +10553,7 @@
     },
     {
       "path": "web/public/content/react/modulo-3.md",
-      "lines": 261,
+      "lines": 263,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10566,7 +10574,7 @@
     },
     {
       "path": "web/public/content/react/modulo-4.md",
-      "lines": 293,
+      "lines": 295,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10608,7 +10616,7 @@
     },
     {
       "path": "web/public/content/react/modulo-6.md",
-      "lines": 358,
+      "lines": 359,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10629,7 +10637,7 @@
     },
     {
       "path": "web/public/content/react/modulo-7.md",
-      "lines": 352,
+      "lines": 355,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10650,7 +10658,7 @@
     },
     {
       "path": "web/public/content/react/modulo-8.md",
-      "lines": 265,
+      "lines": 266,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10671,7 +10679,7 @@
     },
     {
       "path": "web/public/content/react/modulo-9.md",
-      "lines": 406,
+      "lines": 409,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

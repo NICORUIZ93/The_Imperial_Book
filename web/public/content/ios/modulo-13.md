@@ -13,37 +13,7 @@ Al finalizar vas a validar un Universal Link entrante de RutaFlow (`https://ruta
 Cualquier app puede construir y enviar un link con la forma `https://rutaflow.app/envios/RF-4471`; que el sistema haya verificado que RutaFlow es la app asociada a ese dominio no significa que el conductor actual tenga permiso de leer ESE envío puntual.
 #### Paso 3 · Teoría, modelo mental y analogía
 El sandbox y la verificación de dominio reducen qué puede llegar a tu app, pero no validan la intención de cada entrada — una frontera con controles: validar estructura, autenticar, autorizar y recién después actuar.
-#### Paso 4 · Demostración guiada
-```swift
-enum LinkError: Error { case malformed, forbidden }
 
-func envioID(from url: URL, session: Session) throws -> EnvioID {
-    guard url.scheme == "https",
-          url.host == "rutaflow.app",
-          url.pathComponents.count == 3,
-          url.pathComponents[1] == "envios",
-          let id = EnvioID(rawValue: url.pathComponents[2])
-    else { throw LinkError.malformed }
-    guard session.puedeLeer(id) else { throw LinkError.forbidden }
-    return id
-}
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: `envioID(from:session:)` lanza `.malformed` si la URL no tiene exactamente la forma esperada, y lanza `.forbidden` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual — nunca abre un envío solo porque la URL "se ve bien".
-#### Paso 5 · Práctica guiada
-Pista: quitá la línea `guard session.puedeLeer(id) else { throw LinkError.forbidden }` "porque ya validamos la estructura de la URL arriba" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, exactamente la amenaza que la verificación de dominio no cubre por sí sola.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `.forbidden`, no que simplemente "no hace nada".
-#### Paso 7 · Cierre y evidencia
-Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
-**¿Por qué es importante?** Porque una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
 **Evidencia de aprendizaje:** entrega función con validación completa, acceso indebido provocado y test de autorización.
 **Conceptos clave:** sandbox, entitlement, capability, least privilege, runtime permission, URL scheme, Universal Link, associated domain, input validation, authentication, authorization y threat model.
 
@@ -97,28 +67,19 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, practicá extendiendo `envioID(from:session:)` a tu proyecto propio con un segundo recurso protegido. Límite de la decisión: verificar el dominio asociado (Universal Link) no conviene tratarlo como prueba de autorización — confirma únicamente que RutaFlow es la app correcta para ese dominio, nunca que el usuario actual puede leer ese recurso puntual; confundir ambos pasos es exactamente la amenaza que este tema demuestra.
 
-### Tema 2: Proteger datos es controlar todas sus copias
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en `UserDefaults`), y a confirmar que ese token no queda expuesto en logs. Prerrequisitos: Módulo 5 completo.
-#### Paso 2 · Contexto y caso real
-Guardar el token de sesión de un conductor en `UserDefaults` "porque es más simple" lo deja en un archivo plist sin cifrado dedicado, legible por cualquiera con acceso al dispositivo o a un backup del mismo.
-#### Paso 3 · Teoría, modelo mental y analogía
-Keychain protege secretos pequeños con una clase de accesibilidad explícita; redactar logs es tan necesario como elegir bien el almacén — guardar una joya en una caja fuerte no ayuda si su fotografía queda sobre la mesa.
 #### Paso 4 · Demostración guiada
 ```swift
-func guardarToken(_ data: Data, conductorID: String) throws {
-    let query: [CFString: Any] = [
-        kSecClass: kSecClassGenericPassword,
-        kSecAttrService: "com.rutaflow.conductor.session",
-        kSecAttrAccount: conductorID,
-        kSecValueData: data,
-        kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-    ]
-    SecItemDelete(query as CFDictionary)
-    guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else {
-        throw SesionError.keychainWrite
-    }
+enum LinkError: Error { case malformed, forbidden }
+
+func envioID(from url: URL, session: Session) throws -> EnvioID {
+    guard url.scheme == "https",
+          url.host == "rutaflow.app",
+          url.pathComponents.count == 3,
+          url.pathComponents[1] == "envios",
+          let id = EnvioID(rawValue: url.pathComponents[2])
+    else { throw LinkError.malformed }
+    guard session.puedeLeer(id) else { throw LinkError.forbidden }
+    return id
 }
 ```
 
@@ -129,14 +90,24 @@ xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: el token queda en Keychain con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` (no migra a otro dispositivo vía backup ni es legible con el teléfono bloqueado); buscar el string del token en los logs de la app no encuentra ninguna coincidencia.
+Resultado esperado: `envioID(from:session:)` lanza `.malformed` si la URL no tiene exactamente la forma esperada, y lanza `.forbidden` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual — nunca abre un envío solo porque la URL "se ve bien".
 #### Paso 5 · Práctica guiada
-Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .utf8) ?? "")")` justo después de `SecItemAdd` "para depurar" — ese es el fallo deliberado: ahora el token completo del conductor queda en los logs del sistema en texto plano, exactamente la copia secundaria sin control que vuelve inútil haber usado Keychain para el almacén principal.
+Pista: quitá la línea `guard session.puedeLeer(id) else { throw LinkError.forbidden }` "porque ya validamos la estructura de la URL arriba" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, exactamente la amenaza que la verificación de dominio no cubre por sí sola.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que registre solo que "la sesión se guardó" (sin el valor), más una función `cerrarSesion(conductorID:)` que borre el token de Keychain con `SecItemDelete`.
+Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `.forbidden`, no que simplemente "no hace nada".
 #### Paso 7 · Cierre y evidencia
-Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
-**¿Por qué es importante?** Porque las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
+Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
+**¿Por qué es importante?** Porque una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
+
+### Tema 2: Proteger datos es controlar todas sus copias
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en `UserDefaults`), y a confirmar que ese token no queda expuesto en logs. Prerrequisitos: Módulo 5 completo.
+#### Paso 2 · Contexto y caso real
+Guardar el token de sesión de un conductor en `UserDefaults` "porque es más simple" lo deja en un archivo plist sin cifrado dedicado, legible por cualquiera con acceso al dispositivo o a un backup del mismo.
+#### Paso 3 · Teoría, modelo mental y analogía
+Keychain protege secretos pequeños con una clase de accesibilidad explícita; redactar logs es tan necesario como elegir bien el almacén — guardar una joya en una caja fuerte no ayuda si su fotografía queda sobre la mesa.
+
 **Evidencia de aprendizaje:** entrega guardado en Keychain, filtración en logs detectada y función de cierre de sesión.
 **Conceptos clave:** clasificación, minimización, Keychain, access class, Data Protection, Secure Enclave, backup, log redaction, screenshot, pasteboard, notification preview, privacy manifest, token y logout.
 
@@ -189,31 +160,19 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, `guardarToken` vive en `examples/ios-lab/Sources/RutaFlowLab/SesionVault.swift`. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
 
-### Tema 3: Offline-first es un protocolo, no una caché
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir una outbox persistente para `confirmarEntrega` (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
-#### Paso 2 · Contexto y caso real
-Si `confirmarEntrega` falla porque el conductor está sin señal en un sótano, simplemente reintentar la misma llamada cuando vuelva la red puede duplicar el efecto si el servidor sí la había recibido pero la respuesta se perdió en el camino.
-#### Paso 3 · Teoría, modelo mental y analogía
-Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
 #### Paso 4 · Demostración guiada
 ```swift
-struct ConfirmacionPendiente: Codable, Identifiable {
-    enum Estado: String, Codable { case encolada, enviando, fallida }
-    let id: UUID              // también es la clave de idempotencia
-    let envioID: String
-    let pin: String
-    var estado: Estado
-    var intentos: Int
-}
-
-actor MotorSincronizacion {
-    func vaciar() async {
-        for confirmacion in await almacen.pendientes() {
-            guard !Task.isCancelled else { return }
-            await enviarYReconciliar(confirmacion)
-        }
+func guardarToken(_ data: Data, conductorID: String) throws {
+    let query: [CFString: Any] = [
+        kSecClass: kSecClassGenericPassword,
+        kSecAttrService: "com.rutaflow.conductor.session",
+        kSecAttrAccount: conductorID,
+        kSecValueData: data,
+        kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+    ]
+    SecItemDelete(query as CFDictionary)
+    guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else {
+        throw SesionError.keychainWrite
     }
 }
 ```
@@ -225,14 +184,24 @@ xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendiente` con un `id` fijo; cuando vuelve la conectividad, `MotorSincronizacion.vaciar()` envía esa misma confirmación identificada por ese `id` — si el servidor ya la había procesado antes de que se perdiera la respuesta, reconoce el mismo `id` y no la aplica dos veces.
+Resultado esperado: el token queda en Keychain con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` (no migra a otro dispositivo vía backup ni es legible con el teléfono bloqueado); buscar el string del token en los logs de la app no encuentra ninguna coincidencia.
 #### Paso 5 · Práctica guiada
-Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
+Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .utf8) ?? "")")` justo después de `SecItemAdd` "para depurar" — ese es el fallo deliberado: ahora el token completo del conductor queda en los logs del sistema en texto plano, exactamente la copia secundaria sin control que vuelve inútil haber usado Keychain para el almacén principal.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
+Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que registre solo que "la sesión se guardó" (sin el valor), más una función `cerrarSesion(conductorID:)` que borre el token de Keychain con `SecItemDelete`.
 #### Paso 7 · Cierre y evidencia
-Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
-**¿Por qué es importante?** Porque la conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
+Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
+**¿Por qué es importante?** Porque las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
+
+### Tema 3: Offline-first es un protocolo, no una caché
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a construir una outbox persistente para `confirmarEntrega` (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
+#### Paso 2 · Contexto y caso real
+Si `confirmarEntrega` falla porque el conductor está sin señal en un sótano, simplemente reintentar la misma llamada cuando vuelva la red puede duplicar el efecto si el servidor sí la había recibido pero la respuesta se perdió en el camino.
+#### Paso 3 · Teoría, modelo mental y analogía
+Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
+
 **Evidencia de aprendizaje:** entrega outbox con idempotencia, duplicación provocada y backoff agregado.
 **Conceptos clave:** source of truth, outbox, state machine, idempotency key, retry, exponential backoff, jitter, reachability, optimistic UI, version, conflict, tombstone, background task y cancellation.
 
@@ -295,24 +264,24 @@ sequenceDiagram
 
 En el proyecto integrador RutaFlow, La implementación de laboratorio EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion` vive en `examples/ios-lab/Sources/RutaFlowLab/MotorSincronizacion.swift`.
 
-### Tema 4: Operar significa detectar, limitar y aprender del fallo
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a instrumentar `MotorSincronizacion.vaciar()` (Tema 3) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 3 de este módulo.
-#### Paso 2 · Contexto y caso real
-"No se traba en mi teléfono" no es evidencia de que la sincronización funcione para los conductores reales — necesitás una medición agregada, no una impresión personal.
-#### Paso 3 · Teoría, modelo mental y analogía
-MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
 #### Paso 4 · Demostración guiada
 ```swift
-import OSLog
+struct ConfirmacionPendiente: Codable, Identifiable {
+    enum Estado: String, Codable { case encolada, enviando, fallida }
+    let id: UUID              // también es la clave de idempotencia
+    let envioID: String
+    let pin: String
+    var estado: Estado
+    var intentos: Int
+}
 
-let puntos = OSSignposter(subsystem: "com.rutaflow.conductor", category: "sync")
-
-func sincronizacionMedida() async throws {
-    let estado = puntos.beginInterval("outbox-drain")
-    defer { puntos.endInterval("outbox-drain", estado) }
-    try await motorSincronizacion.vaciar()
+actor MotorSincronizacion {
+    func vaciar() async {
+        for confirmacion in await almacen.pendientes() {
+            guard !Task.isCancelled else { return }
+            await enviarYReconciliar(confirmacion)
+        }
+    }
 }
 ```
 
@@ -323,14 +292,24 @@ xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
+Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendiente` con un `id` fijo; cuando vuelve la conectividad, `MotorSincronizacion.vaciar()` envía esa misma confirmación identificada por ese `id` — si el servidor ya la había procesado antes de que se perdiera la respuesta, reconoce el mismo `id` y no la aplica dos veces.
 #### Paso 5 · Práctica guiada
-Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
+Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
+Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
 #### Paso 7 · Cierre y evidencia
-Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
-**¿Por qué es importante?** Porque todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
+Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
+**¿Por qué es importante?** Porque la conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
+
+### Tema 4: Operar significa detectar, limitar y aprender del fallo
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a instrumentar `MotorSincronizacion.vaciar()` (Tema 3) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 3 de este módulo.
+#### Paso 2 · Contexto y caso real
+"No se traba en mi teléfono" no es evidencia de que la sincronización funcione para los conductores reales — necesitás una medición agregada, no una impresión personal.
+#### Paso 3 · Teoría, modelo mental y analogía
+MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
+
 **Evidencia de aprendizaje:** entrega signpost instrumentado, métrica sin umbral detectada y umbral con acción definida.
 **Conceptos clave:** crash, hang, launch time, memory pressure, MetricKit, Instruments, os_signpost, structured logging, SLI, release train, TestFlight, phased release, migration, feature flag y rollback.
 
@@ -378,6 +357,35 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, `sincronizacionMedida` vive en `examples/ios-lab/Sources/RutaFlowLab/MotorSincronizacion.swift`.
+
+#### Paso 4 · Demostración guiada
+```swift
+import OSLog
+
+let puntos = OSSignposter(subsystem: "com.rutaflow.conductor", category: "sync")
+
+func sincronizacionMedida() async throws {
+    let estado = puntos.beginInterval("outbox-drain")
+    defer { puntos.endInterval("outbox-drain", estado) }
+    try await motorSincronizacion.vaciar()
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
+#### Paso 5 · Práctica guiada
+Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
+#### Paso 7 · Cierre y evidencia
+Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
+**¿Por qué es importante?** Porque todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
 
 ### Tema 5: Keychain — guardar secretos de forma segura
 

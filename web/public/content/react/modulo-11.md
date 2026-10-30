@@ -117,6 +117,37 @@ RutaFlow necesita persistir en `localStorage` tanto el string del filtro de zona
 #### Paso 3 · Teoría, modelo mental y analogía
 Un hook genérico usa un parámetro de tipo `T` para permanecer reutilizable para cualquier tipo de dato concreto, sin fijar de antemano un tipo específico — un molde ajustable, no uno nuevo por cada forma.
 
+**Evidencia de aprendizaje:** entrega hook reutilizado para dos tipos, inferencia ambigua detectada y tipo explícito agregado.
+**Conceptos clave:** parámetro de tipo `<T>`, reutilización para cualquier tipo de dato.
+
+Un hook personalizado genérico (`function useLocalStorage<T>(clave: string, valorInicial: T) {...}`) usa un parámetro de tipo (`T`) para permanecer reutilizable para cualquier tipo de dato concreto que se le pase, en vez de fijar de antemano un tipo específico (por ejemplo, `string` únicamente) que limitaría su reutilización a ese único caso: al invocarlo como `useLocalStorage<'claro' | 'oscuro'>('tema', 'claro')`, TypeScript infiere (o recibe explícitamente) que `T` es el tipo unión `'claro' | 'oscuro'` para esa invocación específica, tipando correctamente tanto el valor devuelto como el setter correspondiente según ese tipo concreto, sin que el hook en sí tenga que conocer de antemano cuál será ese tipo específico en cada uso particular.
+
+Este mismo principio de generics aplicado a hooks es exactamente el mismo concepto de generics estudiado de forma más general para funciones y clases en el track de TypeScript, aplicado aquí específicamente al caso de hooks personalizados de React: el hook define su comportamiento una única vez de forma abstracta sobre un tipo `T` no especificado todavía, y cada punto de uso concreto especifica (o permite que TypeScript infiera) cuál es ese tipo específico para esa invocación particular, obteniendo tipado preciso sin necesidad de duplicar la implementación del hook para cada tipo de dato distinto que pudiera necesitarse.
+
+**Analogía:** un hook genérico es como un molde ajustable que puede producir piezas de distintas formas específicas según el parámetro que se le indique, en vez de tener que fabricar un molde completamente nuevo y separado para cada forma específica de pieza que se necesite producir.
+
+**¿Por qué es importante?** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación para cada tipo específico que pudiera necesitarse.
+
+**Código del ejemplo:**
+
+```tsx
+function useLocalStorage<T>(clave: string, valorInicial: T) {
+  const [valor, setValor] = useState<T>(() => {
+    const guardado = localStorage.getItem(clave);
+    return guardado ? JSON.parse(guardado) : valorInicial;
+  });
+  useEffect(() => localStorage.setItem(clave, JSON.stringify(valor)), [clave, valor]);
+  return [valor, setValor] as const;
+}
+
+const [tema, setTema] = useLocalStorage<'claro' | 'oscuro'>('tema', 'claro');
+```
+
+* Ejecutar: `npm test`
+* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
+* Proyecto: proyecto integrador RutaFlow
+* Visualización: concepto mostrado en diagrama
+
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
 function useLocalStorage<T>(clave: string, valorInicial: T) {
@@ -152,36 +183,6 @@ Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLoca
 #### Paso 7 · Cierre y evidencia
 Entregá el hook genérico reutilizado para dos tipos distintos del Paso 4, el caso de inferencia ambigua del Paso 5, y la especificación explícita del Paso 6; explicá cuándo conviene especificar el parámetro de tipo explícitamente en vez de depender de que TypeScript lo infiera solo. Siguiente paso: estudia eventos tipados y componentes polimórficos. Errores comunes: depender de la inferencia de tipos en casos ambiguos donde el valor inicial no determina claramente el tipo deseado, duplicar un hook para cada tipo de dato en vez de generalizarlo, y omitir el parámetro de tipo cuando TypeScript realmente no puede inferirlo del contexto. Fuentes oficiales: https://www.typescriptlang.org/docs/handbook/2/generics.html y https://react.dev/learn/reusing-logic-with-custom-hooks.
 **¿Por qué es importante?** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación.
-**Evidencia de aprendizaje:** entrega hook reutilizado para dos tipos, inferencia ambigua detectada y tipo explícito agregado.
-**Conceptos clave:** parámetro de tipo `<T>`, reutilización para cualquier tipo de dato.
-
-Un hook personalizado genérico (`function useLocalStorage<T>(clave: string, valorInicial: T) {...}`) usa un parámetro de tipo (`T`) para permanecer reutilizable para cualquier tipo de dato concreto que se le pase, en vez de fijar de antemano un tipo específico (por ejemplo, `string` únicamente) que limitaría su reutilización a ese único caso: al invocarlo como `useLocalStorage<'claro' | 'oscuro'>('tema', 'claro')`, TypeScript infiere (o recibe explícitamente) que `T` es el tipo unión `'claro' | 'oscuro'` para esa invocación específica, tipando correctamente tanto el valor devuelto como el setter correspondiente según ese tipo concreto, sin que el hook en sí tenga que conocer de antemano cuál será ese tipo específico en cada uso particular.
-
-Este mismo principio de generics aplicado a hooks es exactamente el mismo concepto de generics estudiado de forma más general para funciones y clases en el track de TypeScript, aplicado aquí específicamente al caso de hooks personalizados de React: el hook define su comportamiento una única vez de forma abstracta sobre un tipo `T` no especificado todavía, y cada punto de uso concreto especifica (o permite que TypeScript infiera) cuál es ese tipo específico para esa invocación particular, obteniendo tipado preciso sin necesidad de duplicar la implementación del hook para cada tipo de dato distinto que pudiera necesitarse.
-
-**Analogía:** un hook genérico es como un molde ajustable que puede producir piezas de distintas formas específicas según el parámetro que se le indique, en vez de tener que fabricar un molde completamente nuevo y separado para cada forma específica de pieza que se necesite producir.
-
-**¿Por qué es importante?** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación para cada tipo específico que pudiera necesitarse.
-
-**Código del ejemplo:**
-
-```tsx
-function useLocalStorage<T>(clave: string, valorInicial: T) {
-  const [valor, setValor] = useState<T>(() => {
-    const guardado = localStorage.getItem(clave);
-    return guardado ? JSON.parse(guardado) : valorInicial;
-  });
-  useEffect(() => localStorage.setItem(clave, JSON.stringify(valor)), [clave, valor]);
-  return [valor, setValor] as const;
-}
-
-const [tema, setTema] = useLocalStorage<'claro' | 'oscuro'>('tema', 'claro');
-```
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 3: Eventos tipados y componentes polimórficos
 

@@ -11,28 +11,7 @@ Al finalizar podrás definir una API GraphQL desde cero. Prerrequisitos: Node.js
 Una aplicación necesita consultar exactamente los campos que su pantalla requiere.
 #### Paso 3 · Teoría, modelo mental y analogía
 El esquema GraphQL es menú tipado; el cliente pide solo platos necesarios.
-#### Paso 4 · Demostración guiada
-Crea `src/schema.graphql` desde una carpeta vacía.
-```bash
-mkdir ejemplo-graphql
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
-#### Paso 5 · Práctica guiada
-Pista: consulta un campo inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Añade tipo, query y autenticación.
-#### Paso 7 · Cierre y evidencia
-Entrega esquema, salida, fallo y corrección; explica el resultado. Siguiente paso: resolvers. Errores comunes: esquema sin límites y consultas costosas. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html.
 **Conceptos clave:** `CreateGraphqlApi`, esquema GraphQL, tipo de autenticación.
 
 AppSync resuelve el mismo problema de fondo que API Gateway del Módulo 6 —exponer una API a tus clientes—, pero con GraphQL en vez de REST: en lugar de múltiples endpoints donde cada uno devuelve una forma fija de datos, GraphQL expone un único endpoint donde el cliente especifica exactamente qué campos necesita en cada consulta, evitando tanto la sobre-obtención (recibir campos que no usas) como la sub-obtención (tener que hacer varias llamadas para juntar los datos que necesitas). Crear una API con `CreateGraphqlApi` requiere elegir un tipo de autenticación —`API_KEY` es el más simple para empezar— y luego definir el esquema con `StartSchemaCreation`, que en Floci es siempre síncrono: no hay espera de procesamiento como en otros servicios.
@@ -64,6 +43,29 @@ aws appsync start-schema-creation --api-id "$API_ID" \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Expón una consulta de estado de guía por GraphQL con campos públicos explícitos. Prueba una selección válida y el intento de consultar un dato privado que no debe formar parte del esquema.
 
+#### Paso 4 · Demostración guiada
+Crea `src/schema.graphql` desde una carpeta vacía.
+```bash
+mkdir ejemplo-graphql
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Node disponible.
+#### Paso 5 · Práctica guiada
+Pista: consulta un campo inexistente para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Añade tipo, query y autenticación.
+#### Paso 7 · Cierre y evidencia
+Entrega esquema, salida, fallo y corrección; explica el resultado. Siguiente paso: resolvers. Errores comunes: esquema sin límites y consultas costosas. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html.
+
 ### Tema 2: Fuentes de datos y resolvers
 
 #### Paso 1 · Objetivo y preparación
@@ -72,20 +74,7 @@ Al finalizar vas a conectar el campo `estadoEntrega` de `demo-api` (Tema 1) a un
 El equipo de frontend de RutaFlow quiere empezar a consumir `estadoEntrega` desde su app ya mismo, sin esperar a que el backend termine de conectar la fuente de datos real.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una fuente de datos `NONE` es un mostrador local que responde sin ir a la cocina (el backend real) — útil para validar el esquema con clientes reales antes de conectar nada definitivo.
-#### Paso 4 · Demostración guiada
-```bash
-API_ID=$(aws appsync list-graphql-apis --query "graphqlApis[?name=='demo-api'].apiId | [0]" --output text)
-aws appsync create-data-source --api-id "$API_ID" --name origen-local --type NONE
-aws appsync create-resolver --api-id "$API_ID" --type-name Query --field-name estadoEntrega \
-  --data-source-name origen-local
-```
-Resultado esperado: la fuente `origen-local` y el resolver quedan creados sin backend externo — cualquier cliente GraphQL ya puede consultar `estadoEntrega` y recibir una respuesta, aunque todavía no venga de ninguna base de datos real.
-#### Paso 5 · Práctica guiada
-Pista: configurá el resolver local para devolver una forma de dato que no coincide con el tipo declarado en el esquema (por ejemplo, un número donde el esquema espera un `String`) — ese es el fallo deliberado: AppSync rechaza la respuesta del resolver con un error de tipo, aunque el resolver en sí "corrió" sin excepciones.
-#### Paso 6 · Práctica independiente
-Corregí la forma de la respuesta para que coincida con el esquema, y documentá qué validación agregarías antes de reemplazar este resolver `NONE` por la tabla DynamoDB real de entregas, para no romper a los clientes que ya empezaron a consumir `estadoEntrega`.
-#### Paso 7 · Cierre y evidencia
-Entregá el resolver local funcionando del Paso 4, el error de tipo del Paso 5, y la validación propuesta del Paso 6; explicá por qué "maqueta funcional primero" le permitió al frontend avanzar sin esperar al backend. Siguiente paso: correo. Errores comunes: lógica sin autorización y respuestas inconsistentes. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference.html.
+
 **Conceptos clave:** fuente de datos tipo `NONE`, resolvers locales, función.
 
 Un resolver conecta un campo del esquema con una fuente de datos (`CreateDataSource`): puede ser DynamoDB, Lambda, o el tipo especial `NONE`, que permite resolvers completamente locales sin backend externo — útiles para prototipar rápidamente antes de conectar un origen de datos real, exactamente lo que vas a practicar en el laboratorio de este módulo. Los resolvers se pueden crear directamente sobre un campo (`CreateResolver`) o como funciones reutilizables (`CreateFunction`) que varios resolvers pueden compartir, evitando duplicar lógica cuando varios campos necesitan un patrón de acceso a datos similar.
@@ -120,6 +109,21 @@ aws appsync create-api-key --api-id "$API_ID" --description "clave de prueba"
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Implementa el resolver de seguimiento y prueba fuente vacía, dato existente y error. El resultado debe distinguir ausencia de entrega de fallo de infraestructura sin filtrar detalles internos.
 
+#### Paso 4 · Demostración guiada
+```bash
+API_ID=$(aws appsync list-graphql-apis --query "graphqlApis[?name=='demo-api'].apiId | [0]" --output text)
+aws appsync create-data-source --api-id "$API_ID" --name origen-local --type NONE
+aws appsync create-resolver --api-id "$API_ID" --type-name Query --field-name estadoEntrega \
+  --data-source-name origen-local
+```
+Resultado esperado: la fuente `origen-local` y el resolver quedan creados sin backend externo — cualquier cliente GraphQL ya puede consultar `estadoEntrega` y recibir una respuesta, aunque todavía no venga de ninguna base de datos real.
+#### Paso 5 · Práctica guiada
+Pista: configurá el resolver local para devolver una forma de dato que no coincide con el tipo declarado en el esquema (por ejemplo, un número donde el esquema espera un `String`) — ese es el fallo deliberado: AppSync rechaza la respuesta del resolver con un error de tipo, aunque el resolver en sí "corrió" sin excepciones.
+#### Paso 6 · Práctica independiente
+Corregí la forma de la respuesta para que coincida con el esquema, y documentá qué validación agregarías antes de reemplazar este resolver `NONE` por la tabla DynamoDB real de entregas, para no romper a los clientes que ya empezaron a consumir `estadoEntrega`.
+#### Paso 7 · Cierre y evidencia
+Entregá el resolver local funcionando del Paso 4, el error de tipo del Paso 5, y la validación propuesta del Paso 6; explicá por qué "maqueta funcional primero" le permitió al frontend avanzar sin esperar al backend. Siguiente paso: correo. Errores comunes: lógica sin autorización y respuestas inconsistentes. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference.html.
+
 ### Tema 3: SES — identidades, envío y plantillas
 
 #### Paso 1 · Objetivo y preparación
@@ -128,21 +132,7 @@ Al finalizar vas a crear la plantilla real que RutaFlow usa para notificar por c
 RutaFlow necesita avisarle al cliente por correo que su pedido llegó, sin concatenar HTML a mano cada vez ni arriesgarse a enviar desde una dirección que nadie verificó.
 #### Paso 3 · Teoría, modelo mental y analogía
 Verificar una identidad es registrar quién puede enviar en nombre de ese remitente; una plantilla es un formato reutilizable con marcadores, no un string armado a mano en cada envío.
-#### Paso 4 · Demostración guiada
-```bash
-aws ses verify-email-identity --email-address notificaciones@demo.example.com
-aws ses create-template --template '{"TemplateName":"entrega-confirmada","SubjectPart":"Tu pedido {{guia}} fue entregado","TextPart":"Hola {{nombre}}, tu paquete {{guia}} llegó."}'
-aws ses send-templated-email --source notificaciones@demo.example.com \
-  --destination ToAddresses=success@simulator.amazonses.com \
-  --template entrega-confirmada --template-data '{"guia":"RF-001","nombre":"Ana"}'
-```
-Resultado esperado: `send-templated-email` devuelve un `MessageId`, y el correo resuelto con los datos reales de Ana (no los marcadores `{{}}` literales) llega al buzón de inspección local.
-#### Paso 5 · Práctica guiada
-Pista: probá enviar el mismo correo con `--source no-verificado@demo.example.com` (una dirección que nunca pasó por `verify-email-identity`) — ese es el fallo deliberado: SES rechaza el envío porque la identidad remitente no está verificada, el mismo control que en producción evitaría que cualquiera envíe en nombre de un dominio que no le pertenece.
-#### Paso 6 · Práctica independiente
-Reenviá la plantilla con datos distintos (`{"guia":"RF-002","nombre":"Luis"}`) y confirmá en el buzón de inspección que cada mensaje muestra su propio contenido resuelto; documentá qué pasaría con el manejo de un rebote si la dirección de Luis estuviera mal escrita (vas a provocarlo de verdad en el Tema 4).
-#### Paso 7 · Cierre y evidencia
-Entregá la plantilla creada y el envío exitoso del Paso 4, el rechazo por identidad no verificada del Paso 5, y los dos correos distintos del Paso 6; explicá por qué una plantilla evita inconsistencias frente a concatenar HTML a mano en cada envío. Siguiente paso: simulador. Errores comunes: destinatarios sin consentimiento y logs con PII. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/Welcome.html.
+
 **Conceptos clave:** `VerifyEmailIdentity`, `SendEmail`, plantilla de correo, SES v1 vs v2.
 
 Enviar correo transaccional desde una aplicación —confirmaciones de pedido, restablecimiento de contraseña, notificaciones— requiere primero verificar la identidad remitente: en AWS real, esto implica probar que controlas esa dirección o dominio (mediante un enlace de confirmación o un registro DNS); en Floci, `VerifyEmailIdentity` y `VerifyDomainIdentity` marcan la identidad como verificada de inmediato, sin ese flujo de validación real, para que puedas iterar rápido en desarrollo. A partir de ahí, `SendEmail` envía un correo estructurado con asunto y cuerpo de texto o HTML, `SendRawEmail` acepta un mensaje MIME completo para casos con adjuntos o estructura compleja, y `SendTemplatedEmail` resuelve una plantilla previamente creada con `CreateTemplate` contra los datos que le pases, útil cuando el mismo tipo de correo se envía con distintos valores miles de veces.
@@ -175,6 +165,22 @@ aws ses send-templated-email --source notificaciones@demo.example.com \
 **Cómo crece tu proyecto:** esta plantilla es la que El proyecto usa para notificar automáticamente a cada cliente cuando su paquete se marca como entregado.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara una plantilla de aviso de entrega con datos de prueba. Verifica identidad remitente, destinatario y escape de variables antes de habilitar envíos desde el flujo operativo.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws ses verify-email-identity --email-address notificaciones@demo.example.com
+aws ses create-template --template '{"TemplateName":"entrega-confirmada","SubjectPart":"Tu pedido {{guia}} fue entregado","TextPart":"Hola {{nombre}}, tu paquete {{guia}} llegó."}'
+aws ses send-templated-email --source notificaciones@demo.example.com \
+  --destination ToAddresses=success@simulator.amazonses.com \
+  --template entrega-confirmada --template-data '{"guia":"RF-001","nombre":"Ana"}'
+```
+Resultado esperado: `send-templated-email` devuelve un `MessageId`, y el correo resuelto con los datos reales de Ana (no los marcadores `{{}}` literales) llega al buzón de inspección local.
+#### Paso 5 · Práctica guiada
+Pista: probá enviar el mismo correo con `--source no-verificado@demo.example.com` (una dirección que nunca pasó por `verify-email-identity`) — ese es el fallo deliberado: SES rechaza el envío porque la identidad remitente no está verificada, el mismo control que en producción evitaría que cualquiera envíe en nombre de un dominio que no le pertenece.
+#### Paso 6 · Práctica independiente
+Reenviá la plantilla con datos distintos (`{"guia":"RF-002","nombre":"Luis"}`) y confirmá en el buzón de inspección que cada mensaje muestra su propio contenido resuelto; documentá qué pasaría con el manejo de un rebote si la dirección de Luis estuviera mal escrita (vas a provocarlo de verdad en el Tema 4).
+#### Paso 7 · Cierre y evidencia
+Entregá la plantilla creada y el envío exitoso del Paso 4, el rechazo por identidad no verificada del Paso 5, y los dos correos distintos del Paso 6; explicá por qué una plantilla evita inconsistencias frente a concatenar HTML a mano en cada envío. Siguiente paso: simulador. Errores comunes: destinatarios sin consentimiento y logs con PII. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/Welcome.html.
 
 ### Tema 4: El simulador de buzones y el punto de inspección local
 

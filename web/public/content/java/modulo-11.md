@@ -14,33 +14,6 @@ Un servicio de entregas reporta latencia creciente bajo carga, y el equipo "opti
 #### Paso 3 · Teoría, modelo mental y analogía
 La heap se divide en una generación joven (donde nacen los objetos, recolectada frecuente y rápidamente) y una vieja (objetos que sobrevivieron, recolectada con menor frecuencia); G1 balancea throughput y pausas predecibles, ZGC prioriza pausas sub-milisegundo a costa de algo más de overhead. La analogía: revisar una flota con telemetría real antes de cambiar piezas — el ruido no se corrige a ciegas sin identificar primero el síntoma exacto.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-g1-vs-zgc
-cd ejemplo-g1-vs-zgc
-mkdir -p src/main/java/academia/perf
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea `src/main/java/academia/perf/CargaAsignacion.java`: un bucle que crea millones de objetos pequeños de vida corta en un `while(true)` con un contador de iteraciones impreso cada segundo. Compílalo con `javac -d out src/main/java/academia/perf/CargaAsignacion.java` y ejecútalo primero con `java -Xlog:gc -XX:+UseG1GC -cp out academia.perf.CargaAsignacion`, luego con `-XX:+UseZGC`.
-
-#### Paso 5 · Práctica guiada
-Pista: reduce deliberadamente el heap máximo (`-Xmx64m`) con G1 para provocar pausas de GC visibles y más frecuentes en el log; lee las líneas `[gc]` que muestran duración de pausa. Resultado esperado: aumentar `-Xmx` reduce la frecuencia de pausas para la misma carga.
-#### Paso 6 · Práctica independiente
-Ejecuta la misma carga con `-Xlog:gc` bajo G1 y bajo ZGC, mide la pausa máxima reportada en cada log, y documenta cuál elegirías para un servicio de baja latencia frente a uno de alto throughput por lotes.
-
-#### Paso 7 · Cierre y evidencia
-Guarda ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas; como siguiente paso graba un perfil JFR de la misma carga. Errores comunes: tunear el recolector sin un baseline medido previamente, confundir uso de heap con memoria nativa (fuera del control del GC), y comparar recolectores bajo cargas de trabajo distintas en vez de la misma carga exacta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/gctuning/.
-**¿Por qué es importante?** Porque elegir un recolector sin medir primero es optimizar a ciegas; la decisión entre G1 y ZGC depende de si la aplicación prioriza throughput general o latencia mínima extrema, algo que solo una medición real responde.
 **Evidencia de aprendizaje:** entrega ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas bajo la misma carga, y la justificación de cuál elegirías.
 **Conceptos clave:** generación joven vs vieja, G1 frente a ZGC.
 
@@ -69,6 +42,34 @@ Elegir el recolector correcto es una decisión de infraestructura que documentar
 
 **Cuándo no usarlo:** para un script de corta vida o una prueba unitaria, tunear el recolector es tiempo perdido; solo importa en procesos de larga duración con carga sostenida.
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-g1-vs-zgc
+cd ejemplo-g1-vs-zgc
+mkdir -p src/main/java/academia/perf
+```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+Crea `src/main/java/academia/perf/CargaAsignacion.java`: un bucle que crea millones de objetos pequeños de vida corta en un `while(true)` con un contador de iteraciones impreso cada segundo. Compílalo con `javac -d out src/main/java/academia/perf/CargaAsignacion.java` y ejecútalo primero con `java -Xlog:gc -XX:+UseG1GC -cp out academia.perf.CargaAsignacion`, luego con `-XX:+UseZGC`.
+
+#### Paso 5 · Práctica guiada
+Pista: reduce deliberadamente el heap máximo (`-Xmx64m`) con G1 para provocar pausas de GC visibles y más frecuentes en el log; lee las líneas `[gc]` que muestran duración de pausa. Resultado esperado: aumentar `-Xmx` reduce la frecuencia de pausas para la misma carga.
+#### Paso 6 · Práctica independiente
+Ejecuta la misma carga con `-Xlog:gc` bajo G1 y bajo ZGC, mide la pausa máxima reportada en cada log, y documenta cuál elegirías para un servicio de baja latencia frente a uno de alto throughput por lotes.
+
+#### Paso 7 · Cierre y evidencia
+Guarda ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas; como siguiente paso graba un perfil JFR de la misma carga. Errores comunes: tunear el recolector sin un baseline medido previamente, confundir uso de heap con memoria nativa (fuera del control del GC), y comparar recolectores bajo cargas de trabajo distintas en vez de la misma carga exacta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/gctuning/.
+**¿Por qué es importante?** Porque elegir un recolector sin medir primero es optimizar a ciegas; la decisión entre G1 y ZGC depende de si la aplicación prioriza throughput general o latencia mínima extrema, algo que solo una medición real responde.
+
 ### Tema 2: Java Flight Recorder y JIT compilation
 
 #### Paso 1 · Objetivo y preparación
@@ -79,6 +80,31 @@ Medir el rendimiento de un método justo al arrancar la aplicación, antes de qu
 
 #### Paso 3 · Teoría, modelo mental y analogía
 La JVM interpreta bytecode inicialmente, pero identifica dinámicamente el código "caliente" (ejecutado con mucha frecuencia) y lo compila en caliente a código máquina optimizado (JIT); JFR graba eventos detallados de la JVM con overhead deliberadamente mínimo, pensado para usarse de forma segura en producción. La analogía: un traductor que al notar que ciertas frases se repiten constantemente, memoriza progresivamente una traducción óptima para ellas, acelerando esas partes recurrentes con el tiempo.
+
+**Evidencia de aprendizaje:** entrega la comparación con y sin `-Xint` (JIT desactivado), y el método caliente real identificado con `jfr print`.
+**Conceptos clave:** perfilado de bajo overhead en producción, compilación en caliente.
+
+Java Flight Recorder (JFR) graba eventos detallados de la JVM (uso de CPU por método, actividad de memoria, contención de locks) con un overhead deliberadamente mínimo, diseñado específicamente para poder usarse de forma segura en producción sin degradar significativamente el rendimiento de la aplicación mientras se graba: `java -XX:StartFlightRecording=filename=perfil.jfr -jar mi-app.jar` inicia una grabación que produce un archivo `.jfr` analizable posteriormente, permitiendo diagnosticar problemas reales de rendimiento observados directamente en producción bajo carga real, en vez de tener que intentar reproducir artificialmente esas condiciones en un entorno de pruebas separado, que frecuentemente no logra replicar exactamente las condiciones específicas que causan el problema real observado.
+
+La JVM inicialmente interpreta el bytecode (Módulo 0) en vez de compilarlo directamente a código máquina, pero identifica dinámicamente el código "caliente" (métodos ejecutados con muchísima frecuencia durante la ejecución real) y lo compila en caliente a código máquina nativo altamente optimizado específicamente para el patrón de uso observado en esa ejecución concreta, un proceso llamado compilación JIT (Just-In-Time); esta es precisamente la razón por la que una aplicación Java típica suele acelerarse notablemente después de sus primeros segundos de ejecución (el período de "warm-up"): el código que efectivamente se ejecuta con mayor frecuencia progresivamente deja de interpretarse y pasa a ejecutarse como código máquina nativo ya optimizado por el JIT.
+
+**Analogía:** JFR es como una caja negra de un avión, registrando datos detallados de la operación con un impacto mínimo en el propio funcionamiento del avión, permitiendo analizar exactamente qué ocurrió durante un vuelo real específico en vez de solo poder estudiar simulaciones de vuelo separadas; el JIT es como un traductor que inicialmente interpreta un discurso frase por frase en tiempo real, pero que, al notar que ciertas frases se repiten constantemente, memoriza y perfecciona progresivamente una traducción óptima específica para esas frases frecuentes, acelerando notablemente la traducción de esas partes recurrentes con el paso del tiempo.
+
+**¿Por qué es importante?** JFR permite diagnosticar problemas de rendimiento con evidencia real de producción, con overhead mínimo; el JIT explica por qué el rendimiento de una aplicación Java mejora progresivamente tras sus primeros momentos de ejecución.
+
+**Prueba en terminal:**
+
+```bash
+java -XX:StartFlightRecording=filename=perfil.jfr -jar mi-app.jar
+```
+```
+JVM interpreta bytecode inicialmente → identifica código "caliente" → 
+compila JIT a código máquina optimizado → la app se acelera tras el warm-up
+```
+
+Un benchmark del Proyecto integrador (Módulo 13) que no espera el warm-up del JIT mide el intérprete, no el rendimiento real de producción.
+
+**Cuándo no usarlo:** para un script de un solo uso que se ejecuta y termina en milisegundos, el warm-up del JIT nunca llega a ocurrir; no tiene sentido optimizar pensando en código "caliente" que no existirá.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -108,30 +134,6 @@ Abre `perfil.jfr` con `jfr print --events jdk.ExecutionSample perfil.jfr` y docu
 #### Paso 7 · Cierre y evidencia
 Guarda el comportamiento con y sin `-Xint`, y el resumen de `jfr print` mostrando el método caliente; como siguiente paso investiga una retención de memoria con heap dump. Errores comunes: medir rendimiento sin dejar que el warm-up del JIT ocurra primero, asumir que JFR tiene overhead alto en producción sin haberlo medido, y confundir el método que aparece con más muestras con la causa raíz sin revisar su contexto de llamada. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html.
 **¿Por qué es importante?** Porque medir antes del warm-up del JIT mide el intérprete lento de arranque, no el rendimiento real que la aplicación tendrá en producción tras los primeros segundos de ejecución continua.
-**Evidencia de aprendizaje:** entrega la comparación con y sin `-Xint` (JIT desactivado), y el método caliente real identificado con `jfr print`.
-**Conceptos clave:** perfilado de bajo overhead en producción, compilación en caliente.
-
-Java Flight Recorder (JFR) graba eventos detallados de la JVM (uso de CPU por método, actividad de memoria, contención de locks) con un overhead deliberadamente mínimo, diseñado específicamente para poder usarse de forma segura en producción sin degradar significativamente el rendimiento de la aplicación mientras se graba: `java -XX:StartFlightRecording=filename=perfil.jfr -jar mi-app.jar` inicia una grabación que produce un archivo `.jfr` analizable posteriormente, permitiendo diagnosticar problemas reales de rendimiento observados directamente en producción bajo carga real, en vez de tener que intentar reproducir artificialmente esas condiciones en un entorno de pruebas separado, que frecuentemente no logra replicar exactamente las condiciones específicas que causan el problema real observado.
-
-La JVM inicialmente interpreta el bytecode (Módulo 0) en vez de compilarlo directamente a código máquina, pero identifica dinámicamente el código "caliente" (métodos ejecutados con muchísima frecuencia durante la ejecución real) y lo compila en caliente a código máquina nativo altamente optimizado específicamente para el patrón de uso observado en esa ejecución concreta, un proceso llamado compilación JIT (Just-In-Time); esta es precisamente la razón por la que una aplicación Java típica suele acelerarse notablemente después de sus primeros segundos de ejecución (el período de "warm-up"): el código que efectivamente se ejecuta con mayor frecuencia progresivamente deja de interpretarse y pasa a ejecutarse como código máquina nativo ya optimizado por el JIT.
-
-**Analogía:** JFR es como una caja negra de un avión, registrando datos detallados de la operación con un impacto mínimo en el propio funcionamiento del avión, permitiendo analizar exactamente qué ocurrió durante un vuelo real específico en vez de solo poder estudiar simulaciones de vuelo separadas; el JIT es como un traductor que inicialmente interpreta un discurso frase por frase en tiempo real, pero que, al notar que ciertas frases se repiten constantemente, memoriza y perfecciona progresivamente una traducción óptima específica para esas frases frecuentes, acelerando notablemente la traducción de esas partes recurrentes con el paso del tiempo.
-
-**¿Por qué es importante?** JFR permite diagnosticar problemas de rendimiento con evidencia real de producción, con overhead mínimo; el JIT explica por qué el rendimiento de una aplicación Java mejora progresivamente tras sus primeros momentos de ejecución.
-
-**Prueba en terminal:**
-
-```bash
-java -XX:StartFlightRecording=filename=perfil.jfr -jar mi-app.jar
-```
-```
-JVM interpreta bytecode inicialmente → identifica código "caliente" → 
-compila JIT a código máquina optimizado → la app se acelera tras el warm-up
-```
-
-Un benchmark del Proyecto integrador (Módulo 13) que no espera el warm-up del JIT mide el intérprete, no el rendimiento real de producción.
-
-**Cuándo no usarlo:** para un script de un solo uso que se ejecuta y termina en milisegundos, el warm-up del JIT nunca llega a ocurrir; no tiene sentido optimizar pensando en código "caliente" que no existirá.
 
 ### Tema 3: Referencias especiales y heap dumps
 
@@ -143,6 +145,31 @@ Una caché implementada con una lista que acumula objetos indefinidamente sin nu
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un heap dump es un volcado completo del contenido de la heap en el instante de un fallo, mostrando exactamente qué objetos consumían la memoria; `WeakReference`/`SoftReference` permiten que el recolector libere un objeto si ya no hay otras referencias fuertes hacia él, cooperando con el recolector en vez de impedir siempre su trabajo. La analogía: una fotografía forense tomada exactamente en el momento de un colapso, mostrando con precisión qué había acumulado — algo que un registro de eventos anteriores no puede ofrecer con el mismo nivel de detalle del instante exacto.
+
+**Evidencia de aprendizaje:** entrega el `.hprof` generado por el `OutOfMemoryError`, el análisis de qué tipo dominaba la memoria, y la corrección con `SoftReference` que ya no falla bajo el mismo límite de heap.
+**Conceptos clave:** `WeakReference`/`SoftReference`/`PhantomReference`, análisis de un heap dump.
+
+`WeakReference` permite mantener una referencia a un objeto sin impedir que el recolector de basura lo elimine si esa es la única referencia restante hacia él (a diferencia de una referencia normal, "fuerte", que sí impide la recolección mientras exista), apropiada para estructuras como cachés donde se desea que ciertos objetos puedan liberarse automáticamente si la memoria se vuelve escasa y ya no hay otras referencias reales activas hacia ellos; `SoftReference` es similar pero más conservadora, permitiendo que el recolector la elimine solo bajo presión real de memoria, no tan agresivamente como una `WeakReference`; `PhantomReference`, junto con una `ReferenceQueue` asociada, permite ejecutar cierta lógica de limpieza específica justo después de que un objeto ha sido efectivamente finalizado por el recolector, un mecanismo más avanzado y de uso considerablemente menos común que los dos anteriores.
+
+Provocar intencionalmente un `OutOfMemoryError` (acumulando objetos indefinidamente en una estructura sin nunca liberar sus referencias) y analizar el heap dump generado en ese momento (un volcado completo del contenido de la heap en el instante del error) permite identificar exactamente qué objetos específicos consumían la memoria disponible en el momento del fallo, y con qué frecuencia y desde qué puntos del código se estaban creando, información considerablemente más específica y accionable que la que los logs normales de la aplicación proporcionarían, dado que los logs típicamente no capturan el estado completo detallado de la memoria en el instante exacto de un fallo de memoria.
+
+**Analogía:** una `WeakReference` es como una nota adhesiva que recuerda dónde está un objeto, pero que no impide que ese objeto se deseche si nadie más lo necesita realmente; un heap dump es como una fotografía forense detallada tomada exactamente en el momento de un colapso, mostrando con precisión qué había acumulado y en qué cantidades exactas, información que un simple registro de eventos anteriores al colapso no podría ofrecer con el mismo nivel de detalle específico del instante del fallo.
+
+**¿Por qué es importante?** Las referencias especiales (`WeakReference`, `SoftReference`) permiten estructuras que cooperan con el recolector de basura en vez de impedir siempre su trabajo; un heap dump proporciona información detallada y específica sobre el estado exacto de la memoria en el momento de un fallo, información que los logs normales no capturan.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    ROOT["GC roots"] --> LIVE["objetos alcanzables"]
+    CACHE["caché fuerte accidental"] --> LIVE
+    WEAK["WeakReference"] -. "no impide recolección" .-> CANDIDATE["objeto sin raíz fuerte"]
+    DUMP["heap dump"] --> DOMINATOR["retained size y dominators"]
+```
+
+Diagnosticar una fuga de memoria con heap dump es la habilidad que usarías si el Proyecto integrador (Módulo 13) empezara a consumir memoria creciente en producción.
+
+**Cuándo no usarlo:** capturar un heap dump completo en un servicio de producción con datos sensibles puede exponer información confidencial en el volcado; sanea o restringe el acceso al archivo `.hprof` antes de compartirlo.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
@@ -172,30 +199,6 @@ Reescribe `FugaCache` usando `List<SoftReference<byte[]>>` en vez de referencias
 #### Paso 7 · Cierre y evidencia
 Guarda el `.hprof` generado, el análisis de qué tipo dominaba la memoria, y la versión corregida con `SoftReference` que ya no falla; como siguiente paso construye el laboratorio completo del capítulo. Errores comunes: usar referencias fuertes para una caché que debería poder liberarse bajo presión de memoria, intentar una corrección a ciegas sin analizar primero el heap dump, y capturar un heap dump de producción con datos sensibles sin sanearlo antes de compartirlo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jhsdb.html.
 **¿Por qué es importante?** Porque un heap dump muestra exactamente qué objetos consumían la memoria en el instante del fallo, información mucho más específica que los logs normales; una caché con referencias fuertes que nunca se liberan es una causa común y evitable de ese mismo fallo.
-**Evidencia de aprendizaje:** entrega el `.hprof` generado por el `OutOfMemoryError`, el análisis de qué tipo dominaba la memoria, y la corrección con `SoftReference` que ya no falla bajo el mismo límite de heap.
-**Conceptos clave:** `WeakReference`/`SoftReference`/`PhantomReference`, análisis de un heap dump.
-
-`WeakReference` permite mantener una referencia a un objeto sin impedir que el recolector de basura lo elimine si esa es la única referencia restante hacia él (a diferencia de una referencia normal, "fuerte", que sí impide la recolección mientras exista), apropiada para estructuras como cachés donde se desea que ciertos objetos puedan liberarse automáticamente si la memoria se vuelve escasa y ya no hay otras referencias reales activas hacia ellos; `SoftReference` es similar pero más conservadora, permitiendo que el recolector la elimine solo bajo presión real de memoria, no tan agresivamente como una `WeakReference`; `PhantomReference`, junto con una `ReferenceQueue` asociada, permite ejecutar cierta lógica de limpieza específica justo después de que un objeto ha sido efectivamente finalizado por el recolector, un mecanismo más avanzado y de uso considerablemente menos común que los dos anteriores.
-
-Provocar intencionalmente un `OutOfMemoryError` (acumulando objetos indefinidamente en una estructura sin nunca liberar sus referencias) y analizar el heap dump generado en ese momento (un volcado completo del contenido de la heap en el instante del error) permite identificar exactamente qué objetos específicos consumían la memoria disponible en el momento del fallo, y con qué frecuencia y desde qué puntos del código se estaban creando, información considerablemente más específica y accionable que la que los logs normales de la aplicación proporcionarían, dado que los logs típicamente no capturan el estado completo detallado de la memoria en el instante exacto de un fallo de memoria.
-
-**Analogía:** una `WeakReference` es como una nota adhesiva que recuerda dónde está un objeto, pero que no impide que ese objeto se deseche si nadie más lo necesita realmente; un heap dump es como una fotografía forense detallada tomada exactamente en el momento de un colapso, mostrando con precisión qué había acumulado y en qué cantidades exactas, información que un simple registro de eventos anteriores al colapso no podría ofrecer con el mismo nivel de detalle específico del instante del fallo.
-
-**¿Por qué es importante?** Las referencias especiales (`WeakReference`, `SoftReference`) permiten estructuras que cooperan con el recolector de basura en vez de impedir siempre su trabajo; un heap dump proporciona información detallada y específica sobre el estado exacto de la memoria en el momento de un fallo, información que los logs normales no capturan.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    ROOT["GC roots"] --> LIVE["objetos alcanzables"]
-    CACHE["caché fuerte accidental"] --> LIVE
-    WEAK["WeakReference"] -. "no impide recolección" .-> CANDIDATE["objeto sin raíz fuerte"]
-    DUMP["heap dump"] --> DOMINATOR["retained size y dominators"]
-```
-
-Diagnosticar una fuga de memoria con heap dump es la habilidad que usarías si el Proyecto integrador (Módulo 13) empezara a consumir memoria creciente en producción.
-
-**Cuándo no usarlo:** capturar un heap dump completo en un servicio de producción con datos sensibles puede exponer información confidencial en el volcado; sanea o restringe el acceso al archivo `.hprof` antes de compartirlo.
 
 ### Tema 4: Foreign Function & Memory API (Java 22)
 

@@ -14,45 +14,6 @@ El gestor de tareas CLI (proyecto integrador Fundamentos) necesita, desde el pri
 #### Paso 3 · Teoría, modelo mental y analogía
 Una `list` en Python es una secuencia: accedés rápido por posición (`lista[0]`), pero buscar por valor exige recorrerla elemento por elemento en el peor caso — es O(n). Un `dict` guarda pares clave-valor en una tabla hash: calcula dónde vive cada clave y accede casi siempre en O(1), sin importar cuántos elementos tenga. La diferencia de fondo es qué identifica a una tarea: en el diccionario, la clave (el id) es la identidad lógica de la tarea y no cambia; en la lista, la posición es solo un lugar físico que se corre cada vez que insertás o eliminás algo antes. La analogía es un archivador con carpetas rotuladas —vas directo a la etiqueta que buscás— contra una fila de cajas sin rotular, donde tenés que revisar caja por caja.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/tareas_estructura.py`:
-```bash
-mkdir ejemplo-estructuras
-cd ejemplo-estructuras
-mkdir src
-```
-```python
-tareas = [
-    {"id": 1, "descripcion": "comprar leche", "estado": "pendiente"},
-    {"id": 2, "descripcion": "pagar factura", "estado": "pendiente"},
-    {"id": 3, "descripcion": "llamar al dentista", "estado": "hecho"},
-]
-
-def buscar_por_id_lista(tareas, id_buscado):
-    for tarea in tareas:
-        if tarea["id"] == id_buscado:
-            return tarea
-    return None
-
-por_id = {tarea["id"]: tarea for tarea in tareas}
-
-indice_guardado = 1  # "la tarea 2 está en la posición 1" — guardado para usar después
-print(tareas[indice_guardado]["descripcion"])
-```
-```bash
-python src/tareas_estructura.py
-```
-**Resultado esperado:** `pagar factura` — la tarea 2 vive en la posición 1, y tanto `buscar_por_id_lista(tareas, 2)` como `por_id[2]` devuelven lo mismo. **Fallo deliberado:** eliminá la tarea 1 con `del tareas[0]` (como si "comprar leche" se completara y se sacara de la lista) y volvé a ejecutar `print(tareas[indice_guardado]["descripcion"])` sin tocar `indice_guardado`. Ahora imprime `llamar al dentista`: el índice 1 sigue siendo válido pero ya no apunta a la tarea 2, porque la eliminación desplazó una posición a todo lo que estaba después — sin ningún error. `por_id[2]` sigue devolviendo la tarea correcta porque el diccionario no depende de la posición física. Corregí siempre buscando por `por_id[id]`, nunca guardando un índice de lista para usar después.
-
-#### Paso 5 · Práctica guiada
-Pista: después de cualquier `del tareas[i]`, cualquier índice que guardaste antes queda potencialmente inválido aunque no lance error — confirmalo guardando el índice de la última tarea antes y después de eliminar la primera, y compará qué tarea devuelve cada vez.
-
-#### Paso 6 · Práctica independiente
-Agregá 50 tareas más a la lista y al diccionario (ids del 4 al 53), medí con `time.perf_counter()` cuánto tarda `buscar_por_id_lista` comparado con `por_id[53]` para el peor caso (el último id), y repetí con 5000 tareas. Anotá cómo crece el tiempo de la lista mientras el del diccionario se mantiene estable.
-
-#### Paso 7 · Cierre y evidencia
-Guardá el código con `buscar_por_id_lista`, el diccionario `por_id` y la demostración del índice desactualizado tras `del tareas[0]`; como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista y asumir que sigue apuntando a la misma tarea después de cualquier eliminación; elegir diccionario sin medir si en tu caso realmente hay más búsquedas que inserciones. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
-**¿Por qué es importante?** Porque un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
 **Evidencia de aprendizaje:** entregá la búsqueda por lista y por diccionario, el código que reproduce el índice desactualizado después de `del tareas[0]`, y la corrección usando `por_id`.
 **Conceptos clave:** lista, tupla, conjunto, diccionario, orden, duplicados, clave, acceso, inserción y mutabilidad.
 
@@ -125,6 +86,46 @@ Si inserción = 50/seg: cambiarías a _________
 
 </details>
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/tareas_estructura.py`:
+```bash
+mkdir ejemplo-estructuras
+cd ejemplo-estructuras
+mkdir src
+```
+```python
+tareas = [
+    {"id": 1, "descripcion": "comprar leche", "estado": "pendiente"},
+    {"id": 2, "descripcion": "pagar factura", "estado": "pendiente"},
+    {"id": 3, "descripcion": "llamar al dentista", "estado": "hecho"},
+]
+
+def buscar_por_id_lista(tareas, id_buscado):
+    for tarea in tareas:
+        if tarea["id"] == id_buscado:
+            return tarea
+    return None
+
+por_id = {tarea["id"]: tarea for tarea in tareas}
+
+indice_guardado = 1  # "la tarea 2 está en la posición 1" — guardado para usar después
+print(tareas[indice_guardado]["descripcion"])
+```
+```bash
+python src/tareas_estructura.py
+```
+**Resultado esperado:** `pagar factura` — la tarea 2 vive en la posición 1, y tanto `buscar_por_id_lista(tareas, 2)` como `por_id[2]` devuelven lo mismo. **Fallo deliberado:** eliminá la tarea 1 con `del tareas[0]` (como si "comprar leche" se completara y se sacara de la lista) y volvé a ejecutar `print(tareas[indice_guardado]["descripcion"])` sin tocar `indice_guardado`. Ahora imprime `llamar al dentista`: el índice 1 sigue siendo válido pero ya no apunta a la tarea 2, porque la eliminación desplazó una posición a todo lo que estaba después — sin ningún error. `por_id[2]` sigue devolviendo la tarea correcta porque el diccionario no depende de la posición física. Corregí siempre buscando por `por_id[id]`, nunca guardando un índice de lista para usar después.
+
+#### Paso 5 · Práctica guiada
+Pista: después de cualquier `del tareas[i]`, cualquier índice que guardaste antes queda potencialmente inválido aunque no lance error — confirmalo guardando el índice de la última tarea antes y después de eliminar la primera, y compará qué tarea devuelve cada vez.
+
+#### Paso 6 · Práctica independiente
+Agregá 50 tareas más a la lista y al diccionario (ids del 4 al 53), medí con `time.perf_counter()` cuánto tarda `buscar_por_id_lista` comparado con `por_id[53]` para el peor caso (el último id), y repetí con 5000 tareas. Anotá cómo crece el tiempo de la lista mientras el del diccionario se mantiene estable.
+
+#### Paso 7 · Cierre y evidencia
+Guardá el código con `buscar_por_id_lista`, el diccionario `por_id` y la demostración del índice desactualizado tras `del tareas[0]`; como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista y asumir que sigue apuntando a la misma tarea después de cualquier eliminación; elegir diccionario sin medir si en tu caso realmente hay más búsquedas que inserciones. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
+**¿Por qué es importante?** Porque un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
+
 ### Tema 2: Pilas, colas y abstracciones de comportamiento
 
 #### Paso 1 · Objetivo y preparación
@@ -136,54 +137,6 @@ El mismo gestor de tareas necesita dos comportamientos nuevos: un "deshacer" que
 #### Paso 3 · Teoría, modelo mental y analogía
 Una pila es LIFO: lo último que entra es lo primero que sale; una cola es FIFO: lo primero que entra es lo primero que sale. Esto es un contrato de comportamiento, no una implementación — podés construir ambas con una `list`. Lo que cambia es el costo: `list.append()` y `list.pop()` (sin índice) operan sobre el final de la lista y son O(1), porque Python solo ajusta un puntero; pero `list.pop(0)` o `list.insert(0, x)` operan sobre el principio y son O(n), porque hay que desplazar todos los elementos restantes una posición. `collections.deque` está pensada para operar en O(1) en AMBOS extremos. La analogía: una pila es una torre de platos (sacás el de arriba); una cola bien implementada es una fila donde atender al primero no mueve a nadie más; `list.pop(0)` es esa misma fila pero donde, cada vez que atienden a alguien, el resto tiene que dar un paso al frente.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/pila_cola.py`:
-```bash
-mkdir ejemplo-pila-cola
-cd ejemplo-pila-cola
-mkdir src
-```
-```python
-import time
-from collections import deque
-
-# "Deshacer": cada acción se apila; deshacer = pop() (LIFO, la última entra, sale primero)
-acciones = []
-acciones.append("crear tarea 1")
-acciones.append("marcar tarea 1 como hecha")
-acciones.append("crear tarea 2")
-print("deshacer:", acciones.pop())
-
-# "Procesar en el orden en que llegaron": dos formas de representar la misma cola
-pendientes_lista = list(range(20_000))
-pendientes_deque = deque(range(20_000))
-
-inicio = time.perf_counter()
-while pendientes_lista:
-    pendientes_lista.pop(0)
-tiempo_lista = time.perf_counter() - inicio
-
-inicio = time.perf_counter()
-while pendientes_deque:
-    pendientes_deque.popleft()
-tiempo_deque = time.perf_counter() - inicio
-
-print(f"list.pop(0): {tiempo_lista:.4f}s | deque.popleft(): {tiempo_deque:.4f}s")
-```
-```bash
-python src/pila_cola.py
-```
-**Resultado esperado:** `deshacer: crear tarea 2` (deshace la acción más reciente primero), y dos tiempos donde `list.pop(0)` es notablemente más lento que `deque.popleft()` para vaciar las mismas 20 000 tareas. **Fallo deliberado:** usar `list.pop(0)` para una cola no lanza ningún error ni da un resultado incorrecto — el bug es de rendimiento oculto. Vaciar una cola con `list.pop(0)` cuesta O(n²) en total, porque cada `pop(0)` debe desplazar todos los elementos restantes una posición; `deque.popleft()` cuesta O(n) en total porque cada extracción es O(1). Con 20 000 elementos la diferencia ya es medible; en el Paso 6 vas a subir a 100 000 y la vas a ver crecer. Corregí usando `deque` desde el principio cuando la operación dominante sea sacar del frente.
-
-#### Paso 5 · Práctica guiada
-Pista: implementá `deshacer_todo` vaciando la pila con `pop()` hasta que esté vacía, y `procesar_todo` vaciando la cola con `popleft()` hasta que esté vacía; comprobá que llamar una vez de más sobre cualquiera de las dos ya vacías produce `IndexError`, y decidí cómo evitarlo (validar antes de extraer).
-
-#### Paso 6 · Práctica independiente
-Repetí la medición del Paso 4 con `pendientes_lista` y `pendientes_deque` de 100 000 elementos. La brecha entre `list.pop(0)` y `deque.popleft()` debería crecer, porque el costo de desplazar el resto escala con el tamaño de la lista, no es un costo fijo.
-
-#### Paso 7 · Cierre y evidencia
-Guardá el código de la pila de deshacer, la cola de pendientes y la medición de `list.pop(0)` contra `deque.popleft()`; como siguiente paso, en el Tema 3 vas a necesitar que esas mismas tareas estén ordenadas para poder buscarlas con búsqueda binaria. Errores comunes: usar `list.pop(0)` para una cola y no notar el costo porque con pocos elementos no se nota; desapilar o desencolar sin comprobar antes si la estructura está vacía. Fuentes oficiales: https://docs.python.org/es/3/library/collections.html#collections.deque y https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks.
-**¿Por qué es importante?** Porque elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
 **Evidencia de aprendizaje:** entregá la pila de deshacer, la cola de pendientes y los dos tiempos medidos (`list.pop(0)` vs `deque.popleft()`) con al menos dos tamaños distintos.
 **Conceptos clave:** tipo abstracto de datos, pila, cola, LIFO, FIFO, push, pop, enqueue y dequeue.
 
@@ -269,6 +222,55 @@ Cola vs pila: Perderías _________ (¿qué?)
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Usa una cola para tareas pendientes y una pila para una demostración de deshacer. Prueba el orden de extracción y explica qué operaciones necesitarían persistencia antes de usarse en el gestor real.
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/pila_cola.py`:
+```bash
+mkdir ejemplo-pila-cola
+cd ejemplo-pila-cola
+mkdir src
+```
+```python
+import time
+from collections import deque
+
+# "Deshacer": cada acción se apila; deshacer = pop() (LIFO, la última entra, sale primero)
+acciones = []
+acciones.append("crear tarea 1")
+acciones.append("marcar tarea 1 como hecha")
+acciones.append("crear tarea 2")
+print("deshacer:", acciones.pop())
+
+# "Procesar en el orden en que llegaron": dos formas de representar la misma cola
+pendientes_lista = list(range(20_000))
+pendientes_deque = deque(range(20_000))
+
+inicio = time.perf_counter()
+while pendientes_lista:
+    pendientes_lista.pop(0)
+tiempo_lista = time.perf_counter() - inicio
+
+inicio = time.perf_counter()
+while pendientes_deque:
+    pendientes_deque.popleft()
+tiempo_deque = time.perf_counter() - inicio
+
+print(f"list.pop(0): {tiempo_lista:.4f}s | deque.popleft(): {tiempo_deque:.4f}s")
+```
+```bash
+python src/pila_cola.py
+```
+**Resultado esperado:** `deshacer: crear tarea 2` (deshace la acción más reciente primero), y dos tiempos donde `list.pop(0)` es notablemente más lento que `deque.popleft()` para vaciar las mismas 20 000 tareas. **Fallo deliberado:** usar `list.pop(0)` para una cola no lanza ningún error ni da un resultado incorrecto — el bug es de rendimiento oculto. Vaciar una cola con `list.pop(0)` cuesta O(n²) en total, porque cada `pop(0)` debe desplazar todos los elementos restantes una posición; `deque.popleft()` cuesta O(n) en total porque cada extracción es O(1). Con 20 000 elementos la diferencia ya es medible; en el Paso 6 vas a subir a 100 000 y la vas a ver crecer. Corregí usando `deque` desde el principio cuando la operación dominante sea sacar del frente.
+
+#### Paso 5 · Práctica guiada
+Pista: implementá `deshacer_todo` vaciando la pila con `pop()` hasta que esté vacía, y `procesar_todo` vaciando la cola con `popleft()` hasta que esté vacía; comprobá que llamar una vez de más sobre cualquiera de las dos ya vacías produce `IndexError`, y decidí cómo evitarlo (validar antes de extraer).
+
+#### Paso 6 · Práctica independiente
+Repetí la medición del Paso 4 con `pendientes_lista` y `pendientes_deque` de 100 000 elementos. La brecha entre `list.pop(0)` y `deque.popleft()` debería crecer, porque el costo de desplazar el resto escala con el tamaño de la lista, no es un costo fijo.
+
+#### Paso 7 · Cierre y evidencia
+Guardá el código de la pila de deshacer, la cola de pendientes y la medición de `list.pop(0)` contra `deque.popleft()`; como siguiente paso, en el Tema 3 vas a necesitar que esas mismas tareas estén ordenadas para poder buscarlas con búsqueda binaria. Errores comunes: usar `list.pop(0)` para una cola y no notar el costo porque con pocos elementos no se nota; desapilar o desencolar sin comprobar antes si la estructura está vacía. Fuentes oficiales: https://docs.python.org/es/3/library/collections.html#collections.deque y https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks.
+**¿Por qué es importante?** Porque elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
+
 ### Tema 3: Búsqueda, precondiciones y demostración de corrección
 
 #### Paso 1 · Objetivo y preparación
@@ -280,49 +282,6 @@ El gestor de tareas va a necesitar listar tareas por fecha límite y, más adela
 #### Paso 3 · Teoría, modelo mental y analogía
 La búsqueda binaria exige una precondición explícita: la lista tiene que estar ordenada según el mismo criterio que usás para comparar. A cambio, cada paso descarta la mitad del espacio de búsqueda restante — por eso es O(log n) en vez de O(n). Esa garantía depende enteramente de que la precondición se cumpla; si no se cumple, el algoritmo no "se rompe" con una excepción, simplemente deja de ser correcto, y nada en su código te avisa. Un algoritmo se demuestra correcto respecto a un contrato explícito (precondición + poscondición), no porque "funcionó" en un caso de prueba. La analogía: buscar una palabra en un diccionario abriéndolo por la mitad funciona porque está ordenado alfabéticamente; hacer lo mismo con hojas sueltas sin ordenar no te dice nada sobre dónde está la palabra.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/busqueda.py`:
-```bash
-mkdir ejemplo-busqueda
-cd ejemplo-busqueda
-mkdir src
-```
-```python
-tareas_por_fecha = [
-    {"id": 1, "fecha": "2026-01-05"},
-    {"id": 2, "fecha": "2026-02-10"},
-    {"id": 3, "fecha": "2026-03-01"},
-    {"id": 4, "fecha": "2026-04-20"},
-]
-
-def buscar_binaria_por_fecha(tareas, fecha_objetivo):
-    izquierda, derecha = 0, len(tareas) - 1
-    while izquierda <= derecha:
-        medio = (izquierda + derecha) // 2
-        if tareas[medio]["fecha"] == fecha_objetivo:
-            return tareas[medio]
-        if tareas[medio]["fecha"] < fecha_objetivo:
-            izquierda = medio + 1
-        else:
-            derecha = medio - 1
-    return None
-
-print(buscar_binaria_por_fecha(tareas_por_fecha, "2026-03-01"))
-```
-```bash
-python src/busqueda.py
-```
-**Resultado esperado:** imprime la tarea con id 3 (`fecha: "2026-03-01"`) porque `tareas_por_fecha` está ordenada de la fecha más antigua a la más reciente — esa es la precondición de `buscar_binaria_por_fecha`. **Fallo deliberado:** desordená la lista a mano (por ejemplo, poné la tarea de id 3 primero) y volvé a buscar la misma fecha `"2026-03-01"`. La función devuelve `None` aunque la tarea EXISTE en la lista — sin ningún error, solo un resultado silenciosamente incorrecto, porque la mitad que descarta en cada paso ya no garantiza nada cuando el orden está roto. Corregí ordenando con `tareas_por_fecha.sort(key=lambda t: t["fecha"])` antes de buscar, o usando búsqueda lineal cuando no puedas garantizar el orden.
-
-#### Paso 5 · Práctica guiada
-Pista: probá con la lista desordenada del Paso 4 buscando una fecha que quedó en la primera posición y otra que quedó en la última — vas a ver que a veces "por suerte" sí la encuentra. Eso es lo más peligroso de violar una precondición: el fallo no es consistente, así que un solo caso de prueba que "funciona" no demuestra nada.
-
-#### Paso 6 · Práctica independiente
-Generá 1000 tareas con fechas aleatorias, ordenalas con `.sort(key=...)` antes de buscar, y medí con `time.perf_counter()` si `buscar_binaria_por_fecha` sigue siendo más rápida que una búsqueda lineal equivalente a ese tamaño.
-
-#### Paso 7 · Cierre y evidencia
-Guardá `buscar_binaria_por_fecha`, la versión que falla sobre la lista desordenada y la corrección (ordenar antes o usar búsqueda lineal); como siguiente paso, en el Tema 4 vas a medir cuánto cuesta ese orden previo —y el resto de las operaciones— a medida que crece el número de tareas. Errores comunes: aplicar búsqueda binaria sin verificar que la lista esté ordenada por la misma clave que usás para comparar; confundir "no la encontró" con "no existe" cuando en realidad la precondición estaba rota. Fuentes oficiales: https://docs.python.org/es/3/library/bisect.html y https://opendsa-server.cs.vt.edu/.
-**¿Por qué es importante?** Porque un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
 **Evidencia de aprendizaje:** entregá la búsqueda binaria correcta, el caso que falla en silencio sobre la lista desordenada, y la corrección aplicada.
 **Conceptos clave:** búsqueda lineal, búsqueda binaria, precondición, invariante, corrección y caso ausente.
 
@@ -417,6 +376,50 @@ Si 0 coincidencias: devuelve _________ (None, -1, excepción)
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Busca una tarea por identificador con precondiciones explícitas. Si usas búsqueda binaria, prueba una colección desordenada y muestra por qué primero debes establecer y conservar el orden.
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/busqueda.py`:
+```bash
+mkdir ejemplo-busqueda
+cd ejemplo-busqueda
+mkdir src
+```
+```python
+tareas_por_fecha = [
+    {"id": 1, "fecha": "2026-01-05"},
+    {"id": 2, "fecha": "2026-02-10"},
+    {"id": 3, "fecha": "2026-03-01"},
+    {"id": 4, "fecha": "2026-04-20"},
+]
+
+def buscar_binaria_por_fecha(tareas, fecha_objetivo):
+    izquierda, derecha = 0, len(tareas) - 1
+    while izquierda <= derecha:
+        medio = (izquierda + derecha) // 2
+        if tareas[medio]["fecha"] == fecha_objetivo:
+            return tareas[medio]
+        if tareas[medio]["fecha"] < fecha_objetivo:
+            izquierda = medio + 1
+        else:
+            derecha = medio - 1
+    return None
+
+print(buscar_binaria_por_fecha(tareas_por_fecha, "2026-03-01"))
+```
+```bash
+python src/busqueda.py
+```
+**Resultado esperado:** imprime la tarea con id 3 (`fecha: "2026-03-01"`) porque `tareas_por_fecha` está ordenada de la fecha más antigua a la más reciente — esa es la precondición de `buscar_binaria_por_fecha`. **Fallo deliberado:** desordená la lista a mano (por ejemplo, poné la tarea de id 3 primero) y volvé a buscar la misma fecha `"2026-03-01"`. La función devuelve `None` aunque la tarea EXISTE en la lista — sin ningún error, solo un resultado silenciosamente incorrecto, porque la mitad que descarta en cada paso ya no garantiza nada cuando el orden está roto. Corregí ordenando con `tareas_por_fecha.sort(key=lambda t: t["fecha"])` antes de buscar, o usando búsqueda lineal cuando no puedas garantizar el orden.
+
+#### Paso 5 · Práctica guiada
+Pista: probá con la lista desordenada del Paso 4 buscando una fecha que quedó en la primera posición y otra que quedó en la última — vas a ver que a veces "por suerte" sí la encuentra. Eso es lo más peligroso de violar una precondición: el fallo no es consistente, así que un solo caso de prueba que "funciona" no demuestra nada.
+
+#### Paso 6 · Práctica independiente
+Generá 1000 tareas con fechas aleatorias, ordenalas con `.sort(key=...)` antes de buscar, y medí con `time.perf_counter()` si `buscar_binaria_por_fecha` sigue siendo más rápida que una búsqueda lineal equivalente a ese tamaño.
+
+#### Paso 7 · Cierre y evidencia
+Guardá `buscar_binaria_por_fecha`, la versión que falla sobre la lista desordenada y la corrección (ordenar antes o usar búsqueda lineal); como siguiente paso, en el Tema 4 vas a medir cuánto cuesta ese orden previo —y el resto de las operaciones— a medida que crece el número de tareas. Errores comunes: aplicar búsqueda binaria sin verificar que la lista esté ordenada por la misma clave que usás para comparar; confundir "no la encontró" con "no existe" cuando en realidad la precondición estaba rota. Fuentes oficiales: https://docs.python.org/es/3/library/bisect.html y https://opendsa-server.cs.vt.edu/.
+**¿Por qué es importante?** Porque un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
+
 ### Tema 4: Complejidad, medición, ordenamiento y recursión
 
 #### Paso 1 · Objetivo y preparación
@@ -428,53 +431,6 @@ A medida que el gestor de tareas acumula historial, vas a necesitar ordenarlo (p
 #### Paso 3 · Teoría, modelo mental y analogía
 Big O describe cómo CRECE el trabajo cuando crece la entrada, no cuánto tarda en segundos —eso depende de la máquina—. `sorted()` en Python usa Timsort, un algoritmo híbrido que aprovecha el orden que ya pueda tener la entrada y logra O(n log n). Una implementación ingenua como bubble sort compara cada par de elementos adyacentes en pasadas repetidas sobre toda la lista —dos bucles anidados que dan O(n²)—. La teoría predice que la brecha entre ambas crece sin límite a medida que n crece; medir con `time.perf_counter()` en unos pocos tamaños es la única forma de confirmar esa predicción con números reales, en tu propia máquina.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/medir.py`:
-```bash
-mkdir ejemplo-complejidad
-cd ejemplo-complejidad
-mkdir src
-```
-```python
-import time
-import random
-
-def bubble_sort(valores):
-    valores = valores.copy()
-    n = len(valores)
-    for i in range(n):
-        for j in range(n - 1 - i):
-            if valores[j] > valores[j + 1]:
-                valores[j], valores[j + 1] = valores[j + 1], valores[j]
-    return valores
-
-for tamano in (500, 1000, 2000):
-    tareas = [random.random() for _ in range(tamano)]
-
-    inicio = time.perf_counter()
-    sorted(tareas)
-    tiempo_sorted = time.perf_counter() - inicio
-
-    inicio = time.perf_counter()
-    bubble_sort(tareas)
-    tiempo_bubble = time.perf_counter() - inicio
-
-    print(f"n={tamano}: sorted()={tiempo_sorted:.5f}s  bubble_sort()={tiempo_bubble:.5f}s")
-```
-```bash
-python src/medir.py
-```
-**Resultado esperado:** para n=500, 1000 y 2000, `sorted()` apenas crece, mientras que `bubble_sort()` crece mucho más rápido: al duplicar n, `sorted()` tarda un poco más del doble, pero `bubble_sort()` tarda aproximadamente CUATRO veces más, porque n² duplicado es (2n)² = 4n². **Fallo deliberado:** cambiá `tamano` a `20_000` sin tocar nada más. `bubble_sort()` pasa de tardar milisegundos a tardar varios segundos —la misma función que "andaba bien" con 500 elementos, usada sin medir antes con una entrada 40 veces más grande—. `sorted()` sigue siendo casi instantáneo. Corregí: para listas que pueden crecer, usá `sorted()`/`.sort()` (Timsort) y reservá una implementación manual como `bubble_sort` solo para fines didácticos.
-
-#### Paso 5 · Práctica guiada
-Pista: anotá el cociente `tiempo_bubble / tiempo_sorted` en cada tamaño del Paso 4 — ese cociente debería crecer a medida que n crece, porque O(n²) crece mucho más rápido que O(n log n); si el cociente se mantiene parecido, medí de nuevo con tamaños más separados.
-
-#### Paso 6 · Práctica independiente
-Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de ordenamiento intermedia (por ejemplo insertion sort) para ver dónde queda ubicada respecto a `sorted()` y `bubble_sort()`. Anotá si el orden relativo de las tres (quién es más rápida) se mantiene igual en los tres tamaños.
-
-#### Paso 7 · Cierre y evidencia
-Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
-**¿Por qué es importante?** Porque la teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
 **Evidencia de aprendizaje:** entregá la tabla de tiempos con al menos tres tamaños, y la explicación de qué pasó al multiplicar por cuarenta el tamaño en `bubble_sort`.
 **Conceptos clave:** tamaño de entrada, Big O, tiempo, espacio, O(1), O(log n), O(n), O(n²), ordenamiento y recursión.
 
@@ -569,6 +525,54 @@ Medición: time.time() antes/después, imprime diferencia
 </details>
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Compara dos estrategias de ordenamiento con tareas equivalentes y tamaños crecientes. Verifica primero que producen el mismo orden y registra condiciones de medición antes de elegir por velocidad.
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea `src/medir.py`:
+```bash
+mkdir ejemplo-complejidad
+cd ejemplo-complejidad
+mkdir src
+```
+```python
+import time
+import random
+
+def bubble_sort(valores):
+    valores = valores.copy()
+    n = len(valores)
+    for i in range(n):
+        for j in range(n - 1 - i):
+            if valores[j] > valores[j + 1]:
+                valores[j], valores[j + 1] = valores[j + 1], valores[j]
+    return valores
+
+for tamano in (500, 1000, 2000):
+    tareas = [random.random() for _ in range(tamano)]
+
+    inicio = time.perf_counter()
+    sorted(tareas)
+    tiempo_sorted = time.perf_counter() - inicio
+
+    inicio = time.perf_counter()
+    bubble_sort(tareas)
+    tiempo_bubble = time.perf_counter() - inicio
+
+    print(f"n={tamano}: sorted()={tiempo_sorted:.5f}s  bubble_sort()={tiempo_bubble:.5f}s")
+```
+```bash
+python src/medir.py
+```
+**Resultado esperado:** para n=500, 1000 y 2000, `sorted()` apenas crece, mientras que `bubble_sort()` crece mucho más rápido: al duplicar n, `sorted()` tarda un poco más del doble, pero `bubble_sort()` tarda aproximadamente CUATRO veces más, porque n² duplicado es (2n)² = 4n². **Fallo deliberado:** cambiá `tamano` a `20_000` sin tocar nada más. `bubble_sort()` pasa de tardar milisegundos a tardar varios segundos —la misma función que "andaba bien" con 500 elementos, usada sin medir antes con una entrada 40 veces más grande—. `sorted()` sigue siendo casi instantáneo. Corregí: para listas que pueden crecer, usá `sorted()`/`.sort()` (Timsort) y reservá una implementación manual como `bubble_sort` solo para fines didácticos.
+
+#### Paso 5 · Práctica guiada
+Pista: anotá el cociente `tiempo_bubble / tiempo_sorted` en cada tamaño del Paso 4 — ese cociente debería crecer a medida que n crece, porque O(n²) crece mucho más rápido que O(n log n); si el cociente se mantiene parecido, medí de nuevo con tamaños más separados.
+
+#### Paso 6 · Práctica independiente
+Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de ordenamiento intermedia (por ejemplo insertion sort) para ver dónde queda ubicada respecto a `sorted()` y `bubble_sort()`. Anotá si el orden relativo de las tres (quién es más rápida) se mantiene igual en los tres tamaños.
+
+#### Paso 7 · Cierre y evidencia
+Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
+**¿Por qué es importante?** Porque la teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
 
 ### Tema 5: Árboles y árboles binarios de búsqueda (BST)
 

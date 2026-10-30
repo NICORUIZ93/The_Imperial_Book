@@ -11,25 +11,6 @@ Al finalizar podrás comprobar en vivo, con datos reales, por qué DynamoDB no o
 El proyecto integrador RutaFlow (`examples/rutaflow/cloud/template.yaml`) guarda el historial de cada envío en la tabla `ShipmentEvents`. Cada evento es distinto (un "creado" trae datos distintos a un "entregado" con foto), y eso es justo lo que una tabla SQL de columnas fijas obligaría a forzar con columnas vacías o una tabla aparte por tipo de evento. Esta flexibilidad de esquema es exactamente por qué RutaFlow elige DynamoDB: eventos reales nunca son iguales.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una tabla SQL es un archivador con carpetas idénticas; DynamoDB es una caja de fichas donde cada ficha trae solo los campos que le corresponden, mientras comparta la clave que las ordena.
-#### Paso 4 · Demostración guiada
-```bash
-aws dynamodb create-table --table-name ShipmentEvents \
-  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N \
-  --key-schema AttributeName=shipmentId,KeyType=HASH AttributeName=sequence,KeyType=RANGE \
-  --billing-mode PAY_PER_REQUEST
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"},"tipo":{"S":"creado"},"origen":{"S":"bodega-norte"}}'
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"2"},"tipo":{"S":"entregado"},"fotoKey":{"S":"envio-4471/entrega-001.jpg"},"firmaCliente":{"BOOL":true}}'
-```
-Resultado esperado: ambos `put-item` terminan sin error, aunque el segundo item trae dos atributos (`fotoKey`, `firmaCliente`) que el primero ni siquiera tiene — `create-table` nunca los declaró, porque no son parte de la clave.
-#### Paso 5 · Práctica guiada
-Pista: intentá un `put-item` sin `sequence` (solo `shipmentId`) — ese es el fallo deliberado: `ValidationException: One or more parameter values were invalid: Missing the key sequence in the item`. A diferencia de los atributos normales, los de la clave primaria no son opcionales.
-#### Paso 6 · Práctica independiente
-Agregá un tercer evento (`sequence: 3`, `tipo: en_ruta`) con un atributo que ningún evento anterior tenga (por ejemplo `conductorId`), y confirmá con `get-item` que los tres eventos conviven en la misma tabla sin que ninguno necesite los atributos de los otros dos.
-#### Paso 7 · Cierre y evidencia
-Entregá los tres `put-item`, el error de clave incompleta del Paso 5, y una frase explicando por qué ninguno de los tres eventos tiene la misma forma. Siguiente paso: tablas, items y atributos en detalle. Errores comunes: modelar como SQL sin patrón de acceso. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html.
-### Fallo Deliberado: Missing Key Attribute en DynamoDB
 
 **Error real que deberías ver:**
 ```error-output
@@ -93,6 +74,26 @@ flowchart LR
     end
 ```
 
+#### Paso 4 · Demostración guiada
+```bash
+aws dynamodb create-table --table-name ShipmentEvents \
+  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N \
+  --key-schema AttributeName=shipmentId,KeyType=HASH AttributeName=sequence,KeyType=RANGE \
+  --billing-mode PAY_PER_REQUEST
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"},"tipo":{"S":"creado"},"origen":{"S":"bodega-norte"}}'
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"2"},"tipo":{"S":"entregado"},"fotoKey":{"S":"envio-4471/entrega-001.jpg"},"firmaCliente":{"BOOL":true}}'
+```
+Resultado esperado: ambos `put-item` terminan sin error, aunque el segundo item trae dos atributos (`fotoKey`, `firmaCliente`) que el primero ni siquiera tiene — `create-table` nunca los declaró, porque no son parte de la clave.
+#### Paso 5 · Práctica guiada
+Pista: intentá un `put-item` sin `sequence` (solo `shipmentId`) — ese es el fallo deliberado: `ValidationException: One or more parameter values were invalid: Missing the key sequence in the item`. A diferencia de los atributos normales, los de la clave primaria no son opcionales.
+#### Paso 6 · Práctica independiente
+Agregá un tercer evento (`sequence: 3`, `tipo: en_ruta`) con un atributo que ningún evento anterior tenga (por ejemplo `conductorId`), y confirmá con `get-item` que los tres eventos conviven en la misma tabla sin que ninguno necesite los atributos de los otros dos.
+#### Paso 7 · Cierre y evidencia
+Entregá los tres `put-item`, el error de clave incompleta del Paso 5, y una frase explicando por qué ninguno de los tres eventos tiene la misma forma. Siguiente paso: tablas, items y atributos en detalle. Errores comunes: modelar como SQL sin patrón de acceso. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html.
+### Fallo Deliberado: Missing Key Attribute en DynamoDB
+
 ### Tema 2: Tablas, items y atributos
 
 #### Paso 1 · Objetivo y preparación
@@ -101,20 +102,6 @@ Al finalizar vas a distinguir, sobre la tabla `ShipmentEvents` que ya creaste, q
 `ShipmentEvents` ya existe en tu Floci local con el mismo esquema declarado en `examples/rutaflow/cloud/template.yaml` — acá vas a inspeccionar esa definición del proyecto integrador RutaFlow y confirmar qué parte de un item es realmente fija. Solo la clave primaria es obligatoria; todo lo demás varía por evento.
 #### Paso 3 · Teoría, modelo mental y analogía
 La tabla es el archivador completo; cada evento de envío es un expediente (item); cada dato del evento (`tipo`, `origen`, `fotoKey`) es un campo (atributo) dentro de ese expediente.
-#### Paso 4 · Demostración guiada
-```bash
-aws dynamodb list-tables
-aws dynamodb describe-table --table-name ShipmentEvents --query "Table.KeySchema"
-aws dynamodb get-item --table-name ShipmentEvents \
-  --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
-```
-Resultado esperado: `describe-table` muestra solo dos entradas en `KeySchema` (`shipmentId` HASH, `sequence` RANGE) — nunca vas a ver `tipo`, `origen` ni `fotoKey` ahí, porque esos atributos viven en los items, no en la definición de la tabla.
-#### Paso 5 · Práctica guiada
-Pista: pedí un `get-item` con una clave que no existe (`sequence: 99`) para provocar el fallo deliberado — no es una excepción, es la respuesta correcta de DynamoDB: un JSON sin la clave `Item`. Confundir "no hay error" con "sí hay dato" es el error real acá.
-#### Paso 6 · Práctica independiente
-Insertá un evento nuevo con un atributo que no usaste antes (por ejemplo `intentosEntrega: {"N":"2"}`) y recuperalo con `get-item`, confirmando que la tabla no tuvo que cambiar para aceptarlo.
-#### Paso 7 · Cierre y evidencia
-Entregá el `describe-table`, el `get-item` vacío del Paso 5 y el `get-item` con el atributo nuevo del Paso 6; explicá por qué ninguno de los tres pasos requirió tocar la definición de la tabla. Siguiente paso: tipos de dato. Errores comunes: atributos innecesarios y capacidad sin medir. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
 
 #### Profundización · Diseño: Clave de partición para consulta operacional
 
@@ -187,6 +174,21 @@ flowchart TD
 
 Solo "id" es obligatorio en todos los items; el resto de atributos varía libremente.
 
+#### Paso 4 · Demostración guiada
+```bash
+aws dynamodb list-tables
+aws dynamodb describe-table --table-name ShipmentEvents --query "Table.KeySchema"
+aws dynamodb get-item --table-name ShipmentEvents \
+  --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
+```
+Resultado esperado: `describe-table` muestra solo dos entradas en `KeySchema` (`shipmentId` HASH, `sequence` RANGE) — nunca vas a ver `tipo`, `origen` ni `fotoKey` ahí, porque esos atributos viven en los items, no en la definición de la tabla.
+#### Paso 5 · Práctica guiada
+Pista: pedí un `get-item` con una clave que no existe (`sequence: 99`) para provocar el fallo deliberado — no es una excepción, es la respuesta correcta de DynamoDB: un JSON sin la clave `Item`. Confundir "no hay error" con "sí hay dato" es el error real acá.
+#### Paso 6 · Práctica independiente
+Insertá un evento nuevo con un atributo que no usaste antes (por ejemplo `intentosEntrega: {"N":"2"}`) y recuperalo con `get-item`, confirmando que la tabla no tuvo que cambiar para aceptarlo.
+#### Paso 7 · Cierre y evidencia
+Entregá el `describe-table`, el `get-item` vacío del Paso 5 y el `get-item` con el atributo nuevo del Paso 6; explicá por qué ninguno de los tres pasos requirió tocar la definición de la tabla. Siguiente paso: tipos de dato. Errores comunes: atributos innecesarios y capacidad sin medir. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
+
 ### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M
 
 #### Paso 1 · Objetivo y preparación
@@ -195,22 +197,6 @@ Al finalizar podrás modelar un evento de entrega real con tipos anidados (lista
 Un evento de tipo `entregado` en el proyecto integrador RutaFlow necesita guardar la ubicación GPS (dos números relacionados: lat, lon) y la lista de fotos subidas — ninguno de los dos encaja bien como un atributo escalar suelto. Ver `examples/rutaflow/cloud/template.yaml` para el esquema real de ShipmentEvents que usa exactamente estos tipos anidados.
 #### Paso 3 · Teoría, modelo mental y analogía
 `M` es un sub-formulario anidado dentro del evento; `L` es una lista de elementos relacionados que puede crecer sin límite fijo de cuántos hay.
-#### Paso 4 · Demostración guiada
-```bash
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"},"tipo":{"S":"entregado"},
-    "ubicacion":{"M":{"lat":{"N":"4.6097"},"lon":{"N":"-74.0817"}}},
-    "fotos":{"L":[{"S":"envio-4471/entrega-001.jpg"},{"S":"envio-4471/entrega-002.jpg"}]}}'
-aws dynamodb get-item --table-name ShipmentEvents \
-  --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"}}'
-```
-Resultado esperado: el `get-item` devuelve `ubicacion` como un `M` con `lat`/`lon` anidados y `fotos` como un `L` con dos strings — ambos navegables sin necesidad de una tabla separada.
-#### Paso 5 · Práctica guiada
-Pista: guardá `lat` como texto (`{"S":"4.6097"}`) en vez de número para provocar el fallo deliberado: el `put-item` no rechaza el string, pero una comparación o un rango numérico posterior sobre ese campo (por ejemplo "entregas dentro de este radio") dejaría de funcionar correctamente, sin que DynamoDB avise nada en el momento de guardar.
-#### Paso 6 · Práctica independiente
-Agregá un evento con una lista de incidencias (`L` de strings, por ejemplo `["direccion_incorrecta","reintentar"]`) y confirmá que podés leerla completa con `get-item`.
-#### Paso 7 · Cierre y evidencia
-Entregá el `get-item` del evento con `ubicacion`/`fotos`, el intento con `lat` como string y una frase explicando por qué DynamoDB lo acepta sin error aunque sea un problema real. Siguiente paso: claves. Errores comunes: mezclar tipos y no validar nulos. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingFormat.html.
 
 #### Profundización · Diseño: Estructura anidada para metadatos de foto
 
@@ -385,6 +371,23 @@ flowchart TD
     A5 --> A5b["cp: S = &quot;110111&quot;"]
 ```
 
+#### Paso 4 · Demostración guiada
+```bash
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"},"tipo":{"S":"entregado"},
+    "ubicacion":{"M":{"lat":{"N":"4.6097"},"lon":{"N":"-74.0817"}}},
+    "fotos":{"L":[{"S":"envio-4471/entrega-001.jpg"},{"S":"envio-4471/entrega-002.jpg"}]}}'
+aws dynamodb get-item --table-name ShipmentEvents \
+  --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"}}'
+```
+Resultado esperado: el `get-item` devuelve `ubicacion` como un `M` con `lat`/`lon` anidados y `fotos` como un `L` con dos strings — ambos navegables sin necesidad de una tabla separada.
+#### Paso 5 · Práctica guiada
+Pista: guardá `lat` como texto (`{"S":"4.6097"}`) en vez de número para provocar el fallo deliberado: el `put-item` no rechaza el string, pero una comparación o un rango numérico posterior sobre ese campo (por ejemplo "entregas dentro de este radio") dejaría de funcionar correctamente, sin que DynamoDB avise nada en el momento de guardar.
+#### Paso 6 · Práctica independiente
+Agregá un evento con una lista de incidencias (`L` de strings, por ejemplo `["direccion_incorrecta","reintentar"]`) y confirmá que podés leerla completa con `get-item`.
+#### Paso 7 · Cierre y evidencia
+Entregá el `get-item` del evento con `ubicacion`/`fotos`, el intento con `lat` como string y una frase explicando por qué DynamoDB lo acepta sin error aunque sea un problema real. Siguiente paso: claves. Errores comunes: mezclar tipos y no validar nulos. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingFormat.html.
+
 ### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE)
 
 #### Paso 1 · Objetivo y preparación
@@ -393,19 +396,6 @@ Al finalizar vas a comprobar en la propia tabla `ShipmentEvents` por qué necesi
 El proyecto integrador RutaFlow declara en `template.yaml` exactamente este diseño: `shipmentId` como partición (HASH) y `sequence` como ordenación (RANGE) — porque un mismo envío tiene muchos eventos (creado, en_ruta, entregado...) y hay que poder pedirlos todos, en orden, con una sola consulta eficiente.
 #### Paso 3 · Teoría, modelo mental y analogía
 `shipmentId` agrupa; `sequence` ordena dentro del grupo — como un expediente médico organizado por paciente (partición) y fecha de consulta (ordenación): muchas consultas, mismo paciente, cada una distinguible por su fecha.
-#### Paso 4 · Demostración guiada
-```bash
-aws dynamodb query --table-name ShipmentEvents \
-  --key-condition-expression "shipmentId = :id" \
-  --expression-attribute-values '{":id":{"S":"env-4471"}}'
-```
-Resultado esperado: devuelve los 4 eventos que ya insertaste de `env-4471` (sequence 1, 2, 3, 4), en orden por `sequence` — exactamente el patrón de acceso que una clave simple (solo `shipmentId`) no podría resolver, porque no podría tener más de un item por envío.
-#### Paso 5 · Práctica guiada
-Pista: insertá un evento con `shipmentId: env-4471` y `sequence: 2` (un valor que ya existe) pero con `tipo` distinto — ese es el fallo deliberado: no hay ninguna `Exception`, `put-item` sobrescribe en silencio el evento original. La clave compuesta exige unicidad en la combinación, pero no te avisa si repetís una por error.
-#### Paso 6 · Práctica independiente
-Creá un segundo envío completo (`shipmentId: env-5002`, con sus propios `sequence` 1 y 2) y confirmá con `query` que pedir los eventos de `env-4471` nunca devuelve nada de `env-5002`, aunque estén en la misma tabla.
-#### Paso 7 · Cierre y evidencia
-Entregá el `query` de `env-4471`, la sobrescritura silenciosa del Paso 5 y el `query` que separa ambos envíos; explicá qué patrón de acceso justifica la clave compuesta acá. Siguiente paso: índices. Errores comunes: clave caliente y consultas no previstas. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
 
 #### Profundización · Diseño: Clave simple vs compuesta
 
@@ -468,6 +458,20 @@ flowchart LR
     end
 ```
 
+#### Paso 4 · Demostración guiada
+```bash
+aws dynamodb query --table-name ShipmentEvents \
+  --key-condition-expression "shipmentId = :id" \
+  --expression-attribute-values '{":id":{"S":"env-4471"}}'
+```
+Resultado esperado: devuelve los 4 eventos que ya insertaste de `env-4471` (sequence 1, 2, 3, 4), en orden por `sequence` — exactamente el patrón de acceso que una clave simple (solo `shipmentId`) no podría resolver, porque no podría tener más de un item por envío.
+#### Paso 5 · Práctica guiada
+Pista: insertá un evento con `shipmentId: env-4471` y `sequence: 2` (un valor que ya existe) pero con `tipo` distinto — ese es el fallo deliberado: no hay ninguna `Exception`, `put-item` sobrescribe en silencio el evento original. La clave compuesta exige unicidad en la combinación, pero no te avisa si repetís una por error.
+#### Paso 6 · Práctica independiente
+Creá un segundo envío completo (`shipmentId: env-5002`, con sus propios `sequence` 1 y 2) y confirmá con `query` que pedir los eventos de `env-4471` nunca devuelve nada de `env-5002`, aunque estén en la misma tabla.
+#### Paso 7 · Cierre y evidencia
+Entregá el `query` de `env-4471`, la sobrescritura silenciosa del Paso 5 y el `query` que separa ambos envíos; explicá qué patrón de acceso justifica la clave compuesta acá. Siguiente paso: índices. Errores comunes: clave caliente y consultas no previstas. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
+
 ### Tema 5: Índices secundarios globales (GSI) y locales (LSI)
 
 #### Paso 1 · Objetivo y preparación
@@ -476,23 +480,7 @@ Al finalizar vas a crear y usar el índice `EstadoIndex` que ya está declarado 
 Un operador del proyecto integrador RutaFlow necesita "todos los envíos con estado `entregado`" sin saber de antemano ningún `shipmentId` — la clave primaria (`shipmentId` + `sequence`) no resuelve esto sin revisar la tabla entera. El proyecto integrador declara el GSI `EstadoIndex` (partición `estado`, ordenación `sequence`) justo para este patrón de acceso operacional.
 #### Paso 3 · Teoría, modelo mental y analogía
 El índice principal de `ShipmentEvents` es el índice de un libro ordenado por envío; `EstadoIndex` es un índice alfabético adicional al final del mismo libro, ordenado por un criterio totalmente distinto.
-#### Paso 4 · Demostración guiada
-```bash
-aws dynamodb update-table --table-name ShipmentEvents \
-  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N AttributeName=estado,AttributeType=S \
-  --global-secondary-index-updates '[{"Create":{"IndexName":"EstadoIndex","KeySchema":[{"AttributeName":"estado","KeyType":"HASH"},{"AttributeName":"sequence","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}}]'
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"},"tipo":{"S":"entregado"},"estado":{"S":"entregado"}}'
-aws dynamodb query --table-name ShipmentEvents --index-name EstadoIndex \
-  --key-condition-expression "estado = :e" --expression-attribute-values '{":e":{"S":"entregado"}}'
-```
-Resultado esperado: la `query` sobre `EstadoIndex` devuelve el evento de `env-4471` sin que el comando mencione `shipmentId` en ningún lado — encontraste el envío por su estado, no por su clave primaria.
-#### Paso 5 · Práctica guiada
-Pista: repetí la misma `query` pero con `--index-name EstadoIndex2` (un nombre que no existe) para provocar el fallo deliberado: `ValidationException: The table does not have the specified index`. El nombre del índice no es cosmético, es parte de la consulta.
-#### Paso 6 · Práctica independiente
-Agregá un evento `entregado` para `env-5002` y confirmá con la misma `query` sobre `EstadoIndex` que ahora devuelve los eventos `entregado` de ambos envíos, ordenados por `sequence` dentro de ese estado.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación del índice, la `query` exitosa, el error de índice inexistente del Paso 5 y la `query` con dos envíos del Paso 6; explicá qué pregunta resuelve `EstadoIndex` que la clave primaria no resuelve. Siguiente paso: consultas. Errores comunes: indexar todo y olvidar capacidad. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html.
+
 **Conceptos clave:** índice secundario global (GSI), índice secundario local (LSI), clave de partición alternativa, proyección de atributos.
 
 La clave primaria de una tabla define el único camino de acceso directo y eficiente a sus items usando Query, pero en la práctica casi ninguna aplicación necesita consultar sus datos por un único criterio de acceso. Los índices secundarios resuelven este problema, permitiendo consultas eficientes usando un atributo distinto al de la clave primaria original, sin necesidad de recurrir a un Scan completo de la tabla.
@@ -552,6 +540,24 @@ flowchart TD
     BASE --> LSI["LSI por monto: HASH usuario_id, RANGE monto_total"]
     LSI --> LP["permite consultar pedidos del usuario ordenados por monto"]
 ```
+
+#### Paso 4 · Demostración guiada
+```bash
+aws dynamodb update-table --table-name ShipmentEvents \
+  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N AttributeName=estado,AttributeType=S \
+  --global-secondary-index-updates '[{"Create":{"IndexName":"EstadoIndex","KeySchema":[{"AttributeName":"estado","KeyType":"HASH"},{"AttributeName":"sequence","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}}]'
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"},"tipo":{"S":"entregado"},"estado":{"S":"entregado"}}'
+aws dynamodb query --table-name ShipmentEvents --index-name EstadoIndex \
+  --key-condition-expression "estado = :e" --expression-attribute-values '{":e":{"S":"entregado"}}'
+```
+Resultado esperado: la `query` sobre `EstadoIndex` devuelve el evento de `env-4471` sin que el comando mencione `shipmentId` en ningún lado — encontraste el envío por su estado, no por su clave primaria.
+#### Paso 5 · Práctica guiada
+Pista: repetí la misma `query` pero con `--index-name EstadoIndex2` (un nombre que no existe) para provocar el fallo deliberado: `ValidationException: The table does not have the specified index`. El nombre del índice no es cosmético, es parte de la consulta.
+#### Paso 6 · Práctica independiente
+Agregá un evento `entregado` para `env-5002` y confirmá con la misma `query` sobre `EstadoIndex` que ahora devuelve los eventos `entregado` de ambos envíos, ordenados por `sequence` dentro de ese estado.
+#### Paso 7 · Cierre y evidencia
+Entregá la creación del índice, la `query` exitosa, el error de índice inexistente del Paso 5 y la `query` con dos envíos del Paso 6; explicá qué pregunta resuelve `EstadoIndex` que la clave primaria no resuelve. Siguiente paso: consultas. Errores comunes: indexar todo y olvidar capacidad. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html.
 
 ### Tema 6: Query vs Scan
 
