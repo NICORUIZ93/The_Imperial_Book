@@ -31,15 +31,9 @@ Al finalizar podrás construir y verificar **Tema 1: Infraestructura y entrega s
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** En RutaFlow, el servicio `api-envios` se despliega varias veces por semana: si cualquiera puede empujar una imagen a `registry.rutaflow.dev/api-envios` y el pipeline la despliega sin más preguntas, un registro comprometido (o un error humano con la imagen equivocada) termina sirviendo tráfico de producción sin que nadie lo note hasta que falla en caliente. Firmar la imagen con cosign y exigir `cosign verify` antes de desplegar no certifica que el código sea correcto ni que esté libre de vulnerabilidades: certifica que la imagen que llega a Kubernetes es exactamente la que el pipeline construyó y firmó, bit a bit, y que nadie la sustituyó en el camino.
-
 **Caso real:** un registro de contenedores mal asegurado permite retaguear una imagen (`docker tag otra-imagen:latest registry.rutaflow.dev/api-envios:1.4.2` y `docker push`) sin tocar el repositorio de código. Si el `kubectl set image` del deploy no verifica la firma, Kubernetes despliega esa imagen igual que si fuera legítima.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** imagen inmutable, SBOM, firma criptográfica (cosign/sigstore), verificación como gate de despliegue, cadena de custodia. Pensá la firma como un sello de notario sobre una caja cerrada: el notario no revisa qué hay adentro ni si funciona, solo certifica que esta caja específica —identificada por su hash— salió de donde dice haber salido y no se abrió en el camino. `cosign verify` es el guardia que revisa ese sello antes de dejar pasar la caja a producción; sin ese guardia, el sello existe pero no protege nada.
-
-**Analogía:** es como un precinto de seguridad en un camión de carga: el precinto no garantiza que la mercancía sea de buena calidad, solo que nadie abrió el camión entre el origen y el destino. Un precinto que nadie revisa en la puerta de destino es exactamente igual de útil que no tener precinto.
 
 ```mermaid
 flowchart LR
@@ -182,15 +176,9 @@ Al finalizar podrás construir y verificar **Tema 2: SLO y respuesta a incidente
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Un SLO sin probes bien configuradas es papel mojado: podés declarar que `/envios/:id` responde en menos de 300 ms el 99.9% del tiempo, pero si Kubernetes no distingue entre «el proceso murió» y «el proceso está vivo pero momentáneamente lento», un pico de carga normal termina en un reinicio en cascada que degrada la disponibilidad real mucho más que el problema original.
-
 **Caso real:** un repunte de pedidos satura temporalmente las consultas a la base de datos detrás de `/envios/:id`. El servicio sigue vivo y procesando, solo tarda más en responder. Si el `livenessProbe` usa el mismo endpoint y el mismo umbral que el `readinessProbe`, Kubernetes interpreta la lentitud como una muerte del proceso y lo reinicia — perdiendo las conexiones en curso y empeorando la carga sobre las réplicas restantes.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** SLI, SLO, presupuesto de error, `readinessProbe` (¿puede recibir tráfico ahora?) vs `livenessProbe` (¿sigue vivo el proceso?), burn rate. Pensá el `readinessProbe` como el guardia de la puerta de un local: si hay cola adentro, deja de dejar entrar gente nueva, pero no echa a nadie ni cierra el local. El `livenessProbe` es la alarma de incendio: solo debería dispararse si el local realmente se está quemando, no porque hay mucha gente adentro.
-
-**Analogía:** mezclar ambas probes es como poner la misma alarma para «hay cola en la caja» y para «se incendió el local»: cada vez que hay mucha gente, los bomberos evacúan un edificio que no se está quemando.
 
 ```mermaid
 flowchart LR
@@ -392,15 +380,9 @@ Al finalizar podrás construir y verificar **Tema 3: Continuidad, costes y proye
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Un backup que nunca se restauró no es un backup: es un archivo del que nadie sabe si sirve. El `pg_dump` que corre todas las noches puede terminar con código de salida 0, escribir un archivo con buen tamaño, y aun así ser inútil — porque apuntaba a la base equivocada, porque la selección de tablas no cubría todos los datos requeridos, o porque el archivo se corrompió en el camino. La única forma real de saber si un backup protege algo es restaurarlo y comparar.
-
 **Caso real:** antes de este tema, RutaFlow documentaba un RPO y un RTO en un README, pero nadie había restaurado un backup real en meses. Este tema cierra esa brecha: la prueba de continuidad no es «el script de backup no tiró error», es «restauré el dump en una base nueva y los conteos de filas coinciden con el origen».
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** RPO (cuánta pérdida de datos es tolerable), RTO (cuánto tiempo toma recuperarse), backup probado vs backup solamente ejecutado, verificación por conteo. Pensá el backup como un paracaídas: empacarlo bien no sirve de nada si nunca lo abriste para comprobar que se despliega; la única prueba real es saltar (restaurar) y confirmar que funciona.
-
-**Analogía:** es como un simulacro de evacuación que revisa si la puerta de emergencia realmente abre, no solo si el cartel de «salida» está bien pegado en la pared.
 
 ```mermaid
 flowchart LR

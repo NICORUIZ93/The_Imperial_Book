@@ -90,13 +90,18 @@ def trim_topic(topic_text: str) -> tuple[str, bool]:
 def dedupe_topic(topic_text: str) -> tuple[str, bool]:
     """Quita la segunda aparición de una sección y su párrafo."""
     changed = False
-    for marker in ("**¿Por qué es importante?**", "**Analogía:**"):
+    for marker in (
+        "**¿Por qué es importante?**",
+        "**Analogía:**",
+        "**Conceptos clave:**",
+        "**Evidencia de aprendizaje:**",
+    ):
         positions = [match.start() for match in re.finditer(re.escape(marker), topic_text)]
         if len(positions) < 2:
             continue
         for position in reversed(positions[1:]):
             end = len(topic_text)
-            for separator in ("\n**", "\n#### ", "\n### ", "\n## "):
+            for separator in ("\n\n", "\n**", "\n#### ", "\n### ", "\n## "):
                 found = topic_text.find(separator, position + len(marker))
                 if found >= 0:
                     end = min(end, found)

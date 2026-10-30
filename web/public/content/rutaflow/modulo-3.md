@@ -31,15 +31,9 @@ Al finalizar vas a tener un tipo de estado explícito (unión discriminada) para
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** La vista de seguimiento de un envío puede estar cargando, puede haber terminado con datos, o puede haber fallado — pero nunca dos de esas cosas a la vez. Si el estado se modela con banderas sueltas, nada impide que las tres sean verdaderas simultáneamente: la pantalla queda obligada a *adivinar* cuál manda, y ahí aparecen los spinners que nunca desaparecen o los errores que tapan un dato que ya había llegado.
-
 **Caso real:** un operador abre el tracking de `RF-4471` justo cuando la respuesta anterior todavía no terminó de limpiarse y llega un error de red de un reintento automático. Con banderas sueltas, `envio` (del éxito previo), `hasError` (del fallo nuevo) e `isLoading` (del reintento) pueden coexistir en el mismo render. Con una unión discriminada, el estado solo puede tomar una de esas tres formas — no hay combinación ambigua que resolver dentro del componente.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** unión discriminada (*discriminated union*), campo etiqueta (`tipo`), exhaustividad, estado derivado vs. única fuente de verdad. En Angular esto se modela con un `Signal<EstadoVista>` donde `EstadoVista` es la unión; en React, con un único `useState`/`useReducer` sobre ese mismo tipo en vez de tres estados booleanos independientes. La idea central: el dato ya prohíbe los estados imposibles, no hace falta acordarse de validarlos en cada componente que lo consume.
-
-**Analogía:** es como un semáforo real: nunca muestra rojo y verde a la vez porque el propio hardware no lo permite — no depende de que el conductor interprete correctamente dos luces encendidas juntas.
 
 ```mermaid
 stateDiagram-v2
@@ -185,15 +179,9 @@ Al finalizar vas a poder agrupar (clusterizar) 500 `TarjetaEnvio` en el mapa ope
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Un centro de operaciones que sigue 500 envíos en una sola ciudad no puede mostrar 500 marcadores individuales a la vez: al nivel de zoom en el que se ve la ciudad completa, decenas de pines terminan superpuestos en el mismo puñado de píxeles — el operador no puede hacer click en uno en particular, y cada pan o zoom tiene que recalcular posición y estilo de los 500 elementos aunque casi ninguno cambió de pantalla.
-
 **Caso real:** en hora pico, la zona del centro de distribución de una ciudad concentra decenas de envíos `en_transito` en un radio de pocas cuadras. Sin agrupar, esos pines se dibujan unos encima de otros; con clustering, MapLibre los reemplaza por un único círculo con el conteo, hasta que el operador hace zoom lo suficiente como para distinguirlos.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** fuente GeoJSON, `cluster: true`, `clusterRadius`, `clusterMaxZoom`, capa de cluster vs. capa de punto individual. MapLibre no agrupa marcadores DOM: agrupa *features* de una fuente GeoJSON dentro del propio motor de mapas, y expone capas que vos estilizás por separado — círculos de cluster (con el conteo como texto) y puntos individuales para lo que ya no está agrupado al nivel de zoom actual.
-
-**Analogía:** es como un mapa de calor que resume una multitud antes de pedir el detalle de una persona: de lejos ves densidad (un número), de cerca ves el pin individual.
 
 ```mermaid
 flowchart LR
@@ -353,15 +341,9 @@ Al finalizar vas a poder diagnosticar y corregir una insignia de estado que comu
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Una consola de operaciones profesional la usa gente con distintas capacidades y en distintas condiciones: un operador con daltonismo no distingue un punto verde de uno rojo, y un operador que usa lector de pantalla no "ve" ningún color — solo escucha lo que el DOM expone como texto. Si el único canal de información es el color de fondo de un `<span>`, esas dos personas no tienen forma de saber el estado de un envío.
-
 **Caso real:** la consola muestra el estado de `RF-4471` con `<span class="dot-verde"></span>`: visualmente es un punto verde, pero no tiene texto ni `aria-label`. Un operador con VoiceOver o NVDA activado enfoca esa fila y el lector de pantalla no anuncia nada relacionado con el estado — como si la columna de estado no existiera.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** nombre accesible (*accessible name*), `aria-label`, texto visualmente oculto, "el color no puede ser el único canal" (criterio 1.4.1 de WCAG). El nombre accesible de un elemento se calcula en un orden fijo: primero `aria-label`, después el texto visible del propio elemento, después `title`. Un `<span>` vacío sin ninguno de los tres no tiene nombre accesible, sin importar qué color de fondo tenga en el CSS — el lector de pantalla no interpreta estilos.
-
-**Analogía:** es como una rampa: no es un adorno, cambia literalmente quién puede entrar al edificio. Un punto de color sin texto es la versión digital de una señal "solo visual" en una puerta que en realidad también necesita sonido o relieve para quien no puede verla.
 
 ```mermaid
 flowchart LR

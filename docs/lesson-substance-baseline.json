@@ -1443,9 +1443,6 @@
     "node/6/Tema 1: Hashing de contraseñas": [
       "cola-tras-cierre"
     ],
-    "node/6/Tema 2: JWT — access y refresh tokens": [
-      "bloque-repetido"
-    ],
     "node/6/Tema 3: Middleware de autenticación y control de roles": [
       "cola-tras-cierre"
     ],
@@ -1645,69 +1642,8 @@
       "bloque-repetido",
       "cola-tras-cierre"
     ],
-    "rutaflow/1/Tema 1: Modelo relacional e historial": [
-      "bloque-repetido"
-    ],
-    "rutaflow/1/Tema 2: Geografía con precisión útil": [
-      "bloque-repetido"
-    ],
-    "rutaflow/1/Tema 3: Ledger de doble partida": [
-      "bloque-repetido"
-    ],
-    "rutaflow/2/Tema 1: Contratos HTTP y autorización": [
-      "bloque-repetido"
-    ],
-    "rutaflow/2/Tema 2: Casos de uso y transacciones": [
-      "bloque-repetido"
-    ],
-    "rutaflow/2/Tema 3: Outbox, colas y observabilidad": [
-      "bloque-repetido"
-    ],
-    "rutaflow/3/Tema 1: Estados explícitos y arquitectura de interfaz": [
-      "bloque-repetido"
-    ],
-    "rutaflow/3/Tema 2: Mapas operativos": [
-      "bloque-repetido"
-    ],
-    "rutaflow/3/Tema 3: Accesibilidad, seguridad y rendimiento": [
-      "bloque-repetido"
-    ],
-    "rutaflow/4/Tema 1: Arquitectura Flutter por capacidades": [
-      "bloque-repetido"
-    ],
-    "rutaflow/4/Tema 2: GPS, permisos y batería": [
-      "bloque-repetido"
-    ],
-    "rutaflow/4/Tema 3: Offline-first y prueba de entrega": [
-      "bloque-repetido"
-    ],
-    "rutaflow/5/Tema 1: Grafos y problema de rutas": [
-      "bloque-repetido"
-    ],
-    "rutaflow/5/Tema 2: Geocoding y map matching": [
-      "bloque-repetido"
-    ],
-    "rutaflow/5/Tema 3: Streaming y ETA con incertidumbre": [
-      "bloque-repetido"
-    ],
-    "rutaflow/6/Tema 1: Cotización y facturación reproducible": [
-      "bloque-repetido"
-    ],
-    "rutaflow/6/Tema 2: Recaudo, liquidación y conciliación": [
-      "bloque-repetido"
-    ],
-    "rutaflow/6/Tema 3: Fraude responsable": [
-      "bloque-repetido"
-    ],
-    "rutaflow/7/Tema 1: Infraestructura y entrega segura": [
-      "bloque-repetido"
-    ],
-    "rutaflow/7/Tema 2: SLO y respuesta a incidentes": [
-      "bloque-repetido"
-    ],
     "rutaflow/7/Tema 4: Continuidad, costes y proyecto final": [
-      "andamiaje-generico",
-      "bloque-repetido"
+      "andamiaje-generico"
     ],
     "spring-boot/16/Tema 1: Relaciones, lado propietario y ciclo de vida": [
       "andamiaje-generico"

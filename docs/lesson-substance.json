@@ -1647,10 +1647,10 @@
     }
   ],
   "summary": {
-    "fingerprint": "0b5cf2035151f6345fdefaff035c81d6aefcfc341b2400569c54c5d0065843d9",
+    "fingerprint": "33bf68372cff8f036d5afb0ac844436b09fa3de3a03152f632d6f71c8f0e3d6d",
     "issues": {
       "andamiaje-generico": 128,
-      "bloque-repetido": 240,
+      "bloque-repetido": 218,
       "cola-tras-cierre": 382,
       "parrafo-repetido": 5,
       "tema-breve": 2
@@ -1663,7 +1663,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1098,
-    "topicsWithIssues": 497
+    "topicsWithIssues": 476
   },
   "topics": {
     "android": [
@@ -9021,13 +9021,11 @@
         "words": 982
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 185,
+        "tailWords": 164,
         "topic": "Tema 2: JWT — access y refresh tokens",
-        "words": 540
+        "words": 519
       },
       {
         "issues": [
@@ -9742,58 +9740,46 @@
         "words": 900
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 199,
         "topic": "Tema 1: Modelo relacional e historial",
-        "words": 1179
+        "words": 1008
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 188,
         "topic": "Tema 2: Geografía con precisión útil",
-        "words": 1168
+        "words": 982
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 206,
         "topic": "Tema 3: Ledger de doble partida",
-        "words": 1194
+        "words": 1015
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 157,
         "topic": "Tema 1: Contratos HTTP y autorización",
-        "words": 1196
+        "words": 1057
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 191,
         "topic": "Tema 2: Casos de uso y transacciones",
-        "words": 1212
+        "words": 1073
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 208,
         "topic": "Tema 3: Outbox, colas y observabilidad",
-        "words": 1254
+        "words": 1114
       },
       {
         "issues": [],
@@ -9803,85 +9789,67 @@
         "words": 561
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 214,
         "topic": "Tema 1: Estados explícitos y arquitectura de interfaz",
-        "words": 1335
+        "words": 1156
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 167,
         "topic": "Tema 2: Mapas operativos",
-        "words": 1405
+        "words": 1231
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 241,
         "topic": "Tema 3: Accesibilidad, seguridad y rendimiento",
-        "words": 1330
+        "words": 1126
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 216,
         "topic": "Tema 1: Arquitectura Flutter por capacidades",
-        "words": 1419
+        "words": 1183
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 159,
         "topic": "Tema 2: GPS, permisos y batería",
-        "words": 1279
+        "words": 1059
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
         "tailWords": 212,
         "topic": "Tema 3: Offline-first y prueba de entrega",
-        "words": 1381
+        "words": 1189
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 169,
         "topic": "Tema 1: Grafos y problema de rutas",
-        "words": 1408
+        "words": 1268
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 198,
         "topic": "Tema 2: Geocoding y map matching",
-        "words": 1257
+        "words": 1114
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
         "tailWords": 242,
         "topic": "Tema 3: Streaming y ETA con incertidumbre",
-        "words": 1487
+        "words": 1325
       },
       {
         "issues": [],
@@ -9898,31 +9866,25 @@
         "words": 949
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 178,
         "topic": "Tema 1: Cotización y facturación reproducible",
-        "words": 1449
+        "words": 1296
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 172,
         "topic": "Tema 2: Recaudo, liquidación y conciliación",
-        "words": 1419
+        "words": 1244
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 6,
         "tailWords": 215,
         "topic": "Tema 3: Fraude responsable",
-        "words": 1438
+        "words": 1304
       },
       {
         "issues": [],
@@ -9932,22 +9894,18 @@
         "words": 625
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 173,
         "topic": "Tema 1: Infraestructura y entrega segura",
-        "words": 1351
+        "words": 1093
       },
       {
-        "issues": [
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 176,
         "topic": "Tema 2: SLO y respuesta a incidentes",
-        "words": 1293
+        "words": 1113
       },
       {
         "issues": [],
@@ -9958,13 +9916,12 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
+          "andamiaje-generico"
         ],
         "module": 7,
         "tailWords": 274,
         "topic": "Tema 4: Continuidad, costes y proyecto final",
-        "words": 1454
+        "words": 1281
       }
     ],
     "spring-boot": [

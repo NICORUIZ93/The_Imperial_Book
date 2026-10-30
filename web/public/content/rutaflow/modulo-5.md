@@ -31,17 +31,11 @@ Al finalizar podrás construir y verificar **Tema 1: Grafos y problema de rutas*
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Minimizar la distancia total de una ruta no es lo mismo que minimizar el tiempo real que tarda un conductor en completarla: un tramo más corto en kilómetros puede cruzar una avenida saturada en hora pico y terminar siendo más lento que una alternativa más larga pero fluida. Si RutaFlow asigna rutas solo por distancia, un conductor queda atrapado en tráfico previsible mientras el sistema reporta que eligió la "mejor" ruta.
-
 **Caso real:** un conductor debe ir del depósito a una parada final (`parada_b`) pasando por una intermedia. Dos caminos existen: uno más corto en kilómetros que cruza una avenida con congestión conocida en ese horario, y otro ligeramente más largo que la evita. El sistema debe comparar ambos por tiempo real de viaje, no solo por distancia, antes de asignar la ruta al conductor.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** grafo dirigido, nodo (parada), arista con peso (distancia y tiempo), algoritmo de camino mínimo (Dijkstra), y la diferencia entre optimizar por una métrica u otra.
-
 Modelá la red de paradas como un grafo: cada parada es un nodo y cada tramo transitable es una arista con dos pesos distintos — la distancia en kilómetros y el tiempo real de viaje en minutos (que ya incluye congestión conocida). El algoritmo de camino mínimo no sabe nada de tráfico por sí mismo: encuentra el camino de menor peso según la métrica que vos le indiques. Si le pedís el camino de menor `km`, te va a devolver el más corto en el mapa, aunque cruce la avenida más congestionada de la ciudad a las 6pm.
-
-**Analogía:** es como elegir un vuelo solo por la distancia en línea recta entre ciudades: ignora que una ruta con escala puede llegar antes que un vuelo directo si el directo sale más tarde o enfrenta más demora.
 
 ```mermaid
 flowchart LR
@@ -169,17 +163,11 @@ Al finalizar podrás construir y verificar **Tema 2: Geocoding y map matching** 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Un geocodificador que recibe "Calle 10 # 5-30" sin saber en qué ciudad buscar puede devolver, con total confianza numérica, coordenadas de una calle con el mismo nombre en otra ciudad del país. La app del conductor no tiene forma de saber que está mal: el servicio respondió con un punto válido en el mapa, solo que en el lugar equivocado. Sin acotar la búsqueda a una región esperada, un error de geocoding es silencioso y termina en una entrega despachada a la ciudad que no es.
-
 **Caso real:** un cliente registra un envío a "Calle 10 # 5-30" en Bogotá. Esa misma combinación de calle y carrera también existe en Cali. Si el geocodificador no recibe una pista de región, puede devolver el candidato de Cali (el primero de su lista interna) y el sistema le asigna al conductor una parada a cientos de kilómetros de donde debía entregar.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** geocoding, candidatos con score de confianza, ambigüedad de direcciones, sesgo por región (`viewbox` / `bounded`), verificación de localidad esperada.
-
 Un geocodificador real (como Nominatim sobre datos de OpenStreetMap, respaldado por PostGIS) no devuelve "la" coordenada de una dirección: devuelve una lista de candidatos, cada uno con su propia ciudad y nivel de confianza. Cuando el texto de la dirección es ambiguo (existe en más de una ciudad), el primer candidato de esa lista no necesariamente es el correcto para tu caso de uso. La forma de resolverlo no es "confiar en el primero", sino acotar la búsqueda con una pista de región y, después, verificar que la ciudad del candidato devuelto coincide con la que esperabas.
-
-**Analogía:** es como preguntar "¿dónde queda la Calle 10?" en una ciudad que no mencionaste: te van a contestar con la primera Calle 10 que se les ocurra, no necesariamente la tuya.
 
 ```mermaid
 flowchart LR
@@ -297,17 +285,11 @@ Al finalizar podrás construir y verificar **Tema 3: Streaming y ETA con incerti
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Los pings GPS de un conductor viajan por una red que puede reordenarlos: un reintento de red puede hacer que un dato más viejo llegue después de uno más nuevo. Si el sistema de ETA actualiza la posición del envío con "el último dato que llegó" en vez de "el dato con el timestamp más reciente", la llegada tardía de un ping viejo puede pisar una posición más actualizada e inflar el ETA mostrado al cliente, aunque el conductor ya haya avanzado.
-
 **Caso real:** un conductor envía un ping a las `10:00:08` que llega a tiempo. Un ping anterior, de las `10:00:05`, se había perdido en la red y llega recién después, por un reintento automático del dispositivo. Si el servidor procesa "el último mensaje recibido" como la posición vigente, reemplaza la posición de las `10:00:08` (más cercana al destino) por la de las `10:00:05` (más lejana), y el ETA mostrado empeora aunque el conductor ya avanzó.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** tiempo de evento vs. tiempo de llegada, datos tardíos (*late data*), orden por `evento_time`, estado por envío, ETA como función de la posición más reciente por timestamp, no por orden de arribo.
-
 La trampa más común en streaming es confundir "el mensaje que acabo de recibir" con "el dato más nuevo". Un stream de posiciones GPS no garantiza orden de entrega: la red puede repetir, retrasar o reordenar paquetes. La única fuente de verdad sobre qué tan reciente es un dato es su `evento_time` (cuándo ocurrió en el dispositivo), nunca el momento en que el servidor lo procesó. Mantener el estado correcto significa comparar el `evento_time` del evento entrante contra el `evento_time` ya guardado, y descartar cualquier evento más viejo que el estado actual.
-
-**Analogía:** es como leer un grupo de postales que llegan desordenadas por correo: si las archivás en el orden en que las recibiste en vez de mirar la fecha escrita en cada una, terminás creyendo que el remitente retrocedió en el tiempo.
 
 ```mermaid
 sequenceDiagram

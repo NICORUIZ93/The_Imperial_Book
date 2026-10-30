@@ -31,15 +31,9 @@ Al finalizar podrás construir y verificar **Tema 1: Arquitectura Flutter por ca
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** En la app del conductor, la pantalla de entregas (`ListaEnvios`) necesita datos de `Envio` pero no debería saber si esos datos vienen de una API REST, de una caché SQLite o de un doble de pruebas. Si un widget instancia directamente un cliente HTTP, cambiar de proveedor de mapas, migrar de `dio` a otro cliente o agregar una caché offline obliga a reescribir pantallas en vez de tocar solo la capa de datos — y un error en ese cambio rompe la UI que el conductor mira en plena ruta.
-
 **Caso real:** el equipo agrega soporte offline: antes de sincronizar, la app debe poder mostrar la lista de entregas guardada en SQLite cuando no hay señal. Si `ListaEnvios` crea su propio cliente HTTP adentro del widget en vez de pedirle los datos a un `EnvioRepository`, no hay forma de intercalar una fuente local sin reescribir la pantalla.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** capa de dominio, capa de datos, capa de presentación, inversión de dependencias e interfaz de repositorio. La capa de presentación (widgets como `ListaEnvios`) solo conoce contratos del dominio (`Envio`, `EnvioRepository`); la capa de datos implementa esos contratos contra HTTP, SQLite o GPS; el dominio no importa nada de Flutter ni de ningún paquete HTTP. Cuando una pantalla instancia directamente un cliente HTTP, la dependencia apunta en la dirección equivocada: la UI termina dependiendo del detalle de infraestructura, en vez de que la infraestructura dependa de un contrato estable que el dominio define.
-
-**Analogía:** es como un restorán: el mesero (`presentation`) le pide un plato a la cocina a través de la carta (`EnvioRepository`, la interfaz); nunca entra a buscar los ingredientes él mismo. Si el mesero empieza a cocinar directamente, cambiar de proveedor de verduras obliga también a reentrenarlo a él.
 
 ```mermaid
 flowchart LR
@@ -206,15 +200,9 @@ Al finalizar podrás construir y verificar **Tema 2: GPS, permisos y batería** 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** En RutaFlow, pedir ubicación en segundo plano (`LocationPermission.always`) sin manejar el caso en que el sistema la niega para siempre (`deniedForever`) hace que la app deje de reportar posición en silencio, sin ningún mensaje que le explique al conductor por qué el mapa dejó de actualizarse. La política de permisos y de muestreo no es un detalle de UI: decide si RutaFlow tiene señal operativa real o un flujo de GPS que se corta solo, en producción, sin que nadie se entere.
-
 **Caso real:** un conductor instala la app y, por error o apuro, rechaza el diálogo de permiso de ubicación dos veces seguidas; en Android eso activa `deniedForever` automáticamente, sin un tercer diálogo posible. Si el código solo contempla los casos `granted` y `denied`, la app queda pidiendo una posición que nunca va a llegar, sin ofrecerle al conductor ninguna forma de corregirlo desde la propia app.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** `LocationPermission` (`denied`, `deniedForever`, `whileInUse`, `always`), muestreo adaptativo y el paquete `battery_plus`. Pedir `always` sin necesitarlo es pedir más permiso del que la mayoría de los sistemas operativos conceden con un solo diálogo; `whileInUse` alcanza para la jornada activa del conductor con la app abierta, y solo una función real de rastreo en segundo plano justifica escalar a `always`. La frecuencia de muestreo tampoco debería ser fija: con batería baja, leer el GPS con menos frecuencia extiende la jornada del conductor sin perder la señal esencial.
-
-**Analogía:** es como un fotógrafo que no dispara cien veces por segundo cuando la escena no cambia: pedí el permiso mínimo necesario para la foto que realmente vas a tomar, y bajá el ritmo del obturador cuando la batería de la cámara se está por agotar.
 
 ```mermaid
 flowchart LR
@@ -336,15 +324,9 @@ Al finalizar podrás construir y verificar **Tema 3: Offline-first y prueba de e
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Confirmar una entrega cuando el conductor está sin señal — en un sótano, un ascensor o una zona rural — no puede depender de que la confirmación llegue al servidor en el momento exacto en que se toca el botón. Si el proceso de sincronización reenvía una confirmación que ya se había sincronizado, el backend puede recibir dos eventos de "entregado" para la misma guía apenas la conexión aparece y desaparece varias veces seguidas.
-
 **Caso real:** el conductor confirma la entrega del envío `RF-4471` dentro de un edificio sin señal. La app guarda la confirmación localmente y, cuando vuelve a haber datos móviles intermitentes (una barra que aparece y desaparece), el proceso de sincronización se dispara dos veces antes de que la primera respuesta del servidor termine de procesarse — sin un control explícito, eso produce dos eventos "entregado" para el mismo envío.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** outbox local, tabla `confirmaciones_pendientes` en `sqflite`, bandera `sincronizado` e idempotencia del lado del cliente. El patrón outbox guarda primero la acción localmente, con un id propio, antes de intentar enviarla; sincronizar significa recorrer las filas con `sincronizado = 0`, nunca "todo lo que el conductor confirmó alguna vez". Una fila ya marcada `sincronizado = 1` no debería reenviarse jamás, aunque el proceso de sincronización se dispare de nuevo por una reconexión.
-
-**Analogía:** es como un mensajero que numera cada recibo antes de salir a entregarlo: si pierde la señal de radio con la oficina, no vuelve a leer por radio un recibo que la oficina ya confirmó haber recibido — primero revisa cuáles todavía siguen sin confirmar.
 
 ```mermaid
 flowchart LR

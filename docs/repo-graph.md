@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 13:47 UTC
+Generated: 2026-10-30 14:10 UTC
 Root: `Academia_Floci`
 Indexed files: 920
 Import edges: 56
@@ -64,8 +64,8 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1101 lines, angular-app)
-  - symbols: LessonViewerComponent, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject, moduleIndex
+- `web/src/app/course/lesson-viewer.ts` (1164 lines, angular-app)
+  - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
 
@@ -156,7 +156,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
-- `web/src/app/app.routes.ts` (28 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
+- `web/src/app/app.routes.ts` (29 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
 - `web/src/app/app.spec.ts` (182 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
@@ -186,7 +186,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
 - `scripts/catalog_external_library.py` (49 lines) - symbols: main; imports: argparse, hashlib, json, pathlib, pymupdf
-- `scripts/clean_legacy_tails.py` (179 lines) - symbols: legacy_candidates, trim_topic, dedupe_topic, fences_balanced, topic_slice, safe_trim, clean_file, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
+- `scripts/clean_legacy_tails.py` (184 lines) - symbols: legacy_candidates, trim_topic, dedupe_topic, fences_balanced, topic_slice, safe_trim, clean_file, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/extract_pdf_toc.py` (33 lines) - imports: sys, pathlib, pymupdf
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
@@ -230,7 +230,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
-- `docs/PLAN-TOTAL-DE-CAMBIO.md` (171 lines) - headings: # Plan total de cambio, ## Diagnóstico, ## Definición operativa de «de cero a profesional», ## Fases
+- `docs/PLAN-TOTAL-DE-CAMBIO.md` (174 lines) - headings: # Plan total de cambio, ## Diagnóstico, ## Definición operativa de «de cero a profesional», ## Fases
 - `docs/PLANTILLA-LECCION.md` (109 lines) - headings: # Plantilla de Lección — Prompt Maestro para Claude / Codex, ## PROMPT MAESTRO (copiar desde aquí), ## DATOS DE LA LECCIÓN, ## REGLAS DE ESTILO
 - `docs/PROMPTS-FORMACION.md` (30 lines) - headings: # Prompts de formación profesional a partir de merged.pdf, ## Tutor paso a paso (página 1), ## Ruta de 30 pasos (página 21), ## Revisión profesional (página 55)
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
@@ -278,8 +278,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/course-depth-review.json` (12460 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
-- `docs/lesson-substance-baseline.json` (1757 lines)
-- `docs/lesson-substance.json` (10639 lines)
+- `docs/lesson-substance-baseline.json` (1693 lines)
+- `docs/lesson-substance.json` (10596 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)

@@ -152,8 +152,6 @@ Este par access/refresh token es el mecanismo de autenticación que protegerá c
 
 **Fuentes oficiales:** [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519) y [jose](https://github.com/panva/jose).
 
-**Evidencia de aprendizaje:** entrega la verificación de un token válido, uno alterado y uno vencido, indicando el código de respuesta esperado.
-
 ### Tema 3: Middleware de autenticación y control de roles
 
 #### Paso 1 · Objetivo y preparación

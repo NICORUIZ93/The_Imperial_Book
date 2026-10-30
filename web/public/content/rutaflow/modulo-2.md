@@ -31,17 +31,11 @@ Al finalizar podrás construir y verificar **Tema 1: Contratos HTTP y autorizaci
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Un endpoint de asignación que no verifica el rol contra el token firmado es una autorización de fachada: cualquier cliente que conozca el nombre del campo puede declararse `operador` y mover conductores entre envíos ajenos. La integridad de RutaFlow depende de que la identidad y el rol salgan siempre del JWT ya verificado por el servidor, nunca de un dato que el propio cliente envía en la petición.
-
 **Caso real:** una app de reparto modificada envía `{"role":"operador"}` en el cuerpo del `POST /envios/:id/asignar` para que el conductor se autoasigne envíos ajenos sin pasar por el panel de operaciones. Si el backend confía en ese campo del body, el ataque funciona sin tocar el token.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** JWT, claims verificados, control de acceso por rol (RBAC), diferencia entre 401 (no autenticado) y 403 (sin permiso), y la regla de "nunca uses datos del cliente para decidir permisos".
-
 Pensá el contrato de este endpoint como dos capas de control: la primera (autenticación) confirma que el token es válido y no fue alterado; la segunda (autorización) lee el claim `role` de ESE token ya verificado y decide si esa identidad puede ejecutar `asignar` sobre el recurso `envío`. Cualquier dato que viaje en el cuerpo de la petición es responsabilidad del cliente y jamás debe influir en esa decisión.
-
-**Analogía:** es como un guardia que ya validó tu cédula en la entrada: no le importa qué credencial digas tener en la mano, solo lo que el sistema interno —el token— ya confirmó sobre vos.
 
 ```mermaid
 flowchart LR
@@ -188,17 +182,11 @@ Al finalizar podrás construir y verificar **Tema 2: Casos de uso y transaccione
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Asignar un conductor no es una sola escritura: es un envío que cambia de estado Y un contador de capacidad que debe bajar en la misma operación. Si el proceso falla entre esas dos escrituras, el sistema puede terminar con un envío "asignado" a un conductor cuyo contador nunca bajó — y ese conductor sigue pareciendo disponible mientras ya tiene el envío encima. Esa inconsistencia solo se evita tratando ambas escrituras como una unidad atómica.
-
 **Caso real:** un pico de pedidos satura la base por un instante; la actualización del envío se confirma pero la conexión se corta antes de descontar la capacidad del conductor. Sin transacción, ese conductor queda con capacidad fantasma y puede recibir más envíos de los que puede entregar.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** transacción (`BEGIN`/`COMMIT`/`ROLLBACK`), atomicidad, invariante de negocio (la capacidad nunca es negativa), estado parcial, optimistic locking.
-
 Una operación transaccional no es "ejecutar dos pasos seguidos": es garantizar que ambos pasos se confirman juntos o ninguno se confirma. Si decrementás la capacidad del conductor y actualizás el envío en dos sentencias sueltas, cualquier error entre medio deja guardada una mitad del cambio y pierde la otra — un estado que ninguna regla de negocio predijo.
-
-**Analogía:** es como transferir dinero entre dos cuentas: si el banco descuenta de una y el proceso se cae antes de acreditar en la otra, la plata no "desapareció", pero el sistema queda en un estado que no debería poder existir nunca.
 
 ```mermaid
 flowchart LR
@@ -335,17 +323,11 @@ Al finalizar podrás construir y verificar **Tema 3: Outbox, colas y observabili
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Si el backend confirma la entrega en la base y publica el evento directo a la cola, queda una ventana entre el `COMMIT` y la publicación donde el proceso puede morir: la base ya quedó consistente, pero ningún otro servicio (facturación, notificaciones, tracking) se entera jamás de que el envío se entregó. El outbox cierra esa ventana guardando el evento como parte de la misma transacción que el cambio de estado.
-
 **Caso real:** el worker que confirma entregas se reinicia (deploy, falta de memoria, caída) justo después de hacer commit en la base y antes de publicar a la cola. Sin outbox, ese evento de entrega desaparece para siempre y el envío queda "entregado" en la base sin que ningún otro servicio lo sepa.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** tabla outbox, proceso relay/publicador, entrega al menos una vez (at-least-once), deduplicación por `message_id`, acoplamiento transaccional entre dominio y evento.
-
 El patrón outbox separa dos responsabilidades que normalmente se mezclan: cambiar el estado de dominio (la fila del envío) y notificar ese cambio (el evento). En vez de publicar directo a la cola, el evento se escribe como una fila más dentro de la MISMA transacción de base de datos. Un proceso aparte —el relay— lee esa tabla y publica a la cola; si el relay falla, el evento sigue ahí esperando, no se perdió.
-
-**Analogía:** es como escribir la carta y sellarla dentro del mismo sobre que vas a despachar: el cartero (el relay) puede demorarse en pasar a buscarla, pero la carta ya existe y no depende de que nadie la vuelva a escribir.
 
 ```mermaid
 flowchart LR

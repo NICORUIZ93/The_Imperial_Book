@@ -31,17 +31,11 @@ Al finalizar podrás construir y verificar **Tema 1: Cotización y facturación 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Una cotización que no se puede reproducir rompe la confianza del cliente y la auditoría. Si el conductor cobra un valor hoy por un envío pero el sistema recalcula otro distinto la próxima semana con la tarifa ya actualizada, nadie puede decir cuál de los dos montos era el correcto. La tarifa debe quedar versionada con su rango exacto de vigencia, y el cálculo debe hacerse en aritmética exacta (`BigDecimal`), nunca en punto flotante: un error de redondeo de una fracción de centavo por envío se multiplica por miles de guías al mes y termina en un descuadre contable real.
-
 **Caso real:** un cliente pide cotización para el envío RF-4471 el 3 de marzo, bajo la tarifa vigente ese día. El 10 de marzo la tarifa cambia. Si la factura se emite el 12 de marzo, debe reflejar la tarifa del 3 de marzo —la fecha de la cotización—, no la nueva. El sistema necesita conservar la vigencia exacta de cada tarifa para poder reconstruir ese cálculo meses después, ante un reclamo o una auditoría.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** `BigDecimal`, escala (`scale`) y modo de redondeo, tarifa versionada, rango de vigencia (`vigenteDesde` / `vigenteHasta`), desglose de cotización.
-
 Piensa este tema no como una estación de clasificación genérica, sino como una caja registradora que jamás puede dar un resultado distinto para la misma venta. Cada tarifa tiene una fecha de inicio y una de fin de vigencia; cotizar es elegir la tarifa correcta para la fecha de la operación, no la tarifa de hoy. Si el cálculo usa `double` para sumar dinero, ya perdió la capacidad de ser auditado: el error de redondeo es silencioso y se acumula sin avisar.
-
-**Analogía:** es como un recibo de caja registradora: aunque el precio del producto suba la semana próxima, el recibo de hoy prueba exactamente cuánto se cobró y bajo qué tarifa.
 
 ```mermaid
 flowchart LR
@@ -181,17 +175,11 @@ Al finalizar podrás construir y verificar **Tema 2: Recaudo, liquidación y con
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** La conciliación compara dos fuentes independientes de verdad —lo que el conductor reporta haber recaudado en efectivo y lo que el sistema de facturación registra que debía cobrarse— para una misma ventana de liquidación. Cuando las dos cifras no coinciden, la diferencia **nunca** se corrige editando el movimiento original: se inserta un movimiento de ajuste compensatorio que queda registrado junto al original. Editar un recaudo histórico directamente borra la evidencia de que hubo una discrepancia, rompe el rastro de auditoría y puede ocultar un fraude real en vez de detectarlo. Esta es la razón por la que una corrección contable es siempre **otro** movimiento, y nunca una edición del movimiento anterior.
-
 **Caso real:** el conductor Ana reporta haber recaudado $120.000 en efectivo durante su turno del 5 de marzo para el envío RF-4471, pero el sistema registra que las facturas de contraentrega de ese turno suman $135.000. La diferencia de $15.000 debe quedar visible en una cola de discrepancias —nunca restada en silencio del saldo de Ana ni "corregida" sobre el registro original.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** doble partida, ventana de liquidación, movimiento compensatorio, saldo neto, reverso, tabla append-only (solo inserciones, nunca `UPDATE`/`DELETE`).
-
 Piensa este tema como un libro contable de doble entrada: cada recaudo reportado y cada factura del sistema son hechos independientes que ya ocurrieron y no pueden reescribirse. Si aparece una diferencia, el libro no borra la página anterior —agrega una página nueva que explica y compensa la diferencia. Esa es la única forma de que, meses después, alguien pueda reconstruir exactamente qué pasó.
-
-**Analogía:** es como cerrar caja en una tienda: si el efectivo contado no coincide con lo que el sistema dice que debía haber, no se tacha el reporte del cajero —se registra un ajuste aparte y se investiga la diferencia.
 
 ```mermaid
 flowchart LR
@@ -325,17 +313,11 @@ Al finalizar podrás construir y verificar **Tema 3: Fraude responsable** dentro
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Una señal automatizada —por ejemplo, que la confirmación GPS de una entrega esté a más de 500 metros de la dirección registrada— puede indicar fraude, pero también puede ser GPS impreciso en una zona urbana densa, o un cliente que simplemente bajó a la calle principal a recibir el paquete porque el edificio no tiene acceso vehicular. Si el sistema bloquea o cancela automáticamente la entrega solo con esa señal, un falso positivo le niega el pago a un conductor honesto y genera una disputa evitable. Por eso la señal debe **encolar el caso para revisión humana**, nunca decidir el resultado final por sí sola.
-
 **Caso real:** el conductor Carlos confirma la entrega del envío RF-7788 a unos 556 metros de la dirección registrada, porque el edificio no tiene acceso vehicular y el cliente bajó a la avenida principal a recibirlo. Una regla que bloquea automáticamente por distancia marcaría esta entrega legítima como fraude y le retendría el pago a Carlos por un patrón perfectamente normal en esa zona.
 
 #### Paso 3 · Teoría, conceptos y analogía
 
-**Conceptos clave:** señal, puntuación (`score`), umbral, cola de revisión, falso positivo, explicabilidad.
-
 Piensa este tema como una alarma de humo, no como un veredicto: la alarma solicita inspección, no condena el edificio. Una señal de fraude (distancia GPS, velocidad imposible, reversos repetidos) prioriza un caso en una cola para que una persona lo revise con contexto completo; nunca cambia por sí misma el estado final de la entrega. Si un sistema automatizado tiene el poder de bloquear sin revisión humana, cualquier señal ruidosa —y el GPS siempre es ruidoso— se convierte en una decisión irreversible contra alguien inocente.
-
-**Analogía:** es como una alarma de humo: solicita inspección, no condena el edificio.
 
 ```mermaid
 flowchart LR

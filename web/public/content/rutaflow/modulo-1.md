@@ -31,15 +31,9 @@ Al finalizar podrás diseñar un esquema `envios` + `envio_eventos` append-only 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** El envío `RF-4471` puede crearse, pasar a "en tránsito", sufrir un reintento de red y terminar entregado dos veces si el backend no distingue entre "estado actual" e "historial de lo que pasó". Si `envios.estado` fuera el único dato, una corrección manual (un soporte que cambia el estado a mano) borraría la evidencia de qué ocurrió realmente. Separar una tabla de estado mutable (`envios`) de una tabla de hechos append-only (`envio_eventos`) permite reconstruir, para cualquier auditoría o reclamo, la secuencia exacta de eventos de un envío.
-
 **Caso real:** un conductor marca "entregado" dos veces por un reintento de la app sin conexión, o un soporte intenta "corregir" un evento pasado en vez de agregar uno nuevo. El modelo debe impedir ambas cosas a nivel de base de datos, no solo en la capa de aplicación.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** clave primaria, clave foránea, restricción `UNIQUE`, tabla de hechos inmutable (append-only) y trigger `BEFORE UPDATE OR DELETE`. `envios` guarda el estado actual (mutable); `envio_eventos` guarda cada hecho que ocurrió (inmutable). La única forma válida de "corregir" el historial es agregar un evento nuevo que lo compense, nunca editar uno existente.
-
-**Analogía:** es como un libro contable notarial: si el notario se equivoca, no tacha la página anterior, asienta una corrección fechada en una página nueva.
 
 ```mermaid
 flowchart LR
@@ -155,15 +149,9 @@ Al finalizar podrás modelar ubicaciones con PostGIS (`geography(Point, 4326)`) 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** RutaFlow necesita responder "¿qué conductores están a menos de 2km del punto de recogida del envío `RF-4471`?" en milisegundos. Si las coordenadas se guardan como `geometry` planas en vez de `geography` geodésica, o sin el SRID correcto, la consulta sigue ejecutándose sin error, pero devuelve distancias calculadas como si la Tierra fuera un plano cartesiano en grados: un conductor a 670 metros puede aparecer como si estuviera a "0.006" de distancia, y uno en otra ciudad puede colarse dentro del radio.
-
 **Caso real:** un GPS reporta la posición de un conductor con 6 decimales de precisión, pero si la columna no es `geography(Point, 4326)` la "precisión" del dato no sirve de nada: la consulta de cercanía puede estar comparando grados contra metros sin que Postgres avise.
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** `SRID 4326` (WGS84, el sistema de coordenadas de GPS), `geography` vs `geometry`, `ST_DWithin` (distancia dentro de un radio, usa índice), `ST_Distance` (distancia real en metros) e índice espacial `GiST`. `geography` calcula distancias geodésicas (sobre la curvatura real de la Tierra, en metros); `geometry` trata lat/lon como un plano cartesiano (en grados), que es más rápido pero matemáticamente incorrecto para distancias reales.
-
-**Analogía:** es como medir la distancia entre dos ciudades con una regla sobre un mapa plano en vez de un hilo tensado sobre un globo terráqueo: el número que obtenés depende de qué superficie asumiste.
 
 ```mermaid
 flowchart LR
@@ -271,15 +259,9 @@ Al finalizar podrás modelar un ledger de doble partida en PostgreSQL y escribir
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Cuando el envío `RF-4471` se cobra en efectivo, ese dinero debe repartirse entre la obligación con el comercio y la comisión de la plataforma. Si el saldo de cada cuenta fuera un campo que se actualiza directamente (`UPDATE cuentas SET saldo = saldo - 100`), un bug o un reintento duplicado podría descuadrar el dinero sin dejar rastro de qué pasó. Un ledger de doble partida obliga a que cada asiento tenga una contrapartida exacta: si entra plata a una cuenta, tiene que salir de otra por el mismo monto.
-
 **Caso real:** un conductor recauda $25.000 en efectivo por el envío `RF-4471`. De eso, $22.000 son obligación con el comercio y $3.000 son comisión de la plataforma. Si alguien inserta el movimiento de comisión pero olvida el de obligación al comercio, el sistema debe poder detectarlo con una consulta, no confiando en que "nadie se equivocó".
 
 #### Paso 3 · Teoría, conceptos y analogía
-
-**Conceptos clave:** asiento contable (`asiento_id`), cuenta, débito, crédito y partida doble: todo asiento debe cumplir `SUM(debito) = SUM(credito)`. Cada movimiento afecta una sola cuenta con un solo lado (débito o crédito), nunca ambos a la vez; el balance se verifica agrupando por `asiento_id`.
-
-**Analogía:** es como una balanza de dos platos: cada vez que ponés un peso en un plato (débito en una cuenta), tenés que poner el mismo peso en el otro (crédito en otra cuenta), o la balanza queda inclinada y se nota.
 
 ```mermaid
 flowchart LR
