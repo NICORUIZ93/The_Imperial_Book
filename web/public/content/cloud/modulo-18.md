@@ -133,33 +133,7 @@ Al finalizar vas a armar el flujo OAuth 2.0 con PKCE que la app móvil del condu
 El `app-conductor` del Tema 1 ya se creó con `--no-generate-secret`: es un cliente público, el mismo tipo que una app móvil nativa, donde cualquier secreto embebido en el binario sería extraíble por cualquiera con el APK.
 #### Paso 3 · Teoría, modelo mental y analogía
 OAuth entrega un permiso delegado, no la contraseña del conductor; PKCE agrega un código de verificación que solo la app original conoce, para que interceptar el código de autorización en el camino no alcance para robar la sesión.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-CODE_VERIFIER=$(openssl rand -base64 32 | tr -d '=+/')
-CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | openssl dgst -sha256 -binary | base64 | tr -d '=+/')
-echo "Abrí en el navegador: https://localhost:4566/oauth2/authorize?client_id=$CLIENT_ID&response_type=code&code_challenge=$CODE_CHALLENGE&code_challenge_method=S256&redirect_uri=rutaflow://callback"
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: el flujo arranca con un `code_challenge` derivado del `code_verifier`, nunca el verificador en sí — ese valor original solo vive en la app del conductor hasta el último paso del intercambio.
-#### Paso 5 · Práctica guiada
-Pista: en el intercambio final, probá `POST /oauth2/token` con el código de autorización pero SIN el parámetro `code_verifier` — ese es el fallo deliberado: Cognito rechaza el intercambio (`invalid_grant` o un error equivalente de verificación PKCE fallida), porque sin el verificador original no hay forma de confirmar que quien presenta el código es la misma app que inició el flujo.
-#### Paso 6 · Práctica independiente
-Documentá, para `app-conductor`, qué `redirect_uri` debería aceptar Cognito (pista: una URI de esquema personalizado como `rutaflow://callback`, nunca un wildcard abierto que acepte cualquier destino) y qué scope mínimo necesitaría pedir para confirmar entregas, sin pedir de más.
-#### Paso 7 · Cierre y evidencia
-Entregá el `code_challenge` generado del Paso 4, el intercambio rechazado sin `code_verifier` del Paso 5, y el `redirect_uri`/scope documentados del Paso 6; explicá por qué un cliente público como `app-conductor` necesita PKCE y un backend con secreto propio no lo necesitaría de la misma forma. Siguiente paso: autorización por roles. Errores comunes: redirect abierto y scopes excesivos. Fuente oficial: https://www.rfc-editor.org/rfc/rfc6749.
 **Conceptos clave:** protocolo de autorización delegada, protección adicional para clientes que no pueden guardar secretos de forma segura.
 
 OAuth 2.0 es el protocolo estándar de la industria para autorización delegada (permitir que una aplicación acceda a recursos en nombre de un usuario sin que ese usuario comparta directamente su contraseña con esa aplicación), y Cognito implementa flujos OAuth 2.0 completos, permitiendo integraciones estándar con proveedores de identidad externos (Google, Facebook) además de la autenticación directa con usuario y contraseña propia estudiada en el Tema 2.
@@ -201,6 +175,33 @@ en la app móvil del conductor, autenticando contra el mismo `POST /entregas` de
 
 ---
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+CODE_VERIFIER=$(openssl rand -base64 32 | tr -d '=+/')
+CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | openssl dgst -sha256 -binary | base64 | tr -d '=+/')
+echo "Abrí en el navegador: https://localhost:4566/oauth2/authorize?client_id=$CLIENT_ID&response_type=code&code_challenge=$CODE_CHALLENGE&code_challenge_method=S256&redirect_uri=rutaflow://callback"
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: el flujo arranca con un `code_challenge` derivado del `code_verifier`, nunca el verificador en sí — ese valor original solo vive en la app del conductor hasta el último paso del intercambio.
+#### Paso 5 · Práctica guiada
+Pista: en el intercambio final, probá `POST /oauth2/token` con el código de autorización pero SIN el parámetro `code_verifier` — ese es el fallo deliberado: Cognito rechaza el intercambio (`invalid_grant` o un error equivalente de verificación PKCE fallida), porque sin el verificador original no hay forma de confirmar que quien presenta el código es la misma app que inició el flujo.
+#### Paso 6 · Práctica independiente
+Documentá, para `app-conductor`, qué `redirect_uri` debería aceptar Cognito (pista: una URI de esquema personalizado como `rutaflow://callback`, nunca un wildcard abierto que acepte cualquier destino) y qué scope mínimo necesitaría pedir para confirmar entregas, sin pedir de más.
+#### Paso 7 · Cierre y evidencia
+Entregá el `code_challenge` generado del Paso 4, el intercambio rechazado sin `code_verifier` del Paso 5, y el `redirect_uri`/scope documentados del Paso 6; explicá por qué un cliente público como `app-conductor` necesita PKCE y un backend con secreto propio no lo necesitaría de la misma forma. Siguiente paso: autorización por roles. Errores comunes: redirect abierto y scopes excesivos. Fuente oficial: https://www.rfc-editor.org/rfc/rfc6749.
 
 ## Laboratorio práctico
 

@@ -323,42 +323,6 @@ Una consulta de tarifas repetida puede saturar un servicio externo; una orden du
 
 TTL expira datos; una clave idempotente registra que un comando ya fue procesado. Pub/Sub notifica en vivo pero no es una cola durable. Son notas con caducidad, recibos únicos y anuncios separados.
 
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-redis
-cd ejemplo-redis
-npm init -y
-npm install redis
-mkdir src
-docker run --name redis-demo -p 6379:6379 -d redis:7-alpine
-```
-
-Crea `src/app.js`:
-
-```js
-import { createClient } from "redis";
-const redis = createClient({ url: "redis://127.0.0.1:6379" });
-await redis.connect();
-await redis.set("tarifa:co", "12500", { EX: 30 });
-const primera = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
-const segunda = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
-console.log({ tarifa: await redis.get("tarifa:co"), primera, segunda });
-await redis.quit();
-```
-
-Ejecuta `node src/app.js`. **Resultado esperado:** primera operación `OK`, segunda `null`. **Fallo deliberado y diagnóstico:** elimina `NX: true`; ambas escrituras devuelven `OK`, demostrando el riesgo de duplicación. Detén con `docker rm -f redis-demo`.
-
-#### Paso 5 · Práctica guiada
-
-Añade TTL de 2 segundos y comprueba que la tarifa desaparece. **Pista:** mide el valor antes y después de esperar.
-
-#### Paso 6 · Práctica independiente
-
-Publica un evento con Pub/Sub y documenta qué ocurre si el suscriptor está desconectado; no lo presentes como persistencia.
-
-#### Paso 7 · Cierre y conexión
-
 Ya distingues caché, idempotencia y notificación. El siguiente módulo abordará observabilidad desde una carpeta nueva.
 
 **Errores comunes:** cachear sin TTL; usar `SET` sin NX para comandos únicos; confundir Pub/Sub con cola durable; no cerrar cliente; guardar secretos en URL.
@@ -442,6 +406,42 @@ REDIS_URL='redis://localhost:6379' npm test -- redis-cache
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Distingue caché de lectura y registro de idempotencia de confirmaciones. Prueba expiración, caída de Redis y reintento; documenta dónde se conserva la garantía durable de no duplicar efectos.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-redis
+cd ejemplo-redis
+npm init -y
+npm install redis
+mkdir src
+docker run --name redis-demo -p 6379:6379 -d redis:7-alpine
+```
+
+Crea `src/app.js`:
+
+```js
+import { createClient } from "redis";
+const redis = createClient({ url: "redis://127.0.0.1:6379" });
+await redis.connect();
+await redis.set("tarifa:co", "12500", { EX: 30 });
+const primera = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
+const segunda = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
+console.log({ tarifa: await redis.get("tarifa:co"), primera, segunda });
+await redis.quit();
+```
+
+Ejecuta `node src/app.js`. **Resultado esperado:** primera operación `OK`, segunda `null`. **Fallo deliberado y diagnóstico:** elimina `NX: true`; ambas escrituras devuelven `OK`, demostrando el riesgo de duplicación. Detén con `docker rm -f redis-demo`.
+
+#### Paso 5 · Práctica guiada
+
+Añade TTL de 2 segundos y comprueba que la tarifa desaparece. **Pista:** mide el valor antes y después de esperar.
+
+#### Paso 6 · Práctica independiente
+
+Publica un evento con Pub/Sub y documenta qué ocurre si el suscriptor está desconectado; no lo presentes como persistencia.
+
+#### Paso 7 · Cierre y conexión
 
 ## Laboratorio práctico
 

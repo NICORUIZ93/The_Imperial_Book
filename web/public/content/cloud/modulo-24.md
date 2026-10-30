@@ -276,19 +276,7 @@ Al finalizar vas a desplegar una nueva definición de tarea del servicio de segu
 El servicio de seguimiento corriendo en ECS (Módulo 14) debe probarse con un conjunto de tareas nuevo (verde) antes de que `demo-alb` le mande todo el tráfico real, sin apagar nunca el conjunto actual (azul) hasta confirmar que el nuevo funciona.
 #### Paso 3 · Teoría, modelo mental y analogía
 Blue/Green es mantener dos flotas completas y mover el letrero del listener hacia la nueva recién cuando está lista, en vez de reemplazar tareas una por una mientras siguen atendiendo tráfico real.
-#### Paso 4 · Demostración guiada
-```bash
-LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
-aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo-ecs \
-  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"arn:aws:ecs:us-east-1:000000000000:task-definition/rutaflow-planificador-task:2\"}}}]}"}'
-```
-Resultado esperado: CodeDeploy crea un conjunto de tareas verde apuntando a la nueva definición, y empieza a desviar tráfico del listener de `demo-alb` hacia ese grupo objetivo verde según la estrategia configurada — el conjunto azul original sigue corriendo, intacto, mientras tanto.
-#### Paso 5 · Práctica guiada
-Pista: hacé que el healthcheck del grupo objetivo verde falle a propósito (por ejemplo, apuntándolo a un puerto que el contenedor nuevo no escucha) — ese es el fallo deliberado: CodeDeploy nunca promueve ese conjunto verde a `PRIMARY`, y el tráfico sigue sirviéndose desde el azul, sin que los clientes de RutaFlow noten nada.
-#### Paso 6 · Práctica independiente
-Corregí el healthcheck, confirmá que el conjunto verde se promueve a `PRIMARY` y el azul se elimina, y después documentá cómo sería un rollback manual si el problema se hubiera detectado recién después de la promoción completa (pista: ya no hay conjunto azul al que volver automáticamente, a diferencia de mientras el despliegue seguía en curso).
-#### Paso 7 · Cierre y evidencia
-Entregá el despliegue Blue/Green en curso del Paso 4, el healthcheck fallido sin promoción del Paso 5, y la promoción exitosa más la reflexión de rollback del Paso 6; explicá por qué Blue/Green reduce el riesgo de downtime comparado con un despliegue in-place. Siguiente paso: observabilidad. Errores comunes: targets mezclados y rollback sin datos. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-ecs.html.
+
 **Conceptos clave:** conjunto de tareas verde, `TargetService`, promoción a PRIMARY, AppSpec.
 
 Para `computePlatform: ECS`, el despliegue Blue/Green es más elaborado: CodeDeploy analiza un AppSpec en formato JSON que describe la nueva definición de tarea, crea un "conjunto de tareas verde" en tu servicio ECS apuntando a esa nueva definición, ejecuta los lifecycle hooks configurados, y luego cambia atómicamente la regla de reenvío por defecto del listener ELB v2 para dirigir tráfico hacia el grupo objetivo verde —de forma inmediata (`AllAtOnce`), gradual por pasos (`Canary`) o en incrementos lineales (`Linear`), según la configuración elegida. Al finalizar exitosamente, el conjunto de tareas verde se promueve a `PRIMARY` y el conjunto azul original se elimina.
@@ -329,6 +317,20 @@ aws deploy create-deployment-group --application-name demo-app-ecs --deployment-
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara dos revisiones del servicio de seguimiento con grupos objetivo separados. Cambia el listener en laboratorio y demuestra que puedes restaurar el destino anterior sin reconstruir la imagen.
+
+#### Paso 4 · Demostración guiada
+```bash
+LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
+aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo-ecs \
+  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"arn:aws:ecs:us-east-1:000000000000:task-definition/rutaflow-planificador-task:2\"}}}]}"}'
+```
+Resultado esperado: CodeDeploy crea un conjunto de tareas verde apuntando a la nueva definición, y empieza a desviar tráfico del listener de `demo-alb` hacia ese grupo objetivo verde según la estrategia configurada — el conjunto azul original sigue corriendo, intacto, mientras tanto.
+#### Paso 5 · Práctica guiada
+Pista: hacé que el healthcheck del grupo objetivo verde falle a propósito (por ejemplo, apuntándolo a un puerto que el contenedor nuevo no escucha) — ese es el fallo deliberado: CodeDeploy nunca promueve ese conjunto verde a `PRIMARY`, y el tráfico sigue sirviéndose desde el azul, sin que los clientes de RutaFlow noten nada.
+#### Paso 6 · Práctica independiente
+Corregí el healthcheck, confirmá que el conjunto verde se promueve a `PRIMARY` y el azul se elimina, y después documentá cómo sería un rollback manual si el problema se hubiera detectado recién después de la promoción completa (pista: ya no hay conjunto azul al que volver automáticamente, a diferencia de mientras el despliegue seguía en curso).
+#### Paso 7 · Cierre y evidencia
+Entregá el despliegue Blue/Green en curso del Paso 4, el healthcheck fallido sin promoción del Paso 5, y la promoción exitosa más la reflexión de rollback del Paso 6; explicá por qué Blue/Green reduce el riesgo de downtime comparado con un despliegue in-place. Siguiente paso: observabilidad. Errores comunes: targets mezclados y rollback sin datos. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-ecs.html.
 
 ## Laboratorio práctico
 

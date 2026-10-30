@@ -457,43 +457,6 @@ El sitio del proyecto integrador Fundamentos necesita texto legible para cualqui
 #### Paso 3 · Teoría, modelo mental y analogía
 La cascada CSS decide qué regla gana, pero el **contraste** entre color de texto y color de fondo es independiente de la cascada: es una relación matemática entre la luminancia relativa de ambos colores. WCAG AA exige un ratio mínimo de **4.5:1** para texto normal y **3:1** para texto grande; por debajo de eso, el texto es insuficiente para accesibilidad, más allá de cómo se vea en un monitor bien calibrado. La analogía: el contraste no es una opinión de diseño, es como el voltaje de un enchufe — hay un número que cumple o no cumple, y "a mí me pareció que andaba bien" no reemplaza medirlo.
 
-#### Paso 4 · Demostración guiada desde cero
-
-Guarda el HTML en `ejemplo-contraste/index.html` y el CSS en `ejemplo-contraste/styles.css`. Inicia el servidor desde `ejemplo-contraste` y abre `/index.html`; comprueba en Network que `styles.css` responde con 200 antes de medir el contraste.
-
-```bash
-mkdir ejemplo-contraste
-cd ejemplo-contraste
-```
-```html
-<!doctype html><html lang="es"><head><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="styles.css"></head>
-<body><main><h1>Entregas</h1><section class="grid"><article>RF-101</article><article>RF-102</article></section></main></body></html>
-```
-```css
-body { margin: 0; font: 1rem/1.5 system-ui; color: #cccccc; background: #ffffff; }
-main { width: min(70rem, 100% - 2rem); margin: 2rem auto; }
-.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-article { padding: 1rem; border: 1px solid #d2d2d7; border-radius: .75rem; }
-@media (max-width: 40rem) { .grid { grid-template-columns: 1fr; } }
-```
-```bash
-python3 -m http.server 8000
-```
-**Resultado esperado:** el layout responde bien — dos columnas en escritorio, una columna bajo 40rem —, pero el texto `#cccccc` sobre fondo `#ffffff` es casi ilegible aun con buena vista.
-
-**Fallo deliberado (verificable, no solo "se ve mal"):** calculá el contraste real entre `#cccccc` y `#ffffff` (o abrí DevTools → inspeccioná el `<h1>` → ícono de contraste junto al color de texto). El ratio es aproximadamente **1.6:1**. WCAG AA exige **4.5:1** para texto normal: este diseño falla por un margen enorme, no por una cuestión de gusto.
-
-**Corrección:** cambiá `color: #cccccc;` por `color: #1d1d1f;`. Recalculá o volvé a mirar DevTools: el nuevo ratio supera **16:1**, muy por encima del mínimo.
-
-#### Paso 5 · Práctica guiada
-Pista: no te quedes en "se ve mejor" — recalculá el ratio o volvé a mirar el ícono de contraste de DevTools después del cambio. Que el número pase de 1.6:1 a más de 4.5:1 es la única evidencia de que corregiste el problema; un color que "se ve más oscuro" sin medirlo no es evidencia.
-
-#### Paso 6 · Práctica independiente
-Elegí otras dos combinaciones de color de texto/fondo (por ejemplo las que ya usás en los bordes o enlaces de tu sitio), calculá o verificá su ratio con la misma herramienta, y documentá cuáles cumplen 4.5:1 (texto normal) y cuáles necesitarían ser texto grande para que alcance con el mínimo de 3:1.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1, y las combinaciones adicionales del Paso 6; explicá por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitás un número verificable. Con esto cerrás el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
-**¿Por qué es importante?** Porque la accesibilidad verificable exige un número que cualquiera pueda recalcular — "4.5:1 o no cumple" — en vez de una impresión subjetiva de legibilidad.
 **Evidencia de aprendizaje:** entrega el ratio reprobado del diseño original, la corrección con ratio verificado, y las combinaciones adicionales calculadas en el Paso 6.
 **Conceptos clave:** selector, cascada, especificidad, herencia, box model, Flexbox, Grid, media query, foco, contraste y responsive.
 
@@ -607,6 +570,44 @@ Herramienta: contrast-ratio.com, comprobación: _________
 
 **Límites y decisión de uso:** Superar una medida de contraste no garantiza accesibilidad completa. Comprueba teclado, semántica, ampliación y mensajes de error; evita corregir colores sin revisar si el contenido puede leerse y operarse en distintas condiciones.
 
+#### Paso 4 · Demostración guiada desde cero
+
+Guarda el HTML en `ejemplo-contraste/index.html` y el CSS en `ejemplo-contraste/styles.css`. Inicia el servidor desde `ejemplo-contraste` y abre `/index.html`; comprueba en Network que `styles.css` responde con 200 antes de medir el contraste.
+
+```bash
+mkdir ejemplo-contraste
+cd ejemplo-contraste
+```
+```html
+<!doctype html><html lang="es"><head><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="styles.css"></head>
+<body><main><h1>Entregas</h1><section class="grid"><article>RF-101</article><article>RF-102</article></section></main></body></html>
+```
+```css
+body { margin: 0; font: 1rem/1.5 system-ui; color: #cccccc; background: #ffffff; }
+main { width: min(70rem, 100% - 2rem); margin: 2rem auto; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+article { padding: 1rem; border: 1px solid #d2d2d7; border-radius: .75rem; }
+@media (max-width: 40rem) { .grid { grid-template-columns: 1fr; } }
+```
+```bash
+python3 -m http.server 8000
+```
+**Resultado esperado:** el layout responde bien — dos columnas en escritorio, una columna bajo 40rem —, pero el texto `#cccccc` sobre fondo `#ffffff` es casi ilegible aun con buena vista.
+
+**Fallo deliberado (verificable, no solo "se ve mal"):** calculá el contraste real entre `#cccccc` y `#ffffff` (o abrí DevTools → inspeccioná el `<h1>` → ícono de contraste junto al color de texto). El ratio es aproximadamente **1.6:1**. WCAG AA exige **4.5:1** para texto normal: este diseño falla por un margen enorme, no por una cuestión de gusto.
+
+**Corrección:** cambiá `color: #cccccc;` por `color: #1d1d1f;`. Recalculá o volvé a mirar DevTools: el nuevo ratio supera **16:1**, muy por encima del mínimo.
+
+#### Paso 5 · Práctica guiada
+Pista: no te quedes en "se ve mejor" — recalculá el ratio o volvé a mirar el ícono de contraste de DevTools después del cambio. Que el número pase de 1.6:1 a más de 4.5:1 es la única evidencia de que corregiste el problema; un color que "se ve más oscuro" sin medirlo no es evidencia.
+
+#### Paso 6 · Práctica independiente
+Elegí otras dos combinaciones de color de texto/fondo (por ejemplo las que ya usás en los bordes o enlaces de tu sitio), calculá o verificá su ratio con la misma herramienta, y documentá cuáles cumplen 4.5:1 (texto normal) y cuáles necesitarían ser texto grande para que alcance con el mínimo de 3:1.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1, y las combinaciones adicionales del Paso 6; explicá por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitás un número verificable. Con esto cerrás el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
+**¿Por qué es importante?** Porque la accesibilidad verificable exige un número que cualquiera pueda recalcular — "4.5:1 o no cumple" — en vez de una impresión subjetiva de legibilidad.
+
 ## Construcción guiada del capítulo
 
 ### Proyecto 3: sitio profesional accesible desde carpeta vacía
@@ -633,7 +634,6 @@ Fases:
 - Usar div como botón: emplea semántica nativa.
 - Eliminar focus outline: crea un estilo visible.
 - Diseñar con tamaños fijos: usa restricciones y prueba extremos.
-
 
 ## Laboratorio de transferencia
 

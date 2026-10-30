@@ -399,62 +399,6 @@ El proyecto Fundamentos ya tiene pruebas (Tema 2) e historial con buenos mensaje
 #### Paso 3 · Teoría, modelo mental y analogía
 El análisis estático detecta problemas SIN ejecutar el programa: un linter como Ruff encuentra imports sin usar, variables no definidas y patrones riesgosos leyendo el código, no corriéndolo. CI (integración continua) ejecuta esos controles —lint, pruebas— automáticamente en un entorno recién creado, con un clon limpio del repositorio: ningún archivo que hayas creado a mano durante una sesión de prueba sobrevive ahí. Por eso una prueba que depende de "algo que ya está en mi carpeta" puede pasar en tu máquina y fallar en CI sin que el código haya cambiado — el entorno es el que cambió. La analogía: ensayar una receta en tu cocina, con ingredientes que ya tenías picados de ayer, no prueba que la receta funcione completa desde cero en otra cocina.
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-Desde una **carpeta vacía**, reproducí primero un catch de análisis estático y después la trampa de "funciona en mi máquina":
-```bash
-mkdir calidad-tareas
-cd calidad-tareas
-python3 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
-python3 -m pip install ruff pytest
-mkdir src tests
-```
-Guardá `src/tareas.py`:
-```python
-import os  # defecto: queda sin usar
-
-def contar_pendientes(tareas):
-    return len([t for t in tareas if t["estado"] == "pendiente"])
-```
-Ejecutá `ruff check .` ANTES de correr nada. **Resultado esperado:** Ruff informa `F401 'os' imported but unused`, sin haber ejecutado una sola línea del programa. Quitá el import y confirmá que `ruff check .` ya no reporta nada.
-
-Ahora guardá `tests/test_tareas.py` dependiendo de un archivo que vos mismo vas a crear "a mano", simulando una exploración manual previa:
-```bash
-printf '[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]' > tareas_prueba.json
-```
-```python
-import json
-from src.tareas import contar_pendientes
-
-def test_contar_pendientes_desde_archivo():
-    with open("tareas_prueba.json") as f:
-        tareas = json.load(f)
-    assert contar_pendientes(tareas) == 2
-```
-Ejecutá `python3 -m pytest -q` en esta misma carpeta. **Resultado esperado:** `1 passed` — funciona, porque `tareas_prueba.json` está ahí. **Fallo deliberado:** copiá SOLO `src/` y `tests/` (sin `tareas_prueba.json`) a una carpeta nueva y corré `python3 -m pytest -q` ahí — esto es exactamente lo que hace CI al clonar el repositorio: arranca limpio, sin tus archivos manuales. El resultado es `FileNotFoundError: [Errno 2] No such file or directory: 'tareas_prueba.json'`. El mismo código, la misma prueba, un resultado distinto — porque "pasar" dependía de un archivo que nadie commiteó y que solo existía porque lo creaste una vez a mano. La corrección real es que la prueba cree sus propios datos en lugar de depender de algo externo:
-```python
-import json
-from src.tareas import contar_pendientes
-
-def test_contar_pendientes_desde_archivo(tmp_path):
-    archivo = tmp_path / "tareas_prueba.json"
-    archivo.write_text('[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]')
-    tareas = json.loads(archivo.read_text())
-    assert contar_pendientes(tareas) == 2
-```
-Con `tmp_path` (una carpeta temporal que pytest crea y destruye por prueba), el test pasa igual en tu máquina y en cualquier clon limpio, porque ya no depende de nada que no haya creado él mismo.
-
-#### Paso 5 · Práctica guiada
-Pista: para saber si una prueba de verdad corre en limpio, cloná el proyecto en una carpeta nueva (o simplemente copiá solo `src/` y `tests/`, sin nada más) y corré `pytest -q` ahí — si falla, dependía de algo que no estaba versionado.
-
-#### Paso 6 · Práctica independiente
-Agregá al pipeline un segundo chequeo estático (por ejemplo `python3 -m py_compile src/tareas.py` o una regla adicional de `ruff check .`) y confirmá que ese chequeo falla con un commit roto ANTES de que llegue a ejecutarse `pytest`.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el `F401` detectado y corregido, la prueba que pasaba en tu máquina y fallaba en una copia limpia, y la corrección con `tmp_path` que ya no depende de archivos manuales; con esto cerrás el Módulo 5. Como siguiente paso, en el Módulo 6 vas a aplicar exactamente esta misma disciplina de evidencia a seguridad: vas a modelar amenazas contra el mismo proyecto Fundamentos y a probar que una acción no autorizada falla, con pruebas, no con suposiciones. Errores comunes: confiar en que una prueba "pasó en mi máquina" sin probarla en un entorno limpio; dejar que una prueba dependa de archivos no versionados; desactivar una regla de lint en vez de corregir lo que señala. Fuentes oficiales: https://docs.github.com/actions y https://docs.astral.sh/ruff/.
-**¿Por qué es importante?** Porque "funciona en mi máquina" no es una garantía: es una hipótesis sin probar sobre el entorno, y CI existe justamente para probarla en un lugar donde los atajos manuales no sobreviven.
 **Evidencia de aprendizaje:** entrega el hallazgo de Ruff corregido, la prueba fallando en copia limpia, y la corrección con `tmp_path` pasando en ambos entornos.
 
 **Cuándo NO usar:** No deshabilites una regla de lint por conveniencia; corregí lo que señala. No ignores un fallo que "solo pasa en CI" asumiendo que CI está mal configurado; es más probable que tu entorno local tenga algo que CI no tiene. No dejes una prueba que dependa de archivos, variables de entorno o datos que no estén versionados o generados por la prueba misma.
@@ -533,6 +477,63 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Ejecuta análisis, formato y pruebas del gestor en CI. Provoca un fallo en una rama de laboratorio y comprueba que queda visible antes de integrar el cambio.
+
+#### Paso 4 · Demostración guiada desde cero
+**Crea** el archivo `src/tareas.py` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+
+Desde una **carpeta vacía**, reproducí primero un catch de análisis estático y después la trampa de "funciona en mi máquina":
+```bash
+mkdir calidad-tareas
+cd calidad-tareas
+python3 -m venv .venv
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+python3 -m pip install ruff pytest
+mkdir src tests
+```
+Guardá `src/tareas.py`:
+```python
+import os  # defecto: queda sin usar
+
+def contar_pendientes(tareas):
+    return len([t for t in tareas if t["estado"] == "pendiente"])
+```
+Ejecutá `ruff check .` ANTES de correr nada. **Resultado esperado:** Ruff informa `F401 'os' imported but unused`, sin haber ejecutado una sola línea del programa. Quitá el import y confirmá que `ruff check .` ya no reporta nada.
+
+Ahora guardá `tests/test_tareas.py` dependiendo de un archivo que vos mismo vas a crear "a mano", simulando una exploración manual previa:
+```bash
+printf '[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]' > tareas_prueba.json
+```
+```python
+import json
+from src.tareas import contar_pendientes
+
+def test_contar_pendientes_desde_archivo():
+    with open("tareas_prueba.json") as f:
+        tareas = json.load(f)
+    assert contar_pendientes(tareas) == 2
+```
+Ejecutá `python3 -m pytest -q` en esta misma carpeta. **Resultado esperado:** `1 passed` — funciona, porque `tareas_prueba.json` está ahí. **Fallo deliberado:** copiá SOLO `src/` y `tests/` (sin `tareas_prueba.json`) a una carpeta nueva y corré `python3 -m pytest -q` ahí — esto es exactamente lo que hace CI al clonar el repositorio: arranca limpio, sin tus archivos manuales. El resultado es `FileNotFoundError: [Errno 2] No such file or directory: 'tareas_prueba.json'`. El mismo código, la misma prueba, un resultado distinto — porque "pasar" dependía de un archivo que nadie commiteó y que solo existía porque lo creaste una vez a mano. La corrección real es que la prueba cree sus propios datos en lugar de depender de algo externo:
+```python
+import json
+from src.tareas import contar_pendientes
+
+def test_contar_pendientes_desde_archivo(tmp_path):
+    archivo = tmp_path / "tareas_prueba.json"
+    archivo.write_text('[{"estado":"pendiente"},{"estado":"pendiente"},{"estado":"hecho"}]')
+    tareas = json.loads(archivo.read_text())
+    assert contar_pendientes(tareas) == 2
+```
+Con `tmp_path` (una carpeta temporal que pytest crea y destruye por prueba), el test pasa igual en tu máquina y en cualquier clon limpio, porque ya no depende de nada que no haya creado él mismo.
+
+#### Paso 5 · Práctica guiada
+Pista: para saber si una prueba de verdad corre en limpio, cloná el proyecto en una carpeta nueva (o simplemente copiá solo `src/` y `tests/`, sin nada más) y corré `pytest -q` ahí — si falla, dependía de algo que no estaba versionado.
+
+#### Paso 6 · Práctica independiente
+Agregá al pipeline un segundo chequeo estático (por ejemplo `python3 -m py_compile src/tareas.py` o una regla adicional de `ruff check .`) y confirmá que ese chequeo falla con un commit roto ANTES de que llegue a ejecutarse `pytest`.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el `F401` detectado y corregido, la prueba que pasaba en tu máquina y fallaba en una copia limpia, y la corrección con `tmp_path` que ya no depende de archivos manuales; con esto cerrás el Módulo 5. Como siguiente paso, en el Módulo 6 vas a aplicar exactamente esta misma disciplina de evidencia a seguridad: vas a modelar amenazas contra el mismo proyecto Fundamentos y a probar que una acción no autorizada falla, con pruebas, no con suposiciones. Errores comunes: confiar en que una prueba "pasó en mi máquina" sin probarla en un entorno limpio; dejar que una prueba dependa de archivos no versionados; desactivar una regla de lint en vez de corregir lo que señala. Fuentes oficiales: https://docs.github.com/actions y https://docs.astral.sh/ruff/.
+**¿Por qué es importante?** Porque "funciona en mi máquina" no es una garantía: es una hipótesis sin probar sobre el entorno, y CI existe justamente para probarla en un lugar donde los atajos manuales no sobreviven.
 
 ## Construcción guiada del capítulo
 

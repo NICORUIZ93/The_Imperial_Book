@@ -191,23 +191,7 @@ Al finalizar vas a confirmar en vivo, intentando una conexión SFTP real contra 
 Antes de prometerle al socio logístico externo que ya puede subir manifiestos por SFTP, alguien del equipo de RutaFlow tiene que saber con certeza si eso ya funciona de punta a punta o solo está configurado.
 #### Paso 3 · Teoría, modelo mental y analogía
 El plano de gestión configura la oficina completa (servidores, usuarios, claves); el plano de datos es el que efectivamente transporta los paquetes — y en Fase 1, solo el primero está terminado.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-SERVER_ID=$(aws transfer list-servers --query 'Servers[0].ServerId' --output text)
-aws transfer describe-server --server-id "$SERVER_ID" --query 'Server.{Estado:State,Protocolos:Protocols}'
-```
-Resultado esperado: `describe-server` confirma el plano de gestión completo (estado, protocolos soportados) — todo lo que configuraste en los Temas 1-3 es real y consultable.
-#### Paso 5 · Práctica guiada
-Pista: probá conectarte de verdad con un cliente SFTP (`sftp -i /tmp/clave-socio socio-logistico@localhost`) — ese es el fallo deliberado que confirma el límite real: la conexión falla o no responde, porque la transferencia efectiva de archivos por SFTP (el plano de datos) todavía no está implementada en Floci, aunque toda la configuración alrededor sí lo esté.
-#### Paso 6 · Práctica independiente
-Escribí en un README qué validarías contra AWS real antes de confiar en este flujo para producción (la conectividad SFTP efectiva), separado explícitamente de lo que ya quedó probado acá (la gestión completa de servidores, usuarios y claves).
-#### Paso 7 · Cierre y evidencia
-Entregá el plano de gestión confirmado del Paso 4, el intento real de SFTP fallido del Paso 5, y el README con la frontera documentada del Paso 6; explicá por qué reportar este módulo como "probado end-to-end" en una demo sería engañoso para el equipo. Siguiente paso: integración. Errores comunes: afirmar transferencia real por ver API verde. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html.
 **Conceptos clave:** Fase 1, plano de gestión vs plano de datos, transferencia real no emulada.
 
 Como con ELB v2, CloudFront y Route53 en el Módulo 22, Transfer Family en Floci es una implementación de Fase 1: el plano de gestión —crear servidores, usuarios, claves, etiquetas— está completo y es fielmente consultable vía SDK, CLI o Terraform, pero la conectividad SFTP real del plano de datos —efectivamente subir o descargar un archivo por el protocolo SFTP— todavía no está implementada. Puedes validar que tu infraestructura como código crea correctamente el servidor y los usuarios con los permisos esperados, pero no puedes usar un cliente SFTP real para conectarte y transferir un archivo contra Floci todavía.
@@ -238,6 +222,24 @@ sftp -i /tmp/clave-socio socio-logistico@localhost 2>&1 | head -3 || true
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Marca la transferencia de un manifiesto como pendiente si solo está implementado el plano de gestión. La evidencia debe distinguir un servidor registrado de una conexión SFTP que realmente entrega bytes.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+SERVER_ID=$(aws transfer list-servers --query 'Servers[0].ServerId' --output text)
+aws transfer describe-server --server-id "$SERVER_ID" --query 'Server.{Estado:State,Protocolos:Protocols}'
+```
+Resultado esperado: `describe-server` confirma el plano de gestión completo (estado, protocolos soportados) — todo lo que configuraste en los Temas 1-3 es real y consultable.
+#### Paso 5 · Práctica guiada
+Pista: probá conectarte de verdad con un cliente SFTP (`sftp -i /tmp/clave-socio socio-logistico@localhost`) — ese es el fallo deliberado que confirma el límite real: la conexión falla o no responde, porque la transferencia efectiva de archivos por SFTP (el plano de datos) todavía no está implementada en Floci, aunque toda la configuración alrededor sí lo esté.
+#### Paso 6 · Práctica independiente
+Escribí en un README qué validarías contra AWS real antes de confiar en este flujo para producción (la conectividad SFTP efectiva), separado explícitamente de lo que ya quedó probado acá (la gestión completa de servidores, usuarios y claves).
+#### Paso 7 · Cierre y evidencia
+Entregá el plano de gestión confirmado del Paso 4, el intento real de SFTP fallido del Paso 5, y el README con la frontera documentada del Paso 6; explicá por qué reportar este módulo como "probado end-to-end" en una demo sería engañoso para el equipo. Siguiente paso: integración. Errores comunes: afirmar transferencia real por ver API verde. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html.
 
 ## Laboratorio práctico
 

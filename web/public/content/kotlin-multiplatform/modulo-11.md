@@ -192,30 +192,6 @@ En la retrospectiva final del proyecto integrador, alguien del equipo pregunta "
 #### Paso 3 · Teoría, modelo mental y analogía
 La promesa realista de KMP es compartir específicamente lo que es redundancia pura entre plataformas (lógica de negocio, networking, persistencia), dejando la UI como decisión de arquitectura deliberada: nativa por fidelidad, o Compose Multiplatform por velocidad de desarrollo compartido. La analogía es una cocina central que prepara los ingredientes base compartidos, mientras cada sucursal presenta el plato final según las preferencias de su clientela local.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-Compartido (redundancia pura si se duplicara): lógica de negocio, networking, persistencia
-Decisión de arquitectura del equipo: UI nativa (fidelidad) vs Compose Multiplatform (velocidad compartida)
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: un documento de cierre del proyecto que lista explícitamente cada capa del proyecto integrador (dominio, datos, UI) junto con la razón concreta de por qué se comparte o por qué se mantiene nativa, en vez de una decisión implícita o "por costumbre".
-
-#### Paso 5 · Práctica guiada
-Pista: respondé la pregunta de la retrospectiva con "sí, compartamos la navegación y las pantallas también en el próximo proyecto, así compartimos el 100%". Ese es el fallo deliberado: forzar una capa de UI compartida sin evaluar que la navegación y los gestos nativos de Android e iOS tienen modelos de interacción genuinamente distintos, termina produciendo una UI que ninguna de las dos plataformas simula bien, o un wrapper tan complejo que anula el ahorro de tiempo que se buscaba.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reemplazando la meta de "100% compartido" por una decisión explícita basada en las prioridades reales del equipo: si la fidelidad nativa importa genuinamente, la UI se mantiene nativa; si la velocidad de entrega importa más, se evalúa Compose Multiplatform con ese trade-off documentado explícitamente.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el documento de cierre del Paso 4, la meta de "100% compartido" sin evaluar trade-offs del Paso 5, y la decisión documentada con su justificación del Paso 6; explicá por qué maximizar el porcentaje de código compartido no es, por sí mismo, un objetivo válido de arquitectura. Siguiente paso: si el proyecto crece, estudia cómo mantener la frontera compartida estable frente a múltiples equipos consumidores. Errores comunes: tratar "porcentaje compartido" como una métrica de éxito en sí misma, forzar una UI compartida sin evaluar si los modelos de interacción nativos realmente convergen, y no documentar la decisión para que el próximo proyecto no repita la misma discusión sin contexto. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-samples.html y https://kotlinlang.org/docs/multiplatform.html.
-**¿Por qué es importante?** Entender que KMP comparte específicamente lo que es redundancia pura entre plataformas, dejando la UI como una decisión de arquitectura deliberada, evita expectativas poco realistas sobre qué KMP puede y debe compartir.
 **Evidencia de aprendizaje:** entrega documento de cierre, meta de 100% compartido sin trade-offs detectada y decisión final justificada y documentada.
 **Conceptos clave:** compartir donde la duplicación es redundancia, UI nativa donde importa la experiencia específica.
 
@@ -249,6 +225,31 @@ flowchart LR
 ```
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+```text
+Compartido (redundancia pura si se duplicara): lógica de negocio, networking, persistencia
+Decisión de arquitectura del equipo: UI nativa (fidelidad) vs Compose Multiplatform (velocidad compartida)
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: un documento de cierre del proyecto que lista explícitamente cada capa del proyecto integrador (dominio, datos, UI) junto con la razón concreta de por qué se comparte o por qué se mantiene nativa, en vez de una decisión implícita o "por costumbre".
+
+#### Paso 5 · Práctica guiada
+Pista: respondé la pregunta de la retrospectiva con "sí, compartamos la navegación y las pantallas también en el próximo proyecto, así compartimos el 100%". Ese es el fallo deliberado: forzar una capa de UI compartida sin evaluar que la navegación y los gestos nativos de Android e iOS tienen modelos de interacción genuinamente distintos, termina produciendo una UI que ninguna de las dos plataformas simula bien, o un wrapper tan complejo que anula el ahorro de tiempo que se buscaba.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reemplazando la meta de "100% compartido" por una decisión explícita basada en las prioridades reales del equipo: si la fidelidad nativa importa genuinamente, la UI se mantiene nativa; si la velocidad de entrega importa más, se evalúa Compose Multiplatform con ese trade-off documentado explícitamente.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el documento de cierre del Paso 4, la meta de "100% compartido" sin evaluar trade-offs del Paso 5, y la decisión documentada con su justificación del Paso 6; explicá por qué maximizar el porcentaje de código compartido no es, por sí mismo, un objetivo válido de arquitectura. Siguiente paso: si el proyecto crece, estudia cómo mantener la frontera compartida estable frente a múltiples equipos consumidores. Errores comunes: tratar "porcentaje compartido" como una métrica de éxito en sí misma, forzar una UI compartida sin evaluar si los modelos de interacción nativos realmente convergen, y no documentar la decisión para que el próximo proyecto no repita la misma discusión sin contexto. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-samples.html y https://kotlinlang.org/docs/multiplatform.html.
+**¿Por qué es importante?** Entender que KMP comparte específicamente lo que es redundancia pura entre plataformas, dejando la UI como una decisión de arquitectura deliberada, evita expectativas poco realistas sobre qué KMP puede y debe compartir.
 
 ## Laboratorio práctico
 

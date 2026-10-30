@@ -181,37 +181,6 @@ Completaste el track entero construyendo RutaFlow en SwiftUI — nadie te pidió
 #### Paso 3 · Teoría, modelo mental y analogía
 Una app iOS completa combina seguridad de tipos (optionals, enums exhaustivos), concurrencia estructurada (`async`/`await`, actors) y UI reactiva sincronizada automáticamente (`@Observable`) — una pieza musical interpretada con instrumentos diseñados para resaltar esas fortalezas específicas.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-Decisión: EnviosViewModel usa @Observable (Módulo 2) para que ListaEnvios
-se redibuje solo cuando lee la propiedad que cambió.
-
-Específico de Swift/SwiftUI: la integración de @Observable con el sistema
-de tipos del compilador (rastrea qué propiedad leíste, no qué objeto).
-
-Principio universal: "state hoisting" — un componente hijo recibe el
-valor y una forma de notificar cambios, sin poseer el estado él mismo
-(igual en Compose/Android y en hooks de React).
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: tu retrospectiva separa explícitamente qué parte de la decisión depende del compilador y el runtime de Swift (imposible de trasladar literalmente a otra plataforma) de qué parte es un principio que reconocerías en cualquier framework de UI declarativa moderno.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí la retrospectiva afirmando que "`@Observable` es exclusivo de SwiftUI y no existe nada parecido en otras plataformas" — ese es el fallo deliberado: es una afirmación incorrecta que ignora que Compose (`mutableStateOf`) y React (hooks) resuelven exactamente el mismo problema de redibujado granular, solo con mecanismos de lenguaje distintos.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente qué es sintaxis/mecanismo propio de Swift (la macro `@Observable` y el rastreo de acceso a propiedades en tiempo de compilación) de qué es el principio compartido (redibujado granular basado en qué se leyó realmente), citando el módulo específico de Android o React donde estudiaste el equivalente.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
-**¿Por qué es importante?** Porque distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
 **Evidencia de aprendizaje:** entrega retrospectiva, afirmación incorrecta corregida y lista de principios transferibles.
 **Conceptos clave:** lo que hace que una app "se sienta nativa" en el sentido más profundo.
 
@@ -246,6 +215,38 @@ graph TD
 * Código: `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+```text
+Decisión: EnviosViewModel usa @Observable (Módulo 2) para que ListaEnvios
+se redibuje solo cuando lee la propiedad que cambió.
+
+Específico de Swift/SwiftUI: la integración de @Observable con el sistema
+de tipos del compilador (rastrea qué propiedad leíste, no qué objeto).
+
+Principio universal: "state hoisting" — un componente hijo recibe el
+valor y una forma de notificar cambios, sin poseer el estado él mismo
+(igual en Compose/Android y en hooks de React).
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: tu retrospectiva separa explícitamente qué parte de la decisión depende del compilador y el runtime de Swift (imposible de trasladar literalmente a otra plataforma) de qué parte es un principio que reconocerías en cualquier framework de UI declarativa moderno.
+
+#### Paso 5 · Práctica guiada
+Pista: escribí la retrospectiva afirmando que "`@Observable` es exclusivo de SwiftUI y no existe nada parecido en otras plataformas" — ese es el fallo deliberado: es una afirmación incorrecta que ignora que Compose (`mutableStateOf`) y React (hooks) resuelven exactamente el mismo problema de redibujado granular, solo con mecanismos de lenguaje distintos.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente qué es sintaxis/mecanismo propio de Swift (la macro `@Observable` y el rastreo de acceso a propiedades en tiempo de compilación) de qué es el principio compartido (redibujado granular basado en qué se leyó realmente), citando el módulo específico de Android o React donde estudiaste el equivalente.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
+**¿Por qué es importante?** Porque distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
 
 ## Laboratorio práctico
 

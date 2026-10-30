@@ -152,31 +152,7 @@ Al finalizar vas a comprobar en vivo una diferencia real (no solo de nombre) ent
 RutaFlow necesita que los eventos de un mismo envío se procesen en el orden en que ocurrieron (creado antes que entregado) — DynamoDB Streams y SQS FIFO (Módulo 3) dan esa garantía fácil; Pub/Sub no la da gratis.
 #### Paso 3 · Teoría, modelo mental y analogía
 La equivalencia funcional entre proveedores no implica la misma garantía de comportamiento: dos herramientas pueden resolver "lo mismo" con reglas distintas por debajo.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project mi-proyecto-local
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: ese es el fallo deliberado — `FAILED_PRECONDITION: The subscription delivery-commands-sub does not have message ordering enabled`, porque publicar con `--ordering-key` no alcanza: también hay que habilitar el ordenamiento en la suscripción.
-#### Paso 5 · Práctica guiada
-Pista: corregí el error del Paso 4 recreando la suscripción con `gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --enable-message-ordering --project mi-proyecto-local`, y repetí el `publish` con `--ordering-key` — ahora sí se acepta, porque tanto el productor como la suscripción acordaron explícitamente mantener el orden.
-#### Paso 6 · Práctica independiente
-Armá una tabla de tres columnas (AWS / Azure / GCP) solo para la fila "mensajería", anotando qué necesita cada uno para garantizar orden (SQS FIFO vs Pub/Sub con `--enable-message-ordering`), y decidí cuál requeriría menos cambios de configuración si RutaFlow migrara hoy.
-#### Paso 7 · Cierre y evidencia
-Entregá el error de ordenamiento no habilitado y su corrección, y la tabla comparativa del Paso 6; explicá por qué "SQS y Pub/Sub son equivalentes" es una simplificación que un caso real como este rompe. Siguiente paso: seguridad multi-cloud. Errores comunes: elegir por popularidad y omitir salida. Fuente oficial: https://cloud.google.com/architecture.
 **Conceptos clave:** equivalencia funcional, diferencias de modelo, criterios de elección de proveedor.
 
 Aunque los tres proveedores resuelven los mismos problemas fundamentales —almacenamiento de objetos, mensajería, bases de datos NoSQL, cómputo serverless—, las diferencias de modelo que viste en los dos temas anteriores importan a la hora de diseñar un sistema real. En almacenamiento de objetos, los tres (S3, Blob Storage, Cloud Storage) son suficientemente equivalentes en concepto y comportamiento como para que la elección dependa casi enteramente de en qué proveedor ya está el resto de tu infraestructura, más que de una diferencia funcional decisiva entre ellos.
@@ -248,6 +224,31 @@ cuándo no conviene hacerlo sin rediseñar (mensajería, donde SQS FIFO y Pub/Su
 
 ---
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project mi-proyecto-local
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: ese es el fallo deliberado — `FAILED_PRECONDITION: The subscription delivery-commands-sub does not have message ordering enabled`, porque publicar con `--ordering-key` no alcanza: también hay que habilitar el ordenamiento en la suscripción.
+#### Paso 5 · Práctica guiada
+Pista: corregí el error del Paso 4 recreando la suscripción con `gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --enable-message-ordering --project mi-proyecto-local`, y repetí el `publish` con `--ordering-key` — ahora sí se acepta, porque tanto el productor como la suscripción acordaron explícitamente mantener el orden.
+#### Paso 6 · Práctica independiente
+Armá una tabla de tres columnas (AWS / Azure / GCP) solo para la fila "mensajería", anotando qué necesita cada uno para garantizar orden (SQS FIFO vs Pub/Sub con `--enable-message-ordering`), y decidí cuál requeriría menos cambios de configuración si RutaFlow migrara hoy.
+#### Paso 7 · Cierre y evidencia
+Entregá el error de ordenamiento no habilitado y su corrección, y la tabla comparativa del Paso 6; explicá por qué "SQS y Pub/Sub son equivalentes" es una simplificación que un caso real como este rompe. Siguiente paso: seguridad multi-cloud. Errores comunes: elegir por popularidad y omitir salida. Fuente oficial: https://cloud.google.com/architecture.
 
 ## Laboratorio práctico
 

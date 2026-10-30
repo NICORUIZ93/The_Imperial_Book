@@ -567,23 +567,6 @@ Al finalizar vas a medir, con números reales, la diferencia de costo entre Quer
 La API de tracking del proyecto integrador RutaFlow (`examples/rutaflow/cloud/functions/`) pide "los eventos de este envío" decenas de veces por minuto en producción — tiene que resolverlo con Query, no con un Scan de toda la tabla de eventos de todos los envíos. Esta diferencia de eficiencia es lo que permite que RutaFlow escale sin deuda operacional.
 #### Paso 3 · Teoría, modelo mental y analogía
 Query va directo a la partición de un envío; Scan recorre evento por evento de todos los envíos, sin importar cuál buscás.
-#### Paso 4 · Demostración guiada
-
-En `examples/rutaflow/cloud/template.yaml` (líneas 45-60), ShipmentEvents está definida con clave primaria shipmentId+sequence. Aquí mides el costo de ambas operaciones:
-
-```bash
-aws dynamodb scan --table-name ShipmentEvents --select COUNT
-aws dynamodb query --table-name ShipmentEvents \
-  --key-condition-expression "shipmentId = :id" \
-  --expression-attribute-values '{":id":{"S":"env-4471"}}' --select COUNT
-```
-Resultado esperado: el `scan` reporta `ScannedCount` igual al total de eventos de TODOS los envíos que creaste en este módulo (`env-4471` y `env-5002` juntos); la `query` reporta `ScannedCount` igual solo a los eventos de `env-4471` — la diferencia es exactamente el costo que pagarías de más con Scan en una tabla real con miles de envíos.
-#### Paso 5 · Práctica guiada
-Pista: agregá `--filter-expression "tipo = :t" --expression-attribute-values '{":t":{"S":"entregado"}}'` al `scan` del Paso 4 para provocar el fallo deliberado de rendimiento: `Count` baja (solo los eventos `entregado`), pero `ScannedCount` se queda igual de alto — el filtro se aplicó después de leer la tabla completa, no antes.
-#### Paso 6 · Práctica independiente
-Repetí la comparación `scan` vs `query` después de insertar 5 eventos más de `env-5002`, y confirmá que el `ScannedCount` de la `query` sobre `env-4471` no cambió, mientras que el del `scan` sí.
-#### Paso 7 · Cierre y evidencia
-Entregá los dos `ScannedCount` del Paso 4, el `scan` con filtro del Paso 5 y la comparación del Paso 6; explicá en una frase por qué RutaFlow no podría usar Scan para su API de tracking en producción. Siguiente paso: seguridad. Errores comunes: filtrar después de leer y no paginar. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html.
 
 #### Profundización · Diseño y decisión (Ejercicio sin solución visible)
 
@@ -658,6 +641,23 @@ flowchart LR
 
 ---
 
+#### Paso 4 · Demostración guiada
+
+En `examples/rutaflow/cloud/template.yaml` (líneas 45-60), ShipmentEvents está definida con clave primaria shipmentId+sequence. Aquí mides el costo de ambas operaciones:
+
+```bash
+aws dynamodb scan --table-name ShipmentEvents --select COUNT
+aws dynamodb query --table-name ShipmentEvents \
+  --key-condition-expression "shipmentId = :id" \
+  --expression-attribute-values '{":id":{"S":"env-4471"}}' --select COUNT
+```
+Resultado esperado: el `scan` reporta `ScannedCount` igual al total de eventos de TODOS los envíos que creaste en este módulo (`env-4471` y `env-5002` juntos); la `query` reporta `ScannedCount` igual solo a los eventos de `env-4471` — la diferencia es exactamente el costo que pagarías de más con Scan en una tabla real con miles de envíos.
+#### Paso 5 · Práctica guiada
+Pista: agregá `--filter-expression "tipo = :t" --expression-attribute-values '{":t":{"S":"entregado"}}'` al `scan` del Paso 4 para provocar el fallo deliberado de rendimiento: `Count` baja (solo los eventos `entregado`), pero `ScannedCount` se queda igual de alto — el filtro se aplicó después de leer la tabla completa, no antes.
+#### Paso 6 · Práctica independiente
+Repetí la comparación `scan` vs `query` después de insertar 5 eventos más de `env-5002`, y confirmá que el `ScannedCount` de la `query` sobre `env-4471` no cambió, mientras que el del `scan` sí.
+#### Paso 7 · Cierre y evidencia
+Entregá los dos `ScannedCount` del Paso 4, el `scan` con filtro del Paso 5 y la comparación del Paso 6; explicá en una frase por qué RutaFlow no podría usar Scan para su API de tracking en producción. Siguiente paso: seguridad. Errores comunes: filtrar después de leer y no paginar. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html.
 
 ## Laboratorio práctico
 

@@ -333,42 +333,7 @@ Al finalizar vas a mostrar una lista completa de envíos de RutaFlow con `LazyVG
 Si un conductor tiene 50 envíos pendientes en el día, renderizar las 50 `TarjetaEnvio` de una sola vez con un `VStack` normal desperdicia trabajo en celdas que todavía no son visibles en pantalla.
 #### Paso 3 · Teoría, modelo mental y analogía
 `LazyVGrid` solo crea las celdas efectivamente visibles, no todas de antemano; el sistema de Previews renderiza una vista en el canvas de Xcode sin compilar ni correr la app completa — un modelo a escala instantáneo en vez de construir la habitación real cada vez.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-struct ListaEnviosGrid: View {
-    let envios: [(guia: String, estado: String)]
-    var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
-                ForEach(envios, id: \.guia) { envio in
-                    TarjetaEnvio(guia: envio.guia, estado: envio.estado)
-                }
-            }
-        }
-    }
-}
 
-#Preview {
-    ListaEnviosGrid(envios: [("RF-4471", "en ruta"), ("RF-5002", "entregado")])
-}
-```
-
-Pega el código en `ContentView.swift`. Este tema se practica en el canvas de Preview (⌥⌘↵), pero confirma primero que el proyecto compila:
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-
-**Resultado esperado:** el `#Preview` renderiza la grilla completa en el canvas de Xcode, sin compilar la app ni abrir el simulador — cambiar el array de `envios` se refleja casi al instante.
-
-**Por qué este tema importa en el trabajo real:** las Previews son lo que hace a SwiftUI productivo. Un desarrollador profesional itera el diseño en el canvas (segundos) en vez de recompilar y abrir el simulador (minutos) en cada cambio. `LazyVGrid` + `ScrollView` es, además, el patrón real para listas largas: "Lazy" significa que solo construye las celdas visibles, clave para que una lista de miles de envíos no agote la memoria.
-#### Paso 5 · Práctica guiada
-Pista: cambiá el Preview para que llame a una API real de RutaFlow en vez de pasar datos de muestra fijos — ese es el fallo deliberado: el canvas de Previews no está pensado para esperar una respuesta de red real, y el preview queda cargando indefinidamente o falla, en vez de iterar instantáneamente como se espera de este sistema.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a datos de muestra fijos, y agregá un estado `loading` y uno `error` como dos Previews adicionales separados (`#Preview("Cargando")`, `#Preview("Error")`), para poder ver los tres estados sin tocar código de red real.
-#### Paso 7 · Cierre y evidencia
-Entregá la grilla con Preview funcionando del Paso 4, el intento de red real roto del Paso 5, y los tres estados (`loading`/`error`/datos) del Paso 6; explicá por qué el sistema de Previews está pensado para datos de muestra, no para red real. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
-**¿Por qué es importante?** Porque el sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.
 **Evidencia de aprendizaje:** entrega la grilla con Preview funcionando, el intento roto de llamar a una API real desde el Preview, y los tres estados (`loading`/`error`/datos) como Previews separados.
 **Conceptos clave:** iteración casi instantánea sin recompilar la app completa.
 
@@ -408,6 +373,42 @@ En el proyecto integrador RutaFlow, `ListaEnviosGrid` vive en `examples/rutaflow
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+struct ListaEnviosGrid: View {
+    let envios: [(guia: String, estado: String)]
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
+                ForEach(envios, id: \.guia) { envio in
+                    TarjetaEnvio(guia: envio.guia, estado: envio.estado)
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    ListaEnviosGrid(envios: [("RF-4471", "en ruta"), ("RF-5002", "entregado")])
+}
+```
+
+Pega el código en `ContentView.swift`. Este tema se practica en el canvas de Preview (⌥⌘↵), pero confirma primero que el proyecto compila:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+
+**Resultado esperado:** el `#Preview` renderiza la grilla completa en el canvas de Xcode, sin compilar la app ni abrir el simulador — cambiar el array de `envios` se refleja casi al instante.
+
+**Por qué este tema importa en el trabajo real:** las Previews son lo que hace a SwiftUI productivo. Un desarrollador profesional itera el diseño en el canvas (segundos) en vez de recompilar y abrir el simulador (minutos) en cada cambio. `LazyVGrid` + `ScrollView` es, además, el patrón real para listas largas: "Lazy" significa que solo construye las celdas visibles, clave para que una lista de miles de envíos no agote la memoria.
+#### Paso 5 · Práctica guiada
+Pista: cambiá el Preview para que llame a una API real de RutaFlow en vez de pasar datos de muestra fijos — ese es el fallo deliberado: el canvas de Previews no está pensado para esperar una respuesta de red real, y el preview queda cargando indefinidamente o falla, en vez de iterar instantáneamente como se espera de este sistema.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a datos de muestra fijos, y agregá un estado `loading` y uno `error` como dos Previews adicionales separados (`#Preview("Cargando")`, `#Preview("Error")`), para poder ver los tres estados sin tocar código de red real.
+#### Paso 7 · Cierre y evidencia
+Entregá la grilla con Preview funcionando del Paso 4, el intento de red real roto del Paso 5, y los tres estados (`loading`/`error`/datos) del Paso 6; explicá por qué el sistema de Previews está pensado para datos de muestra, no para red real. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
+**¿Por qué es importante?** Porque el sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.
 
 ## Laboratorio práctico
 

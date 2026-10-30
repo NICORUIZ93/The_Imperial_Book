@@ -190,25 +190,7 @@ Al finalizar vas a provocar a propósito un rebote de correo real para probar el
 RutaFlow necesita desactivar automáticamente las notificaciones a una dirección que rebota — y probar ese manejador de forma confiable contra un proveedor de correo real, sin poder forzar un rebote a voluntad, sería prácticamente imposible.
 #### Paso 3 · Teoría, modelo mental y analogía
 El simulador es un maniquí de entrenamiento: reacciona de forma predecible a cada procedimiento que practiques, en vez de esperar una emergencia real para entrenar la respuesta correcta.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws ses send-email --from notificaciones@demo.example.com \
-  --destination ToAddresses=bounce@simulator.amazonses.com \
-  --message "Subject={Data=Prueba rebote},Body={Text={Data=Hola}}"
-curl -s http://localhost:4566/_aws/ses | grep -o '"bounce@simulator.amazonses.com"'
-```
-Resultado esperado: el envío genera un evento `Bounce` determinista (no un error de la llamada); el buzón de inspección confirma que el mensaje quedó registrado con esa dirección de destino, listo para que tu manejador de rebotes lo procese.
-#### Paso 5 · Práctica guiada
-Pista: ese envío a `bounce@simulator.amazonses.com` ES el fallo deliberado que buscás provocar a propósito — ahora escribí (o simulá con otra consulta a `/_aws/ses`) el código que debería reaccionar a ese evento `Bounce` desactivando las notificaciones futuras a esa dirección, y confirmá que un segundo envío a la misma dirección simulada se sigue registrando igual (el simulador no bloquea nada solo, es tu aplicación la que debe reaccionar al evento).
-#### Paso 6 · Práctica independiente
-Repetí el mismo envío hacia `complaint@simulator.amazonses.com` y hacia `success@simulator.amazonses.com`, e inspeccioná `/_aws/ses` para confirmar que los tres eventos (`Bounce`, `Complaint`, `Delivery`) quedaron registrados por separado, cada uno con su propio contenido.
-#### Paso 7 · Cierre y evidencia
-Entregá el evento `Bounce` provocado del Paso 4, el manejador de rebotes propuesto del Paso 5, y los tres eventos distintos del Paso 6; explicá por qué un sistema de notificaciones nunca probado contra un rebote real fallará silenciosamente la primera vez que ocurra uno en producción. Siguiente paso: almacenamiento. Errores comunes: confundir simulador con proveedor real y no revisar eventos. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/mailbox-simulator.html.
 **Conceptos clave:** direcciones del simulador (`success@`, `bounce@`, `complaint@`), punto de inspección `/_aws/ses`, eventos deterministas.
 
 Probar cómo reacciona tu aplicación ante un correo que rebota (bounce) o genera una queja (complaint) es difícil contra un proveedor de correo real: no puedes forzar esos eventos a voluntad de forma confiable. AWS resuelve esto con direcciones de simulador de buzones de correo especiales —`success@simulator.amazonses.com`, `bounce@simulator.amazonses.com`, `complaint@simulator.amazonses.com`, `suppressionlist@simulator.amazonses.com`— que generan de forma determinista el evento correspondiente cada vez que envías un correo a esa dirección, sin enviar correo real a nadie. Floci reconoce estas mismas direcciones especiales e implementa la misma emisión determinista de eventos, así que puedes escribir pruebas automatizadas de tu manejador de rebotes o quejas sin depender de infraestructura de correo real ni de comportamiento aleatorio.
@@ -242,6 +224,26 @@ curl -s http://localhost:4566/_aws/ses | grep -o '"bounce@simulator.amazonses.co
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Usa el buzón simulado para observar un aviso por confirmación. Repite el evento y verifica la política contra duplicados sin enviar mensajes a destinatarios reales durante la práctica.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws ses send-email --from notificaciones@demo.example.com \
+  --destination ToAddresses=bounce@simulator.amazonses.com \
+  --message "Subject={Data=Prueba rebote},Body={Text={Data=Hola}}"
+curl -s http://localhost:4566/_aws/ses | grep -o '"bounce@simulator.amazonses.com"'
+```
+Resultado esperado: el envío genera un evento `Bounce` determinista (no un error de la llamada); el buzón de inspección confirma que el mensaje quedó registrado con esa dirección de destino, listo para que tu manejador de rebotes lo procese.
+#### Paso 5 · Práctica guiada
+Pista: ese envío a `bounce@simulator.amazonses.com` ES el fallo deliberado que buscás provocar a propósito — ahora escribí (o simulá con otra consulta a `/_aws/ses`) el código que debería reaccionar a ese evento `Bounce` desactivando las notificaciones futuras a esa dirección, y confirmá que un segundo envío a la misma dirección simulada se sigue registrando igual (el simulador no bloquea nada solo, es tu aplicación la que debe reaccionar al evento).
+#### Paso 6 · Práctica independiente
+Repetí el mismo envío hacia `complaint@simulator.amazonses.com` y hacia `success@simulator.amazonses.com`, e inspeccioná `/_aws/ses` para confirmar que los tres eventos (`Bounce`, `Complaint`, `Delivery`) quedaron registrados por separado, cada uno con su propio contenido.
+#### Paso 7 · Cierre y evidencia
+Entregá el evento `Bounce` provocado del Paso 4, el manejador de rebotes propuesto del Paso 5, y los tres eventos distintos del Paso 6; explicá por qué un sistema de notificaciones nunca probado contra un rebote real fallará silenciosamente la primera vez que ocurra uno en producción. Siguiente paso: almacenamiento. Errores comunes: confundir simulador con proveedor real y no revisar eventos. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/mailbox-simulator.html.
 
 ## Laboratorio práctico
 

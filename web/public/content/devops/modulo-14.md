@@ -277,41 +277,6 @@ Un desarrollador nuevo en el equipo de RutaFlow tardó tres días en lograr su p
 #### Paso 3 · Teoría, modelo mental y analogía
 Policy as code aplica límites antes y durante el despliegue como software verificable; un golden path provee plantilla, pipeline y soporte para el caso común, permitiendo escape consciente cuando el dominio lo requiere. La analogía: una carretera bien señalizada con barreras, no una que obligue a todos los vehículos a ser iguales.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-```rego
-package kubernetes.admission
-
-deny[msg] {
-  input.kind.kind == "Pod"
-  c := input.spec.containers[_]
-  not c.securityContext.runAsNonRoot
-  msg := sprintf("%s debe ejecutar como non-root", [c.name])
-}
-```
-
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
-
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
-Resultado esperado: un Pod de RutaFlow que no declara `runAsNonRoot: true` en su `securityContext` es rechazado en el momento de la admisión, con un mensaje específico que indica exactamente qué contenedor y qué regla violó.
-
-#### Paso 5 · Práctica guiada
-Pista: medí la "adopción de la plataforma" contando únicamente cuántos equipos usan el golden path, sin medir el tiempo real hasta el primer deploy exitoso ni los tickets de soporte generados — ese es el fallo deliberado: esa métrica puede mostrar "alta adopción" mientras los equipos abren decenas de tickets porque el golden path es confuso, ocultando un problema real detrás de un número que solo mide uso forzado.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando métricas de producto reales a la plataforma (tiempo hasta primer deploy, tickets de soporte por equipo, encuesta de satisfacción), y medí el tiempo real del próximo desarrollador nuevo que use el golden path desde cero.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la política Rego del Paso 4, la métrica de adopción incompleta del Paso 5, y las métricas de producto corregidas del Paso 6; explicá por qué "centralizar sin escuchar" crea otro cuello de botella en vez de resolver el problema original. Siguiente paso: cerrá el módulo integrando SLO, alertas, supply chain y platform engineering en la operación completa de RutaFlow. Errores comunes: medir adopción de una plataforma interna sin medir satisfacción ni tiempo real de onboarding, escribir políticas sin mensajes de error reparables, y centralizar la plataforma sin ningún canal de feedback de los equipos que la usan. Fuentes oficiales: https://www.openpolicyagent.org/docs/latest/ y https://internaldeveloperplatform.org/.
-**¿Por qué es importante?** Estandarizar solo YAML no reduce la carga cognitiva ni crea una experiencia operable; una plataforma interna es un producto que se mide con las mismas métricas que cualquier producto real.
 **Evidencia de aprendizaje:** entrega política Rego funcionando, métrica de adopción incompleta detectada y métricas de producto corregidas.
 **Conceptos clave:** GitOps, reconciliation, drift, pull model, policy as code, golden path, self-service, platform API, tenancy, guardrail, developer experience y product metrics.
 
@@ -362,6 +327,42 @@ quitara esa línea, la política lo rechazaría antes de llegar al clúster, no 
 conviene medir adopción del golden path solo por cuántos equipos lo usan: ese número no
 distingue adopción real de uso forzado sin alternativa.
 
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
+```rego
+package kubernetes.admission
+
+deny[msg] {
+  input.kind.kind == "Pod"
+  c := input.spec.containers[_]
+  not c.securityContext.runAsNonRoot
+  msg := sprintf("%s debe ejecutar como non-root", [c.name])
+}
+```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+Resultado esperado: un Pod de RutaFlow que no declara `runAsNonRoot: true` en su `securityContext` es rechazado en el momento de la admisión, con un mensaje específico que indica exactamente qué contenedor y qué regla violó.
+
+#### Paso 5 · Práctica guiada
+Pista: medí la "adopción de la plataforma" contando únicamente cuántos equipos usan el golden path, sin medir el tiempo real hasta el primer deploy exitoso ni los tickets de soporte generados — ese es el fallo deliberado: esa métrica puede mostrar "alta adopción" mientras los equipos abren decenas de tickets porque el golden path es confuso, ocultando un problema real detrás de un número que solo mide uso forzado.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 agregando métricas de producto reales a la plataforma (tiempo hasta primer deploy, tickets de soporte por equipo, encuesta de satisfacción), y medí el tiempo real del próximo desarrollador nuevo que use el golden path desde cero.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la política Rego del Paso 4, la métrica de adopción incompleta del Paso 5, y las métricas de producto corregidas del Paso 6; explicá por qué "centralizar sin escuchar" crea otro cuello de botella en vez de resolver el problema original. Siguiente paso: cerrá el módulo integrando SLO, alertas, supply chain y platform engineering en la operación completa de RutaFlow. Errores comunes: medir adopción de una plataforma interna sin medir satisfacción ni tiempo real de onboarding, escribir políticas sin mensajes de error reparables, y centralizar la plataforma sin ningún canal de feedback de los equipos que la usan. Fuentes oficiales: https://www.openpolicyagent.org/docs/latest/ y https://internaldeveloperplatform.org/.
+**¿Por qué es importante?** Estandarizar solo YAML no reduce la carga cognitiva ni crea una experiencia operable; una plataforma interna es un producto que se mide con las mismas métricas que cualquier producto real.
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Kubernetes 1.36, OpenTelemetry 1.59 y herramientas con ciclo propio
@@ -369,7 +370,6 @@ distingue adopción real de uso forzado sin alternativa.
 La revisión usa **Kubernetes 1.36** y **OpenTelemetry 1.59** como referencias, pero clusters gestionados, `kubectl`, APIs y add-ons no avanzan necesariamente juntos. Revisa deprecaciones y APIs removidas antes de subir una versión menor. OpenTelemetry define señales, SDK, OTLP y convenciones; no es el backend. **Terraform** y sus providers tienen ciclos separados: fija restricciones, lockfile y prueba el plan con cada actualización.
 
 **Aplicación al proyecto:** escanea manifiestos por APIs obsoletas, prueba skew soportado de kubectl, valida Collector/configuración y semantic conventions, y ejecuta plan más pruebas de política antes de actualizar provider o core.
-
 
 ## Laboratorio práctico
 

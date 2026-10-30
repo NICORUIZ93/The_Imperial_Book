@@ -190,24 +190,7 @@ Al finalizar vas a confirmar, consultando las tres APIs reales, que RutaFlow ya 
 El pipe del Tema 3 (SQS → Lambda directo), la regla `SoloEntregados` del Módulo 11 (filtra por contenido desde un bus compartido) y `ConfirmarEntregaFlow` del Módulo 16 (orquesta varios pasos con reintentos) son tres herramientas distintas resolviendo tres problemas distintos, no la misma cosa con nombres diferentes.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un pipe es un pasillo directo entre dos oficinas; una regla EventBridge es una recepcionista que redirige según de qué se trate; una Step Function es el proceso completo con varios departamentos y aprobaciones.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws pipes describe-pipe --name demo-pipe --query 'Source'
-aws events list-rules --event-bus-name rutaflow-eventos --query 'Rules[].Name'
-aws stepfunctions list-state-machines --query 'stateMachines[].name'
-```
-Resultado esperado: los tres comandos muestran, lado a lado, un origen fijo para el pipe punto a punto, la regla `SoloEntregados` enrutando por patrón desde `rutaflow-eventos`, y `ConfirmarEntregaFlow` como máquina de estados — la misma jerarquía de complejidad que describe este Tema, visible en la API real de RutaFlow.
-#### Paso 5 · Práctica guiada
-Pista: intentá resolver "cuando llega un pedido nuevo, verificar inventario, cobrar, y si algo falla reintentar 3 veces" con un pipe simple en vez de una Step Function — ese es el fallo deliberado: un pipe no tiene lógica condicional ni reintentos configurables paso a paso, así que forzarlo ahí te deja sin manejo de errores real para una secuencia de varios pasos dependientes entre sí.
-#### Paso 6 · Práctica independiente
-Construí una tabla de tres filas (Pipes / regla EventBridge / Step Functions) con columnas de latencia típica, si mantienen estado entre pasos, y esfuerzo de mantenimiento — completala con los tres ejemplos reales de RutaFlow del Paso 4.
-#### Paso 7 · Cierre y evidencia
-Entregá la consulta de las tres piezas del Paso 4, el error de forzar un pipe para un caso que necesita Step Functions del Paso 5, y la tabla del Paso 6; explicá por qué sobre-diseñar con Step Functions "por si acaso" sería tan equivocado como forzar un pipe donde no alcanza. Siguiente paso: gobierno. Errores comunes: usar workflow para todo y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/decision-guides/latest/event-driven-architecture-on-aws/.
 **Conceptos clave:** integración punto a punto vs enrutamiento por patrones vs orquestación con estado.
 
 Ya conoces dos primos cercanos de Pipes: las reglas EventBridge del Módulo 11, que enrutan eventos de un bus hacia múltiples destinos según patrones de contenido (fan-out desde una sola fuente lógica, el bus), y Step Functions del Módulo 16, que orquesta flujos complejos con lógica condicional, reintentos y múltiples pasos con estado. Pipes ocupa un espacio distinto: integración punto a punto entre un origen y un destino específicos, sin la lógica de enrutamiento por patrones de una regla EventBridge, y sin el estado y la lógica condicional de una máquina de estados.
@@ -238,6 +221,25 @@ aws stepfunctions list-state-machines --query 'stateMachines[].name' 2>&1 | head
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Decide cómo conectar una confirmación con notificaciones y recuperación. Distingue conexión, distribución y orquestación, y documenta con un caso de fallo por qué la solución seleccionada necesita esa capacidad.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws pipes describe-pipe --name demo-pipe --query 'Source'
+aws events list-rules --event-bus-name rutaflow-eventos --query 'Rules[].Name'
+aws stepfunctions list-state-machines --query 'stateMachines[].name'
+```
+Resultado esperado: los tres comandos muestran, lado a lado, un origen fijo para el pipe punto a punto, la regla `SoloEntregados` enrutando por patrón desde `rutaflow-eventos`, y `ConfirmarEntregaFlow` como máquina de estados — la misma jerarquía de complejidad que describe este Tema, visible en la API real de RutaFlow.
+#### Paso 5 · Práctica guiada
+Pista: intentá resolver "cuando llega un pedido nuevo, verificar inventario, cobrar, y si algo falla reintentar 3 veces" con un pipe simple en vez de una Step Function — ese es el fallo deliberado: un pipe no tiene lógica condicional ni reintentos configurables paso a paso, así que forzarlo ahí te deja sin manejo de errores real para una secuencia de varios pasos dependientes entre sí.
+#### Paso 6 · Práctica independiente
+Construí una tabla de tres filas (Pipes / regla EventBridge / Step Functions) con columnas de latencia típica, si mantienen estado entre pasos, y esfuerzo de mantenimiento — completala con los tres ejemplos reales de RutaFlow del Paso 4.
+#### Paso 7 · Cierre y evidencia
+Entregá la consulta de las tres piezas del Paso 4, el error de forzar un pipe para un caso que necesita Step Functions del Paso 5, y la tabla del Paso 6; explicá por qué sobre-diseñar con Step Functions "por si acaso" sería tan equivocado como forzar un pipe donde no alcanza. Siguiente paso: gobierno. Errores comunes: usar workflow para todo y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/decision-guides/latest/event-driven-architecture-on-aws/.
 
 ## Laboratorio práctico
 

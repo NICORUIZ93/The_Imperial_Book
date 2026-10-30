@@ -266,24 +266,7 @@ Al finalizar vas a encadenar los cuatro servicios de este módulo: `demo-alb` (T
 La API de seguimiento de RutaFlow (servida por `demo-alb`, no por archivos estáticos) debe cifrar su tráfico y ser alcanzable por `api.demo.example.com` — un recorrido distinto al de las fotos estáticas, disponibles en `fotos.demo.example.com` por CloudFront.
 #### Paso 3 · Teoría, modelo mental y analogía
 ACM es la identidad criptográfica; el ALB es la recepción que termina esa conexión TLS; Route53 es el directorio que le dice al cliente a qué recepción ir.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws elbv2 add-listener-certificates --listener-arn "$LISTENER_ARN" --certificates CertificateArn="$CERT_ARN"
-aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch \
-  '{"Changes":[{"Action":"UPSERT","ResourceRecordSet":{"Name":"api.demo.example.com.","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"demo-alb-123456.us-east-1.elb.amazonaws.com"}]}}]}'
-```
-Resultado esperado: el listener de `demo-alb` ahora tiene adjunto el certificado de `api.demo.example.com` del Tema 2; `api.demo.example.com` queda apuntando al nombre DNS del balanceador — la cadena completa (Route53 → ALB → certificado ACM) queda declarada de punta a punta.
-#### Paso 5 · Práctica guiada
-Pista: apuntá el `CNAME` de `api.demo.example.com` al `DomainName` de la distribución CloudFront del Tema 3 en vez de al del ALB — ese es el fallo deliberado: técnicamente el registro se crea sin error, pero la API de seguimiento (que vive en el ALB, no en CloudFront) deja de ser alcanzable por ese nombre, un error de "apunté bien el DNS pero al servicio equivocado".
-#### Paso 6 · Práctica independiente
-Corregí el `CNAME` de vuelta al nombre del ALB, y documentá qué pasaría si el certificado adjunto al listener fuera para un dominio distinto a `api.demo.example.com` (pista: el navegador mostraría una advertencia de certificado no coincidente, aunque la conexión TLS en sí se establezca).
-#### Paso 7 · Cierre y evidencia
-Entregá la cadena completa declarada en el Paso 4, el `CNAME` apuntado al destino equivocado del Paso 5, y la corrección más la reflexión sobre dominios no coincidentes del Paso 6; explicá por qué las fotos (CloudFront) y la API (ALB) de RutaFlow necesitan cadenas DNS separadas aunque comparten el mismo dominio base. Siguiente paso: observabilidad. Errores comunes: terminación en lugar incorrecto y mixed content. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-certificates.html.
 **Conceptos clave:** cadena ACM → listener ALB → Route53, dos nombres DNS para dos servicios, terminación TLS.
 
 **Diagrama interactivo:** [Dos rutas de borde: fotos por CloudFront y API por ALB](/visuals/temas/cloud/modulo-22-tema-5-edge-routes.html)
@@ -326,6 +309,25 @@ aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID" --query "Resou
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Dibuja el recorrido DNS, TLS, distribución y balanceador del seguimiento. Provoca un fallo en una capa y conserva la prueba que lo distingue de un error de aplicación.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws elbv2 add-listener-certificates --listener-arn "$LISTENER_ARN" --certificates CertificateArn="$CERT_ARN"
+aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch \
+  '{"Changes":[{"Action":"UPSERT","ResourceRecordSet":{"Name":"api.demo.example.com.","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"demo-alb-123456.us-east-1.elb.amazonaws.com"}]}}]}'
+```
+Resultado esperado: el listener de `demo-alb` ahora tiene adjunto el certificado de `api.demo.example.com` del Tema 2; `api.demo.example.com` queda apuntando al nombre DNS del balanceador — la cadena completa (Route53 → ALB → certificado ACM) queda declarada de punta a punta.
+#### Paso 5 · Práctica guiada
+Pista: apuntá el `CNAME` de `api.demo.example.com` al `DomainName` de la distribución CloudFront del Tema 3 en vez de al del ALB — ese es el fallo deliberado: técnicamente el registro se crea sin error, pero la API de seguimiento (que vive en el ALB, no en CloudFront) deja de ser alcanzable por ese nombre, un error de "apunté bien el DNS pero al servicio equivocado".
+#### Paso 6 · Práctica independiente
+Corregí el `CNAME` de vuelta al nombre del ALB, y documentá qué pasaría si el certificado adjunto al listener fuera para un dominio distinto a `api.demo.example.com` (pista: el navegador mostraría una advertencia de certificado no coincidente, aunque la conexión TLS en sí se establezca).
+#### Paso 7 · Cierre y evidencia
+Entregá la cadena completa declarada en el Paso 4, el `CNAME` apuntado al destino equivocado del Paso 5, y la corrección más la reflexión sobre dominios no coincidentes del Paso 6; explicá por qué las fotos (CloudFront) y la API (ALB) de RutaFlow necesitan cadenas DNS separadas aunque comparten el mismo dominio base. Siguiente paso: observabilidad. Errores comunes: terminación en lugar incorrecto y mixed content. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-certificates.html.
 
 ## Laboratorio práctico
 

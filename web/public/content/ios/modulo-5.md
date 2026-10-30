@@ -166,36 +166,7 @@ Al finalizar vas a reintentar `confirmarEntrega` con backoff solo ante fallos tr
 Si la conexión del conductor falla momentáneamente, reintentar tiene sentido; pero reintentar un `ErrorEntrega.pinInvalido` tres veces no va a arreglar nada — el PIN sigue mal escrito en el reintento número tres igual que en el uno.
 #### Paso 3 · Teoría, modelo mental y analogía
 Reintentar con backoff es como volver a llamar a alguien que no contestó, esperando cada vez más entre intentos; cancelar una tarea en curso es retirar un pedido anterior antes de hacer uno nuevo, para que no lleguen fuera de orden.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-func confirmarConReintentos(guia: String, pin: String, intentos: Int = 3) async throws -> ConfirmacionEntrega {
-    for intento in 0..<intentos {
-        do { return try await confirmarEntrega(guia: guia, pin: pin) }
-        catch ErrorEntrega.pinInvalido { throw ErrorEntrega.pinInvalido(mensaje: "corregí el PIN") } // nunca reintentar esto
-        catch ErrorEntrega.sinConexion {
-            if intento == intentos - 1 { throw ErrorEntrega.sinConexion }
-            try await Task.sleep(for: .seconds(Double(intento + 1)))
-        }
-    }
-    fatalError("inalcanzable")
-}
-```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: un `ErrorEntrega.sinConexion` se reintenta hasta 3 veces con espera creciente; un `ErrorEntrega.pinInvalido` se propaga inmediatamente en el primer intento, sin ninguna espera ni reintento.
-#### Paso 5 · Práctica guiada
-Pista: quitá el `catch ErrorEntrega.pinInvalido` específico, dejando que ese error también caiga en la lógica de reintento genérica — ese es el fallo deliberado: ahora la app reintenta 3 veces un PIN que sabe con certeza que está mal, desperdiciando 3 llamadas de red y segundos de espera para un error que nunca iba a cambiar de resultado.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `catch` específico, y envolvé la llamada completa en una `Task` que se cancele si el conductor sale de `DetalleEnvio` antes de que termine — confirmá que cancelar a mitad de un backoff no deja ninguna llamada de red "colgada" de fondo.
-#### Paso 7 · Cierre y evidencia
-Entregá el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido del Paso 5, y la cancelación del Paso 6; explicá por qué reintentar un error 4xx (como PIN inválido) es un desperdicio que nunca cambia el resultado, a diferencia de un error transitorio de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
-**¿Por qué es importante?** Porque reintentar indiscriminadamente desperdicia llamadas de red en errores que nunca van a cambiar de resultado (un PIN inválido), mientras que cancelar una tarea obsoleta evita procesar una respuesta que ya no corresponde a la intención actual del usuario.
 **Evidencia de aprendizaje:** entrega el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido reproducido, y la cancelación agregada.
 **Conceptos clave:** resiliencia ante fallos transitorios, control explícito del ciclo de vida de una tarea en curso.
 
@@ -246,6 +217,36 @@ En el proyecto integrador RutaFlow, `confirmarConReintentos` vive en `examples/r
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+func confirmarConReintentos(guia: String, pin: String, intentos: Int = 3) async throws -> ConfirmacionEntrega {
+    for intento in 0..<intentos {
+        do { return try await confirmarEntrega(guia: guia, pin: pin) }
+        catch ErrorEntrega.pinInvalido { throw ErrorEntrega.pinInvalido(mensaje: "corregí el PIN") } // nunca reintentar esto
+        catch ErrorEntrega.sinConexion {
+            if intento == intentos - 1 { throw ErrorEntrega.sinConexion }
+            try await Task.sleep(for: .seconds(Double(intento + 1)))
+        }
+    }
+    fatalError("inalcanzable")
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: un `ErrorEntrega.sinConexion` se reintenta hasta 3 veces con espera creciente; un `ErrorEntrega.pinInvalido` se propaga inmediatamente en el primer intento, sin ninguna espera ni reintento.
+#### Paso 5 · Práctica guiada
+Pista: quitá el `catch ErrorEntrega.pinInvalido` específico, dejando que ese error también caiga en la lógica de reintento genérica — ese es el fallo deliberado: ahora la app reintenta 3 veces un PIN que sabe con certeza que está mal, desperdiciando 3 llamadas de red y segundos de espera para un error que nunca iba a cambiar de resultado.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando el `catch` específico, y envolvé la llamada completa en una `Task` que se cancele si el conductor sale de `DetalleEnvio` antes de que termine — confirmá que cancelar a mitad de un backoff no deja ninguna llamada de red "colgada" de fondo.
+#### Paso 7 · Cierre y evidencia
+Entregá el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido del Paso 5, y la cancelación del Paso 6; explicá por qué reintentar un error 4xx (como PIN inválido) es un desperdicio que nunca cambia el resultado, a diferencia de un error transitorio de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
+**¿Por qué es importante?** Porque reintentar indiscriminadamente desperdicia llamadas de red en errores que nunca van a cambiar de resultado (un PIN inválido), mientras que cancelar una tarea obsoleta evita procesar una respuesta que ya no corresponde a la intención actual del usuario.
 
 ## Laboratorio práctico
 

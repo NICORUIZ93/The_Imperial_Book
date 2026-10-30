@@ -204,42 +204,6 @@ Muchas aplicaciones empresariales reales conservan pantallas UIKit o Storyboards
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `UIViewController` tiene un ciclo de vida explícito (`loadView`, `viewDidLoad`, `viewWillAppear`) y Auto Layout expresa relaciones, no posiciones absolutas — el controlador es el director de una terminal, y la fuente diffable mantiene el tablero de salidas por identificadores.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-final class StopsViewController: UIViewController {
-    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
-    private let viewModel: StopsViewModel
-    init(viewModel: StopsViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    required init?(coder: NSCoder) { fatalError("Usa init(viewModel:)") }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "Paradas"
-        Task { await viewModel.load() }
-    }
-}
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: `StopsViewController` no tiene ningún inicializador que funcione sin un `viewModel` (el `required init?(coder:)` falla intencionalmente), y `viewDidLoad()` dispara la carga una sola vez cuando la vista se crea, no cada vez que la pantalla reaparece.
-
-#### Paso 5 · Práctica guiada
-Pista: movés `Task { await viewModel.load() }` de `viewDidLoad()` a `viewWillAppear(_:)` sin agregar ningún control de caché — ese es el fallo deliberado: ahora cada vez que el conductor vuelve a esta pantalla (por ejemplo, al volver de `DetalleEnvio`) se dispara una nueva petición de red completa, aunque la lista de paradas no haya cambiado.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo la carga a `viewDidLoad()`, y agregá en su lugar un `refresh()` explícito disparado solo por un pull-to-refresh del usuario, nunca automáticamente en cada `viewWillAppear`.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el controlador con carga única del Paso 4, la petición de red repetida provocada en el Paso 5, y el `refresh()` explícito del Paso 6; explicá la diferencia entre trabajo que debe ocurrir una sola vez (`viewDidLoad`) y trabajo que podría repetirse antes de cada aparición (`viewWillAppear`), y por qué esa segunda categoría necesita caché o control explícito. Siguiente paso: estudia distribución y certificados. Errores comunes: peticiones de red incondicionales en `viewWillAppear`, inicializar sin el ViewModel requerido, y usar el índice de fila como identidad en una fuente diffable. Fuentes oficiales: https://developer.apple.com/documentation/uikit/uiviewcontroller y https://developer.apple.com/documentation/uikit/uitableviewdiffabledatasource.
-**¿Por qué es importante?** Porque confundir trabajo de una sola vez con trabajo repetible en el ciclo de vida de UIKit produce peticiones de red redundantes o datos que nunca se actualizan.
 **Evidencia de aprendizaje:** entrega controlador con carga única, petición repetida detectada y refresh explícito.
 **Conceptos clave:** `UIViewController`, ciclo de vida, vista programática, Auto Layout, `UITableViewDiffableDataSource`, reutilización, ARC, captura débil y migración gradual.
 
@@ -374,6 +338,43 @@ flowchart LR
 ---
 
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Integra una pantalla heredada UIKit de captura en el flujo de entrega. Prueba presentación, cancelación y retorno del resultado, manteniendo explícito quién administra su ciclo de vida.
+
+#### Paso 4 · Demostración guiada desde cero
+```swift
+final class StopsViewController: UIViewController {
+    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
+    private let viewModel: StopsViewModel
+    init(viewModel: StopsViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { fatalError("Usa init(viewModel:)") }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "Paradas"
+        Task { await viewModel.load() }
+    }
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: `StopsViewController` no tiene ningún inicializador que funcione sin un `viewModel` (el `required init?(coder:)` falla intencionalmente), y `viewDidLoad()` dispara la carga una sola vez cuando la vista se crea, no cada vez que la pantalla reaparece.
+
+#### Paso 5 · Práctica guiada
+Pista: movés `Task { await viewModel.load() }` de `viewDidLoad()` a `viewWillAppear(_:)` sin agregar ningún control de caché — ese es el fallo deliberado: ahora cada vez que el conductor vuelve a esta pantalla (por ejemplo, al volver de `DetalleEnvio`) se dispara una nueva petición de red completa, aunque la lista de paradas no haya cambiado.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo la carga a `viewDidLoad()`, y agregá en su lugar un `refresh()` explícito disparado solo por un pull-to-refresh del usuario, nunca automáticamente en cada `viewWillAppear`.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el controlador con carga única del Paso 4, la petición de red repetida provocada en el Paso 5, y el `refresh()` explícito del Paso 6; explicá la diferencia entre trabajo que debe ocurrir una sola vez (`viewDidLoad`) y trabajo que podría repetirse antes de cada aparición (`viewWillAppear`), y por qué esa segunda categoría necesita caché o control explícito. Siguiente paso: estudia distribución y certificados. Errores comunes: peticiones de red incondicionales en `viewWillAppear`, inicializar sin el ViewModel requerido, y usar el índice de fila como identidad en una fuente diffable. Fuentes oficiales: https://developer.apple.com/documentation/uikit/uiviewcontroller y https://developer.apple.com/documentation/uikit/uitableviewdiffabledatasource.
+**¿Por qué es importante?** Porque confundir trabajo de una sola vez con trabajo repetible en el ciclo de vida de UIKit produce peticiones de red redundantes o datos que nunca se actualizan.
 
 ## Laboratorio práctico
 

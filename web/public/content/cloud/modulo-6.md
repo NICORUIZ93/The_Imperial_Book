@@ -315,21 +315,7 @@ Al finalizar vas a publicar `POST /entregas` en un stage real y a probar el endp
 Todo lo configurado en los Temas 1-4 (recurso, método, integración, modelo) sigue invisible desde fuera hasta este paso — RutaFlow necesita una URL real que la app del conductor pueda llamar.
 #### Paso 3 · Teoría, modelo mental y analogía
 El despliegue es publicar una fotografía de la configuración actual; la variable de stage es el rótulo del ambiente que esa fotografía usa (por ejemplo, qué alias de Lambda invocar).
-#### Paso 4 · Demostración guiada
-```bash
-aws apigateway create-deployment --rest-api-id "$API_ID" --stage-name dev
-aws apigateway update-stage --rest-api-id "$API_ID" --stage-name dev \
-  --patch-operations op=replace,path=/variables/lambdaAlias,value=produccion
-curl -X POST "http://localhost:4566/restapis/$API_ID/dev/_user_request_/entregas" \
-  -d '{"shipmentId":"env-4471","recipientPin":"837201"}'
-```
-Resultado esperado: el `curl` devuelve `{"shipmentId":"env-4471","status":"delivered"}` con HTTP 200 — la cadena completa (API Gateway → integración proxy → `confirmar-entrega` → respuesta) funciona de punta a punta, y el stage `dev` ya tiene su propia variable `lambdaAlias` apuntando al alias `produccion` del Módulo 5 Tema 5.
-#### Paso 5 · Práctica guiada
-Pista: repetí el mismo `curl` pero contra `/qa/_user_request_/entregas` (un stage que nunca desplegaste) — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, el mismo error del Tema 1, confirmando que ese mensaje significa "esta combinación de ruta y stage no existe todavía", no un problema de autenticación real.
-#### Paso 6 · Práctica independiente
-Cambiá el `requestValidatorId` del método (por ejemplo, quitá la validación del Tema 4 con `update-method`), confirmá con un `curl` que el comportamiento en `dev` NO cambió todavía, y recién después de un nuevo `create-deployment --stage-name dev` confirmá que sí cambió — evidencia directa de que configurar y desplegar son pasos separados.
-#### Paso 7 · Cierre y evidencia
-Entregá el `curl` exitoso del Paso 4, el error de stage inexistente del Paso 5, y la comparación antes/después de re-desplegar del Paso 6; explicá por qué un cambio de configuración no se nota hasta el siguiente despliegue. Siguiente paso: observabilidad. Errores comunes: cambiar producción sin versionar y olvidar cache. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-deployments.html.
+
 **Conceptos clave:** despliegue (deployment), variable de stage, inmutabilidad de la configuración hasta el despliegue.
 
 Un aspecto que sorprende a quien configura una API Gateway por primera vez es que modificar la configuración de recursos, métodos o integraciones —incluso guardando esos cambios explícitamente— no los hace accesibles de inmediato en ningún stage. API Gateway requiere una operación explícita y separada llamada despliegue (deployment), que toma una instantánea del estado actual de la configuración y la publica en un stage específico. Hasta que no ejecutas ese despliegue, cualquier cliente que llame a la URL de un stage sigue recibiendo el comportamiento de la última configuración desplegada anteriormente, no los cambios que acabas de guardar.
@@ -367,6 +353,21 @@ Kubernetes) desplegaría automáticamente en cada cambio a `template.yaml`, sin 
 
 ---
 
+#### Paso 4 · Demostración guiada
+```bash
+aws apigateway create-deployment --rest-api-id "$API_ID" --stage-name dev
+aws apigateway update-stage --rest-api-id "$API_ID" --stage-name dev \
+  --patch-operations op=replace,path=/variables/lambdaAlias,value=produccion
+curl -X POST "http://localhost:4566/restapis/$API_ID/dev/_user_request_/entregas" \
+  -d '{"shipmentId":"env-4471","recipientPin":"837201"}'
+```
+Resultado esperado: el `curl` devuelve `{"shipmentId":"env-4471","status":"delivered"}` con HTTP 200 — la cadena completa (API Gateway → integración proxy → `confirmar-entrega` → respuesta) funciona de punta a punta, y el stage `dev` ya tiene su propia variable `lambdaAlias` apuntando al alias `produccion` del Módulo 5 Tema 5.
+#### Paso 5 · Práctica guiada
+Pista: repetí el mismo `curl` pero contra `/qa/_user_request_/entregas` (un stage que nunca desplegaste) — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, el mismo error del Tema 1, confirmando que ese mensaje significa "esta combinación de ruta y stage no existe todavía", no un problema de autenticación real.
+#### Paso 6 · Práctica independiente
+Cambiá el `requestValidatorId` del método (por ejemplo, quitá la validación del Tema 4 con `update-method`), confirmá con un `curl` que el comportamiento en `dev` NO cambió todavía, y recién después de un nuevo `create-deployment --stage-name dev` confirmá que sí cambió — evidencia directa de que configurar y desplegar son pasos separados.
+#### Paso 7 · Cierre y evidencia
+Entregá el `curl` exitoso del Paso 4, el error de stage inexistente del Paso 5, y la comparación antes/después de re-desplegar del Paso 6; explicá por qué un cambio de configuración no se nota hasta el siguiente despliegue. Siguiente paso: observabilidad. Errores comunes: cambiar producción sin versionar y olvidar cache. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-deployments.html.
 
 ## Laboratorio práctico
 

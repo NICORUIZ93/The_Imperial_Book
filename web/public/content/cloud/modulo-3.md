@@ -217,29 +217,7 @@ ese orden exacto — aplicar "entregado" antes de "en camino" rompe `ShipmentEve
 envíos DISTINTOS no tienen esa restricción entre sí.
 #### Paso 3 · Teoría, modelo mental y analogía
 FIFO es una fila única con turnos; Standard prioriza velocidad y no promete orden.
-#### Paso 4 · Demostración guiada
-```bash
-FIFO_URL=$(aws sqs create-queue --queue-name shipment-events.fifo --attributes FifoQueue=true --query QueueUrl --output text)
-aws sqs send-message --queue-url "$FIFO_URL" --message-body "asignado" --message-group-id env-4471 --message-deduplication-id d1
-aws sqs send-message --queue-url "$FIFO_URL" --message-body "en-camino" --message-group-id env-4471 --message-deduplication-id d2
-aws sqs send-message --queue-url "$FIFO_URL" --message-body "entregado" --message-group-id env-4471 --message-deduplication-id d3
-aws sqs receive-message --queue-url "$FIFO_URL" --max-number-of-messages 3
-```
-Resultado esperado: los 3 mensajes llegan en el orden exacto "asignado", "en-camino",
-"entregado" — nunca mezclados, porque comparten el mismo `MessageGroupId`.
-#### Paso 5 · Práctica guiada
-Pista: enviá un mensaje a esa misma cola FIFO sin `--message-group-id` para provocar el fallo
-deliberado — SQS lo rechaza con `MissingParameter`, a diferencia de Standard, donde ese
-parámetro no existe.
-#### Paso 6 · Práctica independiente
-Enviá 3 mensajes más, esta vez con `--message-group-id env-5000` (un envío distinto) y
-confirmá que SQS los deja intercalarse con los del grupo `env-4471` sin problema — el orden
-solo se garantiza DENTRO de un mismo grupo.
-#### Paso 7 · Cierre y evidencia
-Entregá los 3 mensajes en orden del Paso 4, el error de `MissingParameter`, y la confirmación
-de que 2 grupos distintos no se bloquean entre sí. Siguiente paso: eventos. Errores comunes:
-usar FIFO para todo "por si acaso", perdiendo el rendimiento de Standard sin necesitarlo.
-Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html.
+
 **Conceptos clave:** cola Standard, cola FIFO, orden garantizado, deduplicación, `MessageGroupId`, `MessageDeduplicationId`.
 
 Una cola Standard prioriza el rendimiento y la disponibilidad por encima del orden estricto: puede entregar mensajes en un orden distinto al que se enviaron, y como viste en el Tema 2, puede entregar el mismo mensaje más de una vez en casos poco frecuentes. A cambio, ofrece un rendimiento prácticamente ilimitado en cuanto a mensajes por segundo, lo que la hace adecuada para la gran mayoría de los casos de uso donde el orden exacto de procesamiento no es crítico para la corrección del sistema (por ejemplo, procesar imágenes subidas por distintos usuarios: no importa si la imagen del usuario A se procesa antes o después que la del usuario B).
@@ -283,6 +261,29 @@ Standard.
 
 ---
 
+#### Paso 4 · Demostración guiada
+```bash
+FIFO_URL=$(aws sqs create-queue --queue-name shipment-events.fifo --attributes FifoQueue=true --query QueueUrl --output text)
+aws sqs send-message --queue-url "$FIFO_URL" --message-body "asignado" --message-group-id env-4471 --message-deduplication-id d1
+aws sqs send-message --queue-url "$FIFO_URL" --message-body "en-camino" --message-group-id env-4471 --message-deduplication-id d2
+aws sqs send-message --queue-url "$FIFO_URL" --message-body "entregado" --message-group-id env-4471 --message-deduplication-id d3
+aws sqs receive-message --queue-url "$FIFO_URL" --max-number-of-messages 3
+```
+Resultado esperado: los 3 mensajes llegan en el orden exacto "asignado", "en-camino",
+"entregado" — nunca mezclados, porque comparten el mismo `MessageGroupId`.
+#### Paso 5 · Práctica guiada
+Pista: enviá un mensaje a esa misma cola FIFO sin `--message-group-id` para provocar el fallo
+deliberado — SQS lo rechaza con `MissingParameter`, a diferencia de Standard, donde ese
+parámetro no existe.
+#### Paso 6 · Práctica independiente
+Enviá 3 mensajes más, esta vez con `--message-group-id env-5000` (un envío distinto) y
+confirmá que SQS los deja intercalarse con los del grupo `env-4471` sin problema — el orden
+solo se garantiza DENTRO de un mismo grupo.
+#### Paso 7 · Cierre y evidencia
+Entregá los 3 mensajes en orden del Paso 4, el error de `MissingParameter`, y la confirmación
+de que 2 grupos distintos no se bloquean entre sí. Siguiente paso: eventos. Errores comunes:
+usar FIFO para todo "por si acaso", perdiendo el rendimiento de Standard sin necesitarlo.
+Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html.
 
 ## Laboratorio práctico
 

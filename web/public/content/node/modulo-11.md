@@ -272,47 +272,6 @@ El proxy oculta puertos internos, centraliza TLS y balancea; una función server
 
 Nginx es la recepción que dirige visitantes; la función es un trabajador convocado por evento. El proxy mantiene conexión; serverless puede arrancar en frío.
 
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-nginx
-cd ejemplo-nginx
-mkdir app
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
-
-```bash
-npm init -y && npm install
-node index.js
-```
-Para las pruebas: `npm test`.
-
-
-Crea `app/server.js` y `nginx.conf`:
-
-```js
-import http from "node:http";
-http.createServer((_req, res) => res.end("backend")).listen(3000, "0.0.0.0");
-```
-
-```nginx
-events {}
-http { server { listen 8080; location / { proxy_pass http://host.docker.internal:3000; } } }
-```
-
-Ejecuta `node app/server.js` y `docker run --rm --add-host=host.docker.internal:host-gateway -p 8080:8080 -v "$PWD/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:alpine`; consulta `curl http://127.0.0.1:8080`. **Resultado esperado:** `backend`. **Fallo deliberado y diagnóstico:** cambia el puerto upstream; Nginx devuelve 502 porque el backend no está disponible.
-
-#### Paso 5 · Práctica guiada
-
-Añade un header `X-Request-ID` en proxy y backend. **Pista:** preserva el valor recibido.
-
-#### Paso 6 · Práctica independiente
-
-Escribe una función serverless que reciba `{ name }` y devuelva 400 si falta; entrega el contrato y una comparación de cold start.
-
-#### Paso 7 · Cierre y conexión
-
 Ya distingues proxy, backend y función bajo demanda. El siguiente módulo cerrará Node con un proyecto de producción independiente.
 
 **Errores comunes:** exponer backend directamente; confiar en headers sin proxy confiable; olvidar timeouts; usar serverless para procesos largos; no medir cold starts.
@@ -346,6 +305,46 @@ Serverless: código empaquetado → la plataforma lo ejecuta bajo demanda,
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Prueba la API detrás del proxy con tamaño máximo de cuerpo y tiempos definidos. Verifica interpretación de cabeceras de origen y cliente sin confiar en valores enviados desde conexiones no autorizadas.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-nginx
+cd ejemplo-nginx
+mkdir app
+```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+Crea `app/server.js` y `nginx.conf`:
+
+```js
+import http from "node:http";
+http.createServer((_req, res) => res.end("backend")).listen(3000, "0.0.0.0");
+```
+
+```nginx
+events {}
+http { server { listen 8080; location / { proxy_pass http://host.docker.internal:3000; } } }
+```
+
+Ejecuta `node app/server.js` y `docker run --rm --add-host=host.docker.internal:host-gateway -p 8080:8080 -v "$PWD/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:alpine`; consulta `curl http://127.0.0.1:8080`. **Resultado esperado:** `backend`. **Fallo deliberado y diagnóstico:** cambia el puerto upstream; Nginx devuelve 502 porque el backend no está disponible.
+
+#### Paso 5 · Práctica guiada
+
+Añade un header `X-Request-ID` en proxy y backend. **Pista:** preserva el valor recibido.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una función serverless que reciba `{ name }` y devuelva 400 si falta; entrega el contrato y una comparación de cold start.
+
+#### Paso 7 · Cierre y conexión
 
 ## Laboratorio práctico
 

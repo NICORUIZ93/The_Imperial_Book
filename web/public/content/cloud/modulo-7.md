@@ -259,20 +259,7 @@ Al finalizar vas a rotar de verdad las claves del `usuario-de-prueba` que creast
 `confirmar-entrega` usa un rol (Tema 3), así que nunca tiene una clave de larga duración que rotar — pero cualquier identidad humana real del equipo de RutaFlow (un desarrollador con acceso de consola) sí la tiene, y esa es la que hay que rotar periódicamente.
 #### Paso 3 · Teoría, modelo mental y analogía
 Rotar una credencial es cambiar la cerradura aunque no haya indicios de robo; el objetivo es que una clave filtrada y no detectada deje de servir pronto, no nunca.
-#### Paso 4 · Demostración guiada
-```bash
-OLD_KEY=$(aws iam create-access-key --user-name usuario-de-prueba --query 'AccessKey.AccessKeyId' --output text)
-NEW_KEY=$(aws iam create-access-key --user-name usuario-de-prueba --query 'AccessKey.AccessKeyId' --output text)
-aws iam update-access-key --user-name usuario-de-prueba --access-key-id "$OLD_KEY" --status Inactive
-aws iam list-access-keys --user-name usuario-de-prueba
-```
-Resultado esperado: `list-access-keys` muestra ambas claves — `$OLD_KEY` con `Status: Inactive` y `$NEW_KEY` con `Status: Active` — el patrón real de rotación: la nueva ya funciona antes de desactivar la vieja, sin ventana de corte donde ninguna clave sirva.
-#### Paso 5 · Práctica guiada
-Pista: borrá del todo la clave vieja (`aws iam delete-access-key --user-name usuario-de-prueba --access-key-id "$OLD_KEY"`) y después probá `aws iam get-access-key-last-used --access-key-id "$OLD_KEY"` — ese es el fallo deliberado: `NoSuchEntity`, porque una clave borrada no deja rastro consultable, a diferencia de una simplemente inactiva.
-#### Paso 6 · Práctica independiente
-Confirmá con `aws iam list-access-keys --user-name usuario-de-prueba` que ahora solo aparece `$NEW_KEY`, y documentá por escrito cada cuánto tiempo correspondería repetir este ciclo completo para `usuario-de-prueba` si fuera una cuenta real de un desarrollador.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación de ambas claves, la desactivación de la vieja, el error `NoSuchEntity` del Paso 5 y la lista final con una sola clave activa; explicá por qué desactivar antes de borrar evita una ventana sin acceso válido. Siguiente paso: almacenamiento seguro. Errores comunes: compartir claves y no revisar CloudTrail. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html.
+
 **Conceptos clave:** rotación de credenciales, políticas administradas vs políticas en línea, auditoría de acceso, autenticación multifactor (MFA).
 
 Además de preferir roles sobre usuarios para casos de servicio a servicio (Tema 3), y de aplicar mínimo privilegio en cada política (Tema 1), existen prácticas operativas adicionales que forman parte del estándar de la industria para gestionar IAM de forma segura y sostenible. La rotación periódica de credenciales de larga duración —cambiar las claves de acceso de un usuario cada cierto intervalo de tiempo, incluso si no hay indicio de que se hayan comprometido— reduce la ventana de exposición de cualquier credencial que sí se haya filtrado sin que nadie lo haya detectado todavía: cuanto más frecuente la rotación, menor el tiempo durante el cual una credencial filtrada sigue siendo válida y explotable.
@@ -309,6 +296,20 @@ recomienda roles sobre usuarios para cualquier identidad de servicio.
 
 ---
 
+#### Paso 4 · Demostración guiada
+```bash
+OLD_KEY=$(aws iam create-access-key --user-name usuario-de-prueba --query 'AccessKey.AccessKeyId' --output text)
+NEW_KEY=$(aws iam create-access-key --user-name usuario-de-prueba --query 'AccessKey.AccessKeyId' --output text)
+aws iam update-access-key --user-name usuario-de-prueba --access-key-id "$OLD_KEY" --status Inactive
+aws iam list-access-keys --user-name usuario-de-prueba
+```
+Resultado esperado: `list-access-keys` muestra ambas claves — `$OLD_KEY` con `Status: Inactive` y `$NEW_KEY` con `Status: Active` — el patrón real de rotación: la nueva ya funciona antes de desactivar la vieja, sin ventana de corte donde ninguna clave sirva.
+#### Paso 5 · Práctica guiada
+Pista: borrá del todo la clave vieja (`aws iam delete-access-key --user-name usuario-de-prueba --access-key-id "$OLD_KEY"`) y después probá `aws iam get-access-key-last-used --access-key-id "$OLD_KEY"` — ese es el fallo deliberado: `NoSuchEntity`, porque una clave borrada no deja rastro consultable, a diferencia de una simplemente inactiva.
+#### Paso 6 · Práctica independiente
+Confirmá con `aws iam list-access-keys --user-name usuario-de-prueba` que ahora solo aparece `$NEW_KEY`, y documentá por escrito cada cuánto tiempo correspondería repetir este ciclo completo para `usuario-de-prueba` si fuera una cuenta real de un desarrollador.
+#### Paso 7 · Cierre y evidencia
+Entregá la creación de ambas claves, la desactivación de la vieja, el error `NoSuchEntity` del Paso 5 y la lista final con una sola clave activa; explicá por qué desactivar antes de borrar evita una ventana sin acceso válido. Siguiente paso: almacenamiento seguro. Errores comunes: compartir claves y no revisar CloudTrail. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html.
 
 ## Laboratorio práctico
 

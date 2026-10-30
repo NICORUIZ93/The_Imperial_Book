@@ -178,28 +178,7 @@ Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker 
 Cada suite necesita entorno limpio y puertos no predecibles.
 #### Paso 3 · Teoría, modelo mental y analogía
 El módulo gestiona ciclo de vida como un técnico que prepara y limpia el laboratorio.
-#### Paso 4 · Demostración guiada
-Crea `tests/isolated.test.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-isolated-tests
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
-#### Paso 5 · Práctica guiada
-Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Ejecuta suites en paralelo y verifica limpieza.
-#### Paso 7 · Cierre y evidencia
-Entrega tests, salida, fallo y corrección; explica el resultado. Siguiente paso: CI. Errores comunes: depender de puertos fijos y dejar contenedores vivos. Fuente oficial: https://testcontainers.com/.
 **Conceptos clave:** módulo Testcontainers oficial por lenguaje, ciclo de vida gestionado automáticamente, sin puerto fijo ni contenedor persistente entre suites.
 
 Floci publica módulos Testcontainers propios para los lenguajes SDK principales: `io.floci:testcontainers-floci` en Maven Central (Java), `@floci/testcontainers` en npm (Node.js/TypeScript) y `testcontainers-floci` en PyPI (Python). Cada módulo expone una clase `FlociContainer` que envuelve la imagen `floci/floci:latest`: al arrancar, espera a que el puerto 4566 esté listo dentro del contenedor y expone cuatro métodos — `getEndpoint()`, `getRegion()`, `getAccessKey()` y `getSecretKey()` — que se pasan directamente al cliente del SDK que estés probando, sin variables de entorno ni configuración manual del endpoint.
@@ -289,12 +268,10 @@ import pytest
 import boto3
 from testcontainers_floci import FlociContainer
 
-
 @pytest.fixture(scope="session")
 def floci():
     with FlociContainer() as container:
         yield container
-
 
 @pytest.fixture(scope="session")
 def s3_client(floci):
@@ -305,7 +282,6 @@ def s3_client(floci):
         aws_access_key_id=floci.get_access_key(),
         aws_secret_access_key=floci.get_secret_key(),
     )
-
 
 def test_create_bucket(s3_client):
     s3_client.create_bucket(Bucket="my-bucket")
@@ -336,6 +312,29 @@ flowchart TD
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea recursos únicos por prueba de integración y consulta una evidencia recién almacenada. Ejecuta dos pruebas en paralelo y demuestra que no comparten nombres ni dejan recursos tras un fallo.
+
+#### Paso 4 · Demostración guiada
+Crea `tests/isolated.test.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-isolated-tests
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Node disponible.
+#### Paso 5 · Práctica guiada
+Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Ejecuta suites en paralelo y verifica limpieza.
+#### Paso 7 · Cierre y evidencia
+Entrega tests, salida, fallo y corrección; explica el resultado. Siguiente paso: CI. Errores comunes: depender de puertos fijos y dejar contenedores vivos. Fuente oficial: https://testcontainers.com/.
 
 ## Laboratorio práctico
 

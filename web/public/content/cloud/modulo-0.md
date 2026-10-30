@@ -402,28 +402,7 @@ Al finalizar podrás estudiar con evidencia desde cero. Prerrequisitos: terminal
 Un aprendizaje profesional alterna explicación, práctica y comprobación.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada ciclo es una iteración: entender, construir, fallar, corregir y explicar.
-#### Paso 4 · Demostración guiada
-Crea `src/study-log.md` desde una carpeta vacía.
-```bash
-mkdir ejemplo-bitacora
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Git disponible.
-#### Paso 5 · Práctica guiada
-Pista: omite una evidencia para provocar un fallo deliberado y complétala.
-#### Paso 6 · Práctica independiente
-Registra una sesión completa con criterios de éxito.
-#### Paso 7 · Cierre y evidencia
-Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: iniciar el módulo 1. Errores comunes: marcar sin probar y no documentar decisiones. Fuente oficial: https://git-scm.com/doc.
 **Conceptos clave:** ciclo teoría-práctica-evaluación, entregable verificable, autoevaluación con criterios de éxito.
 
 Cada uno de los diez módulos de este curso sigue el mismo ciclo de tres fases. La primera fase es la teoría: para cada tema del módulo encontrarás una explicación de los conceptos, una analogía que conecta la idea con algo cotidiano, una justificación de por qué ese concepto importa en el mundo real, y una representación visual simplificada. Esta fase no tiene comandos que ejecutar: es para construir el modelo mental antes de tocar el teclado.
@@ -451,6 +430,29 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Versiona una evidencia por práctica del entorno cloud: comando, salida, fallo y corrección. Otra persona debe repetir la creación de una cola desde ese registro y obtener el mismo recurso lógico.
 
+#### Paso 4 · Demostración guiada
+Crea `src/study-log.md` desde una carpeta vacía.
+```bash
+mkdir ejemplo-bitacora
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Git disponible.
+#### Paso 5 · Práctica guiada
+Pista: omite una evidencia para provocar un fallo deliberado y complétala.
+#### Paso 6 · Práctica independiente
+Registra una sesión completa con criterios de éxito.
+#### Paso 7 · Cierre y evidencia
+Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: iniciar el módulo 1. Errores comunes: marcar sin probar y no documentar decisiones. Fuente oficial: https://git-scm.com/doc.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-cloud && cd academia-cloud && git init`; crea allí `compose.yaml`, `infra/`, `src/` y `tests/`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
@@ -463,7 +465,6 @@ No crees un proyecto desechable por módulo. Conserva un único repositorio que 
 | Experto | gobierno, multi-cloud y recuperación. | Perfil o threat model, telemetría y runbook de recuperación. |
 
 Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, verifica el criterio de éxito y fusiona solo con pruebas verdes. Si un módulo necesita un experimento aislado, colócalo en `experiments/modulo-N/`; el producto acumulativo permanece ejecutable. Al terminar, otra persona debe poder clonar el repositorio y reproducir el último hito siguiendo únicamente el README.
-
 
 ## Laboratorio práctico
 

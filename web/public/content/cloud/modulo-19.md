@@ -144,24 +144,7 @@ Al finalizar vas a medir, con bytes escaneados reales, cuánto cuesta de más co
 RutaFlow acumula pings de ubicación de todos los días desde que arrancó Firehose — una consulta que solo necesita "hoy" no debería tener que leer los archivos de hace tres meses.
 #### Paso 3 · Teoría, modelo mental y analogía
 Particionar por fecha es como ordenar un archivo físico por año y abrir solo el cajón del año que te interesa, en vez de revisar el archivo completo cada vez.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws athena start-query-execution --query-string "SELECT conductorId FROM rutaflow_analytics.ubicaciones WHERE anio=2026 AND mes=10 AND dia=5" \
-  --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/
-aws athena get-query-execution --query-execution-id <id-de-la-ejecucion-anterior> --query 'QueryExecution.Statistics.DataScannedInBytes'
-```
-Resultado esperado: `DataScannedInBytes` reporta solo los bytes de los archivos bajo la partición `anio=2026/mes=10/dia=5/` — Athena nunca abrió los archivos de otras fechas, porque la cláusula `WHERE` coincide exactamente con las claves de partición.
-#### Paso 5 · Práctica guiada
-Pista: repetí la misma consulta de negocio pero SIN el `WHERE` de partición (`SELECT conductorId FROM rutaflow_analytics.ubicaciones`) y compará `DataScannedInBytes` — ese es el fallo deliberado de coste: escaneás TODOS los archivos históricos para responder una pregunta que, en la mayoría de los casos reales, solo necesitaba un día específico.
-#### Paso 6 · Práctica independiente
-Convertí mentalmente (o con `CREATE TABLE AS SELECT`) los mismos datos de CSV a Parquet, y documentá por qué, incluso sin particiones, Parquet ya reduciría los bytes escaneados para una consulta que solo pide `conductorId` de una tabla con muchas más columnas.
-#### Paso 7 · Cierre y evidencia
-Entregá los bytes escaneados con partición del Paso 4, los bytes sin partición del Paso 5, y la comparación CSV/Parquet del Paso 6; explicá por qué particionar y elegir el formato correcto son dos palancas de costo independientes, no la misma. Siguiente paso: analítica. Errores comunes: particiones pequeñas y formato no columnar. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/partitions.html.
 **Conceptos clave:** el formato de archivo y la organización en particiones determinan drásticamente el costo de cada consulta.
 
 Parquet es un formato de almacenamiento columnar (organiza los datos por columna en vez de por fila, como CSV/JSON) que permite a Athena leer únicamente las columnas efectivamente referenciadas en una consulta específica (en vez de tener que leer el archivo completo fila por fila, extrayendo todas las columnas incluso las no relevantes para esa consulta particular como ocurre inevitablemente con CSV), además de aplicar compresión considerablemente más eficiente gracias a que valores similares del mismo tipo de columna quedan almacenados contiguos entre sí; esta combinación hace que Parquet sea típicamente 10 veces más eficiente en bytes escaneados (y por lo tanto en costo, dado que Athena cobra según bytes escaneados) que CSV para consultas analíticas típicas que solo necesitan un subconjunto de columnas de una tabla ancha.
@@ -188,6 +171,24 @@ completo, no un simple cambio de configuración.
 
 ---
 
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws athena start-query-execution --query-string "SELECT conductorId FROM rutaflow_analytics.ubicaciones WHERE anio=2026 AND mes=10 AND dia=5" \
+  --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/
+aws athena get-query-execution --query-execution-id <id-de-la-ejecucion-anterior> --query 'QueryExecution.Statistics.DataScannedInBytes'
+```
+Resultado esperado: `DataScannedInBytes` reporta solo los bytes de los archivos bajo la partición `anio=2026/mes=10/dia=5/` — Athena nunca abrió los archivos de otras fechas, porque la cláusula `WHERE` coincide exactamente con las claves de partición.
+#### Paso 5 · Práctica guiada
+Pista: repetí la misma consulta de negocio pero SIN el `WHERE` de partición (`SELECT conductorId FROM rutaflow_analytics.ubicaciones`) y compará `DataScannedInBytes` — ese es el fallo deliberado de coste: escaneás TODOS los archivos históricos para responder una pregunta que, en la mayoría de los casos reales, solo necesitaba un día específico.
+#### Paso 6 · Práctica independiente
+Convertí mentalmente (o con `CREATE TABLE AS SELECT`) los mismos datos de CSV a Parquet, y documentá por qué, incluso sin particiones, Parquet ya reduciría los bytes escaneados para una consulta que solo pide `conductorId` de una tabla con muchas más columnas.
+#### Paso 7 · Cierre y evidencia
+Entregá los bytes escaneados con partición del Paso 4, los bytes sin partición del Paso 5, y la comparación CSV/Parquet del Paso 6; explicá por qué particionar y elegir el formato correcto son dos palancas de costo independientes, no la misma. Siguiente paso: analítica. Errores comunes: particiones pequeñas y formato no columnar. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/partitions.html.
 
 ## Laboratorio práctico
 

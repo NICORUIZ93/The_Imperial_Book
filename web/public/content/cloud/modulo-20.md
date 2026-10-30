@@ -123,20 +123,7 @@ Al finalizar vas a documentar, para los SMS generados (Tema 1) y las facturas ex
 Antes de llevar esto a producción, alguien del equipo de RutaFlow va a preguntar "¿ya probamos que esto funciona?" — y la respuesta correcta depende de qué significa "probar" en cada caso.
 #### Paso 3 · Teoría, modelo mental y analogía
 La prueba local con el stub valida el cableado (¿tu código llama bien a la API y parsea bien la respuesta?); el servicio real valida el comportamiento (¿el SMS generado suena natural? ¿Textract leyó bien una factura arrugada de verdad?).
-#### Paso 4 · Demostración guiada
-```bash
-# Lo que SÍ confirma el stub de Floci (estructura del contrato):
-aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
-  --body '{"prompt":"test","max_tokens":10}' --cli-binary-format raw-in-base64-out stub.json
-cat stub.json
-```
-Resultado esperado: confirmás que tu código recibe y parsea correctamente la forma del JSON — eso es exactamente lo que el stub puede validar con confianza, ni más ni menos.
-#### Paso 5 · Práctica guiada
-Pista: afirmá en tu documentación interna que "ya validamos localmente que el SMS generado suena natural y profesional" basándote solo en la respuesta del stub de Floci — ese es el fallo deliberado: el stub nunca varía su texto, así que no probaste nada sobre la calidad real del lenguaje generado, solo sobre si tu código sabe leer la respuesta.
-#### Paso 6 · Práctica independiente
-Armá una tabla de dos columnas ("se prueba localmente con el stub" / "necesita el servicio real") y clasificá: parseo de la respuesta de Bedrock, calidad del texto del SMS, forma del JSON de Textract, precisión del OCR sobre una foto real borrosa, manejo de errores HTTP de la API, tiempo de respuesta real bajo carga.
-#### Paso 7 · Cierre y evidencia
-Entregá la validación de contrato del Paso 4, la afirmación incorrecta corregida del Paso 5, y la tabla de límites del Paso 6; explicá por qué pasar todas las pruebas contra el stub nunca es suficiente para decir "esto ya está probado" sin matices. Siguiente paso: seguridad. Errores comunes: confundir mock con modelo y no medir coste. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation.html.
+
 **Conceptos clave:** distinguir qué se puede verificar con confianza localmente frente a lo que requiere el servicio real.
 
 Un stub (usado por cloud local para Bedrock) es una implementación que devuelve respuestas predefinidas y deterministas, útil para verificar que la aplicación maneja correctamente la estructura esperada de una respuesta (¿el código extrae correctamente el campo de texto generado de la respuesta JSON? ¿maneja correctamente un código de error?); un mock, en el sentido más estricto usado en testing (Módulo 9 de varios tracks de esta Academia), típicamente además verifica que se invocó de una forma específica esperada (con ciertos argumentos, un número específico de veces). En la práctica de cloud local, "stub" describe con más precisión el comportamiento: una respuesta fija y predecible, sin verificación de la forma exacta de la invocación en sí misma.
@@ -158,6 +145,21 @@ flowchart LR
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Separa pruebas del cliente de IA con stub, errores simulados y evaluación del modelo real. Una respuesta mal formada debe ser rechazada antes de convertirse en una decisión sobre una entrega.
+
+#### Paso 4 · Demostración guiada
+```bash
+# Lo que SÍ confirma el stub de Floci (estructura del contrato):
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"test","max_tokens":10}' --cli-binary-format raw-in-base64-out stub.json
+cat stub.json
+```
+Resultado esperado: confirmás que tu código recibe y parsea correctamente la forma del JSON — eso es exactamente lo que el stub puede validar con confianza, ni más ni menos.
+#### Paso 5 · Práctica guiada
+Pista: afirmá en tu documentación interna que "ya validamos localmente que el SMS generado suena natural y profesional" basándote solo en la respuesta del stub de Floci — ese es el fallo deliberado: el stub nunca varía su texto, así que no probaste nada sobre la calidad real del lenguaje generado, solo sobre si tu código sabe leer la respuesta.
+#### Paso 6 · Práctica independiente
+Armá una tabla de dos columnas ("se prueba localmente con el stub" / "necesita el servicio real") y clasificá: parseo de la respuesta de Bedrock, calidad del texto del SMS, forma del JSON de Textract, precisión del OCR sobre una foto real borrosa, manejo de errores HTTP de la API, tiempo de respuesta real bajo carga.
+#### Paso 7 · Cierre y evidencia
+Entregá la validación de contrato del Paso 4, la afirmación incorrecta corregida del Paso 5, y la tabla de límites del Paso 6; explicá por qué pasar todas las pruebas contra el stub nunca es suficiente para decir "esto ya está probado" sin matices. Siguiente paso: seguridad. Errores comunes: confundir mock con modelo y no medir coste. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation.html.
 
 ## Laboratorio práctico
 

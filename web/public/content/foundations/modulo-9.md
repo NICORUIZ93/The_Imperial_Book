@@ -337,47 +337,6 @@ Si RutaFlow necesitara decidir cuántas paradas por zona puede manejar antes de 
 #### Paso 3 · Teoría, modelo mental y analogía
 La mediana y los percentiles describen mejor una distribución asimétrica que el promedio — informar solo el promedio puede ocultar que el 5% de las zonas con más paradas tarda muchísimo más que el resto.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-```python
-import time
-from statistics import mean, median, quantiles
-from examples.rutaflow.foundation.domain import Stop, nearest_neighbor_route
-
-tiempos = []
-for _ in range(30):
-    paradas = [Stop(f"RF-{i}", i % 7, i % 5) for i in range(200)]
-    inicio = time.perf_counter()
-    nearest_neighbor_route((0, 0), paradas)
-    tiempos.append(time.perf_counter() - inicio)
-
-p50 = median(tiempos)
-p95 = quantiles(tiempos, n=100)[94]
-print({"n": len(tiempos), "media": mean(tiempos), "p50": p50, "p95": p95})
-```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
-
-Resultado esperado: un diccionario con media, p50 y p95 reales de 30 repeticiones — la heurística O(n²) sobre 200 paradas da tiempos consistentes, y podés comparar si la media y la mediana están cerca (señal de distribución simétrica) o lejos (señal de cola larga).
-
-#### Paso 5 · Práctica guiada
-Pista: repetí la medición con solo 3 repeticiones en vez de 30, y afirmá una conclusión sobre el "tiempo típico" basándote en esas 3 — ese es el fallo deliberado: con una muestra tan chica, un solo valor atípico (por ejemplo, si el primer cálculo coincidió con el arranque en frío del intérprete) puede distorsionar completamente la media, sin que tengas suficientes repeticiones para distinguir ruido de señal real.
-
-#### Paso 6 · Práctica independiente
-Repetí el Paso 4 con 1000 paradas en vez de 200, y compará el p95 de ambos tamaños — documentá si el crecimiento del tiempo es lineal, cuadrático o algo distinto, usando los números reales medidos, no la complejidad teórica O(n²) citada en el docstring de la función.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la distribución con 30 repeticiones del Paso 4, la conclusión frágil con 3 repeticiones del Paso 5, y la comparación de tamaños del Paso 6; explicá por qué el tamaño de muestra y los percentiles importan más que un único número de "tiempo promedio" al decidir cuántas paradas por zona puede manejar RutaFlow. Errores comunes: sacar conclusiones de una muestra demasiado chica, reportar solo el promedio y ocultar la dispersión, y no documentar bajo qué condiciones (tamaño de entrada, hardware, repeticiones) se midió. Fuente oficial: https://docs.python.org/3/library/statistics.html.
-**¿Por qué es importante?** Porque decidir cuántas paradas por zona puede manejar RutaFlow con un solo promedio esconde exactamente la cola larga que determina si el sistema se siente lento en el peor caso, no en el caso típico.
 **Escenario:** Mediste que "confirmación de entrega" tiene p95 = 150ms. Pero ¿qué confianza tienes? ¿Eso vale para hoy? ¿La semana que viene con el doble de entregas?
 
 **Tu tarea:**
@@ -425,6 +384,49 @@ Esta medición de percentiles corre sobre `nearest_neighbor_route`, definida en 
 
 **Límites y decisión de uso:** Una muestra pequeña o sesgada no permite generalizar resultados con certeza. Registra procedencia, tamaño y variabilidad, y distingue asociación de causalidad antes de elegir una solución a partir de una medición.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+```python
+import time
+from statistics import mean, median, quantiles
+from examples.rutaflow.foundation.domain import Stop, nearest_neighbor_route
+
+tiempos = []
+for _ in range(30):
+    paradas = [Stop(f"RF-{i}", i % 7, i % 5) for i in range(200)]
+    inicio = time.perf_counter()
+    nearest_neighbor_route((0, 0), paradas)
+    tiempos.append(time.perf_counter() - inicio)
+
+p50 = median(tiempos)
+p95 = quantiles(tiempos, n=100)[94]
+print({"n": len(tiempos), "media": mean(tiempos), "p50": p50, "p95": p95})
+```
+
+**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+
+```bash
+python3 ejemplo.py
+```
+Observa la salida impresa y compárala con el resultado esperado.
+
+Resultado esperado: un diccionario con media, p50 y p95 reales de 30 repeticiones — la heurística O(n²) sobre 200 paradas da tiempos consistentes, y podés comparar si la media y la mediana están cerca (señal de distribución simétrica) o lejos (señal de cola larga).
+
+#### Paso 5 · Práctica guiada
+Pista: repetí la medición con solo 3 repeticiones en vez de 30, y afirmá una conclusión sobre el "tiempo típico" basándote en esas 3 — ese es el fallo deliberado: con una muestra tan chica, un solo valor atípico (por ejemplo, si el primer cálculo coincidió con el arranque en frío del intérprete) puede distorsionar completamente la media, sin que tengas suficientes repeticiones para distinguir ruido de señal real.
+
+#### Paso 6 · Práctica independiente
+Repetí el Paso 4 con 1000 paradas en vez de 200, y compará el p95 de ambos tamaños — documentá si el crecimiento del tiempo es lineal, cuadrático o algo distinto, usando los números reales medidos, no la complejidad teórica O(n²) citada en el docstring de la función.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la distribución con 30 repeticiones del Paso 4, la conclusión frágil con 3 repeticiones del Paso 5, y la comparación de tamaños del Paso 6; explicá por qué el tamaño de muestra y los percentiles importan más que un único número de "tiempo promedio" al decidir cuántas paradas por zona puede manejar RutaFlow. Errores comunes: sacar conclusiones de una muestra demasiado chica, reportar solo el promedio y ocultar la dispersión, y no documentar bajo qué condiciones (tamaño de entrada, hardware, repeticiones) se midió. Fuente oficial: https://docs.python.org/3/library/statistics.html.
+**¿Por qué es importante?** Porque decidir cuántas paradas por zona puede manejar RutaFlow con un solo promedio esconde exactamente la cola larga que determina si el sistema se siente lento en el peor caso, no en el caso típico.
+
 ## Construcción guiada del capítulo
 
 ### Proyecto 9: cuaderno de propiedades, grafos y evidencia

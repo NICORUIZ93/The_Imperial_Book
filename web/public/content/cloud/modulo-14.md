@@ -119,19 +119,7 @@ Al finalizar vas a justificar, con el límite real de Lambda del Módulo 5, por 
 `confirmar-entrega` responde en milisegundos a un solo envío; el planificador de rutas procesa todos los envíos pendientes de una zona y puede tardar 20-30 minutos en una hora pico — ambos son "cómputo", pero no caben en la misma plataforma.
 #### Paso 3 · Teoría, modelo mental y analogía
 Elegir entre Lambda y contenedores es como elegir entre un taxi (por viaje puntual, corto) y una flota propia (para trabajos largos con requisitos específicos de equipo).
-#### Paso 4 · Demostración guiada
-```bash
-aws lambda create-function --function-name planificador-fallido --runtime nodejs20.x \
-  --handler index.handler --zip-file fileb://funcion.zip --timeout 1800 \
-  --role arn:aws:iam::000000000000:role/lambda-role
-```
-Resultado esperado: ese es el fallo deliberado — `ParameterValidationError` o `InvalidParameterValueException` según la versión: el campo `--timeout` de Lambda tiene un tope real de 900 segundos (15 minutos); 1800 segundos (30 minutos, lo que el planificador necesita de verdad) directamente no es un valor válido para Lambda.
-#### Paso 5 · Práctica guiada
-Pista: corregí el Paso 4 reemplazando el enfoque completo, no solo el número — el planificador tiene que correr como la tarea ECS del Tema 2 (sin límite de 15 minutos), mientras que `confirmar-entrega` (que sí cabe sobradamente en ese límite) se queda en Lambda exactamente como está desde el Módulo 5.
-#### Paso 6 · Práctica independiente
-Construí una tabla de dos filas (`confirmar-entrega` / planificador de rutas) con tres columnas (duración típica, necesidad de control del entorno, modelo de coste) y completala con lo que ya sabés de ambos de los Módulos 5 y 14.
-#### Paso 7 · Cierre y evidencia
-Entregá el error de timeout del Paso 4, la decisión de plataforma del Paso 5 y la tabla del Paso 6; explicá por qué "¿cuánto dura la tarea?" es la primera pregunta antes de elegir Lambda o contenedores, no la única pero sí la más decisiva acá. Siguiente paso: seguridad operacional. Errores comunes: elegir por moda y olvidar observabilidad. Fuente oficial: https://aws.amazon.com/compute/.
+
 **Conceptos clave:** elegir según duración, control de runtime y complejidad de la carga de trabajo.
 
 Usar contenedores (ECS) sobre Lambda es apropiado cuando la carga de trabajo tiene una duración prolongada más allá de los límites de tiempo de ejecución de una función Lambda, requiere un control más fino sobre el entorno de ejecución (versiones específicas de librerías del sistema operativo, dependencias binarias particulares que no encajan bien en el modelo de runtime más restringido de Lambda), o cuando la aplicación ya está empaquetada como un contenedor por otras razones (por ejemplo, un mismo artefacto de contenedor que también corre en Kubernetes en otro contexto); Lambda sigue siendo preferible para cargas de trabajo cortas, orientadas a eventos, donde el modelo de escalado automático a cero (sin costo cuando no hay invocaciones) es especialmente valioso.
@@ -167,6 +155,19 @@ como función, sino como tarea ECS o EKS separada.
 
 ---
 
+#### Paso 4 · Demostración guiada
+```bash
+aws lambda create-function --function-name planificador-fallido --runtime nodejs20.x \
+  --handler index.handler --zip-file fileb://funcion.zip --timeout 1800 \
+  --role arn:aws:iam::000000000000:role/lambda-role
+```
+Resultado esperado: ese es el fallo deliberado — `ParameterValidationError` o `InvalidParameterValueException` según la versión: el campo `--timeout` de Lambda tiene un tope real de 900 segundos (15 minutos); 1800 segundos (30 minutos, lo que el planificador necesita de verdad) directamente no es un valor válido para Lambda.
+#### Paso 5 · Práctica guiada
+Pista: corregí el Paso 4 reemplazando el enfoque completo, no solo el número — el planificador tiene que correr como la tarea ECS del Tema 2 (sin límite de 15 minutos), mientras que `confirmar-entrega` (que sí cabe sobradamente en ese límite) se queda en Lambda exactamente como está desde el Módulo 5.
+#### Paso 6 · Práctica independiente
+Construí una tabla de dos filas (`confirmar-entrega` / planificador de rutas) con tres columnas (duración típica, necesidad de control del entorno, modelo de coste) y completala con lo que ya sabés de ambos de los Módulos 5 y 14.
+#### Paso 7 · Cierre y evidencia
+Entregá el error de timeout del Paso 4, la decisión de plataforma del Paso 5 y la tabla del Paso 6; explicá por qué "¿cuánto dura la tarea?" es la primera pregunta antes de elegir Lambda o contenedores, no la única pero sí la más decisiva acá. Siguiente paso: seguridad operacional. Errores comunes: elegir por moda y olvidar observabilidad. Fuente oficial: https://aws.amazon.com/compute/.
 
 ## Laboratorio práctico
 

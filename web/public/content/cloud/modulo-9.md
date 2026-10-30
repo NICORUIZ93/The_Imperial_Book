@@ -262,28 +262,7 @@ Al finalizar podrás documentar y desplegar desde cero. Prerrequisitos: Node.js 
 Un equipo necesita repetir el despliegue sin conocimiento oculto.
 #### Paso 3 · Teoría, modelo mental y analogía
 La documentación es el manual de operación y el contrato evita interpretaciones.
-#### Paso 4 · Demostración guiada
-Crea `README.md` y `src/deploy.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-documentado
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
-#### Paso 5 · Práctica guiada
-Pista: elimina un parámetro para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Añade ejemplo de petición, respuesta y rollback.
-#### Paso 7 · Cierre y evidencia
-Entrega README, salida, fallo y corrección; explica el resultado. Siguiente paso: observabilidad. Errores comunes: enlaces rotos y comandos no reproducibles. Fuente oficial: https://spec.openapis.org/oas/latest.html.
 **Conceptos clave:** documentación de endpoints, contrato de API, guía de despliegue reproducible.
 
 Un proyecto funcional pero sin documentación no está realmente terminado desde una perspectiva profesional: cualquier persona que necesite usar, mantener o extender tu API en el futuro (incluido tú mismo, meses después) necesita saber qué endpoints existen, qué esperan recibir, y qué devuelven. La documentación mínima esperada para este proyecto incluye, para cada endpoint (`POST /tareas`, `GET /tareas`, `GET /tareas/{id}`, `PUT /tareas/{id}`, `DELETE /tareas/{id}`): el método HTTP y la ruta completa, una descripción de su propósito, la estructura esperada del cuerpo de la petición (si aplica), y un ejemplo de respuesta exitosa junto con los posibles códigos de error.
@@ -310,6 +289,29 @@ flowchart TD
 ---
 
 **Límites y decisión de uso:** Una guía de despliegue ligada a rutas personales o recursos de una sesión no es reproducible. Pruébala desde un entorno limpio y distingue preparación, creación, comprobación y limpieza; no incluyas credenciales reales como valores de ejemplo.
+
+#### Paso 4 · Demostración guiada
+Crea `README.md` y `src/deploy.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-documentado
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Node disponible.
+#### Paso 5 · Práctica guiada
+Pista: elimina un parámetro para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Añade ejemplo de petición, respuesta y rollback.
+#### Paso 7 · Cierre y evidencia
+Entrega README, salida, fallo y corrección; explica el resultado. Siguiente paso: observabilidad. Errores comunes: enlaces rotos y comandos no reproducibles. Fuente oficial: https://spec.openapis.org/oas/latest.html.
 
 ## Laboratorio práctico
 
@@ -340,10 +342,6 @@ flowchart TD
 5. Evidencia de que el sistema funciona de extremo a extremo: por ejemplo, una secuencia de comandos `curl` que crea una tarea, le adjunta un archivo, consulta su estado tras el procesamiento en segundo plano, y finalmente la elimina.
 
 **Verificación:** desde una instancia limpia de Floci, el script de despliegue termina sin errores; la secuencia `curl` crea, consulta, actualiza y elimina una tarea; el adjunto aparece bajo `adjuntos/<tarea_id>/`; el mensaje asíncrono se procesa una sola vez o termina en la DLQ tras agotar los reintentos; y cada función opera con un rol IAM distinto. Guarda comandos, respuestas HTTP, logs del consumidor y el resultado de consultar la DLQ como evidencia reproducible.
-
-
-
-
 
 ## Apéndice A: Guía de referencia rápida
 

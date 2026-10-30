@@ -347,45 +347,6 @@ Una lista de paradas de una ruta puede traer coordenadas ausentes o fuera de ran
 #### Paso 3 · Teoría, modelo mental y analogía
 `compactMap` transforma y descarta los resultados `nil` en una sola operación; un algoritmo genérico con una restricción como `ID: Hashable` expresa una relación entre tipos sin perder información al caer en `Any`. La analogía: una banda transportadora con estaciones que ordenan, seleccionan y transforman, donde un genérico describe la forma de la máquina sin exigir que todo se convierta en cajas sin etiqueta.
 
-#### Paso 4 · Demostración guiada desde cero
-Desde una **carpeta vacía**, crea una transformación tipada de paradas:
-```bash
-mkdir SwiftColecciones
-cd SwiftColecciones
-swift package init --type library
-```
-Guarda `Sources/SwiftColecciones/RoutePreparation.swift` y `Tests/SwiftColeccionesTests/RoutePreparationTests.swift`:
-
-```swift
-public func coordenadasValidas(_ valores: [Double?]) -> [Double] {
-    valores.compactMap { valor in
-        // La closure descarta nil y posiciones fuera del rango de latitud.
-        guard let valor, (-90...90).contains(valor) else { return nil }
-        return valor
-    }
-}
-```
-
-```swift
-import Testing
-@testable import SwiftColecciones
-
-@Test func filtraAusenciasYValoresImposibles() {
-    #expect(coordenadasValidas([4.6, nil, 120]) == [4.6])
-}
-```
-
-Ejecuta `swift test`. **Resultado esperado:** una prueba aprobada. **Fallo deliberado:** cambia el rango a `(-180...180)`; la prueba falla porque `120` deja de descartarse. El diagnóstico muestra que una regla de latitud se confundió con una de longitud.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá el rango de latitud válida de `(-90...90)` a `(-180...180)` en `coordenadasValidas`. Ese es el fallo deliberado: la prueba `filtraAusenciasYValoresImposibles` falla porque `120` (una longitud válida, pero no una latitud válida) ya no se descarta, revelando que una regla de longitud se confundió con una de latitud.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el rango `(-90...90)` para latitud, y agregá una segunda función que valide longitud con su propio rango `(-180...180)`, confirmando con un test que ambas reglas se verifican de forma independiente y no se mezclan.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el filtro de coordenadas del Paso 4, la prueba fallida por rango de latitud/longitud confundidos del Paso 5, y la validación de longitud independiente del Paso 6; explicá por qué nombrar explícitamente cada regla de rango (latitud vs longitud) evita que una se confunda silenciosamente con la otra. Siguiente paso: construí una app SwiftUI completa que use estos mismos modelos. Errores comunes: usar `$0` en closures con varias reglas distintas, perdiendo legibilidad; descartar valores inválidos con `compactMap` sin documentar si esconder el dato inválido es realmente la decisión correcta para ese caso. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/ y https://developer.apple.com/documentation/swift/generics.
-**¿Por qué es importante?** Porque nombrar explícitamente cada regla de filtrado (latitud vs longitud) evita que una se confunda silenciosamente con otra al descartar datos con `compactMap`.
 **Evidencia de aprendizaje:** entrega el filtro de coordenadas del Paso 4, la prueba fallida por reglas confundidas reproducida, y la validación de longitud independiente agregada.
 **Conceptos clave:** función como valor, closure de escape, lista de captura, `map`, `filter`, `compactMap`, `reduce`, parámetro genérico y cláusula `where`.
 
@@ -493,6 +454,46 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Transforma y ordena la ruta mediante funciones sobre colecciones y un criterio inyectado. Prueba empates y lista vacía, evitando que un closure retenga innecesariamente el modelo de pantalla.
 
+#### Paso 4 · Demostración guiada desde cero
+Desde una **carpeta vacía**, crea una transformación tipada de paradas:
+```bash
+mkdir SwiftColecciones
+cd SwiftColecciones
+swift package init --type library
+```
+Guarda `Sources/SwiftColecciones/RoutePreparation.swift` y `Tests/SwiftColeccionesTests/RoutePreparationTests.swift`:
+
+```swift
+public func coordenadasValidas(_ valores: [Double?]) -> [Double] {
+    valores.compactMap { valor in
+        // La closure descarta nil y posiciones fuera del rango de latitud.
+        guard let valor, (-90...90).contains(valor) else { return nil }
+        return valor
+    }
+}
+```
+
+```swift
+import Testing
+@testable import SwiftColecciones
+
+@Test func filtraAusenciasYValoresImposibles() {
+    #expect(coordenadasValidas([4.6, nil, 120]) == [4.6])
+}
+```
+
+Ejecuta `swift test`. **Resultado esperado:** una prueba aprobada. **Fallo deliberado:** cambia el rango a `(-180...180)`; la prueba falla porque `120` deja de descartarse. El diagnóstico muestra que una regla de latitud se confundió con una de longitud.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá el rango de latitud válida de `(-90...90)` a `(-180...180)` en `coordenadasValidas`. Ese es el fallo deliberado: la prueba `filtraAusenciasYValoresImposibles` falla porque `120` (una longitud válida, pero no una latitud válida) ya no se descarta, revelando que una regla de longitud se confundió con una de latitud.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando el rango `(-90...90)` para latitud, y agregá una segunda función que valide longitud con su propio rango `(-180...180)`, confirmando con un test que ambas reglas se verifican de forma independiente y no se mezclan.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el filtro de coordenadas del Paso 4, la prueba fallida por rango de latitud/longitud confundidos del Paso 5, y la validación de longitud independiente del Paso 6; explicá por qué nombrar explícitamente cada regla de rango (latitud vs longitud) evita que una se confunda silenciosamente con la otra. Siguiente paso: construí una app SwiftUI completa que use estos mismos modelos. Errores comunes: usar `$0` en closures con varias reglas distintas, perdiendo legibilidad; descartar valores inválidos con `compactMap` sin documentar si esconder el dato inválido es realmente la decisión correcta para ese caso. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/ y https://developer.apple.com/documentation/swift/generics.
+**¿Por qué es importante?** Porque nombrar explícitamente cada regla de filtrado (latitud vs longitud) evita que una se confunda silenciosamente con otra al descartar datos con `compactMap`.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con crea una carpeta vacía `academia-ios`, genera dentro un proyecto **iOS App / SwiftUI** con Xcode y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
@@ -505,7 +506,6 @@ No crees un proyecto desechable por módulo. Conserva un único repositorio que 
 | Experto | testing, seguridad y TestFlight. | Perfil o threat model, telemetría y runbook de recuperación. |
 
 Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, verifica el criterio de éxito y fusiona solo con pruebas verdes. Si un módulo necesita un experimento aislado, colócalo en `experiments/modulo-N/`; el producto acumulativo permanece ejecutable. Al terminar, otra persona debe poder clonar el repositorio y reproducir el último hito siguiendo únicamente el README.
-
 
 ## Laboratorio práctico
 

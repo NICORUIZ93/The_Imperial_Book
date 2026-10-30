@@ -130,28 +130,6 @@ Un intento de retirar más saldo del disponible en una billetera de conductor es
 #### Paso 3 · Teoría, modelo mental y analogía
 Una excepción personalizada (`SaldoInsuficienteException`) comunica con precisión qué condición ocurrió; un catch vacío oculta el error, dejando el bug invisible hasta que sus consecuencias aparezcan mucho después y sin relación aparente con la causa. La analogía: desactivar la alarma de incendio sin investigar qué la activó.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-excepcion-dominio
-cd ejemplo-excepcion-dominio
-mkdir -p src/main/java/academia/billetera
-```
-Crea `Billetera.java` con `SaldoInsuficienteException` (extiende `RuntimeException`) y un método `retirar(double monto)` que la lance cuando el saldo sea insuficiente. Compila y ejecuta un `Main` que primero capture la excepción con un catch vacío (para observar el problema) y luego con un catch que registre el error.
-```bash
-javac -d out src/main/java/academia/billetera/Billetera.java
-java -cp out academia.billetera.Main
-```
-
-#### Paso 5 · Práctica guiada
-Pista: usa deliberadamente el catch vacío para provocar el antipatrón (el retiro fallido no deja ningún rastro en consola); reemplázalo por `log.error(...)` y confirma que ahora el fallo es visible. Resultado esperado: el mismo error, pero ahora diagnosticable.
-
-#### Paso 6 · Práctica independiente
-Agrega una segunda excepción de dominio (`CuentaBloqueadaException`) y un bloque que capture ambas por separado, reaccionando distinto a cada una en vez de tratarlas como un `Exception` genérico.
-
-#### Paso 7 · Cierre y evidencia
-Guarda ambas excepciones, la salida silenciosa del catch vacío y la salida registrada tras corregirlo; como siguiente paso estudia streams. Errores comunes: usar un catch vacío "para que no se rompa el programa", capturar `Throwable`/`Exception` genérico en vez del tipo de dominio específico cuando sí se necesita reaccionar distinto a cada caso, y devolver el stack trace completo al cliente final en vez de un mensaje de dominio junto con el registro técnico interno. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
-**¿Por qué es importante?** Porque una excepción de dominio específica permite reaccionar distinto según qué regla de negocio se violó, mientras que un catch vacío convierte cualquier error real en un bug invisible que solo se descubre mucho después, por sus consecuencias, no por su causa.
 **Evidencia de aprendizaje:** entrega `SaldoInsuficienteException`, la salida silenciosa del catch vacío (el antipatrón), y la salida registrada tras reemplazarlo por `log.error(...)`.
 **Conceptos clave:** modelar errores de dominio, antipatrón del catch vacío.
 
@@ -186,6 +164,28 @@ try { operacionRiesgosa(); } catch (Exception e) {
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-excepcion-dominio
+cd ejemplo-excepcion-dominio
+mkdir -p src/main/java/academia/billetera
+```
+Crea `Billetera.java` con `SaldoInsuficienteException` (extiende `RuntimeException`) y un método `retirar(double monto)` que la lance cuando el saldo sea insuficiente. Compila y ejecuta un `Main` que primero capture la excepción con un catch vacío (para observar el problema) y luego con un catch que registre el error.
+```bash
+javac -d out src/main/java/academia/billetera/Billetera.java
+java -cp out academia.billetera.Main
+```
+
+#### Paso 5 · Práctica guiada
+Pista: usa deliberadamente el catch vacío para provocar el antipatrón (el retiro fallido no deja ningún rastro en consola); reemplázalo por `log.error(...)` y confirma que ahora el fallo es visible. Resultado esperado: el mismo error, pero ahora diagnosticable.
+
+#### Paso 6 · Práctica independiente
+Agrega una segunda excepción de dominio (`CuentaBloqueadaException`) y un bloque que capture ambas por separado, reaccionando distinto a cada una en vez de tratarlas como un `Exception` genérico.
+
+#### Paso 7 · Cierre y evidencia
+Guarda ambas excepciones, la salida silenciosa del catch vacío y la salida registrada tras corregirlo; como siguiente paso estudia streams. Errores comunes: usar un catch vacío "para que no se rompa el programa", capturar `Throwable`/`Exception` genérico en vez del tipo de dominio específico cuando sí se necesita reaccionar distinto a cada caso, y devolver el stack trace completo al cliente final en vez de un mensaje de dominio junto con el registro técnico interno. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
+**¿Por qué es importante?** Porque una excepción de dominio específica permite reaccionar distinto según qué regla de negocio se violó, mientras que un catch vacío convierte cualquier error real en un bug invisible que solo se descubre mucho después, por sus consecuencias, no por su causa.
 
 ## Construcción guiada del capítulo
 

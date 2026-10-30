@@ -148,6 +148,32 @@ Un módulo de dominio compila perfectamente y `exports` su paquete principal, pe
 #### Paso 3 · Teoría, modelo mental y analogía
 `exports` resuelve el acceso normal de compilación y llamada directa; `opens` concede, por separado, acceso reflexivo en tiempo de ejecución, el que frameworks como Jackson, Hibernate o Spring necesitan para inspeccionar y construir objetos sin que tu código los llame directamente. La analogía: `exports` es dar una llave para entrar y usar las habitaciones normalmente; `opens` es un permiso aparte para que un inspector concreto revise los cajones — son dos autorizaciones independientes.
 
+**Evidencia de aprendizaje:** entrega el `InaccessibleObjectException` provocado al faltar `opens`, su corrección, y la comparación entre `opens` abierto a todos frente a acotado con `to`.
+**Conceptos clave:** `exports` da acceso en tiempo de compilación, `opens` da acceso reflexivo en tiempo de ejecución; son declaraciones independientes.
+
+`exports` resuelve el acceso normal de compilación y llamada directa entre módulos, pero no basta para frameworks como Spring, Jackson o Hibernate, que necesitan inspeccionar y construir objetos de tus propias clases mediante reflexión (leer campos privados, invocar constructores sin argumentos, anotar campos) sin que tu código llame a esos frameworks directamente. Si un paquete solo está `exports`, la reflexión profunda de esos frameworks sobre tus clases falla en tiempo de ejecución con `InaccessibleObjectException`, aunque el mismo paquete compile y funcione perfectamente con llamadas directas de código. `opens com.miapp.dominio;` concede ese acceso reflexivo adicional; `opens com.miapp.dominio to com.fasterxml.jackson.databind;` lo restringe a un módulo específico en vez de abrirlo a cualquiera, igual que `exports ... to ...` restringe el acceso de compilación a módulos concretos.
+
+Es habitual necesitar ambas declaraciones sobre el mismo paquete a la vez: `exports` para que otros módulos llamen directamente a tus clases de dominio, y `opens` (normalmente acotado con `to`) para que el framework de serialización o el ORM pueda además inspeccionarlas por reflexión. Un módulo completo puede además declararse `open module com.miapp.dominio { ... }`, lo que abre todos sus paquetes a reflexión sin necesidad de una línea `opens` por paquete — una opción más simple pero que renuncia a la encapsulación fuerte del Tema 1 para todo el módulo, útil sobre todo durante una migración incremental (Tema 2) mientras terminas de identificar exactamente qué paquetes necesitan reflexión.
+
+**Analogía:** `exports` es como dar a alguien una llave para entrar por la puerta principal y usar las habitaciones normalmente; `opens` es un permiso aparte para que un inspector concreto pueda además revisar los cajones y closets sin necesidad de pedirte permiso cada vez — son dos autorizaciones independientes, y dar la llave de la puerta no incluye automáticamente el permiso de inspección.
+
+**¿Por qué es importante?** La mayoría de los frameworks Java del ecosistema real (inyección de dependencias, serialización JSON, ORMs) dependen de reflexión profunda sobre tus propias clases; olvidar `opens` es la causa más común de que una aplicación que compila perfectamente falle en tiempo de ejecución al integrarla con JPMS.
+
+**Código del ejemplo:**
+
+```java
+module com.miapp.dominio {
+    exports com.miapp.dominio;                                    // llamada directa desde otros módulos
+    opens com.miapp.dominio to com.fasterxml.jackson.databind;     // reflexión, solo para Jackson
+}
+```
+
+Si el Proyecto integrador (Módulo 13) usa Jackson o un ORM sobre módulos JPMS, cada paquete de dominio serializado necesita su `opens` explícito y acotado.
+
+**Cuándo no usarlo:** si ningún framework necesita reflexión sobre tus clases (todo el acceso es llamada directa de código), no declares `opens`; mantener solo `exports` conserva la encapsulación fuerte.
+
+---
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -176,32 +202,6 @@ Compara declarar `opens academia.dominio;` (abierto a cualquiera) frente a `open
 #### Paso 7 · Cierre y evidencia
 Guarda el `InaccessibleObjectException` provocado, el `module-info.java` corregido con `opens ... to ...` y la comparación entre abrir a todos o acotarlo; como siguiente paso construye el laboratorio completo del capítulo. Errores comunes: confundir `exports` (acceso de compilación) con `opens` (acceso reflexivo), declarar `opens` sin acotar con `to` cuando bastaría abrirlo solo al framework específico, y olvidar que un módulo que compila bien puede de todas formas fallar en runtime por reflexión sin `opens`. Fuentes oficiales: https://dev.java/learn/modules/.
 **¿Por qué es importante?** Porque la mayoría de los frameworks del ecosistema Java (serialización JSON, ORMs, inyección de dependencias) dependen de reflexión profunda sobre tus propias clases; olvidar `opens` es la causa más común de que una aplicación que compila perfectamente falle recién en tiempo de ejecución al integrarla con JPMS.
-**Evidencia de aprendizaje:** entrega el `InaccessibleObjectException` provocado al faltar `opens`, su corrección, y la comparación entre `opens` abierto a todos frente a acotado con `to`.
-**Conceptos clave:** `exports` da acceso en tiempo de compilación, `opens` da acceso reflexivo en tiempo de ejecución; son declaraciones independientes.
-
-`exports` resuelve el acceso normal de compilación y llamada directa entre módulos, pero no basta para frameworks como Spring, Jackson o Hibernate, que necesitan inspeccionar y construir objetos de tus propias clases mediante reflexión (leer campos privados, invocar constructores sin argumentos, anotar campos) sin que tu código llame a esos frameworks directamente. Si un paquete solo está `exports`, la reflexión profunda de esos frameworks sobre tus clases falla en tiempo de ejecución con `InaccessibleObjectException`, aunque el mismo paquete compile y funcione perfectamente con llamadas directas de código. `opens com.miapp.dominio;` concede ese acceso reflexivo adicional; `opens com.miapp.dominio to com.fasterxml.jackson.databind;` lo restringe a un módulo específico en vez de abrirlo a cualquiera, igual que `exports ... to ...` restringe el acceso de compilación a módulos concretos.
-
-Es habitual necesitar ambas declaraciones sobre el mismo paquete a la vez: `exports` para que otros módulos llamen directamente a tus clases de dominio, y `opens` (normalmente acotado con `to`) para que el framework de serialización o el ORM pueda además inspeccionarlas por reflexión. Un módulo completo puede además declararse `open module com.miapp.dominio { ... }`, lo que abre todos sus paquetes a reflexión sin necesidad de una línea `opens` por paquete — una opción más simple pero que renuncia a la encapsulación fuerte del Tema 1 para todo el módulo, útil sobre todo durante una migración incremental (Tema 2) mientras terminas de identificar exactamente qué paquetes necesitan reflexión.
-
-**Analogía:** `exports` es como dar a alguien una llave para entrar por la puerta principal y usar las habitaciones normalmente; `opens` es un permiso aparte para que un inspector concreto pueda además revisar los cajones y closets sin necesidad de pedirte permiso cada vez — son dos autorizaciones independientes, y dar la llave de la puerta no incluye automáticamente el permiso de inspección.
-
-**¿Por qué es importante?** La mayoría de los frameworks Java del ecosistema real (inyección de dependencias, serialización JSON, ORMs) dependen de reflexión profunda sobre tus propias clases; olvidar `opens` es la causa más común de que una aplicación que compila perfectamente falle en tiempo de ejecución al integrarla con JPMS.
-
-**Código del ejemplo:**
-
-```java
-module com.miapp.dominio {
-    exports com.miapp.dominio;                                    // llamada directa desde otros módulos
-    opens com.miapp.dominio to com.fasterxml.jackson.databind;     // reflexión, solo para Jackson
-}
-```
-
-Si el Proyecto integrador (Módulo 13) usa Jackson o un ORM sobre módulos JPMS, cada paquete de dominio serializado necesita su `opens` explícito y acotado.
-
-**Cuándo no usarlo:** si ningún framework necesita reflexión sobre tus clases (todo el acceso es llamada directa de código), no declares `opens`; mantener solo `exports` conserva la encapsulación fuerte.
-
----
-
 
 ## Construcción guiada del capítulo
 

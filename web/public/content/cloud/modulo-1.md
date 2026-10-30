@@ -233,19 +233,7 @@ Al finalizar podrás coordinar servicios desde cero. Prerrequisitos: Docker Comp
 Una aplicación necesita API, base de datos y red reproducible.
 #### Paso 3 · Teoría, modelo mental y analogía
 Compose es el plano de un edificio: servicios, conexiones y almacenamiento.
-#### Paso 4 · Demostración guiada
-Crea `docker-compose.yml` en `ejemplo-compose` desde una carpeta vacía.
-```bash
-mkdir ejemplo-compose
-docker compose version
-```
-Resultado esperado: Compose disponible.
-#### Paso 5 · Práctica guiada
-Pista: usa un volumen inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Añade red, volumen y healthcheck.
-#### Paso 7 · Cierre y evidencia
-Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: servicios cloud. Errores comunes: datos efímeros, puertos duplicados y dependencias sin healthcheck. Fuente oficial: https://docs.docker.com/compose/.
+
 **Conceptos clave:** `docker-compose.yml`, servicio, red por defecto, volumen, `docker compose up/down`.
 
 Docker Compose resuelve un problema que aparece en cuanto necesitas más de un contenedor trabajando juntos: en vez de escribir un comando `docker run` largo y repetirlo cada vez (con todos sus puertos, variables de entorno y volúmenes), describes toda la configuración una sola vez en un archivo de texto llamado `docker-compose.yml`, y Docker Compose se encarga de levantar (o destruir) todos los contenedores descritos con un solo comando.
@@ -280,6 +268,20 @@ flowchart LR
 ---
 
 **Límites y decisión de uso:** Compose sirve para reproducir varios servicios en un host, pero no garantiza alta disponibilidad entre máquinas. Que un contenedor haya arrancado tampoco implica que su dependencia esté lista: combina healthchecks con recuperación en la aplicación.
+
+#### Paso 4 · Demostración guiada
+Crea `docker-compose.yml` en `ejemplo-compose` desde una carpeta vacía.
+```bash
+mkdir ejemplo-compose
+docker compose version
+```
+Resultado esperado: Compose disponible.
+#### Paso 5 · Práctica guiada
+Pista: usa un volumen inexistente para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Añade red, volumen y healthcheck.
+#### Paso 7 · Cierre y evidencia
+Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: servicios cloud. Errores comunes: datos efímeros, puertos duplicados y dependencias sin healthcheck. Fuente oficial: https://docs.docker.com/compose/.
 
 ## Laboratorio práctico
 

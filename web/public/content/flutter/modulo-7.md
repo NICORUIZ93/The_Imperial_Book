@@ -248,40 +248,6 @@ Una foto visible en pantalla todavía no es una evidencia persistida — captura
 #### Paso 3 · Teoría, modelo mental y analogía
 El dominio no depende de `XFile` ni de Dio; valida bytes, tamaño y MIME de forma aislada; el repositorio traduce ese contrato a HTTP con una clave de idempotencia para que reintentar no duplique la evidencia.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-final class DeliveryProof {
-  DeliveryProof({required this.bytes, required this.fileName, required this.mimeType}) {
-    if (bytes.isEmpty) throw ArgumentError('La imagen está vacía');
-    if (bytes.lengthInBytes > 5 * 1024 * 1024) throw ArgumentError('La imagen supera 5 MB');
-    if (!{'image/jpeg', 'image/png'}.contains(mimeType)) throw ArgumentError('Formato no permitido: $mimeType');
-  }
-  final Uint8List bytes;
-  final String fileName;
-  final String mimeType;
-}
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: construir un `DeliveryProof` con una imagen de 6 MB (o un tipo MIME no permitido) lanza un `ArgumentError` inmediatamente en el dominio, antes de que esos bytes lleguen siquiera a considerarse para una subida por red.
-
-#### Paso 5 · Práctica guiada
-Pista: activá modo avión cuando la carga llegue aproximadamente al 50% sin una clave de idempotencia estable del lado del repositorio — ese es el fallo deliberado: reintentar la subida desde cero después de recuperar la conexión puede crear una segunda evidencia en el servidor para la misma entrega, en vez de completar o reemplazar la que se cortó a la mitad.
-
-#### Paso 6 · Práctica independiente
-Corregí confirmando que la implementación reutiliza la misma `idempotencyKey` en el reintento, y que la interfaz conserva la fotografía localmente para ese reintento, sin marcar la entrega como completada hasta recibir la confirmación `201` real del servidor.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el dominio con validación del Paso 4, el riesgo de evidencia duplicada del Paso 5, y la confirmación de idempotencia del Paso 6; explicá por qué separar selección, validación y transferencia permite probar las reglas de validación sin necesitar una cámara real. Siguiente paso: cerrá el módulo integrando permisos, MethodChannel y carga de evidencia en el flujo completo. Errores comunes: confiar únicamente en la extensión del archivo para validar el tipo, marcar la entrega como completa antes de la confirmación del servidor, y generar una nueva clave de idempotencia en cada reintento. Fuentes oficiales: https://pub.dev/packages/image_picker y https://pub.dev/packages/dio.
-**¿Por qué es importante?** Una foto visible en pantalla todavía no es una evidencia persistida; separar selección, validación y carga permite probar reglas sin cámara real y reintentar con seguridad.
 **Evidencia de aprendizaje:** entrega dominio con validación, riesgo de evidencia duplicada detectado y confirmación de idempotencia en el reintento.
 **Conceptos clave:** `XFile`, permiso contextual, validación local, puerto de dominio, `FormData`, progreso, idempotencia y archivo temporal.
 
@@ -430,6 +396,41 @@ sequenceDiagram
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Captura una evidencia y envíala con autorización por guía. Prueba cancelación de cámara y subida interrumpida; conserva el archivo hasta confirmar recepción y evita duplicarlo al reintentar.
 
 **Límites y decisión de uso:** Capturar una foto no acredita que el servidor la recibió ni que el usuario estaba autorizado. Conserva referencia local, controla tamaño y tipo en el backend y ofrece recuperación si permiso, almacenamiento o red fallan.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+final class DeliveryProof {
+  DeliveryProof({required this.bytes, required this.fileName, required this.mimeType}) {
+    if (bytes.isEmpty) throw ArgumentError('La imagen está vacía');
+    if (bytes.lengthInBytes > 5 * 1024 * 1024) throw ArgumentError('La imagen supera 5 MB');
+    if (!{'image/jpeg', 'image/png'}.contains(mimeType)) throw ArgumentError('Formato no permitido: $mimeType');
+  }
+  final Uint8List bytes;
+  final String fileName;
+  final String mimeType;
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: construir un `DeliveryProof` con una imagen de 6 MB (o un tipo MIME no permitido) lanza un `ArgumentError` inmediatamente en el dominio, antes de que esos bytes lleguen siquiera a considerarse para una subida por red.
+
+#### Paso 5 · Práctica guiada
+Pista: activá modo avión cuando la carga llegue aproximadamente al 50% sin una clave de idempotencia estable del lado del repositorio — ese es el fallo deliberado: reintentar la subida desde cero después de recuperar la conexión puede crear una segunda evidencia en el servidor para la misma entrega, en vez de completar o reemplazar la que se cortó a la mitad.
+
+#### Paso 6 · Práctica independiente
+Corregí confirmando que la implementación reutiliza la misma `idempotencyKey` en el reintento, y que la interfaz conserva la fotografía localmente para ese reintento, sin marcar la entrega como completada hasta recibir la confirmación `201` real del servidor.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el dominio con validación del Paso 4, el riesgo de evidencia duplicada del Paso 5, y la confirmación de idempotencia del Paso 6; explicá por qué separar selección, validación y transferencia permite probar las reglas de validación sin necesitar una cámara real. Siguiente paso: cerrá el módulo integrando permisos, MethodChannel y carga de evidencia en el flujo completo. Errores comunes: confiar únicamente en la extensión del archivo para validar el tipo, marcar la entrega como completa antes de la confirmación del servidor, y generar una nueva clave de idempotencia en cada reintento. Fuentes oficiales: https://pub.dev/packages/image_picker y https://pub.dev/packages/dio.
+**¿Por qué es importante?** Una foto visible en pantalla todavía no es una evidencia persistida; separar selección, validación y carga permite probar reglas sin cámara real y reintentar con seguridad.
 
 ## Laboratorio práctico
 

@@ -248,24 +248,7 @@ Al finalizar vas a confirmar en qué cuenta simulada está operando tu sesión a
 Antes de que un pipeline de CI despliegue cambios de RutaFlow, necesita confirmar con certeza que está apuntando a la cuenta correcta (dev, no una de otro equipo) — el mismo smoke test que correría contra AWS real.
 #### Paso 3 · Teoría, modelo mental y analogía
 `GetCallerIdentity` es mostrar tu credencial actual; `AssumeRole` es cambiar de pase temporalmente, con un alcance distinto al tuyo.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws sts get-caller-identity
-AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
-  aws sts get-caller-identity --query 'Account' --output text
-```
-Resultado esperado: la primera llamada confirma la cuenta por defecto (`000000000000`); la segunda, con un `AWS_ACCESS_KEY_ID` de 12 dígitos distinto, devuelve `222222222222` — la prueba de que Floci resuelve la cuenta directamente desde ese identificador.
-#### Paso 5 · Práctica guiada
-Pista: creá una tabla DynamoDB usando las credenciales de la cuenta `222222222222`, y después intentá leerla con las credenciales por defecto de `000000000000` — ese es el fallo deliberado si lo esperás ver: `ResourceNotFoundException`, porque esa tabla simplemente no existe en la cuenta `000000000000`; el aislamiento multi-cuenta es real, no cosmético.
-#### Paso 6 · Práctica independiente
-Documentá, para un pipeline real de RutaFlow, por qué el primer paso antes de cualquier despliegue debería ser `get-caller-identity` — qué desastre evitaría detectar a tiempo que el pipeline apunta a la cuenta equivocada.
-#### Paso 7 · Cierre y evidencia
-Entregá las dos identidades confirmadas del Paso 4, el aislamiento entre cuentas del Paso 5, y la justificación del smoke test del Paso 6; explicá por qué las credenciales temporales de alcance limitado son el principio de seguridad central que atraviesa todo este módulo. Siguiente paso: gobierno. Errores comunes: operar cuenta equivocada y no validar región. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html.
 **Conceptos clave:** `GetCallerIdentity`, `AssumeRole`, resolución de cuenta por AKID de 12 dígitos.
 
 Ya usaste STS de forma implícita en el Módulo 7 al hablar de roles IAM, pero vale la pena profundizar en su rol central: `GetCallerIdentity` es la forma más simple y confiable de verificar que tus credenciales funcionan contra un endpoint —AWS real o Floci— antes de ejecutar lógica más compleja, y por eso es una verificación de humo (smoke test) tan común al inicio de pipelines de CI. `AssumeRole` es el mecanismo central para obtener credenciales temporales con permisos distintos a los tuyos —el patrón que ya usaste para dar permisos a instancias EC2 vía IMDS en el Módulo 21—, y Floci también soporta `AssumeRoleWithWebIdentity` (para flujos OIDC) y `AssumeRoleWithSAML` (para federación empresarial).
@@ -296,6 +279,25 @@ AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Asume el rol de prueba del consumidor y registra identidad y expiración sin imprimir el secreto. Comprueba aislamiento entre cuentas del laboratorio y documenta la validación adicional requerida en producción.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws sts get-caller-identity
+AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
+  aws sts get-caller-identity --query 'Account' --output text
+```
+Resultado esperado: la primera llamada confirma la cuenta por defecto (`000000000000`); la segunda, con un `AWS_ACCESS_KEY_ID` de 12 dígitos distinto, devuelve `222222222222` — la prueba de que Floci resuelve la cuenta directamente desde ese identificador.
+#### Paso 5 · Práctica guiada
+Pista: creá una tabla DynamoDB usando las credenciales de la cuenta `222222222222`, y después intentá leerla con las credenciales por defecto de `000000000000` — ese es el fallo deliberado si lo esperás ver: `ResourceNotFoundException`, porque esa tabla simplemente no existe en la cuenta `000000000000`; el aislamiento multi-cuenta es real, no cosmético.
+#### Paso 6 · Práctica independiente
+Documentá, para un pipeline real de RutaFlow, por qué el primer paso antes de cualquier despliegue debería ser `get-caller-identity` — qué desastre evitaría detectar a tiempo que el pipeline apunta a la cuenta equivocada.
+#### Paso 7 · Cierre y evidencia
+Entregá las dos identidades confirmadas del Paso 4, el aislamiento entre cuentas del Paso 5, y la justificación del smoke test del Paso 6; explicá por qué las credenciales temporales de alcance limitado son el principio de seguridad central que atraviesa todo este módulo. Siguiente paso: gobierno. Errores comunes: operar cuenta equivocada y no validar región. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html.
 
 ## Laboratorio práctico
 

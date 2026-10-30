@@ -195,40 +195,6 @@ El botón "Ver detalle" de un envío necesita comportarse como un link real (`<a
 #### Paso 3 · Teoría, modelo mental y analogía
 Tipar un evento con el tipo específico del elemento permite que TypeScript sepa qué propiedades existen en `e.target`; un componente polimórfico renderiza distintos elementos según una prop `as`, tipado dinámicamente según cuál se indique.
 
-#### Paso 4 · Demostración guiada desde cero
-```tsx
-function manejarCambioBusqueda(e: React.ChangeEvent<HTMLInputElement>) {
-  console.log(e.target.value); // TypeScript sabe que .value existe en HTMLInputElement
-}
-
-type BotonProps<T extends React.ElementType> = { as?: T } & React.ComponentPropsWithoutRef<T>;
-function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonProps<T>) {
-  const Componente = as || 'button';
-  return <Componente {...props} />;
-}
-// <Boton as="a" href="/envios/RF-4471">Ver detalle</Boton>
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: `<Boton as="a" href="/envios/RF-4471">` compila correctamente (TypeScript sabe que `<a>` acepta `href`); `<Boton href="/envios/RF-4471">` sin `as="a"` (dejando el `button` por defecto) es rechazado en tiempo de compilación, porque un `<button>` no tiene una prop `href` válida.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá el tipo del manejador de `React.ChangeEvent<HTMLInputElement>` a `React.ChangeEvent<HTMLElement>` (el tipo base genérico) — ese es el fallo deliberado: TypeScript ya no reconoce que `.value` existe en `e.target`, y acceder a `e.target.value` ahora produce un error de compilación, perdiendo exactamente la seguridad de tipos que el tipo específico ofrecía.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agregá un segundo caso polimórfico: `<Boton as="label" htmlFor="busqueda">`, confirmando que TypeScript acepta `htmlFor` solo cuando `as="label"`.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida de tipo específico del Paso 5, y el segundo caso polimórfico del Paso 6; explicá por qué usar el tipo de elemento más específico posible preserva el acceso tipado a las propiedades reales de ese elemento. Siguiente paso: cerrá el módulo migrando un componente completo a TypeScript estricto sin ningún `any`. Errores comunes: tipar un evento con el tipo base genérico en vez del específico del elemento real, omitir la restricción `T extends React.ElementType` en un componente polimórfico, y aceptar props que no son válidas para el elemento efectivamente renderizado según `as`. Fuentes oficiales: https://react.dev/learn/typescript#typing-the-usestate-hook y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html.
-**¿Por qué es importante?** Tipar eventos sintéticos correctamente detecta accesos inválidos a propiedades en tiempo de compilación; tipar componentes polimórficos preserva la seguridad de tipos incluso cuando el elemento final es configurable dinámicamente.
 **Evidencia de aprendizaje:** entrega evento tipado, pérdida de tipo específico detectada y segundo caso polimórfico confirmado.
 **Conceptos clave:** `React.ChangeEvent<T>`, componentes que renderizan como elemento configurable.
 
@@ -277,6 +243,40 @@ Resultado esperado: la compilación falla si algún lugar del código pasa `href
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```tsx
+function manejarCambioBusqueda(e: React.ChangeEvent<HTMLInputElement>) {
+  console.log(e.target.value); // TypeScript sabe que .value existe en HTMLInputElement
+}
+
+type BotonProps<T extends React.ElementType> = { as?: T } & React.ComponentPropsWithoutRef<T>;
+function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonProps<T>) {
+  const Componente = as || 'button';
+  return <Componente {...props} />;
+}
+// <Boton as="a" href="/envios/RF-4471">Ver detalle</Boton>
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: `<Boton as="a" href="/envios/RF-4471">` compila correctamente (TypeScript sabe que `<a>` acepta `href`); `<Boton href="/envios/RF-4471">` sin `as="a"` (dejando el `button` por defecto) es rechazado en tiempo de compilación, porque un `<button>` no tiene una prop `href` válida.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá el tipo del manejador de `React.ChangeEvent<HTMLInputElement>` a `React.ChangeEvent<HTMLElement>` (el tipo base genérico) — ese es el fallo deliberado: TypeScript ya no reconoce que `.value` existe en `e.target`, y acceder a `e.target.value` ahora produce un error de compilación, perdiendo exactamente la seguridad de tipos que el tipo específico ofrecía.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agregá un segundo caso polimórfico: `<Boton as="label" htmlFor="busqueda">`, confirmando que TypeScript acepta `htmlFor` solo cuando `as="label"`.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida de tipo específico del Paso 5, y el segundo caso polimórfico del Paso 6; explicá por qué usar el tipo de elemento más específico posible preserva el acceso tipado a las propiedades reales de ese elemento. Siguiente paso: cerrá el módulo migrando un componente completo a TypeScript estricto sin ningún `any`. Errores comunes: tipar un evento con el tipo base genérico en vez del específico del elemento real, omitir la restricción `T extends React.ElementType` en un componente polimórfico, y aceptar props que no son válidas para el elemento efectivamente renderizado según `as`. Fuentes oficiales: https://react.dev/learn/typescript#typing-the-usestate-hook y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html.
+**¿Por qué es importante?** Tipar eventos sintéticos correctamente detecta accesos inválidos a propiedades en tiempo de compilación; tipar componentes polimórficos preserva la seguridad de tipos incluso cuando el elemento final es configurable dinámicamente.
 
 ## Laboratorio práctico
 

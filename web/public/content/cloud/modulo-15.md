@@ -126,19 +126,7 @@ Al finalizar podrás detectar drift desde cero. Prerrequisitos: Terraform y Dock
 Un cambio manual en consola puede dejar infraestructura fuera del control del repositorio.
 #### Paso 3 · Teoría, modelo mental y analogía
 Drift es una diferencia entre plano y edificio construido.
-#### Paso 4 · Demostración guiada
-Crea `main.tf` y `README.md` desde una carpeta vacía.
-```bash
-mkdir ejemplo-drift
-terraform --version
-```
-Resultado esperado: Terraform disponible.
-#### Paso 5 · Práctica guiada
-Pista: cambia un recurso manualmente para provocar un fallo deliberado de convergencia y corrígelo.
-#### Paso 6 · Práctica independiente
-Documenta importación y reconciliación.
-#### Paso 7 · Cierre y evidencia
-Entrega diff, salida, fallo y corrección; explica el resultado. Siguiente paso: CI/CD. Errores comunes: aceptar cambios manuales y no proteger estado. Fuente oficial: https://developer.hashicorp.com/terraform/language/state.
+
 **Conceptos clave:** detectar divergencia entre el estado declarado y el estado real.
 
 Drift detection compara el estado actual real de los recursos desplegados contra el estado declarado en el template de CloudFormation, señalando cualquier divergencia (por ejemplo, si alguien modificó manualmente una configuración de un recurso directamente en la consola, fuera del proceso de CloudFormation, sin actualizar el template correspondiente); detectar ese drift es importante porque, sin esa verificación, el template deja de ser una fuente de verdad confiable sobre el estado real de la infraestructura, socavando precisamente el beneficio central de tratar la infraestructura como código versionado y reproducible.
@@ -162,6 +150,20 @@ flowchart LR
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Modifica manualmente un recurso de laboratorio y compara su estado con la definición. Documenta la detección de drift y la reparación elegida; no permitas que dos herramientas administren el mismo recurso simultáneamente.
+
+#### Paso 4 · Demostración guiada
+Crea `main.tf` y `README.md` desde una carpeta vacía.
+```bash
+mkdir ejemplo-drift
+terraform --version
+```
+Resultado esperado: Terraform disponible.
+#### Paso 5 · Práctica guiada
+Pista: cambia un recurso manualmente para provocar un fallo deliberado de convergencia y corrígelo.
+#### Paso 6 · Práctica independiente
+Documenta importación y reconciliación.
+#### Paso 7 · Cierre y evidencia
+Entrega diff, salida, fallo y corrección; explica el resultado. Siguiente paso: CI/CD. Errores comunes: aceptar cambios manuales y no proteger estado. Fuente oficial: https://developer.hashicorp.com/terraform/language/state.
 
 ## Laboratorio práctico
 

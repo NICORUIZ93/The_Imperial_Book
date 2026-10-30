@@ -332,34 +332,6 @@ Al finalizar vas a eliminar un mismatch de hidratación en `DetalleEnvio` causad
 #### Paso 3 · Teoría, modelo mental y analogía
 La hidratación une listeners al HTML del servidor asumiendo que el primer render del cliente coincide exactamente; una zona horaria implícita (o `Date.now()`, `Math.random()`) produce un mismatch.
 
-#### Paso 4 · Demostración guiada desde cero
-```tsx
-const due = new Intl.DateTimeFormat(locale, {
-  dateStyle: 'long',
-  timeZone: userTimeZone, // la misma zona decidida en el servidor, no la del navegador
-}).format(new Date(envio.fechaEstimada));
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados — sin ninguna advertencia de mismatch de hidratación en consola.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirmá en la consola del navegador que la advertencia de mismatch desapareció.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explicá por qué `suppressHydrationWarning` no habría sido la corrección correcta acá: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cerrá el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
-**¿Por qué es importante?** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
 **Evidencia de aprendizaje:** entrega formato determinista, mismatch provocado y confirmación sin advertencias.
 **Conceptos clave:** SSR, hydration, mismatch, determinismo, identifierPrefix, suppressHydrationWarning, locale, timezone, RTL, streaming, bundle budget, Core Web Vitals, RUM, deployment ID y rollback.
 
@@ -416,6 +388,35 @@ graph LR
 * Ejecutar: `npm run build && npm run preview`
 * Código: `src/components/DetalleEnvio.tsx`
 
+#### Paso 4 · Demostración guiada desde cero
+```tsx
+const due = new Intl.DateTimeFormat(locale, {
+  dateStyle: 'long',
+  timeZone: userTimeZone, // la misma zona decidida en el servidor, no la del navegador
+}).format(new Date(envio.fechaEstimada));
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados — sin ninguna advertencia de mismatch de hidratación en consola.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirmá en la consola del navegador que la advertencia de mismatch desapareció.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explicá por qué `suppressHydrationWarning` no habría sido la corrección correcta acá: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cerrá el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
+**¿Por qué es importante?** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### React 19.2, Compiler y seguridad de Server Components
@@ -423,7 +424,6 @@ graph LR
 **React 19.2** incorpora `Activity`, `useEffectEvent`, `cacheSignal`, Performance Tracks y capacidades de pre-render parcial. `useEffectEvent` separa lógica no reactiva de un efecto sin mentir al linter; no es una forma general de omitir dependencias. **React Compiler** 1.0 puede reducir memorización manual, pero primero exige código conforme a las reglas de React y mediciones. Para los paquetes `react-server-dom-webpack`, `react-server-dom-parcel` y `react-server-dom-turbopack`, el aviso actualizado el 26 de enero de 2026 corrige los problemas descritos en 19.0.4, 19.1.5 y 19.2.4, respectivamente. 19.2.1–19.2.3 no bastan. Usa una versión mantenida del framework con todos los avisos aplicables corregidos y comprueba el lockfile; estos mínimos históricos no sustituyen revisar nuevos avisos. Fuente oficial: https://react.dev/blog/2025/12/11/denial-of-service-and-source-code-exposure-in-react-server-components.
 
 **Aplicación al proyecto:** elimina una memorización especulativa y compara Performance Tracks, modela una pantalla conservada con Activity, migra un callback de efecto a useEffectEvent y añade un gate que rechace versiones vulnerables de paquetes RSC.
-
 
 ## Laboratorio práctico
 

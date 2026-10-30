@@ -176,38 +176,6 @@ Distintas pantallas de RutaFlow (lista de envíos, detalle, mapa) empezaron a co
 #### Paso 3 · Teoría, modelo mental y analogía
 Definir breakpoints como una función pura centraliza esa lógica en un único lugar reutilizable; `SafeArea` evita que el contenido quede oculto detrás de elementos físicos del dispositivo.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-enum TipoDispositivo { movil, tablet, escritorio }
-TipoDispositivo segunAncho(double ancho) {
-  if (ancho < 600) return TipoDispositivo.movil;
-  if (ancho < 1024) return TipoDispositivo.tablet;
-  return TipoDispositivo.escritorio;
-}
-
-Scaffold(body: SafeArea(child: PanelEnvios()))
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: cada pantalla de RutaFlow llama a `segunAncho(constraints.maxWidth)` en vez de comparar números directamente; `SafeArea` evita que la primera fila de `PanelEnvios` quede oculta detrás del notch en dispositivos con cámara frontal pronunciada.
-
-#### Paso 5 · Práctica guiada
-Pista: en una pantalla nueva (`DetalleEnvio`), escribí directamente `if (ancho > 600)` con el número hardcodeado "para ir más rápido", en vez de llamar a `segunAncho()` — ese es el fallo deliberado: cuando el equipo de diseño cambia el breakpoint real de tablet a 640, alguien actualiza `segunAncho()` pero se olvida de esa comparación hardcodeada en `DetalleEnvio`, que queda con un comportamiento inconsistente respecto al resto de la app.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `DetalleEnvio` a usar `segunAncho()`, y quitá `SafeArea` deliberadamente de una pantalla para confirmar visualmente (en un dispositivo con notch) que el contenido queda oculto, antes de restaurarlo.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la función centralizada del Paso 4, la inconsistencia por hardcodear del Paso 5, y la comprobación visual de `SafeArea` del Paso 6; explicá por qué centralizar breakpoints en una función reutilizable evita exactamente la clase de inconsistencia que ocurrió en el Paso 5. Siguiente paso: cerrá el módulo con la pantalla responsive completa. Errores comunes: dispersar comparaciones numéricas de breakpoints en cada widget, omitir `SafeArea` asumiendo que todos los dispositivos tienen los mismos insets, y definir breakpoints basados en orientación cuando el ancho real disponible es lo que importa. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/SafeArea-class.html y https://docs.flutter.dev/ui/layout.
-**¿Por qué es importante?** Centralizar los breakpoints en una función reutilizable evita inconsistencias de comparaciones numéricas dispersas; `SafeArea` importa de forma variable según el dispositivo específico.
 **Evidencia de aprendizaje:** entrega función centralizada de breakpoints, inconsistencia por hardcodear detectada y comprobación visual de SafeArea.
 **Conceptos clave:** categorización explícita de rangos de pantalla, protección contra elementos físicos del dispositivo.
 
@@ -259,6 +227,38 @@ En el proyecto integrador RutaFlow, `segunAncho()` vive en `lib/core/responsive.
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```dart
+enum TipoDispositivo { movil, tablet, escritorio }
+TipoDispositivo segunAncho(double ancho) {
+  if (ancho < 600) return TipoDispositivo.movil;
+  if (ancho < 1024) return TipoDispositivo.tablet;
+  return TipoDispositivo.escritorio;
+}
+
+Scaffold(body: SafeArea(child: PanelEnvios()))
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: cada pantalla de RutaFlow llama a `segunAncho(constraints.maxWidth)` en vez de comparar números directamente; `SafeArea` evita que la primera fila de `PanelEnvios` quede oculta detrás del notch en dispositivos con cámara frontal pronunciada.
+
+#### Paso 5 · Práctica guiada
+Pista: en una pantalla nueva (`DetalleEnvio`), escribí directamente `if (ancho > 600)` con el número hardcodeado "para ir más rápido", en vez de llamar a `segunAncho()` — ese es el fallo deliberado: cuando el equipo de diseño cambia el breakpoint real de tablet a 640, alguien actualiza `segunAncho()` pero se olvida de esa comparación hardcodeada en `DetalleEnvio`, que queda con un comportamiento inconsistente respecto al resto de la app.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `DetalleEnvio` a usar `segunAncho()`, y quitá `SafeArea` deliberadamente de una pantalla para confirmar visualmente (en un dispositivo con notch) que el contenido queda oculto, antes de restaurarlo.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la función centralizada del Paso 4, la inconsistencia por hardcodear del Paso 5, y la comprobación visual de `SafeArea` del Paso 6; explicá por qué centralizar breakpoints en una función reutilizable evita exactamente la clase de inconsistencia que ocurrió en el Paso 5. Siguiente paso: cerrá el módulo con la pantalla responsive completa. Errores comunes: dispersar comparaciones numéricas de breakpoints en cada widget, omitir `SafeArea` asumiendo que todos los dispositivos tienen los mismos insets, y definir breakpoints basados en orientación cuando el ancho real disponible es lo que importa. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/SafeArea-class.html y https://docs.flutter.dev/ui/layout.
+**¿Por qué es importante?** Centralizar los breakpoints en una función reutilizable evita inconsistencias de comparaciones numéricas dispersas; `SafeArea` importa de forma variable según el dispositivo específico.
 
 ## Laboratorio práctico
 

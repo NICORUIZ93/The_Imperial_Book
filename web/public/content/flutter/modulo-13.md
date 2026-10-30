@@ -292,38 +292,6 @@ Si un conductor confirma una entrega y pierde señal justo cuando la respuesta d
 #### Paso 3 · Teoría, modelo mental y analogía
 Una mutación offline-first conserva un UUID estable, versión base, intento y siguiente fecha; el servidor deduplica por esa clave, y cambiarla al reintentar puede duplicar efectos.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-final class PendingMutation {
-  PendingMutation(this.id, this.entityId, this.baseVersion, this.payload);
-  final String id; // clave de idempotencia estable
-  final String entityId;
-  final int baseVersion;
-  final Map<String, Object?> payload;
-  int attempts = 0;
-}
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: confirmar una entrega sin red crea un `PendingMutation` con un `id` fijo; reintentarla más tarde con conectividad real reusa ese mismo `id`, permitiendo que el servidor reconozca si ya procesó ese intento y evite aplicar el efecto dos veces.
-
-#### Paso 5 · Práctica guiada
-Pista: en la lógica de reintento, generá un `PendingMutation` nuevo con un `id` distinto cada vez que falla un intento previo, en vez de reintentar el mismo objeto con su `id` original — ese es el fallo deliberado: el servidor recibe cada reintento como una mutación completamente nueva, sin forma de reconocer que corresponde al mismo intento, aplicando "entrega confirmada" dos o más veces para el mismo envío.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reutilizando siempre el mismo `PendingMutation` (y su `id` original) en cada reintento, solo incrementando `attempts`, y agregá un test que confirme que tres reintentos consecutivos llegan al servidor con exactamente la misma clave de idempotencia.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la outbox con clave de idempotencia estable del Paso 4, la duplicación provocada al generar un nuevo `id` en cada reintento del Paso 5, y el test de clave estable del Paso 6; explicá por qué la conectividad solo dispara intentos, pero no prueba disponibilidad real del servidor, y por qué eso hace indispensable la idempotencia en cada reintento. Siguiente paso: cerrá el módulo integrando seguridad, isolates y outbox en un release real auditado. Errores comunes: generar una nueva clave de idempotencia en cada reintento, publicar sin símbolos de depuración, y desplegar a todos los usuarios de una vez en vez de por cohortes observables. Fuente oficial: https://docs.flutter.dev/app-architecture/design-patterns/offline-first.
-**¿Por qué es importante?** La capacidad de detectar y contener un fallo determina su impacto real; una clave de idempotencia estable evita que la conectividad intermitente duplique efectos reales en el servidor.
 **Evidencia de aprendizaje:** entrega outbox con clave estable, duplicación detectada y test de clave estable confirmado.
 **Conceptos clave:** source of truth, outbox, idempotency key, version conflict, backoff, connectivity, background execution, symbol file, crash-free sessions, feature flag, staged rollout, migration y rollback.
 
@@ -371,6 +339,39 @@ sequenceDiagram
 
 En el proyecto integrador RutaFlow, `PendingMutation` vive en `lib/features/offline/pending_delivery.dart`. Límite de la decisión: una outbox persistente con idempotencia no conviene para operaciones idempotentes por naturaleza (una lectura GET, por ejemplo) — ahí el costo de la infraestructura de reintento no se justifica; reservala específicamente para mutaciones con efectos reales en el servidor (POST/PUT) que pueden duplicarse si se reintentan sin una clave estable.
 
+#### Paso 4 · Demostración guiada desde cero
+```dart
+final class PendingMutation {
+  PendingMutation(this.id, this.entityId, this.baseVersion, this.payload);
+  final String id; // clave de idempotencia estable
+  final String entityId;
+  final int baseVersion;
+  final Map<String, Object?> payload;
+  int attempts = 0;
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: confirmar una entrega sin red crea un `PendingMutation` con un `id` fijo; reintentarla más tarde con conectividad real reusa ese mismo `id`, permitiendo que el servidor reconozca si ya procesó ese intento y evite aplicar el efecto dos veces.
+
+#### Paso 5 · Práctica guiada
+Pista: en la lógica de reintento, generá un `PendingMutation` nuevo con un `id` distinto cada vez que falla un intento previo, en vez de reintentar el mismo objeto con su `id` original — ese es el fallo deliberado: el servidor recibe cada reintento como una mutación completamente nueva, sin forma de reconocer que corresponde al mismo intento, aplicando "entrega confirmada" dos o más veces para el mismo envío.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reutilizando siempre el mismo `PendingMutation` (y su `id` original) en cada reintento, solo incrementando `attempts`, y agregá un test que confirme que tres reintentos consecutivos llegan al servidor con exactamente la misma clave de idempotencia.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la outbox con clave de idempotencia estable del Paso 4, la duplicación provocada al generar un nuevo `id` en cada reintento del Paso 5, y el test de clave estable del Paso 6; explicá por qué la conectividad solo dispara intentos, pero no prueba disponibilidad real del servidor, y por qué eso hace indispensable la idempotencia en cada reintento. Siguiente paso: cerrá el módulo integrando seguridad, isolates y outbox en un release real auditado. Errores comunes: generar una nueva clave de idempotencia en cada reintento, publicar sin símbolos de depuración, y desplegar a todos los usuarios de una vez en vez de por cohortes observables. Fuente oficial: https://docs.flutter.dev/app-architecture/design-patterns/offline-first.
+**¿Por qué es importante?** La capacidad de detectar y contener un fallo determina su impacto real; una clave de idempotencia estable evita que la conectividad intermitente duplique efectos reales en el servidor.
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Flutter 3.44, Dart 3.12.2 y migraciones controladas
@@ -378,7 +379,6 @@ En el proyecto integrador RutaFlow, `PendingMutation` vive en `lib/features/offl
 La documentación estable revisada refleja **Flutter 3.44** y **Dart 3.12.2**. Dart 3.12 añade **private named parameters** y conserva `dot shorthand`, introducido en 3.10; una sintaxis más corta no debe ocultar tipos en lugares ambiguos. Flutter publica cambios incompatibles y guías de migración por separado de las notas de parches. Verifica las versiones realmente acopladas con `flutter --version`, porque Flutter incluye su propio SDK de Dart. Actualiza SDK, Gradle/AGP, CocoaPods/Xcode y plugins con una matriz de dispositivos y plataformas.
 
 **Aplicación al proyecto:** ejecuta `flutter analyze`, pruebas y builds antes/después, migra un caso legible a dot shorthand, revisa breaking changes desde la versión origen y conserva rollback del lockfile y artefactos firmados.
-
 
 ## Laboratorio práctico
 

@@ -177,38 +177,6 @@ Un test unitario de `confirmarEntrega` (Tema 2) prueba la lógica en memoria, pe
 #### Paso 3 · Teoría, modelo mental y analogía
 XCUITest lanza la app compilada e instalada y simula interacciones reales (`tap`, `typeText`) contra la UI efectivamente renderizada — una inspección de calidad de punta a punta, mucho más lenta que verificar un componente aislado en un banco de pruebas.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-func testConfirmarEntregaDesdeLaUI() {
-    let app = XCUIApplication()
-    app.launch()
-    app.textFields["campoGuia"].tap()
-    app.textFields["campoGuia"].typeText("RF-4471")
-    app.textFields["campoPin"].tap()
-    app.textFields["campoPin"].typeText("837201")
-    app.buttons["botonConfirmar"].tap()
-    XCTAssertTrue(app.staticTexts["Entrega confirmada"].waitForExistence(timeout: 5))
-}
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: el test lanza la app real, escribe guía y PIN como lo haría un conductor, y confirma que "Entrega confirmada" aparece en pantalla dentro de 5 segundos — valida el flujo completo, no solo la función `confirmarEntrega` en memoria.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `waitForExistence(timeout: 5)` por un simple `app.staticTexts["Entrega confirmada"].exists` inmediatamente después del `tap()`, sin esperar — ese es el fallo deliberado: el test falla intermitentemente, porque la confirmación tarda unos milisegundos en aparecer (hay una llamada de red real de por medio) y `exists` se evalúa antes de que la UI se actualice.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `waitForExistence`, y agregá un segundo test que escriba un PIN incorrecto y confirme que aparece un mensaje de error en pantalla en vez de "Entrega confirmada" — identificando qué `accessibility identifiers` necesitás agregar a esa vista de error si todavía no existen.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y el test del flujo de error del Paso 6; explicá por qué un XCUITest necesita esperar explícitamente (`waitForExistence`) en vez de asumir que la UI ya se actualizó apenas después de un `tap()`. Siguiente paso: estudia cómo correr esta suite en CI. Errores comunes: no esperar explícitamente a que la UI se actualice, depender de texto visible en vez de accessibility identifiers estables, y cubrir solo el camino feliz en los UI Tests. Fuentes oficiales: https://developer.apple.com/documentation/xctest/xcuiapplication y https://developer.apple.com/documentation/testing.
-**¿Por qué es importante?** Porque un XCUITest valida el flujo completo end-to-end tal como lo experimenta un conductor real, pero exige esperar explícitamente a que la UI se actualice en vez de asumir que el `tap()` tiene efecto inmediato.
 **Evidencia de aprendizaje:** entrega test del flujo feliz, falla intermitente detectada y test del flujo de error.
 **Conceptos clave:** simulación de interacciones reales contra la app compilada, más lento pero valida el recorrido end-to-end.
 
@@ -257,6 +225,38 @@ En el proyecto integrador RutaFlow, este test vive en `examples/rutaflow/ios/Det
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+func testConfirmarEntregaDesdeLaUI() {
+    let app = XCUIApplication()
+    app.launch()
+    app.textFields["campoGuia"].tap()
+    app.textFields["campoGuia"].typeText("RF-4471")
+    app.textFields["campoPin"].tap()
+    app.textFields["campoPin"].typeText("837201")
+    app.buttons["botonConfirmar"].tap()
+    XCTAssertTrue(app.staticTexts["Entrega confirmada"].waitForExistence(timeout: 5))
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: el test lanza la app real, escribe guía y PIN como lo haría un conductor, y confirma que "Entrega confirmada" aparece en pantalla dentro de 5 segundos — valida el flujo completo, no solo la función `confirmarEntrega` en memoria.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá `waitForExistence(timeout: 5)` por un simple `app.staticTexts["Entrega confirmada"].exists` inmediatamente después del `tap()`, sin esperar — ese es el fallo deliberado: el test falla intermitentemente, porque la confirmación tarda unos milisegundos en aparecer (hay una llamada de red real de por medio) y `exists` se evalúa antes de que la UI se actualice.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `waitForExistence`, y agregá un segundo test que escriba un PIN incorrecto y confirme que aparece un mensaje de error en pantalla en vez de "Entrega confirmada" — identificando qué `accessibility identifiers` necesitás agregar a esa vista de error si todavía no existen.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y el test del flujo de error del Paso 6; explicá por qué un XCUITest necesita esperar explícitamente (`waitForExistence`) en vez de asumir que la UI ya se actualizó apenas después de un `tap()`. Siguiente paso: estudia cómo correr esta suite en CI. Errores comunes: no esperar explícitamente a que la UI se actualice, depender de texto visible en vez de accessibility identifiers estables, y cubrir solo el camino feliz en los UI Tests. Fuentes oficiales: https://developer.apple.com/documentation/xctest/xcuiapplication y https://developer.apple.com/documentation/testing.
+**¿Por qué es importante?** Porque un XCUITest valida el flujo completo end-to-end tal como lo experimenta un conductor real, pero exige esperar explícitamente a que la UI se actualice en vez de asumir que el `tap()` tiene efecto inmediato.
 
 ## Laboratorio práctico
 

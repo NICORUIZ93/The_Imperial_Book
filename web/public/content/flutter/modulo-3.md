@@ -186,37 +186,6 @@ Tras confirmar una entrega, RutaFlow navega con la transición de deslizamiento 
 #### Paso 3 · Teoría, modelo mental y analogía
 `pageBuilder` con `CustomTransitionPage` permite especificar explícitamente la animación de una ruta — un fundido comunica "esto reemplaza el contexto anterior" mejor que un deslizamiento lateral.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-GoRoute(
-  path: '/envios/:id/confirmado',
-  pageBuilder: (context, state) => CustomTransitionPage(
-    child: ConfirmacionExitosa(),
-    transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
-  ),
-)
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: al confirmar una entrega, la navegación hacia `ConfirmacionExitosa` usa un fundido de opacidad en vez del deslizamiento estándar, comunicando visualmente que ese flujo concluyó, distinto de navegar "un paso más adentro" en la jerarquía habitual.
-
-#### Paso 5 · Práctica guiada
-Pista: aplicá ese mismo `FadeTransition` a todas las rutas de la app, incluyendo la navegación normal entre `ListaEnvios` y `DetalleEnvio` — ese es el fallo deliberado: ahora toda la navegación se siente uniformemente "distinta" sin ningún significado diferenciado, perdiendo la señal visual que la transición personalizada debía comunicar solo en el punto donde aportaba valor.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo la transición por defecto a la navegación normal entre `ListaEnvios` y `DetalleEnvio`, dejando el `FadeTransition` únicamente en la ruta de confirmación exitosa, y documentá por escrito el criterio de cuándo aplicar una transición distinta a la estándar.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la transición personalizada en el punto correcto del Paso 4, la aplicación indiscriminada del Paso 5, y el criterio documentado del Paso 6; explicá por qué aplicar transiciones personalizadas en todas partes diluye exactamente la señal visual que debían comunicar en los puntos específicos donde sí aportaban valor. Siguiente paso: cerrá el módulo integrando rutas, guards y transiciones en el flujo completo de RutaFlow. Errores comunes: aplicar transiciones personalizadas de forma inconsistente en toda la app sin criterio, elegir una transición que no refleja la relación semántica real entre pantallas, y no probar la transición en ambas direcciones. Fuentes oficiales: https://pub.dev/documentation/go_router/latest/go_router/CustomTransitionPage-class.html y https://docs.flutter.dev/ui/animations.
-**¿Por qué es importante?** Las transiciones personalizadas, aplicadas deliberadamente en puntos clave, comunican mejor la relación semántica entre pantallas que la transición por defecto genérica.
 **Evidencia de aprendizaje:** entrega transición personalizada en el punto correcto, aplicación indiscriminada detectada y criterio documentado.
 **Conceptos clave:** control explícito sobre la animación de transición entre pantallas.
 
@@ -260,6 +229,37 @@ En el proyecto integrador RutaFlow, la transición de confirmación vive en `lib
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```dart
+GoRoute(
+  path: '/envios/:id/confirmado',
+  pageBuilder: (context, state) => CustomTransitionPage(
+    child: ConfirmacionExitosa(),
+    transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+  ),
+)
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: al confirmar una entrega, la navegación hacia `ConfirmacionExitosa` usa un fundido de opacidad en vez del deslizamiento estándar, comunicando visualmente que ese flujo concluyó, distinto de navegar "un paso más adentro" en la jerarquía habitual.
+
+#### Paso 5 · Práctica guiada
+Pista: aplicá ese mismo `FadeTransition` a todas las rutas de la app, incluyendo la navegación normal entre `ListaEnvios` y `DetalleEnvio` — ese es el fallo deliberado: ahora toda la navegación se siente uniformemente "distinta" sin ningún significado diferenciado, perdiendo la señal visual que la transición personalizada debía comunicar solo en el punto donde aportaba valor.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo la transición por defecto a la navegación normal entre `ListaEnvios` y `DetalleEnvio`, dejando el `FadeTransition` únicamente en la ruta de confirmación exitosa, y documentá por escrito el criterio de cuándo aplicar una transición distinta a la estándar.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la transición personalizada en el punto correcto del Paso 4, la aplicación indiscriminada del Paso 5, y el criterio documentado del Paso 6; explicá por qué aplicar transiciones personalizadas en todas partes diluye exactamente la señal visual que debían comunicar en los puntos específicos donde sí aportaban valor. Siguiente paso: cerrá el módulo integrando rutas, guards y transiciones en el flujo completo de RutaFlow. Errores comunes: aplicar transiciones personalizadas de forma inconsistente en toda la app sin criterio, elegir una transición que no refleja la relación semántica real entre pantallas, y no probar la transición en ambas direcciones. Fuentes oficiales: https://pub.dev/documentation/go_router/latest/go_router/CustomTransitionPage-class.html y https://docs.flutter.dev/ui/animations.
+**¿Por qué es importante?** Las transiciones personalizadas, aplicadas deliberadamente en puntos clave, comunican mejor la relación semántica entre pantallas que la transición por defecto genérica.
 
 ## Laboratorio práctico
 

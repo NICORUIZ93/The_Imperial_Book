@@ -196,6 +196,40 @@ Completaste el track entero construyendo RutaFlow en Flutter — nadie te pidió
 #### Paso 3 · Teoría, modelo mental y analogía
 Flutter logra apariencia y rendimiento consistentes en ambas plataformas renderizando con su propio motor gráfico, en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio.
 
+**Evidencia de aprendizaje:** entrega retrospectiva, afirmación incompleta corregida y lista de principios transferibles.
+**Conceptos clave:** una sola base de código, apariencia y rendimiento consistentes, el costo de un ecosistema propio.
+
+Flutter cumple su promesa central de forma bastante directa: una sola base de código Dart, con widgets propios que Flutter renderiza directamente con su propio motor gráfico (Skia, el mismo motor mencionado en Compose Multiplatform, Módulo 7 del track de Kotlin Multiplatform), en vez de simplemente envolver componentes nativos de cada plataforma (a diferencia de otros frameworks multiplataforma históricos que traducían hacia widgets nativos subyacentes), corriendo con apariencia y rendimiento consistentes en Android e iOS sin las diferencias sutiles de comportamiento que podrían surgir de depender de implementaciones nativas distintas por plataforma.
+
+El costo de esta consistencia es aprender un ecosistema de widgets completamente propio de Flutter, distinto tanto de las tecnologías web (HTML/CSS/JavaScript) como de cada plataforma nativa (UIKit/SwiftUI en iOS, Views/Compose en Android): un desarrollador que ya domina Compose o SwiftUI reconocerá los mismos principios conceptuales de UI declarativa (estado como fuente de verdad, composición de widgets, reconstrucción en respuesta a cambios), pero necesitará aprender la sintaxis y las convenciones específicas del ecosistema de widgets propio de Flutter para aplicarlos efectivamente.
+
+**Analogía:** Flutter es como un sistema de construcción modular propio que garantiza resultados idénticos sin importar en qué terreno geográfico se construya (renderizado propio consistente), a diferencia de adaptar los materiales de construcción disponibles localmente en cada región (envolver componentes nativos), a cambio de que los constructores deban aprender ese sistema modular específico en vez de reutilizar directamente sus conocimientos previos de construcción tradicional de cada región.
+
+**¿Por qué es importante?** Flutter logra apariencia y rendimiento consistentes en ambas plataformas gracias a renderizar con su propio motor gráfico en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio distinto de la web y de cada plataforma nativa.
+
+**Diagrama:**
+
+```
+Flutter = una base de código Dart
+        + motor gráfico propio (Skia)
+        + widgets propios (NO wrappers de componentes nativos)
+        = apariencia y rendimiento consistentes en Android e iOS
+```
+
+**Diagrama: específico de Flutter vs principio universal**
+
+```mermaid
+flowchart LR
+    A["Retrospectiva de RutaFlow"] --> B["Específico de Flutter:\nmotor Skia propio"]
+    A --> C["Principio universal:\nUI como función del estado"]
+    C --> D["SwiftUI (iOS)"]
+    C --> E["Compose (Android/KMP)"]
+```
+
+En el proyecto integrador RutaFlow, esta retrospectiva se escribe comparando `lib/features/deliveries/presentation/delivery_list_screen.dart` (Flutter) contra el equivalente en `examples/rutaflow/ios/ContentView.swift` (SwiftUI) u otro track completado.
+
+---
+
 #### Paso 4 · Demostración guiada desde cero
 ```text
 Decisión: TarjetaEnvio se ve y se comporta idéntica en Android e iOS,
@@ -230,39 +264,6 @@ Corregí el Paso 5 reescribiendo la afirmación para incluir ese costo explícit
 #### Paso 7 · Cierre y evidencia
 Entregá la retrospectiva del Paso 4, la afirmación incompleta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en Flutter que repetirías igual en otra plataforma aunque el motor de renderizado cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: presentar una decisión de plataforma como ventaja incondicional sin mencionar su costo real, confundir una ventaja de consistencia visual con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://docs.flutter.dev/resources/architectural-overview y https://docs.flutter.dev/platform-integration.
 **¿Por qué es importante?** Flutter logra apariencia y rendimiento consistentes gracias a su motor gráfico propio, a costa de requerir un ecosistema de widgets propio y no heredar automáticamente actualizaciones visuales nativas.
-**Evidencia de aprendizaje:** entrega retrospectiva, afirmación incompleta corregida y lista de principios transferibles.
-**Conceptos clave:** una sola base de código, apariencia y rendimiento consistentes, el costo de un ecosistema propio.
-
-Flutter cumple su promesa central de forma bastante directa: una sola base de código Dart, con widgets propios que Flutter renderiza directamente con su propio motor gráfico (Skia, el mismo motor mencionado en Compose Multiplatform, Módulo 7 del track de Kotlin Multiplatform), en vez de simplemente envolver componentes nativos de cada plataforma (a diferencia de otros frameworks multiplataforma históricos que traducían hacia widgets nativos subyacentes), corriendo con apariencia y rendimiento consistentes en Android e iOS sin las diferencias sutiles de comportamiento que podrían surgir de depender de implementaciones nativas distintas por plataforma.
-
-El costo de esta consistencia es aprender un ecosistema de widgets completamente propio de Flutter, distinto tanto de las tecnologías web (HTML/CSS/JavaScript) como de cada plataforma nativa (UIKit/SwiftUI en iOS, Views/Compose en Android): un desarrollador que ya domina Compose o SwiftUI reconocerá los mismos principios conceptuales de UI declarativa (estado como fuente de verdad, composición de widgets, reconstrucción en respuesta a cambios), pero necesitará aprender la sintaxis y las convenciones específicas del ecosistema de widgets propio de Flutter para aplicarlos efectivamente.
-
-**Analogía:** Flutter es como un sistema de construcción modular propio que garantiza resultados idénticos sin importar en qué terreno geográfico se construya (renderizado propio consistente), a diferencia de adaptar los materiales de construcción disponibles localmente en cada región (envolver componentes nativos), a cambio de que los constructores deban aprender ese sistema modular específico en vez de reutilizar directamente sus conocimientos previos de construcción tradicional de cada región.
-
-**¿Por qué es importante?** Flutter logra apariencia y rendimiento consistentes en ambas plataformas gracias a renderizar con su propio motor gráfico en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio distinto de la web y de cada plataforma nativa.
-
-**Diagrama:**
-
-```
-Flutter = una base de código Dart
-        + motor gráfico propio (Skia)
-        + widgets propios (NO wrappers de componentes nativos)
-        = apariencia y rendimiento consistentes en Android e iOS
-```
-
-**Diagrama: específico de Flutter vs principio universal**
-
-```mermaid
-flowchart LR
-    A["Retrospectiva de RutaFlow"] --> B["Específico de Flutter:\nmotor Skia propio"]
-    A --> C["Principio universal:\nUI como función del estado"]
-    C --> D["SwiftUI (iOS)"]
-    C --> E["Compose (Android/KMP)"]
-```
-
-En el proyecto integrador RutaFlow, esta retrospectiva se escribe comparando `lib/features/deliveries/presentation/delivery_list_screen.dart` (Flutter) contra el equivalente en `examples/rutaflow/ios/ContentView.swift` (SwiftUI) u otro track completado.
-
----
 
 ## Laboratorio práctico
 

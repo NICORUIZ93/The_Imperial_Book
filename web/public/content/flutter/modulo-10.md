@@ -173,35 +173,6 @@ El botón de eliminar un envío usa solo un ícono de tacho de basura sin texto 
 #### Paso 3 · Teoría, modelo mental y analogía
 Sin `Semantics` con un `label` explícito, un lector de pantalla lee un ícono sin texto como "botón" genérico; probar ambos modos de color explícitamente revela contrastes insuficientes que no se notarían probando solo uno.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-Semantics(
-  label: 'Eliminar envío',
-  button: true,
-  child: IconButton(icon: Icon(Icons.delete), onPressed: eliminarEnvio),
-)
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: activando TalkBack o VoiceOver y navegando hasta ese botón, el lector anuncia "Eliminar envío, botón" — no "botón" genérico sin ninguna indicación de qué acción realiza.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá el `Semantics` y fijá el color del ícono como `Colors.grey.shade800` sin verificar el tema activo — ese es el fallo deliberado: con VoiceOver activado, el botón se anuncia genéricamente sin indicación de qué hace; y en modo oscuro, ese gris oscuro hardcodeado se vuelve casi invisible contra el fondo oscuro, aunque se veía bien en modo claro.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `Semantics` con su label, y reemplazando el color hardcodeado por `Theme.of(context).colorScheme.onSurface`, confirmando visualmente en un dispositivo real que el ícono es visible en ambos modos.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el `Semantics` agregado del Paso 4, el ícono invisible en modo oscuro detectado en el Paso 5, y la corrección con color adaptativo del Paso 6; explicá por qué un color hardcodeado puede verse perfecto en el modo que probaste, pero fallar silenciosamente en el modo que no probaste. Siguiente paso: cerrá el módulo integrando theming, adaptación de plataforma y accesibilidad en el proyecto completo. Errores comunes: dejar íconos interactivos sin `Semantics`, hardcodear colores que ignoran el tema activo, y probar la app solo en el modo de color que coincide con la preferencia personal de quien la desarrolla. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/accessibility y https://api.flutter.dev/flutter/widgets/Semantics-class.html.
-**¿Por qué es importante?** Activar un lector de pantalla revela huecos de accesibilidad que una inspección visual no puede detectar; probar ambos modos de color revela contrastes insuficientes que no se notarían probando solo uno.
 **Evidencia de aprendizaje:** entrega Semantics agregado, ícono invisible en modo oscuro detectado y corrección con color adaptativo.
 **Conceptos clave:** verificación activa con el lector de pantalla real, no asunción por inspección visual.
 
@@ -246,6 +217,35 @@ En el proyecto integrador RutaFlow, este botón vive en `lib/features/deliveries
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```dart
+Semantics(
+  label: 'Eliminar envío',
+  button: true,
+  child: IconButton(icon: Icon(Icons.delete), onPressed: eliminarEnvio),
+)
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: activando TalkBack o VoiceOver y navegando hasta ese botón, el lector anuncia "Eliminar envío, botón" — no "botón" genérico sin ninguna indicación de qué acción realiza.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá el `Semantics` y fijá el color del ícono como `Colors.grey.shade800` sin verificar el tema activo — ese es el fallo deliberado: con VoiceOver activado, el botón se anuncia genéricamente sin indicación de qué hace; y en modo oscuro, ese gris oscuro hardcodeado se vuelve casi invisible contra el fondo oscuro, aunque se veía bien en modo claro.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando el `Semantics` con su label, y reemplazando el color hardcodeado por `Theme.of(context).colorScheme.onSurface`, confirmando visualmente en un dispositivo real que el ícono es visible en ambos modos.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el `Semantics` agregado del Paso 4, el ícono invisible en modo oscuro detectado en el Paso 5, y la corrección con color adaptativo del Paso 6; explicá por qué un color hardcodeado puede verse perfecto en el modo que probaste, pero fallar silenciosamente en el modo que no probaste. Siguiente paso: cerrá el módulo integrando theming, adaptación de plataforma y accesibilidad en el proyecto completo. Errores comunes: dejar íconos interactivos sin `Semantics`, hardcodear colores que ignoran el tema activo, y probar la app solo en el modo de color que coincide con la preferencia personal de quien la desarrolla. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/accessibility y https://api.flutter.dev/flutter/widgets/Semantics-class.html.
+**¿Por qué es importante?** Activar un lector de pantalla revela huecos de accesibilidad que una inspección visual no puede detectar; probar ambos modos de color revela contrastes insuficientes que no se notarían probando solo uno.
 
 ## Laboratorio práctico
 

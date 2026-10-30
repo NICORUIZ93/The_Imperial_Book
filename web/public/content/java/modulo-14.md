@@ -283,39 +283,6 @@ Un contenedor Docker que empaqueta el JDK completo (300+ MB) para ejecutar una a
 #### Paso 3 · Teoría, modelo mental y analogía
 `jdeps` descubre qué módulos JDK usa realmente un JAR; `jlink` enlaza esos módulos (y sus dependencias transitivas) en una imagen de runtime autocontenida. La analogía: jlink construye una caja de herramientas a medida, más liviana, pero que ya no recibe automáticamente herramientas reparadas — quien la empacó debe reconstruirla ante cada parche del JDK.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-jlink-runtime
-cd ejemplo-jlink-runtime
-mkdir -p src/main/java/academia/runtime
-```
-
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Crea una clase mínima que use `java.net.http.HttpClient` para hacer una petición GET. Compílala a un JAR simple, luego ejecuta:
-```bash
-jdeps --print-module-deps --ignore-missing-deps app.jar
-jlink --add-modules java.base,java.net.http --strip-debug --no-header-files --no-man-pages --output build/runtime
-du -sh build/runtime "$JAVA_HOME"
-```
-
-#### Paso 5 · Práctica guiada
-Pista: ejecuta la aplicación con `build/runtime/bin/java -jar app.jar` omitiendo deliberadamente el módulo `java.logging` de `--add-modules` mientras el código lo usa, para provocar un fallo deliberado (`NoClassDefFoundError` o similar por módulo ausente); lee el error. Resultado esperado: agregar el módulo faltante a `--add-modules` corrige el fallo.
-
-#### Paso 6 · Práctica independiente
-Compara el tamaño de `build/runtime` contra `$JAVA_HOME` completo (con `du -sh`), y documenta cuántos módulos del JDK completo tu aplicación realmente usa según `jdeps`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda la salida de `jdeps`, el runtime generado, el fallo por módulo faltante y su corrección, y la comparación de tamaño; como siguiente paso documenta el procedimiento de reconstrucción ante un parche del JDK. Errores comunes: crear la imagen jlink una sola vez y no reconstruirla ante actualizaciones de seguridad del JDK, y fijar `-Xmx` igual al límite del contenedor sin dejar margen para metaspace y memoria nativa. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html.
-**¿Por qué es importante?** porque diagnósticos, seguridad y uso de memoria dependen del runtime exacto que llega a producción, no del JDK instalado en el portátil.
 **Evidencia de aprendizaje:** entrega la comparación de tamaño, el fallo por módulo faltante y su corrección.
 **Conceptos clave:** module graph, jdeps, jlink, runtime image, jpackage, CDS, container awareness, heap limit, native memory, PID 1, signal, graceful shutdown, JFR, unified logging, health, update y rollback.
 
@@ -357,6 +324,40 @@ flowchart LR
 Empaquetar el Proyecto integrador (Módulo 13) con `jlink` cierra el ciclo completo: dominio correcto, benchmarks honestos, deserialización endurecida y runtime versionado.
 
 **Cuándo no usarlo:** si el equipo despliega sobre una imagen base ya optimizada y compartida entre varios servicios, mantener un runtime jlink propio por servicio agrega una carga operativa de reconstrucción que puede no justificarse frente al beneficio de tamaño.
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-jlink-runtime
+cd ejemplo-jlink-runtime
+mkdir -p src/main/java/academia/runtime
+```
+
+**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+Crea una clase mínima que use `java.net.http.HttpClient` para hacer una petición GET. Compílala a un JAR simple, luego ejecuta:
+```bash
+jdeps --print-module-deps --ignore-missing-deps app.jar
+jlink --add-modules java.base,java.net.http --strip-debug --no-header-files --no-man-pages --output build/runtime
+du -sh build/runtime "$JAVA_HOME"
+```
+
+#### Paso 5 · Práctica guiada
+Pista: ejecuta la aplicación con `build/runtime/bin/java -jar app.jar` omitiendo deliberadamente el módulo `java.logging` de `--add-modules` mientras el código lo usa, para provocar un fallo deliberado (`NoClassDefFoundError` o similar por módulo ausente); lee el error. Resultado esperado: agregar el módulo faltante a `--add-modules` corrige el fallo.
+
+#### Paso 6 · Práctica independiente
+Compara el tamaño de `build/runtime` contra `$JAVA_HOME` completo (con `du -sh`), y documenta cuántos módulos del JDK completo tu aplicación realmente usa según `jdeps`.
+
+#### Paso 7 · Cierre y evidencia
+Guarda la salida de `jdeps`, el runtime generado, el fallo por módulo faltante y su corrección, y la comparación de tamaño; como siguiente paso documenta el procedimiento de reconstrucción ante un parche del JDK. Errores comunes: crear la imagen jlink una sola vez y no reconstruirla ante actualizaciones de seguridad del JDK, y fijar `-Xmx` igual al límite del contenedor sin dejar margen para metaspace y memoria nativa. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html.
+**¿Por qué es importante?** porque diagnósticos, seguridad y uso de memoria dependen del runtime exacto que llega a producción, no del JDK instalado en el portátil.
 
 ## Revisión oficial de plataforma — octubre de 2026
 

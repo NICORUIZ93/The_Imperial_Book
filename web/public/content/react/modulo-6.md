@@ -235,40 +235,6 @@ Esperar la invalidación + refetch completo del Tema 2 para ver un envío marcad
 #### Paso 3 · Teoría, modelo mental y analogía
 Un optimistic update actualiza la cache inmediatamente con el resultado esperado, antes de la confirmación del servidor; si la mutación falla, se revierte al estado anterior guardado — marcar una tarea como completada en papel, confiando en que el sistema central lo registrará, y tachar de nuevo si falla.
 
-#### Paso 4 · Demostración guiada desde cero
-```jsx
-useMutation({
-  mutationFn: marcarEntregado,
-  onMutate: async (envioId) => {
-    await queryClient.cancelQueries({ queryKey: ['envios'] });
-    const anterior = queryClient.getQueryData(['envios']);
-    queryClient.setQueryData(['envios'], old => old.map(e => e.id === envioId ? { ...e, estado: 'entregado' } : e));
-    return { anterior };
-  },
-  onError: (err, envioId, contexto) => queryClient.setQueryData(['envios'], contexto.anterior),
-});
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: tocar "Marcar entregado" cambia visualmente el estado del envío en la lista de forma instantánea, sin esperar ninguna respuesta de red; si la mutación falla (el servidor rechaza porque ese envío ya fue entregado por otro operador), la lista vuelve exactamente al estado anterior guardado en `anterior`.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `await queryClient.cancelQueries({ queryKey: ['envios'] })` del `onMutate` — ese es el fallo deliberado: si un refetch en segundo plano de `['envios']` estaba en vuelo y completa después del `setQueryData` optimista, esa respuesta vieja sobrescribe el cambio optimista, haciendo que el envío "vuelva" a verse como no entregado por un instante confuso.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `cancelQueries`, y agregá una notificación visual explícita ("no se pudo confirmar, se revirtió el cambio") dentro de `onError`, para que el operador entienda por qué el envío volvió a su estado anterior.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explicá por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cerrá el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
-**¿Por qué es importante?** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
 **Evidencia de aprendizaje:** entrega optimistic update funcionando, sobrescritura por refetch detectada y notificación de reversión agregada.
 **Conceptos clave:** actualizar la UI antes de la confirmación del servidor, revertir ante error.
 
@@ -328,6 +294,40 @@ Resultado esperado: el test simula un fallo del servidor y verifica que `queryCl
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```jsx
+useMutation({
+  mutationFn: marcarEntregado,
+  onMutate: async (envioId) => {
+    await queryClient.cancelQueries({ queryKey: ['envios'] });
+    const anterior = queryClient.getQueryData(['envios']);
+    queryClient.setQueryData(['envios'], old => old.map(e => e.id === envioId ? { ...e, estado: 'entregado' } : e));
+    return { anterior };
+  },
+  onError: (err, envioId, contexto) => queryClient.setQueryData(['envios'], contexto.anterior),
+});
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: tocar "Marcar entregado" cambia visualmente el estado del envío en la lista de forma instantánea, sin esperar ninguna respuesta de red; si la mutación falla (el servidor rechaza porque ese envío ya fue entregado por otro operador), la lista vuelve exactamente al estado anterior guardado en `anterior`.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `await queryClient.cancelQueries({ queryKey: ['envios'] })` del `onMutate` — ese es el fallo deliberado: si un refetch en segundo plano de `['envios']` estaba en vuelo y completa después del `setQueryData` optimista, esa respuesta vieja sobrescribe el cambio optimista, haciendo que el envío "vuelva" a verse como no entregado por un instante confuso.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `cancelQueries`, y agregá una notificación visual explícita ("no se pudo confirmar, se revirtió el cambio") dentro de `onError`, para que el operador entienda por qué el envío volvió a su estado anterior.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explicá por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cerrá el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
+**¿Por qué es importante?** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
 
 ## Laboratorio práctico
 

@@ -339,39 +339,6 @@ Los logs explican eventos; las métricas muestran tendencia y las trazas conecta
 
 Un contador aumenta, un histograma mide distribución y un span representa una operación con contexto. Es el tablero de un vehículo: nivel, velocidad y recorrido cuentan cosas diferentes.
 
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-observabilidad
-cd ejemplo-observabilidad
-npm init -y
-npm install express prom-client
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import express from "express";
-import client from "prom-client";
-const app = express(); const requests = new client.Counter({ name: "http_requests_total", help: "Requests", labelNames: ["route"] });
-app.get("/health", (_req, res) => { requests.inc({ route: "/health" }); res.json({ ok: true }); });
-app.get("/metrics", async (_req, res) => { res.type(client.register.contentType); res.end(await client.register.metrics()); });
-app.listen(3000, () => console.log("/health y /metrics"));
-```
-
-Ejecuta `node src/server.js`, llama `/health` y luego `/metrics`. **Resultado esperado:** aparece `http_requests_total{route="/health"} 1`. **Fallo deliberado y diagnóstico:** incrementa el contador con una etiqueta no declarada; prom-client rechaza el evento, señalando una métrica mal definida.
-
-#### Paso 5 · Práctica guiada
-
-Añade un histograma de duración alrededor del handler. **Pista:** observa `finally` para registrar también fallos.
-
-#### Paso 6 · Práctica independiente
-
-Instala OpenTelemetry en una copia y crea un span manual con atributos `route` y `status_code`; entrega la consola y explica qué exportador usarías en producción.
-
-#### Paso 7 · Cierre y conexión
-
 Ya distingues métrica agregada de traza individual. El siguiente módulo tratará despliegue desde otra carpeta.
 
 **Errores comunes:** etiquetas de cardinalidad infinita; contar usuarios como labels; no cerrar spans; exponer `/metrics` públicamente; usar logs como única métrica.
@@ -460,6 +427,39 @@ curl -s http://localhost:3000/metrics | grep app_http_request_duration
 **Transferencia al proyecto integrador «API operativa de entregas»:** Instrumenta confirmaciones con conteos y duración, y propaga contexto al consumidor. Una carga de prueba debe generar métricas coherentes y una traza útil sin etiquetas por cada guía.
 
 **Límites y decisión de uso:** Etiquetas por guía o usuario disparan cardinalidad y pueden filtrar información. Agrega métricas por dimensiones acotadas y usa trazas o logs restringidos para correlación individual; documenta muestreo antes de interpretar ausencia de spans como ausencia de fallos.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-observabilidad
+cd ejemplo-observabilidad
+npm init -y
+npm install express prom-client
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+import client from "prom-client";
+const app = express(); const requests = new client.Counter({ name: "http_requests_total", help: "Requests", labelNames: ["route"] });
+app.get("/health", (_req, res) => { requests.inc({ route: "/health" }); res.json({ ok: true }); });
+app.get("/metrics", async (_req, res) => { res.type(client.register.contentType); res.end(await client.register.metrics()); });
+app.listen(3000, () => console.log("/health y /metrics"));
+```
+
+Ejecuta `node src/server.js`, llama `/health` y luego `/metrics`. **Resultado esperado:** aparece `http_requests_total{route="/health"} 1`. **Fallo deliberado y diagnóstico:** incrementa el contador con una etiqueta no declarada; prom-client rechaza el evento, señalando una métrica mal definida.
+
+#### Paso 5 · Práctica guiada
+
+Añade un histograma de duración alrededor del handler. **Pista:** observa `finally` para registrar también fallos.
+
+#### Paso 6 · Práctica independiente
+
+Instala OpenTelemetry en una copia y crea un span manual con atributos `route` y `status_code`; entrega la consola y explica qué exportador usarías en producción.
+
+#### Paso 7 · Cierre y conexión
 
 ## Laboratorio práctico
 

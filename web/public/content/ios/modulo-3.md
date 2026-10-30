@@ -155,30 +155,7 @@ Al finalizar vas a abrir `DetalleEnvio` directamente desde un deep link real (`r
 Cuando el conductor toca una notificación push "nueva entrega asignada: RF-4471", esa URL tiene que aterrizar directamente en `DetalleEnvio` de ese envío específico, no en la pantalla principal esperando navegación manual.
 #### Paso 3 · Teoría, modelo mental y analogía
 `.onOpenURL` es un sistema de recepción que lee la dirección exacta del sobre entrante y lo entrega directamente en la oficina correspondiente, sin dejarlo en recepción general para que alguien lo redirija después.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-.onOpenURL { url in
-    guard url.scheme == "rutaflow", url.host == "envio",
-          let guia = url.pathComponents.last, guia.hasPrefix("RF-") else { return }
-    path.append(Envio(guia: guia))
-}
-```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: abrir `rutaflow://envio/RF-4471` navega directamente a `DetalleEnvio(guia: "RF-4471")`, usando el mismo `NavigationPath` del Tema 1.
-#### Paso 5 · Práctica guiada
-Pista: quitá la validación `guia.hasPrefix("RF-")` y probá abrir `rutaflow://envio/<script>` — ese es el fallo deliberado: sin validar el formato de la guía antes de usarla, cualquier contenido arbitrario de una URL maliciosa terminaría navegando a `DetalleEnvio` con un valor que nunca debería tratarse como una guía real.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la validación, y agregá un `Form` con un `Picker` para que el conductor reporte el motivo si no pudo entregar (por ejemplo "destinatario ausente", "dirección incorrecta"), usando `.swipeActions()` en la lista para marcar un envío como "reintentar" sin entrar al detalle.
-#### Paso 7 · Cierre y evidencia
-Entregá el deep link validado del Paso 4, el formato no validado y su riesgo del Paso 5, y el formulario con swipe actions del Paso 6; explicá por qué una URL entrante nunca debería tratarse como un dato de confianza sin antes validar su forma. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
-**¿Por qué es importante?** Porque una URL entrante (deep link) nunca debería tratarse como un dato de confianza; validar su formato antes de navegar evita que contenido arbitrario termine tratado como una guía real.
 **Evidencia de aprendizaje:** entrega el deep link validado funcionando, el riesgo expuesto al quitar la validación, y el formulario con swipe actions agregado.
 **Conceptos clave:** entrada externa mapeada directamente a un punto específico de navegación.
 
@@ -219,6 +196,30 @@ En el proyecto integrador RutaFlow, este handler vive en `examples/rutaflow/ios/
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+.onOpenURL { url in
+    guard url.scheme == "rutaflow", url.host == "envio",
+          let guia = url.pathComponents.last, guia.hasPrefix("RF-") else { return }
+    path.append(Envio(guia: guia))
+}
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: abrir `rutaflow://envio/RF-4471` navega directamente a `DetalleEnvio(guia: "RF-4471")`, usando el mismo `NavigationPath` del Tema 1.
+#### Paso 5 · Práctica guiada
+Pista: quitá la validación `guia.hasPrefix("RF-")` y probá abrir `rutaflow://envio/<script>` — ese es el fallo deliberado: sin validar el formato de la guía antes de usarla, cualquier contenido arbitrario de una URL maliciosa terminaría navegando a `DetalleEnvio` con un valor que nunca debería tratarse como una guía real.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando la validación, y agregá un `Form` con un `Picker` para que el conductor reporte el motivo si no pudo entregar (por ejemplo "destinatario ausente", "dirección incorrecta"), usando `.swipeActions()` en la lista para marcar un envío como "reintentar" sin entrar al detalle.
+#### Paso 7 · Cierre y evidencia
+Entregá el deep link validado del Paso 4, el formato no validado y su riesgo del Paso 5, y el formulario con swipe actions del Paso 6; explicá por qué una URL entrante nunca debería tratarse como un dato de confianza sin antes validar su forma. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
+**¿Por qué es importante?** Porque una URL entrante (deep link) nunca debería tratarse como un dato de confianza; validar su formato antes de navegar evita que contenido arbitrario termine tratado como una guía real.
 
 ## Laboratorio práctico
 

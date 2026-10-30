@@ -352,42 +352,6 @@ RutaFlow recibe webhooks de un proveedor de pagos cuando se confirma el cobro de
 #### Paso 3 · Teoría, modelo mental y analogía
 Firmar versión, timestamp y cuerpo con HMAC y comparar en tiempo constante autentica el contenido exacto; no comparar JSON reserializado evita falsos negativos por diferencias de espacios u orden.
 
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `src/webhooks/signature-verify.ts` en tu proyecto Node para manejar verificación de firmas:
-
-```typescript
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
-function validSignature(raw: Buffer, timestamp: string, receivedHex: string, secret: string) {
-  const expected = createHmac('sha256', secret)
-    .update(`v1.${timestamp}.`)
-    .update(raw)
-    .digest();
-  const received = Buffer.from(receivedHex, 'hex');
-  return received.length === expected.length && timingSafeEqual(received, expected);
-}
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
-
-```bash
-npm init -y && npm install
-node index.js
-```
-Para las pruebas: `npm test`.
-
-Resultado esperado: un webhook con la firma correcta (calculada por el proveedor real con el secreto compartido) pasa la verificación; un POST falso sin conocer el secreto falla la comparación y se rechaza antes de procesar ningún cambio de estado.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `timingSafeEqual(received, expected)` por una comparación directa `received.toString('hex') === receivedHex` de strings — ese es el fallo deliberado: una comparación de strings normal retorna más rápido en cuanto encuentra el primer carácter distinto, filtrando por temporización cuántos caracteres iniciales coinciden, una vulnerabilidad de timing attack que permitiría reconstruir la firma correcta byte por byte midiendo tiempos de respuesta.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `timingSafeEqual`, y agregá el rechazo de timestamps fuera de una ventana razonable (5 minutos) para prevenir ataques de replay con una firma válida pero capturada previamente.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la verificación HMAC del Paso 4, la vulnerabilidad de timing attack del Paso 5, y el rechazo de timestamps antiguos del Paso 6; explicá por qué una comparación de strings normal filtra información por temporización, y por qué `timingSafeEqual` existe específicamente para evitar ese canal lateral. Siguiente paso: cerrá el módulo integrando validación, contratos, idempotencia y webhooks en la API completa de RutaFlow. Errores comunes: comparar firmas con el operador `===` normal en vez de una comparación en tiempo constante, no rechazar timestamps fuera de ventana, y reintentar indefinidamente un webhook que responde `400`. Fuentes oficiales: https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b y https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries.
-
 **¿Por qué es importante?** Las integraciones vía webhook viven fuera de tu despliegue y control; una garantía profesional incluye autenticidad verificable, no solo HTTPS en tránsito.
 **Conceptos clave:** webhook, firma HMAC, secreto, timestamp, replay, payload crudo, delivery ID, retry, backoff, jitter, DLQ, circuit breaker, reconciliación y estado fuente.
 
@@ -429,6 +393,42 @@ reconciliador compara fuente/proyección -> replay auditado
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Recibe un webhook con firma comprobable y registra su identificador antes de aplicar efectos. Reenvíalo y ejecuta reconciliación de un evento perdido; ambos caminos deben converger al mismo estado.
 
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `src/webhooks/signature-verify.ts` en tu proyecto Node para manejar verificación de firmas:
+
+```typescript
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+function validSignature(raw: Buffer, timestamp: string, receivedHex: string, secret: string) {
+  const expected = createHmac('sha256', secret)
+    .update(`v1.${timestamp}.`)
+    .update(raw)
+    .digest();
+  const received = Buffer.from(receivedHex, 'hex');
+  return received.length === expected.length && timingSafeEqual(received, expected);
+}
+```
+
+**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+
+```bash
+npm init -y && npm install
+node index.js
+```
+Para las pruebas: `npm test`.
+
+Resultado esperado: un webhook con la firma correcta (calculada por el proveedor real con el secreto compartido) pasa la verificación; un POST falso sin conocer el secreto falla la comparación y se rechaza antes de procesar ningún cambio de estado.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá `timingSafeEqual(received, expected)` por una comparación directa `received.toString('hex') === receivedHex` de strings — ese es el fallo deliberado: una comparación de strings normal retorna más rápido en cuanto encuentra el primer carácter distinto, filtrando por temporización cuántos caracteres iniciales coinciden, una vulnerabilidad de timing attack que permitiría reconstruir la firma correcta byte por byte midiendo tiempos de respuesta.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `timingSafeEqual`, y agregá el rechazo de timestamps fuera de una ventana razonable (5 minutos) para prevenir ataques de replay con una firma válida pero capturada previamente.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la verificación HMAC del Paso 4, la vulnerabilidad de timing attack del Paso 5, y el rechazo de timestamps antiguos del Paso 6; explicá por qué una comparación de strings normal filtra información por temporización, y por qué `timingSafeEqual` existe específicamente para evitar ese canal lateral. Siguiente paso: cerrá el módulo integrando validación, contratos, idempotencia y webhooks en la API completa de RutaFlow. Errores comunes: comparar firmas con el operador `===` normal en vez de una comparación en tiempo constante, no rechazar timestamps fuera de ventana, y reintentar indefinidamente un webhook que responde `400`. Fuentes oficiales: https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b y https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries.
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Línea LTS, línea Current y APIs del runtime
@@ -436,7 +436,6 @@ reconciliador compara fuente/proyección -> replay auditado
 Producción debe partir de una línea **LTS**: hoy conviven **Node.js 24 LTS** (en mantenimiento) y **Node.js 26 LTS** (Active LTS desde octubre de 2026, soporte hasta abril de 2029). Node 26 habilita `Temporal` por defecto y actualiza V8, Undici y deprecaciones; que ya sea LTS no justifica migrar sin probar dependencias, imágenes, rendimiento y observabilidad. Distingue API estable, experimental y retirada leyendo notas de la versión mayor y cada release de seguridad. El soporte nativo de TypeScript no reemplaza comprobación de tipos ni todas las transformaciones de un compilador.
 
 **Aplicación al proyecto:** ejecuta contratos y benchmarks en una matriz 24/26, prueba fechas con Temporal, convierte deprecaciones en fallo controlado de CI y conserva Node 24 como runtime de despliegue hasta aprobar la evidencia.
-
 
 ## Laboratorio práctico
 
@@ -469,9 +468,6 @@ Evoluciona una vertical del proyecto final —crear tarea y notificarla— sin r
 - Reintentar cada 4xx: clasifica permanente, rate limit y transitorio; respeta presupuesto.
 - DLQ sin procedimiento: alerta, inspecciona, corrige y reproduce con auditoría.
 
-
-
-
 ## Ampliación: contratos con OpenAPI
 
 ### Tema 5: OpenAPI como contrato ejecutable
@@ -484,25 +480,6 @@ En un caso real, una aplicación móvil y un socio externo deben interpretar la 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 OpenAPI es un contrato ejecutable: describe entradas, salidas y errores para personas, validadores y clientes. La analogía es un plano firmado que el inspector compara con el edificio.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-node-m13-t5 && cd ejemplo-node-m13-t5
-npm init -y
-npm install -D @redocly/cli
-mkdir src
-```
-Crea `src/openapi.yaml` con una operación GET y ejecuta `npx redocly lint src/openapi.yaml`.
-
-#### Paso 5 · Práctica guiada
-Pista: elimina un campo requerido para provocar un fallo deliberado, lee el diagnóstico y restáuralo. Resultado esperado: el lint termina sin errores.
-
-#### Paso 6 · Práctica independiente
-Añade POST, respuesta Problem Details y un ejemplo de consumidor; comprueba compatibilidad al agregar un campo opcional.
-
-#### Paso 7 · Cierre y evidencia
-Conserva el contrato, el log y una captura; como siguiente paso conecta el lint al CI. **Evidencia:** entrega la salida correcta, el fallo provocado y una explicación de qué regla de OpenAPI corregiste. Errores comunes: documentación desactualizada, tipos incompatibles, omitir errores y cambiar campos sin deprecación. Fuentes oficiales: https://spec.openapis.org/oas/latest.html y https://redocly.com/docs/cli/.
 
 Este mismo archivo `openapi.yaml`, versionado y validado en CI, es el contrato real que describirá los endpoints del proyecto integrador (API productiva, Módulo 12), permitiendo que un cliente móvil o un socio externo detecte una ruptura de compatibilidad antes de que llegue a producción.
 
@@ -589,6 +566,26 @@ npm test -- contract
 **Cierre:** el contrato ya es documentación, prueba y frontera de colaboración. El siguiente paso combina OpenAPI, idempotencia y outbox para evolucionar integraciones sin duplicar efectos. Recurso oficial: [OpenAPI Specification 3.1](https://spec.openapis.org/oas/v3.1.0.html).
 
 <!-- OFFICIAL-TOPIC-ATLAS:START -->
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-node-m13-t5 && cd ejemplo-node-m13-t5
+npm init -y
+npm install -D @redocly/cli
+mkdir src
+```
+Crea `src/openapi.yaml` con una operación GET y ejecuta `npx redocly lint src/openapi.yaml`.
+
+#### Paso 5 · Práctica guiada
+Pista: elimina un campo requerido para provocar un fallo deliberado, lee el diagnóstico y restáuralo. Resultado esperado: el lint termina sin errores.
+
+#### Paso 6 · Práctica independiente
+Añade POST, respuesta Problem Details y un ejemplo de consumidor; comprueba compatibilidad al agregar un campo opcional.
+
+#### Paso 7 · Cierre y evidencia
+Conserva el contrato, el log y una captura; como siguiente paso conecta el lint al CI. **Evidencia:** entrega la salida correcta, el fallo provocado y una explicación de qué regla de OpenAPI corregiste. Errores comunes: documentación desactualizada, tipos incompatibles, omitir errores y cambiar campos sin deprecación. Fuentes oficiales: https://spec.openapis.org/oas/latest.html y https://redocly.com/docs/cli/.
+
 ## Atlas completo de temas oficiales
 
 Derivado de la [documentación oficial](https://nodejs.org/api/), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 46 temas.**

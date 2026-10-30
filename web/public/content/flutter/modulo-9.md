@@ -197,39 +197,6 @@ Los widget tests del Tema 1 y los mocks del Tema 2 prueban piezas aisladas — n
 #### Paso 3 · Teoría, modelo mental y analogía
 Un integration test corre contra un dispositivo o emulador real, validando la integración completa de la app, incluyendo plugins nativos y navegación real.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-testWidgets('flujo completo: confirmar una entrega', (tester) async {
-  await tester.pumpWidget(RutaFlowApp());
-  await tester.tap(find.text('RF-4471'));
-  await tester.pumpAndSettle();
-  await tester.enterText(find.byType(TextField), '837201');
-  await tester.tap(find.text('Confirmar'));
-  await tester.pumpAndSettle();
-  expect(find.text('Entrega confirmada'), findsOneWidget);
-});
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: corriendo este test contra un emulador o dispositivo real, el flujo completo navega desde la lista hasta la confirmación exitosa, validando la integración real entre pantallas, formulario y backend de staging.
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `await tester.pumpAndSettle()` después de tocar "Confirmar" por un simple `await tester.pump()` — ese es el fallo deliberado: si la confirmación depende de una animación de transición todavía en curso, la aserción final puede ejecutarse antes de que termine, y el test falla de forma intermitente según cuánto tarde la animación en cada corrida.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `pumpAndSettle()`, y agregá un segundo integration test que confirme el camino de error (PIN incorrecto), verificando que el mensaje de error aparece en el dispositivo real.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el integration test del flujo feliz del Paso 4, la falla intermitente provocada en el Paso 5, y el test del camino de error del Paso 6; explicá por qué `pumpAndSettle()` es necesario específicamente en integration tests donde las animaciones reales ocurren, a diferencia de un widget test simulado donde `pump()` simple suele bastar. Siguiente paso: cerrá el módulo integrando unit tests, widget tests e integration tests en la suite completa de RutaFlow. Errores comunes: usar `pump()` simple en vez de `pumpAndSettle()` cuando hay animaciones reales en curso, escribir únicamente integration tests sin ninguna base de widget tests más rápidos, y no cubrir el camino de error en los flujos críticos. Fuentes oficiales: https://docs.flutter.dev/testing/integration-tests y https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html.
-**¿Por qué es importante?** Un integration test valida la integración completa contra un dispositivo real, necesario para verificar flujos críticos de principio a fin que los widget tests aislados no cubren.
 **Evidencia de aprendizaje:** entrega integration test del flujo feliz, falla intermitente detectada y test del camino de error.
 **Conceptos clave:** validación completa contra un dispositivo o emulador real.
 
@@ -276,6 +243,39 @@ flutter test integration_test/confirmar_entrega_test.dart
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```dart
+testWidgets('flujo completo: confirmar una entrega', (tester) async {
+  await tester.pumpWidget(RutaFlowApp());
+  await tester.tap(find.text('RF-4471'));
+  await tester.pumpAndSettle();
+  await tester.enterText(find.byType(TextField), '837201');
+  await tester.tap(find.text('Confirmar'));
+  await tester.pumpAndSettle();
+  expect(find.text('Entrega confirmada'), findsOneWidget);
+});
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: corriendo este test contra un emulador o dispositivo real, el flujo completo navega desde la lista hasta la confirmación exitosa, validando la integración real entre pantallas, formulario y backend de staging.
+
+#### Paso 5 · Práctica guiada
+Pista: reemplazá `await tester.pumpAndSettle()` después de tocar "Confirmar" por un simple `await tester.pump()` — ese es el fallo deliberado: si la confirmación depende de una animación de transición todavía en curso, la aserción final puede ejecutarse antes de que termine, y el test falla de forma intermitente según cuánto tarde la animación en cada corrida.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `pumpAndSettle()`, y agregá un segundo integration test que confirme el camino de error (PIN incorrecto), verificando que el mensaje de error aparece en el dispositivo real.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el integration test del flujo feliz del Paso 4, la falla intermitente provocada en el Paso 5, y el test del camino de error del Paso 6; explicá por qué `pumpAndSettle()` es necesario específicamente en integration tests donde las animaciones reales ocurren, a diferencia de un widget test simulado donde `pump()` simple suele bastar. Siguiente paso: cerrá el módulo integrando unit tests, widget tests e integration tests en la suite completa de RutaFlow. Errores comunes: usar `pump()` simple en vez de `pumpAndSettle()` cuando hay animaciones reales en curso, escribir únicamente integration tests sin ninguna base de widget tests más rápidos, y no cubrir el camino de error en los flujos críticos. Fuentes oficiales: https://docs.flutter.dev/testing/integration-tests y https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html.
+**¿Por qué es importante?** Un integration test valida la integración completa contra un dispositivo real, necesario para verificar flujos críticos de principio a fin que los widget tests aislados no cubren.
 
 ## Laboratorio práctico
 

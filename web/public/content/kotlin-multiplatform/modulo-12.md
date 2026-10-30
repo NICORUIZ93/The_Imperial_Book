@@ -331,36 +331,6 @@ Un crash reportado desde la app iOS muestra un stack trace de frames de Kotlin/N
 #### Paso 3 · Teoría, modelo mental y analogía
 Un defecto en `commonMain` puede aparecer como un stack Kotlin distinto en Android y frames Kotlin/Native en iOS; sin mapping de Android y dSYM/debug symbols del framework exacto por versión, la ofuscación vuelve los grupos de crashes inútiles. La analogía es una misma pieza defectuosa que viaja en dos vehículos y produce ruidos distintos — el número de lote y el manual de diagnóstico permiten encontrar la causa compartida sin confundir síntomas.
 
-#### Paso 4 · Demostración guiada desde cero
-```kotlin
-public interface Diagnostics {
-    public fun record(
-        event: DiagnosticEvent,
-        attributes: Map<String, String> = emptyMap(),
-    )
-}
-
-public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
-```
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
-
-```bash
-./gradlew commonTest
-```
-Para compilar todos los targets: `./gradlew build`.
-
-Resultado esperado: al provocar deliberadamente un `SYNC_FAILED` en ambas apps (forzando un conflicto de sincronización del Módulo 11), cada adaptador nativo registra el evento con su propio proveedor de telemetría, y ambos reportes pueden correlacionarse por `build ID` aunque los stacks nativos se vean completamente distintos entre sí.
-
-#### Paso 5 · Práctica guiada
-Pista: archivá los símbolos (dSYM) de la app iOS solo para los releases "importantes", no para cada build subida a TestFlight "para ahorrar espacio de almacenamiento". Ese es el fallo deliberado: un crash reportado desde una build intermedia (no marcada como "importante") llega sin su dSYM correspondiente, y el stack trace queda compuesto enteramente de direcciones de memoria sin nombres de función, sin ninguna forma de identificar qué parte del código compartido falló.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 archivando el dSYM de cada build subida a TestFlight (no solo las "importantes"), indexado por su build ID exacto, y verificá que el crash simulado del Paso 4 ahora se simboliza completamente al subir ese dSYM específico a la herramienta de diagnóstico.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la interfaz `Diagnostics` del Paso 4, el crash no simbolizable del Paso 5, y el archivo completo de dSYM por build ID del Paso 6; explicá por qué "ahorrar espacio" archivando símbolos solo de releases importantes elimina la capacidad de diagnosticar exactamente los crashes intermedios que más necesitan contexto. Siguiente paso: cerrá el proyecto del módulo preparando un plan de release con ventana de compatibilidad y rollback. Errores comunes: no archivar dSYM/mapping de cada build distribuida, hacer que `commonMain` dependa directamente de un SDK de analytics específico de plataforma, y usar un ID de usuario como label de métrica en vez de un correlation ID anónimo. Fuentes oficiales: https://developer.apple.com/documentation/xcode/building-your-app-to-include-debugging-information y https://developer.android.com/studio/build/shrink-code.
-**¿Por qué es importante?** La optimización y los bridges entre runtimes cambian los stacks, y los releases asíncronos entre plataformas dejan múltiples combinaciones de versiones en campo al mismo tiempo.
 **Evidencia de aprendizaje:** entrega interfaz Diagnostics, crash no simbolizable reproducido y archivo completo de dSYM por build ID verificado.
 **Conceptos clave:** crash, stack trace, symbolication, dSYM, mapping, source map, correlation ID, privacy, breadcrumb, metric, target matrix, canary, staged rollout, compatibility window y rollback.
 
@@ -404,6 +374,37 @@ metrics por sdk/app/OS -> promover | detener | forward fix
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Provoca una excepción controlada en una operación compartida llamada desde iOS. Conserva versión y símbolos de depuración que permitan ubicar la línea Kotlin sin registrar datos personales del envío.
 
+#### Paso 4 · Demostración guiada desde cero
+```kotlin
+public interface Diagnostics {
+    public fun record(
+        event: DiagnosticEvent,
+        attributes: Map<String, String> = emptyMap(),
+    )
+}
+
+public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
+```
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+
+```bash
+./gradlew commonTest
+```
+Para compilar todos los targets: `./gradlew build`.
+
+Resultado esperado: al provocar deliberadamente un `SYNC_FAILED` en ambas apps (forzando un conflicto de sincronización del Módulo 11), cada adaptador nativo registra el evento con su propio proveedor de telemetría, y ambos reportes pueden correlacionarse por `build ID` aunque los stacks nativos se vean completamente distintos entre sí.
+
+#### Paso 5 · Práctica guiada
+Pista: archivá los símbolos (dSYM) de la app iOS solo para los releases "importantes", no para cada build subida a TestFlight "para ahorrar espacio de almacenamiento". Ese es el fallo deliberado: un crash reportado desde una build intermedia (no marcada como "importante") llega sin su dSYM correspondiente, y el stack trace queda compuesto enteramente de direcciones de memoria sin nombres de función, sin ninguna forma de identificar qué parte del código compartido falló.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 archivando el dSYM de cada build subida a TestFlight (no solo las "importantes"), indexado por su build ID exacto, y verificá que el crash simulado del Paso 4 ahora se simboliza completamente al subir ese dSYM específico a la herramienta de diagnóstico.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la interfaz `Diagnostics` del Paso 4, el crash no simbolizable del Paso 5, y el archivo completo de dSYM por build ID del Paso 6; explicá por qué "ahorrar espacio" archivando símbolos solo de releases importantes elimina la capacidad de diagnosticar exactamente los crashes intermedios que más necesitan contexto. Siguiente paso: cerrá el proyecto del módulo preparando un plan de release con ventana de compatibilidad y rollback. Errores comunes: no archivar dSYM/mapping de cada build distribuida, hacer que `commonMain` dependa directamente de un SDK de analytics específico de plataforma, y usar un ID de usuario como label de métrica en vez de un correlation ID anónimo. Fuentes oficiales: https://developer.apple.com/documentation/xcode/building-your-app-to-include-debugging-information y https://developer.android.com/studio/build/shrink-code.
+**¿Por qué es importante?** La optimización y los bridges entre runtimes cambian los stacks, y los releases asíncronos entre plataformas dejan múltiples combinaciones de versiones en campo al mismo tiempo.
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Kotlin 2.4 y estado real de cada target
@@ -411,7 +412,6 @@ metrics por sdk/app/OS -> promover | detener | forward fix
 La línea revisada es **Kotlin 2.4**. Compose Multiplatform se considera estable en Android, iOS y escritorio; web basado en **Wasm** continúa con un nivel de estabilidad diferente y debe aislarse. **Swift export** mejora la superficie consumida desde Swift, pero requiere revisar tipos compatibles, nombres, errores, concurrencia y evolución binaria. Actualiza Kotlin, Gradle, Android Gradle Plugin, Xcode y bibliotecas kotlinx como una matriz, no como números independientes.
 
 **Aplicación al proyecto:** exporta una API mínima a Swift, prueba compatibilidad de fuente/binario y cancelación, compila todos los targets en CI y etiqueta cualquier uso Wasm con su nivel de estabilidad y fallback.
-
 
 ## Laboratorio práctico
 

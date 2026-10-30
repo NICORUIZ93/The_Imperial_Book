@@ -148,28 +148,6 @@ Un listado de entregas necesita un orden natural único por antigüedad (`Compar
 #### Paso 3 · Teoría, modelo mental y analogía
 `Comparable` define el único orden natural de una clase implementando `compareTo`; `Comparator` define órdenes alternativos externos sin modificar esa clase. La analogía: el orden oficial de un catálogo (por código de producto) frente a pedirle temporalmente que lo muestre ordenado por precio, sin alterar su orden oficial para nadie más.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-comparable-comparator
-cd ejemplo-comparable-comparator
-mkdir -p src/main/java/academia/orden
-```
-Crea `Entrega.java` implementando `Comparable<Entrega>` por antigüedad, y una clase `Main` que ordene una lista primero con `Collections.sort` (orden natural) y luego con `lista.sort(Comparator.comparing(Entrega::getDestino))`. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/orden/Entrega.java
-java -cp out academia.orden.Main
-```
-
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente `implements Comparable<Entrega>` para provocar un fallo de compilación al llamar `Collections.sort(lista)` sin `Comparator`; restaura la interfaz y confirma que ambos órdenes (natural y alternativo) coexisten sin conflicto. Resultado esperado: dos salidas ordenadas de forma distinta a partir de la misma lista.
-
-#### Paso 6 · Práctica independiente
-Agrega un segundo `Comparator` por peso y encadénalos con `thenComparing`; recorre el resultado con un `Map<String, List<Entrega>>` agrupado por destino usando `entrySet()`.
-
-#### Paso 7 · Cierre y evidencia
-Guarda `Entrega`, ambos órdenes obtenidos y el error de compilación provocado; como siguiente paso estudia excepciones. Errores comunes: implementar `compareTo` con una resta de enteros (`this.valor - otro.valor`) que puede desbordar con valores extremos en vez de usar `Integer.compare`, modificar después de insertar el campo por el que un `TreeSet`/`TreeMap` ya ordenó un objeto (corrompe la estructura interna), y definir un `Comparable` inconsistente con `equals` sin documentarlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
 **Evidencia de aprendizaje:** entrega `Entrega` con su orden natural por `Comparable`, el orden alternativo por `Comparator.comparing`, y el error de compilación al quitar `implements Comparable<Entrega>` e intentar `Collections.sort` sin `Comparator`.
 **Conceptos clave:** orden natural único frente a órdenes alternativos externos, `entrySet()`.
 
@@ -200,6 +178,28 @@ for (Map.Entry<String, Integer> entrada : edades.entrySet()) {
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-comparable-comparator
+cd ejemplo-comparable-comparator
+mkdir -p src/main/java/academia/orden
+```
+Crea `Entrega.java` implementando `Comparable<Entrega>` por antigüedad, y una clase `Main` que ordene una lista primero con `Collections.sort` (orden natural) y luego con `lista.sort(Comparator.comparing(Entrega::getDestino))`. Compila y ejecuta:
+```bash
+javac -d out src/main/java/academia/orden/Entrega.java
+java -cp out academia.orden.Main
+```
+
+#### Paso 5 · Práctica guiada
+Pista: elimina deliberadamente `implements Comparable<Entrega>` para provocar un fallo de compilación al llamar `Collections.sort(lista)` sin `Comparator`; restaura la interfaz y confirma que ambos órdenes (natural y alternativo) coexisten sin conflicto. Resultado esperado: dos salidas ordenadas de forma distinta a partir de la misma lista.
+
+#### Paso 6 · Práctica independiente
+Agrega un segundo `Comparator` por peso y encadénalos con `thenComparing`; recorre el resultado con un `Map<String, List<Entrega>>` agrupado por destino usando `entrySet()`.
+
+#### Paso 7 · Cierre y evidencia
+Guarda `Entrega`, ambos órdenes obtenidos y el error de compilación provocado; como siguiente paso estudia excepciones. Errores comunes: implementar `compareTo` con una resta de enteros (`this.valor - otro.valor`) que puede desbordar con valores extremos en vez de usar `Integer.compare`, modificar después de insertar el campo por el que un `TreeSet`/`TreeMap` ya ordenó un objeto (corrompe la estructura interna), y definir un `Comparable` inconsistente con `equals` sin documentarlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
+**¿Por qué es importante?** Porque mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
 
 ## Construcción guiada del capítulo
 

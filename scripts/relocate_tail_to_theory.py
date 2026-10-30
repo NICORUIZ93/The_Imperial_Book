@@ -60,7 +60,17 @@ def relocate(block: str) -> tuple[str, bool]:
         return block, False
     cut = min(candidates)
     genuine_closing = after_heading[:cut]
-    tail = after_heading[cut:]
+
+    # Si este es el último Tema del archivo, `block` se extiende hasta el
+    # final del archivo e incluye secciones de nivel de módulo ("##...") que
+    # vienen después de todos los Temas (ej. "Ruta de proyecto progresivo",
+    # "Laboratorio práctico"). Esas NO son parte de este Tema: hay que
+    # cortar la reubicación justo antes de ese "##" y dejarlas intactas al
+    # final, fuera del tema reconstruido.
+    module_boundary = NEXT_H2.search(after_heading, cut)
+    tail_end = module_boundary.start() if module_boundary else len(after_heading)
+    tail = after_heading[cut:tail_end]
+    module_level_tail = after_heading[tail_end:]
     if len(tail.split()) < 30:
         return block, False  # nada sustancial que reubicar
 
@@ -80,6 +90,7 @@ def relocate(block: str) -> tuple[str, bool]:
         + tail_clean
         + "\n\n"
         + without_tail[insertion_point.start():].rstrip("\n")
+        + ("\n\n" + module_level_tail.strip("\n") if module_level_tail.strip() else "")
         + trailing_sep
     )
     return re.sub(r"\n{3,}", "\n\n", new_block), True

@@ -522,19 +522,6 @@ Al finalizar vas a registrar un hallazgo real de latencia de RutaFlow separando 
 Si alguien reporta "RutaFlow está lento", esa frase no es evidencia ni una decisión — hace falta separar lo que realmente se observó, la explicación provisional, y la acción concreta que se va a tomar.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada capa de ingeniería profesional tiene contrato, amenaza, prueba y responsable; evidencia es lo observado, inferencia es la explicación provisional, decisión es la acción reversible.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `evidence.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Ejecutá el `evidence.py` de más abajo y confirmá que `Finding` imprime sus tres campos (`evidence`, `inference`, `decision`) por separado.
-#### Paso 5 · Práctica guiada
-Pista: cambiá `frozen=True` por `False` en `Finding`, y modificá `finding.evidence` DESPUÉS de haber tomado la decisión — ese es el fallo deliberado: técnicamente funciona, pero destruye la trazabilidad; alguien podría reescribir la evidencia original para que coincida con la decisión ya tomada, en vez de que la decisión siga respaldada por lo que realmente se observó.
-#### Paso 6 · Práctica independiente
-Restaurá `frozen=True`, agregá los campos `risk` y `owner` a `Finding`, y escribí un hallazgo real sobre el SLI de `confirmar-entrega` del Módulo 10 de este track (la latencia del proveedor de SMS) con sus cuatro campos completos.
-#### Paso 7 · Cierre y evidencia
-Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: especialización. Errores comunes: seguridad como añadido y documentación desactualizada. Fuente oficial: https://owasp.org/www-project-top-ten/.
 
 **Cuándo NO usar:** No guardes evidencia en variables mutables; es rastreable. No confundas observación con causa.
 
@@ -589,12 +576,25 @@ python3 ejemplo.py
 ```
 Observa la salida impresa y compárala con el resultado esperado.
 
-
 Ejecuta `python3 src/evidence.py` y guarda la salida en `evidence/professional-practice.txt`. **Resultado esperado:** una representación de `Finding` con sus tres campos. Cambia `frozen=True` por `False` y modifica la evidencia después de decidir: técnicamente funciona, pero destruye la trazabilidad. La inmutabilidad no garantiza verdad; evita que el registro cambie accidentalmente.
 
 **Modifica y comprueba:** añade `risk` y `owner`, después redacta un README para que otra persona reproduzca uno de los seis experimentos. El entregable es una decisión de especialización respaldada por resultados, límites y el prerrequisito que estudiarás después.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Expón una consulta de tareas en una interfaz web local y registra su contrato. Prueba entrada inválida y acceso no permitido, documentando el límite entre validación del navegador y del servidor.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `evidence.py` dentro.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Ejecutá el `evidence.py` de más abajo y confirmá que `Finding` imprime sus tres campos (`evidence`, `inference`, `decision`) por separado.
+#### Paso 5 · Práctica guiada
+Pista: cambiá `frozen=True` por `False` en `Finding`, y modificá `finding.evidence` DESPUÉS de haber tomado la decisión — ese es el fallo deliberado: técnicamente funciona, pero destruye la trazabilidad; alguien podría reescribir la evidencia original para que coincida con la decisión ya tomada, en vez de que la decisión siga respaldada por lo que realmente se observó.
+#### Paso 6 · Práctica independiente
+Restaurá `frozen=True`, agregá los campos `risk` y `owner` a `Finding`, y escribí un hallazgo real sobre el SLI de `confirmar-entrega` del Módulo 10 de este track (la latencia del proveedor de SMS) con sus cuatro campos completos.
+#### Paso 7 · Cierre y evidencia
+Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: especialización. Errores comunes: seguridad como añadido y documentación desactualizada. Fuente oficial: https://owasp.org/www-project-top-ten/.
 
 ## Fuentes para continuar
 

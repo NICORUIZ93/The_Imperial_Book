@@ -183,36 +183,6 @@ Si `ListaEnvios` leyera directamente de la API cada vez, un conductor sin señal
 #### Paso 3 · Teoría, modelo mental y analogía
 En offline-first, la UI siempre lee de la caché local reactiva; un proceso de sincronización separado actualiza esa caché en segundo plano con datos frescos de la API.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-Stream<List<Envio>> get envios => box.watch().map((_) => box.values.toList());
-
-Future<void> sincronizar() async {
-  final remotos = await api.obtenerEnvios();
-  for (final e in remotos) { box.put(e.id, e); }
-}
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: `ListaEnvios` se suscribe al `Stream envios` (que lee de Hive) y muestra los últimos datos cacheados incluso en modo avión; cuando `sincronizar()` completa con conectividad real, la caja de Hive se actualiza y el `Stream` emite automáticamente la lista refrescada.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `ListaEnvios` para que llame directamente a `api.obtenerEnvios()` dentro de un `FutureBuilder`, "para tener siempre los datos más frescos" — ese es el fallo deliberado: activá el modo avión y reabrí la pantalla; ahora `ListaEnvios` muestra un estado de error o una pantalla vacía, en vez de los últimos envíos sincronizados que sí existían en la caché local.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `ListaEnvios` a leer del `Stream` sobre Hive, y confirmá explícitamente (activando modo avión) que la pantalla sigue mostrando los últimos envíos cacheados, aunque desactualizados, en vez de un error.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el patrón offline-first del Paso 4, la pantalla rota en modo avión provocada en el Paso 5, y la confirmación del Paso 6; explicá por qué hacer que la UI dependa directamente de la API rompe exactamente la garantía que offline-first existe para dar. Siguiente paso: cerrá el módulo evaluando si Firebase encajaría como backend para RutaFlow. Errores comunes: hacer que la UI dependa directamente de la API en vez de la caché local, sincronizar sin ningún indicador de que los datos mostrados podrían estar desactualizados, y no considerar Firebase cuando el proyecto podría evitar construir backend propio desde cero. Fuentes oficiales: https://docs.flutter.dev/app-architecture/design-patterns/offline-first y https://firebase.google.com/docs/flutter/setup.
-**¿Por qué es importante?** Offline-first mantiene la app funcional sin conexión leyendo siempre de la caché local sincronizada en background, en vez de depender directamente de la disponibilidad de la API.
 **Evidencia de aprendizaje:** entrega patrón offline-first funcionando, pantalla rota en modo avión detectada y confirmación de resiliencia sin conexión.
 **Conceptos clave:** la UI lee siempre de la caché local, sincronización en segundo plano.
 
@@ -262,6 +232,36 @@ En el proyecto integrador RutaFlow, este patrón vive en `lib/features/offline/p
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```dart
+Stream<List<Envio>> get envios => box.watch().map((_) => box.values.toList());
+
+Future<void> sincronizar() async {
+  final remotos = await api.obtenerEnvios();
+  for (final e in remotos) { box.put(e.id, e); }
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: `ListaEnvios` se suscribe al `Stream envios` (que lee de Hive) y muestra los últimos datos cacheados incluso en modo avión; cuando `sincronizar()` completa con conectividad real, la caja de Hive se actualiza y el `Stream` emite automáticamente la lista refrescada.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá `ListaEnvios` para que llame directamente a `api.obtenerEnvios()` dentro de un `FutureBuilder`, "para tener siempre los datos más frescos" — ese es el fallo deliberado: activá el modo avión y reabrí la pantalla; ahora `ListaEnvios` muestra un estado de error o una pantalla vacía, en vez de los últimos envíos sincronizados que sí existían en la caché local.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `ListaEnvios` a leer del `Stream` sobre Hive, y confirmá explícitamente (activando modo avión) que la pantalla sigue mostrando los últimos envíos cacheados, aunque desactualizados, en vez de un error.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el patrón offline-first del Paso 4, la pantalla rota en modo avión provocada en el Paso 5, y la confirmación del Paso 6; explicá por qué hacer que la UI dependa directamente de la API rompe exactamente la garantía que offline-first existe para dar. Siguiente paso: cerrá el módulo evaluando si Firebase encajaría como backend para RutaFlow. Errores comunes: hacer que la UI dependa directamente de la API en vez de la caché local, sincronizar sin ningún indicador de que los datos mostrados podrían estar desactualizados, y no considerar Firebase cuando el proyecto podría evitar construir backend propio desde cero. Fuentes oficiales: https://docs.flutter.dev/app-architecture/design-patterns/offline-first y https://firebase.google.com/docs/flutter/setup.
+**¿Por qué es importante?** Offline-first mantiene la app funcional sin conexión leyendo siempre de la caché local sincronizada en background, en vez de depender directamente de la disponibilidad de la API.
 
 ## Laboratorio práctico
 
@@ -285,7 +285,6 @@ En el proyecto integrador RutaFlow, este patrón vive en `lib/features/offline/p
 - **Hacer que la UI dependa directamente de la API en vez de la caché local.** Rompe offline-first; la UI debe leer siempre del caché.
 
 ---
-
 
 ## Laboratorio de transferencia
 

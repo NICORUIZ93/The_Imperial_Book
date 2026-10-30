@@ -210,41 +210,6 @@ graph TD
     style I fill:#c62828
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-dio.interceptors.add(InterceptorsWrapper(
-  onRequest: (options, handler) {
-    options.headers['Authorization'] = 'Bearer $token';
-    handler.next(options);
-  },
-));
-
-sealed class EstadoEnvios {}
-class Cargando extends EstadoEnvios {}
-class Exito extends EstadoEnvios { final List<Envio> envios; Exito(this.envios); }
-class ErrorEnvios extends EstadoEnvios { final String mensaje; ErrorEnvios(this.mensaje); }
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: cualquier petición nueva agregada al cliente `dio` incluye automáticamente el header de autenticación sin código adicional por llamada; un `switch` sobre `EstadoEnvios` que no maneje alguno de los tres casos produce una advertencia del analizador de Dart, no un bug silencioso descubierto en producción.
-
-#### Paso 5 · Práctica guiada
-Pista: decidí qué renderizar según el estado usando `if (estado is Cargando) ... else if (estado is Exito) ...` en vez de un `switch` exhaustivo sobre la `sealed class` — ese es el fallo deliberado: agregá el caso `ErrorEnvios` más tarde a la jerarquía, y esta cadena de `if`/`else if` sigue compilando sin ninguna advertencia aunque nadie haya agregado la rama para el nuevo estado, dejando la pantalla en blanco cuando ocurre un error real de red.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reemplazando la cadena `if`/`else if` por un `switch` exhaustivo sobre la `sealed class`, confirmando que el analizador de Dart ahora señala explícitamente si en el futuro se agrega un cuarto estado sin actualizar este `switch`.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con `if`/`else if` del Paso 5, y el switch exhaustivo corregido del Paso 6; explicá por qué un `switch` exhaustivo sobre una `sealed class` previene específicamente el tipo de omisión que ocurrió en el Paso 5, mientras que una cadena de `if`/`else if` manual no ofrece esa garantía del compilador. Siguiente paso: cerrá el módulo integrando networking completo en el proyecto. Errores comunes: agregar headers de autenticación manualmente en cada llamada en vez de centralizarlos en un interceptor, usar `if`/`else if` en vez de un `switch` exhaustivo sobre una sealed class, y omitir el manejo explícito del estado de error en la UI. Fuentes oficiales: https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html y https://dart.dev/language/class-modifiers#sealed.
-**¿Por qué es importante?** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 **Evidencia de aprendizaje:** entrega interceptor y sealed class, omisión silenciosa con if/else detectada y switch exhaustivo corregido.
 **Conceptos clave:** transformación transversal de cada petición, categorías modeladas exhaustivamente.
 
@@ -284,6 +249,42 @@ class Error extends EstadoTareas { final String mensaje; Error(this.mensaje); }
 En el proyecto integrador RutaFlow, el interceptor vive en `lib/core/api_client.dart` y `EstadoEnvios` en `lib/features/deliveries/domain/delivery_providers.dart`. Límite de la decisión: no conviene modelar una `sealed class` para una pantalla que solo tiene un estado posible (sin error ni carga real) — frente a esa pantalla trivial, un valor directo basta; la sealed class se justifica cuando hay al menos tres estados mutuamente excluyentes que la UI debe diferenciar.
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+dio.interceptors.add(InterceptorsWrapper(
+  onRequest: (options, handler) {
+    options.headers['Authorization'] = 'Bearer $token';
+    handler.next(options);
+  },
+));
+
+sealed class EstadoEnvios {}
+class Cargando extends EstadoEnvios {}
+class Exito extends EstadoEnvios { final List<Envio> envios; Exito(this.envios); }
+class ErrorEnvios extends EstadoEnvios { final String mensaje; ErrorEnvios(this.mensaje); }
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: cualquier petición nueva agregada al cliente `dio` incluye automáticamente el header de autenticación sin código adicional por llamada; un `switch` sobre `EstadoEnvios` que no maneje alguno de los tres casos produce una advertencia del analizador de Dart, no un bug silencioso descubierto en producción.
+
+#### Paso 5 · Práctica guiada
+Pista: decidí qué renderizar según el estado usando `if (estado is Cargando) ... else if (estado is Exito) ...` en vez de un `switch` exhaustivo sobre la `sealed class` — ese es el fallo deliberado: agregá el caso `ErrorEnvios` más tarde a la jerarquía, y esta cadena de `if`/`else if` sigue compilando sin ninguna advertencia aunque nadie haya agregado la rama para el nuevo estado, dejando la pantalla en blanco cuando ocurre un error real de red.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reemplazando la cadena `if`/`else if` por un `switch` exhaustivo sobre la `sealed class`, confirmando que el analizador de Dart ahora señala explícitamente si en el futuro se agrega un cuarto estado sin actualizar este `switch`.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con `if`/`else if` del Paso 5, y el switch exhaustivo corregido del Paso 6; explicá por qué un `switch` exhaustivo sobre una `sealed class` previene específicamente el tipo de omisión que ocurrió en el Paso 5, mientras que una cadena de `if`/`else if` manual no ofrece esa garantía del compilador. Siguiente paso: cerrá el módulo integrando networking completo en el proyecto. Errores comunes: agregar headers de autenticación manualmente en cada llamada en vez de centralizarlos en un interceptor, usar `if`/`else if` en vez de un `switch` exhaustivo sobre una sealed class, y omitir el manejo explícito del estado de error en la UI. Fuentes oficiales: https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html y https://dart.dev/language/class-modifiers#sealed.
+**¿Por qué es importante?** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 
 ## Referencia: RutaFlow Flutter
 

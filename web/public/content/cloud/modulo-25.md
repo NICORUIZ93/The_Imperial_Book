@@ -251,26 +251,7 @@ Al finalizar vas a disparar un respaldo bajo demanda de `ShipmentEvents` antes d
 Antes de aplicar una migración de esquema arriesgada sobre `ShipmentEvents` (como las del Módulo 13, pero aplicadas acá a DynamoDB), RutaFlow necesita un punto de recuperación fresco AHORA, no el que generó el cron a las 12:00 de ayer.
 #### Paso 3 · Teoría, modelo mental y analogía
 El estado del job de respaldo es un semáforo (`CREATED → RUNNING → COMPLETED`) que te dice si ya es seguro continuar con la migración o si todavía hay que esperar.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
-  --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents \
-  --iam-role-arn arn:aws:iam::000000000000:role/backup-role --query 'BackupJobId' --output text)
-sleep 4
-aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
-```
-Resultado esperado: el estado pasa de `CREATED` a `RUNNING` y, tras unos segundos, a `COMPLETED` — recién en ese momento, no antes, es seguro decir que el punto de recuperación de `ShipmentEvents` ya existe y la migración riesgosa puede empezar.
-#### Paso 5 · Práctica guiada
-Pista: iniciá un segundo job y, mientras todavía está en `RUNNING`, corré `aws backup stop-backup-job --backup-job-id <ese-id>` — ese es el fallo deliberado si lo hacés pensando que podés "pausar y reanudar": el job queda cancelado por completo, no pausado; si todavía necesitás ese respaldo, hay que iniciar un job nuevo desde cero.
-#### Paso 6 · Práctica independiente
-Confirmá con `describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'` que el contador subió por el job `COMPLETED` del Paso 4, y después intentá borrar `demo-boveda` con `delete-backup-vault` — confirmá el error `InvalidRequestException`, porque ahora sí hay un punto de recuperación real protegiéndola.
-#### Paso 7 · Cierre y evidencia
-Entregá el job completado del Paso 4, la cancelación irreversible del Paso 5, y la bóveda protegida del Paso 6; explicá por qué asumir éxito apenas se crea el job (en vez de esperar `COMPLETED`) sería un error antes de empezar una migración riesgosa. Siguiente paso: continuidad. Errores comunes: asumir éxito por creación y no revisar estado final. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/working-with-backups.html.
 **Conceptos clave:** `CREATED → RUNNING → COMPLETED`, punto de recuperación, `StopBackupJob`.
 
 Un trabajo de respaldo iniciado con `StartBackupJob` transiciona automáticamente por estados: `CREATED` al iniciar, `RUNNING` aproximadamente un segundo después, y `COMPLETED` tras un retraso configurable (por defecto 3 segundos en Floci, ajustable con `FLOCI_SERVICES_BACKUP_JOB_COMPLETION_DELAY_SECONDS` para acelerar pruebas automatizadas). Al llegar a `COMPLETED`, se crea un punto de recuperación en la bóveda de destino, y el contador de puntos de recuperación de esa bóveda se incrementa — información que puedes auditar en cualquier momento con `DescribeBackupVault`.
@@ -306,6 +287,27 @@ aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'Number
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Sigue un trabajo de respaldo desde solicitud hasta estado terminal. Simula o registra un fallo y comprueba que la automatización no anuncia éxito mientras el trabajo continúe pendiente.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
+  --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents \
+  --iam-role-arn arn:aws:iam::000000000000:role/backup-role --query 'BackupJobId' --output text)
+sleep 4
+aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
+```
+Resultado esperado: el estado pasa de `CREATED` a `RUNNING` y, tras unos segundos, a `COMPLETED` — recién en ese momento, no antes, es seguro decir que el punto de recuperación de `ShipmentEvents` ya existe y la migración riesgosa puede empezar.
+#### Paso 5 · Práctica guiada
+Pista: iniciá un segundo job y, mientras todavía está en `RUNNING`, corré `aws backup stop-backup-job --backup-job-id <ese-id>` — ese es el fallo deliberado si lo hacés pensando que podés "pausar y reanudar": el job queda cancelado por completo, no pausado; si todavía necesitás ese respaldo, hay que iniciar un job nuevo desde cero.
+#### Paso 6 · Práctica independiente
+Confirmá con `describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'` que el contador subió por el job `COMPLETED` del Paso 4, y después intentá borrar `demo-boveda` con `delete-backup-vault` — confirmá el error `InvalidRequestException`, porque ahora sí hay un punto de recuperación real protegiéndola.
+#### Paso 7 · Cierre y evidencia
+Entregá el job completado del Paso 4, la cancelación irreversible del Paso 5, y la bóveda protegida del Paso 6; explicá por qué asumir éxito apenas se crea el job (en vez de esperar `COMPLETED`) sería un error antes de empezar una migración riesgosa. Siguiente paso: continuidad. Errores comunes: asumir éxito por creación y no revisar estado final. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/working-with-backups.html.
 
 ## Laboratorio práctico
 
@@ -345,7 +347,6 @@ aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'Number
 - **El estado de cumplimiento en Config siempre es `INSUFFICIENT_DATA`.** Es el comportamiento documentado de Floci: la evaluación real de cumplimiento no está implementada; usa este servicio para practicar el flujo de gestión de reglas, no para validar cumplimiento real.
 
 ---
-
 
 ## Laboratorio de transferencia
 

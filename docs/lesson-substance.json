@@ -1647,11 +1647,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "4e6f0859b9c2d2e732fd98a828380b60ab88d93edfddc120b7a3a1c2b67d4a8a",
+    "fingerprint": "e90f688b5da394559eec5dc946db1229848f9a64a06fe805cb85a2d9c7a8cec2",
     "issues": {
       "andamiaje-generico": 128,
       "bloque-repetido": 202,
-      "cola-tras-cierre": 77,
+      "cola-tras-cierre": 1,
       "parrafo-repetido": 5,
       "tema-breve": 2
     },
@@ -1663,7 +1663,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1098,
-    "topicsWithIssues": 331
+    "topicsWithIssues": 306
   },
   "topics": {
     "android": [
@@ -2635,11 +2635,9 @@
         "words": 764
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 575,
+        "tailWords": 31,
         "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
         "words": 727
       },
@@ -2672,11 +2670,9 @@
         "words": 748
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 1,
-        "tailWords": 678,
+        "tailWords": 30,
         "topic": "Tema 5: Docker Compose — servicios, redes y volúmenes",
         "words": 795
       },
@@ -2781,11 +2777,9 @@
         "words": 901
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 641,
+        "tailWords": 66,
         "topic": "Tema 3: Contenedores vs Lambda, y EKS",
         "words": 961
       },
@@ -2804,11 +2798,9 @@
         "words": 655
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 15,
-        "tailWords": 512,
+        "tailWords": 31,
         "topic": "Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta",
         "words": 631
       },
@@ -2874,11 +2866,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 18,
-        "tailWords": 588,
+        "tailWords": 68,
         "topic": "Tema 3: OAuth 2.0 y PKCE",
         "words": 992
       },
@@ -2898,11 +2889,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 19,
-        "tailWords": 549,
+        "tailWords": 65,
         "topic": "Tema 3: Parquet vs CSV, y partition pruning",
         "words": 898
       },
@@ -2936,11 +2926,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 2,
-        "tailWords": 656,
+        "tailWords": 62,
         "topic": "Tema 5: Políticas de bucket, ACL y URLs pre-firmadas",
         "words": 920
       },
@@ -2959,11 +2948,9 @@
         "words": 862
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 20,
-        "tailWords": 527,
+        "tailWords": 70,
         "topic": "Tema 3: Stub vs mock, y qué probar localmente",
         "words": 864
       },
@@ -3043,11 +3030,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 22,
-        "tailWords": 783,
+        "tailWords": 79,
         "topic": "Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real",
         "words": 1199
       },
@@ -3077,11 +3063,9 @@
         "words": 839
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 23,
-        "tailWords": 566,
+        "tailWords": 72,
         "topic": "Tema 4: Autenticación IAM para el plano de datos de ElastiCache",
         "words": 867
       },
@@ -3114,11 +3098,9 @@
         "words": 1002
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 24,
-        "tailWords": 744,
+        "tailWords": 70,
         "topic": "Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB",
         "words": 1115
       },
@@ -3154,11 +3136,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 25,
-        "tailWords": 590,
+        "tailWords": 73,
         "topic": "Tema 5: El ciclo de vida de un trabajo de respaldo",
         "words": 970
       },
@@ -3192,11 +3173,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 26,
-        "tailWords": 648,
+        "tailWords": 80,
         "topic": "Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions",
         "words": 1034
       },
@@ -3223,11 +3203,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 27,
-        "tailWords": 577,
+        "tailWords": 74,
         "topic": "Tema 4: El simulador de buzones y el punto de inspección local",
         "words": 949
       },
@@ -3256,11 +3235,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 28,
-        "tailWords": 676,
+        "tailWords": 78,
         "topic": "Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB",
         "words": 1020
       },
@@ -3300,11 +3278,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 29,
-        "tailWords": 619,
+        "tailWords": 71,
         "topic": "Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta",
         "words": 931
       },
@@ -3332,11 +3309,9 @@
         "words": 1087
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 757,
+        "tailWords": 59,
         "topic": "Tema 4: Colas FIFO vs Standard",
         "words": 1043
       },
@@ -3365,11 +3340,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 30,
-        "tailWords": 605,
+        "tailWords": 75,
         "topic": "Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente",
         "words": 948
       },
@@ -3399,11 +3373,9 @@
         "words": 881
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 31,
-        "tailWords": 890,
+        "tailWords": 27,
         "topic": "Tema 4: Testcontainers — pruebas de integración automatizadas",
         "words": 1045
       },
@@ -3479,11 +3451,9 @@
         "words": 840
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 33,
-        "tailWords": 568,
+        "tailWords": 97,
         "topic": "Tema 6: Microservicios, Big Data, AI/ML y multi-cloud",
         "words": 963
       },
@@ -3606,11 +3576,9 @@
         "words": 1203
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 959,
+        "tailWords": 62,
         "topic": "Tema 6: Query vs Scan",
         "words": 1306
       },
@@ -3654,11 +3622,9 @@
         "words": 1207
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 878,
+        "tailWords": 63,
         "topic": "Tema 6: Integración con S3, DynamoDB Streams y API Gateway",
         "words": 1252
       },
@@ -3691,11 +3657,9 @@
         "words": 981
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 6,
-        "tailWords": 641,
+        "tailWords": 66,
         "topic": "Tema 5: Despliegue y variables de stage",
         "words": 971
       },
@@ -3730,11 +3694,9 @@
         "words": 784
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 709,
+        "tailWords": 64,
         "topic": "Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales",
         "words": 1058
       },
@@ -3758,11 +3720,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 8,
-        "tailWords": 1077,
+        "tailWords": 56,
         "topic": "Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio",
         "words": 1447
       },
@@ -3797,11 +3758,9 @@
         "words": 1139
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 586,
+        "tailWords": 29,
         "topic": "Tema 5: Documentación de la API y guía de despliegue",
         "words": 740
       }
@@ -4077,11 +4036,10 @@
       {
         "issues": [
           "andamiaje-generico",
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 13,
-        "tailWords": 729,
+        "tailWords": 138,
         "topic": "Tema 3: Cierre del track — checklist final y reflexión",
         "words": 1213
       },
@@ -4119,11 +4077,10 @@
         "issues": [
           "andamiaje-generico",
           "bloque-repetido",
-          "cola-tras-cierre",
           "parrafo-repetido"
         ],
         "module": 14,
-        "tailWords": 529,
+        "tailWords": 145,
         "topic": "Tema 4: Una plataforma interna es un producto con límites",
         "words": 956
       },
@@ -4692,11 +4649,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 1,
-        "tailWords": 605,
+        "tailWords": 139,
         "topic": "Tema 3: Keys",
         "words": 1076
       },
@@ -4720,11 +4676,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 10,
-        "tailWords": 659,
+        "tailWords": 156,
         "topic": "Tema 3: Accesibilidad con Semantics y dark mode",
         "words": 988
       },
@@ -4782,11 +4737,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 12,
-        "tailWords": 555,
+        "tailWords": 139,
         "topic": "Tema 3: Cierre del track",
         "words": 952
       },
@@ -4820,11 +4774,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 13,
-        "tailWords": 537,
+        "tailWords": 150,
         "topic": "Tema 4: Producción exige protocolo, telemetría y contención",
         "words": 903
       },
@@ -4952,11 +4905,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 2,
-        "tailWords": 612,
+        "tailWords": 134,
         "topic": "Tema 3: Breakpoints propios y SafeArea",
         "words": 963
       },
@@ -4980,11 +4932,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 3,
-        "tailWords": 540,
+        "tailWords": 143,
         "topic": "Tema 3: Transiciones personalizadas",
         "words": 865
       },
@@ -5049,11 +5000,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 5,
-        "tailWords": 644,
+        "tailWords": 172,
         "topic": "Tema 3: Interceptores y estados explícitos",
         "words": 1122
       },
@@ -5077,11 +5027,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 6,
-        "tailWords": 652,
+        "tailWords": 155,
         "topic": "Tema 3: Offline-first y Firebase",
         "words": 1003
       },
@@ -5118,11 +5067,9 @@
         "words": 873
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 936,
+        "tailWords": 136,
         "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia",
         "words": 1318
       },
@@ -5187,11 +5134,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 9,
-        "tailWords": 586,
+        "tailWords": 162,
         "topic": "Tema 3: Integration tests",
         "words": 925
       }
@@ -5372,11 +5318,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 11,
-        "tailWords": 659,
+        "tailWords": 29,
         "topic": "Tema 6: Redes, seguridad, web e ingeniería profesional",
         "words": 945
       },
@@ -5716,11 +5661,9 @@
         "words": 1391
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 3,
-        "tailWords": 786,
+        "tailWords": 153,
         "topic": "Tema 4: CSS, layout responsive y accesibilidad verificable",
         "words": 1550
       },
@@ -5819,11 +5762,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 5,
-        "tailWords": 721,
+        "tailWords": 165,
         "topic": "Tema 4: Calidad estática, revisión e integración continua",
         "words": 1475
       },
@@ -5998,11 +5940,10 @@
       },
       {
         "issues": [
-          "andamiaje-generico",
-          "cola-tras-cierre"
+          "andamiaje-generico"
         ],
         "module": 9,
-        "tailWords": 694,
+        "tailWords": 133,
         "topic": "Tema 4: Probabilidad y evidencia para decisiones técnicas",
         "words": 1136
       }
@@ -6037,11 +5978,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 0,
-        "tailWords": 904,
+        "tailWords": 143,
         "topic": "Tema 4: Closures, colecciones y genéricos con propósito",
         "words": 1302
       },
@@ -6065,11 +6005,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 1,
-        "tailWords": 584,
+        "tailWords": 118,
         "topic": "Tema 3: Previews, LazyVGrid/ScrollView y property wrappers",
         "words": 1019
       },
@@ -6098,11 +6037,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 10,
-        "tailWords": 959,
+        "tailWords": 139,
         "topic": "Tema 4: UIKit desde cero para mantener aplicaciones reales",
         "words": 1333
       },
@@ -6126,11 +6064,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 11,
-        "tailWords": 570,
+        "tailWords": 144,
         "topic": "Tema 3: Metadata y versionado",
         "words": 952
       },
@@ -6154,11 +6091,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 12,
-        "tailWords": 565,
+        "tailWords": 143,
         "topic": "Tema 3: Cierre del track",
         "words": 993
       },
@@ -6284,11 +6220,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 2,
-        "tailWords": 586,
+        "tailWords": 118,
         "topic": "Tema 3: @Environment y identidad vs valor",
         "words": 976
       },
@@ -6308,11 +6243,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 3,
-        "tailWords": 558,
+        "tailWords": 116,
         "topic": "Tema 3: Deep linking y controles de formulario",
         "words": 888
       },
@@ -6332,11 +6266,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 4,
-        "tailWords": 632,
+        "tailWords": 132,
         "topic": "Tema 3: TaskGroup y MainActor",
         "words": 1013
       },
@@ -6365,11 +6298,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 5,
-        "tailWords": 554,
+        "tailWords": 129,
         "topic": "Tema 3: Reintentos y cancelación",
         "words": 950
       },
@@ -6391,11 +6323,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 6,
-        "tailWords": 526,
+        "tailWords": 122,
         "topic": "Tema 3: Migraciones y SwiftData vs Core Data",
         "words": 898
       },
@@ -6469,11 +6400,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 9,
-        "tailWords": 657,
+        "tailWords": 146,
         "topic": "Tema 3: UI Tests con XCUITest",
         "words": 1042
       }
@@ -6574,11 +6504,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 1,
-        "tailWords": 521,
+        "tailWords": 94,
         "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
         "words": 877
       },
@@ -6602,11 +6531,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 10,
-        "tailWords": 608,
+        "tailWords": 131,
         "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
         "words": 1003
       },
@@ -6668,11 +6596,9 @@
         "words": 858
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 12,
-        "tailWords": 506,
+        "tailWords": 90,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
         "words": 1139
       },
@@ -6723,11 +6649,9 @@
         "words": 885
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 719,
+        "tailWords": 109,
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
         "words": 1110
       },
@@ -6884,11 +6808,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 2,
-        "tailWords": 591,
+        "tailWords": 130,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
         "words": 889
       },
@@ -6933,11 +6856,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 3,
-        "tailWords": 584,
+        "tailWords": 137,
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones",
         "words": 903
       },
@@ -7055,11 +6977,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 6,
-        "tailWords": 650,
+        "tailWords": 136,
         "topic": "Tema 3: Archivos grandes y recursos del classpath",
         "words": 960
       },
@@ -7153,11 +7074,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 9,
-        "tailWords": 634,
+        "tailWords": 149,
         "topic": "Tema 3: Tests parametrizados y cobertura",
         "words": 1061
       }
@@ -7882,11 +7802,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 11,
-        "tailWords": 691,
+        "tailWords": 167,
         "topic": "Tema 3: Cierre del track — la promesa realista de KMP",
         "words": 1103
       },
@@ -7922,11 +7841,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 12,
-        "tailWords": 605,
+        "tailWords": 162,
         "topic": "Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas",
         "words": 1029
       },
@@ -8177,11 +8095,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 8,
-        "tailWords": 648,
+        "tailWords": 156,
         "topic": "Tema 3: Coroutines desde Swift, y distribución del framework",
         "words": 1288
       },
@@ -8205,11 +8122,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 9,
-        "tailWords": 652,
+        "tailWords": 158,
         "topic": "Tema 3: runTest para coroutines",
         "words": 959
       }
@@ -8342,11 +8258,9 @@
         "words": 814
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 11,
-        "tailWords": 637,
+        "tailWords": 0,
         "topic": "Tema 4: Nginx como reverse proxy y serverless",
         "words": 921
       },
@@ -8386,11 +8300,9 @@
         "words": 989
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 12,
-        "tailWords": 528,
+        "tailWords": 0,
         "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización",
         "words": 831
       },
@@ -8424,20 +8336,17 @@
       {
         "issues": [
           "bloque-repetido",
-          "cola-tras-cierre",
           "parrafo-repetido"
         ],
         "module": 13,
-        "tailWords": 507,
+        "tailWords": 116,
         "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación",
         "words": 872
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 13,
-        "tailWords": 657,
+        "tailWords": 61,
         "topic": "Tema 5: OpenAPI como contrato ejecutable",
         "words": 848
       },
@@ -8729,11 +8638,9 @@
         "words": 875
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 8,
-        "tailWords": 692,
+        "tailWords": 0,
         "topic": "Tema 5: Redis para caché, idempotencia y Pub/Sub",
         "words": 987
       },
@@ -8766,11 +8673,9 @@
         "words": 822
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 715,
+        "tailWords": 0,
         "topic": "Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry",
         "words": 999
       }
@@ -8892,11 +8797,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 11,
-        "tailWords": 754,
+        "tailWords": 163,
         "topic": "Tema 3: Eventos tipados y componentes polimórficos",
         "words": 1153
       },
@@ -8946,11 +8850,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 13,
-        "tailWords": 617,
+        "tailWords": 164,
         "topic": "Tema 4: Hidratación determinista, idioma y releases medibles",
         "words": 992
       },
@@ -9139,11 +9042,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 6,
-        "tailWords": 779,
+        "tailWords": 139,
         "topic": "Tema 3: Optimistic updates",
         "words": 1179
       },
@@ -9176,11 +9078,10 @@
       },
       {
         "issues": [
-          "bloque-repetido",
-          "cola-tras-cierre"
+          "bloque-repetido"
         ],
         "module": 7,
-        "tailWords": 535,
+        "tailWords": 158,
         "topic": "Tema 4: Jotai, Recoil y XState como alternativas",
         "words": 909
       },
@@ -9201,11 +9102,9 @@
         "words": 849
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 8,
-        "tailWords": 624,
+        "tailWords": 159,
         "topic": "Tema 3: Testing de hooks personalizados",
         "words": 953
       },

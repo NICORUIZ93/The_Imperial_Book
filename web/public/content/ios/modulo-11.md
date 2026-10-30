@@ -138,32 +138,6 @@ El build de RutaFlow ya está en TestFlight, pero promoverlo a revisión de la A
 #### Paso 3 · Teoría, modelo mental y analogía
 `CFBundleShortVersionString` es la versión visible al usuario (semver); `CFBundleVersion` es el número de build interno, que debe incrementarse estrictamente en cada subida — un nombre comercial visible frente a un número de serie interno.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-CFBundleShortVersionString: 1.3.0   ← versión visible (semver), cambia por release
-CFBundleVersion: 42                  ← número de build, SIEMPRE incremental
-```
-
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-En App Store Connect: completá descripción, palabras clave, capturas por tamaño de dispositivo, política de privacidad (URL obligatoria) y el cuestionario de privacidad (qué datos recolecta RutaFlow: ubicación del conductor, para el tracking de entregas).
-
-Resultado esperado: App Store Connect solo habilita enviar a revisión cuando todos los campos obligatorios están completos; si falta la política de privacidad o el cuestionario, el botón de enviar a revisión queda deshabilitado con el campo faltante señalado explícitamente.
-
-#### Paso 5 · Práctica guiada
-Pista: subí un nuevo build incrementando `CFBundleVersion` a 43, pero dejá `CFBundleShortVersionString` igual en "1.3.0" — ese es el fallo deliberado: App Store Connect acepta el build (porque el número de build sí es mayor), pero los usuarios que ya tienen "1.3.0" instalado no ven ninguna razón visible para actualizar, porque la versión visible no cambió aunque el contenido sí.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 incrementando también `CFBundleShortVersionString` a "1.3.1" cuando el cambio sea visible para el usuario, y documentá en el changelog de App Store Connect qué cambió en esta versión respecto a la anterior.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la metadata completa del Paso 4, la confusión de versión detectada en el Paso 5, y el changelog del Paso 6; explicá la diferencia entre incrementar solo `CFBundleVersion` (necesario en cada subida, invisible para el usuario) e incrementar también `CFBundleShortVersionString` (cuando el cambio es visible y merece comunicarse). Siguiente paso: estudia cómo automatizar este proceso con CI. Errores comunes: olvidar incrementar `CFBundleVersion` antes de subir, cambiar la versión visible sin que el cambio lo justifique, y omitir la política de privacidad o el cuestionario de privacidad. Fuentes oficiales: https://developer.apple.com/help/app-store-connect/ y https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion.
-**¿Por qué es importante?** Porque la metadata obligatoria (especialmente la política de privacidad) es un requisito no negociable antes de la revisión, y confundir versión de build con versión visible comunica mal los cambios al usuario.
 **Evidencia de aprendizaje:** entrega metadata completa, confusión de versión detectada y changelog documentado.
 **Conceptos clave:** información obligatoria para la revisión, dos identificadores con propósitos distintos.
 
@@ -205,6 +179,32 @@ CFBundleVersion: "42"                  → SIEMPRE incremental, uso interno de A
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```text
+CFBundleShortVersionString: 1.3.0   ← versión visible (semver), cambia por release
+CFBundleVersion: 42                  ← número de build, SIEMPRE incremental
+```
+
+**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+En App Store Connect: completá descripción, palabras clave, capturas por tamaño de dispositivo, política de privacidad (URL obligatoria) y el cuestionario de privacidad (qué datos recolecta RutaFlow: ubicación del conductor, para el tracking de entregas).
+
+Resultado esperado: App Store Connect solo habilita enviar a revisión cuando todos los campos obligatorios están completos; si falta la política de privacidad o el cuestionario, el botón de enviar a revisión queda deshabilitado con el campo faltante señalado explícitamente.
+
+#### Paso 5 · Práctica guiada
+Pista: subí un nuevo build incrementando `CFBundleVersion` a 43, pero dejá `CFBundleShortVersionString` igual en "1.3.0" — ese es el fallo deliberado: App Store Connect acepta el build (porque el número de build sí es mayor), pero los usuarios que ya tienen "1.3.0" instalado no ven ninguna razón visible para actualizar, porque la versión visible no cambió aunque el contenido sí.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 incrementando también `CFBundleShortVersionString` a "1.3.1" cuando el cambio sea visible para el usuario, y documentá en el changelog de App Store Connect qué cambió en esta versión respecto a la anterior.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la metadata completa del Paso 4, la confusión de versión detectada en el Paso 5, y el changelog del Paso 6; explicá la diferencia entre incrementar solo `CFBundleVersion` (necesario en cada subida, invisible para el usuario) e incrementar también `CFBundleShortVersionString` (cuando el cambio es visible y merece comunicarse). Siguiente paso: estudia cómo automatizar este proceso con CI. Errores comunes: olvidar incrementar `CFBundleVersion` antes de subir, cambiar la versión visible sin que el cambio lo justifique, y omitir la política de privacidad o el cuestionario de privacidad. Fuentes oficiales: https://developer.apple.com/help/app-store-connect/ y https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion.
+**¿Por qué es importante?** Porque la metadata obligatoria (especialmente la política de privacidad) es un requisito no negociable antes de la revisión, y confundir versión de build con versión visible comunica mal los cambios al usuario.
 
 ## Laboratorio práctico
 

@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 16:17 UTC
+Generated: 2026-10-30 16:26 UTC
 Root: `Academia_Floci`
-Indexed files: 922
+Indexed files: 924
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,18 +16,18 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 35 files
+- `automation-script`: 36 files
 - `course-content`: 251 files
 - `documentation`: 54 files
 - `example`: 467 files
 - `local-infra`: 1 files
-- `project-file`: 55 files
+- `project-file`: 56 files
 
 ## File Types
 
 - `.md`: 312
-- `.py`: 161
-- `.json`: 68
+- `.py`: 162
+- `.json`: 69
 - `.ts`: 66
 - `.java`: 54
 - `.js`: 54
@@ -191,10 +191,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/merge_duplicate_sections.py` (179 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
+- `scripts/relocate_tail_to_theory.py` (162 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
 - `scripts/start.sh` (10 lines)
 - `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
-- `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
-- ... 17 more files
+- ... 18 more files
 
 ### course-content
 
@@ -271,19 +271,19 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
 - `docs/app-flow-inspection-devops.json` (1617 lines)
+- `docs/app-flow-inspection-relocate.json` (11319 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2156 lines)
+- `docs/code-visual-quality.json` (1904 lines)
 - `docs/course-depth-review.json` (12460 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10130 lines)
+- `docs/lesson-substance.json` (10029 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (12086 lines)
-- ... 37 more files
+- ... 38 more files

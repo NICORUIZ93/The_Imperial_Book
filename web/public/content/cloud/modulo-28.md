@@ -201,24 +201,7 @@ Al finalizar vas a mapear las tres preguntas reales de RutaFlow (buscar por guí
 RutaFlow necesita "el envío con esta guía exacta" (`ShipmentEvents`), "repartidores que cubrieron la misma zona que Ana" (Neptune, Tema 1-2) y "paquetes cuya descripción menciona frágil" (OpenSearch, Tema 3) — tres preguntas, tres estructuras.
 #### Paso 3 · Teoría, modelo mental y analogía
 La estructura de datos debe seguir la pregunta dominante de cada parte del sistema, no una preferencia por una tecnología de moda aplicada a todo por igual.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws dynamodb get-item --table-name ShipmentEvents --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
-curl "http://$ENDPOINT/paquetes/_search?q=fragil"
-# (consulta Gremlin del Tema 1, vía gremlin-python contra el puerto de Neptune)
-```
-Resultado esperado: cada consulta responde rápido y de forma natural en su propio almacén — la de DynamoDB por clave exacta, la de OpenSearch por texto con relevancia, la de Neptune por cadena de relaciones.
-#### Paso 5 · Práctica guiada
-Pista: intentá responder "paquetes cuya descripción menciona frágil" haciendo un `Scan` completo de una tabla DynamoDB filtrando con `contains()` sobre el atributo `descripcion` — ese es el fallo deliberado de rendimiento: funciona en una tabla de prueba con pocos items, pero escala pésimo (Módulo 4, Tema 6) comparado con la búsqueda de texto completo real que OpenSearch resuelve de forma nativa.
-#### Paso 6 · Práctica independiente
-Construí una tabla de tres filas (clave exacta / relación multi-salto / texto completo) con la columna "almacén correcto" y "por qué forzarlo en otro almacén sería más lento", usando los tres ejemplos reales de RutaFlow de este módulo.
-#### Paso 7 · Cierre y evidencia
-Entregá las tres consultas nativas del Paso 4, el Scan forzado y lento del Paso 5, y la tabla de decisión del Paso 6; explicá por qué en sistemas reales es común usar los tres almacenes a la vez para distintas partes del mismo dominio, en vez de elegir uno solo "para todo". Siguiente paso: búsqueda. Errores comunes: modelar sin medir y olvidar cardinalidad. Fuente oficial: https://docs.aws.amazon.com/architecture-well-architected/latest/framework/welcome.html.
 **Conceptos clave:** patrón de acceso dominante, búsqueda por clave vs relación vs texto completo.
 
 Con Neptune, OpenSearch y DynamoDB en tu caja de herramientas, la pregunta de diseño correcta no es "¿cuál es la mejor base de datos?" sino "¿cuál es el patrón de acceso dominante de esta parte específica de mi sistema?". Si necesitas recuperar un registro por su identificador de forma extremadamente rápida y predecible, DynamoDB. Si necesitas encontrar documentos que contengan ciertas palabras, con relevancia y tolerancia a errores de escritura, OpenSearch. Si necesitas recorrer cadenas de relaciones entre entidades —quién está conectado con quién, y a través de qué caminos—, Neptune.
@@ -256,6 +239,25 @@ En el comando de DynamoDB, `--table-name` es la bandera que indica en qué tabla
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Clasifica seguimiento por clave, búsqueda textual y relaciones entre almacenes. Asigna un motor a cada consulta con un ejemplo verificable y evita replicar todos los datos sin un caso de uso.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws dynamodb get-item --table-name ShipmentEvents --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
+curl "http://$ENDPOINT/paquetes/_search?q=fragil"
+# (consulta Gremlin del Tema 1, vía gremlin-python contra el puerto de Neptune)
+```
+Resultado esperado: cada consulta responde rápido y de forma natural en su propio almacén — la de DynamoDB por clave exacta, la de OpenSearch por texto con relevancia, la de Neptune por cadena de relaciones.
+#### Paso 5 · Práctica guiada
+Pista: intentá responder "paquetes cuya descripción menciona frágil" haciendo un `Scan` completo de una tabla DynamoDB filtrando con `contains()` sobre el atributo `descripcion` — ese es el fallo deliberado de rendimiento: funciona en una tabla de prueba con pocos items, pero escala pésimo (Módulo 4, Tema 6) comparado con la búsqueda de texto completo real que OpenSearch resuelve de forma nativa.
+#### Paso 6 · Práctica independiente
+Construí una tabla de tres filas (clave exacta / relación multi-salto / texto completo) con la columna "almacén correcto" y "por qué forzarlo en otro almacén sería más lento", usando los tres ejemplos reales de RutaFlow de este módulo.
+#### Paso 7 · Cierre y evidencia
+Entregá las tres consultas nativas del Paso 4, el Scan forzado y lento del Paso 5, y la tabla de decisión del Paso 6; explicá por qué en sistemas reales es común usar los tres almacenes a la vez para distintas partes del mismo dominio, en vez de elegir uno solo "para todo". Siguiente paso: búsqueda. Errores comunes: modelar sin medir y olvidar cardinalidad. Fuente oficial: https://docs.aws.amazon.com/architecture-well-architected/latest/framework/welcome.html.
 
 ## Laboratorio práctico
 

@@ -3,7 +3,7 @@
     "foundations": {
       "topics": 99,
       "code": 99,
-      "commentedCode": 90,
+      "commentedCode": 92,
       "mermaid": 69,
       "archifyVisual": 6,
       "asciiVisual": 0,
@@ -15,7 +15,7 @@
     "cloud": {
       "topics": 156,
       "code": 156,
-      "commentedCode": 112,
+      "commentedCode": 124,
       "mermaid": 80,
       "archifyVisual": 4,
       "asciiVisual": 18,
@@ -27,7 +27,7 @@
     "devops": {
       "topics": 113,
       "code": 113,
-      "commentedCode": 61,
+      "commentedCode": 63,
       "mermaid": 62,
       "archifyVisual": 1,
       "asciiVisual": 43,
@@ -51,7 +51,7 @@
     "node": {
       "topics": 77,
       "code": 77,
-      "commentedCode": 41,
+      "commentedCode": 42,
       "mermaid": 23,
       "archifyVisual": 0,
       "asciiVisual": 13,
@@ -75,7 +75,7 @@
     "react": {
       "topics": 58,
       "code": 58,
-      "commentedCode": 38,
+      "commentedCode": 42,
       "mermaid": 37,
       "archifyVisual": 0,
       "asciiVisual": 9,
@@ -111,7 +111,7 @@
     "kotlin-multiplatform": {
       "topics": 56,
       "code": 56,
-      "commentedCode": 43,
+      "commentedCode": 45,
       "mermaid": 31,
       "archifyVisual": 0,
       "asciiVisual": 22,
@@ -135,7 +135,7 @@
     "ios": {
       "topics": 56,
       "code": 56,
-      "commentedCode": 32,
+      "commentedCode": 38,
       "mermaid": 30,
       "archifyVisual": 0,
       "asciiVisual": 16,
@@ -147,7 +147,7 @@
     "flutter": {
       "topics": 63,
       "code": 63,
-      "commentedCode": 41,
+      "commentedCode": 48,
       "mermaid": 51,
       "archifyVisual": 0,
       "asciiVisual": 15,
@@ -214,36 +214,8 @@
     },
     {
       "track": "foundations",
-      "module": 5,
-      "topic": "Tema 4: Calidad estática, revisión e integración continua",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
       "module": 7,
       "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "foundations",
-      "module": 9,
-      "topic": "Tema 4: Probabilidad y evidencia para decisiones técnicas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 1,
-      "topic": "Tema 5: Docker Compose — servicios, redes y volúmenes",
       "missingCode": false,
       "missingComments": true
     },
@@ -291,13 +263,6 @@
     },
     {
       "track": "cloud",
-      "module": 14,
-      "topic": "Tema 3: Contenedores vs Lambda, y EKS",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
       "module": 15,
       "topic": "Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI",
       "missingCode": false,
@@ -307,13 +272,6 @@
       "track": "cloud",
       "module": 15,
       "topic": "Tema 2: Change sets",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 15,
-      "topic": "Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta",
       "missingCode": false,
       "missingComments": true
     },
@@ -347,43 +305,8 @@
     },
     {
       "track": "cloud",
-      "module": 18,
-      "topic": "Tema 3: OAuth 2.0 y PKCE",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 19,
-      "topic": "Tema 3: Parquet vs CSV, y partition pruning",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 2,
-      "topic": "Tema 5: Políticas de bucket, ACL y URLs pre-firmadas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 3,
-      "topic": "Tema 4: Colas FIFO vs Standard",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
       "module": 31,
       "topic": "Tema 2: Arquitectura interna de cloud local y su uso en CI/CD",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 31,
-      "topic": "Tema 4: Testcontainers — pruebas de integración automatizadas",
       "missingCode": false,
       "missingComments": true
     },
@@ -431,22 +354,8 @@
     },
     {
       "track": "cloud",
-      "module": 33,
-      "topic": "Tema 6: Microservicios, Big Data, AI/ML y multi-cloud",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
       "module": 34,
       "topic": "Tema 7: Servicios Azure que completan el recorrido",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 4,
-      "topic": "Tema 6: Query vs Scan",
       "missingCode": false,
       "missingComments": true
     },
@@ -531,13 +440,6 @@
       "track": "cloud",
       "module": 8,
       "topic": "Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 9,
-      "topic": "Tema 5: Documentación de la API y guía de despliegue",
       "missingCode": false,
       "missingComments": true
     },
@@ -662,13 +564,6 @@
     },
     {
       "track": "devops",
-      "module": 13,
-      "topic": "Tema 3: Cierre del track — checklist final y reflexión",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
       "module": 14,
       "topic": "Tema 1: Confiabilidad es una expectativa cuantificada",
       "missingCode": false,
@@ -678,13 +573,6 @@
       "track": "devops",
       "module": 14,
       "topic": "Tema 2: Una alerta debe conducir a una acción",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 14,
-      "topic": "Tema 4: Una plataforma interna es un producto con límites",
       "missingCode": false,
       "missingComments": true
     },
@@ -1235,13 +1123,6 @@
       "missingComments": true
     },
     {
-      "track": "node",
-      "module": 9,
-      "topic": "Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
       "track": "angular",
       "module": 12,
       "topic": "Tema 2: Leer la guía de actualización antes de modificar archivos",
@@ -1313,13 +1194,6 @@
     },
     {
       "track": "react",
-      "module": 13,
-      "topic": "Tema 4: Hidratación determinista, idioma y releases medibles",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
       "module": 2,
       "topic": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
       "missingCode": false,
@@ -1355,29 +1229,8 @@
     },
     {
       "track": "react",
-      "module": 6,
-      "topic": "Tema 3: Optimistic updates",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 7,
-      "topic": "Tema 4: Jotai, Recoil y XState como alternativas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
       "module": 8,
       "topic": "Tema 2: Mock Service Worker (MSW)",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 8,
-      "topic": "Tema 3: Testing de hooks personalizados",
       "missingCode": false,
       "missingComments": true
     },
@@ -1684,13 +1537,6 @@
     },
     {
       "track": "kotlin-multiplatform",
-      "module": 11,
-      "topic": "Tema 3: Cierre del track — la promesa realista de KMP",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
       "module": 12,
       "topic": "Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas",
       "missingCode": false,
@@ -1767,13 +1613,6 @@
       "missingComments": true
     },
     {
-      "track": "kotlin-multiplatform",
-      "module": 9,
-      "topic": "Tema 3: runTest para coroutines",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
       "track": "android",
       "module": 0,
       "topic": "Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla",
@@ -1831,13 +1670,6 @@
     },
     {
       "track": "ios",
-      "module": 10,
-      "topic": "Tema 4: UIKit desde cero para mantener aplicaciones reales",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
       "module": 11,
       "topic": "Tema 1: Certificados y provisioning profiles",
       "missingCode": false,
@@ -1847,20 +1679,6 @@
       "track": "ios",
       "module": 11,
       "topic": "Tema 2: Archivar, subir y TestFlight",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 11,
-      "topic": "Tema 3: Metadata y versionado",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 12,
-      "topic": "Tema 3: Cierre del track",
       "missingCode": false,
       "missingComments": true
     },
@@ -1915,13 +1733,6 @@
     },
     {
       "track": "ios",
-      "module": 3,
-      "topic": "Tema 3: Deep linking y controles de formulario",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
       "module": 4,
       "topic": "Tema 1: async/await y Task",
       "missingCode": false,
@@ -1957,13 +1768,6 @@
     },
     {
       "track": "ios",
-      "module": 6,
-      "topic": "Tema 3: Migraciones y SwiftData vs Core Data",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
       "module": 7,
       "topic": "Tema 1: Publishers y Subscribers",
       "missingCode": false,
@@ -1973,13 +1777,6 @@
       "track": "ios",
       "module": 7,
       "topic": "Tema 2: Operadores: debounce y combineLatest",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 9,
-      "topic": "Tema 3: UI Tests con XCUITest",
       "missingCode": false,
       "missingComments": true
     },
@@ -1999,13 +1796,6 @@
     },
     {
       "track": "flutter",
-      "module": 12,
-      "topic": "Tema 3: Cierre del track",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
       "module": 13,
       "topic": "Tema 1: Una API Dart puede terminar en una frontera nativa",
       "missingCode": false,
@@ -2015,13 +1805,6 @@
       "track": "flutter",
       "module": 13,
       "topic": "Tema 2: Los secretos no pertenecen al binario",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 13,
-      "topic": "Tema 4: Producción exige protocolo, telemetría y contención",
       "missingCode": false,
       "missingComments": true
     },
@@ -2090,27 +1873,6 @@
     },
     {
       "track": "flutter",
-      "module": 2,
-      "topic": "Tema 3: Breakpoints propios y SafeArea",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 3,
-      "topic": "Tema 3: Transiciones personalizadas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 6,
-      "topic": "Tema 3: Offline-first y Firebase",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
       "module": 6,
       "topic": "Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación",
       "missingCode": false,
@@ -2120,20 +1882,6 @@
       "track": "flutter",
       "module": 7,
       "topic": "Tema 2: Plugins federados",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 7,
-      "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 9,
-      "topic": "Tema 3: Integration tests",
       "missingCode": false,
       "missingComments": true
     },

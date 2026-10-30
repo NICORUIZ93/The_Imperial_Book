@@ -140,26 +140,6 @@ Verificar una función como "es Fibonacci" para cinco valores distintos copiando
 #### Paso 3 · Teoría, modelo mental y analogía
 `@ParameterizedTest` ejecuta el mismo cuerpo de prueba una vez por cada valor de una fuente de datos, evitando duplicar manualmente la lógica de verificación por cada caso; JaCoCo mide qué porcentaje de líneas y ramas del código de producción efectivamente se ejecutó durante toda la suite. La analogía: verificar la misma receta con distintos ingredientes de entrada, sin reescribir el procedimiento de verificación para cada ingrediente distinto.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-parametrizado-cobertura
-cd ejemplo-parametrizado-cobertura
-mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app
-mvn test jacoco:report            # Maven (plugin jacoco-maven-plugin)
-./gradlew test jacocoTestReport   # Gradle (equivalente, con el plugin `jacoco`)
-```
-Crea `src/test/java/academia/entregas/FibonacciTest.java` con `@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero)`; ejecuta `mvn test jacoco:report` y abre `target/site/jacoco/index.html`.
-
-#### Paso 5 · Práctica guiada
-Pista: agrega el valor `4` a `@ValueSource(ints = {1, 2, 3, 5, 8})` → `{1, 2, 3, 4, 5, 8}`. **Fallo deliberado:** `4` no es un número de Fibonacci, así que `assertTrue(esFibonacci(4))` **falla** con un error `AssertionFailedError: expected: <true> but was: <false>`. Diagnostica el mensaje: JUnit reporta el fallo indicando `[4]` como el parámetro que lo provocó, no un fallo genérico — esa es la ventaja de `@ParameterizedTest`, que señala exactamente cuál de los valores de entrada rompió la aserción. Resultado esperado: quitar el `4` deja la suite en verde de nuevo; el reporte de JaCoCo además muestra qué rama del método `esFibonacci` ejercita cada valor restante.
-#### Paso 6 · Práctica independiente
-Convierte el test a `@MethodSource` con un método que genere los mismos casos programáticamente, y agrega un caso inválido (un número negativo) para verificar el manejo de error.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el test, el reporte HTML de JaCoCo antes y después de quitar el caso, y la explicación de qué rama quedó sin cubrir; como siguiente paso conecta la suite a CI. Errores comunes: duplicar el mismo cuerpo de prueba por cada caso en vez de usar `@ParameterizedTest`, perseguir 100% de cobertura en código trivial (getters/setters) sin evaluar el riesgo real de cada rama, y tratar un alto porcentaje de cobertura como sinónimo de "bien probado" sin revisar la calidad de las aserciones. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests y https://www.jacoco.org/jacoco/trunk/doc/.
-**¿Por qué es importante?** Porque un test parametrizado evita duplicar la misma lógica de verificación por cada caso de entrada, y un reporte de cobertura señala exactamente qué rama del código de producción ninguna prueba ejercita todavía, un riesgo invisible sin esa medición.
 **Evidencia de aprendizaje:** entrega el test parametrizado con `@ValueSource`, y el reporte de JaCoCo comparado antes y después de quitar un caso.
 **Conceptos clave:** una única prueba con múltiples conjuntos de datos, `@CsvSource`/`@MethodSource`, cobertura de líneas/ramas.
 
@@ -190,6 +170,26 @@ El reporte de cobertura del Proyecto integrador (Módulo 13) debe revisarse ante
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-parametrizado-cobertura
+cd ejemplo-parametrizado-cobertura
+mvn -q archetype:generate -DgroupId=academia.entregas -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app
+mvn test jacoco:report            # Maven (plugin jacoco-maven-plugin)
+./gradlew test jacocoTestReport   # Gradle (equivalente, con el plugin `jacoco`)
+```
+Crea `src/test/java/academia/entregas/FibonacciTest.java` con `@ParameterizedTest @ValueSource(ints = {1, 2, 3, 5, 8}) void esFibonacci(int numero)`; ejecuta `mvn test jacoco:report` y abre `target/site/jacoco/index.html`.
+
+#### Paso 5 · Práctica guiada
+Pista: agrega el valor `4` a `@ValueSource(ints = {1, 2, 3, 5, 8})` → `{1, 2, 3, 4, 5, 8}`. **Fallo deliberado:** `4` no es un número de Fibonacci, así que `assertTrue(esFibonacci(4))` **falla** con un error `AssertionFailedError: expected: <true> but was: <false>`. Diagnostica el mensaje: JUnit reporta el fallo indicando `[4]` como el parámetro que lo provocó, no un fallo genérico — esa es la ventaja de `@ParameterizedTest`, que señala exactamente cuál de los valores de entrada rompió la aserción. Resultado esperado: quitar el `4` deja la suite en verde de nuevo; el reporte de JaCoCo además muestra qué rama del método `esFibonacci` ejercita cada valor restante.
+#### Paso 6 · Práctica independiente
+Convierte el test a `@MethodSource` con un método que genere los mismos casos programáticamente, y agrega un caso inválido (un número negativo) para verificar el manejo de error.
+
+#### Paso 7 · Cierre y evidencia
+Guarda el test, el reporte HTML de JaCoCo antes y después de quitar el caso, y la explicación de qué rama quedó sin cubrir; como siguiente paso conecta la suite a CI. Errores comunes: duplicar el mismo cuerpo de prueba por cada caso en vez de usar `@ParameterizedTest`, perseguir 100% de cobertura en código trivial (getters/setters) sin evaluar el riesgo real de cada rama, y tratar un alto porcentaje de cobertura como sinónimo de "bien probado" sin revisar la calidad de las aserciones. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests y https://www.jacoco.org/jacoco/trunk/doc/.
+**¿Por qué es importante?** Porque un test parametrizado evita duplicar la misma lógica de verificación por cada caso de entrada, y un reporte de cobertura señala exactamente qué rama del código de producción ninguna prueba ejercita todavía, un riesgo invisible sin esa medición.
 
 ## Construcción guiada del capítulo
 

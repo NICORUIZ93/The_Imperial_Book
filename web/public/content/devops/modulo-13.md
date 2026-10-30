@@ -179,45 +179,6 @@ Completar el proyecto integrador no garantiza por sí solo que cada concepto est
 #### Paso 3 · Teoría, modelo mental y analogía
 Aplicar la misma disciplina de checklist usada en producción (Módulo 12) al propio aprendizaje es una forma de verificar honestamente el dominio real, distinto de simplemente haber "visto" cada tema una vez.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `examples/rutaflow/devops/deployment.yaml` dentro.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-
-Crea `docs/cierre-track-checklist.md` en tu proyecto y documenta tus respuestas, ejecutando `kubectl` contra el mismo `examples/rutaflow/devops/deployment.yaml` del proyecto integrador para verificar cada decisión (por ejemplo, `kubectl explain deployment.spec.strategy` para la pregunta 3):
-
-```text
-Checklist de auto-evaluación (sin consultar notas):
-1. ¿Diferencia entre Deployment y StatefulSet, y cuándo usar cada uno?
-2. ¿Por qué GitOps reduce la superficie de exposición de credenciales
-   frente al CD tradicional?
-3. ¿Cómo diseñarías, desde cero, un despliegue canary con un umbral
-   de rollback automático razonable?
-```
-
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
-
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
-Resultado esperado: respondés las tres preguntas con una justificación concreta anclada en una decisión real del pipeline de RutaFlow que construiste, confirmando que el conocimiento quedó conectado a una aplicación práctica, no memorizado de forma aislada.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
-```
-#### Paso 5 · Práctica guiada
-Pista: respondé la pregunta sobre GitOps con una definición genérica copiada ("GitOps es usar Git como fuente de verdad") sin conectarla con ninguna decisión específica del pipeline de RutaFlow — ese es el fallo deliberado: esa respuesta "suena" correcta pero no demuestra que entendiste por qué esa propiedad reduce exposición de credenciales en tu propio pipeline, y no te prepara para defender esa decisión frente a alguien que pregunte "¿por qué no simplemente CD tradicional acá?".
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reescribiendo la respuesta conectándola con una decisión real de tu propio pipeline (el operador de GitOps dentro del clúster nunca necesita credenciales de despliegue externas, a diferencia de un runner de CD tradicional que sí las necesita), y repetí el ejercicio para las otras dos preguntas.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el checklist respondido del Paso 4, la respuesta genérica sin anclaje real detectada en el Paso 5, y las tres respuestas reescritas con conexión al pipeline propio del Paso 6; explicá por qué una respuesta "de libro" sin conexión a una decisión real no demuestra dominio genuino. Siguiente paso: aplicá este mismo pipeline completo a un proyecto personal real para consolidarlo de forma duradera. Errores comunes: dar por completado el track sin poder explicar las decisiones propias sin notas, confundir haber "visto" un tema con haberlo dominado, y no conectar este track con el track Cloud que lo complementa directamente. Fuente oficial: https://sre.google/sre-book/.
-**¿Por qué es importante?** La reflexión final de consolidación convierte catorce módulos de conocimiento técnico específico en un modelo mental coherente y duradero de cómo opera un sistema DevOps real.
 **Evidencia de aprendizaje:** entrega checklist respondido, respuesta genérica sin anclaje detectada y las tres respuestas reescritas con conexión al pipeline propio.
 **Conceptos clave:** consolidación, checklist de dominio del track, próximos pasos de aprendizaje.
 
@@ -262,6 +223,45 @@ graph TD
 * Código: `docs/cierre-track-checklist.md`
 
 ---
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `examples/rutaflow/devops/deployment.yaml` dentro.
+```bash
+mkdir ejemplo && cd ejemplo && terraform init
+```
+
+Crea `docs/cierre-track-checklist.md` en tu proyecto y documenta tus respuestas, ejecutando `kubectl` contra el mismo `examples/rutaflow/devops/deployment.yaml` del proyecto integrador para verificar cada decisión (por ejemplo, `kubectl explain deployment.spec.strategy` para la pregunta 3):
+
+```text
+Checklist de auto-evaluación (sin consultar notas):
+1. ¿Diferencia entre Deployment y StatefulSet, y cuándo usar cada uno?
+2. ¿Por qué GitOps reduce la superficie de exposición de credenciales
+   frente al CD tradicional?
+3. ¿Cómo diseñarías, desde cero, un despliegue canary con un umbral
+   de rollback automático razonable?
+```
+
+**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+
+```bash
+bash ejemplo.sh
+```
+Verifica la salida y el estado de los recursos creados.
+
+Resultado esperado: respondés las tres preguntas con una justificación concreta anclada en una decisión real del pipeline de RutaFlow que construiste, confirmando que el conocimiento quedó conectado a una aplicación práctica, no memorizado de forma aislada.
+**Ejecuta el ejemplo** con el comando de su stack:
+```bash
+terraform plan
+```
+#### Paso 5 · Práctica guiada
+Pista: respondé la pregunta sobre GitOps con una definición genérica copiada ("GitOps es usar Git como fuente de verdad") sin conectarla con ninguna decisión específica del pipeline de RutaFlow — ese es el fallo deliberado: esa respuesta "suena" correcta pero no demuestra que entendiste por qué esa propiedad reduce exposición de credenciales en tu propio pipeline, y no te prepara para defender esa decisión frente a alguien que pregunte "¿por qué no simplemente CD tradicional acá?".
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reescribiendo la respuesta conectándola con una decisión real de tu propio pipeline (el operador de GitOps dentro del clúster nunca necesita credenciales de despliegue externas, a diferencia de un runner de CD tradicional que sí las necesita), y repetí el ejercicio para las otras dos preguntas.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el checklist respondido del Paso 4, la respuesta genérica sin anclaje real detectada en el Paso 5, y las tres respuestas reescritas con conexión al pipeline propio del Paso 6; explicá por qué una respuesta "de libro" sin conexión a una decisión real no demuestra dominio genuino. Siguiente paso: aplicá este mismo pipeline completo a un proyecto personal real para consolidarlo de forma duradera. Errores comunes: dar por completado el track sin poder explicar las decisiones propias sin notas, confundir haber "visto" un tema con haberlo dominado, y no conectar este track con el track Cloud que lo complementa directamente. Fuente oficial: https://sre.google/sre-book/.
+**¿Por qué es importante?** La reflexión final de consolidación convierte catorce módulos de conocimiento técnico específico en un modelo mental coherente y duradero de cómo opera un sistema DevOps real.
 
 ## Laboratorio práctico
 

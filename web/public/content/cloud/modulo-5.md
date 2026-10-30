@@ -679,22 +679,6 @@ Al finalizar vas a cerrar el ciclo completo del proyecto integrador RutaFlow: co
 El proyecto integrador RutaFlow declara en `examples/rutaflow/cloud/template.yaml` esta conexión como código (`ConfirmarEntregaFn`, evento `SQS` sobre `DeliveryCommands`) — acá la reproducís a mano con la CLI para ver exactamente qué hace esa declaración por detrás.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un event source mapping es un sensor permanente: no invocás la Lambda vos, el servicio de origen (la cola) la invoca automáticamente cada vez que hay mensajes nuevos.
-#### Paso 4 · Demostración guiada
-```bash
-QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
-aws lambda create-event-source-mapping --function-name confirmar-entrega --event-source-arn "$QUEUE_ARN" --batch-size 5
-aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","recipientPin":"837201"}'
-sleep 2
-aws dynamodb query --table-name ShipmentEvents --key-condition-expression "shipmentId = :id" \
-  --expression-attribute-values '{":id":{"S":"env-4471"}}'
-```
-Resultado esperado: sin que invoques `confirmar-entrega` manualmente, el mapping la dispara solo al llegar el mensaje; la `query` final sobre `ShipmentEvents` (Módulo 4) muestra un evento nuevo que tu código nunca escribió a mano — lo escribió la propia Lambda al procesar el mensaje de la cola.
-#### Paso 5 · Práctica guiada
-Pista: mandá un mensaje con `recipientPin` de 4 dígitos (inválido) a la misma cola — ese es el fallo deliberado: el mapping sigue invocando la función (SQS no valida el contenido del mensaje), la función lanza la excepción de validación, y el mensaje vuelve a quedar visible en la cola para reintento en vez de confirmarse, exactamente el comportamiento de `DeliveryCommandsDLQ` que viste en el Módulo 3.
-#### Paso 6 · Práctica independiente
-Compará esta integración (asíncrona, SQS invoca sin esperar respuesta) contra la del Tema 1 (invocación directa y síncrona con `aws lambda invoke`, donde sí esperás el resultado en el momento); identificá cuál de las dos es la que realmente usa RutaFlow en producción.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación del mapping, el item nuevo en `ShipmentEvents` sin invocación manual, y el comportamiento del mensaje inválido del Paso 5; explicá por qué esta es la forma real en que RutaFlow conecta su cola con esta función. Siguiente paso: API Gateway. Errores comunes: duplicados y no configurar reintentos. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html.
 
 #### Profundización · Diseño: Resilience en event source mapping
 
@@ -756,6 +740,23 @@ Trigger S3 (asíncrono)          DynamoDB Streams (asíncrono)     API Gateway (
 ---
 
 **Límites y decisión de uso:** Los disparadores tienen contratos distintos de reintento, orden y respuesta. No traslades sin adaptación una función HTTP a un consumidor de eventos; prueba duplicados y errores con el formato específico de cada origen.
+
+#### Paso 4 · Demostración guiada
+```bash
+QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
+aws lambda create-event-source-mapping --function-name confirmar-entrega --event-source-arn "$QUEUE_ARN" --batch-size 5
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","recipientPin":"837201"}'
+sleep 2
+aws dynamodb query --table-name ShipmentEvents --key-condition-expression "shipmentId = :id" \
+  --expression-attribute-values '{":id":{"S":"env-4471"}}'
+```
+Resultado esperado: sin que invoques `confirmar-entrega` manualmente, el mapping la dispara solo al llegar el mensaje; la `query` final sobre `ShipmentEvents` (Módulo 4) muestra un evento nuevo que tu código nunca escribió a mano — lo escribió la propia Lambda al procesar el mensaje de la cola.
+#### Paso 5 · Práctica guiada
+Pista: mandá un mensaje con `recipientPin` de 4 dígitos (inválido) a la misma cola — ese es el fallo deliberado: el mapping sigue invocando la función (SQS no valida el contenido del mensaje), la función lanza la excepción de validación, y el mensaje vuelve a quedar visible en la cola para reintento en vez de confirmarse, exactamente el comportamiento de `DeliveryCommandsDLQ` que viste en el Módulo 3.
+#### Paso 6 · Práctica independiente
+Compará esta integración (asíncrona, SQS invoca sin esperar respuesta) contra la del Tema 1 (invocación directa y síncrona con `aws lambda invoke`, donde sí esperás el resultado en el momento); identificá cuál de las dos es la que realmente usa RutaFlow en producción.
+#### Paso 7 · Cierre y evidencia
+Entregá la creación del mapping, el item nuevo en `ShipmentEvents` sin invocación manual, y el comportamiento del mensaje inválido del Paso 5; explicá por qué esta es la forma real en que RutaFlow conecta su cola con esta función. Siguiente paso: API Gateway. Errores comunes: duplicados y no configurar reintentos. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html.
 
 ## Laboratorio práctico
 

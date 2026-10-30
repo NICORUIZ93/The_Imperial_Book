@@ -200,19 +200,7 @@ Al finalizar vas a crear un usuario ElastiCache con permisos limitados solo a la
 El servicio que lee posiciones GPS de `demo-cache` no debería poder tocar ninguna otra clave que RutaFlow guarde ahí en el futuro — el mismo principio de mínimo privilegio del Módulo 7, aplicado al plano de datos de la caché.
 #### Paso 3 · Teoría, modelo mental y analogía
 La cadena de acceso (access string) es un pase firmado con permisos y vencimiento: dice exactamente qué claves y comandos puede usar quien lo porta, nada más.
-#### Paso 4 · Demostración guiada
-```bash
-aws elasticache create-user --user-id lector-posiciones --user-name lector-posiciones --engine redis \
-  --access-string "on ~posicion:* +get" --no-no-password-required
-aws elasticache describe-users --query "Users[?UserId=='lector-posiciones']"
-```
-Resultado esperado: `describe-users` muestra a `lector-posiciones` con `AccessString: "on ~posicion:* +get"` — ese usuario puede leer claves `posicion:*`, pero no escribirlas ni tocar ninguna otra clave de `demo-cache`.
-#### Paso 5 · Práctica guiada
-Pista: generá un token IAM para este usuario y esperá a que expire (o simulá la expiración) antes de usarlo — ese es el fallo deliberado: `ValidateIamAuthToken` lo rechaza igual que un ElastiCache real rechazaría un token vencido, sin excepciones por "todavía está cerca de la hora de expiración".
-#### Paso 6 · Práctica independiente
-Probá con ese mismo usuario un comando `SET posicion:c-891 ...` (escritura, no solo lectura) y confirmá que se rechaza por la cadena de acceso (`+get` sin `+set`); documentá qué cadena de acceso le darías en cambio al servicio que SÍ escribe las posiciones.
-#### Paso 7 · Cierre y evidencia
-Entregá el usuario de solo lectura creado, el token expirado rechazado del Paso 5, y la escritura denegada del Paso 6; explicá por qué un usuario con `+@all` sobre `~*` (como el de ejemplo genérico de la documentación) sería un error de mínimo privilegio para este caso específico. Siguiente paso: eventos. Errores comunes: tokens en logs y permisos amplios. Fuente oficial: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html.
+
 **Conceptos clave:** usuario ElastiCache, cadena de acceso (access string), `ValidateIamAuthToken`.
 
 `--user-id` es el identificador interno del usuario; `--user-name` es el nombre con el que se conecta (pueden diferir, pero acá coinciden); `--access-string` es esa cadena RBAC de Redis que define qué claves y comandos puede tocar; `--no-no-password-required` es la bandera que, con la doble negación de su propio nombre, hace que este usuario SÍ necesite autenticarse — la bandera contraria, `--no-password-required`, crearía un usuario sin ninguna verificación.
@@ -245,6 +233,20 @@ aws elasticache describe-users --query "Users[?UserId=='alice']"
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Documenta la obtención y renovación de credenciales del cliente de caché. Prueba expiración en un entorno compatible y evita confundir permisos para crear el clúster con autorización para leer sus datos.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws elasticache create-user --user-id lector-posiciones --user-name lector-posiciones --engine redis \
+  --access-string "on ~posicion:* +get" --no-no-password-required
+aws elasticache describe-users --query "Users[?UserId=='lector-posiciones']"
+```
+Resultado esperado: `describe-users` muestra a `lector-posiciones` con `AccessString: "on ~posicion:* +get"` — ese usuario puede leer claves `posicion:*`, pero no escribirlas ni tocar ninguna otra clave de `demo-cache`.
+#### Paso 5 · Práctica guiada
+Pista: generá un token IAM para este usuario y esperá a que expire (o simulá la expiración) antes de usarlo — ese es el fallo deliberado: `ValidateIamAuthToken` lo rechaza igual que un ElastiCache real rechazaría un token vencido, sin excepciones por "todavía está cerca de la hora de expiración".
+#### Paso 6 · Práctica independiente
+Probá con ese mismo usuario un comando `SET posicion:c-891 ...` (escritura, no solo lectura) y confirmá que se rechaza por la cadena de acceso (`+get` sin `+set`); documentá qué cadena de acceso le darías en cambio al servicio que SÍ escribe las posiciones.
+#### Paso 7 · Cierre y evidencia
+Entregá el usuario de solo lectura creado, el token expirado rechazado del Paso 5, y la escritura denegada del Paso 6; explicá por qué un usuario con `+@all` sobre `~*` (como el de ejemplo genérico de la documentación) sería un error de mínimo privilegio para este caso específico. Siguiente paso: eventos. Errores comunes: tokens en logs y permisos amplios. Fuente oficial: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html.
 
 ## Laboratorio práctico
 

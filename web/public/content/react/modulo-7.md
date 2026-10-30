@@ -257,39 +257,6 @@ Con el `useReducer` del Módulo 2, nada impide escribir por error una transició
 #### Paso 3 · Teoría, modelo mental y analogía
 XState modela estado como una máquina de estados finitos con transiciones explícitamente definidas; un estado solo puede alcanzarse desde las transiciones que la máquina efectivamente declara, rechazando cualquier otra.
 
-#### Paso 4 · Demostración guiada desde cero
-```jsx
-const maquinaConfirmacion = createMachine({
-  initial: 'inactivo',
-  states: {
-    inactivo: { on: { CONFIRMAR: 'confirmando' } },
-    confirmando: { on: { EXITO: 'exito', ERROR: 'error' } },
-    exito: {},
-    error: { on: { CONFIRMAR: 'confirmando' } },
-  },
-});
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
-
-Resultado esperado: enviar el evento `EXITO` mientras la máquina está en `inactivo` no produce ninguna transición (la máquina permanece en `inactivo`), porque ese estado solo declara una transición válida para el evento `CONFIRMAR` — a diferencia de un reducer manual, donde un `case 'EXITO':` sin ninguna guarda aplicaría ese cambio sin importar el estado actual.
-
-#### Paso 5 · Práctica guiada
-Pista: implementá el mismo flujo con un `useReducer` simple donde el `case 'EXITO'` no verifica el estado actual antes de aplicar la transición — ese es el fallo deliberado: llamar `dispatch({ type: 'EXITO' })` estando en `inactivo` (por un bug en otra parte del código) transiciona igual a `exito`, un estado lógicamente imposible en el flujo real, sin que nada en el reducer lo haya impedido.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a la máquina de XState del Paso 4, y agregá un quinto estado (`cancelado`) alcanzable solo desde `confirmando`, confirmando que ningún otro estado puede transicionar directamente a `cancelado` sin pasar por `confirmando` primero.
-
-#### Paso 7 · Cierre y evidencia
-Entregá la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explicá en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cerrá el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.
-**¿Por qué es importante?** XState aporta garantías estructurales sobre qué transiciones de estado son válidas, una protección que un `useReducer` simple no impone por sí solo y que importa en flujos con reglas estrictas.
 **Evidencia de aprendizaje:** entrega máquina con transiciones explícitas, transición inválida detectada en el reducer simple y quinto estado agregado.
 **Conceptos clave:** modelo atómico frente a store centralizado, máquinas de estado explícitas.
 
@@ -325,6 +292,39 @@ stateDiagram-v2
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```jsx
+const maquinaConfirmacion = createMachine({
+  initial: 'inactivo',
+  states: {
+    inactivo: { on: { CONFIRMAR: 'confirmando' } },
+    confirmando: { on: { EXITO: 'exito', ERROR: 'error' } },
+    exito: {},
+    error: { on: { CONFIRMAR: 'confirmando' } },
+  },
+});
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
+
+Resultado esperado: enviar el evento `EXITO` mientras la máquina está en `inactivo` no produce ninguna transición (la máquina permanece en `inactivo`), porque ese estado solo declara una transición válida para el evento `CONFIRMAR` — a diferencia de un reducer manual, donde un `case 'EXITO':` sin ninguna guarda aplicaría ese cambio sin importar el estado actual.
+
+#### Paso 5 · Práctica guiada
+Pista: implementá el mismo flujo con un `useReducer` simple donde el `case 'EXITO'` no verifica el estado actual antes de aplicar la transición — ese es el fallo deliberado: llamar `dispatch({ type: 'EXITO' })` estando en `inactivo` (por un bug en otra parte del código) transiciona igual a `exito`, un estado lógicamente imposible en el flujo real, sin que nada en el reducer lo haya impedido.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a la máquina de XState del Paso 4, y agregá un quinto estado (`cancelado`) alcanzable solo desde `confirmando`, confirmando que ningún otro estado puede transicionar directamente a `cancelado` sin pasar por `confirmando` primero.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explicá en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cerrá el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.
+**¿Por qué es importante?** XState aporta garantías estructurales sobre qué transiciones de estado son válidas, una protección que un `useReducer` simple no impone por sí solo y que importa en flujos con reglas estrictas.
 
 ## Laboratorio práctico
 

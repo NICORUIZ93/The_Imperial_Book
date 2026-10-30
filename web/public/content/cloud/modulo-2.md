@@ -315,28 +315,7 @@ credenciales de AWS ni acceso al bucket completo.
 #### Paso 3 · Teoría, modelo mental y analogía
 La policy es el reglamento del edificio completo; la URL pre-firmada es un pase temporal para
 una sola puerta, que vence solo.
-#### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws s3 presign s3://pruebas-entrega/envio-4471/entrega-001.jpg --expires-in 120
-```
-Resultado esperado: una URL firmada. Pegala en otra pestaña o con `curl "<url>"` dentro de los
-120 segundos — debe devolver el contenido del archivo sin pedir credenciales.
-#### Paso 5 · Práctica guiada
-Pista: esperá más de 120 segundos y repetí la misma petición contra la misma URL para provocar
-el fallo deliberado — la firma vencida se rechaza aunque el objeto siga existiendo.
-#### Paso 6 · Práctica independiente
-Generá la URL de nuevo, esta vez con `--expires-in 900` (15 minutos), y confirmá que esta sí
-sigue funcionando pasados los 120 segundos originales.
-#### Paso 7 · Cierre y evidencia
-Entregá la respuesta exitosa, la respuesta de la URL vencida (un error de firma, no un 404) y
-la URL nueva funcionando. Siguiente paso: colas. Errores comunes: generar una URL pre-firmada
-sin expiración corta, o hacer público el bucket completo en vez de una URL puntual. Fuente
-oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-best-practices.html.
 **Conceptos clave:** bucket policy, ACL (lista de control de acceso), URL pre-firmada (presigned URL), principio de mínimo privilegio.
 
 **Definición.** El control de acceso a un bucket o a sus objetos se articula mediante tres mecanismos, cada uno orientado a un caso de uso distinto. Una política de bucket es un documento JSON adjunto al bucket completo que define reglas de acceso en función del principal (quién realiza la petición), la acción (qué operación se solicita) y el recurso (sobre qué objetos o el bucket completo se aplica). Constituye el mecanismo más flexible y el recomendado en la mayoría de los casos, al permitir expresar reglas compuestas —por ejemplo, permitir lectura pública exclusivamente sobre el prefijo `publico/` y denegar el resto.
@@ -366,6 +345,30 @@ evento escrito en `ShipmentEvents`, para que el cliente vea su prueba de entrega
 ---
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
 **Evidencia de aprendizaje:** entrega la salida de la URL firmada funcionando dentro de los 120 segundos del Paso 4, el fallo de firma vencida del Paso 5, y la URL nueva con `--expires-in 900` todavía funcionando después de ese plazo.
+
+#### Paso 4 · Demostración guiada
+**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws s3 presign s3://pruebas-entrega/envio-4471/entrega-001.jpg --expires-in 120
+```
+Resultado esperado: una URL firmada. Pegala en otra pestaña o con `curl "<url>"` dentro de los
+120 segundos — debe devolver el contenido del archivo sin pedir credenciales.
+#### Paso 5 · Práctica guiada
+Pista: esperá más de 120 segundos y repetí la misma petición contra la misma URL para provocar
+el fallo deliberado — la firma vencida se rechaza aunque el objeto siga existiendo.
+#### Paso 6 · Práctica independiente
+Generá la URL de nuevo, esta vez con `--expires-in 900` (15 minutos), y confirmá que esta sí
+sigue funcionando pasados los 120 segundos originales.
+#### Paso 7 · Cierre y evidencia
+Entregá la respuesta exitosa, la respuesta de la URL vencida (un error de firma, no un 404) y
+la URL nueva funcionando. Siguiente paso: colas. Errores comunes: generar una URL pre-firmada
+sin expiración corta, o hacer público el bucket completo en vez de una URL puntual. Fuente
+oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-best-practices.html.
+
 ## Construcción guiada: almacena y recupera un archivo
 
 > Esta construcción asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

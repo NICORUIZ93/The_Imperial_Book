@@ -35,7 +35,7 @@ def evaluate(block: str) -> dict[str, bool]:
             # Un tema de infraestructura/CLI demuestra operando recursos
             # reales (su artefacto es el recurso cloud, no un archivo local):
             # aprovisionarlo, consultarlo o mutarlo con la CLI del proveedor.
-            or matches(r"\b(aws|az|gcloud|kubectl|terraform|tofu|sam|helm|ansible(?:-\w+)?)\b[\s\S]{0,120}\b(create|apply|deploy|put[\w-]*|run|publish|invoke|new|add|init|get[\w-]*|list[\w-]*|describe[\w-]*|query|update[\w-]*|send[\w-]*|encrypt|cp|mb|tag-resources|restore[\w-]*)\b", block)
+            or matches(r"\b(aws|az|gcloud|kubectl|terraform|tofu|sam|helm|ansible(?:-\w+)?)\b[\s\S]{0,120}\b(create|apply|deploy|put[\w-]*|run|publish|invoke|new|add|init|get[\w-]*|list[\w-]*|describe[\w-]*|query|update[\w-]*|send[\w-]*|encrypt|cp|mb|tag-resources|restore[\w-]*|presign[\w-]*)\b", block)
             # Un tema de KMP/Gradle demuestra compilando o ejecutando la suite
             # de pruebas del módulo compartido (artefacto = build/test).
             or matches(r"\./gradlew\s+[\w:]*(test|build|assembleDebug|allTests|publish)", block)

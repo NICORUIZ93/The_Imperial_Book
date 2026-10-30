@@ -211,6 +211,50 @@ Al finalizar vas a inyectar un `ServicioAPI` de RutaFlow vía `@Environment`, ll
 Si `DetalleEnvio` está anidada tres niveles dentro de `ListaEnvios`, que a su vez está dentro de la pantalla principal, pasar `ServicioAPI` manualmente por cada inicializador intermedio que no lo usa directamente sería puro acoplamiento sin beneficio.
 #### Paso 3 · Teoría, modelo mental y analogía
 `@Environment` es la electricidad disponible en cualquier toma del edificio: cualquier vista descendiente se "enchufa" sin que nadie tienda un cable manual desde la planta de generación hasta cada habitación.
+
+**Evidencia de aprendizaje:** entrega la inyección funcionando a través de varios niveles, el crash reproducido por ambiente faltante, y la vista intermedia que no necesita conocer la dependencia.
+**Conceptos clave:** inyección de dependencias sin pasar manualmente por cada inicializador.
+
+```swift
+struct MiApp: App {
+    var body: some Scene {
+        WindowGroup { ContentView().environment(ServicioAPI()) }
+    }
+}
+
+struct ContentView: View {
+    @Environment(ServicioAPI.self) var servicio // inyectado sin pasar por cada inicializador
+}
+```
+
+`@Environment` inyecta una dependencia disponible para cualquier vista descendiente en el árbol, sin necesidad de pasarla explícitamente a través de cada inicializador intermedio de vistas que no la usan directamente pero que se encuentran en el camino jerárquico hacia una vista descendiente que sí la necesita (un problema conocido como "prop drilling" en otros ecosistemas de UI declarativa, como React, donde Context API resuelve exactamente el mismo problema, Módulo 5 del track de React); esto es especialmente valioso en apps con árboles de vistas profundos, donde pasar una dependencia manualmente por cada nivel intermedio sería tedioso y añadiría acoplamiento innecesario a vistas que no la consumen directamente.
+
+La distinción entre identidad y valor en SwiftUI (relacionada con el `struct` vs `class` del Módulo 0) determina cómo SwiftUI decide si una vista es "la misma" entre dos renderizados sucesivos o una vista completamente nueva: esta decisión afecta directamente si el estado (`@State`) de esa vista se preserva o se reinicia, un mecanismo importante de entender al trabajar con listas donde el orden o la identidad de los elementos puede cambiar dinámicamente.
+
+**Analogía:** `@Environment` es como la electricidad disponible en cualquier toma de corriente de un edificio entero, sin necesidad de tender un cable manual específico desde la planta de generación hasta cada dispositivo individual que la necesita: cualquier habitación puede simplemente "enchufarse" al servicio ya disponible en el ambiente general.
+
+**¿Por qué es importante?** `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio, un problema resuelto de forma análoga por Context API en React; la identidad de una vista determina si su estado se preserva o se reinicia entre renderizados sucesivos.
+
+**Código del ejemplo:**
+
+```swift
+WindowGroup { ContentView().environment(ServicioAPI()) }
+// Cualquier vista descendiente puede leer @Environment(ServicioAPI.self) sin pasar por cada nivel intermedio
+```
+
+**Diagrama: @Environment vs prop drilling**
+
+```mermaid
+flowchart TD
+    A["WindowGroup\n.environment(ServicioAPI())"] -.->|disponible para cualquier descendiente| B["ListaEnvios\n(no lo usa)"]
+    B -.->|sin reenviar manualmente| C["VistaIntermedia\n(no lo usa)"]
+    C -.->|sin reenviar manualmente| D["DetalleEnvio\n@Environment(ServicioAPI.self)"]
+```
+
+En el proyecto integrador RutaFlow, `ServicioAPI` vive en `examples/rutaflow/ios/ContentView.swift`. Límite de la decisión: `@Environment` no conviene para una dependencia que solo necesita una única vista puntual y cercana a la raíz — ahí pasarla directamente por el inicializador es más simple y explícito; reservá `@Environment` específicamente cuando la dependencia debe atravesar varios niveles de vistas intermedias que no la usan.
+
+---
+
 #### Paso 4 · Demostración guiada desde cero
 
 En el mismo proyecto SwiftUI, reemplaza el archivo de la app (`<NombreApp>App.swift`) y `ContentView.swift` con este contenido completo:
@@ -255,49 +299,6 @@ Corregí el Paso 5 restaurando la inyección, y agregá una segunda vista interm
 #### Paso 7 · Cierre y evidencia
 Entregá la inyección funcionando a través de varios niveles del Paso 4, el crash por ambiente faltante del Paso 5, y la vista intermedia ignorante de la dependencia del Paso 6; explicá por qué esto resuelve el mismo "prop drilling" que Context API resuelve en React. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio que no la usa, resolviendo en SwiftUI el mismo problema que Context API resuelve en React.
-**Evidencia de aprendizaje:** entrega la inyección funcionando a través de varios niveles, el crash reproducido por ambiente faltante, y la vista intermedia que no necesita conocer la dependencia.
-**Conceptos clave:** inyección de dependencias sin pasar manualmente por cada inicializador.
-
-```swift
-struct MiApp: App {
-    var body: some Scene {
-        WindowGroup { ContentView().environment(ServicioAPI()) }
-    }
-}
-
-struct ContentView: View {
-    @Environment(ServicioAPI.self) var servicio // inyectado sin pasar por cada inicializador
-}
-```
-
-`@Environment` inyecta una dependencia disponible para cualquier vista descendiente en el árbol, sin necesidad de pasarla explícitamente a través de cada inicializador intermedio de vistas que no la usan directamente pero que se encuentran en el camino jerárquico hacia una vista descendiente que sí la necesita (un problema conocido como "prop drilling" en otros ecosistemas de UI declarativa, como React, donde Context API resuelve exactamente el mismo problema, Módulo 5 del track de React); esto es especialmente valioso en apps con árboles de vistas profundos, donde pasar una dependencia manualmente por cada nivel intermedio sería tedioso y añadiría acoplamiento innecesario a vistas que no la consumen directamente.
-
-La distinción entre identidad y valor en SwiftUI (relacionada con el `struct` vs `class` del Módulo 0) determina cómo SwiftUI decide si una vista es "la misma" entre dos renderizados sucesivos o una vista completamente nueva: esta decisión afecta directamente si el estado (`@State`) de esa vista se preserva o se reinicia, un mecanismo importante de entender al trabajar con listas donde el orden o la identidad de los elementos puede cambiar dinámicamente.
-
-**Analogía:** `@Environment` es como la electricidad disponible en cualquier toma de corriente de un edificio entero, sin necesidad de tender un cable manual específico desde la planta de generación hasta cada dispositivo individual que la necesita: cualquier habitación puede simplemente "enchufarse" al servicio ya disponible en el ambiente general.
-
-**¿Por qué es importante?** `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio, un problema resuelto de forma análoga por Context API en React; la identidad de una vista determina si su estado se preserva o se reinicia entre renderizados sucesivos.
-
-**Código del ejemplo:**
-
-```swift
-WindowGroup { ContentView().environment(ServicioAPI()) }
-// Cualquier vista descendiente puede leer @Environment(ServicioAPI.self) sin pasar por cada nivel intermedio
-```
-
-**Diagrama: @Environment vs prop drilling**
-
-```mermaid
-flowchart TD
-    A["WindowGroup\n.environment(ServicioAPI())"] -.->|disponible para cualquier descendiente| B["ListaEnvios\n(no lo usa)"]
-    B -.->|sin reenviar manualmente| C["VistaIntermedia\n(no lo usa)"]
-    C -.->|sin reenviar manualmente| D["DetalleEnvio\n@Environment(ServicioAPI.self)"]
-```
-
-En el proyecto integrador RutaFlow, `ServicioAPI` vive en `examples/rutaflow/ios/ContentView.swift`. Límite de la decisión: `@Environment` no conviene para una dependencia que solo necesita una única vista puntual y cercana a la raíz — ahí pasarla directamente por el inicializador es más simple y explícito; reservá `@Environment` específicamente cuando la dependencia debe atravesar varios niveles de vistas intermedias que no la usan.
-
----
-
 
 ## Laboratorio práctico
 

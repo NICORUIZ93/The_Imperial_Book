@@ -249,6 +249,34 @@ SOLID son cinco principios para gestionar razones de cambio y contratos; no son 
 
 “Programa a una interfaz” no obliga a introducir abstracciones sin necesidad: el contrato debe expresar una variación real, como las estrategias de tarifa del tema anterior.
 
+**Evidencia de aprendizaje:** presenta la refactorización, asigna cada responsabilidad a su tipo y demuestra una política nueva sin editar el consumidor.
+**Conceptos clave:** encapsular variación, programar contra contratos, composición, SRP, OCP, LSP, ISP y DIP.
+
+El principio de responsabilidad única (la "S" de SOLID) es, en la práctica, el más fácil de violar sin notarlo gradualmente con el tiempo: una clase `Pedido` que originalmente solo modelaba los datos de un pedido, pero que con el tiempo acumuló también la lógica de enviar emails de confirmación y de generar PDFs de factura, tiene en realidad tres razones distintas y no relacionadas para cambiar (un cambio en el modelo de datos del pedido, un cambio en cómo se envían emails, un cambio en cómo se generan PDFs), cada una debería justificar modificar una clase distinta y separada (`Pedido`, `EmailService`, `PdfGenerator`), en vez de acumularse todas en la misma clase original, que termina acoplando responsabilidades sin relación real entre sí.
+
+Reconocer cuándo NO aplicar un patrón de diseño es tan importante como saber usarlo. Si una Factory solo puede crear un tipo y no hay variación probable, o una Strategy nunca tendrá una segunda implementación, la capa adicional no aporta valor. También es sobre-ingeniería dividir una clase pequeña con una sola razón de cambio en varios tipos “por si acaso”; aplica SRP cuando puedes nombrar responsabilidades y razones de cambio distintas.
+
+**Analogía:** SRP separa trabajos con razones de cambio distintas; DIP conecta equipos mediante un contrato acordado, no mediante el conocimiento de sus herramientas internas. La herencia expresa una relación de subtipo; la composición combina capacidades sin prometer que un objeto es otra clase.
+
+**Diagrama: políticas dependientes de contratos**
+
+```mermaid
+flowchart LR
+    UC["Despacho"] -->|depende del contrato| TARIFF["Tarifa"]
+    NORMAL["Tarifa normal"] -.->|implementa| TARIFF
+    EXPRESS["Tarifa express"] -.->|implementa| TARIFF
+    UC -->|compone| NOTIFY["Notificador"]
+    EMAIL["Adaptador correo"] -.->|implementa| NOTIFY
+```
+
+En el Proyecto integrador (Módulo 13), el caso de uso depende de contratos y combina políticas por composición; las implementaciones concretas quedan en el límite de la aplicación. Practica la idea agregando una tarifa concreta a `Cotizador` sin editarlo y explica dónde la composición selecciona esa política.
+
+**Cuándo no usarlo:** dividir una clase pequeña con una sola razón real de cambio en múltiples clases "por si acaso" es sobre-ingeniería; aplica SRP cuando ya observas responsabilidades genuinamente distintas, no antes.
+
+---
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía:
 ```bash
@@ -277,33 +305,7 @@ Completa la extracción y divide la interfaz de persistencia en `ConsultaEntrega
 #### Paso 7 · Cierre y evidencia
 Guarda la versión mezclada y la refactorizada, identifica dónde aplicarían OCP, LSP, ISP y DIP y justifica qué abstracción aporta valor. Errores comunes: interpretar OCP como “nunca editar código”, fortalecer precondiciones en una subclase, crear interfaces gigantes o separar clases sin razones de cambio distintas. Lectura contrastada: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas PDF 35–75; referencia técnica: https://dev.java/learn/classes-objects/.
 **¿Por qué es importante?** Una solución debe admitir los cambios probables y conservar contratos, no acumular patrones por nombre.
-**Evidencia de aprendizaje:** presenta la refactorización, asigna cada responsabilidad a su tipo y demuestra una política nueva sin editar el consumidor.
-**Conceptos clave:** encapsular variación, programar contra contratos, composición, SRP, OCP, LSP, ISP y DIP.
 
-El principio de responsabilidad única (la "S" de SOLID) es, en la práctica, el más fácil de violar sin notarlo gradualmente con el tiempo: una clase `Pedido` que originalmente solo modelaba los datos de un pedido, pero que con el tiempo acumuló también la lógica de enviar emails de confirmación y de generar PDFs de factura, tiene en realidad tres razones distintas y no relacionadas para cambiar (un cambio en el modelo de datos del pedido, un cambio en cómo se envían emails, un cambio en cómo se generan PDFs), cada una debería justificar modificar una clase distinta y separada (`Pedido`, `EmailService`, `PdfGenerator`), en vez de acumularse todas en la misma clase original, que termina acoplando responsabilidades sin relación real entre sí.
-
-Reconocer cuándo NO aplicar un patrón de diseño es tan importante como saber usarlo. Si una Factory solo puede crear un tipo y no hay variación probable, o una Strategy nunca tendrá una segunda implementación, la capa adicional no aporta valor. También es sobre-ingeniería dividir una clase pequeña con una sola razón de cambio en varios tipos “por si acaso”; aplica SRP cuando puedes nombrar responsabilidades y razones de cambio distintas.
-
-**Analogía:** SRP separa trabajos con razones de cambio distintas; DIP conecta equipos mediante un contrato acordado, no mediante el conocimiento de sus herramientas internas. La herencia expresa una relación de subtipo; la composición combina capacidades sin prometer que un objeto es otra clase.
-
-**Diagrama: políticas dependientes de contratos**
-
-```mermaid
-flowchart LR
-    UC["Despacho"] -->|depende del contrato| TARIFF["Tarifa"]
-    NORMAL["Tarifa normal"] -.->|implementa| TARIFF
-    EXPRESS["Tarifa express"] -.->|implementa| TARIFF
-    UC -->|compone| NOTIFY["Notificador"]
-    EMAIL["Adaptador correo"] -.->|implementa| NOTIFY
-```
-
-En el Proyecto integrador (Módulo 13), el caso de uso depende de contratos y combina políticas por composición; las implementaciones concretas quedan en el límite de la aplicación. Practica la idea agregando una tarifa concreta a `Cotizador` sin editarlo y explica dónde la composición selecciona esa política.
-
-**Cuándo no usarlo:** dividir una clase pequeña con una sola razón real de cambio en múltiples clases "por si acaso" es sobre-ingeniería; aplica SRP cuando ya observas responsabilidades genuinamente distintas, no antes.
-
----
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Fuente oficial:** [documentación de Java](https://docs.oracle.com/en/java/javase/25/).
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** refactorizar un módulo propio aplicando al menos dos patrones de diseño justificados por una necesidad real.

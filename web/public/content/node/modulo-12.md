@@ -469,43 +469,6 @@ Una entrega puede adjuntar comprobante y avisar al cliente. El archivo debe aisl
 
 Normalizar rutas limita dónde escribir; el proveedor push transporta mensajes, no decide quién puede descargar. Es el mensajero de una oficina: entrega lo que le autorizan, no valida el expediente.
 
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-archivos-push
-cd ejemplo-archivos-push
-npm init -y
-mkdir src uploads
-```
-
-Crea `src/guardar.js`:
-
-```js
-import path from "node:path";
-import { mkdir, writeFile } from "node:fs/promises";
-const base = path.resolve("uploads");
-export async function guardar(nombre, contenido) {
-  const seguro = path.basename(nombre);
-  const destino = path.join(base, seguro);
-  if (!destino.startsWith(`${base}${path.sep}`)) throw new Error("ruta no permitida");
-  await mkdir(base, { recursive: true }); await writeFile(destino, contenido, { flag: "wx" });
-  return destino;
-}
-console.log(await guardar("comprobante.txt", "entrega confirmada"));
-```
-
-Ejecuta `node src/guardar.js`. **Resultado esperado:** crea solo `uploads/comprobante.txt`. **Fallo deliberado y diagnóstico:** intenta `../../secreto`; `basename` evita salir del directorio y el archivo queda dentro de uploads. Un push real requerirá proveedor y credenciales fuera del código.
-
-#### Paso 5 · Práctica guiada
-
-Limita tamaño y extensión permitida. **Pista:** valida bytes antes de escribir y no confíes en la extensión para contenido ejecutable.
-
-#### Paso 6 · Práctica independiente
-
-Diseña una cola de notificación posterior al guardado y entrega el caso donde el push falla sin deshacer el archivo.
-
-#### Paso 7 · Cierre y siguiente paso
-
 Ya separas almacenamiento, autorización y notificación. Este cierre deja preparado el paso hacia servicios externos y móviles.
 
 **Errores comunes:** concatenar paths; sobrescribir archivos; servir uploads como código; guardar tokens push como permisos; no limpiar temporales.
@@ -545,6 +508,43 @@ No incluyas JWT, dirección completa, fotografía, PIN ni nombre del destinatari
 ---
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Autoriza por guía la carga de evidencia y el registro de notificaciones. Prueba un token válido de otro repartidor: no debe permitir adjuntar archivos ni consultar el recurso ajeno.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-archivos-push
+cd ejemplo-archivos-push
+npm init -y
+mkdir src uploads
+```
+
+Crea `src/guardar.js`:
+
+```js
+import path from "node:path";
+import { mkdir, writeFile } from "node:fs/promises";
+const base = path.resolve("uploads");
+export async function guardar(nombre, contenido) {
+  const seguro = path.basename(nombre);
+  const destino = path.join(base, seguro);
+  if (!destino.startsWith(`${base}${path.sep}`)) throw new Error("ruta no permitida");
+  await mkdir(base, { recursive: true }); await writeFile(destino, contenido, { flag: "wx" });
+  return destino;
+}
+console.log(await guardar("comprobante.txt", "entrega confirmada"));
+```
+
+Ejecuta `node src/guardar.js`. **Resultado esperado:** crea solo `uploads/comprobante.txt`. **Fallo deliberado y diagnóstico:** intenta `../../secreto`; `basename` evita salir del directorio y el archivo queda dentro de uploads. Un push real requerirá proveedor y credenciales fuera del código.
+
+#### Paso 5 · Práctica guiada
+
+Limita tamaño y extensión permitida. **Pista:** valida bytes antes de escribir y no confíes en la extensión para contenido ejecutable.
+
+#### Paso 6 · Práctica independiente
+
+Diseña una cola de notificación posterior al guardado y entrega el caso donde el push falla sin deshacer el archivo.
+
+#### Paso 7 · Cierre y siguiente paso
 
 ## Laboratorio práctico
 

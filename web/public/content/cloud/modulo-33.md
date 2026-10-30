@@ -323,20 +323,7 @@ Al finalizar vas a trazar, en un solo diagrama real, cómo los microservicios de
 Alguien nuevo en el equipo pregunta "¿RutaFlow es un monolito o microservicios? ¿usa Big Data? ¿IA?" — la respuesta honesta es que ya usa las cuatro cosas, cada una resolviendo un problema puntual, no por seguir una tendencia.
 #### Paso 3 · Teoría, modelo mental y analogía
 Microservicios, Big Data, AI/ML y multi-cloud no son una pila que se adopta entera: son herramientas independientes que se usan donde el problema real las justifica, como ya hizo RutaFlow módulo a módulo sin que nadie lo planeara como "arquitectura de microservicios" desde el día uno.
-#### Paso 4 · Demostración guiada
-```bash
-aws events list-rules --event-bus-name rutaflow-eventos --query 'Rules[].Name'
-aws athena list-query-executions --query 'QueryExecutionIds[0:3]'
-aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
-  --body '{"prompt":"test","max_tokens":5}' --cli-binary-format raw-in-base64-out /tmp/out.json
-```
-Resultado esperado: tres respuestas reales de tres piezas distintas que YA existen en RutaFlow — `confirmar-entrega` y el planificador comunicándose por eventos (microservicios, Módulo 11), consultas históricas sobre `rutaflow-ubicaciones-historico` (Big Data, Módulo 19), y generación de texto para el SMS de confirmación (AI/ML, Módulo 20) — sin que ningún módulo lo haya llamado "adoptar microservicios" explícitamente.
-#### Paso 5 · Práctica guiada
-Pista: intentá justificar agregar Kafka/MSK (Módulo 17) completo para un volumen de eventos que hoy cabe perfecto en SQS+SNS (Módulo 11) — ese es el fallo deliberado de esta síntesis final: adoptar la pieza "de Big Data" o "de microservicios" más grande disponible, en vez de la que el volumen y la complejidad reales de RutaFlow justifican hoy.
-#### Paso 6 · Práctica independiente
-Dibujá (en papel o en un README) el mapa completo: qué parte de RutaFlow es multi-cloud de verdad (Módulo 8: AWS + Azure + GCP para el mismo caso de ubicaciones), qué parte es Big Data (Athena/Firehose/Kinesis), qué parte es IA (Bedrock/Textract), y qué parte sigue siendo, simplemente, un backend serverless bien diseñado sin ninguna etiqueta de moda encima.
-#### Paso 7 · Cierre y evidencia
-Entregá las tres piezas reales confirmadas del Paso 4, el sobre-dimensionamiento evitado del Paso 5, y el mapa completo del Paso 6; explicá por qué "usar microservicios/Big Data/IA" nunca fue el objetivo de ningún módulo de este track — resolver un problema real con la herramienta correcta sí lo fue, y estas etiquetas son solo la forma en que la industria nombra el resultado. Siguiente paso: cerrar el track. Errores comunes: adoptar una pieza grande sin el volumen que la justifique y nombrar la arquitectura antes de construirla. Fuente oficial: https://aws.amazon.com/architecture/.
+
 **Conceptos clave:** microservicios como consecuencia (no objetivo), Big Data proporcional al volumen real, IA aplicada a un problema concreto, multi-cloud cuando el caso lo exige.
 
 Este Tema cierra el módulo con una idea deliberadamente anticlimática: RutaFlow nunca "adoptó microservicios" ni "adoptó Big Data" como decisión de portada. Cada pieza llegó porque un problema concreto de un módulo específico la justificó — desacoplar `confirmar-entrega` de sus notificaciones (Módulo 11), consultar históricos sin mover datos (Módulo 19), redactar un SMS variable (Módulo 20). La arquitectura resultante se parece a "microservicios con Big Data y AI/ML", pero nombrarla así nunca fue el punto de partida.
@@ -366,6 +353,21 @@ flowchart TD
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Selecciona un único problema del proyecto que justifique eventos, análisis o IA. Define una medida de éxito y una alternativa sencilla; documenta por qué añadir otro servicio mejora ese resultado.
 
 **Límites y decisión de uso:** Dividir un sistema antes de medir sus necesidades introduce coordinación y fallos distribuidos. Conserva una solución modular sencilla hasta que exista un requisito verificable de escala, autonomía o procesamiento que justifique otro servicio.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws events list-rules --event-bus-name rutaflow-eventos --query 'Rules[].Name'
+aws athena list-query-executions --query 'QueryExecutionIds[0:3]'
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"test","max_tokens":5}' --cli-binary-format raw-in-base64-out /tmp/out.json
+```
+Resultado esperado: tres respuestas reales de tres piezas distintas que YA existen en RutaFlow — `confirmar-entrega` y el planificador comunicándose por eventos (microservicios, Módulo 11), consultas históricas sobre `rutaflow-ubicaciones-historico` (Big Data, Módulo 19), y generación de texto para el SMS de confirmación (AI/ML, Módulo 20) — sin que ningún módulo lo haya llamado "adoptar microservicios" explícitamente.
+#### Paso 5 · Práctica guiada
+Pista: intentá justificar agregar Kafka/MSK (Módulo 17) completo para un volumen de eventos que hoy cabe perfecto en SQS+SNS (Módulo 11) — ese es el fallo deliberado de esta síntesis final: adoptar la pieza "de Big Data" o "de microservicios" más grande disponible, en vez de la que el volumen y la complejidad reales de RutaFlow justifican hoy.
+#### Paso 6 · Práctica independiente
+Dibujá (en papel o en un README) el mapa completo: qué parte de RutaFlow es multi-cloud de verdad (Módulo 8: AWS + Azure + GCP para el mismo caso de ubicaciones), qué parte es Big Data (Athena/Firehose/Kinesis), qué parte es IA (Bedrock/Textract), y qué parte sigue siendo, simplemente, un backend serverless bien diseñado sin ninguna etiqueta de moda encima.
+#### Paso 7 · Cierre y evidencia
+Entregá las tres piezas reales confirmadas del Paso 4, el sobre-dimensionamiento evitado del Paso 5, y el mapa completo del Paso 6; explicá por qué "usar microservicios/Big Data/IA" nunca fue el objetivo de ningún módulo de este track — resolver un problema real con la herramienta correcta sí lo fue, y estas etiquetas son solo la forma en que la industria nombra el resultado. Siguiente paso: cerrar el track. Errores comunes: adoptar una pieza grande sin el volumen que la justifique y nombrar la arquitectura antes de construirla. Fuente oficial: https://aws.amazon.com/architecture/.
 
 ## Trazabilidad de la auditoría original
 

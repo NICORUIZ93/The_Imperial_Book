@@ -176,28 +176,6 @@ Un reporte diario de entregas puede tener cientos de miles de líneas; cargarlo 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `BufferedReader` procesa línea por línea, manteniendo en memoria solo la línea actual; `getResourceAsStream` carga un recurso empaquetado en el propio JAR, disponible sin importar dónde se despliegue la aplicación. La analogía: leer un libro página por página en vez de intentar sostenerlo completo en la memoria de una sola mirada.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-archivo-grande
-cd ejemplo-archivo-grande
-mkdir -p src/main/java/academia/streaming
-```
-Crea `ProcesadorReporte.java` que genere primero un archivo de 500 000 líneas, y luego lo procese con `BufferedReader`/`readLine()` contando cuántas líneas cumplen una condición, midiendo la memoria usada con `Runtime.getRuntime().totalMemory() - freeMemory()`. Compila y ejecuta:
-```bash
-javac -d out src/main/java/academia/streaming/ProcesadorReporte.java
-java -cp out academia.streaming.ProcesadorReporte
-```
-
-#### Paso 5 · Práctica guiada
-Pista: reemplaza deliberadamente `BufferedReader`/`readLine()` por `Files.readAllLines()` (que carga todo en una lista en memoria) para provocar un fallo de expectativa en el uso de memoria medido; compara ambos números. Resultado esperado: `BufferedReader` mantiene un uso de memoria aproximadamente constante, `readAllLines()` crece con el tamaño del archivo.
-
-#### Paso 6 · Práctica independiente
-Agrega un `config.json` en `src/main/resources` y cárgalo con `getResourceAsStream("/config.json")`; confirma que funciona igual después de empaquetar la aplicación en un JAR.
-
-#### Paso 7 · Cierre y evidencia
-Guarda ambas mediciones de memoria y la carga del recurso del classpath; como siguiente paso estudia records y pattern matching. Errores comunes: leer todo el archivo con `readAllBytes`/`readAllLines` sin considerar su tamaño real, olvidar que `getResourceAsStream` devuelve `null` (no lanza excepción) si el recurso no existe en el classpath, y no cerrar el `BufferedReader` con try-with-resources dejando el descriptor de archivo abierto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html.
-**¿Por qué es importante?** Porque cargar un archivo de cientos de miles de líneas completo en memoria antes de procesarlo puede agotar la memoria disponible, mientras que procesarlo línea por línea mantiene un uso de memoria acotado sin importar el tamaño real del archivo.
 **Evidencia de aprendizaje:** entrega la medición de memoria con `BufferedReader` (constante) frente a `readAllLines()` (creciente), y la carga exitosa de un recurso del classpath tras empaquetar la aplicación en un JAR.
 **Conceptos clave:** procesamiento línea por línea, evitar cargar todo en memoria, `getResourceAsStream`.
 
@@ -241,6 +219,28 @@ try (InputStream in = getClass().getResourceAsStream("/config.json")) {
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía:
+```bash
+mkdir ejemplo-archivo-grande
+cd ejemplo-archivo-grande
+mkdir -p src/main/java/academia/streaming
+```
+Crea `ProcesadorReporte.java` que genere primero un archivo de 500 000 líneas, y luego lo procese con `BufferedReader`/`readLine()` contando cuántas líneas cumplen una condición, midiendo la memoria usada con `Runtime.getRuntime().totalMemory() - freeMemory()`. Compila y ejecuta:
+```bash
+javac -d out src/main/java/academia/streaming/ProcesadorReporte.java
+java -cp out academia.streaming.ProcesadorReporte
+```
+
+#### Paso 5 · Práctica guiada
+Pista: reemplaza deliberadamente `BufferedReader`/`readLine()` por `Files.readAllLines()` (que carga todo en una lista en memoria) para provocar un fallo de expectativa en el uso de memoria medido; compara ambos números. Resultado esperado: `BufferedReader` mantiene un uso de memoria aproximadamente constante, `readAllLines()` crece con el tamaño del archivo.
+
+#### Paso 6 · Práctica independiente
+Agrega un `config.json` en `src/main/resources` y cárgalo con `getResourceAsStream("/config.json")`; confirma que funciona igual después de empaquetar la aplicación en un JAR.
+
+#### Paso 7 · Cierre y evidencia
+Guarda ambas mediciones de memoria y la carga del recurso del classpath; como siguiente paso estudia records y pattern matching. Errores comunes: leer todo el archivo con `readAllBytes`/`readAllLines` sin considerar su tamaño real, olvidar que `getResourceAsStream` devuelve `null` (no lanza excepción) si el recurso no existe en el classpath, y no cerrar el `BufferedReader` con try-with-resources dejando el descriptor de archivo abierto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html.
+**¿Por qué es importante?** Porque cargar un archivo de cientos de miles de líneas completo en memoria antes de procesarlo puede agotar la memoria disponible, mientras que procesarlo línea por línea mantiene un uso de memoria acotado sin importar el tamaño real del archivo.
 
 ## Construcción guiada del capítulo
 
