@@ -143,6 +143,10 @@ aws configure set aws_access_key_id test
 aws configure set aws_secret_access_key test
 ```
 
+`test` y `000000000000` son valores ficticios para el emulador local, no
+credenciales de una cuenta cloud. No guardes claves reales en `.env` ni las
+envíes al endpoint local.
+
 Ejemplos:
 
 ```bash
