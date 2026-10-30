@@ -107,8 +107,6 @@ El equipo de RutaFlow está evaluando si migrar todo su estado de cliente a Redu
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Redux Toolkit reduce el boilerplate del Redux clásico con `createSlice` e Immer, pero sigue requiriendo slice + store central + Provider, más ceremonia que la función única de Zustand.
-
-**Evidencia de aprendizaje:** entrega implementación con Redux Toolkit, selector de granularidad gruesa detectado y corrección con selector específico.
 **Conceptos clave:** `createSlice`, Immer para mutación segura, comparación de ceremonia con Zustand.
 
 Redux Toolkit es la forma moderna y recomendada de usar Redux, reduciendo drásticamente el boilerplate del Redux clásico (que requería definir manualmente constantes de action types, creadores de actions, y reducers con switch statements extensos): `createSlice({ name: 'carrito', initialState: { items: [] }, reducers: { agregar: (state, action) => { state.items.push(action.payload); } } })` genera automáticamente los creadores de actions y el reducer correspondiente a partir de una única definición declarativa, y crucialmente usa Immer internamente, permitiendo escribir código que "parece" mutar el estado directamente (`state.items.push(...)`) mientras Immer, por debajo, produce en realidad un nuevo objeto de estado inmutable, preservando la garantía de inmutabilidad que Redux requiere sin que el desarrollador tenga que escribir manualmente el spread de objetos y arreglos.
@@ -174,6 +172,8 @@ Pista: usá `useSelector(state => state.filtro)` en un componente para leer todo
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.zona`), y envolvé la aplicación con `<Provider store={store}>`, confirmando que el componente ya no se re-renderiza ante cambios de otros campos del mismo slice.
 
+**Evidencia de aprendizaje:** entrega implementación con Redux Toolkit, selector de granularidad gruesa detectado y corrección con selector específico.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
 **¿Por qué es importante?** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
@@ -188,8 +188,6 @@ Alguien propuso guardar la lista de envíos (que viene de la API) dentro del mis
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El estado de servidor (datos de una API, sujetos a expiración y revalidación) pertenece a TanStack Query; el estado de cliente puro (un modal abierto, un filtro) pertenece a Zustand/Context/`useState`; mezclarlos reimplementa peor lo que TanStack Query ya ofrece.
-
-**Evidencia de aprendizaje:** entrega mezcla incorrecta identificada, divergencia provocada y store limpio con responsabilidades separadas.
 **Conceptos clave:** separación de responsabilidades entre TanStack Query y estado global, sobre-ingeniería evitable.
 
 El estado de servidor (datos que provienen de una API externa, sujetos a expiración, necesitados de revalidación periódica, y potencialmente compartidos entre múltiples usuarios simultáneos) pertenece conceptualmente a TanStack Query (Módulo 6), que ya resuelve cache, invalidación y refetch específicamente para ese tipo de estado; el estado de cliente puro (si un modal está abierto, qué pestaña está activa, el tema visual seleccionado) pertenece a Zustand, Context, o simplemente `useState` local, dado que ese estado no tiene ningún origen ni necesidad de sincronización con un servidor externo.
@@ -242,6 +240,8 @@ Pista: implementá un botón "Refrescar" que llame manualmente a `setEnvios(nuev
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por completo, dejando que `useQuery` (Módulo 6) sea la única fuente de la lista de envíos, y que el store de Zustand contenga solamente `zona` (estado de cliente puro).
 
+**Evidencia de aprendizaje:** entrega mezcla incorrecta identificada, divergencia provocada y store limpio con responsabilidades separadas.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explicá con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/getting-started/introduction.
 **¿Por qué es importante?** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
@@ -256,8 +256,6 @@ Con el `useReducer` del Módulo 2, nada impide escribir por error una transició
 
 #### Paso 3 · Teoría, modelo mental y analogía
 XState modela estado como una máquina de estados finitos con transiciones explícitamente definidas; un estado solo puede alcanzarse desde las transiciones que la máquina efectivamente declara, rechazando cualquier otra.
-
-**Evidencia de aprendizaje:** entrega máquina con transiciones explícitas, transición inválida detectada en el reducer simple y quinto estado agregado.
 **Conceptos clave:** modelo atómico frente a store centralizado, máquinas de estado explícitas.
 
 Jotai modela el estado global como átomos independientes y pequeños (`const contadorAtom = atom(0)`) en vez de un único store centralizado grande, permitiendo componer átomos derivados a partir de otros átomos de forma similar en espíritu a `computed()` de signals (Módulo 2 del track de Angular), con una granularidad de suscripción naturalmente fina dado que cada átomo es independiente por diseño; Recoil ofrece un modelo conceptualmente similar basado en "atoms" y "selectors" (valores derivados memoizados), aunque con menor adopción activa actualmente que Jotai en el ecosistema.
@@ -321,6 +319,8 @@ Pista: implementá el mismo flujo con un `useReducer` simple donde el `case 'EXI
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a la máquina de XState del Paso 4, y agregá un quinto estado (`cancelado`) alcanzable solo desde `confirmando`, confirmando que ningún otro estado puede transicionar directamente a `cancelado` sin pasar por `confirmando` primero.
+
+**Evidencia de aprendizaje:** entrega máquina con transiciones explícitas, transición inválida detectada en el reducer simple y quinto estado agregado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explicá en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cerrá el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.

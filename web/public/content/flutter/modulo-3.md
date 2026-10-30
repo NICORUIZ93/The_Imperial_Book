@@ -13,8 +13,6 @@ Hoy, abrir el detalle de un envío usa `Navigator.push(context, MaterialPageRout
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El Navigator 1.0 trata la navegación como operaciones sobre una pila; go_router la trata como función pura de la URL actual — una dirección postal de destino, no instrucciones paso a paso.
-
-**Evidencia de aprendizaje:** entrega navegación declarativa, desincronización de URL detectada y segunda ruta anidada confirmada.
 **Conceptos clave:** la URL es la fuente de verdad, no una pila de operaciones push/pop imperativas.
 
 ```dart
@@ -80,6 +78,8 @@ Pista: dejá la ruta `/envios/:id` definida, pero seguí navegando con `Navigato
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `context.go('/envios/$id')`, y agregá una segunda ruta `/envios/:id/historial` anidada, confirmando que la URL siempre refleja exactamente qué pantalla se está mostrando.
 
+**Evidencia de aprendizaje:** entrega navegación declarativa, desincronización de URL detectada y segunda ruta anidada confirmada.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la navegación declarativa del Paso 4, la desincronización de URL provocada en el Paso 5, y la segunda ruta del Paso 6; explicá por qué go_router resuelve el problema de que el Navigator 1.0 no tiene ninguna representación explícita de "en qué ruta está la app". Siguiente paso: estudia guards y deep linking. Errores comunes: mezclar `Navigator.push` imperativo con rutas de go_router ya definidas, usar `state.pathParameters['id']!` sin verificar que el parámetro realmente puede faltar, y definir rutas sin un `builder` que use efectivamente ese parámetro. Fuentes oficiales: https://pub.dev/packages/go_router y https://docs.flutter.dev/ui/navigation.
 **¿Por qué es importante?** go_router resuelve el problema de que el Navigator 1.0 imperativo no tiene ninguna representación explícita de "en qué ruta está la app", crítico para deep linking y Flutter Web.
@@ -94,8 +94,6 @@ La pantalla de administración de conductores debería ser inaccesible para cual
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `redirect` en la definición de la ruta centraliza el guard; con go_router, un deep link usa exactamente el mismo mecanismo que la navegación interna, sin lógica paralela.
-
-**Evidencia de aprendizaje:** entrega guard declarativo, ruta desprotegida detectada y ruta hija heredando protección confirmada.
 **Conceptos clave:** protección declarativa de rutas, deep linking sin lógica especial adicional.
 
 ```dart
@@ -151,6 +149,8 @@ Pista: quitá el `redirect` de `/admin` y en su lugar agregá una verificación 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el `redirect` a la definición de la ruta `/admin`, y agregá `/admin/reportes` como ruta hija bajo el mismo padre protegido, confirmando que hereda la protección sin necesitar su propio `redirect` repetido.
 
+**Evidencia de aprendizaje:** entrega guard declarativo, ruta desprotegida detectada y ruta hija heredando protección confirmada.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el guard declarativo del Paso 4, la ruta desprotegida por verificación dispersa del Paso 5, y la ruta hija heredando protección del Paso 6; explicá por qué centralizar el guard en la definición de la ruta evita que una ruta nueva quede desprotegida por descuido. Siguiente paso: estudia transiciones personalizadas. Errores comunes: verificar autenticación manualmente dentro de cada widget de pantalla protegida en vez de en un `redirect`, no confirmar que las rutas hijas heredan protección, y tratar el deep linking como un sistema separado en vez de la misma función de URL ya existente. Fuentes oficiales: https://pub.dev/packages/go_router y https://docs.flutter.dev/ui/navigation/deep-linking.
 **¿Por qué es importante?** Los guards declarativos centralizan la protección de rutas directamente en su definición, evitando verificaciones dispersas y propensas a omisión.
@@ -165,8 +165,6 @@ Tras confirmar una entrega, RutaFlow navega con la transición de deslizamiento 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `pageBuilder` con `CustomTransitionPage` permite especificar explícitamente la animación de una ruta — un fundido comunica "esto reemplaza el contexto anterior" mejor que un deslizamiento lateral.
-
-**Evidencia de aprendizaje:** entrega transición personalizada en el punto correcto, aplicación indiscriminada detectada y criterio documentado.
 **Conceptos clave:** control explícito sobre la animación de transición entre pantallas.
 
 ```dart
@@ -227,6 +225,8 @@ Pista: aplicá ese mismo `FadeTransition` a todas las rutas de la app, incluyend
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo la transición por defecto a la navegación normal entre `ListaEnvios` y `DetalleEnvio`, dejando el `FadeTransition` únicamente en la ruta de confirmación exitosa, y documentá por escrito el criterio de cuándo aplicar una transición distinta a la estándar.
+
+**Evidencia de aprendizaje:** entrega transición personalizada en el punto correcto, aplicación indiscriminada detectada y criterio documentado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la transición personalizada en el punto correcto del Paso 4, la aplicación indiscriminada del Paso 5, y el criterio documentado del Paso 6; explicá por qué aplicar transiciones personalizadas en todas partes diluye exactamente la señal visual que debían comunicar en los puntos específicos donde sí aportaban valor. Siguiente paso: cerrá el módulo integrando rutas, guards y transiciones en el flujo completo de RutaFlow. Errores comunes: aplicar transiciones personalizadas de forma inconsistente en toda la app sin criterio, elegir una transición que no refleja la relación semántica real entre pantallas, y no probar la transición en ambas direcciones. Fuentes oficiales: https://pub.dev/documentation/go_router/latest/go_router/CustomTransitionPage-class.html y https://docs.flutter.dev/ui/animations.

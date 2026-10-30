@@ -176,8 +176,6 @@ Un test unitario de `confirmarEntrega` (Tema 2) prueba la lógica en memoria, pe
 
 #### Paso 3 · Teoría, modelo mental y analogía
 XCUITest lanza la app compilada e instalada y simula interacciones reales (`tap`, `typeText`) contra la UI efectivamente renderizada — una inspección de calidad de punta a punta, mucho más lenta que verificar un componente aislado en un banco de pruebas.
-
-**Evidencia de aprendizaje:** entrega test del flujo feliz, falla intermitente detectada y test del flujo de error.
 **Conceptos clave:** simulación de interacciones reales contra la app compilada, más lento pero valida el recorrido end-to-end.
 
 ```swift
@@ -253,6 +251,8 @@ Pista: cambiá `waitForExistence(timeout: 5)` por un simple `app.staticTexts["En
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `waitForExistence`, y agregá un segundo test que escriba un PIN incorrecto y confirme que aparece un mensaje de error en pantalla en vez de "Entrega confirmada" — identificando qué `accessibility identifiers` necesitás agregar a esa vista de error si todavía no existen.
+
+**Evidencia de aprendizaje:** entrega test del flujo feliz, falla intermitente detectada y test del flujo de error.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y el test del flujo de error del Paso 6; explicá por qué un XCUITest necesita esperar explícitamente (`waitForExistence`) en vez de asumir que la UI ya se actualizó apenas después de un `tap()`. Siguiente paso: estudia cómo correr esta suite en CI. Errores comunes: no esperar explícitamente a que la UI se actualice, depender de texto visible en vez de accessibility identifiers estables, y cubrir solo el camino feliz en los UI Tests. Fuentes oficiales: https://developer.apple.com/documentation/xctest/xcuiapplication y https://developer.apple.com/documentation/testing.

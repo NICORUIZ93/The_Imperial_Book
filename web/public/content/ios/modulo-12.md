@@ -13,8 +13,6 @@ A lo largo del track construiste piezas sueltas de RutaFlow (vistas, ViewModels,
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El proyecto integra capas con ownership claro (vista, ViewModel, servicio, persistencia, dominio) — una central móvil donde cada estación tiene un contrato y una responsabilidad distinta, no una mezcla de todo en un solo lugar.
-
-**Evidencia de aprendizaje:** entrega diagrama de capas, violación provocada y resultado de la revisión completa.
 **Conceptos clave:** cada módulo del track como una pieza que encaja en un sistema mayor coherente.
 
 ```
@@ -84,6 +82,8 @@ Pista: agregá temporalmente una llamada directa a `ServicioAPI().obtenerEnvios(
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el resto del código fuente de RutaFlow buscando otras violaciones similares de capas (una vista que importe SwiftData directamente, o un ViewModel que importe SwiftUI) — documentá cualquiera que encuentres y corregila.
 
+**Evidencia de aprendizaje:** entrega diagrama de capas, violación provocada y resultado de la revisión completa.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
 **¿Por qué es importante?** Porque integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
@@ -98,8 +98,6 @@ Si un conductor pierde señal en medio de una ruta, `ListaEnvios` no debería qu
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El ViewModel orquesta ambas fuentes sin que la vista conozca ninguna de las dos directamente — un gerente de logística que coordina almacén local y proveedores externos sin que el personal de ventas trate directamente con ninguno.
-
-**Evidencia de aprendizaje:** entrega ViewModel orquestando ambas fuentes, error de compilación detectado y log de diagnóstico agregado.
 **Conceptos clave:** el ViewModel orquesta ambas fuentes, sin que la vista conozca ninguna de las dos directamente.
 
 El `EnviosViewModel` del proyecto integrador orquesta ambas fuentes de datos (el servicio de red y el `ModelContext` de SwiftData) sin que la vista necesite conocer ninguno de los dos directamente: la vista simplemente observa `viewModel.envios` y llama a `viewModel.sincronizar()` cuando corresponde, sin ninguna referencia directa a `URLSession` ni a `ModelContext` en el código de la vista misma; esta separación es exactamente el mismo principio de "cada capa con una única responsabilidad, comunicándose en una única dirección" aplicado en el proyecto integrador de Android con Room y Retrofit (Módulo 12 de ese track).
@@ -166,6 +164,8 @@ Pista: cambiá `try?` por `try` (sin el `?`) en la llamada a `servicio.obtenerEn
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `try?`, y agregá un log (no una propagación a la UI) cuando `obtenerEnvios()` falle, para poder diagnosticar fallas de sincronización sin interrumpir al conductor con un error intrusivo por cada corte de señal.
 
+**Evidencia de aprendizaje:** entrega ViewModel orquestando ambas fuentes, error de compilación detectado y log de diagnóstico agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: cerrá el track con una retrospectiva. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
 **¿Por qué es importante?** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
@@ -180,8 +180,6 @@ Completaste el track entero construyendo RutaFlow en SwiftUI — nadie te pidió
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una app iOS completa combina seguridad de tipos (optionals, enums exhaustivos), concurrencia estructurada (`async`/`await`, actors) y UI reactiva sincronizada automáticamente (`@Observable`) — una pieza musical interpretada con instrumentos diseñados para resaltar esas fortalezas específicas.
-
-**Evidencia de aprendizaje:** entrega retrospectiva, afirmación incorrecta corregida y lista de principios transferibles.
 **Conceptos clave:** lo que hace que una app "se sienta nativa" en el sentido más profundo.
 
 Una app iOS "completa" combina precisamente lo que Swift y SwiftUI hacen especialmente bien y que se ha estudiado a lo largo de todo el track: seguridad de tipos incorporada desde el diseño mismo del lenguaje (optionals, enums exhaustivos, Módulo 0), concurrencia estructurada que elimina por completo el anidamiento de callbacks tradicional (`async`/`await`, actors, `TaskGroup`, Módulo 4), y una UI declarativa que se mantiene automáticamente sincronizada con el estado subyacente sin código manual de actualización (`@Observable`, `@Query`, Módulos 2 y 6); el resultado combinado de estos tres pilares se percibe, de forma bastante literal, como genuinamente "nativo" de la plataforma, no simplemente como una app funcional construida con las herramientas de Apple.
@@ -243,6 +241,8 @@ Pista: escribí la retrospectiva afirmando que "`@Observable` es exclusivo de Sw
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente qué es sintaxis/mecanismo propio de Swift (la macro `@Observable` y el rastreo de acceso a propiedades en tiempo de compilación) de qué es el principio compartido (redibujado granular basado en qué se leyó realmente), citando el módulo específico de Android o React donde estudiaste el equivalente.
+
+**Evidencia de aprendizaje:** entrega retrospectiva, afirmación incorrecta corregida y lista de principios transferibles.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.

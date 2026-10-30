@@ -13,8 +13,6 @@ Al finalizar vas a validar un Universal Link entrante de RutaFlow (`https://ruta
 Cualquier app puede construir y enviar un link con la forma `https://rutaflow.app/envios/RF-4471`; que el sistema haya verificado que RutaFlow es la app asociada a ese dominio no significa que el conductor actual tenga permiso de leer ESE envío puntual.
 #### Paso 3 · Teoría, modelo mental y analogía
 El sandbox y la verificación de dominio reducen qué puede llegar a tu app, pero no validan la intención de cada entrada — una frontera con controles: validar estructura, autenticar, autorizar y recién después actuar.
-
-**Evidencia de aprendizaje:** entrega función con validación completa, acceso indebido provocado y test de autorización.
 **Conceptos clave:** sandbox, entitlement, capability, least privilege, runtime permission, URL scheme, Universal Link, associated domain, input validation, authentication, authorization y threat model.
 
 iOS aísla procesos y exige capacidades firmadas, pero una frontera abierta sigue recibiendo datos no confiables. Audita los entitlements generados, activa únicamente capacidades necesarias y separa configuraciones de desarrollo y producción. Pedir acceso a cámara, fotos, ubicación o contactos requiere propósito concreto, texto comprensible y una ruta alternativa cuando el usuario rechaza el permiso.
@@ -95,6 +93,9 @@ Resultado esperado: `envioID(from:session:)` lanza `.malformed` si la URL no tie
 Pista: quitá la línea `guard session.puedeLeer(id) else { throw LinkError.forbidden }` "porque ya validamos la estructura de la URL arriba" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, exactamente la amenaza que la verificación de dominio no cubre por sí sola.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `.forbidden`, no que simplemente "no hace nada".
+
+**Evidencia de aprendizaje:** entrega función con validación completa, acceso indebido provocado y test de autorización.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
 **¿Por qué es importante?** Porque una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
@@ -107,8 +108,6 @@ Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no e
 Guardar el token de sesión de un conductor en `UserDefaults` "porque es más simple" lo deja en un archivo plist sin cifrado dedicado, legible por cualquiera con acceso al dispositivo o a un backup del mismo.
 #### Paso 3 · Teoría, modelo mental y analogía
 Keychain protege secretos pequeños con una clase de accesibilidad explícita; redactar logs es tan necesario como elegir bien el almacén — guardar una joya en una caja fuerte no ayuda si su fotografía queda sobre la mesa.
-
-**Evidencia de aprendizaje:** entrega guardado en Keychain, filtración en logs detectada y función de cierre de sesión.
 **Conceptos clave:** clasificación, minimización, Keychain, access class, Data Protection, Secure Enclave, backup, log redaction, screenshot, pasteboard, notification preview, privacy manifest, token y logout.
 
 Clasifica antes de almacenar: público, interno, sensible y credencial. Define retención y borrado. Los tokens no pertenecen a `UserDefaults`; usa Keychain con una accesibilidad coherente con la función. `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` evita migración a otro dispositivo y acceso mientras está bloqueado, aunque puede ser demasiado restrictivo para tareas de fondo. La decisión es de producto y amenaza, no una receta universal.
@@ -189,6 +188,9 @@ Resultado esperado: el token queda en Keychain con `kSecAttrAccessibleWhenUnlock
 Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .utf8) ?? "")")` justo después de `SecItemAdd` "para depurar" — ese es el fallo deliberado: ahora el token completo del conductor queda en los logs del sistema en texto plano, exactamente la copia secundaria sin control que vuelve inútil haber usado Keychain para el almacén principal.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que registre solo que "la sesión se guardó" (sin el valor), más una función `cerrarSesion(conductorID:)` que borre el token de Keychain con `SecItemDelete`.
+
+**Evidencia de aprendizaje:** entrega guardado en Keychain, filtración en logs detectada y función de cierre de sesión.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
 **¿Por qué es importante?** Porque las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
@@ -201,8 +203,6 @@ Al finalizar vas a construir una outbox persistente para `confirmarEntrega` (Mó
 Si `confirmarEntrega` falla porque el conductor está sin señal en un sótano, simplemente reintentar la misma llamada cuando vuelva la red puede duplicar el efecto si el servidor sí la había recibido pero la respuesta se perdió en el camino.
 #### Paso 3 · Teoría, modelo mental y analogía
 Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
-
-**Evidencia de aprendizaje:** entrega outbox con idempotencia, duplicación provocada y backoff agregado.
 **Conceptos clave:** source of truth, outbox, state machine, idempotency key, retry, exponential backoff, jitter, reachability, optimistic UI, version, conflict, tombstone, background task y cancellation.
 
 Leer una caché sin red es útil, pero offline-first exige definir qué ocurre con escrituras. Mantén una fuente local observable y una outbox persistente. Cada operación tiene identidad estable, payload, estado, intentos y próxima fecha. La interfaz confirma que el cambio está pendiente; un worker lo envía y reconcilia la respuesta.
@@ -297,6 +297,9 @@ Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendie
 Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
+
+**Evidencia de aprendizaje:** entrega outbox con idempotencia, duplicación provocada y backoff agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
 **¿Por qué es importante?** Porque la conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
@@ -309,8 +312,6 @@ Al finalizar vas a instrumentar `MotorSincronizacion.vaciar()` (Tema 3) con un s
 "No se traba en mi teléfono" no es evidencia de que la sincronización funcione para los conductores reales — necesitás una medición agregada, no una impresión personal.
 #### Paso 3 · Teoría, modelo mental y analogía
 MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
-
-**Evidencia de aprendizaje:** entrega signpost instrumentado, métrica sin umbral detectada y umbral con acción definida.
 **Conceptos clave:** crash, hang, launch time, memory pressure, MetricKit, Instruments, os_signpost, structured logging, SLI, release train, TestFlight, phased release, migration, feature flag y rollback.
 
 “No crashea en mi teléfono” no es evidencia. Define indicadores ligados a experiencia: sesiones sin crash, tasa de hangs, tiempo de arranque, éxito de sincronización y latencia percibida. MetricKit entrega diagnósticos agregados; Instruments permite investigar CPU, memoria, energía, red y bloqueos; signposts delimitan operaciones del dominio sin llenar logs de datos personales.
@@ -383,6 +384,9 @@ Resultado esperado: grabando una sesión de Instruments con la plantilla "os_sig
 Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
+
+**Evidencia de aprendizaje:** entrega signpost instrumentado, métrica sin umbral detectada y umbral con acción definida.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
 **¿Por qué es importante?** Porque todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.

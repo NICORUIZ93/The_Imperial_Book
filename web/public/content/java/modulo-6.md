@@ -13,8 +13,6 @@ Una plataforma de entregas procesa comprobantes subidos por el usuario; si el no
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `Path` representa una ubicación; `Files` ofrece operaciones explícitas de alto nivel. Validar que la ruta resuelta (`normalize()`) siga dentro del directorio permitido evita un path traversal. La analogía: un archivador con permisos, donde conocer el nombre de un cajón no autoriza abrirlo.
-
-**Evidencia de aprendizaje:** entrega `LectorComprobantes` con su validación de directorio base, la prueba de traversal (`../../../etc/passwd`) correctamente rechazada, y la lectura válida de un comprobante real.
 **Conceptos clave:** API moderna frente a la clase File legada, operaciones expresivas.
 
 Este validador de rutas es exactamente lo que necesitará cualquier endpoint del proyecto integrador de este track que reciba un nombre de archivo desde afuera (subir un comprobante, descargar un reporte).
@@ -101,6 +99,8 @@ Pista: invoca el mismo programa con `../../../etc/passwd` como nombre de archivo
 
 #### Paso 6 · Práctica independiente
 Agrega `Files.copy` para respaldar el comprobante leído a un directorio de archivo, y una prueba que confirme que un nombre con `..` es rechazado antes de tocar el sistema de archivos.
+
+**Evidencia de aprendizaje:** entrega `LectorComprobantes` con su validación de directorio base, la prueba de traversal (`../../../etc/passwd`) correctamente rechazada, y la lectura válida de un comprobante real.
 
 #### Paso 7 · Cierre y evidencia
 Guarda el validador de rutas, la prueba de traversal rechazada y la lectura válida; como siguiente paso estudia serialización con Jackson. Errores comunes: concatenar rutas con `+` en vez de `resolve()`, confiar en la extensión del archivo sin validar la ruta completa resuelta, y normalizar antes de resolver en vez de después (el orden importa: primero `resolve`, después `normalize()`). Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html.

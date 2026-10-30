@@ -286,6 +286,14 @@
       ]
     },
     {
+      "path": "docs/app-flow-inspection-dedup.json",
+      "lines": 8267,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/app-flow-inspection-devops.json",
       "lines": 1617,
       "kind": "project-file",
@@ -5785,6 +5793,28 @@
       "headings": []
     },
     {
+      "path": "scripts/dedupe_example_code.py",
+      "lines": 153,
+      "kind": "automation-script",
+      "symbols": [
+        "topic_slice",
+        "dedupe",
+        "guard",
+        "improve_topic",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "re",
+        "sys",
+        "difflib",
+        "pathlib",
+        "audit_lesson_substance"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/extract_pdf_toc.py",
       "lines": 33,
       "kind": "automation-script",
@@ -7538,7 +7568,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-5.md",
-      "lines": 857,
+      "lines": 858,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8755,7 +8785,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-1.md",
-      "lines": 429,
+      "lines": 431,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8839,7 +8869,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-13.md",
-      "lines": 636,
+      "lines": 640,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8881,7 +8911,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 317,
+      "lines": 319,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8902,7 +8932,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-3.md",
-      "lines": 243,
+      "lines": 244,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8923,7 +8953,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 322,
+      "lines": 324,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8944,7 +8974,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-5.md",
-      "lines": 278,
+      "lines": 279,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8965,7 +8995,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-6.md",
-      "lines": 262,
+      "lines": 263,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

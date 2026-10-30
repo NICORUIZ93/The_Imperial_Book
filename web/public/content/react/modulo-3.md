@@ -102,8 +102,6 @@ El peso de un envío debe ser un número positivo y la dirección no puede estar
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un schema de zod describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, conectado a React Hook Form mediante `zodResolver` — una plantilla de aduana que especifica qué documentos son válidos para pasar.
-
-**Evidencia de aprendizaje:** entrega schema con validación, pérdida de datos detectada y paso de confirmación con resumen completo.
 **Conceptos clave:** schema declarativo, `zodResolver`, estado compartido entre pasos.
 
 Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, de forma similar en espíritu a los validadores declarativos de Reactive Forms estudiados en el Módulo 5 del track de Angular, pero expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
@@ -163,6 +161,8 @@ Mantén el schema de zod pero agregá además validación manual en el `onSubmit
 **Pista:** revertí cada fallo antes de probar el siguiente — el Fallo #1 se nota de inmediato al retroceder de paso, pero el Fallo #2 (schema incompleto) solo se nota si intentás enviar explícitamente un valor que debería haber sido rechazado.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el spread, y agregá un tercer paso (confirmación) que muestre un resumen de todos los datos acumulados de los pasos 1 y 2, confirmando que nada se perdió en el camino.
+
+**Evidencia de aprendizaje:** entrega schema con validación, pérdida de datos detectada y paso de confirmación con resumen completo.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el schema con validación del Paso 4, la pérdida de datos provocada en el Paso 5, y el paso de confirmación del Paso 6; explicá por qué `setDatos(prev => ({ ...prev, ...datosDelPaso }))` es necesario, dado que cada paso solo conoce sus propios campos, no los de los demás pasos. Siguiente paso: estudia cómo React normaliza los eventos del formulario. Errores comunes: sobrescribir el estado acumulado en vez de fusionarlo al avanzar de paso, duplicar reglas de validación entre el schema y código manual adicional, y no validar un paso antes de permitir avanzar al siguiente. Fuentes oficiales: https://zod.dev/ y https://react-hook-form.com/docs/useform.

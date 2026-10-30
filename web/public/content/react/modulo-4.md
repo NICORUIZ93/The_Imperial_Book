@@ -124,8 +124,6 @@ Alguien propuso meter también el texto del filtro de búsqueda de envíos (que 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada cambio en el valor de un Context re-renderiza todos sus consumidores, sin distinción granular — aceptable para valores que cambian poco (operador, tema), problemático para valores que cambian mucho (una tecla por vez).
-
-**Evidencia de aprendizaje:** entrega medición del re-render innecesario y corrección separando el estado de cambio frecuente.
 **Conceptos clave:** frecuencia de cambio del valor, re-renders de todos los consumidores.
 
 Context resuelve bien el caso de valores que cambian con poca frecuencia relativa (el tema visual de la aplicación, el idioma seleccionado, la identidad del usuario autenticado) y que necesitan leerse desde muchos lugares distintos y potencialmente lejanos del árbol de componentes, dado que el costo de un re-render ocasional de todos los consumidores de ese Context (cada vez que el valor provisto cambia, absolutamente todos los componentes que consumen ese Context con `useContext` se re-renderizan, sin distinción de granularidad más fina) es perfectamente aceptable cuando esos cambios son infrecuentes.
@@ -181,6 +179,8 @@ Pista: dejá `filtroBusqueda` dentro de `SesionContext` y escribí rápido en el
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con un `useState` local dentro del componente de búsqueda, sin Context, porque solo lo necesita ese componente y sus hijos directos — confirmá que `BarraSuperior` ya no se re-renderiza al escribir.
+
+**Evidencia de aprendizaje:** entrega medición del re-render innecesario y corrección separando el estado de cambio frecuente.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explicá con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.

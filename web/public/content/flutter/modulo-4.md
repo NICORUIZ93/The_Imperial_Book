@@ -348,8 +348,6 @@ El conductor debe elegir un motivo y escribir una observación de 10 a 300 carac
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Formz distingue `pure` (sin interacción) de `dirty` (ya modificado); el estado del formulario es inmutable y separa validez de estado de red — las entradas son inspectores especializados, el estado del formulario es el tablero de despacho.
-
-**Evidencia de aprendizaje:** entrega entradas Formz tipadas, envío duplicado detectado y test de envío único.
 **Conceptos clave:** valor `pure`/`dirty`, validación determinista, estado inmutable, feedback progresivo, envío único y error de servidor.
 
 Construiremos el formulario «No fue posible entregar» de nuestra app. El conductor debe elegir un motivo y escribir una observación de 10 a 300 caracteres. Un formulario real no es solamente un conjunto de `TextEditingController`: necesita distinguir lo que el usuario todavía no tocó, una entrada inválida, un envío en curso, un rechazo del backend y una confirmación exitosa.
@@ -528,6 +526,8 @@ Pista: tocá dos veces rápidamente el botón "Reportar novedad" mientras el rep
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 confirmando que la guarda `if (!state.isValid || state.submitStatus == SubmitStatus.sending) return;` está presente, y escribí el test que confirma que `report` se invoca exactamente una vez sin importar cuántos toques rápidos reciba el botón.
+
+**Evidencia de aprendizaje:** entrega entradas Formz tipadas, envío duplicado detectado y test de envío único.
 
 #### Paso 7 · Cierre y evidencia
 Entregá las entradas Formz tipadas y el Notifier del Paso 4, el envío duplicado provocado en el Paso 5, y el test de envío único del Paso 6; explicá por qué separar `isValid` (datos correctos) de `submitStatus` (datos ya guardados) evita confundir ambas cosas y previene envíos duplicados. Siguiente paso: cerrá el módulo documentando el criterio de elección entre setState, Riverpod y Bloc. Errores comunes: mostrar todos los errores de validación antes de que el usuario interactúe con el campo, no proteger `submit()` contra doble toque mientras una petición está en curso, y borrar los valores escritos cuando el servidor rechaza el envío. Fuentes oficiales: https://pub.dev/packages/formz y https://riverpod.dev/docs/concepts/providers.

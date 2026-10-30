@@ -98,8 +98,6 @@ Testear `DetalleEnvio` end-to-end exigiría tener un backend real corriendo con 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 MSW intercepta peticiones a nivel de red; el código de producción hace sus peticiones exactamente igual que en producción, sin saber que está siendo interceptado — un servidor de pruebas que se hace pasar transparentemente por el real.
-
-**Evidencia de aprendizaje:** entrega handler de éxito, fuga de handler sin reset detectada y prueba del caso de error.
 **Conceptos clave:** interceptación a nivel de red, sin conocimiento del código de producción.
 
 MSW intercepta peticiones HTTP a nivel de red (registrando un service worker o, en entornos de prueba, interceptando directamente las llamadas de red del entorno de ejecución) en vez de parchear directamente la función `fetch` global del código de la aplicación (`vi.fn()` o un mock manual de `fetch`, un enfoque alternativo pero más frágil, dado que requiere que el mock replique exactamente la forma en que el código de producción invoca `fetch`); con MSW, el código de producción realiza sus peticiones exactamente igual que en producción real, sin ninguna modificación ni conocimiento de que está siendo interceptado, siendo el propio MSW el que intercepta esas peticiones a nivel de red antes de que lleguen a un servidor real.
@@ -153,6 +151,8 @@ Pista: dentro de un test agregá `server.use(http.post('/api/envios/:id/confirma
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agregá una prueba explícita del caso de error verificando que `DetalleEnvio` muestra un mensaje de error apropiado, no una pantalla en blanco.
 
+**Evidencia de aprendizaje:** entrega handler de éxito, fuga de handler sin reset detectada y prueba del caso de error.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explicá por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
 **¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo probar el código de producción exactamente como se ejecutaría en producción real, sin mockear `fetch` de forma frágil.
@@ -167,8 +167,6 @@ Al finalizar vas a testear `useFiltroZona` (un hook personalizado que envuelve e
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `renderHook` prueba un hook aislado sin un componente dedicado; `act` garantiza que React procese completamente una actualización antes de la siguiente aserción — probar el motor en un banco de pruebas, sin montar la carrocería completa.
-
-**Evidencia de aprendizaje:** entrega test aislado del hook, advertencia de act detectada y segunda prueba del valor por defecto.
 **Conceptos clave:** `renderHook`, `act`, aislar la lógica del hook de un componente visual.
 
 `renderHook(() => useContador())` permite probar un hook personalizado de forma aislada, sin necesidad de crear un componente de prueba dedicado únicamente para invocar ese hook y exponer indirectamente su resultado; el `result` devuelto expone `.current` con el valor actual retornado por el hook, actualizándose automáticamente entre renders sucesivos provocados dentro de la prueba. `act(() => result.current.incrementar())` envuelve cualquier interacción que dispare una actualización de estado dentro del hook, garantizando que React procese completamente esa actualización (incluyendo cualquier efecto asociado) antes de que la aserción siguiente se ejecute, de forma análoga en propósito a `await fixture.whenStable()` en las pruebas de Angular (Módulo 10 del track de Angular).
@@ -231,6 +229,8 @@ Pista: quitá `act(...)` y llamá directamente `result.current.setZona('NORTE')`
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `act`, y agregá una segunda prueba que confirme que llamar `setZona('')` (cadena vacía) hace que `useFiltroZona` vuelva al valor por defecto `'todas'`, en vez de guardar una cadena vacía inválida.
+
+**Evidencia de aprendizaje:** entrega test aislado del hook, advertencia de act detectada y segunda prueba del valor por defecto.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el test aislado del Paso 4, la advertencia de React por falta de `act` del Paso 5, y la segunda prueba del Paso 6; explicá por qué testear este hook con `renderHook` en vez de envolverlo en un componente visual mantiene la prueba enfocada específicamente en su lógica de estado. Siguiente paso: cerrá el módulo integrando los tres enfoques en la suite completa de RutaFlow. Errores comunes: envolver un hook en un componente visual completo solo para poder testearlo, no envolver actualizaciones de estado en `act`, y testear un hook personalizado únicamente a través de pruebas end-to-end de componentes, sin ninguna prueba aislada de su lógica. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/api/#renderhook y https://react.dev/reference/react/act.

@@ -11,8 +11,6 @@ Al finalizar vas a conectar `TarjetaEnvio` (Módulo 1) a un interruptor de estad
 Si la pantalla de detalle de un envío y la lista de envíos mostraran cada una su propia copia del estado "entregado", marcar la entrega en el detalle nunca actualizaría la lista — exactamente el bug que `@Binding` existe para evitar.
 #### Paso 3 · Teoría, modelo mental y analogía
 `@State` pertenece a la vista que lo declara; `@Binding` es una referencia hacia el estado de otra vista, nunca una copia — un apoderado con autorización para modificar la casa de otro, sin ser dueño de ella.
-
-**Evidencia de aprendizaje:** entrega el `@Binding` compartido funcionando, el estado divergente provocado al reemplazarlo por un `@State` propio, y las tres vistas sincronizadas sin copia.
 **Conceptos clave:** estado propio de una vista vs referencia mutable al estado de otra.
 
 #### Cómo leer `@State`, `@Binding` y el prefijo `$`
@@ -100,6 +98,9 @@ xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 1
 Pista: cambiá `ConfirmarEntregaBoton` para que declare su propio `@State private var entregado = false` en vez de recibir el `@Binding` — ese es el fallo deliberado: ahora tocar el botón cambia SU propia copia, pero `DetalleEnvio` nunca se entera, y las dos vistas muestran estados de entrega distintos para el mismo envío.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `@Binding`, y agregá una tercera vista (`ResumenRuta`) que también reciba el mismo `$entregado` — confirmá que las tres vistas (detalle, botón, resumen) siempre muestran el mismo valor, sin que ninguna tenga que "sincronizarse" explícitamente con las otras.
+
+**Evidencia de aprendizaje:** entrega el `@Binding` compartido funcionando, el estado divergente provocado al reemplazarlo por un `@State` propio, y las tres vistas sincronizadas sin copia.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el `@Binding` compartido funcionando del Paso 4, el estado divergente del Paso 5, y las tres vistas sincronizadas del Paso 6; explicá por qué "copiar el valor a otro `@State` para tenerlo a mano" crea exactamente el bug que acabás de provocar. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque copiar un valor compartido en un `@State` propio "para tenerlo a mano" crea dos fuentes de verdad que pueden divergir, exactamente el bug que `@Binding` existe para evitar al referenciar el estado del padre en vez de copiarlo.
@@ -199,8 +200,6 @@ Al finalizar vas a inyectar un `ServicioAPI` de RutaFlow vía `@Environment`, ll
 Si `DetalleEnvio` está anidada tres niveles dentro de `ListaEnvios`, que a su vez está dentro de la pantalla principal, pasar `ServicioAPI` manualmente por cada inicializador intermedio que no lo usa directamente sería puro acoplamiento sin beneficio.
 #### Paso 3 · Teoría, modelo mental y analogía
 `@Environment` es la electricidad disponible en cualquier toma del edificio: cualquier vista descendiente se "enchufa" sin que nadie tienda un cable manual desde la planta de generación hasta cada habitación.
-
-**Evidencia de aprendizaje:** entrega la inyección funcionando a través de varios niveles, el crash reproducido por ambiente faltante, y la vista intermedia que no necesita conocer la dependencia.
 **Conceptos clave:** inyección de dependencias sin pasar manualmente por cada inicializador.
 
 ```swift
@@ -284,6 +283,9 @@ xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 1
 Pista: quitá `.environment(ServicioAPI())` del `WindowGroup` pero dejá `@Environment(ServicioAPI.self) var servicio` en `DetalleEnvio` — ese es el fallo deliberado: en tiempo de ejecución, SwiftUI no encuentra ningún `ServicioAPI` inyectado en el ambiente y la app crashea al intentar leer `servicio`, un error silencioso en tiempo de compilación que solo aparece al correr.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la inyección, y agregá una segunda vista intermedia entre `ListaEnvios` y `DetalleEnvio` que NO lea `ServicioAPI` en absoluto — confirmá que esa vista intermedia no necesita saber nada sobre `ServicioAPI` para que `DetalleEnvio` siga funcionando.
+
+**Evidencia de aprendizaje:** entrega la inyección funcionando a través de varios niveles, el crash reproducido por ambiente faltante, y la vista intermedia que no necesita conocer la dependencia.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la inyección funcionando a través de varios niveles del Paso 4, el crash por ambiente faltante del Paso 5, y la vista intermedia ignorante de la dependencia del Paso 6; explicá por qué esto resuelve el mismo "prop drilling" que Context API resuelve en React. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio que no la usa, resolviendo en SwiftUI el mismo problema que Context API resuelve en React.

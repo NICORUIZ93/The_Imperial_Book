@@ -97,8 +97,6 @@ El equipo de RutaFlow tiene una alerta que se dispara varias veces por semana si
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una página debe despertar a una persona solo si exige acción inmediata; los labels participan en enrutamiento y agrupación, las annotations transportan contexto humano. La analogía es una alarma de incendio útil que indica zona y procedimiento, no una sirena constante que termina ignorada.
-
-**Evidencia de aprendizaje:** entrega alerta con labels/annotations correctos, cardinalidad descontrolada detectada y corrección verificada.
 **Conceptos clave:** symptom, cause, page, ticket, runbook, incident commander, severity, timeline, mitigation, recovery, game day y blameless postmortem.
 
 Alerta por síntomas de usuario y consumo de presupuesto; usa métricas causales para diagnóstico. Una página despierta a una persona solo si exige acción inmediata. Cada alerta tiene propietario, severidad, enlace a dashboard y runbook con verificación y contención segura.
@@ -169,6 +167,8 @@ Pista: agregá el `request_id` de la última petición fallida como un label adi
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 moviendo el `request_id` a `annotations` (donde sí pertenece el contexto de alta cardinalidad), dejando en `labels` únicamente valores pequeños y estables como `severity` y `service`.
+
+**Evidencia de aprendizaje:** entrega alerta con labels/annotations correctos, cardinalidad descontrolada detectada y corrección verificada.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la alerta con labels/annotations correctos del Paso 4, la cardinalidad descontrolada provocada en el Paso 5, y la corrección del Paso 6; explicá por qué un identificador de alta cardinalidad en un label multiplica series, mientras que en una annotation no tiene ese costo. Siguiente paso: estudia por qué construir una imagen no demuestra de dónde proviene. Errores comunes: colocar identificadores de alta cardinalidad en labels en vez de annotations, alertas sin runbook vinculado, y alertar por causa interna en vez de por síntoma observado por el usuario. Fuentes oficiales: https://prometheus.io/docs/practices/naming/ y https://sre.google/workbook/alerting-on-slos/.

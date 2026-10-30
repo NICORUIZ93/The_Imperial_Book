@@ -206,8 +206,6 @@ Al abrir el historial completo de envíos de un conductor con meses de actividad
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `async` libera durante la espera de I/O, pero no paraleliza un cálculo CPU-bound; mover ese trabajo pesado a otro isolate con `compute` libera al isolate de UI para seguir respondiendo mientras tanto.
-
-**Evidencia de aprendizaje:** entrega decodificación off-UI del historial grande, costo medido de mover trabajo pequeño y criterio de decisión documentado.
 **Conceptos clave:** event loop, UI isolate, frame budget, jank, raster thread, isolate, `compute`, transfer cost, allocation, image cache, DevTools, timeline y benchmark.
 
 El isolate principal procesa eventos y construye UI. Una transformación CPU-bound larga impide responder aunque use `Future`: `async` libera durante espera, no paraleliza cálculo. Mueve parseo o compresión suficientemente pesada a otro isolate, enviando datos transferibles y resultados pequeños. No crees isolates para operaciones diminutas: copiar mensajes y coordinar también cuesta.
@@ -277,6 +275,8 @@ Pista: envolvé también la decodificación de un JSON pequeño (la respuesta de
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo la decodificación del JSON pequeño al isolate de UI directamente, dejando `compute` únicamente para el historial grande donde sí se justifica, y documentá el criterio de tamaño/costo que usaste.
 
+**Evidencia de aprendizaje:** entrega decodificación off-UI del historial grande, costo medido de mover trabajo pequeño y criterio de decisión documentado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la decodificación off-UI del Paso 4, el costo medido de mover trabajo pequeño a un isolate del Paso 5, y el criterio documentado del Paso 6; explicá por qué crear isolates para operaciones diminutas cuesta más de lo que ahorra. Siguiente paso: estudia qué exige producción en términos de protocolo y telemetría. Errores comunes: asumir que `async`/`await` paraleliza cálculo CPU-bound, mover operaciones triviales a un isolate sin medir el costo de coordinación, y no perfilar en modo profile sobre un dispositivo representativo. Fuente oficial: https://docs.flutter.dev/perf/isolates.
 **¿Por qué es importante?** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
@@ -291,8 +291,6 @@ Si un conductor confirma una entrega y pierde señal justo cuando la respuesta d
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una mutación offline-first conserva un UUID estable, versión base, intento y siguiente fecha; el servidor deduplica por esa clave, y cambiarla al reintentar puede duplicar efectos.
-
-**Evidencia de aprendizaje:** entrega outbox con clave estable, duplicación detectada y test de clave estable confirmado.
 **Conceptos clave:** source of truth, outbox, idempotency key, version conflict, backoff, connectivity, background execution, symbol file, crash-free sessions, feature flag, staged rollout, migration y rollback.
 
 Offline-first requiere fuente local y outbox persistente. Una mutación conserva UUID estable, versión base, intento y siguiente fecha. El servidor deduplica la clave; cambiarla al reintentar puede duplicar efectos. La conectividad solo dispara intentos: no prueba disponibilidad. Define políticas de conflicto por dominio y muestra estados pendiente, fallido o en conflicto.
@@ -367,6 +365,8 @@ Pista: en la lógica de reintento, generá un `PendingMutation` nuevo con un `id
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reutilizando siempre el mismo `PendingMutation` (y su `id` original) en cada reintento, solo incrementando `attempts`, y agregá un test que confirme que tres reintentos consecutivos llegan al servidor con exactamente la misma clave de idempotencia.
+
+**Evidencia de aprendizaje:** entrega outbox con clave estable, duplicación detectada y test de clave estable confirmado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la outbox con clave de idempotencia estable del Paso 4, la duplicación provocada al generar un nuevo `id` en cada reintento del Paso 5, y el test de clave estable del Paso 6; explicá por qué la conectividad solo dispara intentos, pero no prueba disponibilidad real del servidor, y por qué eso hace indispensable la idempotencia en cada reintento. Siguiente paso: cerrá el módulo integrando seguridad, isolates y outbox en un release real auditado. Errores comunes: generar una nueva clave de idempotencia en cada reintento, publicar sin símbolos de depuración, y desplegar a todos los usuarios de una vez en vez de por cohortes observables. Fuente oficial: https://docs.flutter.dev/app-architecture/design-patterns/offline-first.

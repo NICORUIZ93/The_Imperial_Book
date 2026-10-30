@@ -102,8 +102,6 @@ Parsear la respuesta de `/envios` manualmente accediendo a `json['guia']` como `
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `json_serializable` genera en tiempo de compilación el código de parsing hacia una instancia tipada; un campo faltante o mal tipado produce un error claro al deserializar, no un `null` silencioso.
-
-**Evidencia de aprendizaje:** entrega modelo generado, error silenciado detectado y test de deserialización estricta.
 **Conceptos clave:** generación de código en tiempo de compilación, parsing tipado y verificado.
 
 ```dart
@@ -162,6 +160,8 @@ Pista: cambiá el modelo para parsear `estado` manualmente con `json['estado'] a
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el campo a `required this.estado` tipado estrictamente, y agregá un test que confirme que deserializar un JSON sin el campo `estado` lanza una excepción, en vez de producir un `Envio` con datos incompletos silenciosos.
+
+**Evidencia de aprendizaje:** entrega modelo generado, error silenciado detectado y test de deserialización estricta.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el modelo generado del Paso 4, el error silenciado por el valor por defecto del Paso 5, y el test de deserialización del Paso 6; explicá por qué "evitar el error" con un valor por defecto en este caso oculta un problema real de datos en vez de resolverlo. Siguiente paso: estudia interceptores y estados explícitos. Errores comunes: usar valores por defecto para "evitar" errores de deserialización que en realidad señalan datos incompletos reales, parsear JSON manualmente sin ninguna verificación de tipo centralizada, y olvidar correr `build_runner` después de modificar un modelo anotado. Fuentes oficiales: https://pub.dev/packages/json_serializable y https://docs.flutter.dev/data-and-backend/serialization/json.

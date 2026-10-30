@@ -172,8 +172,6 @@ Al finalizar vas a hacer que `confirmar-entrega` reciba y valide un comando real
 Un comando real de `DeliveryCommands` (Módulo 3) del proyecto integrador RutaFlow trae `shipmentId` y `recipientPin` (el PIN de 6 dígitos que el destinatario confirma al recibir). El handler necesita leer eso de `event`, no inventarlo — debe seguir el contrato exacto que RutaFlow define.
 #### Paso 3 · Teoría, modelo mental y analogía
 `event` es el pedido que llega; `context` es el reloj y los límites del turno; el valor de retorno es el comprobante que se entrega de vuelta.
-
-**Evidencia de aprendizaje:** entrega el `salida.json` exitoso del Paso 4, el `errorMessage` de PIN corto del Paso 5 y el de `shipmentId` ausente del Paso 6, con una explicación de qué parte del `if` disparó cada uno.
 #### Profundización · Verificación: Pruebas unitarias
 
 En producción, confiar solo en invocaciones manuales es riesgoso. RutaFlow usa pruebas automatizadas para verificar que el handler siempre cumple su contrato. Aquí está el patrón:
@@ -315,6 +313,9 @@ Resultado esperado: `salida.json` contiene `{"shipmentId":"env-4471","status":"d
 Pista: invocá con `recipientPin` de solo 4 dígitos (`"1234"`) para provocar el fallo deliberado — `salida.json` no va a tener `shipmentId`, va a tener `errorMessage` y `errorType: "TypeError"`, la misma validación que ya existe en el código TypeScript de RutaFlow.
 #### Paso 6 · Práctica independiente
 Invocá sin `shipmentId` en el payload y confirmá que también falla, con un `errorMessage` distinto al del Paso 5 — las dos validaciones del `if` son independientes.
+
+**Evidencia de aprendizaje:** entrega el `salida.json` exitoso del Paso 4, el `errorMessage` de PIN corto del Paso 5 y el de `shipmentId` ausente del Paso 6, con una explicación de qué parte del `if` disparó cada uno.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId` ausente; explicá qué parte de `event` corresponde a cada validación. Siguiente paso: runtimes. Errores comunes: depender de memoria global y no validar event. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html.
 

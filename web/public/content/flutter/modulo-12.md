@@ -13,8 +13,6 @@ A lo largo del track construiste piezas sueltas de RutaFlow (widgets, providers,
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Organizar por feature agrupa todo el código relacionado con una funcionalidad en un único lugar cohesivo; dentro de cada feature, Domain/Data/Presentation establecen un flujo de dependencia unidireccional donde Domain nunca depende de Data ni Presentation.
-
-**Evidencia de aprendizaje:** entrega estructura por feature, violación de capas detectada y revisión completa confirmada.
 **Conceptos clave:** organización por dominio de negocio, no por tipo técnico de archivo.
 
 ```
@@ -78,6 +76,8 @@ Pista: agregá una llamada directa a `Dio()` dentro de un widget en `presentatio
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo esa llamada al repositorio correspondiente en `data/`, y recorré el resto del proyecto buscando otras violaciones similares de capas.
 
+**Evidencia de aprendizaje:** entrega estructura por feature, violación de capas detectada y revisión completa confirmada.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la estructura por feature del Paso 4, la violación de capas provocada en el Paso 5, y la revisión del Paso 6; explicá por qué integrar todo el track en un único proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: estudia cómo unir todos los módulos del track en el flujo completo. Errores comunes: organizar el proyecto por tipo de archivo en vez de por feature, permitir que `domain/` dependa de `data/` o `presentation/`, y que un widget acceda directamente a una librería de infraestructura sin pasar por el repositorio. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
 **¿Por qué es importante?** Organizar por feature agrupa código relacionado por propósito de negocio; Clean Architecture con capas Domain/Data/Presentation mantiene la lógica de negocio central aislada y testeable.
@@ -92,8 +92,6 @@ Nadie confirmó todavía que la navegación con go_router (Módulo 3), la gesti�
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `AsyncValue.when(data:, loading:, error:)` maneja exhaustivamente los tres estados posibles de una operación asíncrona directamente en la UI.
-
-**Evidencia de aprendizaje:** entrega pantalla integrando los tres módulos, diferencia entre when exhaustivo y maybeWhen genérico explicada, y botón de reintentar confirmado.
 **Conceptos clave:** cada concepto estudiado por separado encaja como parte de un sistema mayor.
 
 ```dart
@@ -181,6 +179,8 @@ Pista: reemplazá `.when(...)` por `.maybeWhen(data: ..., orElse: () => Text('Ca
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `.when(...)` con un caso `error` explícito con un mensaje específico de RutaFlow, y agregá un botón de "reintentar" que invalide `enviosProvider` dentro de ese caso de error.
 
+**Evidencia de aprendizaje:** entrega pantalla integrando los tres módulos, diferencia entre when exhaustivo y maybeWhen genérico explicada, y botón de reintentar confirmado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cerrá el track reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/case_studies/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
 **¿Por qué es importante?** Integrar cada módulo del track en un proyecto real demuestra que los conceptos estudiados por separado se combinan naturalmente en un sistema coherente.
@@ -195,8 +195,6 @@ Completaste el track entero construyendo RutaFlow en Flutter — nadie te pidió
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Flutter logra apariencia y rendimiento consistentes en ambas plataformas renderizando con su propio motor gráfico, en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio.
-
-**Evidencia de aprendizaje:** entrega retrospectiva, afirmación incompleta corregida y lista de principios transferibles.
 **Conceptos clave:** una sola base de código, apariencia y rendimiento consistentes, el costo de un ecosistema propio.
 
 Flutter cumple su promesa central de forma bastante directa: una sola base de código Dart, con widgets propios que Flutter renderiza directamente con su propio motor gráfico (Skia, el mismo motor mencionado en Compose Multiplatform, Módulo 7 del track de Kotlin Multiplatform), en vez de simplemente envolver componentes nativos de cada plataforma (a diferencia de otros frameworks multiplataforma históricos que traducían hacia widgets nativos subyacentes), corriendo con apariencia y rendimiento consistentes en Android e iOS sin las diferencias sutiles de comportamiento que podrían surgir de depender de implementaciones nativas distintas por plataforma.
@@ -260,6 +258,8 @@ Pista: escribí la retrospectiva afirmando que "Flutter es mejor porque su UI se
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reescribiendo la afirmación para incluir ese costo explícitamente, presentando la decisión de Flutter como un trade-off real, no una ventaja incondicional.
+
+**Evidencia de aprendizaje:** entrega retrospectiva, afirmación incompleta corregida y lista de principios transferibles.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la retrospectiva del Paso 4, la afirmación incompleta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en Flutter que repetirías igual en otra plataforma aunque el motor de renderizado cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: presentar una decisión de plataforma como ventaja incondicional sin mencionar su costo real, confundir una ventaja de consistencia visual con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://docs.flutter.dev/resources/architectural-overview y https://docs.flutter.dev/platform-integration.

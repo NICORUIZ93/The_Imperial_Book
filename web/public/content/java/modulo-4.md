@@ -13,8 +13,6 @@ Un reporte necesita los nombres de todas las entregas activas de una lista, y el
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `filter`/`map` son operaciones intermedias perezosas; `collect`/`sum` son terminales y disparan la ejecución completa en una única pasada. La analogía: una línea de ensamblaje donde cada estación transforma la pieza a medida que pasa, sin esperar a que todas completen el paso anterior.
-
-**Evidencia de aprendizaje:** entrega ambas versiones (bucle manual y stream) con el mismo resultado, y el agrupamiento por estado con `Collectors.groupingBy`.
 **Conceptos clave:** pipeline declarativo, operaciones intermedias vs terminales.
 
 Reemplazar bucles manuales por pipelines de Streams es el estilo que usarás en cada reporte o agregación del proyecto integrador de este track.
@@ -61,6 +59,8 @@ Pista: agrega deliberadamente un elemento con tarifa negativa para provocar un f
 #### Paso 6 · Práctica independiente
 Agrega `Collectors.groupingBy` para agrupar las entregas por estado, y `reduce` para calcular el total de tarifas sin usar `sum()`; confirma que el resultado de `reduce` coincide con el de `mapToDouble().sum()`.
 
+**Evidencia de aprendizaje:** entrega ambas versiones (bucle manual y stream) con el mismo resultado, y el agrupamiento por estado con `Collectors.groupingBy`.
+
 #### Paso 7 · Cierre y evidencia
 Guarda ambas versiones (bucle y stream), la comparación de resultados y el agrupamiento por estado; como siguiente paso estudia Optional. Errores comunes: mutar una variable externa al stream desde dentro de un `map`/`forEach` (efecto secundario oculto), reutilizar el mismo stream dos veces (lanza `IllegalStateException`, un stream solo se consume una vez), y usar `forEach` con lógica compleja cuando `collect`/`reduce` expresarían mejor la intención. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
 **¿Por qué es importante?** Porque un pipeline declarativo solo es más claro que un bucle manual si de verdad describe la transformación sin ocultar efectos secundarios dentro de un `map` o `filter` que debería ser una función pura.
@@ -75,8 +75,6 @@ Buscar una entrega por id en una lista puede no encontrar ninguna coincidencia; 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `Optional<T>` como tipo de retorno obliga, en el propio sistema de tipos, a considerar el caso "no hay valor" antes de compilar. La analogía: una caja que explícitamente puede estar vacía, frente a entregar algo que podría ser el objeto real o nada, sin ninguna indicación visible.
-
-**Evidencia de aprendizaje:** entrega `buscarPorId` devolviendo `Optional<Entrega>`, las tres formas de manejar la ausencia (`orElseThrow`/`orElse`/`orElseGet`), y el `NullPointerException` provocado al volver a `null` sin verificar.
 **Conceptos clave:** ausencia de valor explícita en el tipo, `orElseThrow`.
 
 Cada búsqueda que puede no encontrar resultado en el proyecto integrador de este track (`buscarPorId`, `buscarPorEmail`) debería devolver `Optional`, nunca `null`.
@@ -118,6 +116,8 @@ Pista: cambia deliberadamente la firma a que devuelva `Entrega` directamente (pu
 
 #### Paso 6 · Práctica independiente
 Agrega `orElse(entregaPorDefecto)` y `orElseGet(() -> calcularAlternativa())` como dos formas adicionales de manejar la ausencia, y explica en qué caso usarías cada una de las tres.
+
+**Evidencia de aprendizaje:** entrega `buscarPorId` devolviendo `Optional<Entrega>`, las tres formas de manejar la ausencia (`orElseThrow`/`orElse`/`orElseGet`), y el `NullPointerException` provocado al volver a `null` sin verificar.
 
 #### Paso 7 · Cierre y evidencia
 Guarda el repositorio, las tres formas de manejar ausencia y el `NullPointerException` provocado al usar `null`; como siguiente paso estudia streams paralelos. Errores comunes: llamar `.get()` sobre un `Optional` sin verificar `isPresent()` antes (lanza `NoSuchElementException` igual que un `null` no verificado lanzaría `NullPointerException`), usar `Optional` como tipo de un campo o parámetro en vez de como tipo de retorno, y envolver en `Optional` un valor que en realidad nunca debería estar ausente. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.

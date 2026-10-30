@@ -137,8 +137,6 @@ El botón de confirmar entrega se ve bien con el tamaño de texto por defecto, p
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Dynamic Type escala el texto según la configuración del usuario; HIG documenta convenciones (como el área táctil mínima de 44x44 puntos) que hacen que una app se sienta nativa — un código de vestimenta esperado en un ambiente profesional.
-
-**Evidencia de aprendizaje:** entrega prueba con Dynamic Type grande, bloqueo detectado y revisión de áreas táctiles.
 **Conceptos clave:** convenciones documentadas que hacen que una app se sienta nativa, más allá de usar SwiftUI.
 
 Apple documenta convenciones esperadas de comportamiento e interacción en sus Human Interface Guidelines (HIG): tamaño mínimo de áreas táctiles (44x44 puntos, garantizando que elementos interactivos sean cómodamente presionables sin errores de precisión), iconografía consistente mediante SF Symbols (el sistema de íconos nativo de Apple, ya integrado visualmente con la tipografía del sistema), y patrones de navegación estándar (los estudiados en el Módulo 3); seguir estas convenciones documentadas hace que una app "se sienta nativa" de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza automáticamente si las decisiones de diseño e interacción se apartan de esas convenciones esperadas por el usuario habitual de iOS.
@@ -189,6 +187,8 @@ Pista: cambiá `.font(.body)` por `.font(.system(size: 15))` con un tamaño fijo
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `.font(.body)`, y revisá cada botón interactivo de `DetalleEnvio` con el Inspector de Xcode, confirmando que ninguno mide menos de 44x44 puntos de área táctil real.
 
+**Evidencia de aprendizaje:** entrega prueba con Dynamic Type grande, bloqueo detectado y revisión de áreas táctiles.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la prueba con Dynamic Type grande del Paso 4, el bloqueo detectado en el Paso 5, y la revisión de áreas táctiles del Paso 6; explicá por qué usar SwiftUI por sí solo no garantiza automáticamente que una app respete las HIG. Siguiente paso: estudia UIKit desde cero para mantener pantallas existentes. Errores comunes: usar tamaños de fuente fijos en puntos, botones con área táctil menor a 44x44, y no probar con el tamaño de texto más grande disponible. Fuentes oficiales: https://developer.apple.com/design/human-interface-guidelines/ y https://developer.apple.com/documentation/swiftui/text.
 **¿Por qué es importante?** Porque seguir las HIG hace que una app se sienta nativa de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza.
@@ -203,8 +203,6 @@ Muchas aplicaciones empresariales reales conservan pantallas UIKit o Storyboards
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `UIViewController` tiene un ciclo de vida explícito (`loadView`, `viewDidLoad`, `viewWillAppear`) y Auto Layout expresa relaciones, no posiciones absolutas — el controlador es el director de una terminal, y la fuente diffable mantiene el tablero de salidas por identificadores.
-
-**Evidencia de aprendizaje:** entrega controlador con carga única, petición repetida detectada y refresh explícito.
 **Conceptos clave:** `UIViewController`, ciclo de vida, vista programática, Auto Layout, `UITableViewDiffableDataSource`, reutilización, ARC, captura débil y migración gradual.
 
 Construiremos en UIKit la lista de paradas de nuestra app. Aunque un proyecto nuevo pueda elegir SwiftUI, muchas aplicaciones empresariales conservan pantallas UIKit, Storyboards o componentes de terceros. Saber envolver un controlador no basta: necesitas comprender quién crea la vista, cuándo se carga, cómo se actualiza y por qué una referencia fuerte puede impedir que salga de memoria.
@@ -371,6 +369,8 @@ Pista: movés `Task { await viewModel.load() }` de `viewDidLoad()` a `viewWillAp
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo la carga a `viewDidLoad()`, y agregá en su lugar un `refresh()` explícito disparado solo por un pull-to-refresh del usuario, nunca automáticamente en cada `viewWillAppear`.
+
+**Evidencia de aprendizaje:** entrega controlador con carga única, petición repetida detectada y refresh explícito.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el controlador con carga única del Paso 4, la petición de red repetida provocada en el Paso 5, y el `refresh()` explícito del Paso 6; explicá la diferencia entre trabajo que debe ocurrir una sola vez (`viewDidLoad`) y trabajo que podría repetirse antes de cada aparición (`viewWillAppear`), y por qué esa segunda categoría necesita caché o control explícito. Siguiente paso: estudia distribución y certificados. Errores comunes: peticiones de red incondicionales en `viewWillAppear`, inicializar sin el ViewModel requerido, y usar el índice de fila como identidad en una fuente diffable. Fuentes oficiales: https://developer.apple.com/documentation/uikit/uiviewcontroller y https://developer.apple.com/documentation/uikit/uitableviewdiffabledatasource.

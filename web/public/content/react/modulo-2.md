@@ -276,8 +276,6 @@ Con `useState` separados para `cargando`, `envios` y `error`, nada impide que el
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `useReducer` modela transiciones de estado mediante una función pura que recibe el estado actual y una acción, devolviendo un nuevo estado completo y consistente — las reglas de los hooks exigen el mismo orden de llamada siempre, porque React asocia cada hook por posición, no por nombre.
-
-**Evidencia de aprendizaje:** entrega reducer consistente, error de hooks detectado y useImperativeHandle agregado.
 **Conceptos clave:** orden consistente de llamadas, reducers para estado complejo, exponer una API imperativa controlada.
 
 Las reglas de los hooks establecen que los hooks deben llamarse siempre en el mismo orden, en el nivel superior de la función componente, nunca dentro de un `if`, un bucle, o una función anidada condicional: React asocia internamente cada hook con su estado correspondiente basándose estrictamente en el orden en que fueron llamados durante el render (no en un nombre o identificador explícito), por lo que llamar un hook condicionalmente (a veces sí, a veces no, según una rama de código) rompería esa asociación posicional, causando que React confunda el estado de un hook con el de otro en renders sucesivos, un error que React detecta y reporta explícitamente en desarrollo cuando ocurre.
@@ -346,6 +344,8 @@ Pista: dentro de un `if (zona === 'norte')`, agregá una llamada a un nuevo `use
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 moviendo ese `useState` al nivel superior del componente (sin ningún `if` alrededor), usando la condición solo para decidir qué hacer con el valor, no para decidir si llamar al hook; agregá además un `useImperativeHandle` en `PanelEnvios` que exponga únicamente un método `refrescar()` hacia un componente padre con `ref`, sin exponer el nodo DOM completo.
+
+**Evidencia de aprendizaje:** entrega reducer consistente, error de hooks detectado y useImperativeHandle agregado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explicá por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.

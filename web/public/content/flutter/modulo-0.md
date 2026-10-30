@@ -152,8 +152,6 @@ Tanto un `Conductor` como un `Vehiculo` de RutaFlow necesitan reportar su posici
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Dart no permite herencia múltiple directa; un mixin aplica comportamiento compartido con `with` a clases que no tienen relación de herencia entre sí. La analogía: una habilidad certificada que se añade a la formación de cualquier profesional, sin alterar su especialización principal.
-
-**Evidencia de aprendizaje:** entrega `Conductor` y `Vehiculo` compartiendo `Rastreable` sin heredar entre sí, el error del analizador al quitar el mixin, y la tercera clase `Paquete` agregada.
 **Conceptos clave:** comportamiento reutilizable sin herencia múltiple tradicional.
 
 Un mixin como este es el mecanismo que usarás en el proyecto integrador (app Flutter completa, Módulo 12) para compartir comportamiento transversal entre widgets no relacionados por herencia (por ejemplo, lógica de validación de formularios reutilizada entre pantallas distintas).
@@ -240,6 +238,8 @@ Pista: restaurá `with Rastreable` en `Vehiculo`, y ahora intentá declarar `cla
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `class Vehiculo with Rastreable` (sin `extends`), y agregá una tercera clase `Paquete` que también use `with Rastreable` para reportar la posición de un paquete en tránsito, confirmando que las tres clases no relacionadas comparten el mismo comportamiento sin ninguna jerarquía común.
+
+**Evidencia de aprendizaje:** entrega `Conductor` y `Vehiculo` compartiendo `Rastreable` sin heredar entre sí, el error del analizador al quitar el mixin, y la tercera clase `Paquete` agregada.
 
 #### Paso 7 · Cierre y evidencia
 Entregá `Conductor` y `Vehiculo` compartiendo `Rastreable` del Paso 4, el error del analizador al quitar `with` del Paso 4/5, y la tercera clase `Paquete` del Paso 6; explicá por qué un mixin resuelve esto mejor que forzar una relación `extends` artificial. Siguiente paso: estudia Futures y async/await. Errores comunes: usar `extends` para obtener comportamiento compartido cuando no hay relación «es un» real; mixins sin un contrato claro de qué esperan de la clase que los usa. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.

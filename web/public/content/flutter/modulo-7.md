@@ -13,8 +13,6 @@ Flutter no tiene acceso directo a las APIs nativas de batería de cada sistema o
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `MethodChannel` establece un canal bidireccional identificado por un nombre único; `invokeMethod` desde Dart envía la invocación, y `setMethodCallHandler` en el lado nativo responde.
-
-**Evidencia de aprendizaje:** entrega MethodChannel en ambas plataformas, MissingPluginException detectado y manejo de método desconocido agregado.
 **Conceptos clave:** puente de comunicación bidireccional entre Dart y el código nativo de cada plataforma.
 
 ```dart
@@ -101,6 +99,8 @@ Pista: implementá el `setMethodCallHandler` únicamente en Android, pero probá
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 implementando también el `FlutterMethodChannel` del lado de Swift, y agregá un manejo explícito del caso en que `call.method` no coincide con ningún método conocido, en vez de dejarlo sin respuesta.
 
+**Evidencia de aprendizaje:** entrega MethodChannel en ambas plataformas, MissingPluginException detectado y manejo de método desconocido agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el MethodChannel funcionando en ambas plataformas del Paso 4, el `MissingPluginException` provocado en el Paso 5, y el manejo de método desconocido del Paso 6; explicá por qué un `MethodChannel` requiere implementación explícita en cada plataforma, sin que implementarlo en una sea suficiente para la otra. Siguiente paso: estudia plugins federados. Errores comunes: implementar el lado nativo en una sola plataforma y asumir que funciona en ambas, no manejar el caso de un método invocado que no existe del lado nativo, y usar `MethodChannel` para algo que ya resuelve un plugin publicado en pub.dev. Fuentes oficiales: https://docs.flutter.dev/platform-integration/platform-channels y https://api.flutter.dev/flutter/services/MethodChannel-class.html.
 **¿Por qué es importante?** El `MethodChannel` es el puente explícito necesario porque Dart no tiene acceso directo a las APIs nativas de cada sistema operativo, requiriendo implementación por separado en cada plataforma.
@@ -115,8 +115,6 @@ RutaFlow usa geolocalización en Android e iOS hoy; si más adelante alguien qui
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un plugin federado separa la interfaz Dart pública de las implementaciones concretas por plataforma, cada una en su propio paquete independiente.
-
-**Evidencia de aprendizaje:** entrega estructura federada analizada, riesgo de copiar código identificado y verificación de plataformas soportadas.
 **Conceptos clave:** separación de la interfaz Dart de las implementaciones específicas por plataforma.
 
 Un plugin federado separa formalmente la interfaz Dart pública (el conjunto de métodos y tipos que el desarrollador Flutter consume, independiente de la plataforma) de las implementaciones concretas específicas de cada plataforma (Android, iOS, web, cada una en su propio paquete separado que implementa esa misma interfaz), permitiendo que la comunidad agregue soporte para una plataforma nueva (por ejemplo, una implementación para Linux o Windows) sin necesidad de modificar el paquete principal ni las implementaciones ya existentes de otras plataformas, dado que cada implementación específica de plataforma vive de forma completamente independiente y aislada de las demás.
@@ -163,6 +161,8 @@ Pista: imaginá que el equipo de RutaFlow decide "simplificar" copiando toda la 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 explicando por escrito por qué depender del paquete federado permite recibir actualizaciones de la comunidad sin esfuerzo propio, y verificá en pub.dev qué plataformas tiene actualmente soportadas `geolocator`.
 
+**Evidencia de aprendizaje:** entrega estructura federada analizada, riesgo de copiar código identificado y verificación de plataformas soportadas.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la estructura federada analizada del Paso 4, la decisión de copiar código desaconsejada en el Paso 5, y tu explicación del Paso 6; explicá por qué la arquitectura federada permite que la comunidad contribuya implementaciones de plataforma de forma independiente y descentralizada. Siguiente paso: estudia permisos de plataforma y cuándo escribir un platform channel propio. Errores comunes: copiar la lógica de un plugin federado en vez de depender de él, asumir que todas las plataformas de un plugin federado tienen el mismo nivel de soporte sin verificarlo, y modificar directamente el código de un paquete de terceros en vez de contribuir al repositorio real. Fuentes oficiales: https://docs.flutter.dev/packages-and-plugins/developing-packages#federated-plugins y https://pub.dev/packages/geolocator.
 **¿Por qué es importante?** Un plugin federado permite agregar soporte para una plataforma nueva sin modificar el paquete principal ni las implementaciones existentes de otras plataformas.
@@ -177,8 +177,6 @@ Si el conductor rechaza el permiso de cámara y la app simplemente intenta abrir
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Solicitar un permiso sensible requiere manejar explícitamente ambos resultados posibles: concedido y denegado, mostrando un mensaje apropiado en el segundo caso.
-
-**Evidencia de aprendizaje:** entrega manejo de concesión/rechazo, silencio sin feedback detectado y manejo de rechazo permanente.
 **Conceptos clave:** manejo explícito del rechazo, búsqueda de un plugin existente antes de construir uno propio.
 
 ```dart
@@ -233,6 +231,8 @@ Pista: quitá el `else` y dejá solo `if (estado.isGranted) { abrirCamara(); }` 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `else` con un mensaje explícito, y agregá un tercer caso para `estado.isPermanentlyDenied`, ofreciendo un botón que abra la configuración del sistema directamente.
 
+**Evidencia de aprendizaje:** entrega manejo de concesión/rechazo, silencio sin feedback detectado y manejo de rechazo permanente.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el manejo de concesión/rechazo del Paso 4, el silencio sin feedback provocado en el Paso 5, y el tercer caso de rechazo permanente del Paso 6; explicá por qué un permiso denegado nunca debería dejar a la app sin ninguna respuesta visible para el usuario. Siguiente paso: estudia cámara, galería y carga multipart de una evidencia. Errores comunes: no manejar el caso de permiso denegado, no distinguir rechazo simple de rechazo permanente, y escribir un platform channel propio para pedir un permiso que un plugin ya publicado resuelve. Fuentes oficiales: https://pub.dev/packages/permission_handler y https://docs.flutter.dev/platform-integration/platform-channels.
 **¿Por qué es importante?** Manejar explícitamente el caso de permiso denegado evita fallos silenciosos; escribir un platform channel propio solo se justifica cuando no existe ya un plugin publicado que resuelva la necesidad.
@@ -247,8 +247,6 @@ Una foto visible en pantalla todavía no es una evidencia persistida — captura
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El dominio no depende de `XFile` ni de Dio; valida bytes, tamaño y MIME de forma aislada; el repositorio traduce ese contrato a HTTP con una clave de idempotencia para que reintentar no duplique la evidencia.
-
-**Evidencia de aprendizaje:** entrega dominio con validación, riesgo de evidencia duplicada detectado y confirmación de idempotencia en el reintento.
 **Conceptos clave:** `XFile`, permiso contextual, validación local, puerto de dominio, `FormData`, progreso, idempotencia y archivo temporal.
 
 En esta app construiremos la evidencia de entrega: el conductor toma una fotografía o elige una imagen, ve una previsualización y confirma antes de subirla. Capturar, validar y transferir son responsabilidades distintas. La pantalla no debe conocer cabeceras HTTP ni construir `FormData`; pide una imagen a un adaptador de dispositivo y entrega una evidencia válida a un repositorio.
@@ -427,6 +425,8 @@ Pista: activá modo avión cuando la carga llegue aproximadamente al 50% sin una
 
 #### Paso 6 · Práctica independiente
 Corregí confirmando que la implementación reutiliza la misma `idempotencyKey` en el reintento, y que la interfaz conserva la fotografía localmente para ese reintento, sin marcar la entrega como completada hasta recibir la confirmación `201` real del servidor.
+
+**Evidencia de aprendizaje:** entrega dominio con validación, riesgo de evidencia duplicada detectado y confirmación de idempotencia en el reintento.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el dominio con validación del Paso 4, el riesgo de evidencia duplicada del Paso 5, y la confirmación de idempotencia del Paso 6; explicá por qué separar selección, validación y transferencia permite probar las reglas de validación sin necesitar una cámara real. Siguiente paso: cerrá el módulo integrando permisos, MethodChannel y carga de evidencia en el flujo completo. Errores comunes: confiar únicamente en la extensión del archivo para validar el tipo, marcar la entrega como completa antes de la confirmación del servidor, y generar una nueva clave de idempotencia en cada reintento. Fuentes oficiales: https://pub.dev/packages/image_picker y https://pub.dev/packages/dio.

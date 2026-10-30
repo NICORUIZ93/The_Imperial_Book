@@ -116,8 +116,6 @@ RutaFlow necesita persistir en `localStorage` tanto el string del filtro de zona
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un hook genérico usa un parámetro de tipo `T` para permanecer reutilizable para cualquier tipo de dato concreto, sin fijar de antemano un tipo específico — un molde ajustable, no uno nuevo por cada forma.
-
-**Evidencia de aprendizaje:** entrega hook reutilizado para dos tipos, inferencia ambigua detectada y tipo explícito agregado.
 **Conceptos clave:** parámetro de tipo `<T>`, reutilización para cualquier tipo de dato.
 
 Un hook personalizado genérico (`function useLocalStorage<T>(clave: string, valorInicial: T) {...}`) usa un parámetro de tipo (`T`) para permanecer reutilizable para cualquier tipo de dato concreto que se le pase, en vez de fijar de antemano un tipo específico (por ejemplo, `string` únicamente) que limitaría su reutilización a ese único caso: al invocarlo como `useLocalStorage<'claro' | 'oscuro'>('tema', 'claro')`, TypeScript infiere (o recibe explícitamente) que `T` es el tipo unión `'claro' | 'oscuro'` para esa invocación específica, tipando correctamente tanto el valor devuelto como el setter correspondiente según ese tipo concreto, sin que el hook en sí tenga que conocer de antemano cuál será ese tipo específico en cada uso particular.
@@ -180,6 +178,8 @@ Pista: invocá el hook con un valor inicial ambiguo (`useLocalStorage('zona', nu
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLocalStorage<string>('zona', 'todas')`) en vez de depender de la inferencia en un caso ambiguo, y confirmá que `setZona(42)` ahora sí es rechazado en tiempo de compilación.
 
+**Evidencia de aprendizaje:** entrega hook reutilizado para dos tipos, inferencia ambigua detectada y tipo explícito agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el hook genérico reutilizado para dos tipos distintos del Paso 4, el caso de inferencia ambigua del Paso 5, y la especificación explícita del Paso 6; explicá cuándo conviene especificar el parámetro de tipo explícitamente en vez de depender de que TypeScript lo infiera solo. Siguiente paso: estudia eventos tipados y componentes polimórficos. Errores comunes: depender de la inferencia de tipos en casos ambiguos donde el valor inicial no determina claramente el tipo deseado, duplicar un hook para cada tipo de dato en vez de generalizarlo, y omitir el parámetro de tipo cuando TypeScript realmente no puede inferirlo del contexto. Fuentes oficiales: https://www.typescriptlang.org/docs/handbook/2/generics.html y https://react.dev/learn/reusing-logic-with-custom-hooks.
 **¿Por qué es importante?** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación.
@@ -194,8 +194,6 @@ El botón "Ver detalle" de un envío necesita comportarse como un link real (`<a
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Tipar un evento con el tipo específico del elemento permite que TypeScript sepa qué propiedades existen en `e.target`; un componente polimórfico renderiza distintos elementos según una prop `as`, tipado dinámicamente según cuál se indique.
-
-**Evidencia de aprendizaje:** entrega evento tipado, pérdida de tipo específico detectada y segundo caso polimórfico confirmado.
 **Conceptos clave:** `React.ChangeEvent<T>`, componentes que renderizan como elemento configurable.
 
 Tipar el parámetro de un manejador de eventos con el tipo específico correspondiente (`function manejarCambio(e: React.ChangeEvent<HTMLInputElement>) { console.log(e.target.value); }`) permite que TypeScript sepa exactamente qué propiedades existen en `e.target` según el tipo de elemento involucrado (`.value` existe en un `HTMLInputElement`, pero no necesariamente de la misma forma en otros tipos de elementos), detectando en tiempo de compilación el acceso a una propiedad que no existiría realmente en ese tipo específico de evento, en vez de descubrir ese error únicamente en tiempo de ejecución con un valor `undefined` inesperado.
@@ -273,6 +271,8 @@ Pista: cambiá el tipo del manejador de `React.ChangeEvent<HTMLInputElement>` a 
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agregá un segundo caso polimórfico: `<Boton as="label" htmlFor="busqueda">`, confirmando que TypeScript acepta `htmlFor` solo cuando `as="label"`.
+
+**Evidencia de aprendizaje:** entrega evento tipado, pérdida de tipo específico detectada y segundo caso polimórfico confirmado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida de tipo específico del Paso 5, y el segundo caso polimórfico del Paso 6; explicá por qué usar el tipo de elemento más específico posible preserva el acceso tipado a las propiedades reales de ese elemento. Siguiente paso: cerrá el módulo migrando un componente completo a TypeScript estricto sin ningún `any`. Errores comunes: tipar un evento con el tipo base genérico en vez del específico del elemento real, omitir la restricción `T extends React.ElementType` en un componente polimórfico, y aceptar props que no son válidas para el elemento efectivamente renderizado según `as`. Fuentes oficiales: https://react.dev/learn/typescript#typing-the-usestate-hook y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html.

@@ -13,8 +13,6 @@ En la versión tablet de RutaFlow, `PanelEnvios` vive al lado de un mapa, ocupan
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `MediaQuery` da el tamaño de la pantalla completa; `LayoutBuilder` da las constraints del espacio específicamente disponible para ese widget en su posición actual — preguntar por el edificio completo, no por la habitación en la que estás.
-
-**Evidencia de aprendizaje:** entrega LayoutBuilder correctamente usado, overflow por MediaQuery detectado y tercera variante de layout confirmada.
 **Conceptos clave:** tamaño de la pantalla completa frente a espacio disponible para un widget específico.
 
 ```dart
@@ -86,6 +84,8 @@ Pista: reemplazá el `LayoutBuilder` por `MediaQuery.of(context).size.width > 40
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el `LayoutBuilder`, y agregá un tercer caso de layout (`ListaEnviosMuyCompacta`) para cuando `constraints.maxWidth` sea menor a 250, confirmando que cada variante responde al espacio real del panel, no al de la pantalla.
 
+**Evidencia de aprendizaje:** entrega LayoutBuilder correctamente usado, overflow por MediaQuery detectado y tercera variante de layout confirmada.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el `LayoutBuilder` correctamente usado del Paso 4, el overflow provocado por `MediaQuery` del Paso 5, y la tercera variante del Paso 6; explicá cuándo el ancho total de la pantalla y el espacio disponible de un widget específico dejan de ser el mismo número. Siguiente paso: estudia cómo Flutter calcula tamaños con constraints. Errores comunes: usar `MediaQuery` para decidir el layout de un widget anidado que no ocupa toda la pantalla, anidar `LayoutBuilder` innecesariamente en widgets que sí ocupan la pantalla completa, y no probar el layout en al menos dos proporciones de pantalla distintas. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/LayoutBuilder-class.html y https://docs.flutter.dev/ui/layout/constraints.
 **¿Por qué es importante?** `LayoutBuilder` es más preciso que `MediaQuery` cuando el widget que decide su layout no ocupa toda la pantalla, dado que refleja el espacio real disponible para ese widget en su posición actual del árbol.
@@ -100,8 +100,6 @@ Anidar `ListView` (que intenta ocupar todo el alto disponible) dentro de una `Co
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un padre comunica a cada hijo un rango de tamaños permitido; el hijo decide su tamaño final dentro de ese rango y lo informa de vuelta — un `ListView` sin alto máximo recibido no sabe cuánto espacio ocupar.
-
-**Evidencia de aprendizaje:** entrega layout corregido con Expanded, error de constraints no acotadas detectado y explicación escrita del protocolo.
 **Conceptos clave:** constraints fluyen hacia abajo, tamaños fluyen hacia arriba.
 
 Flutter resuelve el layout de todo el árbol de widgets siguiendo un protocolo estricto conocido como "constraints go down, sizes go up": un widget padre le comunica a cada hijo el rango de tamaños permitido (mínimo y máximo de ancho y alto, las "constraints"), y cada hijo, dentro de ese rango permitido, decide su propio tamaño final y se lo informa de vuelta a su padre; el padre nunca dicta directamente el tamaño exacto de un hijo (salvo que las constraints mínima y máxima coincidan exactamente), y un hijo nunca puede ignorar las constraints recibidas de su padre para elegir un tamaño fuera de ese rango permitido.
@@ -161,6 +159,8 @@ Pista: quitá `Expanded` y dejá el `ListView` directamente como hijo de `Column
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `Expanded`, y explicá por escrito, en tus propias palabras, por qué el error específico menciona constraints no acotadas y de dónde debería haber venido el límite faltante.
 
+**Evidencia de aprendizaje:** entrega layout corregido con Expanded, error de constraints no acotadas detectado y explicación escrita del protocolo.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el layout corregido con `Expanded` del Paso 4, el error de constraints no acotadas del Paso 5, y tu explicación escrita del Paso 6; explicá por qué entender el protocolo "constraints go down, sizes go up" permite diagnosticar este tipo de error leyendo el mensaje de la excepción, en vez de probar soluciones al azar. Siguiente paso: estudia breakpoints propios y SafeArea. Errores comunes: anidar un widget que ocupa todo el espacio disponible dentro de un padre que no impone límites, usar `Expanded` fuera de un `Row`/`Column`/`Flex`, y asumir que un `Container` sin tamaño explícito siempre se comporta igual sin importar su padre. Fuentes oficiales: https://docs.flutter.dev/ui/layout/constraints y https://docs.flutter.dev/ui/layout/box-constraints.
 **¿Por qué es importante?** Entender el protocolo "constraints go down, sizes go up" explica de forma predecible por qué un widget termina con el tamaño final que tiene, permitiendo diagnosticar errores de layout leyendo el mensaje real de la excepción.
@@ -175,8 +175,6 @@ Distintas pantallas de RutaFlow (lista de envíos, detalle, mapa) empezaron a co
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Definir breakpoints como una función pura centraliza esa lógica en un único lugar reutilizable; `SafeArea` evita que el contenido quede oculto detrás de elementos físicos del dispositivo.
-
-**Evidencia de aprendizaje:** entrega función centralizada de breakpoints, inconsistencia por hardcodear detectada y comprobación visual de SafeArea.
 **Conceptos clave:** categorización explícita de rangos de pantalla, protección contra elementos físicos del dispositivo.
 
 ```dart
@@ -244,6 +242,8 @@ Pista: en una pantalla nueva (`DetalleEnvio`), escribí directamente `if (ancho 
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `DetalleEnvio` a usar `segunAncho()`, y quitá `SafeArea` deliberadamente de una pantalla para confirmar visualmente (en un dispositivo con notch) que el contenido queda oculto, antes de restaurarlo.
+
+**Evidencia de aprendizaje:** entrega función centralizada de breakpoints, inconsistencia por hardcodear detectada y comprobación visual de SafeArea.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la función centralizada del Paso 4, la inconsistencia por hardcodear del Paso 5, y la comprobación visual de `SafeArea` del Paso 6; explicá por qué centralizar breakpoints en una función reutilizable evita exactamente la clase de inconsistencia que ocurrió en el Paso 5. Siguiente paso: cerrá el módulo con la pantalla responsive completa. Errores comunes: dispersar comparaciones numéricas de breakpoints en cada widget, omitir `SafeArea` asumiendo que todos los dispositivos tienen los mismos insets, y definir breakpoints basados en orientación cuando el ancho real disponible es lo que importa. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/SafeArea-class.html y https://docs.flutter.dev/ui/layout.

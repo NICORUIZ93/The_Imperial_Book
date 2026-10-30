@@ -11,8 +11,6 @@ Al finalizar vas a cargar el detalle de un envío de RutaFlow con `async`/`await
 Si `DetalleEnvio` tarda un segundo en traer los datos de `ShipmentEvents` y el conductor vuelve atrás antes de que termine, esa carga no debería seguir corriendo ni intentar actualizar una vista que ya no existe.
 #### Paso 3 · Teoría, modelo mental y analogía
 `async`/`await` deja leer código asíncrono en el orden natural en que ocurre, sin callbacks anidados; `.task` vinculado al ciclo de vida cancela automáticamente si la vista desaparece, como cancelar un pedido si el cliente ya se fue del restaurante.
-
-**Evidencia de aprendizaje:** entrega la carga cancelable con `.task`, la tarea huérfana reproducida con `Task` suelto, y el timeout agregado.
 **Conceptos clave:** código asíncrono que se lee como si fuera síncrono, cancelación automática vinculada al ciclo de vida.
 
 ```swift
@@ -74,6 +72,9 @@ Resultado esperado: la vista muestra un `ProgressView` mientras espera, y el tex
 Pista: reemplazá `.task { ... }` por `Task { ... }` suelto (sin vincularlo al ciclo de vida de la vista) dentro de `onAppear` — ese es el fallo deliberado: si el conductor sale de `DetalleEnvio` antes de que termine `obtenerEnvio`, esa tarea sigue corriendo de fondo sin que nadie la cancele, y cuando termine va a intentar asignar `envio` sobre una vista que ya no está en pantalla.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `.task`, y agregá un timeout real con `Task.sleep` + `race` manual (o `withTimeout` si tu versión de Swift lo soporta) para que `obtenerEnvio` falle explícitamente si tarda más de 3 segundos, en vez de esperar indefinidamente.
+
+**Evidencia de aprendizaje:** entrega la carga cancelable con `.task`, la tarea huérfana reproducida con `Task` suelto, y el timeout agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la carga cancelable del Paso 4, la tarea huérfana del Paso 5, y el timeout agregado del Paso 6; explicá por qué `.task` resuelve un problema que `Task` suelto dentro de `onAppear` no resuelve. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 **¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
@@ -159,8 +160,6 @@ Al finalizar vas a traer en paralelo los datos de envío y de conductor con `Tas
 `DetalleEnvio` necesita tanto los datos del envío como los del conductor asignado — traerlos uno después del otro duplicaría el tiempo de espera sin necesidad, cuando podrían pedirse al mismo tiempo.
 #### Paso 3 · Teoría, modelo mental y analogía
 `TaskGroup` lanza tareas hijas en paralelo dentro de un ámbito bien definido, garantizando que todas completen o se cancelen antes de retornar; `@MainActor` garantiza, verificado por el compilador, que la UI solo se actualiza desde el hilo principal.
-
-**Evidencia de aprendizaje:** entrega las dos consultas paralelas funcionando, el riesgo de hilo expuesto al quitar `@MainActor`, y la tercera consulta agregada al mismo grupo.
 **Conceptos clave:** concurrencia estructurada con recolección de resultados en paralelo, aislamiento garantizado al hilo principal.
 
 ```swift
@@ -228,6 +227,9 @@ Resultado esperado: `obtenerEnvio` y `obtenerConductor` corren en paralelo (el t
 Pista: quitá `@MainActor` de `DetalleEnvioViewModel` y llamá `cargar(guia:)` desde una `Task.detached` en segundo plano — ese es el fallo deliberado: sin `@MainActor`, nada impide que `envio`/`conductor` se asignen desde un hilo en segundo plano, el mismo error que provoca crashes intermitentes difíciles de reproducir al actualizar una `@Published` fuera del hilo principal.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `@MainActor`, y agregá una tercera consulta en paralelo (`obtenerHistorialRuta`) al mismo `TaskGroup`/`async let`, confirmando que las tres corren simultáneamente sin que el código se vuelva secuencial por accidente.
+
+**Evidencia de aprendizaje:** entrega las dos consultas paralelas funcionando, el riesgo de hilo expuesto al quitar `@MainActor`, y la tercera consulta agregada al mismo grupo.
+
 #### Paso 7 · Cierre y evidencia
 Entregá las dos consultas paralelas del Paso 4, el crash potencial sin `@MainActor` del Paso 5, y la tercera consulta agregada del Paso 6; explicá por qué el compilador puede detectar el error de hilo del Paso 5 en tiempo de compilación, no solo en producción. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 **¿Por qué es importante?** Porque `TaskGroup`/`async let` ejecutan tareas independientes en paralelo reduciendo el tiempo total de espera, y `@MainActor` detecta en tiempo de compilación una actualización de UI insegura desde un hilo en segundo plano, en vez de dejarla como un crash intermitente en producción.

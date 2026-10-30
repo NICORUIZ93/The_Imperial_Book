@@ -13,8 +13,6 @@ Cada vez que el conductor abre RutaFlow, el filtro de zona vuelve a "todas" por 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `shared_preferences` provee almacenamiento clave-valor simple, ideal para configuración pequeña de tipos primitivos; no apropiado para datos estructurados en volumen.
-
-**Evidencia de aprendizaje:** entrega preferencia simple persistida, mal uso detectado y documentación del mecanismo apropiado.
 **Conceptos clave:** almacenamiento clave-valor simple, no apropiado para datos estructurados grandes.
 
 ```dart
@@ -73,6 +71,8 @@ Pista: guardá también la lista completa de envíos del día serializada como u
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando la lista de envíos de `shared_preferences` por completo, dejando ahí únicamente `zona_preferida`, y documentá qué mecanismo de persistencia (Tema 2) sería apropiado para la lista de envíos en su lugar.
 
+**Evidencia de aprendizaje:** entrega preferencia simple persistida, mal uso detectado y documentación del mecanismo apropiado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la preferencia simple persistida del Paso 4, el mal uso de shared_preferences para datos estructurados del Paso 5, y la documentación del Paso 6; explicá por qué el modelo clave-valor de `shared_preferences` no está diseñado para consultas eficientes sobre datos en volumen. Siguiente paso: estudia sqflite y Hive para la lista de envíos. Errores comunes: guardar una lista grande de objetos estructurados en `shared_preferences`, no proveer un valor por defecto al leer una preferencia que puede no existir todavía, y usar `shared_preferences` para datos sensibles sin cifrado. Fuentes oficiales: https://pub.dev/packages/shared_preferences y https://docs.flutter.dev/cookbook/persistence/key-value.
 **¿Por qué es importante?** `shared_preferences` no es apropiado para guardar una lista grande de objetos estructurados, dado que su modelo clave-valor simple no está diseñado para consultas eficientes sobre datos en volumen.
@@ -87,8 +87,6 @@ RutaFlow necesita responder "¿cuántos envíos tiene el conductor X en la zona 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `sqflite` expone SQL real, apropiado para queries relacionales complejas y agregaciones; Hive es más simple y directo para persistir objetos completos sin relaciones complejas entre entidades.
-
-**Evidencia de aprendizaje:** entrega agregación SQL funcionando, costo de la alternativa con Hive medido y caso de uso apropiado para Hive documentado.
 **Conceptos clave:** SQL relacional con queries complejas frente a NoSQL embebido simple y directo.
 
 ```dart
@@ -168,6 +166,8 @@ Pista: intentá resolver esa misma agregación con Hive, cargando `box.values.to
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `sqflite` para este caso específico, y documentá un caso distinto (guardar la última posición GPS conocida de un conductor) donde Hive sí sería la opción más simple y directa, sin necesitar ninguna query relacional.
 
+**Evidencia de aprendizaje:** entrega agregación SQL funcionando, costo de la alternativa con Hive medido y caso de uso apropiado para Hive documentado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la agregación SQL del Paso 4, el costo de la alternativa con Hive del Paso 5, y el caso documentado donde Hive sí es apropiado del Paso 6; explicá el criterio concreto que usarías para elegir entre ambos la próxima vez. Siguiente paso: estudia offline-first y Firebase. Errores comunes: elegir Hive para datos que necesitan queries relacionales complejas con joins o agregaciones, elegir `sqflite` para un caso simple de objetos sin relaciones, y no medir el costo real de cargar una colección completa en memoria antes de descartar una opción. Fuentes oficiales: https://pub.dev/packages/sqflite y https://pub.dev/packages/hive.
 **¿Por qué es importante?** Elegir entre Hive y `sqflite` depende de si la app necesita queries relacionales complejas (apropiado para `sqflite`) o simplemente persistir y recuperar objetos directos sin relaciones complejas (más simple con Hive).
@@ -182,8 +182,6 @@ Si `ListaEnvios` leyera directamente de la API cada vez, un conductor sin señal
 
 #### Paso 3 · Teoría, modelo mental y analogía
 En offline-first, la UI siempre lee de la caché local reactiva; un proceso de sincronización separado actualiza esa caché en segundo plano con datos frescos de la API.
-
-**Evidencia de aprendizaje:** entrega patrón offline-first funcionando, pantalla rota en modo avión detectada y confirmación de resiliencia sin conexión.
 **Conceptos clave:** la UI lee siempre de la caché local, sincronización en segundo plano.
 
 ```dart
@@ -258,6 +256,8 @@ Pista: cambiá `ListaEnvios` para que llame directamente a `api.obtenerEnvios()`
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `ListaEnvios` a leer del `Stream` sobre Hive, y confirmá explícitamente (activando modo avión) que la pantalla sigue mostrando los últimos envíos cacheados, aunque desactualizados, en vez de un error.
+
+**Evidencia de aprendizaje:** entrega patrón offline-first funcionando, pantalla rota en modo avión detectada y confirmación de resiliencia sin conexión.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el patrón offline-first del Paso 4, la pantalla rota en modo avión provocada en el Paso 5, y la confirmación del Paso 6; explicá por qué hacer que la UI dependa directamente de la API rompe exactamente la garantía que offline-first existe para dar. Siguiente paso: cerrá el módulo evaluando si Firebase encajaría como backend para RutaFlow. Errores comunes: hacer que la UI dependa directamente de la API en vez de la caché local, sincronizar sin ningún indicador de que los datos mostrados podrían estar desactualizados, y no considerar Firebase cuando el proyecto podría evitar construir backend propio desde cero. Fuentes oficiales: https://docs.flutter.dev/app-architecture/design-patterns/offline-first y https://firebase.google.com/docs/flutter/setup.

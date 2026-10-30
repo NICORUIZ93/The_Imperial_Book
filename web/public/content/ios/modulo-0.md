@@ -162,8 +162,6 @@ Al pasar los datos de una sesión de conductor activa entre dos partes del códi
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `struct` es un value type — cada asignación crea una copia independiente; una `class` es un reference type — una asignación equivalente comparte la misma instancia. La analogía: fotocopiar un documento antes de entregarlo (struct) frente a entregar el original directamente (class).
-
-**Evidencia de aprendizaje:** entrega la comparación copia/referencia del Paso 4, el error de mutación sobre let reproducido, y la decisión documentada de no cambiar a class.
 **Conceptos clave:** copia independiente vs instancia compartida.
 
 ```swift
@@ -225,6 +223,8 @@ Pista: declará `original` con `let` en vez de `var`, y luego intentá `original
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 decidiendo explícitamente si `original` debe ser mutable (`var`) o no (`let`) según el caso de uso real, en vez de cambiar `Paquete` a `class` solo para silenciar el error del compilador; documentá en un comentario por qué esa sustitución habría sido incorrecta.
+
+**Evidencia de aprendizaje:** entrega la comparación copia/referencia del Paso 4, el error de mutación sobre let reproducido, y la decisión documentada de no cambiar a class.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la copia independiente y la referencia compartida del Paso 4, el error de mutación sobre `let` del Paso 5, y la decisión documentada del Paso 6; explicá por qué Swift elige `struct` como default para la mayoría de los modelos de dominio, reservando `class` para identidad compartida intencional. Siguiente paso: modelá contratos de comportamiento con protocolos y estados con enums. Errores comunes: usar `class` por defecto para modelos de datos simples; cambiar un tipo de `struct` a `class` para evitar un error de mutabilidad en vez de resolver la causa real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/ y https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes.

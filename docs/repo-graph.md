@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 16:32 UTC
+Generated: 2026-10-30 16:37 UTC
 Root: `Academia_Floci`
-Indexed files: 924
+Indexed files: 926
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,18 +16,18 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 59 files
-- `automation-script`: 36 files
+- `automation-script`: 37 files
 - `course-content`: 251 files
 - `documentation`: 54 files
 - `example`: 467 files
 - `local-infra`: 1 files
-- `project-file`: 56 files
+- `project-file`: 57 files
 
 ## File Types
 
 - `.md`: 312
-- `.py`: 162
-- `.json`: 69
+- `.py`: 163
+- `.json`: 70
 - `.ts`: 66
 - `.java`: 54
 - `.js`: 54
@@ -187,14 +187,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
 - `scripts/catalog_external_library.py` (49 lines) - symbols: main; imports: argparse, hashlib, json, pathlib, pymupdf
 - `scripts/clean_legacy_tails.py` (184 lines) - symbols: legacy_candidates, trim_topic, dedupe_topic, fences_balanced, topic_slice, safe_trim, clean_file, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
+- `scripts/dedupe_example_code.py` (153 lines) - symbols: topic_slice, dedupe, guard, improve_topic, main; imports: __future__, argparse, re, sys, difflib, pathlib, audit_lesson_substance
 - `scripts/extract_pdf_toc.py` (33 lines) - imports: sys, pathlib, pymupdf
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/merge_duplicate_sections.py` (179 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
 - `scripts/relocate_tail_to_theory.py` (162 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
 - `scripts/start.sh` (10 lines)
-- `scripts/tests/test_backup_verified.py` (104 lines) - symbols: BackupVerificationTests; imports: os, shutil, subprocess, tempfile, unittest, pathlib, shlex
-- ... 18 more files
+- ... 19 more files
 
 ### course-content
 
@@ -270,6 +270,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `.env.example` (8 lines)
 - `.github/workflows/ci.yml` (62 lines)
+- `docs/app-flow-inspection-dedup.json` (8267 lines)
 - `docs/app-flow-inspection-devops.json` (1617 lines)
 - `docs/app-flow-inspection-relocate.json` (11319 lines)
 - `docs/app-flow-inspection.json` (13830 lines)
@@ -285,5 +286,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
-- `docs/official-topic-atlas.json` (175 lines)
-- ... 38 more files
+- ... 39 more files

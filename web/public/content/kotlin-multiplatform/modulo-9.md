@@ -165,8 +165,6 @@ La suite de tests de `commonTest` empezó a tardar notablemente más en CI a med
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `runTest` gestiona un dispatcher de tiempo virtual: cualquier `delay()` dentro del código bajo prueba se "salta" automáticamente sin esperar ese tiempo en el reloj físico real. La analogía es un simulador de vuelo que prueba procedimientos de horas completas comprimidos a segundos reales.
-
-**Evidencia de aprendizaje:** entrega test con runTest, suite lenta con runBlocking reproducida y medición de tiempo documentada.
 **Conceptos clave:** tiempo virtual, ejecución instantánea sin esperas reales.
 
 `@Test fun pruebaConDelay() = runTest { val resultado = funcionConDelay(); assertEquals(esperado, resultado) }` envuelve el cuerpo de un test que involucra funciones `suspend` (Módulo 2) en un builder especializado (`runTest`) que gestiona un dispatcher de tiempo virtual: cualquier `delay()` interno invocado dentro del código bajo prueba se "salta" automáticamente sin esperar realmente ese tiempo en el reloj físico real, permitiendo que el test corra instantáneamente (en milisegundos reales de ejecución) incluso si la lógica bajo prueba contiene delays simulados de segundos o minutos completos.
@@ -230,6 +228,8 @@ Pista: reemplazá el builder `runTest` por un builder de coroutines normal no es
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `runTest`, medí el tiempo real de ejecución de la suite completa antes y después del cambio (`time ./gradlew :shared:allTests`), y documentá la diferencia.
+
+**Evidencia de aprendizaje:** entrega test con runTest, suite lenta con runBlocking reproducida y medición de tiempo documentada.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el test con `runTest` del Paso 4, la suite lenta con `runBlocking` del Paso 5, y la medición de tiempo del Paso 6; explicá por qué un builder de coroutines "que también compila" no es intercambiable con uno diseñado específicamente para testing. Siguiente paso: automatizá esta suite completa en el pipeline de CI del próximo módulo. Errores comunes: usar un builder de coroutines genérico en vez de `runTest` para funciones con `delay()`, no medir el tiempo real de la suite antes de confiar en que "es rápida", y mezclar tiempo virtual con llamadas de red reales dentro del mismo test. Fuentes oficiales: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-test/ y https://kotlinlang.org/docs/multiplatform-run-tests.html.

@@ -143,8 +143,6 @@ Hoy, si el PIN es incorrecto, el campo se pone en borde rojo — alguien que nav
 
 #### Paso 3 · Teoría, modelo mental y analogía
 React no cambia las reglas de HTML; un campo con error necesita `aria-invalid` y `aria-describedby` apuntando al mensaje real, y el foco debe moverse al primer campo inválido tras un submit fallido.
-
-**Evidencia de aprendizaje:** entrega campo accesible, error solo por color detectado y movimiento de foco agregado.
 **Conceptos clave:** HTML semántico, nombre accesible, rol, estado, teclado, foco, landmark, heading, route announcement, live region, formulario, error, portal, focus trap, Testing Library y axe.
 
 React no cambia las reglas de HTML. Un componente `Button` que devuelve `<div onClick>` sigue siendo un div. Diseña primitivas semánticas antes de añadir estilos. Props polimórficas requieren contratos: si `as="a"`, debe existir `href`; si actúa como botón, usa button.
@@ -226,6 +224,8 @@ Pista: quitá `aria-describedby` y dejá solo el borde rojo con CSS para indicar
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba.
 
+**Evidencia de aprendizaje:** entrega campo accesible, error solo por color detectado y movimiento de foco agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explicá por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
 **¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
@@ -240,8 +240,6 @@ Ocultar el botón "Confirmar entrega" para conductores sin la ruta asignada no i
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una Server Action es un endpoint invocable, no una función privada por estar junto al componente — una puerta tras el mostrador, no una habitación secreta; debe autenticar y autorizar dentro de la propia acción.
-
-**Evidencia de aprendizaje:** entrega Server Action con autorización real, acceso indebido detectado y prueba directa de la acción.
 **Conceptos clave:** XSS, escape, dangerouslySetInnerHTML, sanitización contextual, URL, CSP, nonce, Server Component, Client Component, serialización, secreto, Server Action, autenticación, autorización, CSRF y cache.
 
 React escapa texto interpolado. `dangerouslySetInnerHTML` omite esa protección porque declara HTML intencional. Solo recibe contenido sanitizado por una política mantenida y apropiada al contexto; no una regex. Valida protocolos de URLs y evita `javascript:`. Librerías que tocan DOM pueden crear sinks fuera de JSX.
@@ -317,6 +315,8 @@ Pista: quitá la llamada a `authorize(...)` de la Server Action, confiando en qu
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual.
 
+**Evidencia de aprendizaje:** entrega Server Action con autorización real, acceso indebido detectado y prueba directa de la acción.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explicá por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
 **¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
@@ -331,8 +331,6 @@ Al finalizar vas a eliminar un mismatch de hidratación en `DetalleEnvio` causad
 
 #### Paso 3 · Teoría, modelo mental y analogía
 La hidratación une listeners al HTML del servidor asumiendo que el primer render del cliente coincide exactamente; una zona horaria implícita (o `Date.now()`, `Math.random()`) produce un mismatch.
-
-**Evidencia de aprendizaje:** entrega formato determinista, mismatch provocado y confirmación sin advertencias.
 **Conceptos clave:** SSR, hydration, mismatch, determinismo, identifierPrefix, suppressHydrationWarning, locale, timezone, RTL, streaming, bundle budget, Core Web Vitals, RUM, deployment ID y rollback.
 
 Hydration une listeners al HTML del servidor suponiendo que el primer render cliente coincide. `Date.now()`, `Math.random()`, lectura directa de `window`, locale distinta o datos que cambian entre respuestas producen mismatch. Pasa snapshot serializable, usa IDs estables (`useId` cuando corresponde) y difiere contenido exclusivamente cliente después del montaje si no puede renderizarse igual.
@@ -412,6 +410,8 @@ Pista: quitá `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFo
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirmá en la consola del navegador que la advertencia de mismatch desapareció.
+
+**Evidencia de aprendizaje:** entrega formato determinista, mismatch provocado y confirmación sin advertencias.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explicá por qué `suppressHydrationWarning` no habría sido la corrección correcta acá: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cerrá el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.

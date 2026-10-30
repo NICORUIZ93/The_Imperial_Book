@@ -155,8 +155,6 @@ Al finalizar vas a abrir `DetalleEnvio` directamente desde un deep link real (`r
 Cuando el conductor toca una notificación push "nueva entrega asignada: RF-4471", esa URL tiene que aterrizar directamente en `DetalleEnvio` de ese envío específico, no en la pantalla principal esperando navegación manual.
 #### Paso 3 · Teoría, modelo mental y analogía
 `.onOpenURL` es un sistema de recepción que lee la dirección exacta del sobre entrante y lo entrega directamente en la oficina correspondiente, sin dejarlo en recepción general para que alguien lo redirija después.
-
-**Evidencia de aprendizaje:** entrega el deep link validado funcionando, el riesgo expuesto al quitar la validación, y el formulario con swipe actions agregado.
 **Conceptos clave:** entrada externa mapeada directamente a un punto específico de navegación.
 
 ```swift
@@ -209,6 +207,9 @@ Resultado esperado: abrir `rutaflow://envio/RF-4471` navega directamente a `Deta
 Pista: quitá la validación `guia.hasPrefix("RF-")` y probá abrir `rutaflow://envio/<script>` — ese es el fallo deliberado: sin validar el formato de la guía antes de usarla, cualquier contenido arbitrario de una URL maliciosa terminaría navegando a `DetalleEnvio` con un valor que nunca debería tratarse como una guía real.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la validación, y agregá un `Form` con un `Picker` para que el conductor reporte el motivo si no pudo entregar (por ejemplo "destinatario ausente", "dirección incorrecta"), usando `.swipeActions()` en la lista para marcar un envío como "reintentar" sin entrar al detalle.
+
+**Evidencia de aprendizaje:** entrega el deep link validado funcionando, el riesgo expuesto al quitar la validación, y el formulario con swipe actions agregado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el deep link validado del Paso 4, el formato no validado y su riesgo del Paso 5, y el formulario con swipe actions del Paso 6; explicá por qué una URL entrante nunca debería tratarse como un dato de confianza sin antes validar su forma. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque una URL entrante (deep link) nunca debería tratarse como un dato de confianza; validar su formato antes de navegar evita que contenido arbitrario termine tratado como una guía real.

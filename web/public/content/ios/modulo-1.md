@@ -220,8 +220,6 @@ Si el fondo de color de `TarjetaEnvio` no cubre todo el padding que esperabas, e
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada modificador envuelve la vista anterior en una nueva vista — como envolver un regalo: envolver primero con papel y meter en una caja da un resultado distinto que meter en la caja primero y envolver después.
-
-**Evidencia de aprendizaje:** entrega las dos versiones con orden de modificadores distinto, el padding mal entendido del fallo deliberado y su corrección.
 **Conceptos clave:** cada modificador envuelve la vista anterior en una nueva vista, el orden determina el resultado.
 
 ```swift
@@ -310,6 +308,9 @@ Text("\(guia): \(estado)")
 ```
 #### Paso 6 · Práctica independiente
 Combiná `VStack`, `HStack` y `ZStack` para mostrar `TarjetaEnvio` con un ícono de estado superpuesto en la esquina (pista: `ZStack` superpone; necesitás un `HStack` adentro para alinear guía y estado lado a lado).
+
+**Evidencia de aprendizaje:** entrega las dos versiones con orden de modificadores distinto, el padding mal entendido del fallo deliberado y su corrección.
+
 #### Paso 7 · Cierre y evidencia
 Entregá las dos versiones con orden distinto del Paso 4, el padding mal entendido del Paso 5, y el layout combinado del Paso 6; explicá por qué "el orden no debería importar" es la intuición equivocada más común al empezar con modificadores de SwiftUI. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
@@ -322,8 +323,6 @@ Al finalizar vas a mostrar una lista completa de envíos de RutaFlow con `LazyVG
 Si un conductor tiene 50 envíos pendientes en el día, renderizar las 50 `TarjetaEnvio` de una sola vez con un `VStack` normal desperdicia trabajo en celdas que todavía no son visibles en pantalla.
 #### Paso 3 · Teoría, modelo mental y analogía
 `LazyVGrid` solo crea las celdas efectivamente visibles, no todas de antemano; el sistema de Previews renderiza una vista en el canvas de Xcode sin compilar ni correr la app completa — un modelo a escala instantáneo en vez de construir la habitación real cada vez.
-
-**Evidencia de aprendizaje:** entrega la grilla con Preview funcionando, el intento roto de llamar a una API real desde el Preview, y los tres estados (`loading`/`error`/datos) como Previews separados.
 **Conceptos clave:** iteración casi instantánea sin recompilar la app completa.
 
 ```swift
@@ -395,6 +394,9 @@ xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 
 Pista: cambiá el Preview para que llame a una API real de RutaFlow en vez de pasar datos de muestra fijos — ese es el fallo deliberado: el canvas de Previews no está pensado para esperar una respuesta de red real, y el preview queda cargando indefinidamente o falla, en vez de iterar instantáneamente como se espera de este sistema.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a datos de muestra fijos, y agregá un estado `loading` y uno `error` como dos Previews adicionales separados (`#Preview("Cargando")`, `#Preview("Error")`), para poder ver los tres estados sin tocar código de red real.
+
+**Evidencia de aprendizaje:** entrega la grilla con Preview funcionando, el intento roto de llamar a una API real desde el Preview, y los tres estados (`loading`/`error`/datos) como Previews separados.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la grilla con Preview funcionando del Paso 4, el intento de red real roto del Paso 5, y los tres estados (`loading`/`error`/datos) del Paso 6; explicá por qué el sistema de Previews está pensado para datos de muestra, no para red real. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque el sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.

@@ -101,8 +101,6 @@ Al finalizar vas a envolver `EncabezadoPanel` (identificado en el Tema 1 con el 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `React.memo` compara superficialmente las props entre renders; si son referencialmente iguales, React se salta la re-ejecución — un guardia que compara la lista de invitados antes de repetir el mismo trabajo.
-
-**Evidencia de aprendizaje:** entrega EncabezadoPanel memoizado, memo desperdiciado detectado y limpieza confirmada con el Profiler.
 **Conceptos clave:** comparación superficial de props, overhead de comparación, cuándo realmente ayuda.
 
 `React.memo(function Fila({ item }) { return <li>{item.nombre}</li>; })` envuelve un componente para que React realice una comparación superficial de sus props entre el render anterior y el actual antes de volver a ejecutar la función del componente: si todas las props son referencialmente iguales al render anterior, React se salta completamente la re-ejecución de ese componente y reutiliza el resultado anterior, en vez de volver a calcular un árbol de elementos idéntico innecesariamente.
@@ -161,6 +159,8 @@ Pista: envolvé también `BotonFiltro` (que sí recibe una prop nueva en cada te
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando `React.memo` de `BotonFiltro` (que no lo necesita, porque sus props cambian casi siempre), dejándolo únicamente en `EncabezadoPanel`, y confirmá con el Profiler que esa es la única memoización que efectivamente ahorra trabajo real.
 
+**Evidencia de aprendizaje:** entrega EncabezadoPanel memoizado, memo desperdiciado detectado y limpieza confirmada con el Profiler.
+
 #### Paso 7 · Cierre y evidencia
 Entregá `EncabezadoPanel` memoizado del Paso 4, el memo desperdiciado en `BotonFiltro` del Paso 5, y la limpieza del Paso 6; explicá por qué `React.memo` solo aporta beneficio cuando las props de un componente son estables con frecuencia significativa, no en cualquier componente "por si acaso". Siguiente paso: estudia virtualización para listas largas. Errores comunes: envolver indiscriminadamente todos los componentes en `React.memo`, memoizar un componente cuyas props cambian en casi todos los renders, y no confirmar con el Profiler que la memoización efectivamente eliminó un render real. Fuentes oficiales: https://react.dev/reference/react/memo y https://react.dev/reference/react/memo#minimizing-props-changes.
 **¿Por qué es importante?** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real.
@@ -175,8 +175,6 @@ La pantalla de historial de RutaFlow puede mostrar más de 10,000 envíos acumul
 
 #### Paso 3 · Teoría, modelo mental y analogía
 La virtualización renderiza únicamente los elementos visibles en el viewport (más un pequeño margen), reciclando los mismos nodos DOM al hacer scroll — un teatro que solo construye los asientos de la sección visible, no el estadio completo.
-
-**Evidencia de aprendizaje:** entrega lista virtualizada, medición sin virtualizar y code-splitting de Reportes confirmado.
 **Conceptos clave:** renderizar solo lo visible, dividir el bundle en chunks.
 
 Renderizar una lista de 10,000 elementos completos en el DOM, incluso si la mayoría no son visibles en la pantalla en un momento dado, es costoso tanto en tiempo de renderizado inicial como en memoria consumida por nodos DOM que el usuario nunca ve directamente; la virtualización (`<FixedSizeList height={600} itemCount={10000} itemSize={40}>{({ index, style }) => <div style={style}>{datos[index].nombre}</div>}</FixedSizeList>` con `react-window`) renderiza únicamente los elementos actualmente visibles en el viewport (más un pequeño margen para un scroll suave), reciclando los mismos nodos DOM a medida que el usuario hace scroll, en vez de mantener los 10,000 nodos completos existiendo simultáneamente en el DOM real.
@@ -229,6 +227,8 @@ Pista: reemplazá `FixedSizeList` por un `.map()` directo sobre los 10,000 `envi
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `FixedSizeList`, y agregá `React.lazy` para la pantalla de "Reportes" de RutaFlow (usada por pocos operadores), confirmando en la pestaña Network que su chunk se descarga solo al navegar ahí, no en la carga inicial.
 
+**Evidencia de aprendizaje:** entrega lista virtualizada, medición sin virtualizar y code-splitting de Reportes confirmado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la lista virtualizada del Paso 4, la medición del render completo sin virtualizar del Paso 5, y el code-splitting de Reportes del Paso 6; explicá la diferencia entre lo que resuelve la virtualización (renderizado continuo de una lista ya cargada) y lo que resuelve el code-splitting (descarga inicial del bundle). Siguiente paso: estudia useTransition para mantener la interfaz responsiva durante cálculos costosos. Errores comunes: virtualizar una lista pequeña que no lo necesita, usar un índice de array en vez de un id estable como key dentro de la lista virtualizada, y confundir virtualización con code-splitting. Fuentes oficiales: https://github.com/bvaughn/react-window y https://react.dev/reference/react/lazy.
 **¿Por qué es importante?** La virtualización reduce drásticamente el costo de renderizar listas largas; el code-splitting reduce el bundle inicial descargado — dos optimizaciones distintas para dos problemas distintos.
@@ -243,8 +243,6 @@ Filtrar la lista completa de 10,000 envíos cada vez que el operador escribe una
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `useTransition` marca una actualización como no urgente, permitiendo que React la posponga en favor de actualizaciones más urgentes — gracias a Fiber, que hace que el trabajo de renderizado sea interrumpible y priorizable.
-
-**Evidencia de aprendizaje:** entrega transición dividida correctamente, bloqueo del input detectado y indicador de pending agregado.
 **Conceptos clave:** actualizaciones no urgentes, arquitectura de trabajo interrumpible.
 
 `useTransition` permite marcar ciertas actualizaciones de estado como "de transición" (no urgentes), indicándole a React que puede posponer o interrumpir ese trabajo de renderizado específico en favor de actualizaciones más urgentes que ocurran mientras tanto (como seguir respondiendo instantáneamente a la escritura del usuario en un input, mientras una lista de resultados derivados de ese input, potencialmente costosa de recalcular, se actualiza en segundo plano con menor prioridad); `useDeferredValue` ofrece un mecanismo relacionado, proporcionando una versión "retrasada" de un valor que se actualiza con menor prioridad que el valor original, útil para mantener la interfaz responsiva mientras un cálculo derivado costoso se pone al día en segundo plano.
@@ -307,6 +305,8 @@ Pista: metés ambos `setTextoInput` y `setEnviosFiltrados` dentro de `startTrans
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `setTextoInput` fuera de la transición (urgente) y dejando solo `setEnviosFiltrados` dentro de `startTransition` (no urgente), y agregá un indicador visual sutil basado en `isPending` mientras la lista filtrada todavía se está recalculando.
+
+**Evidencia de aprendizaje:** entrega transición dividida correctamente, bloqueo del input detectado y indicador de pending agregado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la transición correctamente dividida del Paso 4, el bloqueo del input provocado en el Paso 5, y el indicador de `isPending` del Paso 6; explicá por qué solo el cálculo derivado costoso (no la actualización del propio input) debería marcarse como no urgente, y cómo Fiber hace posible que React interrumpa ese trabajo para atender la tecla siguiente. Siguiente paso: cerrá el módulo integrando Profiler, memo, virtualización y transitions en el panel completo de RutaFlow. Errores comunes: marcar como no urgente la actualización que debería sentirse instantánea, no usar `isPending` para comunicar que hay trabajo en curso, y aplicar `useTransition` a actualizaciones que ya son baratas y no lo necesitan. Fuentes oficiales: https://react.dev/reference/react/useTransition y https://react.dev/reference/react/useDeferredValue.

@@ -13,8 +13,6 @@ RutaFlow está lista para subir a ambas tiendas — nadie generó todavía los a
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `flutter build appbundle --release` genera el `.aab` requerido por Google Play; `flutter build ipa --release` genera el `.ipa` para App Store, requiriendo específicamente macOS con Xcode.
-
-**Evidencia de aprendizaje:** entrega ambos builds generados, fallo por entorno incorrecto detectado y corrección con el entorno apropiado.
 **Conceptos clave:** una sola base de código, pero artefactos de build específicos y separados por tienda.
 
 ```bash
@@ -72,6 +70,8 @@ Pista: intentá correr `flutter build ipa --release` desde una máquina Linux o 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 moviendo ese paso a un runner de macOS, y confirmá que el mismo código Dart compartido produce ambos artefactos sin ninguna modificación, solo cambiando el entorno de ejecución del build.
 
+**Evidencia de aprendizaje:** entrega ambos builds generados, fallo por entorno incorrecto detectado y corrección con el entorno apropiado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá ambos builds generados del Paso 4, el fallo por entorno incorrecto del Paso 5, y la corrección con el entorno apropiado del Paso 6; explicá por qué "una sola base de código" en Flutter no elimina la necesidad de un entorno específico para el empaquetado final de cada plataforma. Siguiente paso: estudia cómo generar íconos y splash screens para ambas tiendas. Errores comunes: intentar generar el build de iOS sin macOS/Xcode disponible, publicar accidentalmente un build en modo debug en vez de `--release`, y no verificar que la versión/build number cumple los requisitos de cada tienda. Fuentes oficiales: https://docs.flutter.dev/deployment/android y https://docs.flutter.dev/deployment/ios.
 **¿Por qué es importante?** Aunque el código Dart es compartido, cada tienda requiere un artefacto de build específico y un entorno de compilación distinto.
@@ -86,8 +86,6 @@ Android necesita el ícono de RutaFlow en múltiples resoluciones para distintas
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `flutter_launcher_icons` y `flutter_native_splash` toman una única imagen fuente declarada en `pubspec.yaml` y generan automáticamente todas las variantes requeridas por cada plataforma.
-
-**Evidencia de aprendizaje:** entrega generación automática funcionando, ícono pixelado detectado y corrección con imagen de alta resolución.
 **Conceptos clave:** configuración declarativa que genera automáticamente los múltiples formatos requeridos por cada plataforma.
 
 ```yaml
@@ -160,6 +158,8 @@ Pista: reemplazá `icon_rutaflow.png` por una imagen de baja resolución (48x48 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reemplazando la imagen fuente por una de al menos 1024x1024 píxeles, y volví a correr `flutter_launcher_icons`, confirmando que ahora las variantes de alta densidad se ven nítidas.
 
+**Evidencia de aprendizaje:** entrega generación automática funcionando, ícono pixelado detectado y corrección con imagen de alta resolución.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la generación automática del Paso 4, el ícono pixelado por baja resolución fuente del Paso 5, y la corrección con una imagen de alta resolución del Paso 6; explicá por qué la calidad de todas las variantes generadas depende de la calidad de la única imagen fuente, nunca puede mejorarse después del hecho. Siguiente paso: estudia CI/CD para automatizar todo este proceso. Errores comunes: usar una imagen fuente de baja resolución asumiendo que la generación automática "arregla" eso, producir manualmente cada variante por plataforma, y olvidar regenerar íconos/splash tras cambiar el diseño de marca. Fuentes oficiales: https://pub.dev/packages/flutter_launcher_icons y https://pub.dev/packages/flutter_native_splash.
 **¿Por qué es importante?** Generar automáticamente las variantes de ícono y splash screen a partir de una única imagen fuente evita el trabajo manual tedioso de producir cada variante por separado.
@@ -174,8 +174,6 @@ Cada vez que el equipo de RutaFlow quiere publicar una nueva versión, alguien c
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Codemagic/Fastlane automatizan la secuencia completa de build, firma y distribución; una sola base de código no elimina la necesidad de pasos separados por plataforma dentro de ese mismo pipeline.
-
-**Evidencia de aprendizaje:** entrega workflow de Android, error por script copiado entre plataformas detectado y corrección con script apropiado.
 **Conceptos clave:** pipeline automatizado con pasos específicos por plataforma, a pesar del código compartido.
 
 ```yaml
@@ -251,6 +249,8 @@ Pista: agregá un segundo workflow `ios-release` que reutilice literalmente el m
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 definiendo el workflow `ios-release` con su propio script correcto (`flutter build ipa --release`) y su propio artefacto `.ipa`, confirmando que cada workflow produce el artefacto específico que su tienda realmente necesita.
+
+**Evidencia de aprendizaje:** entrega workflow de Android, error por script copiado entre plataformas detectado y corrección con script apropiado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el workflow de Android del Paso 4, el workflow de iOS incorrecto por copiar el de Android en el Paso 5, y la corrección con el script apropiado del Paso 6; explicá por qué "compartir código" en Flutter no significa que los pasos de publicación también puedan compartirse sin modificación entre plataformas. Siguiente paso: cerrá el módulo integrando build, assets y CI/CD en un release real de RutaFlow. Errores comunes: copiar el mismo script de build entre workflows de plataformas distintas, no verificar que cada workflow produce el artefacto correcto para su tienda, y asumir que un solo pipeline elimina toda la especificidad de plataforma. Fuentes oficiales: https://docs.codemagic.io/flutter-configuration/flutter-projects/ y https://docs.flutter.dev/deployment/cd.

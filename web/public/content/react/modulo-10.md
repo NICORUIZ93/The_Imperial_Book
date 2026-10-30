@@ -103,8 +103,6 @@ Al finalizar vas a marcar `BotonConfirmarEntrega` con `"use client"` porque usa 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cualquier componente con hooks de estado o manejadores de eventos debe marcarse con `"use client"`; ese límite se establece lo más profundo posible en el árbol, no envolviendo páginas completas.
-
-**Evidencia de aprendizaje:** entrega frontera correctamente ubicada, error por marcar la página completa y medición comparativa del JavaScript enviado.
 **Conceptos clave:** hooks de estado solo en Client Components, límite explícito entre servidor y cliente.
 
 Cualquier componente que necesite interactividad basada en hooks de estado (`useState`, `useEffect`, manejadores de eventos como `onClick`) debe marcarse explícitamente con la directiva `"use client"` al inicio del archivo, indicando a Next.js que ese componente (y todo lo que importe transitivamente desde ese punto) debe compilarse también para ejecutarse en el navegador, no únicamente en el servidor:
@@ -154,6 +152,8 @@ Pista: agregá `"use client"` directamente en `PaginaEnvio` "para que todo funci
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa.
+
+**Evidencia de aprendizaje:** entrega frontera correctamente ubicada, error por marcar la página completa y medición comparativa del JavaScript enviado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.

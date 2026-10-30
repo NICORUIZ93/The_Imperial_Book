@@ -13,8 +13,6 @@ Al tocar una `TarjetaEnvio` en la lista, debería expandirse suavemente para mos
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una animación implícita interpola automáticamente entre el valor anterior y el nuevo; una explícita con `AnimationController`/`Tween` da control total sobre curvas, repetición y composición, a costa de más código.
-
-**Evidencia de aprendizaje:** entrega animación implícita funcionando, limitación detectada y TweenSequence explícito implementado.
 **Conceptos clave:** interpolación automática frente a control total sobre curvas y composición.
 
 ```dart
@@ -85,6 +83,8 @@ Pista: intentá lograr que la tarjeta se expanda, pause un instante a mitad de c
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reemplazando esa animación por un `AnimationController` con un `TweenSequence` que defina explícitamente las dos etapas, confirmando que esa secuencia coreografiada sí es posible con el control explícito.
 
+**Evidencia de aprendizaje:** entrega animación implícita funcionando, limitación detectada y TweenSequence explícito implementado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la animación implícita del Paso 4, la limitación de `AnimatedContainer` del Paso 5, y el `TweenSequence` explícito del Paso 6; explicá cuándo una animación implícita deja de ser suficiente y se necesita el control explícito de un `AnimationController`. Siguiente paso: estudia Flutter DevTools para medir si estas animaciones son realmente fluidas. Errores comunes: usar `AnimationController` para una interpolación simple que `AnimatedContainer` ya resuelve con menos código, olvidar hacer `dispose()` de un `AnimationController`, y no considerar `TweenSequence` cuando se necesita una secuencia de múltiples etapas. Fuentes oficiales: https://docs.flutter.dev/ui/animations/implicit-animations y https://docs.flutter.dev/ui/animations/tutorial.
 **¿Por qué es importante?** Una animación implícita es suficiente para interpolar automáticamente entre dos valores; se necesita el control de una explícita para secuencias coreografiadas o composición de múltiples animaciones coordinadas.
@@ -99,8 +99,6 @@ Varios conductores reportaron que la lista de envíos "se traba" al hacer scroll
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El panel de Performance mide el tiempo real de cada frame; a 60fps cada frame tiene ~16ms de presupuesto, y DevTools señala exactamente qué fase (build, layout, paint) excedió ese presupuesto.
-
-**Evidencia de aprendizaje:** entrega grabación en modo profile, medición distorsionada en debug detectada y cálculo costoso identificado.
 **Conceptos clave:** medición objetiva de tiempo de frame, no percepción subjetiva.
 
 El panel de Performance de Flutter DevTools graba el tiempo real que toma renderizar cada frame individual de la app; a 60fps, cada frame dispone de aproximadamente 16 milisegundos para completarse (construcción, layout, pintura), y cualquier frame que exceda ese presupuesto de tiempo causa "jank" (un entrecorte visual perceptible por el usuario, una pausa o salto brusco en una animación o scroll que debería percibirse como fluido); DevTools resalta exactamente qué fase específica del renderizado (build, layout, o paint) consumió ese tiempo excesivo en el frame problemático, permitiendo diagnosticar con precisión dónde optimizar en vez de adivinar basándose en percepción visual subjetiva, el mismo principio de medición objetiva frente a percepción subjetiva estudiado con Instruments en iOS (Módulo 10 de ese track) y el Layout Inspector en Android (Módulo 10 de ese track).
@@ -157,6 +155,8 @@ Pista: grabá la misma sesión pero en modo `debug` (`flutter run` sin `--profil
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a medir en modo `--profile`, e identificá el cálculo costoso específico dentro del `build` de `TarjetaEnvio` usando la pestaña de CPU Profiler de DevTools.
 
+**Evidencia de aprendizaje:** entrega grabación en modo profile, medición distorsionada en debug detectada y cálculo costoso identificado.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la grabación en modo profile del Paso 4, la medición distorsionada en modo debug del Paso 5, y el cálculo costoso identificado en el Paso 6; explicá por qué medir rendimiento en modo debug produce conclusiones sistemáticamente equivocadas. Siguiente paso: estudia const widgets y RepaintBoundary para optimizar lo que encontraste. Errores comunes: medir rendimiento en modo debug en vez de profile/release, confiar en la percepción subjetiva de fluidez en el emulador de desarrollo, y no grabar una interacción específica real sino solo observar la app en reposo. Fuentes oficiales: https://docs.flutter.dev/tools/devtools/performance y https://docs.flutter.dev/perf/ui-performance.
 **¿Por qué es importante?** DevTools mide objetivamente el tiempo real de cada frame y señala exactamente qué fase del renderizado causó un frame perdido, en vez de depender de percepción visual subjetiva.
@@ -171,8 +171,6 @@ El cálculo costoso identificado en el Tema 2 resultó ser el ícono de estado, 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Marcar un widget inmutable como `const` le permite a Flutter omitirlo por completo en reconstrucciones futuras; `RepaintBoundary` aísla una porción del árbol en su propia capa de pintura.
-
-**Evidencia de aprendizaje:** entrega widgets const y RepaintBoundary, repintado excesivo detectado y medición comparativa confirmada.
 **Conceptos clave:** widgets que Flutter puede omitir por completo durante una reconstrucción.
 
 ```dart
@@ -232,6 +230,8 @@ Pista: quitá `RepaintBoundary` del indicador animado y medí de nuevo con DevTo
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `RepaintBoundary`, y medí con DevTools (la opción "Highlight repaints") cuántas áreas de la pantalla se repintan en cada frame antes y después, confirmando la reducción.
+
+**Evidencia de aprendizaje:** entrega widgets const y RepaintBoundary, repintado excesivo detectado y medición comparativa confirmada.
 
 #### Paso 7 · Cierre y evidencia
 Entregá los widgets `const` y el `RepaintBoundary` del Paso 4, el repintado excesivo detectado en el Paso 5, y la medición comparativa del Paso 6; explicá por qué un elemento animado dentro de un árbol más grande necesita aislarse explícitamente con `RepaintBoundary`. Siguiente paso: cerrá el módulo integrando estas optimizaciones medibles en el proyecto completo. Errores comunes: omitir `const` en widgets estáticos dentro de listas largas, no aislar con `RepaintBoundary` elementos que se animan frecuentemente dentro de contenido mayormente estático, y aplicar estas optimizaciones sin medir primero con DevTools si realmente hacían falta. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html y https://docs.flutter.dev/perf/best-practices.

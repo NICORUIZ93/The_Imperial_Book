@@ -13,8 +13,6 @@ A lo largo del track construiste cada etapa de este pipeline por separado (tests
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un pipeline CI/CD maduro encadena etapas donde cada una es un gate real: si una falla, la siguiente no se ejecuta — una línea de ensamblaje donde ningún vehículo avanza sin pasar el control de calidad de la estación anterior.
-
-**Evidencia de aprendizaje:** entrega pipeline completo trazado, gate sin bloqueo real detectado y corrección verificada con una vulnerabilidad crítica real.
 **Conceptos clave:** flujo end-to-end, etapas encadenadas, gates bloqueantes, verificación post-despliegue.
 
 Este proyecto integrador construye, en un único flujo continuo, el pipeline que representa la síntesis de todo el track: un desarrollador hace `git push` de un commit (Módulo 1); esto dispara automáticamente un pipeline de CI (Módulo 4) que ejecuta tests automatizados y, como gate bloqueante, un escaneo de vulnerabilidades con Trivy sobre la imagen construida (Módulo 11); si el escaneo encuentra una vulnerabilidad crítica sin resolver, el pipeline se detiene ahí mismo y no avanza, exactamente como se practicó en el laboratorio del Módulo 11. Si el escaneo pasa, la imagen se etiqueta y se publica en un registry (Módulo 2), y el pipeline continúa hacia la etapa de despliegue.
@@ -82,6 +80,8 @@ Pista: configurá el job de escaneo de Trivy para que imprima el reporte de vuln
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 configurando `exit-code: 1` en Trivy para severidad crítica, y agregá `needs: [scan]` explícito en el job de build/push, confirmando que ahora una vulnerabilidad crítica real detiene el pipeline antes de publicar la imagen.
 
+**Evidencia de aprendizaje:** entrega pipeline completo trazado, gate sin bloqueo real detectado y corrección verificada con una vulnerabilidad crítica real.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el pipeline completo trazado del Paso 4, el gate que no bloqueaba realmente del Paso 5, y la corrección verificada del Paso 6; explicá la diferencia entre un gate que "informa" y un gate que efectivamente detiene el flujo. Siguiente paso: estudia cómo cada módulo del track se conecta en este mismo flujo. Errores comunes: un escaneo de seguridad que solo informa sin bloquear, un despliegue sin verificación post-despliegue real, y un rollback documentado pero nunca ejecutado de verdad. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
 **¿Por qué es importante?** Ver el pipeline completo operar de principio a fin, con cada gate realmente funcionando, es la validación final de que el conocimiento del track se combina en un sistema coherente, no solo en técnicas aisladas.
@@ -96,8 +96,6 @@ Tener cada módulo (CI, escaneo, Helm, observabilidad) funcionando por separado 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 La integración horizontal implica que la salida de una etapa se convierte en la entrada de la siguiente, y que cada etapa deja evidencia trazable (tag con hash del commit, logs con correlation ID) que permite reconstruir la cadena completa ante un incidente.
-
-**Evidencia de aprendizaje:** entrega diseño de conexiones entre etapas, pérdida de trazabilidad detectada y corrección con hash + correlation ID.
 **Conceptos clave:** integración horizontal, dependencias entre etapas, trazabilidad end-to-end.
 
 Construir el proyecto integrador no es simplemente ejecutar cada módulo del track por separado en secuencia, sino diseñar deliberadamente las conexiones entre ellos: la salida de una etapa se convierte en la entrada de la siguiente, y el estado de una etapa determina si la siguiente se ejecuta en absoluto. Por ejemplo, el resultado del escaneo Trivy del Módulo 11 (¿aprobado o rechazado?) determina directamente si la etapa de build/push del Módulo 2 se ejecuta; el resultado de la verificación post-despliegue del Módulo 9 (¿métricas normales o anómalas?) determina si se ejecuta el rollback del Módulo 5.
@@ -164,6 +162,8 @@ Pista: etiquetá la imagen de producción con `rutaflow:latest` en vez de con el
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el etiquetado al hash del commit (manteniendo `latest` solo como etiqueta adicional de conveniencia), y agregá un correlation ID propagado desde el pipeline de CI hasta los logs de la aplicación desplegada, confirmando que ahora se puede trazar un log específico hasta el pipeline exacto que lo generó.
 
+**Evidencia de aprendizaje:** entrega diseño de conexiones entre etapas, pérdida de trazabilidad detectada y corrección con hash + correlation ID.
+
 #### Paso 7 · Cierre y evidencia
 Entregá el diseño de conexiones entre etapas del Paso 4, la pérdida de trazabilidad por usar solo `latest` del Paso 5, y la corrección con hash + correlation ID del Paso 6; explicá por qué la mayoría del valor real de un pipeline maduro está en las conexiones entre etapas, no en cada etapa aislada. Siguiente paso: cerrá el track con el checklist final y la reflexión. Errores comunes: etiquetar imágenes de producción únicamente con `latest`, no propagar un correlation ID entre etapas del pipeline y la aplicación desplegada, y dejar implícitas decisiones de orden sin documentarlas. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
 **¿Por qué es importante?** La mayoría del valor real de un pipeline CI/CD maduro está en las conexiones entre etapas (gates, verificaciones, rollback automático), no en cada etapa aislada.
@@ -178,8 +178,6 @@ Completar el proyecto integrador no garantiza por sí solo que cada concepto est
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Aplicar la misma disciplina de checklist usada en producción (Módulo 12) al propio aprendizaje es una forma de verificar honestamente el dominio real, distinto de simplemente haber "visto" cada tema una vez.
-
-**Evidencia de aprendizaje:** entrega checklist respondido, respuesta genérica sin anclaje detectada y las tres respuestas reescritas con conexión al pipeline propio.
 **Conceptos clave:** consolidación, checklist de dominio del track, próximos pasos de aprendizaje.
 
 Al completar este proyecto integrador, vale la pena hacer una pausa deliberada de consolidación, revisando explícitamente los catorce módulos de este track como un cuerpo de conocimiento coherente en vez de una lista de temas independientes: desde los fundamentos de Linux y Git (Módulos 0-1), pasando por Docker y su orquestación local (Módulos 2-3), CI y CD (Módulos 4-5), Kubernetes y su ecosistema (Módulos 6-7), infraestructura como código (Módulo 8), observabilidad y logging (Módulos 9-10), seguridad DevSecOps (Módulo 11), la transición a producción real (Módulo 12), hasta este proyecto integrador final (Módulo 13) que los conecta todos.
@@ -258,6 +256,8 @@ Pista: respondé la pregunta sobre GitOps con una definición genérica copiada 
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reescribiendo la respuesta conectándola con una decisión real de tu propio pipeline (el operador de GitOps dentro del clúster nunca necesita credenciales de despliegue externas, a diferencia de un runner de CD tradicional que sí las necesita), y repetí el ejercicio para las otras dos preguntas.
+
+**Evidencia de aprendizaje:** entrega checklist respondido, respuesta genérica sin anclaje detectada y las tres respuestas reescritas con conexión al pipeline propio.
 
 #### Paso 7 · Cierre y evidencia
 Entregá el checklist respondido del Paso 4, la respuesta genérica sin anclaje real detectada en el Paso 5, y las tres respuestas reescritas con conexión al pipeline propio del Paso 6; explicá por qué una respuesta "de libro" sin conexión a una decisión real no demuestra dominio genuino. Siguiente paso: aplicá este mismo pipeline completo a un proyecto personal real para consolidarlo de forma duradera. Errores comunes: dar por completado el track sin poder explicar las decisiones propias sin notas, confundir haber "visto" un tema con haberlo dominado, y no conectar este track con el track Cloud que lo complementa directamente. Fuente oficial: https://sre.google/sre-book/.

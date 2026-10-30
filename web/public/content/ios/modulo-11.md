@@ -137,8 +137,6 @@ El build de RutaFlow ya está en TestFlight, pero promoverlo a revisión de la A
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `CFBundleShortVersionString` es la versión visible al usuario (semver); `CFBundleVersion` es el número de build interno, que debe incrementarse estrictamente en cada subida — un nombre comercial visible frente a un número de serie interno.
-
-**Evidencia de aprendizaje:** entrega metadata completa, confusión de versión detectada y changelog documentado.
 **Conceptos clave:** información obligatoria para la revisión, dos identificadores con propósitos distintos.
 
 App Store Connect requiere completar metadata específica antes de que Apple revise la app: descripción y palabras clave (relevantes para el descubrimiento en la búsqueda de la App Store), capturas de pantalla por cada tamaño de dispositivo soportado, una política de privacidad (obligatoria sin excepción para cualquier app publicada), y la clasificación de edad junto con las respuestas del cuestionario de privacidad que declara explícitamente qué datos recolecta la app y con qué propósito, información que Apple usa para mostrar la etiqueta de privacidad visible a los usuarios antes de descargar la app.
@@ -201,6 +199,8 @@ Pista: subí un nuevo build incrementando `CFBundleVersion` a 43, pero dejá `CF
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 incrementando también `CFBundleShortVersionString` a "1.3.1" cuando el cambio sea visible para el usuario, y documentá en el changelog de App Store Connect qué cambió en esta versión respecto a la anterior.
+
+**Evidencia de aprendizaje:** entrega metadata completa, confusión de versión detectada y changelog documentado.
 
 #### Paso 7 · Cierre y evidencia
 Entregá la metadata completa del Paso 4, la confusión de versión detectada en el Paso 5, y el changelog del Paso 6; explicá la diferencia entre incrementar solo `CFBundleVersion` (necesario en cada subida, invisible para el usuario) e incrementar también `CFBundleShortVersionString` (cuando el cambio es visible y merece comunicarse). Siguiente paso: estudia cómo automatizar este proceso con CI. Errores comunes: olvidar incrementar `CFBundleVersion` antes de subir, cambiar la versión visible sin que el cambio lo justifique, y omitir la política de privacidad o el cuestionario de privacidad. Fuentes oficiales: https://developer.apple.com/help/app-store-connect/ y https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion.

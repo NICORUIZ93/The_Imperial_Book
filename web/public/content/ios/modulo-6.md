@@ -170,8 +170,6 @@ Al finalizar vas a agregarle un campo nuevo a `EnvioLocal` (Tema 1) sin perder l
 Si RutaFlow agrega una foto de evidencia a la confirmación offline, los conductores que ya tenían entregas pendientes de sincronizar con la versión vieja del modelo no pueden perder esos datos solo porque la app se actualizó.
 #### Paso 3 · Teoría, modelo mental y analogía
 SwiftData es un panel de control moderno sobre la misma maquinaria de Core Data — cada cambio de esquema debe versionarse y conservar los datos existentes, como un archivo histórico que nunca descarta registros al cambiar de formato.
-
-**Evidencia de aprendizaje:** entrega la migración liviana del Paso 4, el campo requerido que rompe datos existentes reproducido, y el escenario documentado donde preferirías Core Data directo.
 **Conceptos clave:** capa moderna sobre el mismo motor probado, elección según necesidad de control fino.
 
 SwiftData es una capa moderna construida directamente sobre el mismo motor subyacente de Core Data (probado en producción durante más de una década en el ecosistema Apple), reemplazando la sintaxis imperativa y verbosa de `NSManagedObject`/`NSFetchRequest` por macros declarativas de Swift (`@Model`, `@Query`); para proyectos nuevos, SwiftData es generalmente la opción recomendada, dado que ofrece la misma robustez del motor subyacente con una experiencia de desarrollo considerablemente más simple y menos propensa a errores de configuración manual.
@@ -229,6 +227,9 @@ Resultado esperado: los `EnvioLocal` guardados antes de este cambio siguen leyé
 Pista: cambiá `fotoPath` de opcional a requerido (`var fotoPath: String` sin `?`, sin valor por defecto) — ese es el fallo deliberado: los registros `EnvioLocal` ya guardados en el dispositivo de un conductor real no tienen ningún valor para ese campo, y SwiftData no puede migrar automáticamente un campo requerido sin un valor conocido para los datos existentes.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `fotoPath` opcional, y documentá en qué escenario este mismo proyecto preferiría Core Data directo en vez de SwiftData (pista: si necesitaras una migración con lógica de transformación de datos muy específica que SwiftData todavía no expone).
+
+**Evidencia de aprendizaje:** entrega la migración liviana del Paso 4, el campo requerido que rompe datos existentes reproducido, y el escenario documentado donde preferirías Core Data directo.
+
 #### Paso 7 · Cierre y evidencia
 Entregá la migración liviana del Paso 4, el campo requerido que rompe datos existentes del Paso 5, y el escenario de Core Data del Paso 6; explicá por qué un campo opcional es casi siempre más seguro que uno requerido al evolucionar un modelo con datos reales ya guardados. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 **¿Por qué es importante?** Porque un campo opcional permite una migración liviana que preserva los datos ya guardados en el dispositivo, mientras que un campo requerido sin valor por defecto rompe la lectura de los registros existentes.
