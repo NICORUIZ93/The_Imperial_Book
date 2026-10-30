@@ -1031,15 +1031,14 @@ llamadas sigue siendo diseño débil aunque tenga muchos paquetes.
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde la raíz del repositorio ejecuta:
+Desde una carpeta vacía crea `Main.java` y `test.sh` con el contenido completo de abajo:
 
 ```bash
-cp -R examples/rutaflow-material/clean-architecture ejemplo-clean-architecture
+mkdir ejemplo-clean-architecture
 cd ejemplo-clean-architecture
-bash test.sh
 ```
 
-El archivo `Main.java` contiene las capas mínimas sin importar Spring:
+`Main.java` contiene las capas mínimas sin importar Spring:
 
 ```java
 import java.util.ArrayList;
@@ -1092,6 +1091,17 @@ public class Main {
 }
 ```
 
+Crea `test.sh` con estas cuatro líneas y ejecútalo:
+
+```bash
+cat > test.sh <<'SCRIPT'
+#!/usr/bin/env bash
+set -euo pipefail
+rm -rf build && mkdir -p build && javac -d build Main.java && java -cp build Main
+SCRIPT
+bash test.sh
+```
+
 **Resultado esperado:** `shipment=ENV-42 status=CREATED`. `ShipmentId` y
 `Shipment` representan el dominio; `CreateShipment` es el interactor;
 `ShipmentRepository` es el boundary; `InMemoryShipmentRepository` es un
@@ -1121,7 +1131,7 @@ está demasiado adentro.
 
 #### Paso 7 · Cierre y evidencia
 
-**Evidencia de aprendizaje:** compilación con `bash test.sh`, diagrama de la
+**Evidencia de aprendizaje:** entrega la compilación con `bash test.sh`, el diagrama de la
 dirección de dependencias, test de la transición inválida y una tabla que
 separe dominio, aplicación, adaptadores y drivers. El siguiente paso es revisar
 la regla con ArchUnit en el Tema 3 y conectar el caso de uso a una API REST sin
@@ -1134,4 +1144,4 @@ entidades con relaciones. **Límites y decisión de uso:** este laboratorio
 demuestra dirección de dependencias y no reemplaza pruebas de integración,
 transacciones reales, migraciones Flyway ni seguridad de la API.
 
-**Fuente de contraste:** [Spring Boot reference](https://docs.spring.io/spring-boot/reference/) y [DDD Aggregate de Martin Fowler](https://martinfowler.com/bliki/DDD_Aggregate.html).
+**Fuente oficial:** [Spring Boot reference](https://docs.spring.io/spring-boot/reference/) y [DDD Aggregate de Martin Fowler](https://martinfowler.com/bliki/DDD_Aggregate.html).

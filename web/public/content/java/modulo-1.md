@@ -41,46 +41,6 @@ Esta misma disciplina (validar en el constructor, no exponer setters que rompan 
 **Cuándo no usarlo:** para un objeto puramente de transporte de datos sin ninguna regla de negocio que proteger (un DTO que solo cruza una frontera de serialización), validar cada campo en el constructor es esfuerzo sin beneficio real; resérvalo para entidades de dominio donde un estado inválido tendría consecuencias reales.
 **¿Por qué es importante?** Porque un constructor que valida sus invariantes es la única garantía real de que ningún objeto inválido llegue a existir en el sistema, sin depender de que cada consumidor recuerde validar por su cuenta antes de usarlo.
 **Evidencia de aprendizaje:** entrega la clase `Guia` con sus invariantes en el constructor, los tres casos inválidos (número vacío, peso cero, peso excesivo) que lanzan excepción, y la prueba que lo confirma.
-**Conceptos clave:** identidad, estado válido, comportamiento y protección de invariantes.
-
-Una clase define el contrato y la implementación de un tipo; un objeto es una instancia concreta creada a partir de esa definición. Los campos representan estado y los métodos representan operaciones válidas sobre ese estado. Encapsular no significa únicamente escribir campos `private` y generar getters/setters: significa impedir que el objeto pueda existir en un estado inválido y exponer operaciones con significado de dominio.
-
-El constructor establece las invariantes desde el nacimiento del objeto. Si una guía debe tener identificador y peso positivo, valida allí y no permitas una instancia parcialmente válida que “se complete después”. `this` referencia la instancia actual y permite distinguir un parámetro de un campo con el mismo nombre. Una clase no declara constructor de retorno; si se escribe `void Guia(...)`, se creó un método ordinario y Java seguirá usando otro constructor disponible.
-
-```java
-package academia.entregas;
-
-import java.util.Objects;
-
-public final class Guia {
-    private final String numero;
-    private final double pesoKg;
-
-    public Guia(String numero, double pesoKg) {
-        this.numero = Objects.requireNonNull(numero, "numero obligatorio");
-        if (numero.isBlank()) throw new IllegalArgumentException("numero vacío");
-        if (pesoKg <= 0 || pesoKg > 50) {
-            throw new IllegalArgumentException("peso fuera del rango (0, 50]");
-        }
-        this.pesoKg = pesoKg;
-    }
-
-    public String numero() { return numero; }
-    public double pesoKg() { return pesoKg; }
-
-    public boolean requiereManejoEspecial() {
-        return pesoKg > 25;
-    }
-}
-```
-
-Guarda esta clase en `src/main/java/academia/entregas/Guia.java`. Crea `src/test/java/academia/entregas/GuiaTest.java` con un caso válido y casos para número vacío, peso cero y peso mayor de 50. El resultado esperado es que ningún consumidor pueda construir una `Guia` inválida, sin depender de recordar una llamada posterior a `validar()`.
-
-**Decisión:** prefiere composición antes que herencia cuando un objeto “tiene” una capacidad en vez de “ser” una especialización que respeta el contrato completo del padre. No añadas setters a campos inmutables solo por costumbre; agrega una operación con nombre de dominio cuando exista una transición válida.
-
-**Analogía:** una clase es el reglamento de admisión y operación de una bodega; el constructor controla qué entra y los métodos definen las operaciones permitidas, no solamente la forma exterior del edificio.
-
-**¿Por qué es importante?** Si una clase protege sus invariantes, el resto del sistema puede confiar en sus objetos y deja de repetir validaciones defensivas después de cada operación.
 
 ### Tema 2: Herencia y sobreescritura
 

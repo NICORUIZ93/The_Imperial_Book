@@ -234,27 +234,6 @@ graph LR
 
 **¿Por qué es importante?** El envoltorio de eventos sintéticos garantiza una API de eventos consistente entre navegadores, y sin `preventDefault` el comportamiento nativo del navegador destruye todo el estado de React acumulado.
 **Evidencia de aprendizaje:** entrega manejador con preventDefault, recarga de página provocada y bloqueo de teclas no numéricas.
-**Conceptos clave:** `SyntheticEvent`, API consistente entre navegadores, `preventDefault`.
-
-React envuelve los eventos nativos del DOM (que históricamente tenían implementaciones e interfaces ligeramente distintas entre distintos motores de navegador) en un objeto `SyntheticEvent` con una API consistente y unificada independientemente del navegador donde la aplicación se ejecute, siendo esta la razón por la que `e.preventDefault()` (para evitar el comportamiento por defecto del navegador, como recargar la página al enviar un formulario, Módulo 3 del track de JavaScript sobre el bucle de eventos y el DOM) y `e.target.value` (para leer el valor actual de un input) funcionan de forma idéntica en el código de React sin importar el motor de renderizado subyacente del navegador del usuario.
-
-Este envoltorio sintético también permite a React optimizar internamente cómo se registran y despachan los eventos (adjuntando un único listener raíz en vez de un listener individual por cada elemento con un manejador de evento, un detalle de implementación interna que no afecta cómo se escribe el código de manejo de eventos, pero sí su eficiencia general), sin que el código de la aplicación necesite preocuparse por esos detalles internos de optimización.
-
-**Analogía:** los eventos sintéticos son como un traductor universal que normaliza mensajes provenientes de distintos idiomas nativos (los distintos comportamientos de eventos de cada navegador) en un único idioma común y consistente, permitiendo escribir el código de manejo de eventos una única vez, sin preocuparse por las particularidades de cada navegador individual.
-
-**¿Por qué es importante?** El envoltorio de eventos sintéticos garantiza una API de eventos consistente entre distintos motores de navegador, y permite a React optimizar internamente el registro y despacho de eventos sin afectar cómo se escribe el código de manejo de eventos.
-
-**Código del ejemplo:**
-
-```jsx
-function manejarSubmit(e) {
-  e.preventDefault(); // funciona igual en cualquier navegador
-  console.log(e.target.value);
-}
-```
-
----
-
 
 ## Laboratorio práctico
 

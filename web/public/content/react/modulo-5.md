@@ -254,41 +254,6 @@ graph LR
 
 **¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación y el code-splitting reduce el bundle inicial, pero ninguna de las dos sustituye la autorización real que debe vivir en el servidor.
 **Evidencia de aprendizaje:** entrega ruta protegida con lazy loading, acceso indebido detectado y recordatorio de autorización en servidor.
-**Conceptos clave:** redirección condicional según autenticación, `React.lazy` + `Suspense`, chunks separados.
-
-Una ruta protegida verifica, antes de mostrar su contenido real, si el usuario cumple una condición de acceso (típicamente estar autenticado):
-
-```jsx
-function RutaProtegida({ children }) {
-  const { autenticado } = useAuth();
-  return autenticado ? children : <Navigate to="/login" />;
-}
-```
-
-Este componente envolvente renderiza condicionalmente su contenido protegido o redirige a la ruta de login, conceptualmente equivalente a un guard funcional de Angular (`CanActivateFn`, Módulo 4 del track de Angular), aunque expresado aquí como un componente de React en vez de una función dedicada del sistema de routing.
-
-`React.lazy(() => import('./Configuracion'))` marca un componente para que su código se compile en un chunk de JavaScript separado del bundle principal, descargado únicamente cuando efectivamente se necesita renderizar (cuando el usuario navega a la ruta correspondiente), reduciendo el tamaño del bundle inicial que se descarga al cargar la aplicación por primera vez; `<Suspense fallback={<Spinner />}>` envuelve ese componente perezoso, mostrando el `fallback` mientras el chunk correspondiente todavía se está descargando, de forma conceptualmente equivalente al `@defer`/`@placeholder` de Angular (Módulo 11 del track de Angular), aunque aplicado aquí específicamente a la carga perezosa de componentes completos de ruta en vez de a bloques arbitrarios de una plantilla.
-
-**Analogía:** una ruta protegida es como un guardia en la entrada de una sala que verifica una credencial antes de permitir el paso, redirigiendo a otra sala (login) a quien no la presente; el code-splitting por ruta es como no llevar contigo el manual completo de todas las salas del edificio, sino recibir solo el manual específico de la sala a la que efectivamente entras, en el momento en que entras a ella.
-
-**¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación; el code-splitting por ruta reduce el bundle inicial descargado, mejorando el tiempo de carga inicial de la aplicación.
-
-**Código del ejemplo:**
-
-```jsx
-function RutaProtegida({ children }) {
-  const { autenticado } = useAuth();
-  return autenticado ? children : <Navigate to="/login" />;
-}
-
-const Configuracion = lazy(() => import('./Configuracion'));
-<Route path="/config" element={
-  <Suspense fallback={<Spinner />}><Configuracion /></Suspense>
-} />
-```
-
----
-
 
 ## Laboratorio práctico
 

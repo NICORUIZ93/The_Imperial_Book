@@ -381,26 +381,6 @@ Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización d
 
 **¿Por qué es importante?** Los componentes controlados hacen del estado de React la única fuente de verdad del valor de un input, permitiendo validación y transformación centralizada en cada cambio.
 **Evidencia de aprendizaje:** entrega input de PIN controlado, pérdida de sincronización detectada y segundo campo agregado.
-**Conceptos clave:** `value` + `onChange`, React como única fuente de verdad.
-
-Un componente controlado es un elemento de formulario (`<input>`, `<select>`, `<textarea>`) cuyo valor está gobernado completamente por el estado de React, no por el estado interno propio que el elemento del DOM mantendría por defecto: `<input value={valor} onChange={e => setValor(e.target.value)} />` establece que el valor mostrado en el input siempre proviene directamente del estado de React (`valor`), y que cualquier cambio tecleado por el usuario dispara `onChange`, que a su vez actualiza ese mismo estado, que a su vez vuelve a renderizar el input con el nuevo valor — un ciclo completo donde React es la única fuente de verdad, y el DOM nunca "decide" su propio valor de forma independiente sin que React lo sepa.
-
-Esto contrasta con un componente no controlado, donde el DOM mantiene su propio valor interno de forma autónoma, y React solo lo consulta puntualmente cuando es necesario (típicamente mediante una referencia con `useRef`, Módulo 2), en vez de sincronizar ese valor en cada tecla. Los componentes controlados son el enfoque recomendado por defecto porque permiten validar, transformar, o reaccionar al valor tecleado en cada cambio de forma centralizada en el estado de React (útil para validación en tiempo real, formateo automático, o sincronización con otros campos), a costa de un re-render en cada tecla, un costo generalmente insignificante salvo en formularios extremadamente grandes, donde React Hook Form (Módulo 3) ofrece una alternativa que evita ese costo mediante un enfoque no controlado optimizado.
-
-**Analogía:** un componente controlado es como un teleprompter donde el texto mostrado siempre proviene de un guion central que se actualiza en cada cambio; un componente no controlado es como una pizarra donde alguien escribe libremente y solo se consulta lo que dice cuando alguien decide leerla, sin que exista un guion central sincronizado en todo momento.
-
-**¿Por qué es importante?** Los componentes controlados hacen del estado de React la única fuente de verdad del valor de un input, permitiendo validación y transformación centralizada en cada cambio, a costa de un re-render adicional por cada tecla.
-
-**Código del ejemplo:**
-
-```jsx
-const [valor, setValor] = useState('');
-<input value={valor} onChange={e => setValor(e.target.value)} />
-// El DOM nunca "decide" su propio valor de forma independiente
-```
-
----
-
 
 ## Laboratorio práctico
 

@@ -175,7 +175,7 @@ Al finalizar podrás publicar y consumir un trabajo con reintento. **Prerrequisi
 
 #### Paso 2 · Contexto y caso real
 
-Generar una etiqueta o enviar una notificación no debe mantener abierta la petición HTTP. Una cola permite responder pronto y procesar después.
+Generar una etiqueta o enviar una notificación no debe mantener abierta la petición HTTP. Una cola permite responder pronto y procesar después. **¿Por qué es importante?** Sin una cola, un pico de trabajo agota el proceso que atiende HTTP; con ella, el fallo se reintenta y se mide en lugar de perderse en una petición que ya respondió.
 
 #### Paso 3 · Teoría y analogía aplicada
 
@@ -230,28 +230,6 @@ Encolar el trabajo lento en vez de ejecutarlo en el mismo request es el mismo pa
 **Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
 
 **Evidencia de aprendizaje:** entrega la salida de éxito, conexión fallida y reintento.
-
-**Conceptos clave:** desacoplar trabajo pesado del ciclo request-response, jobs, reintentos con backoff.
-
-Una cola de trabajo desacopla el procesamiento de una tarea potencialmente lenta o costosa (enviar un email, generar un reporte, procesar un pago) del ciclo síncrono de request-response de una petición HTTP: en vez de que el manejador de la ruta ejecute directamente esa tarea lenta (haciendo que el cliente espere todo ese tiempo antes de recibir una respuesta), el manejador simplemente encola un "job" describiendo el trabajo a realizar, y responde inmediatamente al cliente confirmando que la solicitud fue recibida, mientras el procesamiento real ocurre de forma completamente asíncrona en un proceso worker separado que consume jobs de la cola a su propio ritmo.
-
-BullMQ, una biblioteca de colas de trabajo para Node respaldada por Redis (una base de datos en memoria de alto rendimiento) como almacén subyacente de los jobs, expone una API para encolar jobs (`cola.add("bienvenida", {destinatario: "..."}, {opciones})`) y para procesarlos en un worker separado (`new Worker("emails", async (job) => enviarEmail(job.data))`), que puede ejecutarse incluso en un proceso completamente distinto del que encola los jobs (habilitando escalar el procesamiento de la cola de forma independiente de la API que la alimenta, añadiendo más workers de procesamiento sin necesidad de escalar proporcionalmente la capacidad de la API misma).
-
-Configurar reintentos automáticos con backoff exponencial (`{attempts: 3, backoff: {type: "exponential", delay: 1000}}`) hace que un job que falla (por ejemplo, porque el servicio externo de envío de email está temporalmente no disponible) se reintente automáticamente un número limitado de veces, con una espera creciente entre cada intento sucesivo (el mismo principio de backoff estudiado en el Módulo 6 del track de JavaScript aplicado ahora a jobs de background en vez de peticiones de red directas), aumentando significativamente la resiliencia del sistema ante fallos transitorios sin requerir intervención manual, mientras evita reintentar indefinidamente ante un fallo permanente que ningún reintento resolvería.
-
-**Analogía:** una cola de trabajo es como un servicio de tintorería que recibe tu ropa, te entrega inmediatamente un recibo de confirmación (la respuesta rápida de la API), y procesa el lavado real (el trabajo pesado) en su propio taller interno a su propio ritmo, sin que tengas que esperar de pie en el mostrador hasta que la ropa esté completamente lista.
-
-**¿Por qué es importante?** Las colas de trabajo mejoran drásticamente la latencia percibida por el cliente al desacoplar trabajo pesado del ciclo de respuesta inmediata, y el backoff exponencial en reintentos aumenta la resiliencia del sistema ante fallos transitorios de servicios externos.
-
-**Código del ejemplo:**
-
-```js
-const colaEmails = new Queue("emails", { connection: { host: "localhost", port: 6379 } });
-await colaEmails.add("bienvenida", { destinatario: "ana@ejemplo.com" }, {
-  attempts: 3, backoff: { type: "exponential", delay: 1000 },
-});
-// El endpoint HTTP responde de inmediato; el envío real ocurre en un worker separado
-```
 
 ### Tema 4: PM2, memory leaks y heap snapshots
 

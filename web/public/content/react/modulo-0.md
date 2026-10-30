@@ -422,26 +422,6 @@ Entregá el renderizado condicional del Paso 4, el "0" fantasma detectado en el 
 * Proyecto: proyecto integrador RutaFlow
 **¿Por qué es importante?** Elegir entre `&&` y el ternario según si existe una única alternativa o dos alternativas de contenido reales evita bugs como el "0" fantasma y produce código más predecible.
 **Evidencia de aprendizaje:** entrega renderizado condicional, bug del "0" detectado y estilos agregados.
-**Conceptos clave:** `&&` frente a ternario, trampa del `0` falsy en JSX, CSS Modules, Styled Components, Tailwind.
-
-El renderizado condicional en JSX aprovecha directamente el comportamiento de cortocircuito de JavaScript: `{cargando && <Spinner />}` renderiza `<Spinner />` únicamente si `cargando` es verdadero (y no renderiza nada, ni siquiera un elemento vacío, si es falso, gracias al cortocircuito del operador `&&`), apropiado cuando existen solo dos posibilidades: mostrar algo, o no mostrar nada en absoluto. El operador ternario (`{usuario ? <Perfil usuario={usuario} /> : <BotonLogin />}`) es apropiado en cambio cuando existen genuinamente dos alternativas de contenido a mostrar, cada una con su propio elemento, no simplemente "algo o nada".
-
-Angular resuelve este mismo problema con `@if`/`@else` como sintaxis dedicada de plantilla (Módulo 1 del track de Angular); React, al no tener un lenguaje de plantillas separado (JSX es simplemente JavaScript, Tema 1), reutiliza directamente los operadores lógicos y condicionales nativos del lenguaje para expresar la misma idea, sin necesidad de sintaxis adicional dedicada.
-
-En cuanto a estilos, CSS Modules generan nombres de clase únicos automáticamente por archivo (evitando colisiones globales de nombres de clase entre componentes distintos), Styled Components permite escribir CSS directamente dentro de JavaScript usando template literals etiquetados, generando componentes con estilos encapsulados, y Tailwind aplica utilidades CSS predefinidas directamente como clases en el marcado (`className="flex items-center gap-2"`), cada enfoque con un balance distinto entre localidad del estilo, curva de aprendizaje, y velocidad de desarrollo.
-
-**Analogía:** `&&` es como una puerta que solo se abre si la condición se cumple, sin alternativa; el ternario es como una bifurcación de caminos donde ambas ramas llevan a algún destino concreto, no a la nada.
-
-**¿Por qué es importante?** Elegir entre `&&` y el ternario según si existe una única alternativa condicional o dos alternativas de contenido reales produce código de renderizado condicional más claro y predecible.
-
-**Código del ejemplo:**
-
-```jsx
-{cargando && <Spinner />}                              // algo o nada
-{usuario ? <Perfil usuario={usuario} /> : <BotonLogin />}  // dos alternativas reales
-```
-
----
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

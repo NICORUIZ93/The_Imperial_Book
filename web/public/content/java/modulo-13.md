@@ -161,26 +161,6 @@ Documentá en el `README.md` del proyecto el comando único (`./gradlew run`) qu
 Guarda el comando único de ejecución documentado, y confirma que un checkout limpio del repositorio compila y corre sin pasos manuales adicionales; con esto cerrás el track completo de Java. Como siguiente paso aplica esta misma disciplina de capas, concurrencia y build reproducible al track de Spring Boot. Errores comunes: documentar un comando de ejecución que depende de un paso manual previo no escrito en ningún lado, dejar dependencias sin versión fijada que pueden resolver distinto en cada máquina, y omitir instrucciones de cómo correr los tests junto con la aplicación. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
 **¿Por qué es importante?** Porque un build reproducible ejecutable con un solo comando documentado elimina la fricción de configuración manual y garantiza el mismo resultado en cualquier máquina, cerrando el ciclo completo del proyecto integrador: dominio, concurrencia, tests y despliegue reproducible.
 **Evidencia de aprendizaje:** entrega el comando único de ejecución documentado, y la confirmación de que un checkout limpio corre sin pasos manuales adicionales.
-**Conceptos clave:** ejecución con un solo comando, Java moderno como reducción de boilerplate.
-
-Configurar el build con Gradle o Maven (Módulo 8) de forma que cualquier persona pueda clonar el repositorio y ejecutar la aplicación completa con un único comando (`./gradlew run` o `mvn compile exec:java`, según la herramienta elegida) elimina la fricción de configuración manual que de otro modo requeriría instrucciones extensas y propensas a desactualizarse sobre cómo preparar el entorno correctamente; declarar explícitamente todas las dependencias necesarias en el archivo de build (en vez de asumir que están disponibles globalmente en el sistema de quien ejecuta el proyecto) garantiza que el build sea reproducible: el mismo resultado exacto sin importar en qué máquina específica se ejecute, siempre que se use la misma versión declarada de cada dependencia.
-
-Java moderno (desde la 16 hasta la 25 LTS actual) reduce significativamente el boilerplate que históricamente se le criticaba al lenguaje frente a alternativas más recientes, sin sacrificar ninguna de las ventajas fundamentales de la JVM (tipado fuerte verificado en compilación, rendimiento maduro tras décadas de optimización del runtime, y un ecosistema de librerías extremadamente extenso y probado en producción): records eliminan el boilerplate de clases de datos inmutables, pattern matching elimina el boilerplate del casteo manual clásico, y virtual threads eliminan la necesidad de reescribir código en un estilo asíncrono basado en callbacks solo para lograr alta concurrencia con I/O bloqueante — la combinación de estas features hace que Java se sienta hoy tan productivo como cualquier lenguaje más reciente, sin abandonar ninguna de las garantías que hicieron a Java una elección confiable durante décadas de uso en producción a gran escala.
-
-**Analogía:** un build reproducible con un solo comando es como entregar un electrodoméstico completamente ensamblado y listo para enchufar, en vez de una caja de piezas sueltas con instrucciones ambiguas que cada persona podría interpretar y ensamblar de forma ligeramente distinta; las features modernas de Java son como actualizaciones a una herramienta tradicional confiable que eliminan pasos manuales tediosos sin comprometer la solidez fundamental que la hizo confiable durante tanto tiempo.
-
-**¿Por qué es importante?** Un build reproducible ejecutable con un solo comando elimina fricción de configuración manual y garantiza el mismo resultado en cualquier máquina; las features modernas de Java reducen boilerplate histórico sin sacrificar el tipado fuerte ni el rendimiento maduro de la JVM. `gradlew` (el "Gradle Wrapper") es el script incluido en el repositorio que descarga y ejecuta la versión exacta de Gradle que el proyecto necesita, sin requerir una instalación global.
-
-**Prueba en terminal:**
-
-```bash
-./gradlew run   # o: mvn compile exec:java
-# cualquier persona clona el repo y ejecuta con un único comando
-```
-
----
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** Construye el motor desde un checkout limpio y ejecuta su conjunto de pruebas. Publica versión y hash del artefacto y repite un caso de asignación para demostrar un resultado determinista.
 
 ## Construcción guiada del capítulo
 

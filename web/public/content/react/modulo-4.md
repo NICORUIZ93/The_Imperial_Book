@@ -262,28 +262,6 @@ graph TD
 
 **¿Por qué es importante?** Los componentes compuestos ofrecen una API declarativa y limpia para el usuario final, ocultando la coordinación interna necesaria sin exponer detalles de implementación.
 **Evidencia de aprendizaje:** entrega componente compuesto funcionando, error por uso fuera de contexto detectado y mensaje descriptivo agregado.
-**Conceptos clave:** coordinación implícita vía Context interno, alternativas históricas de reutilización de lógica.
-
-El patrón de componentes compuestos usa un Context interno y privado (no expuesto directamente al usuario del componente) para coordinar el estado compartido entre un componente contenedor y sus componentes hijos relacionados, sin que el usuario final del componente necesite pasar props de coordinación manualmente: `<Tabs><Tabs.Tab label="Perfil">...</Tabs.Tab></Tabs>` funciona porque `Tabs` provee internamente un Context que sus propios componentes hijos `Tabs.Tab` consumen automáticamente, coordinando cuál pestaña está activa sin que el código que usa `Tabs` tenga que gestionar ese estado explícitamente por su cuenta.
-
-Antes de que los hooks existieran (previo a React 16.8), dos patrones eran comunes para reutilizar lógica con estado entre componentes distintos: render props (un componente que recibe una función como prop y la invoca pasándole cierto estado interno, `<DataFetcher render={data => <Vista data={data} />} />`) y componentes de orden superior (funciones que envuelven un componente para inyectarle props adicionales). Los hooks personalizados (funciones que empiezan con `use` y pueden llamar a otros hooks internamente) reemplazaron en gran medida ambos patrones anteriores, permitiendo extraer y reutilizar lógica con estado de forma más directa y sin la anidación adicional de componentes envolventes que ambos patrones anteriores requerían.
-
-**Analogía:** el patrón de componentes compuestos es como un equipo de trabajo donde los miembros se coordinan internamente mediante un canal de comunicación privado del propio equipo, sin que el cliente externo que contrata al equipo necesite coordinar manualmente la comunicación interna entre sus miembros.
-
-**¿Por qué es importante?** Los componentes compuestos ofrecen una API declarativa y limpia para el usuario final del componente, ocultando la coordinación interna necesaria; los hooks personalizados reemplazaron patrones anteriores más verbosos (render props, HOCs) para reutilizar lógica con estado.
-
-**Código del ejemplo:**
-
-```jsx
-<Tabs>
-  <Tabs.Tab label="Perfil"><Perfil /></Tabs.Tab>
-  <Tabs.Tab label="Ajustes"><Ajustes /></Tabs.Tab>
-</Tabs>
-// Tabs provee un Context interno que Tabs.Tab consume, sin coordinación manual del usuario
-```
-
----
-
 
 ## Laboratorio práctico
 

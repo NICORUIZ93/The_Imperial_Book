@@ -380,33 +380,6 @@ Corregí el Paso 5 volviendo a `ScopedValue`, y medí el uso de heap antes y des
 Entregá la propagación con `ScopedValue` del Paso 4, el crecimiento de heap con `ThreadLocal` heredable del Paso 5, y la medición comparativa del Paso 6; explicá por qué un valor inmutable y acotado a un scope es más apropiado que un valor mutable heredado por cientos de miles de virtual threads. Siguiente paso: estudia NIO.2 para completar el manejo de datos del proyecto integrador. Errores comunes: usar `ThreadLocal` heredable como propagación de contexto por defecto con virtual threads, intentar mutar un `ScopedValue` desde dentro de su propio scope (son inmutables por diseño), y no medir el uso real de memoria antes de descartar el problema como "poco probable". Fuentes oficiales: https://openjdk.org/jeps/506 y https://docs.oracle.com/en/java/javase/25/core/scoped-values.html.
 **¿Por qué es importante?** `ThreadLocal` heredable retiene una copia por cada hilo que lo hereda durante toda su vida; con cientos de miles de virtual threads esa retención se vuelve un problema de memoria real que `ScopedValue` evita por diseño.
 **Evidencia de aprendizaje:** entrega propagación con ScopedValue funcionando, crecimiento de heap con ThreadLocal heredable reproducido y medición comparativa confirmada.
-**Conceptos clave:** ScopedValue, inmutabilidad, propagación acotada a un scope, costo de ThreadLocal heredable con virtual threads.
-
-Cada ID de correlación o contexto de solicitud que el proyecto integrador de este track propague hacia subtareas concurrentes debería usar `ScopedValue` en vez de `ThreadLocal` heredable cuando el código corre sobre virtual threads.
-
-**Cuándo no usarlo:** para un valor que necesita mutarse después de establecerse (no solo leerse dentro de un scope fijo), `ScopedValue` no aplica por diseño; ese caso sigue siendo apropiado para un `ThreadLocal` mutable tradicional, usado con moderación.
-
-`ScopedValue` (finalizado en Java 25) resuelve específicamente el problema que `ThreadLocal` heredable tiene con virtual threads: en vez de copiar el valor a cada hilo hijo y retenerlo durante toda la vida de ese hilo, `ScopedValue` vincula el valor únicamente a la ejecución de un bloque de código específico (el cuerpo de `run()` o `call()`), propagándolo a cualquier virtual thread lanzado dentro de ese bloque sin copia retenida indefinidamente, y liberándolo automáticamente apenas el bloque termina — una diferencia que importa precisamente cuando se lanzan cientos de miles de virtual threads, la escala donde `ThreadLocal` heredable se vuelve costoso.
-
-**Analogía:** `ScopedValue` es como un gafete de visitante que solo es válido mientras estás dentro del edificio y se devuelve automáticamente en la salida; `ThreadLocal` heredable es como entregarle una copia de la llave del edificio a cada visitante que entra, confiando en que alguien se encargue de recolectarlas todas después.
-
-**¿Por qué es importante?** `ScopedValue` propaga contexto inmutable a virtual threads hijos sin la retención de memoria que produce `ThreadLocal` heredable a la escala de cientos de miles de hilos.
-
-**Código del ejemplo:**
-
-```java
-static final ScopedValue<String> ID_CORRELACION = ScopedValue.newInstance();
-
-ScopedValue.where(ID_CORRELACION, generarId()).run(() -> {
-    try (var scope = StructuredTaskScope.open()) {
-        scope.fork(() -> procesarEnvio());
-        scope.join();
-    }
-});
-```
-
----
-
 
 ## Construcción guiada del capítulo
 

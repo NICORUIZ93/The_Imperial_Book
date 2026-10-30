@@ -260,28 +260,6 @@ graph TD
 
 **¿Por qué es importante?** Encapsular `queryKey`/`queryFn` detrás de un hook con nombre significativo centraliza los detalles de acceso a datos, facilitando cambios futuros y evitando inconsistencias entre componentes.
 **Evidencia de aprendizaje:** entrega useEnvios compartido, cache duplicada por typo detectada y useCrearEnvio agregado.
-**Conceptos clave:** encapsular queryKey y queryFn detrás de un hook con nombre significativo.
-
-`useTareas()` envuelve `useQuery<Tarea[]>({ queryKey: ['tareas'], queryFn: () => fetch('/api/tareas').then(r => r.json()) })` dentro de un hook con nombre significativo específico del dominio, en vez de que cada componente que necesita la lista de tareas invoque `useQuery` directamente con su propia `queryKey` y `queryFn` repetidas en cada punto de uso: esta encapsulación centraliza en un único lugar cualquier cambio futuro relacionado con cómo se obtienen las tareas (el endpoint exacto, headers adicionales necesarios, transformación de la respuesta), sin tener que modificar cada componente individual que consume esos datos.
-
-Esta misma técnica se extiende naturalmente a mutaciones relacionadas (por ejemplo, un `useCrearTarea()` complementario que envuelva `useMutation` con su propia invalidación configurada), construyendo así una capa de hooks específicos del dominio de tareas que actúa como la única interfaz pública entre los componentes de la feature y TanStack Query, reflejando el mismo principio de encapsulación de acceso a datos estudiado para `TareasStore` en el Módulo 13 del track de Angular, aunque aquí implementado como hooks de React en vez de un servicio inyectable de Angular.
-
-**Analogía:** `useTareas` es como un mostrador de atención específico para consultas sobre tareas, al que cualquier parte de la aplicación puede acudir sin necesidad de saber los detalles internos de cómo ese mostrador efectivamente obtiene la información solicitada del sistema central.
-
-**¿Por qué es importante?** Encapsular `queryKey`/`queryFn` detrás de un hook con nombre significativo centraliza los detalles de acceso a datos en un único lugar, facilitando cambios futuros sin tocar cada componente consumidor individual.
-
-**Código del ejemplo:**
-
-```tsx
-function useTareas() {
-  return useQuery<Tarea[]>({
-    queryKey: ['tareas'],
-    queryFn: () => fetch('/api/tareas').then(r => r.json()),
-  });
-}
-```
-
----
 
 ## Laboratorio práctico
 

@@ -341,40 +341,6 @@ Convertir con `BigDecimal` desde texto (nunca `double`) para valores monetarios 
 
 **Cuándo no usarlo:** `BigDecimal` es más lento y verboso que `double`; para cálculos donde la precisión decimal exacta no importa (una posición en pantalla, un porcentaje aproximado de progreso), `double` sigue siendo la opción correcta — resérvalo para dinero y cualquier cálculo donde un error de redondeo tenga consecuencias reales.
 
-**Conceptos clave:** inferencia local, conversión segura, precisión e inmutabilidad.
-
-Una variable tiene un tipo estático que limita qué valores y operaciones son válidos. `var` permite que el compilador infiera ese tipo a partir del inicializador, pero no vuelve dinámica la variable: después de `var intentos = 3`, `intentos` continúa siendo `int` y no puede recibir un `String`. Usa `var` cuando el tipo resulte evidente en la misma línea; escribe el tipo explícito cuando comunique una unidad o contrato importante.
-
-Una conversión ampliadora, como `int` a `long`, conserva todos los valores posibles y Java puede aplicarla implícitamente. Una conversión reductora necesita un *cast* porque puede descartar información. `(int) 3_000_000_000L` no “convierte correctamente” el número: conserva solo los bits que caben y produce otro valor. Para datos externos usa `Integer.parseInt` y maneja `NumberFormatException`; para cálculos monetarios evita `double` y modela decimales con `BigDecimal` construido desde texto.
-
-`String` es una referencia a un objeto inmutable. Métodos como `toUpperCase()` devuelven otra cadena; no modifican la original. Compara contenido con `equals`, no con `==`: `==` compara si dos referencias apuntan al mismo objeto, algo que puede parecer funcionar con literales por el *string pool* y fallar cuando una cadena llega desde entrada o red.
-
-```java
-package academia.fundamentos;
-
-import java.math.BigDecimal;
-
-public final class Conversiones {
-    public static void main(String[] args) {
-        var textoCantidad = "12";                 // el tipo inferido sigue siendo String
-        int cantidad = Integer.parseInt(textoCantidad);
-        long cantidadAmpliada = cantidad;          // ampliación segura
-        BigDecimal tarifa = new BigDecimal("19.90");
-
-        String estado = new String("ENTREGADO");
-        System.out.println(estado == "ENTREGADO");      // false: identidad
-        System.out.println(estado.equals("ENTREGADO")); // true: contenido
-        System.out.println(tarifa.multiply(BigDecimal.valueOf(cantidadAmpliada)));
-    }
-}
-```
-
-**Ejecución y diagnóstico:** guarda el ejemplo en `src/main/java/academia/fundamentos/Conversiones.java`, compílalo con `javac -d out src/main/java/academia/fundamentos/Conversiones.java` y ejecútalo con `java -cp out academia.fundamentos.Conversiones`. Cambia `"12"` por `"doce"`: el error esperado es `NumberFormatException`. Corrígelo validando la entrada en la frontera, no ocultando la excepción con un valor arbitrario.
-
-**Analogía:** convertir un `long` a `int` es intentar guardar el contenido de un depósito grande en uno pequeño: el recipiente no amplía su capacidad y parte de la información queda fuera.
-
-**¿Por qué es importante?** Tipos, conversiones e igualdad determinan si el programa conserva el dato real o toma una decisión silenciosamente equivocada.
-
 ### Tema 6: Operadores, precedencia y control de flujo
 
 #### Paso 1 · Objetivo y preparación
@@ -599,34 +565,6 @@ Guarda `FechaEntrega.java`, la ejecución con una fecha válida y con `2026-02-3
 Elegir `java.time` sobre `Date`/`Calendar`, y recibir el reloj como dependencia en vez de llamar `LocalDate.now()` directamente, es exactamente lo que necesitará el proyecto integrador de este track para que su lógica de fechas sea probable de forma determinista.
 
 **Cuándo no usarlo:** `Random` con semilla fija es apropiado para pruebas reproducibles; usar esa misma semilla fija para generar tokens, contraseñas o cualquier valor con implicaciones de seguridad es exactamente el error que `SecureRandom` existe para prevenir — la elección depende de si el valor generado protege algo o no.
-
-**Conceptos clave:** validación en la frontera, `java.time`, configuración y aleatoriedad apropiada.
-
-`Scanner` es adecuado para ejercicios de consola si verificas `hasNextInt()` antes de `nextInt()` y consumes correctamente el salto de línea antes de llamar `nextLine()`. En aplicaciones reales, la entrada puede venir de HTTP, mensajería o archivos, pero la regla se conserva: convierte y valida en la frontera; el dominio debe recibir tipos válidos, no texto sin interpretar.
-
-Para fechas nuevas prefiere `java.time`: `LocalDate` representa una fecha sin hora ni zona; `Instant`, un punto global en el tiempo; `ZonedDateTime`, una fecha-hora asociada a reglas de zona. `Date` y `Calendar` siguen existiendo por compatibilidad, pero su mutabilidad y API difícil de razonar no los convierten en el punto de partida recomendado. Para dinero, fechas y medidas, el tipo debe expresar la semántica y evitar valores ambiguos.
-
-`System.getenv()` lee configuración del entorno; no registres secretos al imprimir su contenido. `Math.random()` sirve para demostraciones simples, `Random` para simulaciones reproducibles con semilla y `SecureRandom` para tokens u otros valores sensibles. Una semilla fija es una ventaja en pruebas porque reproduce el mismo escenario, y una vulnerabilidad si se usa para generar credenciales.
-
-```java
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.Random;
-
-LocalDate nacimiento = LocalDate.parse("1995-08-17");
-int edad = Period.between(nacimiento, LocalDate.now()).getYears();
-Random simulacion = new Random(42); // reproducible para una prueba
-int demoraMinutos = simulacion.nextInt(5, 31);
-System.out.printf("edad=%d, demora=%d min%n", edad, demoraMinutos);
-```
-
-**Decisión profesional:** no uses `LocalDate.now()` directamente dentro de una regla que debas probar de forma determinista; recibe un `Clock` o la fecha actual como dependencia. Provoca una fecha inválida (`"31/02/2025"`), observa `DateTimeParseException` y muestra un mensaje de dominio sin perder la causa técnica en el registro interno.
-
-**Analogía:** las APIs estándar son instrumentos de medición distintos: una fecha civil, un instante global y una fecha con zona responden preguntas diferentes, aunque todas parezcan “tiempo”.
-
-**¿Por qué es importante?** Elegir el tipo y la API según la semántica evita pruebas inestables, fechas ambiguas, secretos expuestos y números supuestamente aleatorios que no cumplen su propósito.
-
----
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

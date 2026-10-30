@@ -100,7 +100,7 @@ Al finalizar podrás emitir y verificar un access token firmado con expiración.
 
 #### Paso 2 · Contexto y caso real
 
-Una API móvil necesita identificar cada solicitud sin guardar una sesión en memoria del proceso. Un token corto para acceder y otro de renovación reducen exposición, pero no sustituyen revocación ni almacenamiento seguro.
+Una API móvil necesita identificar cada solicitud sin guardar una sesión en memoria del proceso. Un token corto para acceder y otro de renovación reducen exposición, pero no sustituyen revocación ni almacenamiento seguro. **¿Por qué es importante?** Un token sin expiración ni verificación de firma convierte cualquier filtración en acceso permanente; el par access/refresh limita la ventana y obliga a decidir dónde se guarda cada uno.
 
 #### Paso 3 · Teoría y analogía aplicada
 
@@ -153,26 +153,6 @@ Este par access/refresh token es el mecanismo de autenticación que protegerá c
 **Fuentes oficiales:** [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519) y [jose](https://github.com/panva/jose).
 
 **Evidencia de aprendizaje:** entrega la verificación de un token válido, uno alterado y uno vencido, indicando el código de respuesta esperado.
-
-**Conceptos clave:** JSON Web Token, tokens de corta y larga duración, header `Authorization`.
-
-Un JWT (JSON Web Token) es una cadena firmada digitalmente que codifica información (llamada "claims", como el id del usuario) de forma verificable pero no necesariamente secreta: cualquiera puede leer el contenido de un JWT decodificándolo (no está cifrado), pero solo quien posee el secreto usado para firmarlo puede haberlo generado válidamente, y cualquier verificador con acceso a ese mismo secreto (o a la clave pública correspondiente, en esquemas de firma asimétrica) puede confirmar que el token no fue alterado desde su emisión. Esta propiedad hace a los JWT apropiados para autenticación sin estado (stateless): el servidor no necesita consultar una base de datos o un almacén de sesiones para verificar la identidad del usuario en cada petición, simplemente verifica la firma criptográfica del token recibido.
-
-El patrón de access token y refresh token separa dos preocupaciones distintas: el access token tiene una duración de vida corta (típicamente minutos), viaja en cada petición (convencionalmente en la cabecera `Authorization: Bearer <token>`), y su corta duración limita el daño potencial si ese token específico es interceptado o robado (expira pronto, limitando la ventana de uso indebido posible); el refresh token tiene una duración de vida considerablemente más larga (días o semanas), se almacena de forma más segura (frecuentemente en una cookie httpOnly, inaccesible directamente desde JavaScript del lado del cliente, mitigando el riesgo de robo mediante ataques de XSS), y se usa exclusivamente contra un endpoint específico (`/refresh`) para obtener un nuevo access token sin requerir que el usuario vuelva a introducir su contraseña cada vez que el access token expira.
-
-Este patrón de dos tokens equilibra seguridad (limitando la ventana de exposición del token de uso más frecuente) con experiencia de usuario (evitando pedir la contraseña repetidamente cada pocos minutos), y es la práctica estándar ampliamente adoptada para autenticación basada en tokens en APIs modernas, en contraste con usar un único token de larga duración (que maximiza el daño potencial si se roba, dado que permanece válido por mucho más tiempo) o requerir reautenticación completa constante (una experiencia de usuario considerablemente peor).
-
-**Analogía:** el access token es como un pase temporal de acceso a un edificio, válido solo por unas pocas horas, que se debe mostrar en cada puerta interna; el refresh token es como la credencial maestra guardada de forma segura en la recepción, que solo se usa específicamente para emitir un nuevo pase temporal cuando el anterior expira, sin necesitar volver a verificar la identidad completa de la persona desde cero cada vez.
-
-**¿Por qué es importante?** El patrón de access/refresh token es el estándar de la industria para autenticación con JWT, equilibrando la seguridad de tokens de corta duración con una experiencia de usuario fluida que no requiere reautenticación constante.
-
-**Código del ejemplo:**
-
-```js
-const accessToken = jwt.sign({ sub: usuario.id }, SECRETO, { expiresIn: "15m" });
-const refreshToken = jwt.sign({ sub: usuario.id }, SECRETO_REFRESH, { expiresIn: "7d" });
-// Cliente usa accessToken en cada request; cuando expira, usa refreshToken contra /refresh
-```
 
 ### Tema 3: Middleware de autenticación y control de roles
 
@@ -646,8 +626,6 @@ Ya tienes el flujo de autenticación completo de punta a punta: login que emite 
 **Errores comunes:** devolver el hash de la contraseña en la respuesta de `/api/usuarios`; responder distinto ante email inexistente vs contraseña incorrecta (filtra qué correos existen); poner el token en la URL en vez del header; no expirar el access token.
 
 **Fuentes oficiales:** [RFC 6750 — Bearer Token Usage](https://www.rfc-editor.org/rfc/rfc6750), [Express — routing](https://expressjs.com/en/guide/routing.html) y [jose](https://github.com/panva/jose).
-
-**Conceptos clave:** flujo login → token → petición protegida, endpoint `/api/auth/login`, header `Authorization: Bearer`, verificación de credenciales con hash.
 
 ## Laboratorio práctico
 

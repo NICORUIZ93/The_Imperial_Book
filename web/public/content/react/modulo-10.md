@@ -296,38 +296,6 @@ graph LR
 
 **¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado, pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
 **Evidencia de aprendizaje:** entrega Server Action funcional, confirmación sin validar PIN detectada y verificación de autorización agregada.
-**Conceptos clave:** procesar formularios en el servidor sin un endpoint API separado.
-
-Una Server Action es una función marcada explícitamente con `"use server"` que se ejecuta en el servidor pero que puede invocarse directamente desde un formulario del lado del cliente:
-
-```jsx
-async function crearTarea(formData) {
-  "use server";
-  await db.tarea.create({ data: { titulo: formData.get('titulo') } });
-}
-```
-
-Invocada como `<form action={crearTarea}>`, esta función no necesita un endpoint API dedicado (una ruta HTTP separada que reciba la petición, la parsee, y la procese) que el formulario tendría que invocar explícitamente mediante `fetch`.
-
-Next.js genera automáticamente la infraestructura de comunicación necesaria entre el formulario del cliente y la función marcada como Server Action (serializando los datos del formulario y estableciendo la petición correspondiente por debajo), reduciendo significativamente el código repetitivo que tradicionalmente se necesitaba para conectar un formulario del cliente con lógica de procesamiento del servidor: sin Server Actions, el mismo caso de uso requeriría definir una ruta API separada, un manejador de submit del lado del cliente que capture el evento, prevenga el comportamiento por defecto, serialice los datos, y realice una petición `fetch` manual hacia esa ruta.
-
-**Analogía:** una Server Action es como entregar un formulario directamente a la persona correcta que lo procesará, sin necesidad de pasar primero por una oficina de recepción separada (el endpoint API) que reciba, registre y reenvíe el formulario hacia esa persona.
-
-**¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado y de código manual de serialización/envío para conectar un formulario del cliente con lógica de procesamiento del servidor.
-
-**Código del ejemplo:**
-
-```jsx
-async function crearTarea(formData) {
-  "use server";
-  await db.tarea.create({ data: { titulo: formData.get('titulo') } });
-}
-
-<form action={crearTarea}><input name="titulo" /><button>Crear</button></form>
-```
-
----
-
 
 ## Laboratorio práctico
 

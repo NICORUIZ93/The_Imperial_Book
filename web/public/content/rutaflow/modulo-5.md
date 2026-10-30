@@ -665,6 +665,6 @@ Para probar el motor real, prepara un dataset y un perfil siguiendo el README of
 Añade un rechazo de métricas NaN y una prueba de coordenadas fuera de rango. Diseña cómo conservarías el último resultado si el proveedor falla, indicando antigüedad al usuario. Decide cuándo usar Table para construir una matriz y por qué eso todavía no resuelve ventanas horarias ni capacidad del vehículo.
 
 #### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** URL construida, fixture identificada como tal, pruebas y rechazo de NoRoute. El siguiente paso es registrar una respuesta obtenida de un dataset real. **Errores comunes:** invertir coordenadas, convertir segundos dos veces y confundir ajuste GPS con optimización de flota. **Límites y decisión de uso:** el laboratorio de contrato no acredita despliegue Docker ni calidad de los mapas; esas dos pruebas quedan separadas.
+**Evidencia de aprendizaje:** entrega la URL construida, la salida de las pruebas del contrato y el rechazo de `NoRoute` con su diagnóstico. El siguiente paso es registrar una respuesta obtenida de un dataset real. **Errores comunes:** invertir coordenadas, convertir segundos dos veces y confundir ajuste GPS con optimización de flota. **Límites y decisión de uso:** el laboratorio de contrato no acredita despliegue Docker ni calidad de los mapas; esas dos pruebas quedan separadas.
 
 **Fuentes oficiales:** [OSRM API](https://project-osrm.org/docs/v5.24.0/api/) y [preparación del motor](https://github.com/Project-OSRM/osrm-backend).

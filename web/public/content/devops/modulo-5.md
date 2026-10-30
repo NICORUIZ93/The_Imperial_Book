@@ -530,15 +530,14 @@ privacidad, tamaño de muestra ni métricas mal elegidas.
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde la raíz del repositorio crea una copia del laboratorio:
+Desde una carpeta vacía crea `package.json`, `deployment.mjs` y `deployment.test.mjs` con el contenido completo de abajo:
 
 ```bash
-cp -R examples/rutaflow-material/deployment-strategies ejemplo-deploy-strategies
+mkdir ejemplo-deploy-strategies
 cd ejemplo-deploy-strategies
-npm test
 ```
 
-El archivo `deployment.mjs` contiene las dos operaciones completas:
+`deployment.mjs` contiene las dos operaciones completas:
 
 `package.json`:
 
@@ -618,6 +617,12 @@ assert.deepEqual(calls.sort(), ['shadow:ENV-42', 'stable:ENV-42']);
 console.log('deployment strategies: ok');
 ```
 
+Ejecuta las pruebas:
+
+```bash
+npm test
+```
+
 **Resultado esperado:** `deployment strategies: ok`. El identificador `ENV-42`
 siempre cae en el mismo bucket, el split 0 produce `stable` y el split 1 produce
 `canary`; aunque shadow devuelva error, la respuesta entregada sigue siendo la
@@ -658,7 +663,7 @@ versión shadow. **Límites y decisión de uso:** el laboratorio no implementa
 consentimiento, análisis estadístico, balanceadores, service mesh ni garantías
 de aislamiento; demuestra la frontera conceptual y un contrato local.
 
-**Fuente de contraste:** [Kubernetes Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
+**Fuente oficial:** [Kubernetes Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
 
 ---
 
