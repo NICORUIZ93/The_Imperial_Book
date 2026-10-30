@@ -159,5 +159,6 @@ python3 scripts/build_prerequisite_graph.py --check
 python3 scripts/build_repo_graph.py --check
 
 python3 scripts/audit_course_depth.py --check
+python3 scripts/build_full_review.py --check
 python3 scripts/verify_professional_bridges.py
 python3 scripts/validate_rutaflow_material.py
