@@ -54,3 +54,6 @@ examples/flutter-testing/pubspec.lock
 /examples/rutaflow-material/**/target/
 /examples/rutaflow-material/**/bin/
 /examples/rutaflow-material/**/obj/
+
+# Artefactos compilados de los laboratorios Java
+examples/rutaflow-material/clean-architecture/build/

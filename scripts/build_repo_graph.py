@@ -399,7 +399,16 @@ def render_json(nodes: list[FileNode]) -> str:
 
 
 def normalize_markdown_for_check(text: str) -> str:
-    return re.sub(r"^Generated: .*$", "Generated: <ignored>", text, flags=re.MULTILINE)
+    """Ignora lo que depende del entorno donde se generó el grafo.
+
+    ``Generated`` es una marca de tiempo y ``Root`` es el nombre de la carpeta
+    local: el mismo repositorio se clona como ``The_Imperial_Book`` en CI y con
+    otro nombre en cada máquina. Comparar esos valores hacía fallar la
+    validación en ambos sentidos y provocó una cadena de commits de "regenerar
+    repo graph" que no corregían nada.
+    """
+    text = re.sub(r"^Generated: .*$", "Generated: <ignored>", text, flags=re.MULTILINE)
+    return re.sub(r"^Root: `[^`]*`$", "Root: `<ignored>`", text, flags=re.MULTILINE)
 
 
 def check_file(path: Path, expected: str, markdown: bool = False) -> bool:
