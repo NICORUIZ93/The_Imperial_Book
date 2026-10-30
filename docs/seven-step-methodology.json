@@ -6,7 +6,7 @@
       "prerequisites": 58,
       "context": 58,
       "theoryAnalogy": 58,
-      "guidedDemo": 57,
+      "guidedDemo": 58,
       "codeExplanation": 58,
       "execution": 58,
       "expectedResult": 58,
@@ -18,7 +18,7 @@
       "resources": 58,
       "standaloneExample": 58,
       "learningEvidence": 58,
-      "complete": 57
+      "complete": 58
     },
     "angular": {
       "topics": 71,
@@ -61,24 +61,24 @@
       "complete": 156
     },
     "devops": {
-      "topics": 105,
-      "objective": 105,
-      "prerequisites": 105,
-      "context": 105,
-      "theoryAnalogy": 105,
-      "guidedDemo": 104,
-      "codeExplanation": 105,
-      "execution": 105,
-      "expectedResult": 105,
-      "deliberateFailure": 105,
-      "guidedPractice": 105,
-      "independentPractice": 105,
-      "closure": 105,
-      "commonErrors": 105,
-      "resources": 104,
-      "standaloneExample": 105,
-      "learningEvidence": 105,
-      "complete": 104
+      "topics": 113,
+      "objective": 113,
+      "prerequisites": 113,
+      "context": 113,
+      "theoryAnalogy": 113,
+      "guidedDemo": 113,
+      "codeExplanation": 113,
+      "execution": 113,
+      "expectedResult": 113,
+      "deliberateFailure": 113,
+      "guidedPractice": 113,
+      "independentPractice": 113,
+      "closure": 113,
+      "commonErrors": 113,
+      "resources": 113,
+      "standaloneExample": 113,
+      "learningEvidence": 113,
+      "complete": 113
     },
     "flutter": {
       "topics": 63,
@@ -106,9 +106,9 @@
       "prerequisites": 99,
       "context": 99,
       "theoryAnalogy": 99,
-      "guidedDemo": 98,
+      "guidedDemo": 99,
       "codeExplanation": 99,
-      "execution": 98,
+      "execution": 99,
       "expectedResult": 99,
       "deliberateFailure": 99,
       "guidedPractice": 99,
@@ -118,7 +118,7 @@
       "resources": 99,
       "standaloneExample": 99,
       "learningEvidence": 99,
-      "complete": 98
+      "complete": 99
     },
     "ios": {
       "topics": 56,
@@ -141,24 +141,24 @@
       "complete": 56
     },
     "java": {
-      "topics": 80,
-      "objective": 80,
-      "prerequisites": 80,
-      "context": 80,
-      "theoryAnalogy": 80,
-      "guidedDemo": 80,
-      "codeExplanation": 80,
-      "execution": 80,
-      "expectedResult": 80,
-      "deliberateFailure": 80,
-      "guidedPractice": 80,
-      "independentPractice": 80,
-      "closure": 80,
-      "commonErrors": 80,
-      "resources": 80,
-      "standaloneExample": 80,
-      "learningEvidence": 80,
-      "complete": 80
+      "topics": 83,
+      "objective": 83,
+      "prerequisites": 83,
+      "context": 83,
+      "theoryAnalogy": 83,
+      "guidedDemo": 83,
+      "codeExplanation": 83,
+      "execution": 83,
+      "expectedResult": 83,
+      "deliberateFailure": 83,
+      "guidedPractice": 83,
+      "independentPractice": 83,
+      "closure": 83,
+      "commonErrors": 83,
+      "resources": 83,
+      "standaloneExample": 83,
+      "learningEvidence": 83,
+      "complete": 83
     },
     "javascript": {
       "topics": 88,
@@ -257,28 +257,28 @@
       "commonErrors": 29,
       "resources": 29,
       "standaloneExample": 29,
-      "learningEvidence": 28,
-      "complete": 28
+      "learningEvidence": 29,
+      "complete": 29
     },
     "spring-boot": {
-      "topics": 88,
-      "objective": 88,
-      "prerequisites": 88,
-      "context": 88,
-      "theoryAnalogy": 88,
-      "guidedDemo": 87,
-      "codeExplanation": 88,
-      "execution": 88,
-      "expectedResult": 88,
-      "deliberateFailure": 88,
-      "guidedPractice": 88,
-      "independentPractice": 88,
-      "closure": 88,
-      "commonErrors": 88,
-      "resources": 87,
-      "standaloneExample": 88,
-      "learningEvidence": 87,
-      "complete": 87
+      "topics": 91,
+      "objective": 91,
+      "prerequisites": 91,
+      "context": 91,
+      "theoryAnalogy": 91,
+      "guidedDemo": 91,
+      "codeExplanation": 91,
+      "execution": 91,
+      "expectedResult": 91,
+      "deliberateFailure": 91,
+      "guidedPractice": 91,
+      "independentPractice": 91,
+      "closure": 91,
+      "commonErrors": 91,
+      "resources": 91,
+      "standaloneExample": 91,
+      "learningEvidence": 91,
+      "complete": 91
     }
   },
   "topics": {
@@ -837,7 +837,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -851,8 +851,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -9104,6 +9104,214 @@
         }
       },
       {
+        "module": 17,
+        "topic": "Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: Dockerfile multi-stage",
         "criteria": {
@@ -9631,7 +9839,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -9640,13 +9848,13 @@
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
-          "resources": false,
+          "resources": true,
           "standaloneExample": true,
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -14393,9 +14601,9 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": true,
@@ -14407,8 +14615,8 @@
           "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 14,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -17434,6 +17642,84 @@
       {
         "module": 2,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -25988,11 +26274,11 @@
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true,
-          "learningEvidence": false
+          "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -27175,7 +27461,7 @@
           "prerequisites": true,
           "context": true,
           "theoryAnalogy": true,
-          "guidedDemo": false,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
@@ -27184,13 +27470,13 @@
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
-          "resources": false,
+          "resources": true,
           "standaloneExample": true,
-          "learningEvidence": false
+          "learningEvidence": true
         },
         "classification": {
-          "stepsPassed": 13,
-          "complete": false
+          "stepsPassed": 16,
+          "complete": true
         }
       },
       {
@@ -27820,6 +28106,84 @@
       {
         "module": 21,
         "topic": "Tema 3: Outbox transaccional y flujo de negocio",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 2: C4: contexto, contenedores, componentes y código",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
         "criteria": {
           "objective": true,
           "prerequisites": true,

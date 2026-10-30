@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-29 21:14 UTC
-Root: `The_Imperial_Book`
-Indexed files: 904
-Import edges: 55
+Generated: 2026-10-30 13:38 UTC
+Root: `Academia_Floci`
+Indexed files: 909
+Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -19,7 +19,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 31 files
 - `course-content`: 247 files
 - `documentation`: 52 files
-- `example`: 462 files
+- `example`: 467 files
 - `local-infra`: 1 files
 - `project-file`: 52 files
 
@@ -28,19 +28,19 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.md`: 306
 - `.py`: 157
 - `.ts`: 66
-- `.json`: 64
+- `.json`: 65
+- `.java`: 54
 - `.js`: 54
-- `.java`: 53
 - `.html`: 38
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 22
 - `.swift`: 20
-- `.mjs`: 15
+- `.mjs`: 17
 - `.kt`: 13
 - `.yaml`: 9
 - `.scss`: 8
-- `.sh`: 6
+- `.sh`: 7
 - `.jsx`: 6
 - `.yml`: 5
 - `.tf`: 4
@@ -51,10 +51,10 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (307 lines, documentation)
+- `README.md` (310 lines, documentation)
   - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
-- `scripts/validate.sh` (135 lines, automation-script)
-- `scripts/build_repo_graph.py` (468 lines, automation-script)
+- `scripts/validate.sh` (136 lines, automation-script)
+- `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
   - symbols: App
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1042 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1101 lines, angular-app)
   - symbols: LessonViewerComponent, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject, moduleIndex
 
 ## Internal Import Graph
@@ -84,6 +84,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/node-federation/federation.test.mjs` -> `examples/node-federation/server.mjs`
 - `examples/professional-bridges/node/pagina.test.mjs` -> `examples/professional-bridges/node/pagina.mjs`
 - `examples/professional-bridges/rutaflow/contrato.test.mjs` -> `examples/professional-bridges/rutaflow/contrato.mjs`
+- `examples/rutaflow-material/deployment-strategies/deployment.test.mjs` -> `examples/rutaflow-material/deployment-strategies/deployment.mjs`
 - `examples/rutaflow-material/payments/contrato.test.mjs` -> `examples/rutaflow-material/payments/contrato.mjs`
 - `examples/rutaflow-material/socketio/gateway.test.mjs` -> `examples/rutaflow-material/socketio/gateway.mjs`
 - `examples/rutaflow-material/socketio/serve.mjs` -> `examples/rutaflow-material/socketio/gateway.mjs`
@@ -181,7 +182,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_prerequisite_graph.py` (114 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
-- `scripts/build_repo_graph.py` (468 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
+- `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
 - `scripts/catalog_external_library.py` (49 lines) - symbols: main; imports: argparse, hashlib, json, pathlib, pymupdf
 - `scripts/extract_pdf_toc.py` (33 lines) - imports: sys, pathlib, pymupdf
@@ -192,7 +193,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/tests/test_course_depth.py` (25 lines) - symbols: DepthSignalsTests; imports: sys, pathlib, unittest, audit_course_depth, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/tests/test_editorial_validation.py` (90 lines) - symbols: EditorialValidationTests; imports: sys, tempfile, unittest, pathlib, unittest.mock, audit_topic_learning_quality, audit_code_visual_quality, fix_lessons
 - `scripts/validate-floci.sh` (43 lines)
-- `scripts/validate.sh` (135 lines)
+- `scripts/validate.sh` (136 lines)
 - ... 13 more files
 
 ### course-content
@@ -224,8 +225,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (31 lines) - headings: # Contribuir a The Imperial Book, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (307 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
-- `docs/CONTINUAR-7-PASOS.md` (98 lines) - headings: # Continuación: completar la metodología de siete pasos, ## Qué ya se hizo (no repetir), ## Regla de oro para continuar, ## Plan priorizado (mayor retorno primero)
+- `README.md` (310 lines) - headings: # The_Imperial_Book, ## Como empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
@@ -259,7 +260,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 444 more files
+- ... 449 more files
 
 ### local-infra
 
@@ -273,16 +274,16 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (2870 lines)
-- `docs/course-depth-review.json` (12304 lines)
+- `docs/code-visual-quality.json` (2884 lines)
+- `docs/course-depth-review.json` (12460 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/merged-pdf-index.json` (426 lines)
 - `docs/official-learning-guides.json` (22 lines)
 - `docs/official-sources.json` (195 lines)
 - `docs/official-topic-atlas.json` (175 lines)
-- `docs/prerequisite-graph.json` (11932 lines)
+- `docs/prerequisite-graph.json` (12086 lines)
 - `docs/requested-master-topics.json` (189 lines)
 - `docs/rutaflow-source-index.json` (385 lines)
-- `docs/seven-step-methodology.json` (28499 lines)
+- `docs/seven-step-methodology.json` (28863 lines)
 - ... 34 more files

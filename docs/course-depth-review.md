@@ -11,14 +11,14 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 77 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 80 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 88 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| java | 83 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| spring-boot | 91 | 8 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 105 | 2 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
@@ -366,6 +366,14 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | devops / 16 | [Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos](../web/public/content/devops/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 16 | [Tema 5: Integración completa — Newman dentro de un pipeline Jenkins](../web/public/content/devops/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 16 | [Tema complementario: Bruno y Postman, evaluar con el mismo contrato](../web/public/content/devops/modulo-16.md) | ejemplo-breve-revisar-contexto |
+| devops / 17 | [Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 17 | [Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 17 | [Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 17 | [Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 18 | [Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches](../web/public/content/devops/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 18 | [Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare](../web/public/content/devops/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 18 | [Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados](../web/public/content/devops/modulo-18.md) | ejemplo-breve-revisar-contexto |
+| devops / 18 | [Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro](../web/public/content/devops/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 1: Dockerfile multi-stage](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 2: Capas e invalidación de caché](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 3: Imágenes base distroless/alpine](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
@@ -687,6 +695,9 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
 | java / 2 | [Tema 2: Genéricos, wildcards y type erasure](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
 | java / 2 | [Tema 3: Comparable vs Comparator, e iteración](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
+| java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 20 | [Tema 3: Streams como composición: pereza, orden y efectos que se esconden](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 3 | [Tema 1: Checked vs unchecked exceptions](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
 | java / 3 | [Tema 2: try-with-resources](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
 | java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
@@ -1086,6 +1097,9 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | clase-java-no-visible |
+| spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 1: Entidades y repositorios derivados](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 2: El problema N+1 y su corrección](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 3: Migraciones con Flyway](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

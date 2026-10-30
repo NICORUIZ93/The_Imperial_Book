@@ -289,4 +289,18 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     ['¿Qué garantías aporta enable.idempotence y cuáles no cubre?', '¿Por qué usar la key del agregado y no una key aleatoria?', '¿Qué fallo evita outbox y cuál duplicado aún permite?', '¿Cómo confirmas un offset después de persistir el efecto del consumidor?'],
     ['Apache Kafka', 'Spring Kafka', 'PostgreSQL', 'Outbox', 'OpenTelemetry'],
     'Flujo RutaFlow verificable de envío a outbox, Kafka y consumidor idempotente, con pruebas de DLT, duplicado y recuperación.'),
+  m(22, 'Arquitectura: puertos, C4 y decisiones', 'Arquitectura y ADR', 'Experto', '8 h', '#6db33f',
+    'Separa dominio e infraestructura con puertos que hablan el idioma del negocio, documenta el sistema en cuatro niveles C4 y registra cada decisión en un ADR que otra persona pueda revisar.',
+    ['Puertos y adaptadores', 'Tipos del dominio frente a entidades JPA', 'Frontera transaccional y outbox mínimo', 'C4: contexto, contenedores, componentes y código', 'ADR: contexto, decisión, alternativas y consecuencias', 'Trazabilidad entre diagrama, decisión y código'],
+    [
+      'Compila un puerto que devuelve tipos del dominio sin Spring en el classpath',
+      'Provoca el fallo de un puerto que filtra Page y entidades JPA al dominio',
+      'Mueve la frontera transaccional fuera del controlador y demuestra el rollback',
+      'Dibuja los cuatro niveles C4 de la API de envíos y verifica cada relación contra el código',
+      'Escribe tres ADR de una decisión real y enlázalos desde el código y el README',
+      'Revisa un ADR incompleto y muestra qué pregunta queda sin responder',
+    ],
+    ['¿Por qué un puerto que devuelve Page obliga al dominio a depender de Spring Data?', '¿Dónde empieza y termina una transacción en un caso de uso?', '¿Qué debe contener un ADR para que otra persona pueda revocar la decisión?'],
+    ['Java', 'Spring Boot', 'Mermaid', 'Markdown'],
+    'Caso de uso sin Spring, diagrama C4 de la API de envíos y tres ADR enlazados al código.'),
 ];

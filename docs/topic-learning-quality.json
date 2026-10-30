@@ -17,7 +17,7 @@
       "explanation": 58,
       "code": 58,
       "visual": 54,
-      "filePath": 57,
+      "filePath": 58,
       "runCommand": 58,
       "expectedResult": 58,
       "practice": 58,
@@ -61,18 +61,18 @@
       "repeatedDemo": 0
     },
     "devops": {
-      "topics": 105,
-      "explanation": 105,
-      "code": 105,
-      "visual": 96,
-      "filePath": 105,
-      "runCommand": 105,
-      "expectedResult": 105,
-      "practice": 105,
-      "project": 104,
-      "modelMental": 105,
-      "limitsDecision": 105,
-      "practicable": 104,
+      "topics": 113,
+      "explanation": 113,
+      "code": 113,
+      "visual": 104,
+      "filePath": 113,
+      "runCommand": 113,
+      "expectedResult": 113,
+      "practice": 113,
+      "project": 112,
+      "modelMental": 113,
+      "limitsDecision": 113,
+      "practicable": 112,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -97,14 +97,14 @@
       "explanation": 99,
       "code": 99,
       "visual": 73,
-      "filePath": 98,
+      "filePath": 99,
       "runCommand": 99,
       "expectedResult": 99,
       "practice": 99,
       "project": 98,
       "modelMental": 99,
       "limitsDecision": 99,
-      "practicable": 97,
+      "practicable": 98,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -125,18 +125,18 @@
       "repeatedDemo": 0
     },
     "java": {
-      "topics": 80,
-      "explanation": 80,
-      "code": 80,
-      "visual": 25,
-      "filePath": 80,
-      "runCommand": 80,
-      "expectedResult": 80,
-      "practice": 80,
-      "project": 80,
-      "modelMental": 80,
-      "limitsDecision": 80,
-      "practicable": 80,
+      "topics": 83,
+      "explanation": 83,
+      "code": 83,
+      "visual": 27,
+      "filePath": 83,
+      "runCommand": 83,
+      "expectedResult": 83,
+      "practice": 83,
+      "project": 83,
+      "modelMental": 83,
+      "limitsDecision": 83,
+      "practicable": 83,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -221,18 +221,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 88,
-      "explanation": 88,
-      "code": 88,
-      "visual": 66,
-      "filePath": 88,
-      "runCommand": 88,
-      "expectedResult": 88,
-      "practice": 88,
-      "project": 87,
-      "modelMental": 88,
-      "limitsDecision": 88,
-      "practicable": 87,
+      "topics": 91,
+      "explanation": 91,
+      "code": 91,
+      "visual": 69,
+      "filePath": 91,
+      "runCommand": 91,
+      "expectedResult": 91,
+      "practice": 91,
+      "project": 90,
+      "modelMental": 91,
+      "limitsDecision": 91,
+      "practicable": 90,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -708,7 +708,7 @@
           "explanation": true,
           "code": true,
           "visual": false,
-          "filePath": false,
+          "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
@@ -717,7 +717,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 10,
+          "rubricScore": 12,
           "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -7704,6 +7704,182 @@
         }
       },
       {
+        "module": 17,
+        "topic": "Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: Dockerfile multi-stage",
         "criteria": {
@@ -12180,7 +12356,7 @@
           "explanation": true,
           "code": true,
           "visual": false,
-          "filePath": false,
+          "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
@@ -12189,8 +12365,8 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -14768,6 +14944,72 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -23558,6 +23800,72 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 2: C4: contexto, contenedores, componentes y código",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

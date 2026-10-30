@@ -82,7 +82,7 @@
     },
     {
       "path": "README.md",
-      "lines": 307,
+      "lines": 310,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -111,18 +111,17 @@
     },
     {
       "path": "docs/CONTINUAR-7-PASOS.md",
-      "lines": 98,
+      "lines": 76,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Continuaci\u00f3n: completar la metodolog\u00eda de siete pasos",
-        "## Qu\u00e9 ya se hizo (no repetir)",
-        "## Regla de oro para continuar",
-        "## Plan priorizado (mayor retorno primero)",
-        "### A falta de UN SOLO marcador (48+20+\u2026 = ~87 temas, el camino m\u00e1s r\u00e1pido)",
-        "### Deuda mayor por track (requiere reescritura de varios pasos por tema)",
-        "## C\u00f3mo encontrar los temas exactos"
+        "# Continuaci\u00f3n de la metodolog\u00eda de siete pasos",
+        "## Qu\u00e9 se corrigi\u00f3 en el auditor (no repetir)",
+        "## Regla de oro",
+        "## Los 5 temas que faltaban (resueltos)",
+        "## C\u00f3mo encontrar los temas exactos",
+        "## Verificaci\u00f3n tras cada tanda"
       ]
     },
     {
@@ -540,7 +539,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2870,
+      "lines": 2884,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -559,7 +558,7 @@
     },
     {
       "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 31,
+      "lines": 38,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -572,7 +571,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12304,
+      "lines": 12460,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -580,7 +579,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1114,
+      "lines": 1128,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -613,7 +612,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 54,
+      "lines": 53,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -766,7 +765,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 11932,
+      "lines": 12086,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -862,7 +861,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28499,
+      "lines": 28863,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -889,7 +888,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1251,
+      "lines": 1294,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -897,7 +896,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24119,
+      "lines": 24427,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -4757,6 +4756,54 @@
       "headings": []
     },
     {
+      "path": "examples/rutaflow-material/clean-architecture/Main.java",
+      "lines": 49,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/clean-architecture/test.sh",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/deployment-strategies/deployment.mjs",
+      "lines": 37,
+      "kind": "example",
+      "symbols": [
+        "abVariant",
+        "serveWithShadow"
+      ],
+      "imports": [
+        "node:crypto"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/deployment-strategies/deployment.test.mjs",
+      "lines": 23,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:assert/strict",
+        "./deployment.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/rutaflow-material/deployment-strategies/package.json",
+      "lines": 7,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/rutaflow-material/osrm/respuesta.json",
       "lines": 2,
       "kind": "example",
@@ -5543,7 +5590,7 @@
     },
     {
       "path": "scripts/build_repo_graph.py",
-      "lines": 468,
+      "lines": 477,
       "kind": "automation-script",
       "symbols": [
         "FileNode",
@@ -5731,7 +5778,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 135,
+      "lines": 136,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -7660,7 +7707,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-5.md",
-      "lines": 723,
+      "lines": 728,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8772,7 +8819,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 675,
+      "lines": 613,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8793,7 +8840,7 @@
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 339,
+      "lines": 299,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8877,7 +8924,7 @@
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 208,
+      "lines": 188,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9087,7 +9134,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 510,
+      "lines": 483,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10032,7 +10079,7 @@
     },
     {
       "path": "web/public/content/node/modulo-6.md",
-      "lines": 676,
+      "lines": 654,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10074,7 +10121,7 @@
     },
     {
       "path": "web/public/content/node/modulo-8.md",
-      "lines": 492,
+      "lines": 470,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10116,7 +10163,7 @@
     },
     {
       "path": "web/public/content/react/modulo-0.md",
-      "lines": 487,
+      "lines": 467,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10137,7 +10184,7 @@
     },
     {
       "path": "web/public/content/react/modulo-1.md",
-      "lines": 432,
+      "lines": 412,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10158,7 +10205,7 @@
     },
     {
       "path": "web/public/content/react/modulo-10.md",
-      "lines": 358,
+      "lines": 326,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10200,7 +10247,7 @@
     },
     {
       "path": "web/public/content/react/modulo-12.md",
-      "lines": 313,
+      "lines": 291,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10284,7 +10331,7 @@
     },
     {
       "path": "web/public/content/react/modulo-3.md",
-      "lines": 286,
+      "lines": 265,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10305,7 +10352,7 @@
     },
     {
       "path": "web/public/content/react/modulo-4.md",
-      "lines": 315,
+      "lines": 293,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10326,7 +10373,7 @@
     },
     {
       "path": "web/public/content/react/modulo-5.md",
-      "lines": 320,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10746,7 +10793,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1138,
+      "lines": 1148,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11061,7 +11108,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4849,
+      "lines": 4913,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12101,7 +12148,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 529,
+      "lines": 550,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12109,7 +12156,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1042,
+      "lines": 1101,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12318,7 +12365,7 @@
     },
     {
       "path": "web/src/app/progress.service.spec.ts",
-      "lines": 64,
+      "lines": 99,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12329,7 +12376,7 @@
     },
     {
       "path": "web/src/app/progress.service.ts",
-      "lines": 175,
+      "lines": 244,
       "kind": "angular-app",
       "symbols": [
         "ProgressService",
@@ -12439,7 +12486,7 @@
     },
     {
       "path": "web/src/app/tracks/devops.track.ts",
-      "lines": 211,
+      "lines": 240,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12479,7 +12526,7 @@
     },
     {
       "path": "web/src/app/tracks/java.track.ts",
-      "lines": 265,
+      "lines": 279,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12539,7 +12586,7 @@
     },
     {
       "path": "web/src/app/tracks/spring-boot.track.ts",
-      "lines": 293,
+      "lines": 307,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12668,6 +12715,10 @@
     {
       "source": "examples/professional-bridges/rutaflow/contrato.test.mjs",
       "target": "examples/professional-bridges/rutaflow/contrato.mjs"
+    },
+    {
+      "source": "examples/rutaflow-material/deployment-strategies/deployment.test.mjs",
+      "target": "examples/rutaflow-material/deployment-strategies/deployment.mjs"
     },
     {
       "source": "examples/rutaflow-material/payments/contrato.test.mjs",

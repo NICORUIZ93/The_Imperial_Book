@@ -1516,6 +1516,42 @@
         "fragment": "tema-complementario-bruno-y-postman-evaluar-con-el-mismo-contrato"
       }
     ],
+    "17": [
+      {
+        "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
+        "fragment": "tema-1-el-borde-balanceo-proxy-inverso-cdn-y-limites-de-tasa"
+      },
+      {
+        "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+        "fragment": "tema-2-datos-que-crecen-indices-replicas-sharding-y-la-eleccion-sql-nosql"
+      },
+      {
+        "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+        "fragment": "tema-3-cap-consistencia-e-idempotencia-lo-que-se-paga-en-cada-decision"
+      },
+      {
+        "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+        "fragment": "tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga"
+      }
+    ],
+    "18": [
+      {
+        "title": "Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+        "fragment": "tema-1-aprovisionar-y-endurecer-usuario-ssh-firewall-y-parches"
+      },
+      {
+        "title": "Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+        "fragment": "tema-2-dominio-tls-y-borde-dns-let-s-encrypt-y-cloudflare"
+      },
+      {
+        "title": "Despliegue y rollback: systemd, nginx y artefactos versionados",
+        "fragment": "tema-3-despliegue-y-rollback-systemd-nginx-y-artefactos-versionados"
+      },
+      {
+        "title": "Respaldos que se restauran: restic, RPO/RTO y simulacro",
+        "fragment": "tema-4-respaldos-que-se-restauran-restic-rpo-rto-y-simulacro"
+      }
+    ],
     "2": [
       {
         "title": "Dockerfile multi-stage",
@@ -2942,6 +2978,20 @@
       {
         "title": "Comparable vs Comparator, e iteración",
         "fragment": "tema-3-comparable-vs-comparator-e-iteracion"
+      }
+    ],
+    "20": [
+      {
+        "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
+      },
+      {
+        "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+        "fragment": "tema-2-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
+      },
+      {
+        "title": "Streams como composición: pereza, orden y efectos que se esconden",
+        "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       }
     ],
     "3": [
@@ -4728,6 +4778,20 @@
       {
         "title": "Outbox transaccional y flujo de negocio",
         "fragment": "tema-3-outbox-transaccional-y-flujo-de-negocio"
+      }
+    ],
+    "22": [
+      {
+        "title": "Hexagonal: puertos que hablan el idioma del dominio",
+        "fragment": "tema-1-hexagonal-puertos-que-hablan-el-idioma-del-dominio"
+      },
+      {
+        "title": "C4: contexto, contenedores, componentes y código",
+        "fragment": "tema-2-c4-contexto-contenedores-componentes-y-codigo"
+      },
+      {
+        "title": "ADR: decisiones con contexto, alternativas y consecuencias",
+        "fragment": "tema-3-adr-decisiones-con-contexto-alternativas-y-consecuencias"
       }
     ],
     "3": [

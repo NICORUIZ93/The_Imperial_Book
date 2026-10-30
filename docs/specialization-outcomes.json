@@ -439,7 +439,8 @@
             5,
             6,
             7,
-            19
+            19,
+            20
           ],
           "evidence": [
             "procesador de datos",
@@ -605,6 +606,26 @@
           "swebok": [
             "Software Quality",
             "Software Engineering Operations"
+          ]
+        },
+        {
+          "id": "SPRING-5",
+          "level": "Experto",
+          "statement": "Separar dominio e infraestructura con puertos, documentar el sistema en cuatro niveles C4 y registrar cada decisión en un ADR revisable.",
+          "moduleIds": [
+            22
+          ],
+          "evidence": [
+            "caso de uso compilado sin Spring",
+            "diagrama C4 validado",
+            "tres ADR con alternativas y consecuencias"
+          ],
+          "cs2023": [
+            "SE"
+          ],
+          "swebok": [
+            "Software Architecture",
+            "Software Design"
           ]
         }
       ]
@@ -1104,6 +1125,27 @@
           "swebok": [
             "Software Testing",
             "Software Engineering Operations"
+          ]
+        },
+        {
+          "id": "DEVOPS-6",
+          "level": "Experto",
+          "statement": "Diseñar el borde, los datos y la capacidad de un sistema distribuido y operar un servidor propio con recuperación probada.",
+          "moduleIds": [
+            17,
+            18
+          ],
+          "evidence": [
+            "informe de capacidad con p95 y error budget",
+            "simulacro de restauración con RTO medido"
+          ],
+          "cs2023": [
+            "PDC",
+            "SEC"
+          ],
+          "swebok": [
+            "Software Engineering Operations",
+            "Software Architecture"
           ]
         }
       ]

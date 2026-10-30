@@ -3,13 +3,16 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 241 módulos y 1084 temas editoriales en formato de
+La academia reúne 14 rutas, 245 módulos y 1098 temas editoriales en formato de
 libro. La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
 
 - [Material solicitado de Proyecto-RutaFlow y destinos](docs/rutaflow-source-index.md)
 - [Revisión de profundidad de todos los temas](docs/course-depth-review.md)
+- [Plan total de cambio y estado](docs/PLAN-TOTAL-DE-CAMBIO.md)
+- [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
+- [Continuación de la metodología de siete pasos](docs/CONTINUAR-7-PASOS.md)
 - [Guia web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
 - [Índice de las 69 páginas e integración de merged.pdf](docs/merged-pdf-review.md)
@@ -144,7 +147,7 @@ El contrato editorial que debe alcanzar cada tema es:
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
 (`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 241
-módulos y 1084 temas editoriales visibles. Cada módulo prioriza una secuencia de
+módulos y 1098 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -153,9 +156,9 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: al corte actual
-registra 1077/1084 temas practicables (cada tema tiene demostración ejecutable con
+registra 1092/1098 temas practicables (cada tema tiene demostración ejecutable con
 comando y resultado, verificado por el auditor endurecido). La auditoría independiente
-de metodología de siete pasos registra 1079/1084 temas completos según sus marcadores
+de metodología de siete pasos registra 1098/1098 temas completos según sus marcadores
 (el auditor reconoce el andamiaje real de cada ecosistema: `npm create vite`, `create-next-app`,
 «Nuevo proyecto» de Xcode y `xcodebuild`, las CLIs de nube `aws`/`az`/`gcloud` que crean el
 recurso base del tema, y la evidencia concreta que entrega el artefacto de un paso, además de
@@ -206,13 +209,13 @@ como certificaciones.
 |---|---|---|
 | Fundamentos | 16 | Computador, programación, algoritmos, web, datos e ingeniería de software |
 | Cloud Local | 35 | AWS, Azure y GCP en local con Floci |
-| DevOps | 17 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation |
+| DevOps | 19 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation, sistemas distribuidos, servidor propio |
 | JavaScript | 15 | Lenguaje, DOM, asincronía, rendimiento |
 | Node.js | 15 | Backend, APIs, bases de datos, producción |
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |
 | React | 15 | Hooks, estado, data fetching, Next.js |
-| Java | 20 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA y HTTP |
-| Spring Boot | 22 | REST, JPA, seguridad, Batch, Kafka y microservicios |
+| Java | 21 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA, HTTP y Java funcional |
+| Spring Boot | 23 | REST, JPA, seguridad, Batch, Kafka, microservicios y arquitectura (hexagonal, C4, ADR) |
 | Kotlin Multiplatform | 14 | Lógica compartida entre Android e iOS |
 | Android | 16 | Jetpack Compose, ciclo de vida, Room, Hilt |
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |

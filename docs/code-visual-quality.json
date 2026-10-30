@@ -25,15 +25,15 @@
       "officialSource": 140
     },
     "devops": {
-      "topics": 105,
-      "code": 105,
-      "commentedCode": 52,
-      "mermaid": 54,
+      "topics": 113,
+      "code": 113,
+      "commentedCode": 60,
+      "mermaid": 62,
       "archifyVisual": 1,
       "asciiVisual": 43,
       "misleadingDiagramLabel": 0,
-      "filePath": 105,
-      "runCommand": 104,
+      "filePath": 113,
+      "runCommand": 112,
       "officialSource": 35
     },
     "javascript": {
@@ -51,7 +51,7 @@
     "node": {
       "topics": 77,
       "code": 77,
-      "commentedCode": 38,
+      "commentedCode": 36,
       "mermaid": 23,
       "archifyVisual": 0,
       "asciiVisual": 13,
@@ -85,28 +85,28 @@
       "officialSource": 39
     },
     "java": {
-      "topics": 80,
-      "code": 80,
-      "commentedCode": 56,
-      "mermaid": 22,
+      "topics": 83,
+      "code": 83,
+      "commentedCode": 58,
+      "mermaid": 24,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 80,
-      "runCommand": 80,
+      "filePath": 83,
+      "runCommand": 83,
       "officialSource": 41
     },
     "spring-boot": {
-      "topics": 88,
-      "code": 88,
-      "commentedCode": 70,
-      "mermaid": 44,
+      "topics": 91,
+      "code": 91,
+      "commentedCode": 74,
+      "mermaid": 47,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 88,
-      "runCommand": 88,
-      "officialSource": 65
+      "filePath": 91,
+      "runCommand": 91,
+      "officialSource": 67
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -1643,6 +1643,13 @@
     {
       "track": "node",
       "module": 6,
+      "topic": "Tema 2: JWT — access y refresh tokens",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "node",
+      "module": 6,
       "topic": "Tema 3: Middleware de autenticación y control de roles",
       "missingCode": false,
       "missingComments": true
@@ -1686,6 +1693,13 @@
       "track": "node",
       "module": 8,
       "topic": "Tema 2: Cluster module y balanceo entre procesos",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "node",
+      "module": 8,
+      "topic": "Tema 3: Colas de trabajo con BullMQ",
       "missingCode": false,
       "missingComments": true
     },
@@ -1908,6 +1922,13 @@
     },
     {
       "track": "java",
+      "module": 13,
+      "topic": "Tema 3: Build reproducible y cierre del track",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
       "module": 14,
       "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "missingCode": false,
@@ -2057,13 +2078,6 @@
       "track": "spring-boot",
       "module": 11,
       "topic": "Tema 1: Fat JAR vs capas de Docker",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 15,
-      "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
       "missingCode": false,
       "missingComments": true
     },

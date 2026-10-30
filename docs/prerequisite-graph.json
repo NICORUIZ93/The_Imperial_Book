@@ -2945,6 +2945,39 @@
       ]
     },
     {
+      "id": "java:20:1",
+      "track": "java",
+      "module": 20,
+      "position": 1,
+      "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:19:7"
+      ]
+    },
+    {
+      "id": "java:20:2",
+      "track": "java",
+      "module": 20,
+      "position": 2,
+      "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:1"
+      ]
+    },
+    {
+      "id": "java:20:3",
+      "track": "java",
+      "module": 20,
+      "position": 3,
+      "title": "Streams como composición: pereza, orden y efectos que se esconden",
+      "file": "web/public/content/java/modulo-20.md",
+      "requires": [
+        "java:20:2"
+      ]
+    },
+    {
       "id": "node:0:1",
       "track": "node",
       "module": 0,
@@ -3799,7 +3832,7 @@
       "title": "Inversión de control y el contenedor de Spring",
       "file": "web/public/content/spring-boot/modulo-0.md",
       "requires": [
-        "java:19:7"
+        "java:20:3"
       ]
     },
     {
@@ -4757,6 +4790,39 @@
       "file": "web/public/content/spring-boot/modulo-21.md",
       "requires": [
         "spring-boot:21:2"
+      ]
+    },
+    {
+      "id": "spring-boot:22:1",
+      "track": "spring-boot",
+      "module": 22,
+      "position": 1,
+      "title": "Hexagonal: puertos que hablan el idioma del dominio",
+      "file": "web/public/content/spring-boot/modulo-22.md",
+      "requires": [
+        "spring-boot:21:3"
+      ]
+    },
+    {
+      "id": "spring-boot:22:2",
+      "track": "spring-boot",
+      "module": 22,
+      "position": 2,
+      "title": "C4: contexto, contenedores, componentes y código",
+      "file": "web/public/content/spring-boot/modulo-22.md",
+      "requires": [
+        "spring-boot:22:1"
+      ]
+    },
+    {
+      "id": "spring-boot:22:3",
+      "track": "spring-boot",
+      "module": 22,
+      "position": 3,
+      "title": "ADR: decisiones con contexto, alternativas y consecuencias",
+      "file": "web/public/content/spring-boot/modulo-22.md",
+      "requires": [
+        "spring-boot:22:2"
       ]
     },
     {
@@ -6186,7 +6252,7 @@
       "title": "Null safety real",
       "file": "web/public/content/kotlin-multiplatform/modulo-0.md",
       "requires": [
-        "java:19:7"
+        "java:20:3"
       ]
     },
     {
@@ -6802,7 +6868,7 @@
       "title": "Estructura de un proyecto Android Studio",
       "file": "web/public/content/android/modulo-0.md",
       "requires": [
-        "java:19:7"
+        "java:20:3"
       ]
     },
     {
@@ -9893,6 +9959,94 @@
       ]
     },
     {
+      "id": "devops:17:1",
+      "track": "devops",
+      "module": 17,
+      "position": 1,
+      "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
+      "file": "web/public/content/devops/modulo-17.md",
+      "requires": [
+        "devops:16:6"
+      ]
+    },
+    {
+      "id": "devops:17:2",
+      "track": "devops",
+      "module": 17,
+      "position": 2,
+      "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+      "file": "web/public/content/devops/modulo-17.md",
+      "requires": [
+        "devops:17:1"
+      ]
+    },
+    {
+      "id": "devops:17:3",
+      "track": "devops",
+      "module": 17,
+      "position": 3,
+      "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+      "file": "web/public/content/devops/modulo-17.md",
+      "requires": [
+        "devops:17:2"
+      ]
+    },
+    {
+      "id": "devops:17:4",
+      "track": "devops",
+      "module": 17,
+      "position": 4,
+      "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+      "file": "web/public/content/devops/modulo-17.md",
+      "requires": [
+        "devops:17:3"
+      ]
+    },
+    {
+      "id": "devops:18:1",
+      "track": "devops",
+      "module": 18,
+      "position": 1,
+      "title": "Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+      "file": "web/public/content/devops/modulo-18.md",
+      "requires": [
+        "devops:17:4"
+      ]
+    },
+    {
+      "id": "devops:18:2",
+      "track": "devops",
+      "module": 18,
+      "position": 2,
+      "title": "Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+      "file": "web/public/content/devops/modulo-18.md",
+      "requires": [
+        "devops:18:1"
+      ]
+    },
+    {
+      "id": "devops:18:3",
+      "track": "devops",
+      "module": 18,
+      "position": 3,
+      "title": "Despliegue y rollback: systemd, nginx y artefactos versionados",
+      "file": "web/public/content/devops/modulo-18.md",
+      "requires": [
+        "devops:18:2"
+      ]
+    },
+    {
+      "id": "devops:18:4",
+      "track": "devops",
+      "module": 18,
+      "position": 4,
+      "title": "Respaldos que se restauran: restic, RPO/RTO y simulacro",
+      "file": "web/public/content/devops/modulo-18.md",
+      "requires": [
+        "devops:18:3"
+      ]
+    },
+    {
       "id": "cloud:0:1",
       "track": "cloud",
       "module": 0,
@@ -9900,7 +10054,7 @@
       "title": "Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo",
       "file": "web/public/content/cloud/modulo-0.md",
       "requires": [
-        "devops:16:6"
+        "devops:18:4"
       ]
     },
     {

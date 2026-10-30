@@ -261,4 +261,18 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué una anotación propia puede no ser visible por reflexión?', '¿Por qué no se usa double para dinero?', '¿Por qué @Transactional no aplica en una auto-invocación?'],
     ['JDK 25', 'java.lang.reflect', 'java.util.regex', 'java.math', 'java.text'],
     'Librería de utilidades de producción para el motor de asignación con validación por anotaciones, regex, dinero exacto, invariantes, plugins, proxy de registro y formatos localizados.'),
+  m(20, 'Java funcional: interfaces que componen comportamiento', 'Java funcional', 'Aplicación', '4 h', '#6d5dfc',
+    'Elige y compone las interfaces funcionales del JDK: decide con Predicate, transforma con Function, notifica con Consumer y provee con Supplier, sin esconder efectos en Streams.',
+    ['Predicate, Function, Consumer y Supplier', 'Composición con andThen, compose, and, or y negate', 'Orden de normalización y validación', 'Streams: pereza, operación terminal y consumo único', 'Cuándo un bucle comunica mejor que un Stream'],
+    [
+      'Modela una regla de revisión como Predicate y compruébala con dos envíos',
+      'Provoca el error de compilación de una lambda con aridad incorrecta',
+      'Normaliza antes de validar y demuestra el rechazo cuando se invierte el orden',
+      'Ejecuta un pipeline perezoso y comprueba que nada ocurre antes de la operación terminal',
+      'Reutiliza un Stream consumido y diagnostica IllegalStateException',
+      'Sustituye un Stream por un for cuando el efecto debe ocurrir en orden',
+    ],
+    ['¿Cuándo una regla de negocio debe ser Predicate y cuándo un tipo con motivo de rechazo?', '¿Por qué un Stream no es una colección reutilizable?', '¿Qué se paga por usar parallelStream sin medir?'],
+    ['JDK 25', 'java.util.function', 'java.util.stream'],
+    'Reglas de revisión y un informe de envíos compuestos con interfaces funcionales, pruebas de orden y diagnóstico de consumo único.'),
 ];
