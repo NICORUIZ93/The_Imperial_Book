@@ -29,7 +29,7 @@ def evaluate(block: str) -> dict[str, bool]:
         "theoryAnalogy": matches(r"paso 3.{0,50}teoría", block) and matches(r"analogía", block),
         "guidedDemo": matches(r"paso 4.{0,60}demostración guiada", block) and matches(r"^```(?!mermaid)", block) and (
             matches(
-                r"(crea|cre[aá]|guarda|actualiza|implementa|pega|reemplaza|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:mjs|cjs|js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json|html|css|scss|sql|sh))",
+                r"(crea|cre[aá]|guarda|actualiza|implementa|pega|reemplaza|a[ñn]ade|agrega|escribe|monta|nombr[aá]lo).{0,220}(src/|app/|lib/|[\w./-]+\.(?:mjs|cjs|js|jsx|ts|tsx|java|kt|swift|dart|py|tf|ya?ml|json|html|css|scss|sql|sh|conf|service|env|ini|toml|properties|md|cs|csproj))",
                 block,
             )
             # Un tema de infraestructura/CLI demuestra operando recursos
@@ -46,7 +46,7 @@ def evaluate(block: str) -> dict[str, bool]:
             or matches(r"(crea el proyecto en xcode|File\s*[.>/▸]\s*New\s*[.>/▸]\s*Project)[\s\S]{0,180}(nombr|pega|compil|swift)", block)
         ),
         "codeExplanation": matches(r"//.{6,}|explica.{0,40}(línea|bloque|parte)", block),
-        "execution": matches(r"^```bash[\s\S]{0,500}(\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|psql|curl|flutter|dart|swift|xcodebuild|xcrun|docker|terraform|tofu|kubectl|aws|az|gcloud|sam|serverless|helm|ng|pod|adb)\b|\./(gradlew|mvnw))", block),
+        "execution": matches(r"^```bash[\s\S]{0,500}(\b(node|npm|npx|java|mvn|gradle|python3?|py|sqlite3|psql|redis-cli|curl|flutter|dart|swift|xcodebuild|xcrun|docker|terraform|tofu|kubectl|aws|az|gcloud|sam|serverless|helm|ng|pod|adb|ssh|scp|rsync|systemctl|journalctl|nginx|certbot|ufw|fail2ban-client|openssl|dig|restic|k6|wrk|dotnet)\b|\./(gradlew|mvnw))", block),
         "expectedResult": matches(r"resultado esperado|salida esperada", block),
         # Fallo deliberado: romper algo a propósito para observar/diagnosticar
         # el efecto. Acepta "fallo deliberado", "provocar deliberadamente …" y

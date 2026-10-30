@@ -1,0 +1,2051 @@
+{
+  "allowed": {
+    "android/0/Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla": [
+      "andamiaje-generico"
+    ],
+    "android/0/Tema 5: Coroutines — asincronía sin bloquear la UI": [
+      "andamiaje-generico"
+    ],
+    "angular/0/Tema 1: El CLI ya no genera NgModules": [
+      "bloque-repetido"
+    ],
+    "angular/0/Tema 2: Interpolación y property binding": [
+      "bloque-repetido"
+    ],
+    "angular/0/Tema 3: TypeScript a fondo — unknown, any, never y utility types": [
+      "bloque-repetido"
+    ],
+    "angular/0/Tema 4: Compilador AOT frente a JIT": [
+      "bloque-repetido"
+    ],
+    "angular/1/Tema 1: input()/output() basados en signals": [
+      "bloque-repetido"
+    ],
+    "angular/1/Tema 2: Control de flujo nativo — @if, @for, @switch": [
+      "bloque-repetido"
+    ],
+    "angular/1/Tema 3: Content projection con ng-content": [
+      "bloque-repetido"
+    ],
+    "angular/1/Tema 4: Ciclo de vida completo de un componente": [
+      "bloque-repetido"
+    ],
+    "angular/1/Tema 5: Consultas signal y trabajo posterior al render": [
+      "andamiaje-generico",
+      "bloque-repetido"
+    ],
+    "angular/1/Tema 6: Directivas y pipes personalizados": [
+      "andamiaje-generico"
+    ],
+    "angular/10/Tema 1: TestBed y componentes standalone": [
+      "bloque-repetido"
+    ],
+    "angular/10/Tema 2: Angular Testing Library": [
+      "bloque-repetido"
+    ],
+    "angular/10/Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest": [
+      "bloque-repetido"
+    ],
+    "angular/13/Tema 1: Estructura del proyecto integrador": [
+      "bloque-repetido"
+    ],
+    "angular/13/Tema 2: Integrando routing, store y formularios": [
+      "bloque-repetido"
+    ],
+    "angular/13/Tema 3: TareasStore — combinando signals, computed y HttpClient": [
+      "bloque-repetido"
+    ],
+    "angular/16/Tema 2: Signals, estilos nativos compilados y el preset de Tailwind": [
+      "andamiaje-generico"
+    ],
+    "angular/16/Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular": [
+      "andamiaje-generico"
+    ],
+    "angular/16/Tema 4: Evaluar la madurez de una tecnología alpha con criterio": [
+      "andamiaje-generico"
+    ],
+    "angular/2/Tema 1: signal(), computed() y effect()": [
+      "bloque-repetido"
+    ],
+    "angular/2/Tema 2: Mutación frente a actualización inmutable": [
+      "bloque-repetido"
+    ],
+    "angular/2/Tema 3: Signals frente a Observables": [
+      "bloque-repetido"
+    ],
+    "angular/2/Tema 4: Hacia zoneless change detection": [
+      "bloque-repetido"
+    ],
+    "angular/2/Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir": [
+      "andamiaje-generico"
+    ],
+    "angular/2/Tema 6: resource() y httpResource — datos asíncronos reactivos": [
+      "andamiaje-generico"
+    ],
+    "angular/3/Tema 1: @Injectable y providedIn: root": [
+      "bloque-repetido"
+    ],
+    "angular/3/Tema 2: inject() frente a inyección por constructor": [
+      "bloque-repetido"
+    ],
+    "angular/3/Tema 3: Jerarquía de inyectores": [
+      "bloque-repetido"
+    ],
+    "angular/3/Tema 4: Tokens de inyección y decoradores de resolución": [
+      "bloque-repetido"
+    ],
+    "angular/4/Tema 1: Router config con rutas standalone": [
+      "bloque-repetido"
+    ],
+    "angular/4/Tema 2: Guards funcionales": [
+      "bloque-repetido"
+    ],
+    "angular/4/Tema 3: Lazy loading con loadComponent": [
+      "bloque-repetido"
+    ],
+    "angular/4/Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing": [
+      "bloque-repetido"
+    ],
+    "angular/5/Tema 1: Reactive Forms — FormGroup y FormControl": [
+      "bloque-repetido"
+    ],
+    "angular/5/Tema 2: Validadores asíncronos": [
+      "bloque-repetido"
+    ],
+    "angular/5/Tema 3: FormArray para campos dinámicos": [
+      "bloque-repetido"
+    ],
+    "angular/5/Tema 4: Template-driven forms — cuándo siguen siendo válidos": [
+      "bloque-repetido"
+    ],
+    "angular/6/Tema 1: Observable frente a Promise": [
+      "bloque-repetido"
+    ],
+    "angular/6/Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest": [
+      "bloque-repetido"
+    ],
+    "angular/6/Tema 3: Manejo de suscripciones sin fugas de memoria": [
+      "bloque-repetido"
+    ],
+    "angular/6/Tema 4: Subjects y operadores de aplanamiento avanzados": [
+      "bloque-repetido"
+    ],
+    "angular/7/Tema 1: HttpClient con backend fetch": [
+      "bloque-repetido"
+    ],
+    "angular/7/Tema 2: Interceptores funcionales": [
+      "bloque-repetido"
+    ],
+    "angular/7/Tema 3: Registro de interceptores y centralización del manejo de errores": [
+      "bloque-repetido"
+    ],
+    "angular/8/Tema 1: Bootstrap sin NgModules": [
+      "bloque-repetido"
+    ],
+    "angular/8/Tema 2: Organización por feature": [
+      "bloque-repetido"
+    ],
+    "angular/8/Tema 3: Migración desde NgModules": [
+      "bloque-repetido"
+    ],
+    "angular/9/Tema 1: Store propio con signals": [
+      "bloque-repetido"
+    ],
+    "angular/9/Tema 2: NgRx — actions, reducers y selectors": [
+      "bloque-repetido"
+    ],
+    "angular/9/Tema 3: Cuándo NgRx justifica su complejidad": [
+      "bloque-repetido"
+    ],
+    "cloud/0/Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo": [
+      "cola-tras-cierre"
+    ],
+    "cloud/0/Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs": [
+      "cola-tras-cierre"
+    ],
+    "cloud/0/Tema 3: Qué vas a aprender y cómo está estructurado el curso": [
+      "cola-tras-cierre"
+    ],
+    "cloud/0/Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack": [
+      "cola-tras-cierre"
+    ],
+    "cloud/0/Tema 5: Servicios que emula Floci — AWS, Azure y GCP": [
+      "cola-tras-cierre"
+    ],
+    "cloud/0/Tema 6: Ventajas y limitaciones de practicar con un emulador local": [
+      "cola-tras-cierre"
+    ],
+    "cloud/0/Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo": [
+      "cola-tras-cierre"
+    ],
+    "cloud/1/Tema 1: Virtualización vs contenedores": [
+      "cola-tras-cierre"
+    ],
+    "cloud/1/Tema 2: Imágenes y capas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/1/Tema 3: Registros de contenedores (Docker Hub)": [
+      "cola-tras-cierre"
+    ],
+    "cloud/1/Tema 4: Comandos esenciales de Docker": [
+      "cola-tras-cierre"
+    ],
+    "cloud/1/Tema 5: Docker Compose — servicios, redes y volúmenes": [
+      "cola-tras-cierre"
+    ],
+    "cloud/10/Tema 1: Secrets Manager y por qué no usar variables de entorno hardcodeadas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/10/Tema 2: KMS y envelope encryption": [
+      "cola-tras-cierre"
+    ],
+    "cloud/11/Tema 1: El patrón fan-out con SNS": [
+      "cola-tras-cierre"
+    ],
+    "cloud/11/Tema 2: EventBridge: bus de eventos con filtrado declarativo": [
+      "cola-tras-cierre"
+    ],
+    "cloud/12/Tema 1: Log groups, log streams y correlation ID": [
+      "cola-tras-cierre"
+    ],
+    "cloud/12/Tema 2: Metric filters y alarmas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/13/Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL": [
+      "cola-tras-cierre"
+    ],
+    "cloud/13/Tema 2: Snapshots y restore": [
+      "cola-tras-cierre"
+    ],
+    "cloud/13/Tema 3: Migrations": [
+      "andamiaje-generico"
+    ],
+    "cloud/14/Tema 1: ECR y por qué no basta con Docker Hub": [
+      "cola-tras-cierre"
+    ],
+    "cloud/14/Tema 2: Task Definition y ECS Cluster": [
+      "cola-tras-cierre"
+    ],
+    "cloud/14/Tema 3: Contenedores vs Lambda, y EKS": [
+      "cola-tras-cierre"
+    ],
+    "cloud/15/Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI": [
+      "cola-tras-cierre"
+    ],
+    "cloud/15/Tema 2: Change sets": [
+      "cola-tras-cierre"
+    ],
+    "cloud/15/Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta": [
+      "cola-tras-cierre"
+    ],
+    "cloud/16/Tema 1: State machine y Task states": [
+      "cola-tras-cierre"
+    ],
+    "cloud/16/Tema 2: Choice state, Retry y Catch": [
+      "andamiaje-generico"
+    ],
+    "cloud/17/Tema 1: Streams vs colas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/17/Tema 2: MSK (Kafka gestionado) y consumer groups": [
+      "cola-tras-cierre"
+    ],
+    "cloud/18/Tema 1: Por qué no construir tu propio sistema de autenticación": [
+      "cola-tras-cierre"
+    ],
+    "cloud/18/Tema 2: Access Token, ID Token y Refresh Token": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/18/Tema 3: OAuth 2.0 y PKCE": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/19/Tema 1: Data lake y Glue Catalog": [
+      "cola-tras-cierre"
+    ],
+    "cloud/19/Tema 2: Glue Crawler y Athena": [
+      "cola-tras-cierre"
+    ],
+    "cloud/19/Tema 3: Parquet vs CSV, y partition pruning": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/2/Tema 1: Objetos, buckets y su nomenclatura": [
+      "cola-tras-cierre"
+    ],
+    "cloud/2/Tema 2: Claves y metadatos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/2/Tema 3: Versionado y ciclo de vida": [
+      "cola-tras-cierre"
+    ],
+    "cloud/2/Tema 4: Transición entre capas de almacenamiento": [
+      "cola-tras-cierre"
+    ],
+    "cloud/2/Tema 5: Políticas de bucket, ACL y URLs pre-firmadas": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/20/Tema 1: Bedrock Runtime y respuestas stub deterministas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/20/Tema 2: Textract y Transcribe": [
+      "cola-tras-cierre"
+    ],
+    "cloud/20/Tema 3: Stub vs mock, y qué probar localmente": [
+      "cola-tras-cierre"
+    ],
+    "cloud/21/Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales": [
+      "cola-tras-cierre"
+    ],
+    "cloud/21/Tema 2: AMIs, grupos de seguridad y claves SSH": [
+      "cola-tras-cierre"
+    ],
+    "cloud/21/Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia": [
+      "cola-tras-cierre"
+    ],
+    "cloud/21/Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/21/Tema 5: El reconciliador de capacidad y las políticas de escalado": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/22/Tema 1: ELB v2 — balanceadores, grupos objetivo y reglas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/22/Tema 2: ACM — certificados TLS con criptografía real": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/22/Tema 3: CloudFront — distribución de contenido y control de acceso al origen": [
+      "cola-tras-cierre"
+    ],
+    "cloud/22/Tema 4: Route53 — zonas alojadas y registros de recursos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/22/Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/23/Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/23/Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación": [
+      "cola-tras-cierre"
+    ],
+    "cloud/23/Tema 3: Creación de clústeres y conexión con clientes estándar": [
+      "andamiaje-generico"
+    ],
+    "cloud/23/Tema 4: Autenticación IAM para el plano de datos de ElastiCache": [
+      "cola-tras-cierre"
+    ],
+    "cloud/24/Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker": [
+      "cola-tras-cierre"
+    ],
+    "cloud/24/Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/24/Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias": [
+      "cola-tras-cierre"
+    ],
+    "cloud/24/Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB": [
+      "cola-tras-cierre"
+    ],
+    "cloud/25/Tema 1: AWS Config — rastrear reglas sobre tus recursos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/25/Tema 2: AppConfig — desplegar configuración sin redeployar código": [
+      "cola-tras-cierre"
+    ],
+    "cloud/25/Tema 3: AppConfigData — el plano de datos que consume tu aplicación": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/25/Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios": [
+      "cola-tras-cierre"
+    ],
+    "cloud/25/Tema 5: El ciclo de vida de un trabajo de respaldo": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/26/Tema 1: Amazon Data Firehose — entrega gestionada sin consumidores propios": [
+      "cola-tras-cierre"
+    ],
+    "cloud/26/Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/26/Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento": [
+      "cola-tras-cierre"
+    ],
+    "cloud/26/Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/27/Tema 1: AppSync — APIs GraphQL gestionadas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/27/Tema 2: Fuentes de datos y resolvers": [
+      "cola-tras-cierre"
+    ],
+    "cloud/27/Tema 3: SES — identidades, envío y plantillas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/27/Tema 4: El simulador de buzones y el punto de inspección local": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/28/Tema 1: Bases de datos de grafos — cuando las relaciones son el dato": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/28/Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación": [
+      "cola-tras-cierre"
+    ],
+    "cloud/28/Tema 3: OpenSearch — modo simulado y modo real": [
+      "cola-tras-cierre"
+    ],
+    "cloud/28/Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/29/Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/29/Tema 2: Pricing — catálogo de tarifas de referencia": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/29/Tema 3: BCM Data Exports — reportes de costo en formato estándar": [
+      "cola-tras-cierre"
+    ],
+    "cloud/29/Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/29/Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/3/Tema 1: Colas, productores y consumidores": [
+      "cola-tras-cierre"
+    ],
+    "cloud/3/Tema 2: Ciclo de vida de un mensaje": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/3/Tema 3: Dead Letter Queues (DLQ)": [
+      "cola-tras-cierre"
+    ],
+    "cloud/3/Tema 4: Colas FIFO vs Standard": [
+      "cola-tras-cierre"
+    ],
+    "cloud/30/Tema 1: Qué resuelve Transfer Family": [
+      "cola-tras-cierre"
+    ],
+    "cloud/30/Tema 2: Ciclo de vida del servidor y modelo de usuarios": [
+      "cola-tras-cierre"
+    ],
+    "cloud/30/Tema 3: Claves públicas SSH y autenticación de usuarios": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/30/Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/31/Tema 1: Arquitectura multi-nube y portabilidad de conocimiento": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/31/Tema 3: Migración desde otros emuladores, y límites de un emulador": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/31/Tema 4: Testcontainers — pruebas de integración automatizadas": [
+      "cola-tras-cierre"
+    ],
+    "cloud/32/Tema 2: Una landing zone convierte gobierno en una base repetible": [
+      "andamiaje-generico"
+    ],
+    "cloud/32/Tema 3: Disponibilidad y recuperación responden preguntas distintas": [
+      "andamiaje-generico"
+    ],
+    "cloud/32/Tema 4: Un backup solo existe operativamente después de restaurarlo": [
+      "andamiaje-generico"
+    ],
+    "cloud/33/Tema 2: Kubernetes administrado, ECS y Service Mesh": [
+      "andamiaje-generico"
+    ],
+    "cloud/33/Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados": [
+      "cola-tras-cierre"
+    ],
+    "cloud/33/Tema 4: Lambda, API Gateway y observabilidad avanzada": [
+      "cola-tras-cierre"
+    ],
+    "cloud/33/Tema 5: Seguridad, auditoría y FinOps": [
+      "cola-tras-cierre"
+    ],
+    "cloud/33/Tema 6: Microservicios, Big Data, AI/ML y multi-cloud": [
+      "cola-tras-cierre"
+    ],
+    "cloud/34/Tema 2: Modelo mental de la plataforma": [
+      "cola-tras-cierre"
+    ],
+    "cloud/34/Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK": [
+      "andamiaje-generico"
+    ],
+    "cloud/34/Tema 4: Configuración avanzada y ciclo de vida": [
+      "cola-tras-cierre"
+    ],
+    "cloud/34/Tema 5: Automatización, UI y agentes": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/34/Tema 6: Servicios AWS incorporados en la documentación actual": [
+      "cola-tras-cierre"
+    ],
+    "cloud/34/Tema 7: Servicios Azure que completan el recorrido": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/34/Tema 8: Servicios GCP que completan el recorrido": [
+      "cola-tras-cierre"
+    ],
+    "cloud/4/Tema 1: Qué es NoSQL y cuándo usarlo": [
+      "cola-tras-cierre"
+    ],
+    "cloud/4/Tema 2: Tablas, items y atributos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/4/Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M": [
+      "cola-tras-cierre"
+    ],
+    "cloud/4/Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE)": [
+      "cola-tras-cierre"
+    ],
+    "cloud/4/Tema 5: Índices secundarios globales (GSI) y locales (LSI)": [
+      "cola-tras-cierre"
+    ],
+    "cloud/4/Tema 6: Query vs Scan": [
+      "cola-tras-cierre"
+    ],
+    "cloud/5/Tema 1: Qué es serverless — ventajas y desventajas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "cloud/5/Tema 2: Estructura de una función Lambda": [
+      "cola-tras-cierre"
+    ],
+    "cloud/5/Tema 3: Runtimes — Node.js, Python, Java, Go": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "cloud/5/Tema 4: Payload de entrada y respuesta": [
+      "cola-tras-cierre"
+    ],
+    "cloud/5/Tema 5: Versionado y alias": [
+      "cola-tras-cierre"
+    ],
+    "cloud/5/Tema 6: Integración con S3, DynamoDB Streams y API Gateway": [
+      "cola-tras-cierre"
+    ],
+    "cloud/6/Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket": [
+      "cola-tras-cierre"
+    ],
+    "cloud/6/Tema 2: Recursos, métodos y stages": [
+      "cola-tras-cierre"
+    ],
+    "cloud/6/Tema 3: Integración con Lambda (proxy)": [
+      "cola-tras-cierre"
+    ],
+    "cloud/6/Tema 4: Mapeo de entrada/salida y validación con modelos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/6/Tema 5: Despliegue y variables de stage": [
+      "cola-tras-cierre"
+    ],
+    "cloud/7/Tema 1: Principio de mínimo privilegio": [
+      "cola-tras-cierre"
+    ],
+    "cloud/7/Tema 2: Modelo de responsabilidad compartida": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/7/Tema 3: Usuarios, grupos y roles": [
+      "cola-tras-cierre"
+    ],
+    "cloud/7/Tema 4: Estructura de una política — acciones, recursos y condiciones": [
+      "cola-tras-cierre"
+    ],
+    "cloud/7/Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales": [
+      "cola-tras-cierre"
+    ],
+    "cloud/8/Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/8/Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/8/Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/9/Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos": [
+      "cola-tras-cierre"
+    ],
+    "cloud/9/Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda": [
+      "cola-tras-cierre"
+    ],
+    "cloud/9/Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS": [
+      "cola-tras-cierre"
+    ],
+    "cloud/9/Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "cloud/9/Tema 5: Documentación de la API y guía de despliegue": [
+      "cola-tras-cierre"
+    ],
+    "devops/0/Tema 9: NGINX y proxies desde cero": [
+      "bloque-repetido"
+    ],
+    "devops/13/Tema 1: El pipeline completo — de commit a producción verificada": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "devops/13/Tema 2: Uniendo cada módulo del track en un solo flujo": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "devops/13/Tema 3: Cierre del track — checklist final y reflexión": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "devops/14/Tema 1: Confiabilidad es una expectativa cuantificada": [
+      "andamiaje-generico",
+      "bloque-repetido"
+    ],
+    "devops/14/Tema 2: Una alerta debe conducir a una acción": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "devops/14/Tema 3: Construir una imagen no demuestra de dónde proviene": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "devops/14/Tema 4: Una plataforma interna es un producto con límites": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre",
+      "parrafo-repetido"
+    ],
+    "devops/15/Tema 1: Docker y Compose avanzados": [
+      "andamiaje-generico"
+    ],
+    "devops/15/Tema 2: Kubernetes extensible y Helm avanzado": [
+      "andamiaje-generico"
+    ],
+    "devops/15/Tema 3: Service Mesh con Istio o Linkerd": [
+      "andamiaje-generico"
+    ],
+    "devops/15/Tema 4: GitOps con Argo CD y Flux": [
+      "andamiaje-generico"
+    ],
+    "devops/15/Tema 5: Ansible, inventarios, roles y Vault": [
+      "andamiaje-generico"
+    ],
+    "devops/15/Tema 6: DevSecOps y métricas DORA": [
+      "andamiaje-generico"
+    ],
+    "flutter/0/Tema 1: Sound null safety": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/0/Tema 2: Clases y mixins": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/0/Tema 3: Futures, async/await y colecciones funcionales": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/1/Tema 1: StatelessWidget vs StatefulWidget": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/1/Tema 2: Layout con Row, Column y Stack, y ciclo de vida": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/1/Tema 3: Keys": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/10/Tema 1: ThemeData con Material 3": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/10/Tema 2: Adaptación Material vs Cupertino": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/10/Tema 3: Accesibilidad con Semantics y dark mode": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/11/Tema 1: Builds de release para cada plataforma": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/11/Tema 2: Iconos y splash screens": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/11/Tema 3: CI/CD con Codemagic o Fastlane": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/12/Tema 1: Arquitectura por features y Clean Architecture": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/12/Tema 2: Uniendo los módulos del track": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/12/Tema 3: Cierre del track": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/13/Tema 1: Una API Dart puede terminar en una frontera nativa": [
+      "bloque-repetido"
+    ],
+    "flutter/13/Tema 2: Los secretos no pertenecen al binario": [
+      "bloque-repetido",
+      "parrafo-repetido"
+    ],
+    "flutter/13/Tema 3: Fluidez se mide contra el presupuesto de cada frame": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/13/Tema 4: Producción exige protocolo, telemetría y contención": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/14/Tema 1: Diseño de pantallas y Riverpod": [
+      "andamiaje-generico"
+    ],
+    "flutter/14/Tema 2: Google Maps y localización en tiempo real": [
+      "andamiaje-generico"
+    ],
+    "flutter/14/Tema 3: Socket.IO y actualización de rutas": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "flutter/14/Tema 4: Animaciones de localización": [
+      "andamiaje-generico"
+    ],
+    "flutter/14/Tema 5: Almacenamiento local, imágenes y offline": [
+      "andamiaje-generico"
+    ],
+    "flutter/14/Tema 6: Dio y notificaciones push": [
+      "andamiaje-generico"
+    ],
+    "flutter/15/Tema 1: flutter test y WidgetTester": [
+      "andamiaje-generico"
+    ],
+    "flutter/15/Tema 4: Clean Architecture": [
+      "andamiaje-generico"
+    ],
+    "flutter/15/Tema 5: Internacionalización completa": [
+      "andamiaje-generico"
+    ],
+    "flutter/15/Tema 6: Builds, firma y despliegue": [
+      "andamiaje-generico"
+    ],
+    "flutter/2/Tema 1: MediaQuery vs LayoutBuilder": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/2/Tema 2: Cómo Flutter calcula tamaños": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/2/Tema 3: Breakpoints propios y SafeArea": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/3/Tema 1: go_router: navegación como función de la URL": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/3/Tema 2: Guards y deep linking": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/3/Tema 3: Transiciones personalizadas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/4/Tema 1: setState y sus límites": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/4/Tema 2: Riverpod": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/4/Tema 3: Bloc/Cubit y otras alternativas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/4/Tema 4: Formularios profesionales con Formz y Riverpod": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/5/Tema 1: http vs dio": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/5/Tema 2: json_serializable": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/5/Tema 3: Interceptores y estados explícitos": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/6/Tema 1: shared_preferences": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/6/Tema 2: sqflite vs Hive": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/6/Tema 3: Offline-first y Firebase": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/7/Tema 1: MethodChannel": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/7/Tema 2: Plugins federados": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/7/Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/7/Tema 4: Cámara, galería y carga multipart de una evidencia": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/8/Tema 1: Animaciones implícitas vs explícitas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/8/Tema 2: Flutter DevTools y detección de jank": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/8/Tema 3: const widgets, RepaintBoundary y shouldRepaint": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/9/Tema 1: Unit tests y widget tests": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/9/Tema 2: Mocking con mocktail": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "flutter/9/Tema 3: Integration tests": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/1/Tema 1: Del problema al algoritmo y a los casos de prueba": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/1/Tema 2: Variables, tipos, expresiones y cambios de estado": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/1/Tema 3: Decisiones, repeticiones y trazado de ejecución": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/1/Tema 4: Funciones y descomposición de problemas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/1/Tema 5: Cómo la computadora representa los datos — binario, texto y decimales": [
+      "andamiaje-generico"
+    ],
+    "foundations/10/Tema 1: La red convierte el resultado en una incertidumbre": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/10/Tema 2: Replicación, consistencia y decisiones explícitas": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/10/Tema 3: Mensajes que se procesan con efectos exactamente una vez": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/10/Tema 4: Resiliencia y observabilidad orientadas a objetivos": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/11/Tema 1: Sistemas, arquitectura y sistemas operativos": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/11/Tema 2: Algoritmos, autómatas, lenguajes y compiladores": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/11/Tema 3: Bases de datos, almacenes analíticos y minería de datos": [
+      "andamiaje-generico"
+    ],
+    "foundations/11/Tema 4: Inteligencia artificial, aprendizaje automático y visión": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/11/Tema 5: Gráficos y cómputo científico": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/11/Tema 6: Redes, seguridad, web e ingeniería profesional": [
+      "andamiaje-generico",
+      "cola-tras-cierre"
+    ],
+    "foundations/2/Tema 1: Elegir estructuras según las operaciones": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/2/Tema 2: Pilas, colas y abstracciones de comportamiento": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/2/Tema 3: Búsqueda, precondiciones y demostración de corrección": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/2/Tema 4: Complejidad, medición, ordenamiento y recursión": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/2/Tema 5: Árboles y árboles binarios de búsqueda (BST)": [
+      "andamiaje-generico"
+    ],
+    "foundations/2/Tema 6: Tablas hash — búsqueda en tiempo constante": [
+      "andamiaje-generico"
+    ],
+    "foundations/2/Tema 7: Grafos y recorridos BFS/DFS": [
+      "andamiaje-generico"
+    ],
+    "foundations/2/Tema 8: Programación dinámica — resolver una vez, recordar el resultado": [
+      "andamiaje-generico"
+    ],
+    "foundations/3/Tema 1: De una URL al servidor: red, DNS, IP y puertos": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/3/Tema 2: HTTP como contrato observable": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/3/Tema 3: HTML semántico, formularios y el DOM": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/3/Tema 4: CSS, layout responsive y accesibilidad verificable": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/4/Tema 1: Del mundo real al modelo relacional": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/4/Tema 2: SQL para definir, escribir, consultar y relacionar": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/4/Tema 3: Índices, restricciones y planes de consulta": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/4/Tema 4: Transacciones, concurrencia y elección SQL/NoSQL": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/5/Tema 1: Depurar con evidencia, no con cambios aleatorios": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/5/Tema 2: Pruebas con propósito y niveles adecuados": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/5/Tema 3: Git como historial de decisiones y colaboración": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/5/Tema 4: Calidad estática, revisión e integración continua": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/6/Tema 1: Activos, amenazas, riesgos y límites de confianza": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/6/Tema 2: Identidad, contraseñas, sesiones y autorización": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/6/Tema 3: Criptografía aplicada, TLS, claves y secretos": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/6/Tema 4: Validación, vulnerabilidades web, privacidad y respuesta": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/7/Tema 1: Requisitos, stakeholders y criterios verificables": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/7/Tema 2: Arquitectura guiada por atributos de calidad": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/7/Tema 3: Diseño modular, principios, patrones y refactoring": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/7/Tema 4: Decisiones, documentación, deuda y evolución": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/8/Tema 1: El sistema operativo como administrador y frontera": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/8/Tema 2: Memoria y concurrencia sin magia": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/8/Tema 3: Linux como entorno observable": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/8/Tema 4: Contenedores: aislamiento reproducible": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/9/Tema 1: Lógica para especificar antes de programar": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/9/Tema 2: Conjuntos, relaciones, funciones e inducción": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/9/Tema 3: Conteo, grafos y estructuras conectadas": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "foundations/9/Tema 4: Probabilidad y evidencia para decisiones técnicas": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/0/Tema 1: Optionals y unwrapping seguro": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/0/Tema 2: struct vs class": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/0/Tema 3: Protocolos y enums con valores asociados": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/0/Tema 4: Closures, colecciones y genéricos con propósito": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/1/Tema 1: El protocolo View y composición": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/1/Tema 2: Orden de modificadores y layout con stacks": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/1/Tema 3: Previews, LazyVGrid/ScrollView y property wrappers": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/10/Tema 1: Instruments": [
+      "bloque-repetido"
+    ],
+    "ios/10/Tema 2: Accesibilidad con VoiceOver": [
+      "bloque-repetido"
+    ],
+    "ios/10/Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/10/Tema 4: UIKit desde cero para mantener aplicaciones reales": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/11/Tema 1: Certificados y provisioning profiles": [
+      "bloque-repetido"
+    ],
+    "ios/11/Tema 2: Archivar, subir y TestFlight": [
+      "bloque-repetido"
+    ],
+    "ios/11/Tema 3: Metadata y versionado": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/12/Tema 1: Arquitectura del proyecto integrador": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/12/Tema 2: Sincronización entre red y persistencia local": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/12/Tema 3: Cierre del track": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/13/Tema 1: El sandbox reduce superficie, pero no valida intenciones": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/13/Tema 2: Proteger datos es controlar todas sus copias": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/13/Tema 3: Offline-first es un protocolo, no una caché": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/13/Tema 4: Operar significa detectar, limitar y aprender del fallo": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/2/Tema 1: @State y @Binding": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/2/Tema 2: @Observable": [
+      "bloque-repetido"
+    ],
+    "ios/2/Tema 3: @Environment y identidad vs valor": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/3/Tema 1: NavigationStack y NavigationPath": [
+      "bloque-repetido"
+    ],
+    "ios/3/Tema 2: Sheets, full screen covers y TabView": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/3/Tema 3: Deep linking y controles de formulario": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/4/Tema 1: async/await y Task": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/4/Tema 2: Actors para estado mutable seguro": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/4/Tema 3: TaskGroup y MainActor": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/5/Tema 1: URLSession con async/await y Codable": [
+      "bloque-repetido"
+    ],
+    "ios/5/Tema 2: Errores tipados": [
+      "bloque-repetido"
+    ],
+    "ios/5/Tema 3: Reintentos y cancelación": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/6/Tema 1: @Model y ModelContainer": [
+      "bloque-repetido"
+    ],
+    "ios/6/Tema 2: @Query y operaciones de escritura": [
+      "bloque-repetido"
+    ],
+    "ios/6/Tema 3: Migraciones y SwiftData vs Core Data": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "ios/7/Tema 1: Publishers y Subscribers": [
+      "bloque-repetido"
+    ],
+    "ios/7/Tema 2: Operadores: debounce y combineLatest": [
+      "bloque-repetido"
+    ],
+    "ios/7/Tema 3: Combine vs async/await": [
+      "bloque-repetido"
+    ],
+    "ios/8/Tema 1: De una vista \"gorda\" a MVVM": [
+      "bloque-repetido"
+    ],
+    "ios/8/Tema 2: Capas del proyecto e inyección por inicializador": [
+      "bloque-repetido"
+    ],
+    "ios/8/Tema 3: Cuándo MVVM no alcanza": [
+      "bloque-repetido"
+    ],
+    "ios/9/Tema 1: XCTest clásico y Swift Testing": [
+      "bloque-repetido"
+    ],
+    "ios/9/Tema 2: Testing de código async": [
+      "bloque-repetido"
+    ],
+    "ios/9/Tema 3: UI Tests con XCUITest": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/0/Tema 1: Del código fuente a la JVM": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/0/Tema 2: public static void main — qué significa cada palabra": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/0/Tema 3: JDK, JRE y JVM": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/0/Tema 4: Tipos primitivos vs referencias": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/0/Tema 6: Operadores, precedencia y control de flujo": [
+      "bloque-repetido"
+    ],
+    "java/0/Tema 7: Arreglos, wrappers y paso de argumentos": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/1/Tema 2: Herencia y sobreescritura": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/1/Tema 3: Interfaces, clases abstractas y cuándo usar cada una": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/1/Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/10/Tema 1: module-info.java y encapsulación fuerte": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/10/Tema 2: Migración incremental y cuándo JPMS aporta valor": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/10/Tema 3: `opens` para acceso reflexivo controlado de frameworks": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/11/Tema 1: Generaciones de memoria y recolectores": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/11/Tema 2: Java Flight Recorder y JIT compilation": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/11/Tema 3: Referencias especiales y heap dumps": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/11/Tema 4: Foreign Function & Memory API (Java 22)": [
+      "bloque-repetido"
+    ],
+    "java/12/Tema 1: Builder — configuración paso a paso y validación": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/12/Tema 2: Factory Method y Strategy": [
+      "cola-tras-cierre"
+    ],
+    "java/12/Tema 4: SOLID y cuándo NO aplicar un patrón": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/13/Tema 1: Arquitectura por capas del proyecto integrador": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/13/Tema 2: Integrando concurrencia, modelado y testing": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/14/Tema 1: Compartir memoria requiere orden y visibilidad": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/14/Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/14/Tema 3: Deserializar es permitir construcción y comportamiento": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/14/Tema 4: El runtime es parte del artefacto y necesita ciclo de vida": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/15/Tema 1: Maven avanzado": [
+      "bloque-repetido"
+    ],
+    "java/15/Tema 2: Gradle y builds reproducibles": [
+      "bloque-repetido"
+    ],
+    "java/15/Tema 3: Proyectos multi-módulo sin ciclos": [
+      "bloque-repetido"
+    ],
+    "java/15/Tema 4: JUnit 5, Mockito y assertions expresivas": [
+      "bloque-repetido"
+    ],
+    "java/15/Tema 5: Pruebas de integración reproducibles": [
+      "bloque-repetido"
+    ],
+    "java/15/Tema 6: SLF4J, Logback, MDC y logging estructurado": [
+      "bloque-repetido"
+    ],
+    "java/2/Tema 1: List, Set, Map y sus implementaciones": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/2/Tema 2: Genéricos, wildcards y type erasure": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/2/Tema 3: Comparable vs Comparator, e iteración": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/3/Tema 1: Checked vs unchecked exceptions": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/3/Tema 2: try-with-resources": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/3/Tema 3: Excepciones personalizadas y no tragar excepciones": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/4/Tema 1: Stream API — map, filter, reduce, collect": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/4/Tema 2: Optional — evitar null explícitamente": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/4/Tema 3: Streams paralelos y referencias a métodos": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/4/Tema 4: Stream Gatherers (Java 24)": [
+      "bloque-repetido"
+    ],
+    "java/5/Tema 2: CompletableFuture": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/5/Tema 3: Virtual threads": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/5/Tema 4: Condiciones de carrera y sincronización": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/5/Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/6/Tema 1: NIO.2 — Path y Files": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/6/Tema 2: Serialización con Jackson": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/6/Tema 3: Archivos grandes y recursos del classpath": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/7/Tema 1: record — modelos inmutables sin boilerplate": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/7/Tema 2: sealed — jerarquías cerradas y exhaustividad": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/7/Tema 3: Pattern matching exhaustivo y para instanceof": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/7/Tema 4: Unnamed variables y patterns (_, Java 22)": [
+      "bloque-repetido"
+    ],
+    "java/8/Tema 1: pom.xml vs build.gradle.kts": [
+      "bloque-repetido"
+    ],
+    "java/8/Tema 2: Ciclo de vida de build y scopes": [
+      "bloque-repetido"
+    ],
+    "java/8/Tema 3: Proyectos multi-módulo": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/9/Tema 1: JUnit 5 — anotaciones y ciclo de vida": [
+      "bloque-repetido"
+    ],
+    "java/9/Tema 2: Mockito — aislar dependencias": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "java/9/Tema 3: Tests parametrizados y cobertura": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "javascript/0/Tema 3: Conversión, coerción e igualdad": [
+      "tema-breve"
+    ],
+    "javascript/0/Tema 4: Template literals y mensajes seguros": [
+      "tema-breve"
+    ],
+    "javascript/1/Tema 1: Tres formas de escribir una función": [
+      "bloque-repetido"
+    ],
+    "javascript/1/Tema 2: Parámetros por defecto y rest/spread": [
+      "bloque-repetido"
+    ],
+    "javascript/1/Tema 3: Funciones de orden superior": [
+      "bloque-repetido"
+    ],
+    "javascript/1/Tema 4: Control de flujo — if, switch y loops": [
+      "bloque-repetido"
+    ],
+    "javascript/1/Tema 5: IIFE y el objeto arguments": [
+      "bloque-repetido"
+    ],
+    "javascript/2/Tema 1: Scope léxico y closures": [
+      "bloque-repetido"
+    ],
+    "javascript/2/Tema 2: Hoisting y Temporal Dead Zone": [
+      "bloque-repetido"
+    ],
+    "javascript/2/Tema 3: Call stack y contexto de ejecución": [
+      "bloque-repetido"
+    ],
+    "javascript/2/Tema 4: this según el modo de invocación": [
+      "bloque-repetido"
+    ],
+    "javascript/2/Tema 5: Module pattern y factory functions": [
+      "bloque-repetido"
+    ],
+    "javascript/2/Tema 6: Execution Context, Scope Chain y Lexical Environment": [
+      "bloque-repetido"
+    ],
+    "javascript/3/Tema 1: Prototype chain y Object.create": [
+      "bloque-repetido"
+    ],
+    "javascript/3/Tema 2: class, extends y super": [
+      "bloque-repetido"
+    ],
+    "javascript/3/Tema 3: Getters, setters y propiedades computadas": [
+      "bloque-repetido"
+    ],
+    "javascript/3/Tema 4: Encapsulación con campos privados (#campo)": [
+      "bloque-repetido"
+    ],
+    "javascript/4/Tema 1: map, filter, reduce, find, some/every": [
+      "bloque-repetido"
+    ],
+    "javascript/4/Tema 2: Set y Map frente a Array y Object": [
+      "bloque-repetido"
+    ],
+    "javascript/4/Tema 3: Inmutabilidad y actualización de estructuras anidadas": [
+      "bloque-repetido"
+    ],
+    "javascript/4/Tema 4: WeakMap y WeakSet": [
+      "bloque-repetido"
+    ],
+    "javascript/4/Tema 5: Métodos inmutables modernos": [
+      "bloque-repetido"
+    ],
+    "javascript/5/Tema 1: El Event Loop": [
+      "bloque-repetido"
+    ],
+    "javascript/5/Tema 2: Promesas": [
+      "bloque-repetido"
+    ],
+    "javascript/5/Tema 3: Promise.all, allSettled, race y any": [
+      "bloque-repetido"
+    ],
+    "javascript/5/Tema 4: El motor V8 — JIT y AST": [
+      "bloque-repetido"
+    ],
+    "javascript/5/Tema 5: Stack, Heap y Garbage Collection": [
+      "bloque-repetido"
+    ],
+    "javascript/6/Tema 1: async/await sobre promesas": [
+      "bloque-repetido"
+    ],
+    "javascript/6/Tema 2: try/catch en flujos asíncronos": [
+      "bloque-repetido"
+    ],
+    "javascript/6/Tema 3: fetch API y AbortController": [
+      "bloque-repetido"
+    ],
+    "javascript/6/Tema 4: Reintentos y timeouts manuales": [
+      "bloque-repetido"
+    ],
+    "kotlin-multiplatform/10/Tema 1: Pipeline Gradle multiplataforma en CI": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/10/Tema 2: Fastlane": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/10/Tema 3: Versionado compartido": [
+      "bloque-repetido"
+    ],
+    "kotlin-multiplatform/11/Tema 1: Arquitectura del proyecto integrador": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/11/Tema 2: Sincronización de datos remotos con caché local": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/11/Tema 3: Cierre del track — la promesa realista de KMP": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/12/Tema 1: La mejor frontera compartida es deliberadamente pequeña": [
+      "bloque-repetido",
+      "cola-tras-cierre",
+      "parrafo-repetido"
+    ],
+    "kotlin-multiplatform/12/Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos": [
+      "bloque-repetido",
+      "cola-tras-cierre",
+      "parrafo-repetido"
+    ],
+    "kotlin-multiplatform/12/Tema 3: Un artefacto compatible necesita más que el mismo número de versión": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/12/Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/13/Tema 1: Kotlin/Native": [
+      "andamiaje-generico"
+    ],
+    "kotlin-multiplatform/8/Tema 1: El framework generado para iOS": [
+      "andamiaje-generico",
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/8/Tema 2: Mapeo de tipos Kotlin ↔ Swift": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/8/Tema 3: Coroutines desde Swift, y distribución del framework": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/9/Tema 1: kotlin.test en commonTest": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/9/Tema 2: Fakes en vez de mocks": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "kotlin-multiplatform/9/Tema 3: runTest para coroutines": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "node/10/Tema 1: Cabeceras seguras con helmet": [
+      "cola-tras-cierre"
+    ],
+    "node/10/Tema 2: Rate limiting": [
+      "cola-tras-cierre"
+    ],
+    "node/10/Tema 3: Inyección SQL y sanitización contra XSS": [
+      "cola-tras-cierre"
+    ],
+    "node/10/Tema 4: OWASP API Security Top 10 y auditoría de dependencias": [
+      "cola-tras-cierre"
+    ],
+    "node/11/Tema 1: Dockerfile multi-stage para Node": [
+      "cola-tras-cierre"
+    ],
+    "node/11/Tema 2: Variables de entorno por ambiente y healthchecks": [
+      "cola-tras-cierre"
+    ],
+    "node/11/Tema 3: PM2, contenedores y zero-downtime deploys": [
+      "cola-tras-cierre"
+    ],
+    "node/11/Tema 4: Nginx como reverse proxy y serverless": [
+      "cola-tras-cierre"
+    ],
+    "node/12/Tema 1: Arquitectura por capas": [
+      "cola-tras-cierre"
+    ],
+    "node/12/Tema 2: Uniendo cada módulo del track": [
+      "cola-tras-cierre"
+    ],
+    "node/12/Tema 3: Qué le falta a esta API para producción real": [
+      "cola-tras-cierre"
+    ],
+    "node/12/Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript": [
+      "cola-tras-cierre"
+    ],
+    "node/12/Tema 5: Posiciones espaciales y Socket.IO con orden recuperable": [
+      "cola-tras-cierre"
+    ],
+    "node/12/Tema 6: Archivos y notificaciones push sin convertirlos en autorización": [
+      "cola-tras-cierre"
+    ],
+    "node/13/Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "node/13/Tema 2: Un contrato HTTP es comportamiento, no solo documentación": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "node/13/Tema 3: Reintentar sin duplicar el efecto": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "node/13/Tema 4: Webhooks verificables y recuperación por reconciliación": [
+      "bloque-repetido",
+      "cola-tras-cierre",
+      "parrafo-repetido"
+    ],
+    "node/13/Tema 5: OpenAPI como contrato ejecutable": [
+      "cola-tras-cierre"
+    ],
+    "node/6/Tema 1: Hashing de contraseñas": [
+      "cola-tras-cierre"
+    ],
+    "node/6/Tema 2: JWT — access y refresh tokens": [
+      "bloque-repetido"
+    ],
+    "node/6/Tema 3: Middleware de autenticación y control de roles": [
+      "cola-tras-cierre"
+    ],
+    "node/6/Tema 4: OAuth 2.0 y Passport.js": [
+      "cola-tras-cierre"
+    ],
+    "node/6/Tema 5: Sesiones, cookies seguras y protección CSRF": [
+      "cola-tras-cierre"
+    ],
+    "node/7/Tema 1: Vitest y Supertest — pruebas de integración HTTP reales": [
+      "cola-tras-cierre"
+    ],
+    "node/7/Tema 2: Testcontainers — bases de datos de prueba reales y efímeras": [
+      "cola-tras-cierre"
+    ],
+    "node/7/Tema 3: Mocks de servicios externos y CI": [
+      "cola-tras-cierre"
+    ],
+    "node/7/Tema 4: Alternativas de testing y debugging": [
+      "cola-tras-cierre"
+    ],
+    "node/8/Tema 1: Worker Threads para trabajo CPU-bound": [
+      "cola-tras-cierre"
+    ],
+    "node/8/Tema 2: Cluster module y balanceo entre procesos": [
+      "cola-tras-cierre"
+    ],
+    "node/8/Tema 4: PM2, memory leaks y heap snapshots": [
+      "cola-tras-cierre"
+    ],
+    "node/8/Tema 5: Redis para caché, idempotencia y Pub/Sub": [
+      "cola-tras-cierre"
+    ],
+    "node/9/Tema 1: Logging estructurado": [
+      "cola-tras-cierre"
+    ],
+    "node/9/Tema 2: Correlation ID por request": [
+      "cola-tras-cierre"
+    ],
+    "node/9/Tema 3: Excepciones no capturadas y graceful shutdown": [
+      "cola-tras-cierre"
+    ],
+    "node/9/Tema 4: REST, GraphQL y gRPC": [
+      "cola-tras-cierre"
+    ],
+    "node/9/Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry": [
+      "cola-tras-cierre"
+    ],
+    "react/0/Tema 1: JSX es azúcar sintáctica sobre createElement": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/0/Tema 2: Listas con key estable": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/0/Tema 3: Composición sobre herencia, y Fragments": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/1/Tema 1: useState y actualizaciones funcionales": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/1/Tema 2: Render frente a commit": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/1/Tema 3: Batching de actualizaciones": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/10/Tema 1: Server Components por defecto": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/10/Tema 2: use client para interactividad": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/10/Tema 3: Streaming con Suspense en el servidor": [
+      "bloque-repetido"
+    ],
+    "react/11/Tema 1: Tipado de props y children": [
+      "bloque-repetido"
+    ],
+    "react/11/Tema 2: Hooks genéricos": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/11/Tema 3: Eventos tipados y componentes polimórficos": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/12/Tema 1: Estructura del proyecto integrador": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/12/Tema 2: Integrando rutas, TanStack Query y Zustand": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/13/Tema 1: Diseñar estados de carga, error y recuperación": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/13/Tema 2: La composición visual debe conservar semántica y foco": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/13/Tema 3: Cliente y servidor forman una sola frontera de seguridad": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/13/Tema 4: Hidratación determinista, idioma y releases medibles": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/14/Tema 2: Server Actions y seguridad": [
+      "andamiaje-generico"
+    ],
+    "react/14/Tema 3: Next.js ISR, Metadata y Middleware": [
+      "andamiaje-generico"
+    ],
+    "react/14/Tema 4: Optimización de imágenes y fuentes": [
+      "andamiaje-generico"
+    ],
+    "react/14/Tema 5: Accesibilidad y React Aria": [
+      "andamiaje-generico"
+    ],
+    "react/14/Tema 6: i18n, pluralización y RTL": [
+      "andamiaje-generico"
+    ],
+    "react/2/Tema 1: useEffect — dependencias y limpieza": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/2/Tema 2: useRef — valores mutables sin re-render": [
+      "bloque-repetido"
+    ],
+    "react/2/Tema 3: useMemo y useCallback con criterio": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/2/Tema 4: Reglas de los hooks, useReducer y useImperativeHandle": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/3/Tema 1: React Hook Form y el problema del re-render por tecla": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/3/Tema 2: Validación con zod y formularios multi-paso": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/4/Tema 1: createContext y useContext": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/4/Tema 2: Cuándo Context es suficiente y cuándo no": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/5/Tema 1: Rutas anidadas y layouts compartidos": [
+      "bloque-repetido"
+    ],
+    "react/5/Tema 2: Loaders — datos antes de renderizar": [
+      "bloque-repetido"
+    ],
+    "react/6/Tema 1: useQuery y el problema que resuelve": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/6/Tema 2: Mutations e invalidación": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/6/Tema 3: Optimistic updates": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/7/Tema 1: Zustand — stores mínimos sin boilerplate": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/7/Tema 2: Redux Toolkit — slices y ceremonia": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/7/Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/7/Tema 4: Jotai, Recoil y XState como alternativas": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/8/Tema 1: Queries por rol, no por clase CSS": [
+      "bloque-repetido"
+    ],
+    "react/8/Tema 2: Mock Service Worker (MSW)": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/8/Tema 3: Testing de hooks personalizados": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/9/Tema 1: Medir antes de optimizar": [
+      "bloque-repetido"
+    ],
+    "react/9/Tema 2: React.memo con criterio": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/9/Tema 3: Virtualización y code-splitting": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "react/9/Tema 4: useTransition, useDeferredValue y Fiber": [
+      "bloque-repetido",
+      "cola-tras-cierre"
+    ],
+    "rutaflow/0/Tema 1: El proceso logístico como sistema": [
+      "bloque-repetido"
+    ],
+    "rutaflow/0/Tema 2: Entorno reproducible en Windows, macOS y Linux": [
+      "bloque-repetido"
+    ],
+    "rutaflow/0/Tema 3: Arquitectura, privacidad y amenazas": [
+      "bloque-repetido"
+    ],
+    "rutaflow/1/Tema 1: Modelo relacional e historial": [
+      "bloque-repetido"
+    ],
+    "rutaflow/1/Tema 2: Geografía con precisión útil": [
+      "bloque-repetido"
+    ],
+    "rutaflow/1/Tema 3: Ledger de doble partida": [
+      "bloque-repetido"
+    ],
+    "rutaflow/2/Tema 1: Contratos HTTP y autorización": [
+      "bloque-repetido"
+    ],
+    "rutaflow/2/Tema 2: Casos de uso y transacciones": [
+      "bloque-repetido"
+    ],
+    "rutaflow/2/Tema 3: Outbox, colas y observabilidad": [
+      "bloque-repetido"
+    ],
+    "rutaflow/3/Tema 1: Estados explícitos y arquitectura de interfaz": [
+      "bloque-repetido"
+    ],
+    "rutaflow/3/Tema 2: Mapas operativos": [
+      "bloque-repetido"
+    ],
+    "rutaflow/3/Tema 3: Accesibilidad, seguridad y rendimiento": [
+      "bloque-repetido"
+    ],
+    "rutaflow/4/Tema 1: Arquitectura Flutter por capacidades": [
+      "bloque-repetido"
+    ],
+    "rutaflow/4/Tema 2: GPS, permisos y batería": [
+      "bloque-repetido"
+    ],
+    "rutaflow/4/Tema 3: Offline-first y prueba de entrega": [
+      "bloque-repetido"
+    ],
+    "rutaflow/5/Tema 1: Grafos y problema de rutas": [
+      "bloque-repetido"
+    ],
+    "rutaflow/5/Tema 2: Geocoding y map matching": [
+      "bloque-repetido"
+    ],
+    "rutaflow/5/Tema 3: Streaming y ETA con incertidumbre": [
+      "bloque-repetido"
+    ],
+    "rutaflow/6/Tema 1: Cotización y facturación reproducible": [
+      "bloque-repetido"
+    ],
+    "rutaflow/6/Tema 2: Recaudo, liquidación y conciliación": [
+      "bloque-repetido"
+    ],
+    "rutaflow/6/Tema 3: Fraude responsable": [
+      "bloque-repetido"
+    ],
+    "rutaflow/7/Tema 1: Infraestructura y entrega segura": [
+      "bloque-repetido"
+    ],
+    "rutaflow/7/Tema 2: SLO y respuesta a incidentes": [
+      "bloque-repetido"
+    ],
+    "rutaflow/7/Tema 4: Continuidad, costes y proyecto final": [
+      "andamiaje-generico",
+      "bloque-repetido"
+    ],
+    "spring-boot/16/Tema 1: Relaciones, lado propietario y ciclo de vida": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/16/Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/17/Tema 1: DataSource, JdbcTemplate y DAO": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/17/Tema 2: `@Transactional`, rollback y límites de transacción": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/18/Tema 1: SecurityFilterChain y autorización": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/18/Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/19/Tema 1: Job, Step, Tasklet y chunk processing": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/20/Tema 1: Scheduling y tareas periódicas": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/20/Tema 2: Eventos locales, eventos transaccionales y mensajería": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/20/Tema 3: Correo con Spring Mail y entrega recuperable": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/20/Tema 4: Caché con Spring Cache, Caffeine y Redis": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/21/Tema 1: Productor, tópico, key y consumidor": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/21/Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia": [
+      "andamiaje-generico"
+    ],
+    "spring-boot/21/Tema 3: Outbox transaccional y flujo de negocio": [
+      "andamiaje-generico"
+    ]
+  },
+  "description": "Deuda histórica aceptada por scripts/audit_lesson_substance.py --strict. Cada entrada debe reducirse, nunca ampliarse."
+}
