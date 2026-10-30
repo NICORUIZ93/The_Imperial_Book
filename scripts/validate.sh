@@ -90,6 +90,23 @@ for (const [trackId, sourceFile] of Object.entries(TRACK_SOURCES)) {
   }
 }
 
+const readme = fs.readFileSync('README.md', 'utf8');
+const declaredInventory = readme.match(/La academia reúne 14 tracks, (\d+) módulos y (\d+) temas editoriales/);
+if (!declaredInventory) {
+  throw new Error('README.md debe declarar el inventario actual de 14 tracks, módulos y temas');
+}
+const tableRows = [...readme.matchAll(/^\| (?!Track \|)([^|]+) \| (\d+) \|/gm)];
+const moduleTotal = tableRows.reduce((total, row) => total + Number(row[2]), 0);
+const expectedModuleTotal = Object.values(TRACK_SOURCES).reduce((total, sourceFile) => {
+  const source = fs.readFileSync(sourceFile, 'utf8');
+  return total + (source.match(/^\s*m\(\d+,/gm) || []).length;
+}, 0);
+if (Number(declaredInventory[1]) !== moduleTotal || moduleTotal !== expectedModuleTotal) {
+  throw new Error(
+    `README.md declara ${declaredInventory[1]} módulos; tabla=${moduleTotal}, tracks=${expectedModuleTotal}`,
+  );
+}
+
 // Los 3 diagramas Mermaid pedidos (arquitectura, flujo de peticion, comparativa)
 // deben existir en el contenido real del track Cloud.
 const cloudModulo0 = fs.readFileSync('web/public/content/cloud/modulo-0.md', 'utf8');

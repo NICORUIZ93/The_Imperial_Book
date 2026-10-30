@@ -3,8 +3,9 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 245 módulos y 1098 temas editoriales en formato de
-libro. La presencia de criterios editoriales y la completitud de los siete pasos
+La academia reúne 14 tracks, 245 módulos y 1098 temas editoriales en formato de
+libro. Esos 14 tracks son Fundamentos + RutaFlow + 12 rutas de especialización.
+La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
 
@@ -146,7 +147,7 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 241
+(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 245
 módulos y 1098 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
