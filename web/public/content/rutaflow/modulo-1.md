@@ -15,16 +15,6 @@ Envio representa el agregado; EnvioEvento registra hechos inmutables. Una transi
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
-
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás diseñar un esquema `envios` + `envio_eventos` append-only en PostgreSQL y explicar, con un error real del motor, por qué el historial no se edita. **Conocimiento previo:** terminal, SQL básico (`CREATE TABLE`, `INSERT`) y Docker para levantar Postgres local.
@@ -133,16 +123,6 @@ Latitud y longitud no son texto. Se almacenan con sistema de referencia explíci
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
-
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás modelar ubicaciones con PostGIS (`geography(Point, 4326)`) y calcular distancias reales con `ST_DWithin`, explicando por qué `geometry` sin castear da resultados incorrectos. **Conocimiento previo:** SQL básico, el esquema `envios` del Tema 1 y Postgres local con la extensión PostGIS disponible.
@@ -242,16 +222,6 @@ El saldo es una proyección de movimientos, no un campo que se corrige manualmen
 **¿Por qué es importante?** Porque hace auditables el efectivo, pagos, liquidaciones y reversos. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
 
 #### Paso 1 · Objetivo y preparación
 

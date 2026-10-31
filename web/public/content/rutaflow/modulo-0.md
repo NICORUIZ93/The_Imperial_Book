@@ -37,10 +37,10 @@ Una guía pasa por admisión, clasificación, asignación, tránsito, intento y 
 
 ```mermaid
 flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
+  A["admitido"] --> B["clasificado"] --> C["asignado"] --> D["en tránsito"]
+  D --> E["intentado"]
+  E --> D
+  D --> F["entregado<br/>terminal"]
 ```
 
 #### Paso 1 · Objetivo y preparación
@@ -144,10 +144,14 @@ El punto de partida será un monorepo con apps, servicios, paquetes, infraestruc
 
 ```mermaid
 flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
+  subgraph Host["tu terminal (host)"]
+    V["verificar.js"] -->|"localhost:5432"| P["puerto publicado (ports:)"]
+  end
+  subgraph Red["red interna de Compose"]
+    APP["servicio app"] -->|"db:5432"| DB[("servicio db")]
+  end
+  P --> DB
+  V -->|"db:5432"| X["ENOTFOUND: el host no resuelve nombres de servicio"]
 ```
 
 #### Paso 1 · Objetivo y preparación
@@ -238,11 +242,12 @@ Se comienza con un monolito modular porque despliegues distribuidos no corrigen 
 **Diagrama:**
 
 ```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
+flowchart TD
+  A["evento con PII"] --> B["registrarEvento: única vía"]
+  B --> C["redactarPII"]
+  C --> D["teléfono enmascarado, sin dirección"]
+  D --> E["log observable"]
+  B -.->|"ruta eliminada"| F["PII en texto plano"]
 ```
 
 #### Paso 1 · Objetivo y preparación

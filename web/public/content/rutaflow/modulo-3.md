@@ -15,16 +15,6 @@ Una pantalla remota no tiene solo datos: puede estar cargando, desactualizada, v
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
-
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar vas a tener un tipo de estado explícito (unión discriminada) para la vista de seguimiento de un envío, en vez de banderas sueltas (`isLoading`, `hasError`, `envio`) que pueden contradecirse entre sí. Vas a construirlo desde una carpeta vacía y vas a poder explicar por qué una unión discriminada hace imposible, a nivel de datos, que la vista esté "cargando" y "lista" al mismo tiempo. **Conocimiento previo:** terminal, Git y JavaScript básico (objetos y `switch`).
@@ -162,16 +152,6 @@ No se renderizan miles de marcadores DOM. El servidor limita por bounding box; e
 **¿Por qué es importante?** Porque mantiene legible y rápida una herramienta de decisión. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
 
 #### Paso 1 · Objetivo y preparación
 
@@ -324,16 +304,6 @@ El mapa tiene alternativa tabular; filtros poseen etiquetas; diálogos gestionan
 **¿Por qué es importante?** Porque una aplicación profesional funciona bajo discapacidad, mala red y dispositivos modestos. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
 
 #### Paso 1 · Objetivo y preparación
 

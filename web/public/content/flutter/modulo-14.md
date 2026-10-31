@@ -329,14 +329,12 @@ El marcador no salta entre puntos: interpola posición y rumbo durante un interv
 **Diagrama:**
 
 ```mermaid
-sequenceDiagram
-  participant M as App móvil
-  participant A as API segura
-  participant D as Datos/outbox
-  M->>A: comando idempotente
-  A->>D: regla + persistencia
-  D-->>A: resultado + evento
-  A-->>M: estado verificable
+flowchart TD
+  A["muestra GPS válida"] --> B["interpolar posición y rumbo"]
+  B --> C["animación acotada"]
+  C --> D["marcador en destino"]
+  E["muestra nueva"] --> F["cancela la anterior"] --> B
+  G["muestra vieja"] --> H["se descarta"]
 ```
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Interpola visualmente entre dos posiciones válidas sin modificar sus datos originales. Prueba una pausa larga y evita que la animación haga parecer actual una ubicación que ya está obsoleta.
@@ -388,14 +386,12 @@ SQLite conserva jornada, paradas y un outbox de comandos. Capturar foto genera u
 **Diagrama:**
 
 ```mermaid
-sequenceDiagram
-  participant M as App móvil
-  participant A as API segura
-  participant D as Datos/outbox
-  M->>A: comando idempotente
-  A->>D: regla + persistencia
-  D-->>A: resultado + evento
-  A-->>M: estado verificable
+flowchart TD
+  A["confirmación y foto cifrada<br/>con solo la ruta local"] --> B["fila local: pending"]
+  B --> C["syncing"]
+  C -->|"200"| D["synced: fila eliminada"]
+  C -->|"error de red"| E["failed: reintento acotado"]
+  E --> C
 ```
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Guarda la referencia local de una evidencia junto a su operación pendiente. Reinicia sin conexión y confirma que sigue disponible para subirla, distinguiendo archivo ausente de envío aún no sincronizado.
@@ -450,13 +446,18 @@ Dio configura timeouts, cancelación, interceptores seguros y subida multipart c
 
 ```mermaid
 sequenceDiagram
-  participant M as App móvil
-  participant A as API segura
-  participant D as Datos/outbox
-  M->>A: comando idempotente
-  A->>D: regla + persistencia
-  D-->>A: resultado + evento
-  A-->>M: estado verificable
+  participant P as Petición
+  participant D as Interceptor Dio
+  participant S as Backend
+  participant N as Push (FCM/APNs)
+  P->>D: request con token vencido
+  D->>S: refresh serializado, una sola vez
+  S-->>D: token nuevo
+  D->>S: reintento acotado
+  S-->>P: respuesta
+  N->>P: push recibido
+  P->>S: consulta el recurso
+  Note over P,S: el push avisa, no autoriza
 ```
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Relaciona cada push con una consulta autorizada de la guía. Prueba notificación duplicada y sesión vencida: recibir un mensaje no debe conceder acceso ni confirmar una entrega por sí solo.

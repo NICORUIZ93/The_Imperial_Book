@@ -15,16 +15,6 @@ Money combina entero en unidad menor y moneda; nunca float. La cotización guard
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
-
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás construir y verificar **Tema 1: Cotización y facturación reproducible** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
@@ -39,10 +29,9 @@ Piensa este tema no como una estación de clasificación genérica, sino como un
 
 ```mermaid
 flowchart LR
-  A[Solicitud de cotizacion para RF-4471] --> B{Tarifa vigente en la fecha de solicitud}
-  B --> C[Calculo con BigDecimal y escala fija]
-  C --> D[Cotizacion guardada con version de tarifa]
-  D --> E[Factura reproduce el mismo monto meses despues]
+  A[solicitud RF-4471] --> B[tarifa por fecha]
+  B --> C[cálculo con BigDecimal<br/>cotización versionada]
+  C --> D[factura reproducible]
 ```
 
 #### Paso 4 · Demostración guiada desde cero
@@ -158,16 +147,6 @@ Cobrar efectivo aumenta caja del conductor y obligación a entregar; liquidar mu
 **¿Por qué es importante?** Porque separa el movimiento real de la representación contable. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
 
 #### Paso 1 · Objetivo y preparación
 
@@ -296,16 +275,6 @@ Velocidad imposible, evidencia repetida o concentración de reversos son señale
 **¿Por qué es importante?** Porque reduce pérdidas sin convertir correlaciones defectuosas en decisiones irreversibles. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
 
 #### Paso 1 · Objetivo y preparación
 

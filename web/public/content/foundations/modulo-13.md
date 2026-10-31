@@ -355,10 +355,10 @@ La búsqueda **ingenua** prueba el patrón en cada posición del texto: O(n·m) 
 **Diagrama:**
 
 ```mermaid
-flowchart LR
-    T["texto: ...A B A B X..."] --> F{"falla en el 5o carácter"}
+flowchart TD
+    T["texto: ...A B A B X..."] --> F["discrepancia en el 5.º carácter"]
     F --> S["tabla de fallos de ABAB = 2"]
-    S --> R["continúa comparando desde patron[2]"]
+    S --> R["continúa comparando desde patrón[2]"]
 ```
 
 #### Paso 4 · Demostración guiada desde cero

@@ -15,16 +15,6 @@ Terraform crea redes, datos e identidades con estado protegido; Kubernetes ejecu
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
-
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás construir y verificar **Tema 1: Infraestructura y entrega segura** dentro de RutaFlow, provisionando un namespace de Kubernetes con Terraform y bloqueando el despliegue de imágenes sin firma verificada. **Conocimiento previo:** terminal, Git, nociones básicas de Terraform/HCL y de `kubectl`.
@@ -160,16 +150,6 @@ Disponibilidad útil mide confirmaciones válidas, no procesos vivos. Un SLO fij
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
-
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás construir y verificar **Tema 2: SLO y respuesta a incidentes** dentro de RutaFlow, definiendo un SLO concreto para `/envios/:id` y configurando `readinessProbe`/`livenessProbe` con semántica distinta. **Conocimiento previo:** terminal, Git, YAML de Kubernetes y lectura de métricas básicas.
@@ -181,13 +161,13 @@ Al finalizar podrás construir y verificar **Tema 2: SLO y respuesta a incidente
 #### Paso 3 · Teoría, conceptos y analogía
 
 ```mermaid
-flowchart LR
-  A[Pod sirviendo trafico] --> B{readinessProbe lento}
-  B -->|falla puntual| C[Sale del Service, sigue vivo]
-  C --> D[Vuelve a pasar la proba, reingresa]
-  A --> E{livenessProbe}
-  E -->|mismo endpoint y umbral que readiness| F[Kubernetes mata el pod]
-  F --> G[Pod nuevo arranca frio, sin cache]
+flowchart TD
+  A["Pod sirviendo tráfico"] --> B["readinessProbe"]
+  B -->|"falla puntual"| C["sale del Service, sigue vivo"]
+  C --> D["reingresa al recuperarse"]
+  A --> E["livenessProbe con el mismo endpoint y umbral"]
+  E -->|"falla por lentitud"| F["Kubernetes reinicia el pod"]
+  F --> G["pod nuevo en frío, sin caché"]
   G --> E
 ```
 
@@ -363,16 +343,6 @@ Un backup no está probado hasta restaurarlo y verificar integridad. RPO limita 
 **¿Por qué es importante?** Porque convierte documentación optimista en capacidad operacional demostrada. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
 **Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Entrada] --> B[Regla de dominio]
-  B --> C[(Estado durable)]
-  C --> D[Evento observable]
-  B -->|rechazo explícito| E[Error recuperable]
-```
 
 #### Paso 1 · Objetivo y preparación
 

@@ -834,12 +834,11 @@ Un pipe es **puro** por defecto: Angular solo lo vuelve a ejecutar cuando cambia
 **Diagrama:**
 
 ```mermaid
-flowchart LR
-    M[push sobre el mismo array] --> R{¿cambió la referencia?}
-    R -- no --> P[pipe puro no se ejecuta: 7 kg]
-    I[pipe impuro] --> S[se ejecuta siempre: 17 kg]
-    N[signal.update con array nuevo] --> R2{¿cambió la referencia?}
-    R2 -- sí --> P2[pipe puro se ejecuta: 17 kg]
+flowchart TD
+    A["entrada al pipe"] --> B{"¿cambió la referencia?"}
+    B -->|"no"| C["pipe puro no se ejecuta: 7 kg"]
+    B -->|"sí"| D["pipe puro se ejecuta: 17 kg"]
+    E["pipe impuro"] --> F["se ejecuta siempre: 17 kg"]
 ```
 
 #### Paso 4 · Demostración guiada desde cero

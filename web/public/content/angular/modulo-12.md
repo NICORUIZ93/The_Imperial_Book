@@ -25,14 +25,13 @@ Una versión semántica tiene tres números: mayor, menor y parche. Un cambio ma
 **Analogía:** una aplicación Angular es un tren. `@angular/core`, CLI, TypeScript y Node.js son vagones acoplados; cambiar uno por un modelo incompatible puede impedir que todo el tren avance.
 
 ```mermaid
-flowchart LR
-  Package["package.json"] --> Core["@angular/core"]
-  Package --> CLI["@angular/cli"]
-  Core --> Matrix["Tabla oficial de compatibilidad"]
-  CLI --> Matrix
-  Node["node --version"] --> Matrix
-  TS["TypeScript"] --> Matrix
-  Matrix --> Decision{"¿Combinación soportada?"}
+flowchart TD
+  P["package.json: core y CLI"] --> M["tabla de compatibilidad"]
+  N["node --version"] --> M
+  T["TypeScript"] --> M
+  M --> D{"¿soportada?"}
+  D -->|"sí"| OK["continuar"]
+  D -->|"no"| FIX["actualizar la incompatible"]
 ```
 
 #### Paso 4 · Demostración guiada desde cero

@@ -350,12 +350,13 @@ Un **CVE** identifica una vulnerabilidad concreta en un producto concreto (CVE-A
 
 ```mermaid
 flowchart LR
-    D[package-lock.json] --> A[npm audit --json]
-    B[(base de avisos GHSA)] --> A
+    D[lockfile] --> A[npm audit --json]
+    B[(avisos GHSA)] --> A
     A --> R[auditar.js]
-    R --> T[tabla por CWE]
+    R --> T[tabla CWE]
     R --> X{high o critical}
-    X -- sí --> F[exit 1: el pipeline falla]
+    X -- "sí" --> F[exit 1]
+    X -- "no" --> G[exit 0]
 ```
 
 #### Paso 4 · Demostración guiada desde cero

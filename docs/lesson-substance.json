@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "69ec0cbe511f8b5787c85082c46b3fc7957f76534dd61c3d3b6e3733ef989704",
+    "fingerprint": "883adf1e27410b09de32228f3e3fb4b36cadf525cdde2c9f37bcf3d5d0dde142",
     "issues": {
       "andamiaje-generico": 99,
       "bloque-repetido": 172,
@@ -2153,7 +2153,7 @@
         "module": 1,
         "tailWords": 190,
         "topic": "Tema 7: Pipes puros e impuros, AsyncPipe y signals",
-        "words": 1139
+        "words": 1127
       },
       {
         "issues": [],
@@ -2216,7 +2216,7 @@
         "module": 12,
         "tailWords": 144,
         "topic": "Tema 1: Reconocer la versión y la arquitectura de un proyecto",
-        "words": 689
+        "words": 690
       },
       {
         "issues": [],
@@ -3866,7 +3866,7 @@
         "module": 1,
         "tailWords": 142,
         "topic": "Tema 4: Hooks de Git y commits firmados",
-        "words": 890
+        "words": 861
       },
       {
         "issues": [],
@@ -4777,27 +4777,27 @@
           "andamiaje-generico"
         ],
         "module": 14,
-        "tailWords": 274,
+        "tailWords": 276,
         "topic": "Tema 4: Animaciones de localización",
-        "words": 574
+        "words": 576
       },
       {
         "issues": [
           "andamiaje-generico"
         ],
         "module": 14,
-        "tailWords": 309,
+        "tailWords": 313,
         "topic": "Tema 5: Almacenamiento local, imágenes y offline",
-        "words": 619
+        "words": 623
       },
       {
         "issues": [
           "andamiaje-generico"
         ],
         "module": 14,
-        "tailWords": 328,
+        "tailWords": 358,
         "topic": "Tema 6: Dio y notificaciones push",
-        "words": 642
+        "words": 672
       },
       {
         "issues": [
@@ -5434,7 +5434,7 @@
         "module": 13,
         "tailWords": 182,
         "topic": "Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP",
-        "words": 811
+        "words": 812
       },
       {
         "issues": [],
@@ -5760,7 +5760,7 @@
         "module": 6,
         "tailWords": 215,
         "topic": "Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
-        "words": 4268
+        "words": 4273
       },
       {
         "issues": [],
@@ -5850,7 +5850,7 @@
         "module": 9,
         "tailWords": 95,
         "topic": "Tema 2: Conjuntos, relaciones, funciones e inducción",
-        "words": 876
+        "words": 884
       },
       {
         "issues": [],
@@ -6679,7 +6679,7 @@
         "module": 19,
         "tailWords": 189,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
-        "words": 846
+        "words": 848
       },
       {
         "issues": [],
@@ -6700,7 +6700,7 @@
         "module": 19,
         "tailWords": 185,
         "topic": "Tema 4: Assertions y diseño por contrato",
-        "words": 813
+        "words": 815
       },
       {
         "issues": [],
@@ -7467,7 +7467,7 @@
         "module": 5,
         "tailWords": 90,
         "topic": "Tema 4: El motor V8 — JIT y AST",
-        "words": 905
+        "words": 909
       },
       {
         "issues": [],
@@ -8154,7 +8154,7 @@
         "module": 10,
         "tailWords": 200,
         "topic": "Tema 5: CVE, CWE y npm audit en el pipeline",
-        "words": 885
+        "words": 882
       },
       {
         "issues": [],
@@ -9073,63 +9073,63 @@
         "module": 0,
         "tailWords": 186,
         "topic": "Tema 1: El proceso logístico como sistema",
-        "words": 960
+        "words": 959
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 187,
         "topic": "Tema 2: Entorno reproducible en Windows, macOS y Linux",
-        "words": 958
+        "words": 982
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 175,
         "topic": "Tema 3: Arquitectura, privacidad y amenazas",
-        "words": 898
+        "words": 907
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 199,
         "topic": "Tema 1: Modelo relacional e historial",
-        "words": 1007
+        "words": 983
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 188,
         "topic": "Tema 2: Geografía con precisión útil",
-        "words": 981
+        "words": 957
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 206,
         "topic": "Tema 3: Ledger de doble partida",
-        "words": 1014
+        "words": 990
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 157,
         "topic": "Tema 1: Contratos HTTP y autorización",
-        "words": 1056
+        "words": 1032
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 191,
         "topic": "Tema 2: Casos de uso y transacciones",
-        "words": 1072
+        "words": 1048
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 208,
         "topic": "Tema 3: Outbox, colas y observabilidad",
-        "words": 1113
+        "words": 1089
       },
       {
         "issues": [],
@@ -9143,63 +9143,63 @@
         "module": 3,
         "tailWords": 214,
         "topic": "Tema 1: Estados explícitos y arquitectura de interfaz",
-        "words": 1155
+        "words": 1131
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 167,
         "topic": "Tema 2: Mapas operativos",
-        "words": 1230
+        "words": 1206
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 241,
         "topic": "Tema 3: Accesibilidad, seguridad y rendimiento",
-        "words": 1125
+        "words": 1101
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 216,
         "topic": "Tema 1: Arquitectura Flutter por capacidades",
-        "words": 1182
+        "words": 1158
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 159,
         "topic": "Tema 2: GPS, permisos y batería",
-        "words": 1058
+        "words": 1034
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 212,
         "topic": "Tema 3: Offline-first y prueba de entrega",
-        "words": 1188
+        "words": 1164
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 169,
         "topic": "Tema 1: Grafos y problema de rutas",
-        "words": 1267
+        "words": 1243
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 198,
         "topic": "Tema 2: Geocoding y map matching",
-        "words": 1113
+        "words": 1089
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 242,
         "topic": "Tema 3: Streaming y ETA con incertidumbre",
-        "words": 1324
+        "words": 1300
       },
       {
         "issues": [],
@@ -9220,21 +9220,21 @@
         "module": 6,
         "tailWords": 178,
         "topic": "Tema 1: Cotización y facturación reproducible",
-        "words": 1295
+        "words": 1251
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 172,
         "topic": "Tema 2: Recaudo, liquidación y conciliación",
-        "words": 1243
+        "words": 1219
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 215,
         "topic": "Tema 3: Fraude responsable",
-        "words": 1303
+        "words": 1279
       },
       {
         "issues": [],
@@ -9248,14 +9248,14 @@
         "module": 7,
         "tailWords": 173,
         "topic": "Tema 1: Infraestructura y entrega segura",
-        "words": 1092
+        "words": 1068
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 176,
         "topic": "Tema 2: SLO y respuesta a incidentes",
-        "words": 1112
+        "words": 1087
       },
       {
         "issues": [],
@@ -9271,7 +9271,7 @@
         "module": 7,
         "tailWords": 274,
         "topic": "Tema 4: Continuidad, costes y proyecto final",
-        "words": 1280
+        "words": 1256
       }
     ],
     "spring-boot": [

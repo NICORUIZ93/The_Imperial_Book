@@ -157,10 +157,11 @@ Una prueba de corrección no demuestra eficiencia ni ausencia de errores de impl
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
     R["R = leer, editar"] --> CHECK{"R ⊆ A"}
     A["A = leer, editar, exportar"] --> CHECK
     CHECK --> AUTH["autorizado"]
+    CHECK -->|"no: falta un permiso"| DENY["no autorizado"]
     BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
 ```
 

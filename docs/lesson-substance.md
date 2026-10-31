@@ -63,12 +63,12 @@ defectos detectados tampoco acredita haber sido comprendida.
 | ios / 8 | Tema 2: Capas del proyecto e inyección por inicializador | 748 | 400 | bloque-repetido |
 | flutter / 14 | Tema 1: Diseño de pantallas y Riverpod | 687 | 385 | andamiaje-generico |
 | cloud / 34 | Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK | 758 | 382 | andamiaje-generico |
+| flutter / 14 | Tema 6: Dio y notificaciones push | 672 | 358 | andamiaje-generico |
 | devops / 15 | Tema 6: DevSecOps y métricas DORA | 762 | 336 | andamiaje-generico |
-| flutter / 14 | Tema 6: Dio y notificaciones push | 642 | 328 | andamiaje-generico |
+| flutter / 14 | Tema 5: Almacenamiento local, imágenes y offline | 623 | 313 | andamiaje-generico |
 | devops / 15 | Tema 3: Service Mesh con Istio o Linkerd | 765 | 311 | andamiaje-generico |
-| flutter / 14 | Tema 5: Almacenamiento local, imágenes y offline | 619 | 309 | andamiaje-generico |
-| flutter / 14 | Tema 4: Animaciones de localización | 574 | 274 | andamiaje-generico |
-| rutaflow / 7 | Tema 4: Continuidad, costes y proyecto final | 1280 | 274 | andamiaje-generico |
+| flutter / 14 | Tema 4: Animaciones de localización | 576 | 276 | andamiaje-generico |
+| rutaflow / 7 | Tema 4: Continuidad, costes y proyecto final | 1256 | 274 | andamiaje-generico |
 | devops / 15 | Tema 5: Ansible, inventarios, roles y Vault | 685 | 273 | andamiaje-generico |
 
 ## Cómo se corrige
@@ -79,4 +79,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `69ec0cbe511f8b5787c85082c46b3fc7957f76534dd61c3d3b6e3733ef989704`
+Huella del contenido: `883adf1e27410b09de32228f3e3fb4b36cadf525cdde2c9f37bcf3d5d0dde142`

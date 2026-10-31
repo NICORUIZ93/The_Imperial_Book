@@ -294,8 +294,10 @@ Aunque como desarrollador de aplicaciones rara vez se interactúa directamente c
 
 ```mermaid
 flowchart LR
-    SOURCE["Código fuente"] --> AST["Parser y AST"] --> IGNITION["Ignition: bytecode"] --> HOT{"función frecuente"} --> TURBO["TurboFan: código optimizado"]
-    TURBO -->|"suposición invalidada"| IGNITION
+    SOURCE["Código fuente"] --> AST["Parser y AST"] --> IGNITION["Ignition: bytecode"] --> HOT{"¿caliente?"}
+    HOT -->|"sí"| TURBO["TurboFan"]
+    HOT -->|"no"| STAY["sigue en bytecode"]
+    TURBO -->|"deoptimización"| IGNITION
 ```
 
 #### Paso 4 · Demostración guiada desde cero

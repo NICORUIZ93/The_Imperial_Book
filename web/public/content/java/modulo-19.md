@@ -20,10 +20,11 @@ Cada clase cargada tiene un objeto `Class<?>` que describe sus **campos** (`Fiel
 
 ```mermaid
 flowchart LR
-    O[objeto Envio] --> C[getClass]
+    O[envío] --> C[getClass]
     C --> F[getDeclaredFields]
-    F --> A{isAnnotationPresent Obligatorio}
-    A -- sí --> V[campo.get y validar]
+    F --> A{"¿@Obligatorio?"}
+    A -- "sí" --> V[get y validar]
+    A -- "no" --> Z[se ignora]
 ```
 
 #### Paso 4 · Demostración guiada desde cero
@@ -340,10 +341,11 @@ El **diseño por contrato** define **precondiciones** (lo que debe cumplir quien
 ```mermaid
 flowchart LR
     L[llamador] --> P{precondición}
-    P -- falla --> E[IllegalArgumentException]
-    P -- ok --> M[cambio de estado]
-    M --> I{assert invariante}
-    I -- con -ea y falla --> A[AssertionError]
+    P -- falla --> E[excepción]
+    P -- ok --> M[estado nuevo]
+    M --> I{invariante}
+    I -- "-ea y falla" --> A[AssertionError]
+    I -- "sin -ea" --> OK[continúa]
 ```
 
 #### Paso 4 · Demostración guiada desde cero

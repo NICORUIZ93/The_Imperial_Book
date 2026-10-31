@@ -1251,6 +1251,7 @@ flowchart TD
     REG -->|"no"| ALERT["señal: destino externo"]
     REG -->|"sí"| TEXT{"¿texto coincide<br/>con destino?"}
     TEXT -->|"no"| ALERT
+    TEXT -->|"sí"| CLEAN["sin señal"]
     C --> URG["urgencia"] --> ALERT
     ALERT --> REP["reportar y contener sesiones"]
 ```

@@ -278,17 +278,12 @@ Los hooks son locales a cada copia del repositorio: no se distribuyen automátic
 
 ```mermaid
 flowchart TD
-    subgraph PC[".git/hooks/pre-commit (local, opcional, rápido)"]
-        direction LR
-        C1["git commit"] --> C2["ejecuta el hook"] --> C3{"¿pasa?"}
-        C3 -->|Sí| C4["commit se crea"]
-        C3 -->|No| C5["commit se cancela"]
-    end
-    subgraph CI["CI en el pipeline (centralizado, obligatorio, para TODO el equipo)"]
-        direction LR
-        P1["git push"] --> P2["dispara CI"] --> P3{"¿pasa?"}
-        P3 -->|Sí| P4["PR puede fusionarse"]
-    end
+    L["hook local (opcional)"] --> LC{"¿pasa?"}
+    LC -->|"sí"| LO["commit creado"]
+    LC -->|"no"| LX["commit cancelado"]
+    C["CI del equipo (obligatoria)"] --> CC{"¿pasa?"}
+    CC -->|"sí"| CO["PR fusionable"]
+    CC -->|"no"| CX["PR bloqueada"]
 ```
 
 #### Paso 4 · Demostración guiada desde cero
