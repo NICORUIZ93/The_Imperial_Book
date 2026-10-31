@@ -69,7 +69,7 @@ El proyecto integrador tiene límites.
     def test_provider_documentation_is_recognized_by_exact_host(self):
         for host in ("docs.python.org", "docs.oracle.com", "www.typescriptlang.org",
                      "tc39.es", "www.gnu.org", "docs.npmjs.com", "docs.github.com",
-                     "sre.google", "www.microsoft.com"):
+                     "sre.google", "www.microsoft.com", "ocw.mit.edu", "cs.brown.edu"):
             with self.subTest(host=host):
                 self.assertTrue(visual_audit.evaluate(f"https://{host}/docs")["officialSource"])
 

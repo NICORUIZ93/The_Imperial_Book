@@ -32,7 +32,7 @@ OFFICIAL_SOURCE_HOSTS = frozenset({
     "dart.dev", "api.flutter.dev", "docs.gradle.org", "maven.apache.org",
     "www.postgresql.org", "www.sqlite.org", "code.visualstudio.com", "docs.github.com",
     "aws.amazon.com", "opentelemetry.io",
-    "sre.google", "www.microsoft.com",
+    "sre.google", "www.microsoft.com", "ocw.mit.edu", "cs.brown.edu",
 })
 
 

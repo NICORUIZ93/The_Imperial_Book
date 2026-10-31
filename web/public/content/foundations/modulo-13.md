@@ -221,7 +221,7 @@ Resuelve el problema de **selección de actividades**: dadas franjas `(inicio, f
 
 #### Paso 7 · Cierre
 Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
-**Fuente oficial:** [Greedy algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Greedy_algorithm), [Kruskal's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Kruskal%27s_algorithm); Baase y Van Gelder, cap. 8.
+**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), que incluyen dos clases de árboles de expansión mínima, y Baase y Van Gelder, cap. 8, pendiente de lectura completa en el disco externo. Wikipedia deja de ser la referencia principal del tema.
 **Conceptos clave:** elección codiciosa, contraejemplo, union-find, árbol de expansión mínima, Kruskal, Prim.
 **Cuándo no usarlo:** cuando no puedes justificar la propiedad de elección codiciosa. Si un contraejemplo pequeño la rompe, usa programación dinámica o búsqueda exhaustiva.
 
@@ -442,7 +442,7 @@ Implementa **Rabin-Karp** (hash rodante) y compáralo con KMP buscando varios pa
 
 #### Paso 7 · Cierre
 Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
-**Fuente oficial:** [Knuth–Morris–Pratt algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm); Baase y Van Gelder, cap. 11.
+**Fuentes oficiales y primarias:** [artículo original *Fast Pattern Matching in Strings* alojado por Brown University](https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf), Knuth, Morris y Pratt (1977), y Baase y Van Gelder, cap. 11, pendiente de lectura completa en el disco externo. El artículo establece tiempo proporcional a la suma de las longitudes; esta lección conserva una implementación educativa propia.
 **Conceptos clave:** búsqueda ingenua, prefijo-sufijo, tabla de fallos, KMP, coincidencias solapadas, hash rodante.
 **Cuándo no usarlo:** en Python, `str.find`, `in` y el módulo `re` ya están optimizados en C: úsalos en código real. Implementa KMP para aprender, para entrevistas o cuando trabajes sobre flujos donde no puedes retroceder.
 
@@ -543,7 +543,7 @@ Investiga y explica con tus palabras otro problema NP-completo que aparezca en l
 
 #### Paso 7 · Cierre
 Entrega la tabla de tiempos, la mejora con 2-opt y tu explicación del segundo problema. **¿Por qué es importante?** porque reconocer un problema intratable te evita prometer una solución "óptima y rápida" imposible y te lleva a negociar requisitos: calidad suficiente, límite de tiempo o tamaño acotado.
-**Fuente oficial:** [NP-completeness (Wikipedia)](https://en.wikipedia.org/wiki/NP-completeness), [Travelling salesman problem (Wikipedia)](https://en.wikipedia.org/wiki/Travelling_salesman_problem); Baase y Van Gelder, cap. 13.
+**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), en particular la clase 17 de complejidad y NP-completitud y la clase 18 de aproximaciones; Baase y Van Gelder, cap. 13, queda pendiente de lectura completa en el disco externo. Las notas definen P, NP, reducciones y NP-hard; no prueban que toda heurística produzca una aproximación con cota.
 **Conceptos clave:** P, NP, NP-completo, reducción, crecimiento factorial, heurística, aproximación, 2-opt.
 **Cuándo no usarlo:** no uses heurísticas cuando el tamaño es pequeño y fijo (fuerza bruta es exacta y simple) ni cuando necesitas una garantía de optimalidad que el negocio sí exige: ahí van los solvers de programación entera.
 

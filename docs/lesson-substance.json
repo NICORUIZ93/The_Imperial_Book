@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1d28f26b0a2df8cc6abb8111dc9e12fe5da84f8f38727f6b8b8cd50217b66199",
+    "fingerprint": "e2b7a3e2c1f665bd3a74d2059906a143a7423ce89963ac456cd176a3c0142277",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -5178,9 +5178,9 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 175,
+        "tailWords": 209,
         "topic": "Tema 2: Algoritmos codiciosos y árbol de expansión mínima",
-        "words": 914
+        "words": 948
       },
       {
         "issues": [],
@@ -5192,16 +5192,16 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 182,
+        "tailWords": 222,
         "topic": "Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP",
-        "words": 812
+        "words": 852
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 198,
+        "tailWords": 249,
         "topic": "Tema 5: Problemas intratables: P, NP y heurísticas",
-        "words": 896
+        "words": 947
       },
       {
         "issues": [],

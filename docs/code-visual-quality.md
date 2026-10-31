@@ -2,11 +2,11 @@
 
 Mide únicamente contenido dentro de cada tema. Las guías transversales no cuentan como código editorial ni como fuente oficial del tema.
 
-Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-10-31 conserva los 378 temas originalmente sin reconocimiento y los resultados HTTP de 175 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
+Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-10-31 conserva los 378 temas originalmente sin reconocimiento y los resultados HTTP de 177 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
 
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| foundations | 99 | 99 | 93 | 70 | 6 | 0 | 0 | 98 | 99 | 61 |
+| foundations | 99 | 99 | 93 | 70 | 6 | 0 | 0 | 98 | 99 | 73 |
 | cloud | 156 | 156 | 124 | 80 | 4 | 18 | 0 | 156 | 156 | 147 |
 | devops | 113 | 113 | 67 | 66 | 1 | 40 | 0 | 113 | 112 | 61 |
 | javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 77 |
@@ -20,7 +20,7 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | ios | 56 | 56 | 38 | 30 | 0 | 16 | 0 | 56 | 56 | 56 |
 | flutter | 63 | 63 | 48 | 51 | 0 | 14 | 0 | 63 | 63 | 55 |
 | rutaflow | 29 | 29 | 27 | 26 | 0 | 0 | 0 | 28 | 27 | 14 |
-| **Total** | **1100** | **1100** | **860** | **592** | **18** | **211** | **0** | **1097** | **1095** | **869** |
+| **Total** | **1100** | **1100** | **860** | **592** | **18** | **211** | **0** | **1097** | **1095** | **881** |
 
 ## Regla editorial
 

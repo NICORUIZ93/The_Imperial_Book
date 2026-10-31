@@ -8,6 +8,7 @@
     "api.flutter.dev",
     "aws.amazon.com",
     "code.visualstudio.com",
+    "cs.brown.edu",
     "dart.dev",
     "docs.github.com",
     "docs.gradle.org",
@@ -16,6 +17,7 @@
     "docs.python.org",
     "git-scm.com",
     "maven.apache.org",
+    "ocw.mit.edu",
     "openjdk.org",
     "opentelemetry.io",
     "peps.python.org",
@@ -583,15 +585,16 @@
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-13.md",
       "topic": "Tema 2: Algoritmos codiciosos y árbol de expansión mínima",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 122,
       "originalProseUrls": [
-        "https://en.wikipedia.org/wiki/Greedy_algorithm",
-        "https://en.wikipedia.org/wiki/Kruskal%27s_algorithm"
+        "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Material universitario oficial con clases específicas de MST; falta revisar su aplicación completa al tema."
     },
     {
       "track": "foundations",
@@ -613,28 +616,31 @@
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-13.md",
       "topic": "Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 342,
       "originalProseUrls": [
-        "https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm"
+        "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Copia universitaria del artículo primario de KMP; falta revisar su correspondencia con la implementación educativa."
     },
     {
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-13.md",
       "topic": "Tema 5: Problemas intratables: P, NP y heurísticas",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 453,
       "originalProseUrls": [
-        "https://en.wikipedia.org/wiki/NP-completeness",
-        "https://en.wikipedia.org/wiki/Travelling_salesman_problem"
+        "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Material universitario oficial sobre complejidad, NP-completitud y aproximaciones; falta revisar cada afirmación del tema."
     },
     {
       "track": "foundations",
@@ -5648,6 +5654,15 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf",
+      "status": 200,
+      "finalUrl": "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf",
+      "contentType": "application/pdf",
+      "title": "Fast Pattern Matching in Strings",
+      "checkedAt": "2026-10-31T15:30:48Z",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
       "url": "https://dart.dev/language/class-modifiers#sealed",
       "status": 200,
       "finalUrl": "https://dart.dev/language/class-modifiers#sealed",
@@ -6564,6 +6579,15 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/",
+      "status": 200,
+      "finalUrl": "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/",
+      "contentType": "text/html",
+      "title": "6.046J Design and Analysis of Algorithms — Lecture Notes",
+      "checkedAt": "2026-10-31T15:30:48Z",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
       "url": "https://openjdk.org/jeps/261",
       "status": 200,
       "finalUrl": "https://openjdk.org/jeps/261",
@@ -7134,11 +7158,11 @@
   "responsible": "Agente Qoder (inventario y HTTP; no firma pedagógica humana)",
   "summary": {
     "baselineUnrecognizedTopics": 378,
-    "additionalRecognizedTopics": 138,
-    "remainingUnrecognizedTopics": 240,
+    "additionalRecognizedTopics": 141,
+    "remainingUnrecognizedTopics": 237,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 175,
-    "urlsReachable": 175,
+    "urlsChecked": 177,
+    "urlsReachable": 177,
     "urlsPending": 0
   },
   "corrections": [
