@@ -1054,6 +1054,22 @@
       ]
     },
     {
+      "path": "docs/troubleshooting.md",
+      "lines": 127,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Soluci\u00f3n de problemas",
+        "## El puerto 8080 est\u00e1 ocupado",
+        "## Floci no arranca",
+        "## `npm ci` falla en `web/`",
+        "## Las pruebas E2E no encuentran navegador o se quedan colgadas",
+        "## Las credenciales locales son rechazadas",
+        "## La validaci\u00f3n del repositorio falla"
+      ]
+    },
+    {
       "path": "docs/validacion-extensa-roadmaps.md",
       "lines": 157,
       "kind": "documentation",
@@ -3941,7 +3957,7 @@
     },
     {
       "path": "examples/professional-bridges/verification.json",
-      "lines": 94,
+      "lines": 95,
       "kind": "example",
       "symbols": [],
       "imports": [],

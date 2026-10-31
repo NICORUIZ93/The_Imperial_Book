@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-29",
+  "date": "2026-10-31",
   "scope": "Verificación técnica delimitada; no certifica aprendizaje, producción ni todos los ejemplos históricos.",
   "laboratories": [
     {
@@ -71,8 +71,9 @@
     {
       "track": "android",
       "lesson": "web/public/content/android/modulo-4.md",
-      "status": "pending",
-      "evidence": "Pendiente: no se compiló la app ni se ensayó recreación/muerte de proceso en dispositivo durante esta entrega."
+      "status": "checked-with-limits",
+      "checkedAt": "2026-10-31",
+      "evidence": "APK del ejemplo compilado con AGP 8.7.3 y instalado en emulador Android 17 (API 37, 1080x2400): con rememberSaveable, el texto «Puerta azul» sobrevive a la rotación real (user_rotation 0→1); con remember, la rotación lo borra. Límite: la muerte de proceso del sistema y el regreso desde Recientes no se condujeron por ADB."
     },
     {
       "track": "flutter",

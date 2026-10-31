@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 06:14 UTC
+Generated: 2026-10-31 06:18 UTC
 Root: `Academia_Floci`
-Indexed files: 958
+Indexed files: 959
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 60 files
 - `automation-script`: 38 files
 - `course-content`: 251 files
-- `documentation`: 57 files
+- `documentation`: 58 files
 - `example`: 490 files
 - `local-infra`: 1 files
 - `project-file`: 61 files
 
 ## File Types
 
-- `.md`: 317
+- `.md`: 318
 - `.py`: 164
 - `.java`: 73
 - `.json`: 72
@@ -239,7 +239,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (235 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Corrección de estado — 2026-10-30, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 39 more files
+- ... 40 more files
 
 ### example
 
