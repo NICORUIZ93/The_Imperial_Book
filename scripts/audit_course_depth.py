@@ -51,11 +51,35 @@ def signals(demo: str) -> list[str]:
     return found
 
 
+def human_review_status() -> dict:
+    path = ROOT / 'docs/manual-review-log.md'
+    status = {}
+    if not path.exists():
+        return status
+    for line in path.read_text(encoding='utf-8').splitlines():
+        if not line.startswith('| 20'):
+            continue
+        cells = [c.strip() for c in line.strip().strip('|').split('|')]
+        if len(cells) < 8:
+            continue
+        date, track, module, title, reviewer, result, evidence, action = cells[:8]
+        try:
+            module = int(module)
+        except ValueError:
+            continue
+        status[(track, module, title)] = {
+            'date': date, 'reviewer': reviewer, 'result': result,
+            'evidence': evidence, 'action': action,
+        }
+    return status
+
+
 def build() -> dict:
     manifest = json.loads((ROOT / 'examples/professional-bridges/manifest.json').read_text())
     material = ROOT / 'examples/rutaflow-material/manifest.json'
     if material.exists(): manifest += json.loads(material.read_text())
     new_topics = {(x['track'], x['module'], x['title']) for x in manifest}
+    human = human_review_status()
     rows = []
     for path in sorted((ROOT / 'web/public/content').glob('*/modulo-*.md')):
         raw = path.read_text()
@@ -63,14 +87,22 @@ def build() -> dict:
         for title, block in topic_blocks(student_visible_content(raw)):
             demo = re.search(r'^#### Paso 4[^\n]*\n([\s\S]*?)(?=^#### Paso 5|\Z)', block, re.M | re.I)
             clean_title = re.sub(r'^Tema(?:\s+(?:\d+|complementario))?\s*:\s*', '', title)
+            review = human.get((path.parent.name, module, title))
             rows.append({'track':path.parent.name, 'module':module, 'title':title,
                 'file':str(path.relative_to(ROOT)), 'line':next((i for i, line in enumerate(raw.splitlines(), 1) if line.endswith(title)), 1),
                 'signals':signals(demo[1] if demo else ''),
                 'newLaboratory':(path.parent.name, module, clean_title) in new_topics,
-                'humanPedagogicalReview':'pending', 'executionEvidence':'see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit'})
+                'humanPedagogicalReview':'pre-read-pending-human-signoff' if review else 'pending',
+                'humanReviewEvidence':f"docs/manual-review-log.md ({review['date']}; {review['reviewer']})" if review else None,
+                'executionEvidence':'see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit'})
+    signed = sum(1 for r in human.values() if 'pendiente' not in r['reviewer'].lower())
+    dates = sorted({r['date'] for r in human.values()})
     return {'method':'Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.',
         'totals':{'tracks':len(PRIORITIES),'modules':len(list((ROOT/'web/public/content').glob('*/modulo-*.md'))),'topics':len(rows),
             'topicsWithSignals':sum(bool(x['signals']) for x in rows),'newLaboratories':len(new_topics)},
+        'humanPedagogicalReview':{'reviewed':signed,'preRead':len(human),'total':len(rows),
+            'date':dates[-1] if dates else None,'responsible':'persona revisora pendiente; pre-lectura de agente registrada',
+            'evidence':'docs/manual-review-log.md'},
         'priorities':{track:{'sequence':a,'evidence':b} for track,(a,b) in PRIORITIES.items()}, 'topics':rows}
 
 
@@ -81,7 +113,12 @@ def markdown(data: dict) -> str:
     for track,p in data['priorities'].items():
         rows=[x for x in data['topics'] if x['track']==track]
         lines.append(f"| {track} | {len(rows)} | {sum(bool(x['signals']) for x in rows)} | {p['sequence']} | {p['evidence']} |")
-    lines+=['','## Registro tema por tema','', 'La revisión pedagógica humana permanece pendiente para todos los temas. Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.','',
+    review = data.get('humanPedagogicalReview', {})
+    review_note = (f"Revisión humana firmada: {review.get('reviewed', 0)}/{review.get('total', 0)} temas. "
+                   f"Pre-lectura registrada sin firma: {review.get('preRead', 0)}. "
+                   "La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; "
+                   "consulta `docs/manual-review-log.md`.")
+    lines += ['','## Registro tema por tema', '', review_note, 'Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.','',
         '| Curso / módulo | Tema | Señales para revisar |','|---|---|---|']
     for row in data['topics']:
         signals_text=', '.join(row['signals']) or 'Sin señales de estos detectores; revisión pendiente'

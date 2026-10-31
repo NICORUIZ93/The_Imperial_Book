@@ -18,6 +18,7 @@ ni demuestra por sí sola que un ejemplo se ejecutó.
 - [Material solicitado de Proyecto-RutaFlow y destinos](docs/rutaflow-source-index.md)
 - [Revisión de profundidad de todos los temas](docs/course-depth-review.md)
 - [Revisión integral: cobertura y pendientes](docs/full-review.md)
+- [Registro de revisión pedagógica humana](docs/manual-review-log.md)
 - [Plan total de cambio y estado](docs/PLAN-TOTAL-DE-CAMBIO.md)
 - [Sustancia de las lecciones: repetición, cola y andamiaje](docs/lesson-substance.md)
 - [Continuación de la metodología de siete pasos](docs/CONTINUAR-7-PASOS.md)

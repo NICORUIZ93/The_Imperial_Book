@@ -14,7 +14,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 | Fuentes oficiales | 722/1100 temas contienen una URL de dominios oficiales reconocidos por el detector. | El enlace puede estar desactualizado o no sustentar la afirmación concreta; la vigencia es una comprobación distinta. | [Auditoría de visuales y fuentes](./code-visual-quality.md) · [Vigencia](./official-sources.json) |
 | Renderizado estructural de navegador | Snapshot del 2026-10-31: 245 páginas y 1100/1100 temas; 0 hallazgos agregados, 0 errores de página y 0 errores de renderizado. | Cobertura completa del renderizado estructural; no ejecuta ejercicios ni acredita calidad pedagógica. | [Snapshot](./browser-course-review.json) |
 | Ejecución de ejemplos | 14/14 laboratorios seleccionados figuran como comprobados con límites; ninguno pendiente. | Muestra delimitada; no cubre todos los ejemplos históricos ni certifica aprendizaje. | [Registro de ejecución](../examples/professional-bridges/verification.json) |
-| Revisión pedagógica humana | 0/1100 temas tienen un estado distinto de pendiente en el registro actual. | La revisión humana y la prueba con personas siguen pendientes según [el registro tema por tema](./course-depth-review.md). | [Revisión por tema](./course-depth-review.json) |
+| Revisión pedagógica humana | 0/1100 temas con firma humana; 14 con pre-lectura de agente sin firma. | La pre-lectura no acredita ejecución, comprensión ni calidad; la firma humana sigue pendiente según [el registro manual](./manual-review-log.md). | [Registro manual](./manual-review-log.md) · [Revisión por tema](./course-depth-review.json) |
 | Similitud entre temas | No medida; el auditor detecta repetición literal dentro de cada tema en 0 temas. | No se ejecutó análisis semántico, similitud entre temas ni detección de plagio. | [Límites de la auditoría de sustancia](./lesson-substance.md) |
 
 ## Hallazgos estructurales que requieren priorización
@@ -29,7 +29,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 
 ## Registro de revisión manual
 
-El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.
+El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Las 14 pre-lecturas de la muestra inicial están en [el registro manual](./manual-review-log.md) con firma humana pendiente. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.
 
 La validación de navegador se ejecutó el 2026-10-31 sobre 245 páginas y 1100/1100 temas. Comprueba estructura y errores de renderizado; no sustituye pruebas funcionales ni revisión humana.
 

@@ -91,7 +91,7 @@
     },
     {
       "path": "README.md",
-      "lines": 363,
+      "lines": 364,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -640,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12492,
+      "lines": 13600,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -648,7 +648,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1130,
+      "lines": 1131,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5837,10 +5837,11 @@
     },
     {
       "path": "scripts/audit_course_depth.py",
-      "lines": 103,
+      "lines": 140,
       "kind": "automation-script",
       "symbols": [
         "signals",
+        "human_review_status",
         "build",
         "markdown",
         "main"
@@ -5953,7 +5954,7 @@
     },
     {
       "path": "scripts/build_full_review.py",
-      "lines": 173,
+      "lines": 172,
       "kind": "automation-script",
       "symbols": [
         "total_field",

@@ -54,10 +54,9 @@ def build() -> str:
     browser_date = browser_generated_at[:10] if isinstance(browser_generated_at, str) else None
     browser_complete = bool(browser_date) and browser_uncovered_topics == 0
 
-    review_states: dict[str, int] = {}
-    for row in depth["topics"]:
-        state = row["humanPedagogicalReview"]
-        review_states[state] = review_states.get(state, 0) + 1
+    human_review = depth.get("humanPedagogicalReview", {})
+    human_signed = human_review.get("reviewed", 0)
+    human_pre_read = human_review.get("preRead", 0)
 
     execution_states: dict[str, int] = {}
     for row in execution.get("laboratories", []):
@@ -127,7 +126,7 @@ def build() -> str:
         f"| Fuentes oficiales | {visual_totals['officialSource']}/{topic_total} temas contienen una URL de dominios oficiales reconocidos por el detector. | El enlace puede estar desactualizado o no sustentar la afirmación concreta; la vigencia es una comprobación distinta. | [Auditoría de visuales y fuentes](./code-visual-quality.md) · [Vigencia](./official-sources.json) |",
         browser_row,
         f"| Ejecución de ejemplos | {execution_states.get('checked-with-limits', 0)}/{execution_total} laboratorios seleccionados figuran como comprobados con límites; {'ninguno pendiente' if execution_states.get('pending', 0) == 0 else str(execution_states.get('pending', 0)) + ' sigue pendiente'}. | Muestra delimitada; no cubre todos los ejemplos históricos ni certifica aprendizaje. | [Registro de ejecución](../examples/professional-bridges/verification.json) |",
-        f"| Revisión pedagógica humana | {topic_total - review_states.get('pending', 0)}/{topic_total} temas tienen un estado distinto de pendiente en el registro actual. | La revisión humana y la prueba con personas siguen pendientes según [el registro tema por tema](./course-depth-review.md). | [Revisión por tema](./course-depth-review.json) |",
+        f"| Revisión pedagógica humana | {human_signed}/{topic_total} temas con firma humana; {human_pre_read} con pre-lectura de agente sin firma. | La pre-lectura no acredita ejecución, comprensión ni calidad; la firma humana sigue pendiente según [el registro manual](./manual-review-log.md). | [Registro manual](./manual-review-log.md) · [Revisión por tema](./course-depth-review.json) |",
         f"| Similitud entre temas | No medida; el auditor detecta repetición literal dentro de cada tema en {findings.get('parrafo-repetido', 0)} temas. | No se ejecutó análisis semántico, similitud entre temas ni detección de plagio. | [Límites de la auditoría de sustancia](./lesson-substance.md) |",
         "",
         "## Hallazgos estructurales que requieren priorización",
@@ -142,7 +141,7 @@ def build() -> str:
         "",
         "## Registro de revisión manual",
         "",
-        "El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.",
+        "El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Las 14 pre-lecturas de la muestra inicial están en [el registro manual](./manual-review-log.md) con firma humana pendiente. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.",
         "",
         browser_note,
         "",
