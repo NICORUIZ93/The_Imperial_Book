@@ -1644,10 +1644,8 @@
     }
   ],
   "summary": {
-    "fingerprint": "e53b41c11b24aa2d1dc4a7518f55c9892e845585d4d86f677bcc5a256b863687",
-    "issues": {
-      "tema-breve": 2
-    },
+    "fingerprint": "a3f9a63a54145339ac6458f281c53656438ff95f92a763d727d0821e62f161b6",
+    "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
@@ -1656,7 +1654,7 @@
     "modules": 245,
     "modulesWithLegacySections": 183,
     "topics": 1100,
-    "topicsWithIssues": 2
+    "topicsWithIssues": 0
   },
   "topics": {
     "android": [
@@ -6598,22 +6596,18 @@
         "words": 477
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 146,
         "topic": "Tema 3: Conversión, coerción e igualdad",
-        "words": 428
+        "words": 487
       },
       {
-        "issues": [
-          "tema-breve"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 160,
         "topic": "Tema 4: Template literals y mensajes seguros",
-        "words": 431
+        "words": 502
       },
       {
         "issues": [],

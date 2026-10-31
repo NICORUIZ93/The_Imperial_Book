@@ -234,6 +234,8 @@ node src/03-conversion.js
 
 **Resultado esperado:** `sin convertir: false` y `convertido: true`.
 
+**Explicación:** `idHttp` es una cadena y `idGuardado` un número; `===` compara tipo y valor, por eso el primer resultado es `false`. `Number` convierte una vez, pero también acepta `''` y `'   '` como `0`; por eso la validación exige `Number.isInteger` y un límite positivo antes de confiar en el valor. `parseInt('101abc')` devolvería `101` y ocultaría un dato inválido en la frontera.
+
 **Fallo deliberado:** llama `convertirId('RF-101')`. El error debe conservar el dato rechazado. No lo “corrijas” usando `parseInt`, porque aceptaría parcialmente textos como `'101abc'`.
 
 #### Paso 5 · Práctica guiada
@@ -295,6 +297,8 @@ node src/04-resumen.js
 ```
 
 **Resultado esperado:** tres líneas; la segunda termina en `sin destino`.
+
+**Explicación:** la plantilla conserva saltos de línea y espacios sin concatenar; `${envio.pesoKg}` convierte el número a texto, pero la unidad `kg` se escribe aparte porque el dato no la incluye. `??` solo sustituye `null` o `undefined`; si el peso fuera `0`, seguiría mostrándose como `0 kg`, mientras que `||` lo reemplazaría por el valor por defecto. La interpolación no escapa HTML: `textContent` sigue siendo necesario al insertar el resultado en el DOM.
 
 **Fallo deliberado:** reemplaza `??` por `||` y prueba un valor permitido igual a `0`. Observa que `||` también reemplaza valores *falsy* válidos; restaura `??` cuando solo quieras tratar `null` o `undefined`.
 

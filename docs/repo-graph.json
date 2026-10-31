@@ -803,7 +803,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9396,
+      "lines": 9390,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -811,7 +811,7 @@
     },
     {
       "path": "docs/lesson-substance.md",
-      "lines": 43,
+      "lines": 40,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -9821,7 +9821,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-0.md",
-      "lines": 401,
+      "lines": 405,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

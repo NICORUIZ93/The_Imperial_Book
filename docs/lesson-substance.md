@@ -7,14 +7,13 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1100 |
-| Temas con algún defecto | 2 |
+| Temas con algún defecto | 0 |
 | Módulos con apéndices heredados | 183/245 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `tema-breve` | 2 |
 
 ## Apéndices heredados más frecuentes
 
@@ -28,8 +27,6 @@ defectos detectados tampoco acredita haber sido comprendida.
 
 | Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |
 |---|---|---:|---:|---|
-| javascript / 0 | Tema 4: Template literals y mensajes seguros | 431 | 160 | tema-breve |
-| javascript / 0 | Tema 3: Conversión, coerción e igualdad | 428 | 146 | tema-breve |
 
 ## Cómo se corrige
 
@@ -39,4 +36,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `e53b41c11b24aa2d1dc4a7518f55c9892e845585d4d86f677bcc5a256b863687`
+Huella del contenido: `a3f9a63a54145339ac6458f281c53656438ff95f92a763d727d0821e62f161b6`

@@ -286,5 +286,5 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (825 lines)
-- `docs/lesson-substance.json` (9396 lines)
+- `docs/lesson-substance.json` (9390 lines)
 - ... 43 more files
