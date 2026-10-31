@@ -47,7 +47,12 @@ def build() -> str:
     browser_page_errors = sum(len(row.get("pageErrors", [])) for row in browser.get("results", []))
     browser_render_errors = sum(len(row.get("errors", [])) for row in browser.get("results", []))
     browser_overflows = sum(bool(row.get("horizontalOverflow")) for row in browser.get("results", []))
-    browser_uncovered_topics = max(topic_total - browser_topic_total, 0)
+    browser_inventory = browser.get("inventoryTopics", topic_total)
+    browser_covered = browser.get("coveredTopics", browser_topic_total)
+    browser_uncovered_topics = max(browser_inventory - browser_covered, 0)
+    browser_generated_at = browser.get("generatedAt")
+    browser_date = browser_generated_at[:10] if isinstance(browser_generated_at, str) else None
+    browser_complete = bool(browser_date) and browser_uncovered_topics == 0
 
     review_states: dict[str, int] = {}
     for row in depth["topics"]:
@@ -77,6 +82,34 @@ def build() -> str:
     substance_summary = substance["summary"]
     findings = substance_summary.get("issues", {})
 
+    if browser_complete:
+        browser_row = (
+            f"| Renderizado estructural de navegador | Snapshot del {browser_date}: {browser_page_total} páginas y "
+            f"{browser_covered}/{browser_inventory} temas; {browser_findings} hallazgos agregados, "
+            f"{browser_page_errors} errores de página y {browser_render_errors} errores de renderizado. | "
+            "Cobertura completa del renderizado estructural; no ejecuta ejercicios ni acredita calidad pedagógica. | "
+            "[Snapshot](./browser-course-review.json) |"
+        )
+        browser_note = (
+            f"La validación de navegador se ejecutó el {browser_date} sobre {browser_page_total} páginas y "
+            f"{browser_covered}/{browser_inventory} temas. Comprueba estructura y errores de renderizado; "
+            "no sustituye pruebas funcionales ni revisión humana."
+        )
+    else:
+        browser_row = (
+            f"| Renderizado estructural de navegador | El snapshot disponible registra {browser_page_total} páginas y "
+            f"{browser_covered}/{browser_inventory} temas; {browser_findings} hallazgos agregados, "
+            f"{browser_page_errors} errores de página y {browser_render_errors} errores de renderizado. | "
+            f"{'El snapshot no registra fecha' if not browser_date else 'El snapshot no cubre el inventario completo'}"
+            f"; cubre {browser_uncovered_topics} temas menos que el inventario actual; actualizar el barrido antes de "
+            "declarar cobertura completa. | [Snapshot](./browser-course-review.json) |"
+        )
+        browser_note = (
+            "La validación de navegador es otra capa. El snapshot anterior cubre menos temas que el inventario actual "
+            "o no registra su fecha; hasta regenerarlo y documentar el recorrido real, no se declara que los "
+            f"{topic_total} temas se hayan probado en navegador."
+        )
+
     lines = [
         "# Revisión integral y trazable",
         "",
@@ -92,7 +125,7 @@ def build() -> str:
         f"| Sustancia Markdown | {substance_summary['topicsWithIssues']}/{topic_total} temas presentan al menos una señal; {substance_summary['modulesWithLegacySections']}/{module_total} módulos, secciones heredadas. | Las señales requieren inspección del texto; no son defectos confirmados. | [Sustancia](./lesson-substance.md) |",
         f"| Código y visuales | {visual_totals['topics']} temas revisados; {visual_totals['mermaid']} con Mermaid, {visual_totals['archifyVisual']} con Archify y {visual_totals['asciiVisual']} con visual ASCII pendiente. | La presencia no acredita que el código se compile o que un diagrama se renderice y sea correcto. | [Código y visuales](./code-visual-quality.md) |",
         f"| Fuentes oficiales | {visual_totals['officialSource']}/{topic_total} temas contienen una URL de dominios oficiales reconocidos por el detector. | El enlace puede estar desactualizado o no sustentar la afirmación concreta; la vigencia es una comprobación distinta. | [Auditoría de visuales y fuentes](./code-visual-quality.md) · [Vigencia](./official-sources.json) |",
-        f"| Renderizado estructural de navegador | El snapshot disponible registra {browser_page_total} páginas y {browser_topic_total}/{topic_total} temas; {browser_findings} hallazgos agregados, {browser_page_errors} errores de página y {browser_render_errors} errores de renderizado. | El snapshot no registra fecha y cubre {browser_uncovered_topics} temas menos que el inventario actual; actualizar el barrido antes de declarar cobertura completa. | [Snapshot](./browser-course-review.json) |",
+        browser_row,
         f"| Ejecución de ejemplos | {execution_states.get('checked-with-limits', 0)}/{execution_total} laboratorios seleccionados figuran como comprobados con límites; {execution_states.get('pending', 0)} sigue pendiente. | Muestra delimitada; no cubre todos los ejemplos históricos ni certifica aprendizaje. | [Registro de ejecución](../examples/professional-bridges/verification.json) |",
         f"| Revisión pedagógica humana | {topic_total - review_states.get('pending', 0)}/{topic_total} temas tienen un estado distinto de pendiente en el registro actual. | La revisión humana y la prueba con personas siguen pendientes según [el registro tema por tema](./course-depth-review.md). | [Revisión por tema](./course-depth-review.json) |",
         f"| Similitud entre temas | No medida; el auditor detecta repetición literal dentro de cada tema en {findings.get('parrafo-repetido', 0)} temas. | No se ejecutó análisis semántico, similitud entre temas ni detección de plagio. | [Límites de la auditoría de sustancia](./lesson-substance.md) |",
@@ -111,7 +144,7 @@ def build() -> str:
         "",
         "El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.",
         "",
-        f"La validación de navegador es otra capa. El snapshot anterior cubre menos temas que el inventario actual y no registra su fecha; hasta regenerarlo y documentar el recorrido real, no se declara que los {topic_total} temas se hayan probado en navegador.",
+        browser_note,
         "",
         "## Reproducibilidad",
         "",

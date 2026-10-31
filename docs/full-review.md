@@ -12,7 +12,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 | Sustancia Markdown | 273/1100 temas presentan al menos una señal; 183/245 módulos, secciones heredadas. | Las señales requieren inspección del texto; no son defectos confirmados. | [Sustancia](./lesson-substance.md) |
 | Código y visuales | 1100 temas revisados; 592 con Mermaid, 18 con Archify y 211 con visual ASCII pendiente. | La presencia no acredita que el código se compile o que un diagrama se renderice y sea correcto. | [Código y visuales](./code-visual-quality.md) |
 | Fuentes oficiales | 722/1100 temas contienen una URL de dominios oficiales reconocidos por el detector. | El enlace puede estar desactualizado o no sustentar la afirmación concreta; la vigencia es una comprobación distinta. | [Auditoría de visuales y fuentes](./code-visual-quality.md) · [Vigencia](./official-sources.json) |
-| Renderizado estructural de navegador | El snapshot disponible registra 241 páginas y 1076/1100 temas; 0 hallazgos agregados, 0 errores de página y 0 errores de renderizado. | El snapshot no registra fecha y cubre 24 temas menos que el inventario actual; actualizar el barrido antes de declarar cobertura completa. | [Snapshot](./browser-course-review.json) |
+| Renderizado estructural de navegador | Snapshot del 2026-10-31: 245 páginas y 1100/1100 temas; 0 hallazgos agregados, 0 errores de página y 0 errores de renderizado. | Cobertura completa del renderizado estructural; no ejecuta ejercicios ni acredita calidad pedagógica. | [Snapshot](./browser-course-review.json) |
 | Ejecución de ejemplos | 13/14 laboratorios seleccionados figuran como comprobados con límites; 1 sigue pendiente. | Muestra delimitada; no cubre todos los ejemplos históricos ni certifica aprendizaje. | [Registro de ejecución](../examples/professional-bridges/verification.json) |
 | Revisión pedagógica humana | 0/1100 temas tienen un estado distinto de pendiente en el registro actual. | La revisión humana y la prueba con personas siguen pendientes según [el registro tema por tema](./course-depth-review.md). | [Revisión por tema](./course-depth-review.json) |
 | Similitud entre temas | No medida; el auditor detecta repetición literal dentro de cada tema en 0 temas. | No se ejecutó análisis semántico, similitud entre temas ni detección de plagio. | [Límites de la auditoría de sustancia](./lesson-substance.md) |
@@ -31,7 +31,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 
 El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.
 
-La validación de navegador es otra capa. El snapshot anterior cubre menos temas que el inventario actual y no registra su fecha; hasta regenerarlo y documentar el recorrido real, no se declara que los 1100 temas se hayan probado en navegador.
+La validación de navegador se ejecutó el 2026-10-31 sobre 245 páginas y 1100/1100 temas. Comprueba estructura y errores de renderizado; no sustituye pruebas funcionales ni revisión humana.
 
 ## Reproducibilidad
 

@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 05:42 UTC
+Generated: 2026-10-31 06:00 UTC
 Root: `Academia_Floci`
 Indexed files: 957
 Import edges: 57
@@ -183,7 +183,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_seven_step_methodology.py` (174 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (233 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, evaluate, classify, demo_signature; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
-- `scripts/build_full_review.py` (140 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
+- `scripts/build_full_review.py` (173 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
 - `scripts/build_prerequisite_graph.py` (114 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_web_topic_index.py` (75 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
@@ -280,7 +280,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/app-flow-inspection.json` (13830 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
-- `docs/browser-course-review.json` (2660 lines)
+- `docs/browser-course-review.json` (2712 lines)
 - `docs/code-visual-quality.json` (1855 lines)
 - `docs/course-depth-review.json` (12478 lines)
 - `docs/curriculum-matrix.json` (394 lines)

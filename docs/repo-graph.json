@@ -600,7 +600,7 @@
     },
     {
       "path": "docs/browser-course-review.json",
-      "lines": 2660,
+      "lines": 2712,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -5937,7 +5937,7 @@
     },
     {
       "path": "scripts/build_full_review.py",
-      "lines": 140,
+      "lines": 173,
       "kind": "automation-script",
       "symbols": [
         "total_field",
@@ -6482,7 +6482,7 @@
     },
     {
       "path": "web/package.json",
-      "lines": 47,
+      "lines": 48,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
