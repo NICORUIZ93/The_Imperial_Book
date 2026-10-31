@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 19:46 UTC
+Generated: 2026-10-31 19:50 UTC
 Root: `Academia_Floci`
-Indexed files: 978
-Import edges: 56
+Indexed files: 979
+Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,7 +15,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 58 files
+- `angular-app`: 59 files
 - `automation-script`: 39 files
 - `course-content`: 260 files
 - `documentation`: 62 files
@@ -29,7 +29,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.py`: 165
 - `.json`: 74
 - `.java`: 73
-- `.ts`: 65
+- `.ts`: 66
 - `.js`: 54
 - `.html`: 44
 - `.rs`: 25
@@ -123,6 +123,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/progress.service.ts` -> `web/src/app/course-data.ts`
 - `web/src/app/project-bootstrap.spec.ts` -> `web/src/app/course-data.ts`
 - `web/src/app/project-bootstrap.spec.ts` -> `web/src/app/project-bootstrap.ts`
+- `web/src/app/theme.service.spec.ts` -> `web/src/app/theme.service.ts`
 - `web/src/main.ts` -> `web/src/app/app.config.ts`
 - `web/src/main.ts` -> `web/src/app/app.ts`
 
@@ -172,7 +173,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-module.model.ts` (37 lines) - symbols: CourseModule, Track
 - `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
 - `web/src/app/course/course-shell.scss` (79 lines)
-- ... 40 more files
+- ... 41 more files
 
 ### automation-script
 

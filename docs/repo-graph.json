@@ -13404,6 +13404,17 @@
       "headings": []
     },
     {
+      "path": "web/src/app/theme.service.spec.ts",
+      "lines": 38,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "@angular/core/testing",
+        "./theme.service"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/theme.service.ts",
       "lines": 54,
       "kind": "angular-app",
@@ -13852,6 +13863,10 @@
     {
       "source": "web/src/app/project-bootstrap.spec.ts",
       "target": "web/src/app/project-bootstrap.ts"
+    },
+    {
+      "source": "web/src/app/theme.service.spec.ts",
+      "target": "web/src/app/theme.service.ts"
     },
     {
       "source": "web/src/main.ts",
