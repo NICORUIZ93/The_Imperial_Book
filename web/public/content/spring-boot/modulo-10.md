@@ -160,9 +160,9 @@ List<ServiceInstance> instancias = discoveryClient.____("servicio-pedidos");
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `application.yml` de Config Server con backend `native`, y un test que confirme por HTTP real que sirve un valor esperado. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya levantas un Config Server real que sirve configuración por HTTP, y resuelves nombres lógicos a instancias reales con `SimpleDiscoveryClient`. El siguiente tema centraliza el enrutamiento hacia esas instancias con Spring Cloud Gateway. **Evidencia:** entrega el resultado de `ConfigServerTest` en verde, y el JSON con `propertySources` vacío que produce el fallo deliberado. Fuente oficial: [Spring Cloud Config](https://docs.spring.io/spring-cloud-config/reference/) y [Spring Cloud Commons — DiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/discovery-client.html).
+Ya levantas un Config Server real que sirve configuración por HTTP, y resuelves nombres lógicos a instancias reales con `SimpleDiscoveryClient`. El siguiente tema centraliza el enrutamiento hacia esas instancias con Spring Cloud Gateway. Fuente oficial: [Spring Cloud Config](https://docs.spring.io/spring-cloud-config/reference/) y [Spring Cloud Commons — DiscoveryClient](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/discovery-client.html).
 
 **Errores comunes:** codificar URLs fijas hacia otros microservicios en vez de resolver por nombre lógico; asumir que el Config Server devuelve `404` para una aplicación sin configuración, cuando en realidad devuelve `200` con propiedades vacías.
 
@@ -328,9 +328,9 @@ builder.routes()
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración de ruta de Gateway y un test `WebTestClient` + `MockWebServer` que confirme el enrutamiento correcto y el `404` para una ruta sin predicado coincidente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya configuras rutas reales de Spring Cloud Gateway y confirmas su comportamiento de extremo a extremo contra un backend real. El siguiente tema protege esas llamadas entre servicios contra fallos en cascada con un circuit breaker. **Evidencia:** entrega el resultado de `GatewayRoutingTest` en verde, y el `404` real que produce el fallo deliberado al desalinear el predicado de la ruta. Fuente oficial: [Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/reference/).
+Ya configuras rutas reales de Spring Cloud Gateway y confirmas su comportamiento de extremo a extremo contra un backend real. El siguiente tema protege esas llamadas entre servicios contra fallos en cascada con un circuit breaker. Fuente oficial: [Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/reference/).
 
 **Errores comunes:** confiar toda la seguridad al gateway sin que el servicio propietario también autorice el recurso; desalinear el predicado de una ruta respecto a las rutas realmente usadas por los clientes, produciendo `404` silenciosos indistinguibles de un backend caído.
 
@@ -455,9 +455,9 @@ assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.____);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `CircuitBreakerConfig` y un test con `AtomicInteger` que confirme que el circuito abierto deja de ejecutar la llamada real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un contador real, que un `CircuitBreaker` de Resilience4j abre el circuito tras superar un umbral de fallos y deja de ejecutar la llamada real mientras está abierto. El siguiente tema protege las fronteras de autorización entre servicios con OAuth2/OIDC. **Evidencia:** entrega el resultado de `CircuitBreakerRealTest` en verde, y el fallo real que produce cambiar `minimumNumberOfCalls`. Fuente oficial: [Resilience4j — CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker).
+Ya confirmas, con un contador real, que un `CircuitBreaker` de Resilience4j abre el circuito tras superar un umbral de fallos y deja de ejecutar la llamada real mientras está abierto. El siguiente tema protege las fronteras de autorización entre servicios con OAuth2/OIDC. Fuente oficial: [Resilience4j — CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker).
 
 **Errores comunes:** no configurar un circuit breaker para llamadas entre servicios, dejando que un servicio caído arrastre en cascada a sus dependientes; confundir `minimumNumberOfCalls` con `slidingWindowSize`, dos umbrales independientes.
 
@@ -611,9 +611,9 @@ mockMvc.perform(post("/api/journeys/1/positions")
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `SecurityFilterChain` con una regla `hasAuthority` y tres tests `MockMvc` + `jwt()` que confirmen 401, 403 y 200. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya pruebas reglas reales de autorización de Resource Server sin necesitar una instancia de Keycloak corriendo, usando el post-processor oficial de `spring-security-test`. El siguiente tema declara contratos HTTP explícitos con deadlines medibles. **Evidencia:** entrega el resultado de `ResourceServerTest` en verde, y la regresión real que produce el fallo deliberado al relajar la regla de autorización. Fuente oficial: [Spring Security — Testing OAuth2](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/oauth2.html).
+Ya pruebas reglas reales de autorización de Resource Server sin necesitar una instancia de Keycloak corriendo, usando el post-processor oficial de `spring-security-test`. El siguiente tema declara contratos HTTP explícitos con deadlines medibles. Fuente oficial: [Spring Security — Testing OAuth2](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/oauth2.html).
 
 **Errores comunes:** confiar toda la seguridad al gateway sin que cada servicio propietario también valide y autorice; verificar solo el scope sin verificar la propiedad real del recurso (`sub` contra el dueño del dato).
 
@@ -773,9 +773,9 @@ ClientHttpRequestFactorySettings.defaults().____(deadline);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un cliente HTTP con deadline configurado y un test que mida con `System.nanoTime()` que ese deadline efectivamente corta una respuesta lenta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras contratos HTTP explícitos con `@HttpExchange` y confirmas, con medición cronométrica real, que un deadline configurado corta esperas indefinidas. El siguiente tema explora gRPC con Spring gRPC (Boot 4.1) como alternativa binaria para comunicación interna de alta frecuencia entre servicios. **Evidencia:** entrega el resultado de `RouteClientDeadlineTest` en verde, y la falta de excepción real que produce el fallo deliberado al quitar el timeout. Fuente oficial: [Spring Framework — HTTP Interface](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface).
+Ya declaras contratos HTTP explícitos con `@HttpExchange` y confirmas, con medición cronométrica real, que un deadline configurado corta esperas indefinidas. El siguiente tema explora gRPC con Spring gRPC (Boot 4.1) como alternativa binaria para comunicación interna de alta frecuencia entre servicios. Fuente oficial: [Spring Framework — HTTP Interface](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface).
 
 **Errores comunes:** no configurar ningún timeout explícito, dependiendo del timeout por defecto del sistema (a menudo demasiado largo para ser útil); agregar retries en múltiples capas (móvil, gateway, cada servicio) sin coordinación, multiplicando la latencia real ante un fallo.
 
@@ -894,16 +894,15 @@ public class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un contrato `.proto` con un mensaje y un servicio de un método, y la implementación `@GrpcService` correspondiente. Compara después contra el Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya exponés y consumís un servicio interno con Spring gRPC (Boot 4.1), confirmando con un cliente real que el contrato binario funciona, y reproducís el riesgo específico de reusar un número de campo en una evolución de contrato. El siguiente y último tema de este módulo aborda cuándo estos límites de servicio deben trazarse con DDD, en vez de por conveniencia técnica. **Evidencia:** entrega el test `TarifaGrpcTest` en verde, y la reproducción del cálculo corrupto al reusar un número de campo en el `.proto`. Fuente oficial: [Spring gRPC Reference](https://docs.spring.io/spring-grpc/reference/) y [Protocol Buffers — Updating a Message Type](https://protobuf.dev/programming-guides/proto3/#updating).
+Ya exponés y consumís un servicio interno con Spring gRPC (Boot 4.1), confirmando con un cliente real que el contrato binario funciona, y reproducís el riesgo específico de reusar un número de campo en una evolución de contrato. El siguiente y último tema de este módulo aborda cuándo estos límites de servicio deben trazarse con DDD, en vez de por conveniencia técnica. Fuente oficial: [Spring gRPC Reference](https://docs.spring.io/spring-grpc/reference/) y [Protocol Buffers — Updating a Message Type](https://protobuf.dev/programming-guides/proto3/#updating).
 
 **Errores comunes:** reusar el número de un campo eliminado en vez de marcarlo `reserved`; exponer gRPC hacia clientes externos no confiables sin la misma capa de autenticación que ya protege las APIs REST del Módulo 4.
 
 **Cuándo no usarlo:** para comunicación con un cliente de navegador (gRPC-Web requiere un proxy adicional) o con un tercero externo que espera JSON/REST estándar, gRPC agrega fricción de integración sin beneficio frente a HTTP Interfaces (Tema 5).
 
 El contrato gRPC de este tema es el que usará la comunicación interna de alta frecuencia del proyecto integrador de este track (microservicio productivo, Módulo 12).
-**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` con `TarifaGrpcTest` en verde confirmando `monto=15000` para 10 km, y la explicación de por qué reusar el número de campo `= 1` para `distanciaMillas` corrompe silenciosamente el cálculo en un cliente viejo, frente a asignarle `= 2` como corrección en el Paso 5.
 ### Tema 7: DDD para decidir límites y propiedad de datos
 
 #### Paso 1 · Objetivo y preparación
@@ -1049,9 +1048,9 @@ if (status == JourneyStatus.CLOSED) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, el agregado `Journey` con la invariante de cierre y un test JUnit que la confirme sin ninguna infraestructura externa. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya formalizas invariantes de dominio en tests unitarios puros, confirmando que la propiedad de una regla de negocio vive en el agregado del contexto correcto. Esto cierra el módulo de microservicios; el siguiente módulo aborda observabilidad distribuida con trazas y logs correlacionados. **Evidencia:** entrega el resultado de `JourneyTest` en verde, y la ausencia real de excepción que produce el fallo deliberado al quitar la comprobación de estado. Fuente oficial: [Domain-Driven Design — Eric Evans (resumen oficial de patrones)](https://martinfowler.com/bliki/DDD_Aggregate.html).
+Ya formalizas invariantes de dominio en tests unitarios puros, confirmando que la propiedad de una regla de negocio vive en el agregado del contexto correcto. Esto cierra el módulo de microservicios; el siguiente módulo aborda observabilidad distribuida con trazas y logs correlacionados. Fuente oficial: [Domain-Driven Design — Eric Evans (resumen oficial de patrones)](https://martinfowler.com/bliki/DDD_Aggregate.html).
 
 **Errores comunes:** dividir servicios por entidades técnicas en vez de por capacidades de negocio; compartir una entidad JPA o una foreign key entre bases de datos de servicios distintos, rompiendo la propiedad de datos.
 
@@ -1325,9 +1324,9 @@ actividades.cobrar(pedidoId, centavos);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `PedidoWorkflowImpl` con tres Activities, cada una con su compensación registrada antes de ejecutarse, y un `catch` que llame a `saga.compensate()`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya orquestas una transacción distribuida con un Workflow duradero de Temporal: reintentos automáticos ante fallos transitorios y compensación (Saga) en orden inverso ante un fallo definitivo, confirmado con el servidor de pruebas embebido. Esto es la evolución del circuit breaker (Tema 3): el breaker protege una llamada; Temporal coordina toda la transacción de principio a fin y garantiza que no quede a medias. **Evidencia:** entrega el test en verde del flujo completo, y el resultado del fallo deliberado mostrando las compensaciones ejecutadas en orden inverso tras agotar los reintentos. Fuentes oficiales: [Temporal — Spring Boot integration](https://docs.temporal.io/develop/java/spring-boot-integration), [Temporal — Workflow basics (Java)](https://docs.temporal.io/develop/java/workflows/basics) y [Temporal — Saga pattern](https://docs.temporal.io/design-patterns/saga-pattern).
+Ya orquestas una transacción distribuida con un Workflow duradero de Temporal: reintentos automáticos ante fallos transitorios y compensación (Saga) en orden inverso ante un fallo definitivo, confirmado con el servidor de pruebas embebido. Esto es la evolución del circuit breaker (Tema 3): el breaker protege una llamada; Temporal coordina toda la transacción de principio a fin y garantiza que no quede a medias. Fuentes oficiales: [Temporal — Spring Boot integration](https://docs.temporal.io/develop/java/spring-boot-integration), [Temporal — Workflow basics (Java)](https://docs.temporal.io/develop/java/workflows/basics) y [Temporal — Saga pattern](https://docs.temporal.io/design-patterns/saga-pattern).
 
 **Errores comunes:** registrar la compensación después de la Activity (nunca se registra si la Activity falla); meter efectos externos (llamadas HTTP, escrituras a BD) directamente en el Workflow en vez de dentro de una Activity (el código del Workflow debe ser determinista y reproducible); usar `Thread.sleep` o `System.currentTimeMillis()` dentro del Workflow en vez de `Workflow.sleep` y `Workflow.currentTimeMillis()`.
 

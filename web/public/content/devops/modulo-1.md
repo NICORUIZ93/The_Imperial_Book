@@ -75,9 +75,9 @@ Repite el demo simulando GitFlow: crea `develop` y `release/1.0`, y confirma con
 
 Para un equipo hipotético de 3 personas con despliegues diarios y buena cobertura de pruebas, decide qué estrategia recomendarías y justifica en 3-4 líneas basándote en los criterios del Paso 3.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo la integración frecuente supera a la estructura de GitFlow. El siguiente tema limpia el historial de una rama antes de integrarla. **Evidencia:** entrega el `git log --graph --all` de ambos escenarios y tu justificación escrita explicando la elección. Fuente oficial: [trunkbaseddevelopment.com](https://trunkbaseddevelopment.com/).
+Ya distingues cuándo la integración frecuente supera a la estructura de GitFlow. El siguiente tema limpia el historial de una rama antes de integrarla. Fuente oficial: [trunkbaseddevelopment.com](https://trunkbaseddevelopment.com/).
 
 **Errores comunes:** adoptar GitFlow por costumbre sin evaluar si la ceremonia aporta valor real; forzar trunk-based sin disciplina de pruebas automatizadas.
 
@@ -158,9 +158,9 @@ Repite el rebase pero usa `reword` en vez de `squash` en el commit final para me
 
 Provoca intencionalmente un conflicto durante un rebase (modifica la misma línea en dos commits distintos) y resuélvelo con `git rebase --continue` tras editar el archivo en conflicto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya limpias tu propio historial local sin arriesgar el de otros. El siguiente tema usa búsqueda binaria para encontrar regresiones en cualquier historial, limpio o no. **Evidencia:** entrega el `git log --oneline` antes y después del squash, y la explicación del historial divergente del compañero simulado. Fuente oficial: [Git — git-rebase](https://git-scm.com/docs/git-rebase).
+Ya limpias tu propio historial local sin arriesgar el de otros. El siguiente tema usa búsqueda binaria para encontrar regresiones en cualquier historial, limpio o no. Fuente oficial: [Git — git-rebase](https://git-scm.com/docs/git-rebase).
 
 **Errores comunes:** rebasar una rama que ya fue fusionada o compartida; olvidar `git rebase --continue` después de resolver un conflicto durante el rebase.
 
@@ -240,9 +240,9 @@ Repite `git bisect start HEAD HEAD~4` pero esta vez marca manualmente cada punto
 
 Introduce una segunda regresión en un commit distinto del mismo historial y ejecuta `bisect run` de nuevo; confirma que encuentra la primera regresión introducida cronológicamente, no la segunda.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conviertes una búsqueda manual de horas en un proceso de minutos con búsqueda binaria. El siguiente tema automatiza validaciones locales antes de cada commit con hooks. **Evidencia:** entrega el hash exacto reportado por `bisect run` como resultado y explica por qué corresponde exactamente al commit `v3-bug`. Fuente oficial: [Git — git-bisect](https://git-scm.com/docs/git-bisect).
+Ya conviertes una búsqueda manual de horas en un proceso de minutos con búsqueda binaria. El siguiente tema automatiza validaciones locales antes de cada commit con hooks. Fuente oficial: [Git — git-bisect](https://git-scm.com/docs/git-bisect).
 
 **Errores comunes:** marcar `good`/`bad` incorrectamente en algún punto intermedio, lo que hace converger la búsqueda en un commit equivocado; olvidar `git bisect reset` al terminar, dejando el repositorio en estado "detached HEAD".
 
@@ -328,9 +328,9 @@ Extiende el hook para que también bloquee la palabra `API_KEY`. **Pista:** usa 
 
 Investiga y anota los comandos para generar una clave GPG o SSH de firma y configurar `git config commit.gpgsign true`, sin necesariamente ejecutarlos si no tienes GPG disponible; explica qué cambiaría en `git log --show-signature` una vez configurado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya bloqueas localmente commits con contenido prohibido y entiendes que los hooks no sustituyen a CI. El siguiente tema decide si tu proyecto vive en un monorepo o un polyrepo. **Evidencia:** entrega el código de salida `1` del commit bloqueado y la confirmación de que `--no-verify` lo omite. Fuente oficial: [Git — githooks](https://git-scm.com/docs/githooks).
+Ya bloqueas localmente commits con contenido prohibido y entiendes que los hooks no sustituyen a CI. El siguiente tema decide si tu proyecto vive en un monorepo o un polyrepo. Fuente oficial: [Git — githooks](https://git-scm.com/docs/githooks).
 
 **Errores comunes:** confiar solo en el hook local sin un chequeo equivalente en CI; olvidar dar permisos de ejecución (`chmod +x`) al archivo del hook.
 
@@ -405,9 +405,9 @@ Corrige `paquete-a` y `paquete-b` para que pasen el nuevo parámetro obligatorio
 
 Simula ahora el equivalente en polyrepo: crea dos carpetas Git independientes (`repo-a`, `repo-b`) y explica en un README qué pasos manuales necesitarías para propagar el mismo cambio de `formatear` entre ambos repositorios separados.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo el cambio atómico de un monorepo compensa la ceremonia de coordinar múltiples repositorios. El siguiente tema cubre comandos puntuales para deshacer cambios sin perder historial. **Evidencia:** entrega el commit atómico con los tres archivos y la explicación de los pasos manuales equivalentes en polyrepo. Fuente oficial: [Google — Why Google Stores Billions of Lines in a Single Repository](https://cacm.acm.org/research/why-google-stores-billions-of-lines-of-code-in-a-single-repository/).
+Ya distingues cuándo el cambio atómico de un monorepo compensa la ceremonia de coordinar múltiples repositorios. El siguiente tema cubre comandos puntuales para deshacer cambios sin perder historial. Fuente oficial: [Google — Why Google Stores Billions of Lines in a Single Repository](https://cacm.acm.org/research/why-google-stores-billions-of-lines-of-code-in-a-single-repository/).
 
 **Errores comunes:** tratar un monorepo como una excusa para no versionar cuidadosamente cada paquete por separado; subestimar la fricción real de coordinar cambios cruzados en polyrepo.
 
@@ -482,9 +482,9 @@ Practica `git stash`: modifica `dato.txt` sin confirmar, guarda con `git stash`,
 
 Crea una segunda rama con un commit útil, y usa `git cherry-pick <hash>` para traer solo ese commit a `main` sin fusionar el resto de la rama.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges la herramienta correcta según si el historial es local o ya compartido. El siguiente tema cubre `reflog`, `worktree` y `submodule` para casos menos frecuentes pero igualmente importantes. **Evidencia:** entrega el `git log --oneline` mostrando el commit de revert (cuatro commits) frente al resultado de `reset --hard` (tres commits), explicando la diferencia. Fuente oficial: [Git — git-revert](https://git-scm.com/docs/git-revert).
+Ya eliges la herramienta correcta según si el historial es local o ya compartido. El siguiente tema cubre `reflog`, `worktree` y `submodule` para casos menos frecuentes pero igualmente importantes. Fuente oficial: [Git — git-revert](https://git-scm.com/docs/git-revert).
 
 **Errores comunes:** usar `reset --hard` sobre una rama que otros ya clonaron; olvidar que `stash pop` puede generar conflictos si el árbol de trabajo cambió mientras tanto.
 
@@ -560,9 +560,9 @@ Crea un `git worktree` adicional apuntando a una rama distinta del mismo reposit
 
 Agrega un submódulo de prueba (`git submodule add <url> libs/externa`) a un repositorio de práctica y explica, en un comentario en el README, qué comando adicional necesita ejecutar alguien que clona el repositorio por primera vez para que el submódulo no quede vacío.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conoces la red de seguridad de `reflog` antes de necesitarla en un incidente real, y cuándo usar `worktree` o `submodule`. Esto cierra el módulo de Git avanzado; el siguiente módulo empaqueta aplicaciones en contenedores Docker reproducibles. **Evidencia:** entrega la salida completa mostrando "commit importante" perdido y recuperado vía `reflog`, y explica el resultado con los hashes involucrados. Fuente oficial: [Git — git-reflog](https://git-scm.com/docs/git-reflog).
+Ya conoces la red de seguridad de `reflog` antes de necesitarla en un incidente real, y cuándo usar `worktree` o `submodule`. Esto cierra el módulo de Git avanzado; el siguiente módulo empaqueta aplicaciones en contenedores Docker reproducibles. Fuente oficial: [Git — git-reflog](https://git-scm.com/docs/git-reflog).
 
 **Errores comunes:** confiar en `reflog` como recuperación permanente sin entender que expira; olvidar `git submodule update --init --recursive` al clonar un repositorio con submódulos, dejándolos vacíos.
 

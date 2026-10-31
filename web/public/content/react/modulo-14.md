@@ -79,12 +79,10 @@ Pista: medí el tiempo hasta el primer byte (`curl -w "%{time_starttransfer}\n" 
 #### Paso 6 · Práctica independiente
 Agregá una segunda sección lenta (por ejemplo `EstadisticasEnvio`) con su propio límite `<Suspense>` independiente, y confirmá que ambas secciones hacen streaming por separado: una puede terminar antes que la otra sin esperarse entre sí.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la página con streaming del Paso 4, el bloqueo total reproducido en el Paso 5, y las dos secciones independientes del Paso 6; explica por qué el streaming ocurre por límite `Suspense`, no por página completa. Como siguiente paso, estudia Server Actions para las mutaciones de esos mismos datos. Errores comunes: hacer `await` de algo lento fuera de cualquier `Suspense`, anulando el streaming de todo lo demás; marcar un componente como `'use client'` sin necesitarlo, perdiendo el beneficio de no enviar su JavaScript. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
 
 **¿Por qué es importante?** Un `await` lento fuera de un límite `Suspense` bloquea todo lo demás en ese componente, aunque el resto de los datos ya estuviera listo — el streaming solo funciona dentro de los límites que vos definís explícitamente.
-
-**Evidencia de aprendizaje:** entrega la página con streaming funcionando, el bloqueo total reproducido al quitar `Suspense`, y las dos secciones independientes del Paso 6.
 
 **Conceptos clave:** Server Component, `Suspense`, streaming por límite, `await` bloqueante.
 
@@ -150,12 +148,10 @@ Pista: `zod` que valida el formato de `envioId` pasa aunque el id pertenezca a o
 #### Paso 6 · Práctica independiente
 Restaura el filtro de `operadorId`, y agregá una prueba con una sesión simulada que confirme que llamar a `marcarEntregado` con el id de un envío ajeno lanza el error, junto con una prueba de regresión que confirme que el camino legítimo (envío propio) sigue funcionando.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la acción autorizada del Paso 4, el envío ajeno modificado sin autorización del Paso 5, y las dos pruebas del Paso 6; explica por qué validar la forma de los datos con `zod` no es lo mismo que autorizar la operación sobre un recurso específico. Como siguiente paso, estudia ISR y Middleware para proteger rutas completas, no solo acciones puntuales. Errores comunes: confiar en cualquier dato que llega del cliente (incluidos ids en campos ocultos) sin revalidar permisos en el servidor; registrar tokens de sesión completos en logs de error. Fuente oficial: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security.
 
 **¿Por qué es importante?** Una Server Action es un endpoint invocable con cualquier valor, sin importar qué muestre la interfaz; validar el formato del dato no reemplaza comprobar que ese usuario puede actuar sobre ese recurso específico.
-
-**Evidencia de aprendizaje:** entrega la acción autorizada, el envío ajeno modificado sin la comprobación, y las dos pruebas (autorización y regresión) agregadas.
 
 **Conceptos clave:** `'use server'`, validación de esquema vs. autorización, confianza cero en datos del cliente.
 
@@ -262,7 +258,7 @@ Pista: compara los logs del filtro con los de validación del servidor y comprue
 #### Paso 6 · Práctica independiente
 Restaura el matcher y prueba sesión ausente, inválida y válida. Para ISR, conserva respuestas con su fecha de generación antes y después de revalidar; distingue dato antiguo servido durante la regeneración de fallo permanente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega las respuestas y explica la diferencia entre navegación, autorización y caché pública. Como siguiente paso, mide imágenes y fuentes de esa página. **Errores comunes:** confiar en existencia de cookie, cachear datos privados entre usuarios, leer params sin await y medir ISR con el servidor de desarrollo. Fuente oficial: [convención Proxy y migración desde Middleware](https://nextjs.org/docs/app/api-reference/file-conventions/proxy).
 
 **Transferencia al proyecto integrador «Portal de clientes»:** Distingue página pública cacheable de panel privado. Prueba navegación sin sesión y datos de dos usuarios; la política de caché nunca debe reutilizar información privada entre identidades.
@@ -323,12 +319,10 @@ Pista: corré Lighthouse (o el panel "Performance" de DevTools) antes y después
 #### Paso 6 · Práctica independiente
 Restaurá `next/image`, y además compará: quitá temporalmente `next/font` en favor de un `<link>` externo a Google Fonts y medí la diferencia en First Contentful Paint entre ambas estrategias.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la foto sin salto de layout del Paso 4, el CLS alto reproducido con `<img>` plano del Paso 5, y la comparación de FCP entre `next/font` y un `<link>` externo del Paso 6; explica por qué reservar espacio de antemano es lo que elimina el salto, no el formato del archivo de imagen. Como siguiente paso, estudia accesibilidad con React Aria para esa misma página. Errores comunes: usar `<img>` plano sin `width`/`height` donde `next/image` ya está disponible; cargar una fuente externa bloqueante cuando `next/font` puede autohospedarla. Fuente oficial: https://nextjs.org/docs/app/building-your-application/optimizing/images y https://nextjs.org/docs/app/building-your-application/optimizing/fonts.
 
 **¿Por qué es importante?** Reservar el espacio de una imagen antes de que descargue es lo que elimina el salto de layout — el formato o la compresión de la imagen no resuelven ese problema por sí solos.
-
-**Evidencia de aprendizaje:** entrega la foto sin salto de layout, el CLS alto reproducido con `<img>` plano, y la comparación de FCP entre las dos estrategias de fuente.
 
 **Conceptos clave:** `next/image`, CLS, `next/font`, reserva de espacio.
 
@@ -391,12 +385,10 @@ Pista: usá la pestaña "Accessibility" de Chrome DevTools para inspeccionar el 
 #### Paso 6 · Práctica independiente
 Restaurá los props de `useDialog`, agregá `useModal`/`FocusScope` para confirmar que Tab no puede escapar del diálogo mientras está abierto, y agregá una prueba automática con `jest-axe` que falle si el `role="dialog"` o el nombre accesible faltan.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el diálogo accesible del Paso 4, la pérdida de semántica confirmada en el árbol de accesibilidad del Paso 5, y el atrapado de foco más la prueba con `jest-axe` del Paso 6; explica por qué un componente puede verse idéntico y a la vez ser invisible para un lector de pantalla. Como siguiente paso, estudia i18n para que los textos de ese mismo diálogo sean traducibles. Errores comunes: confiar en que "se ve bien" es lo mismo que "es accesible"; reinventar el atrapado de foco a mano en vez de usar `useModal`/`FocusScope`. Fuente oficial: https://react-spectrum.adobe.com/react-aria/useDialog.html.
 
 **¿Por qué es importante?** Un componente puede verse visualmente idéntico y a la vez ser invisible para un lector de pantalla — la única forma de confirmarlo es inspeccionar el árbol de accesibilidad, no la apariencia.
-
-**Evidencia de aprendizaje:** entrega el diálogo accesible, la pérdida de semántica confirmada en el árbol de accesibilidad, y el atrapado de foco con la prueba de `jest-axe`.
 
 **Conceptos clave:** `useDialog`, árbol de accesibilidad, atrapado de foco, `jest-axe`.
 
@@ -467,12 +459,10 @@ Pista: corré la build (o visitá `/ar/envios` en desarrollo) inmediatamente des
 #### Paso 6 · Práctica independiente
 Agregá la clave `envios` a `messages/ar.json` con las categorías de plural correctas, y agregá una prueba que recorra todas las claves de `messages/es.json` confirmando que cada una tiene su equivalente en `messages/ar.json`, para detectar claves faltantes en CI en vez de en producción.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la pluralización y el `dir="rtl"` funcionando del Paso 4, la build rota por la clave faltante del Paso 5, y la prueba de paridad de claves del Paso 6; explica por qué una clave de traducción faltante debe ser un error detectable, nunca un texto de respaldo silencioso. Con esto cerrás el track completo de React, listo para operar en producción real. Errores comunes: tratar la pluralización como un simple singular/plural binario cuando el idioma destino tiene más categorías; fijar `dir="ltr"` de forma fija en vez de derivarlo del locale activo. Fuente oficial: https://next-intl.dev/docs/usage/messages#plurals.
 
 **¿Por qué es importante?** Una clave de traducción faltante en un idioma debe producir un error detectable en build o en CI, nunca un texto de respaldo silencioso que solo se descubre al llegar a producción.
-
-**Evidencia de aprendizaje:** entrega la pluralización y el `dir="rtl"` funcionando, la build rota por la clave faltante reproducida, y la prueba de paridad de claves entre idiomas.
 
 **Conceptos clave:** categorías CLDR de plural, `dir` por locale, paridad de claves entre idiomas.
 

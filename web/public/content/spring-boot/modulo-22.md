@@ -139,9 +139,9 @@ Crea `src/CancelarReserva.java`: un caso de uso que busque la reserva, valide qu
 
 **Resultado esperado:** cancelar dos veces la misma reserva produce un mensaje de dominio, no un `NullPointerException`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: documentar el sistema completo con C4. **Evidencia de aprendizaje:** entrega `Hexagonal.java`, la salida `reserva=RES-1 vehiculo=camion-1` y el error de compilación con Spring junto con su diagnóstico.
+Siguiente paso: documentar el sistema completo con C4.
 
 **Errores comunes:** devolver entidades JPA desde el puerto; inyectar `Pageable` en el dominio; poner la lógica de negocio en el adaptador; crear un puerto por cada método del repositorio.
 
@@ -271,9 +271,9 @@ Añade un contenedor real que hoy no está en el diagrama (por ejemplo, un `work
 
 **Resultado esperado:** el validador pasa y el documento menciona el nuevo contenedor en el nivel correcto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: registrar por qué se eligió esta arquitectura. **Evidencia de aprendizaje:** entrega `docs/c4/envios.md`, `validar-c4.mjs` y la salida del validador antes y después de romper el diagrama.
+Siguiente paso: registrar por qué se eligió esta arquitectura.
 
 **Errores comunes:** mezclar niveles en un solo dibujo; dibujar un contenedor que no existe; usar C4 como sustituto de un ADR; no versionar el diagrama junto al código.
 
@@ -405,9 +405,9 @@ Escribe un ADR para una decisión del proyecto integrador que todavía no esté 
 
 **Resultado esperado:** el validador pasa y el README apunta al ADR con su número.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto. **Evidencia de aprendizaje:** entrega los tres ADR, `validar-adr.mjs` y la salida del validador con el fallo de `0003` y su corrección.
+Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto.
 
 **Errores comunes:** escribir un ADR después de implementar sin registrar las alternativas; copiar el mismo texto en los tres; dejar el estado «propuesta» para siempre; usar el ADR para describir la arquitectura completa.
 

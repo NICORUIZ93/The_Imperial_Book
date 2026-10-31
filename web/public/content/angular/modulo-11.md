@@ -112,9 +112,9 @@ const html = await ____(
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente simple y un test `renderApplication` que confirme su contenido en el HTML generado por el servidor. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con `renderApplication` real que Angular genera HTML completo en el servidor, sin depender de la ejecución de JavaScript del cliente. El siguiente tema confirma por qué el contenido no determinista rompe la reutilización del DOM durante la hidratación. **Evidencia:** entrega el resultado del test en verde, y el contenido faltante que produce el fallo deliberado con una promesa no coordinada. Fuentes oficiales: [Angular — Server-side rendering](https://angular.dev/guide/ssr).
+Ya confirmas con `renderApplication` real que Angular genera HTML completo en el servidor, sin depender de la ejecución de JavaScript del cliente. El siguiente tema confirma por qué el contenido no determinista rompe la reutilización del DOM durante la hidratación. Fuentes oficiales: [Angular — Server-side rendering](https://angular.dev/guide/ssr).
 
 **Errores comunes:** asumir que cualquier dato asíncrono aparece automáticamente en el HTML de SSR sin que Angular lo espere correctamente; acceder a `window` u otras APIs de navegador durante el renderizado del servidor, donde no existen.
 
@@ -249,9 +249,9 @@ momentoGenerado = ____.required<string>();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente determinista y uno no determinista, con un test que confirme la diferencia real entre ambos comportamientos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya demuestras, con una comparación de texto real entre dos renders, exactamente por qué el contenido no determinista rompe la reutilización del DOM durante la hidratación. El siguiente tema verifica los estados reales de un bloque `@defer`, incluyendo el estado de error. **Evidencia:** entrega el resultado de ambos tests en verde, y la discrepancia real que produce el fallo deliberado con un desajuste mínimo de datos. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration).
+Ya demuestras, con una comparación de texto real entre dos renders, exactamente por qué el contenido no determinista rompe la reutilización del DOM durante la hidratación. El siguiente tema verifica los estados reales de un bloque `@defer`, incluyendo el estado de error. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration).
 
 **Errores comunes:** generar contenido basado en `Date.now()`, `Math.random()` u otra fuente no determinista directamente en el renderizado; asumir que solo diferencias "grandes" causan errores de hidratación, cuando cualquier desajuste real, por mínimo que sea, cuenta.
 
@@ -377,9 +377,9 @@ await bloqueDeferido.render(DeferBlockState.____);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un bloque `@defer` con manejo explícito de `@error`, y un test que fuerce ese estado con la API oficial. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, forzando el estado real `Error` con la API oficial de test, que un bloque `@defer` sin manejo explícito de fallo deja al usuario sin ninguna indicación clara ante una descarga fallida. El siguiente y último tema de este módulo confirma que el modo zoneless actualiza la vista automáticamente al cambiar un signal. **Evidencia:** entrega el resultado del test en verde, y el mensaje de error ausente que produce el fallo deliberado sin el bloque `@error`. Fuentes oficiales: [Angular — Deferrable Views](https://angular.dev/guide/defer).
+Ya confirmas, forzando el estado real `Error` con la API oficial de test, que un bloque `@defer` sin manejo explícito de fallo deja al usuario sin ninguna indicación clara ante una descarga fallida. El siguiente y último tema de este módulo confirma que el modo zoneless actualiza la vista automáticamente al cambiar un signal. Fuentes oficiales: [Angular — Deferrable Views](https://angular.dev/guide/defer).
 
 **Errores comunes:** omitir el bloque `@error`, dejando un fallo real de carga indistinguible de un placeholder normal; no anunciar el error a tecnologías asistivas con `role="alert"` o equivalente.
 
@@ -498,9 +498,9 @@ providers: [____()],
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un signal configurado en modo zoneless, y un test que confirme la actualización del DOM tras `whenStable()`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con `provideZonelessChangeDetection()` real que el estado modelado en signals actualiza el DOM con precisión, sin necesitar la intercepción genérica de Zone.js. Esto cierra el módulo de rendimiento, SSR y zoneless; como siguiente paso, continúa con el módulo 12 de este track. **Evidencia:** entrega el resultado del test en verde, y el comportamiento inconsistente que produce el fallo deliberado al omitir `whenStable()`. Fuentes oficiales: [Angular — Zoneless](https://angular.dev/guide/experimental/zoneless).
+Ya confirmas con `provideZonelessChangeDetection()` real que el estado modelado en signals actualiza el DOM con precisión, sin necesitar la intercepción genérica de Zone.js. Esto cierra el módulo de rendimiento, SSR y zoneless; como siguiente paso, continúa con el módulo 12 de este track. Fuentes oficiales: [Angular — Zoneless](https://angular.dev/guide/experimental/zoneless).
 
 **Errores comunes:** asumir que el modo zoneless funciona sin migrar el estado relevante a signals; olvidar `await fixture.whenStable()` en tests zoneless, asumiendo actualización sincrónica del DOM.
 

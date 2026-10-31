@@ -14,7 +14,6 @@ El proyecto integrador Fundamentos necesita, además de su CLI, una interfaz web
 #### Paso 3 · Teoría, modelo mental y analogía
 Abrir una URL dispara pasos distintos: si el host es un dominio público, DNS traduce el nombre a una dirección IP; después el cliente abre una conexión TCP contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. `localhost` salta el primer paso — el sistema operativo lo resuelve a `127.0.0.1` sin consultar ningún servidor DNS —, así que en desarrollo local el cuello de botella casi nunca es la resolución de nombres: es que el puerto donde escucha tu servidor coincida exactamente con el puerto que pedís. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
 
-**Evidencia de aprendizaje:** entrega la respuesta 200 en el puerto correcto, el "Connection refused" en el puerto equivocado, y la corrección del Paso 6.
 **Conceptos clave:** cliente, servidor, protocolo, URL, dominio, DNS, dirección IP, puerto, TCP y localhost.
 
 Un **cliente** inicia una comunicación y un **servidor** escucha solicitudes. Son roles, no necesariamente máquinas distintas: tu navegador puede ser cliente y un proceso Python en el mismo equipo puede ser servidor. `localhost` se refiere al propio computador y normalmente se resuelve como `127.0.0.1` o `::1`.
@@ -119,7 +118,7 @@ Pista: ahora detené el servidor con `Ctrl+C` y volvé a ejecutar `curl -i http:
 #### Paso 6 · Práctica independiente
 Iniciá el servidor en un puerto distinto, por ejemplo `python3 -m http.server 8080`, y repetí `curl -i http://localhost:8000` sin cambiarlo: debe fallar. Corregí el comando para que apunte a `8080` y confirmá que responde. Si alguna vez ves `address already in use` al iniciar el servidor, usá `lsof -i :8000` (macOS/Linux) o `netstat -ano | findstr 8000` (Windows) para encontrar qué proceso ya ocupa ese puerto antes de matarlo a ciegas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la respuesta `200` del Paso 4, el `Connection refused` del puerto equivocado, y la verificación del Paso 6 con el servidor en `8080`; explicá por qué en `localhost` el cuello de botella casi nunca es DNS sino la coincidencia exacta de puerto. Como siguiente paso, en el Tema 2 vas a usar `curl -v` sobre un servidor real para observar el contrato HTTP completo: método, headers, código de estado y cuerpo. Errores comunes: confundir "conexión rechazada" con un error HTTP; asumir que `localhost` necesita resolución DNS; no verificar en qué puerto quedó escuchando el servidor antes de probarlo. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
 **¿Por qué es importante?** Porque diagnosticar "no carga" exige separar tres capas distintas — resolución de nombre, conexión TCP a un puerto y respuesta HTTP — y en desarrollo local casi siempre falla la segunda, no la primera.
 
@@ -134,7 +133,6 @@ El proyecto integrador Fundamentos va a exponer una API HTTP simple para consult
 #### Paso 3 · Teoría, modelo mental y analogía
 Una petición HTTP es texto estructurado: un método (`GET`, `POST`...), una ruta, una versión, cabeceras y, a veces, un cuerpo. Una respuesta es simétrica: una línea de estado con un código numérico, cabeceras y, a veces, un cuerpo. El código de estado por sí solo ya es un contrato observable: un cliente puede decidir si algo salió bien (`2xx`), si el problema es suyo (`4xx`) o del servidor (`5xx`) sin necesidad de parsear el cuerpo de la respuesta. La analogía: pedís algo por correo certificado — el acuse de recibo (código de estado) te confirma la entrega sin que tengas que abrir el sobre (el cuerpo) para saberlo.
 
-**Evidencia de aprendizaje:** entrega los dos `curl -v` (200 y 404) con la línea de estado señalada, y la comparación de métodos GET/HEAD/POST del Paso 6.
 **Conceptos clave:** petición, respuesta, método, ruta, header, body, código de estado, idempotencia, caché y TLS.
 
 HTTP intercambia mensajes. Una petición contiene método, destino, headers y quizá cuerpo. Una respuesta contiene estado, headers y quizá cuerpo.
@@ -257,7 +255,7 @@ Pista: compará los dos `curl -v` del Paso 4 línea por línea — la línea de 
 #### Paso 6 · Práctica independiente
 Repetí el experimento pidiendo el método `HEAD` en vez de `GET` (`curl -v -I http://localhost:8000/`) y comparalo: mismas cabeceras, sin cuerpo. Después probá `curl -v -X POST http://localhost:8000/` contra este servidor de archivos estáticos y observá qué código de estado devuelve (`501 Unsupported method ('POST')`) — confirmá que el método también es parte del contrato, no solo la ruta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los dos `curl -v` del Paso 4 (200 y 404) con la línea de estado señalada, y la comparación de métodos del Paso 6; explicá por qué un cliente puede verificar éxito o fallo con solo leer el código de estado, sin parsear el cuerpo. Como siguiente paso, en el Tema 3 vas a construir el HTML real que un servidor como este sirve, con formularios que un lector de pantalla pueda interpretar. Errores comunes: asumir que una respuesta con cuerpo siempre significa éxito; ignorar el código de estado y confiar solo en que "algo se mostró en pantalla"; no revisar las cabeceras de respuesta al depurar una API. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
 **¿Por qué es importante?** Porque los frameworks ocultan el intercambio real, pero cualquier bug de caché, CORS o autenticación se diagnostica leyendo la petición y la respuesta HTTP reales, no adivinando.
 
@@ -272,7 +270,6 @@ El proyecto integrador Fundamentos necesita un formulario de búsqueda de tareas
 #### Paso 3 · Teoría, modelo mental y analogía
 El navegador analiza el HTML y construye el DOM: un árbol de nodos que JavaScript puede leer y modificar. Cada elemento aporta significado además de apariencia. Un `<label for="id">` no es decoración: es una relación programática entre un texto y un control. Clickear el texto enfoca el input, y un lector de pantalla anuncia ese texto como el nombre accesible del campo. Sin esa relación, el campo sigue siendo visible y hasta usable con mouse, pero queda sin nombre para quien no puede verlo. La analogía: un formulario sin label es un casillero sin rótulo — podés adivinar para qué sirve mirando su posición, pero nadie que no pueda ver esa posición puede saberlo con certeza.
 
-**Evidencia de aprendizaje:** entrega la captura del input sin nombre accesible, la corrección con label y name, y el segundo campo corregido del Paso 6.
 **Conceptos clave:** elemento, atributo, documento, semántica, jerarquía, formulario, etiqueta, validación y DOM.
 
 HTML describe estructura y significado. El navegador lo analiza y construye el DOM, un árbol que JavaScript puede consultar o modificar. HTML no es “decoración”: comunica relaciones a navegadores, buscadores y tecnologías de asistencia.
@@ -440,7 +437,7 @@ Pista: hacé clic directamente sobre el texto "Número de guía" (no sobre el in
 #### Paso 6 · Práctica independiente
 Agregá un segundo campo (`<select id="prioridad" name="prioridad">` con opciones baja/media/alta) sin su label, confirmá con DevTools que aparece sin nombre accesible, y corregilo igual que el anterior. Documentá en un comentario qué diferencia concreta notaste entre el campo con label y sin label, más allá de "uno es accesible y el otro no".
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la captura de DevTools con el input sin nombre accesible del Paso 4, la corrección con `label` y `name`, y el segundo campo corregido del Paso 6; explicá qué se rompe en términos concretos (nombre accesible ausente, dato sin clave al enviarse) cuando falta un `label`, no solo que "es menos accesible". Como siguiente paso, en el Tema 4 vas a darle estilos responsive a este mismo formulario y vas a verificar que el contraste de color no excluya a quien ya podés identificar por nombre accesible. Errores comunes: usar solo el `placeholder` como si fuera un label; relacionar un `label` con un `id` que no coincide exactamente; omitir `name` en inputs que después se envían a un servidor. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
 **¿Por qué es importante?** Porque un campo sin nombre accesible no es un detalle visual: para quien usa lector de pantalla directamente no existe, y para un backend que lee `name`, su valor directamente no llega.
 
@@ -457,7 +454,6 @@ El sitio del proyecto integrador Fundamentos necesita texto legible para cualqui
 #### Paso 3 · Teoría, modelo mental y analogía
 La cascada CSS decide qué regla gana, pero el **contraste** entre color de texto y color de fondo es independiente de la cascada: es una relación matemática entre la luminancia relativa de ambos colores. WCAG AA exige un ratio mínimo de **4.5:1** para texto normal y **3:1** para texto grande; por debajo de eso, el texto es insuficiente para accesibilidad, más allá de cómo se vea en un monitor bien calibrado. La analogía: el contraste no es una opinión de diseño, es como el voltaje de un enchufe — hay un número que cumple o no cumple, y "a mí me pareció que andaba bien" no reemplaza medirlo.
 
-**Evidencia de aprendizaje:** entrega el ratio reprobado del diseño original, la corrección con ratio verificado, y las combinaciones adicionales calculadas en el Paso 6.
 **Conceptos clave:** selector, cascada, especificidad, herencia, box model, Flexbox, Grid, media query, foco, contraste y responsive.
 
 CSS aplica reglas a elementos. La **cascada** decide qué declaración gana según origen, importancia, especificidad y orden. Aumentar selectores hasta “ganar” crea deuda; comprende primero por qué una regla fue sobrescrita usando el panel Styles.
@@ -604,7 +600,7 @@ Pista: no te quedes en "se ve mejor" — recalculá el ratio o volvé a mirar el
 #### Paso 6 · Práctica independiente
 Elegí otras dos combinaciones de color de texto/fondo (por ejemplo las que ya usás en los bordes o enlaces de tu sitio), calculá o verificá su ratio con la misma herramienta, y documentá cuáles cumplen 4.5:1 (texto normal) y cuáles necesitarían ser texto grande para que alcance con el mínimo de 3:1.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1, y las combinaciones adicionales del Paso 6; explicá por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitás un número verificable. Con esto cerrás el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
 **¿Por qué es importante?** Porque la accesibilidad verificable exige un número que cualquiera pueda recalcular — "4.5:1 o no cumple" — en vez de una impresión subjetiva de legibilidad.
 
@@ -706,7 +702,7 @@ En Windows puedes usar `py -m http.server 8000`. Abre `http://localhost:8000`. *
 #### Paso 6 · Práctica independiente
 Añade una sección «Horario de atención» con encabezado propio. Comprueba 320 y 768 px y zoom de 200 %. No debe aparecer scroll horizontal de toda la página ni perderse el botón. Explica qué regla controla las columnas y por qué `width: 900px` rompería el teléfono.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** conserva `index.html`, capturas de ambos anchos y el fallo/corrección del label. Este es el primer cliente estático del proyecto integrador; el siguiente paso es añadir comportamiento con JavaScript. **Errores comunes:** usar un `div` como botón, quitar el foco y confundir GET con guardar datos. **Límites y decisión de uso:** la validación del navegador mejora el uso; el servidor debe volver a validar cualquier dato cuando exista un backend.
+#### Paso 7 · Cierre
+Publicá la página como interfaz de consulta del proyecto integrador Fundamentos y comprobá que el formulario se complete solo con teclado. Ese incremento cierra el Módulo 3; el siguiente módulo modela estos datos en una base relacional con SQL. **Errores comunes:** usar un `div` como botón, quitar el foco y confundir GET con guardar datos. **Límites y decisión de uso:** la validación del navegador mejora el uso; el servidor debe volver a validar cualquier dato cuando exista un backend.
 
 **Fuentes oficiales:** [MDN estructura HTML](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content) y [CSS layout](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout).

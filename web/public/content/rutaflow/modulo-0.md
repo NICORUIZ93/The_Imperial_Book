@@ -120,7 +120,7 @@ console.log('OK', envio.estado, envio.eventos.length, 'eventos');
 
 Escribí una función `reconstruirEstado(eventos)` que, dada solo la lista de `envio.eventos` (sin el campo `estado` guardado), reproduzca secuencialmente las transiciones y devuelva el estado final — y confirmá con una aserción que ese estado reconstruido coincide exactamente con `envio.estado` guardado directamente. Esto es una verificación mínima de "estado derivado de eventos" (event sourcing simplificado): si alguna vez difieren, el bug está en cómo se aplicó algún evento, no en el estado guardado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entregá la secuencia completa de transiciones válidas del Paso 4, el error de invariante al intentar reabrir un envío entregado, el estado `cancelado` del Paso 5 y la reconstrucción por eventos del Paso 6; explicá por qué una invariante de negocio como "entregado es terminal" debe vivir como código en el dominio, no solo como una regla documentada que cada pantalla nueva podría ignorar. Como siguiente paso, en el Tema 2 preparás el entorno reproducible (Docker Compose) para correr este mismo dominio junto a una base de datos real. **Fuente oficial:** [https://martinfowler.com/eaaDev/EventSourcing.html](https://martinfowler.com/eaaDev/EventSourcing.html).
 
@@ -215,7 +215,7 @@ node verificar.js
 
 Documentá en un `README.md` de dos párrafos, dirigido a alguien que recién clona el repo, cuándo usar `localhost` y cuándo usar el nombre del servicio al escribir `DATABASE_URL` — y agregá una validación simple al arranque de un script Node (antes de conectar) que imprima una advertencia explícita si detecta `localhost` en una variable de entorno dentro de un contenedor (podés detectarlo chequeando si existe `/.dockerenv`).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entregá la conexión exitosa por `localhost` desde el host del Paso 4, el fallo de DNS al usar `db` desde el host, la conexión exitosa por `db` desde otro contenedor del Paso 5, y el README más la advertencia del Paso 6; explicá por qué "host" y "nombre de servicio" resuelven en redes distintas y nunca son intercambiables. Como siguiente paso, en el Tema 3 aplicás un threat model a los datos reales (direcciones, teléfonos) que esta misma base de datos va a almacenar. **Fuente oficial:** [https://docs.docker.com/compose/networking/](https://docs.docker.com/compose/networking/).
 
@@ -311,7 +311,7 @@ registrarEvento({ id: 'RF-4471', estado: 'entregado', telefono: '3001234567', di
 
 Escribí una prueba automatizada que llame a `registrarEvento` con un envío que incluya un teléfono conocido (ej. `'3001234567'`), capture la salida de `console.log` (podés reasignar temporalmente `console.log` a una función que guarde los argumentos recibidos), y haga una aserción de que esa salida capturada **no contiene** la cadena `'3001234567'` completa. Esta prueba debe fallar si alguien reintroduce el log sin redactar del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entregá el log redactado del Paso 4, la fuga de PII reproducida al quitar `redactarPII`, la función insegura eliminada del Paso 5, y la prueba de regresión del Paso 6; explicá por qué la defensa correcta es que el camino fácil (la función de log del equipo) redacte por defecto, no confiar en que cada desarrollador recuerde hacerlo. Como siguiente paso, en el Módulo 1 estas mismas invariantes de dominio y reglas de privacidad se persisten en PostgreSQL con PostGIS. **Fuente oficial:** [https://owasp.org/www-community/Threat_Modeling](https://owasp.org/www-community/Threat_Modeling).
 

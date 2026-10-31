@@ -80,9 +80,9 @@ Transforma dos entregas con `envios.map(presentar)`. **Pista:** `presentar` ya r
 
 Crea un objeto `centro` con propiedad `nombre` y método `describir`. Provoca el fallo usando una flecha y corrígelo con método abreviado. Explica por qué las transformaciones sí conservan flechas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges sintaxis por comportamiento. El siguiente tema combina parámetros por defecto con rest y spread. **Evidencia:** demuestra la salida, el `ReferenceError`, el fallo de `this` y sus correcciones. Fuente oficial: [MDN — funciones](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Functions).
+Ya eliges sintaxis por comportamiento. El siguiente tema combina parámetros por defecto con rest y spread. Fuente oficial: [MDN — funciones](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Functions).
 
 **Errores comunes:** usar flechas como métodos con `this` dinámico; invocar una expresión antes de inicializarla; escoger sintaxis solo por brevedad.
 
@@ -167,9 +167,9 @@ Agrega un cargo opcional por seguro y calcula de nuevo el total. **Pista:** prep
 
 Añade `direccion: { ciudad: 'Bogotá' }`, copia el envío con spread y cambia la ciudad en la copia. Explica por qué también cambia el original y corrige copiando explícitamente `direccion`. Demuestra ambos comportamientos con salidas diferentes.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ahora distingues rest —recolecta— de spread —expande o copia un nivel— y sabes cuándo actúa un valor por defecto. El siguiente tema usa funciones como datos para componer reglas. **Evidencia:** conserva la salida inicial, el caso `null`, la mutación anidada y su corrección. Fuente oficial: [MDN — rest parameters](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/rest_parameters) y [spread syntax](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Spread_syntax).
+Ahora distingues rest —recolecta— de spread —expande o copia un nivel— y sabes cuándo actúa un valor por defecto. El siguiente tema usa funciones como datos para componer reglas. Fuente oficial: [MDN — rest parameters](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/rest_parameters) y [spread syntax](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Spread_syntax).
 
 **Errores comunes:** colocar rest antes del último parámetro; pasar un array sin expandir; creer que spread clona todos los niveles; esperar que `null` active el valor por defecto.
 
@@ -253,9 +253,9 @@ Agrega `redondear = total => Math.round(total)` al final. **Pista:** predice la 
 
 Implementa `debounce(fn, 100)` en `src/interaccion.js`, llámalo cinco veces y demuestra con un contador que ejecuta una sola vez. Añade `cancel()` y prueba que una búsqueda cancelada no cambia el contador.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya compones transformaciones puras y mantienes temporizadores en el borde. El siguiente tema modela decisiones y estados. **Evidencia:** demuestra el resultado de la tarifa, el peso rechazado, los órdenes comparados y las pruebas de ejecutar/cancelar debounce. Fuente oficial: [MDN — funciones de primera clase](https://developer.mozilla.org/es/docs/Glossary/First-class_Function).
+Ya compones transformaciones puras y mantienes temporizadores en el borde. El siguiente tema modela decisiones y estados. Fuente oficial: [MDN — funciones de primera clase](https://developer.mozilla.org/es/docs/Glossary/First-class_Function).
 
 **Errores comunes:** componer al revés; devolver un tipo incompatible; esconder efectos dentro de una regla; probar debounce sin controlar el tiempo.
 
@@ -345,9 +345,9 @@ Agrega el estado `en-bodega` entre `asignado` y `en-ruta`. **Pista:** modifica d
 
 Implementa `procesarAcciones(estadoInicial, acciones)` que devuelva todos los estados visitados sin mutar el array recibido. Prueba camino feliz, acción desconocida y acción válida desde estado incorrecto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes convertir reglas de transición en datos verificables. El siguiente tema reconoce patrones antiguos y los migra a módulos modernos. **Evidencia:** demuestra el resultado correcto, el fallo deliberado y tres pruebas de `procesarAcciones`. Fuente oficial: [MDN — control flow](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Control_flow_and_error_handling).
+Ya puedes convertir reglas de transición en datos verificables. El siguiente tema reconoce patrones antiguos y los migra a módulos modernos. Fuente oficial: [MDN — control flow](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Control_flow_and_error_handling).
 
 **Errores comunes:** olvidar `break`; usar `for...in` para valores de un array; aceptar silenciosamente claves desconocidas; mezclar reglas con impresión en consola.
 
@@ -431,9 +431,9 @@ Reemplaza `function () { ...arguments }` por `(...cargos) =>`. **Pista:** conser
 
 Crea `src/tarifas.js` con export nombrado `crearCalculadoraTarifas`, estado privado mediante closure y rest. Escribe un import en `src/usar-tarifas.js` y demuestra que dos calculadoras mantienen contadores independientes.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Completaste funciones y control de flujo distinguiendo patrones vigentes de legado. El siguiente módulo profundiza en closures, `this` y prototipos. **Evidencia:** conserva las salidas antiguas, el `TypeError`, la versión ESM y la prueba de dos contadores. Fuentes oficiales: [MDN — IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) y [`arguments`](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/arguments).
+Completaste funciones y control de flujo distinguiendo patrones vigentes de legado. El siguiente módulo profundiza en closures, `this` y prototipos. Fuentes oficiales: [MDN — IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) y [`arguments`](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/arguments).
 
 **Errores comunes:** creer que `arguments` es un array; buscarlo dentro de una arrow; migrar sintaxis y comportamiento a la vez; usar IIFE donde un módulo ya proporciona aislamiento.
 
@@ -539,8 +539,8 @@ Escribe `resumen({ guia, destino: { barrio }, paquetes })` que devuelva un texto
 #### Paso 6 · Práctica independiente
 Toma una respuesta de una API pública de tu elección y extrae con una sola desestructuración anidada tres campos de distintos niveles, con valores por defecto para los opcionales.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque es sintaxis de uso diario y la causa de muchos `TypeError` cuando llegan datos incompletos.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque es sintaxis de uso diario y la causa de muchos `TypeError` cuando llegan datos incompletos.
 **Fuente oficial:** [MDN: Destructuring assignment](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
 **Conceptos clave:** desestructuración de objetos y arrays, renombrado, valor por defecto, anidamiento, rest en objetos, parámetros de opciones.
 **Cuándo no usarlo:** no desestructures estructuras muy profundas en una sola línea: si un nivel puede faltar, combina con encadenamiento opcional (`?.`) o valida antes.

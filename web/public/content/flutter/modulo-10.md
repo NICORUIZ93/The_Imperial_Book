@@ -67,9 +67,7 @@ Pista: en `DetalleEnvio`, usá `Container(color: Color(0xFF3F51B5))` con un valo
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el color hardcodeado y usando `Theme.of(context).colorScheme.primary` (o el estilo por defecto de `ElevatedButton`), confirmando que ahora ese botón también sigue los cambios del `ThemeData` central.
 
-**Evidencia de aprendizaje:** entrega ThemeData centralizado, desincronización por color hardcodeado detectada y corrección confirmada.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `ThemeData` centralizado del Paso 4, la desincronización por color hardcodeado del Paso 5, y la corrección del Paso 6; explicá por qué hardcodear un color en un widget individual rompe la garantía de coherencia que `ThemeData` centralizado existe para dar. Siguiente paso: estudia cómo adaptar widgets entre Material y Cupertino. Errores comunes: hardcodear colores en widgets individuales en vez de leerlos del tema central, no definir `darkTheme` dejando la app sin un modo oscuro coherente, y no probar que `ThemeMode.system` efectivamente responde al cambio de preferencia del sistema. Fuentes oficiales: https://docs.flutter.dev/ui/design/material y https://api.flutter.dev/flutter/material/ThemeData-class.html.
 **¿Por qué es importante?** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget.
 
@@ -138,9 +136,7 @@ Pista: envolvé ese widget condicional dentro de un widget test y corré la suit
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 usando `debugDefaultTargetPlatformOverride` dentro del widget test para forzar `TargetPlatform.iOS`, confirmando que ahora el camino `CupertinoButton` sí se ejecuta y se verifica en CI sin importar el sistema operativo real.
 
-**Evidencia de aprendizaje:** entrega botón adaptativo, camino sin cobertura en CI detectado y override de plataforma en test confirmado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el botón adaptativo del Paso 4, el camino sin cobertura real en CI del Paso 5, y el override de plataforma en test del Paso 6; explicá por qué `Platform.isIOS` depende del sistema operativo real de ejecución, y por qué eso exige un mecanismo distinto para testear el camino Cupertino desde una máquina de CI que no es Apple. Siguiente paso: estudia Semantics y dark mode. Errores comunes: no testear ambos caminos de un widget adaptativo, asumir que el mismo estilo visual funciona igual de bien en ambas plataformas, y usar `Platform.isIOS` en código que corre en la web. Fuentes oficiales: https://docs.flutter.dev/platform-integration/ios/platform-adaptations y https://api.flutter.dev/flutter/cupertino/CupertinoButton-class.html.
 **¿Por qué es importante?** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo las expectativas visuales que los usuarios ya tienen formadas.
 
@@ -216,9 +212,7 @@ Pista: quitá el `Semantics` y fijá el color del ícono como `Colors.grey.shade
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `Semantics` con su label, y reemplazando el color hardcodeado por `Theme.of(context).colorScheme.onSurface`, confirmando visualmente en un dispositivo real que el ícono es visible en ambos modos.
 
-**Evidencia de aprendizaje:** entrega Semantics agregado, ícono invisible en modo oscuro detectado y corrección con color adaptativo.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `Semantics` agregado del Paso 4, el ícono invisible en modo oscuro detectado en el Paso 5, y la corrección con color adaptativo del Paso 6; explicá por qué un color hardcodeado puede verse perfecto en el modo que probaste, pero fallar silenciosamente en el modo que no probaste. Siguiente paso: cerrá el módulo integrando theming, adaptación de plataforma y accesibilidad en el proyecto completo. Errores comunes: dejar íconos interactivos sin `Semantics`, hardcodear colores que ignoran el tema activo, y probar la app solo en el modo de color que coincide con la preferencia personal de quien la desarrolla. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/accessibility y https://api.flutter.dev/flutter/widgets/Semantics-class.html.
 **¿Por qué es importante?** Activar un lector de pantalla revela huecos de accesibilidad que una inspección visual no puede detectar; probar ambos modos de color revela contrastes insuficientes que no se notarían probando solo uno.
 

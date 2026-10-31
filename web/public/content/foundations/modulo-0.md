@@ -90,9 +90,9 @@ Antes de tocar el código, predice qué aparecerá si cambias `Hola, mundo` por 
 
 Crea `presentacion.py` en la misma carpeta, sin copiar el archivo completo anterior. Debe mostrar dos líneas: tu nombre y `Estoy aprendiendo a ejecutar programas`. Usa dos llamadas a `print`; ejecuta `python3 presentacion.py` o `py presentacion.py`. **Resultado esperado:** las dos líneas aparecen en ese orden. Cambiar este archivo no debe cambiar la salida de `saludo.py`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Crea `README.md` en `primera-sesion`. Registra el sistema operativo, el comando que funcionó, la salida de ambos programas y el error de nombre con su corrección. **Evidencia de aprendizaje:** explica por qué guardar el archivo no muestra el mensaje hasta ejecutarlo y demuestra que puedes volver a ejecutarlo tras cerrar y abrir la terminal.
+Crea `README.md` en `primera-sesion`. Registra el sistema operativo, el comando que funcionó, la salida de ambos programas y el error de nombre con su corrección.
 
 **Errores comunes:** guardar como `saludo.py.txt` (comprueba el nombre completo), ejecutar sin guardar (usa File → Save) o pegar el comando dentro del archivo (el comando va en la terminal). **Límites y decisión de uso:** `print` sirve para observar un valor; mostrarlo no lo guarda en un archivo de datos. En el siguiente tema localizarás tus archivos sin depender de que el editor haya abierto la carpeta correcta.
 
@@ -149,9 +149,9 @@ Sin cambiar de carpeta otra vez, ejecuta `python3 ejemplo-rutas/ubicacion.py` o 
 
 Desde esa carpeta superior, ejecuta el archivo usando una ruta absoluta. En VS Code, haz clic derecho en `ubicacion.py` y elige **Copy Path** (Copiar ruta); úsala como argumento entre comillas después de `python3` o `py`. **Resultado esperado:** el mismo mensaje. Guarda ambos comandos en `README.md` y explica cuál depende de la carpeta actual.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-**Evidencia de aprendizaje:** registra la salida de `pwd` antes y después de `cd ..`, el error y las dos ejecuciones correctas. En el proyecto integrador revisarás primero la carpeta y la ruta cuando falte un archivo. **Errores comunes:** omitir un tramo de la ruta o no entrecomillar una ruta con espacios. **Límites y decisión de uso:** una ruta absoluta de tu equipo no es portable a otro computador; una relativa requiere conocer su punto de partida. El siguiente tema te ayudará a separar el programa, sus opciones y sus argumentos.
+En el proyecto integrador revisarás primero la carpeta y la ruta cuando falte un archivo. **Errores comunes:** omitir un tramo de la ruta o no entrecomillar una ruta con espacios. **Límites y decisión de uso:** una ruta absoluta de tu equipo no es portable a otro computador; una relativa requiere conocer su punto de partida. El siguiente tema te ayudará a separar el programa, sus opciones y sus argumentos.
 
 **Fuentes oficiales:** [Python: línea de comandos](https://docs.python.org/3/using/cmdline.html) y [terminal integrada de VS Code](https://code.visualstudio.com/docs/terminal/basics).
 
@@ -206,9 +206,9 @@ En Windows: `py mensaje.py`. **Resultado esperado:** la primera consulta mostró
 
 Crea `segundo.py` en `ejemplo-comandos` con una instrucción que muestre `Elegiste otro archivo`. Antes de ejecutar predice qué parte de `python3 mensaje.py` debes sustituir. **Resultado esperado:** el nuevo mensaje aparece al ejecutar `python3 segundo.py` o `py segundo.py`; la versión del intérprete no cambia.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-**Evidencia de aprendizaje:** en `README.md`, separa programa y argumento en los dos comandos, y registra el error de opción con su corrección. Esto te prepara para leer las instrucciones del proyecto integrador sin ejecutarlas a ciegas. **Errores comunes:** confundir una opción con el nombre de archivo, pegar varias líneas como un solo comando o asumir que todas las herramientas comparten opciones. **Límites y decisión de uso:** antes de usar comandos que modifican archivos, consulta su ayuda y el directorio donde operan. El siguiente tema diagnosticará un error dentro del propio programa.
+Esto te prepara para leer las instrucciones del proyecto integrador sin ejecutarlas a ciegas. **Errores comunes:** confundir una opción con el nombre de archivo, pegar varias líneas como un solo comando o asumir que todas las herramientas comparten opciones. **Límites y decisión de uso:** antes de usar comandos que modifican archivos, consulta su ayuda y el directorio donde operan. El siguiente tema diagnosticará un error dentro del propio programa.
 
 **Fuente oficial:** [Opciones del intérprete Python](https://docs.python.org/3/using/cmdline.html).
 
@@ -269,9 +269,9 @@ Hola, Ana
 
 Crea `destino.py` en la misma carpeta. Pide una ciudad y muestra `Destino registrado: <ciudad>` con el texto recibido. Comprueba dos entradas, `Bogotá` y `Cali`. **Resultado esperado:** cada ejecución incluye su ciudad correspondiente; no debe mostrar siempre la primera. Esta será una primera entrada de datos para un caso de entregas de RutaFlow.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-**Evidencia de aprendizaje:** conserva ambos archivos y añade a `README.md` las dos entradas, sus salidas, el error deliberado y la corrección. Explica qué línea espera información y cuál muestra el resultado. **Errores comunes:** olvidar guardar, escribir `Nombre` cuando definiste `nombre` (son distintos), o dejar fuera la `f` y ver `{nombre}` literalmente. **Límites y decisión de uso:** `input` devuelve texto; aquí no convertimos números ni validamos datos. Eso llegará en el siguiente módulo, Pensamiento computacional y programación.
+**Errores comunes:** olvidar guardar, escribir `Nombre` cuando definiste `nombre` (son distintos), o dejar fuera la `f` y ver `{nombre}` literalmente. **Límites y decisión de uso:** `input` devuelve texto; aquí no convertimos números ni validamos datos. Eso llegará en el siguiente módulo, Pensamiento computacional y programación.
 
 Para cerrar la sesión, vuelve a ejecutar uno de los archivos sin consultar la demostración. Guarda tu carpeta en un lugar que reconozcas. La marca de capítulo conserva tu recorrido en el navegador; no guarda tus programas ni acredita comprensión. Desde el catálogo puedes descargar una copia del progreso, que es distinta de una copia de tus archivos.
 
@@ -314,5 +314,5 @@ Ejecuta la segunda línea desde la carpeta donde guardaste `saludo.py`; crear la
 #### Paso 6 · Práctica independiente
 Escribe tres instrucciones del proyecto integrador usando nombres de comando y añade tus bindings como ayuda local. **Límites:** la tabla de tu equipo no define una regla universal; revisa conflictos y contextos antes de cambiarla.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega `atajos.md`, salida de ambas versiones y explicación del fallo. **Errores comunes:** ejecutar sin guardar, confundir terminal y editor, copiar bindings de otra plataforma. Antes del siguiente tema responde: ¿qué acción realiza el comando?, ¿qué cambia al usar otro sistema?, ¿cómo compruebas un conflicto? **Fuente oficial:** [VS Code keybindings](https://code.visualstudio.com/docs/configure/keybindings).

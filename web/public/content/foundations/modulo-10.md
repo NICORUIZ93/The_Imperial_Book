@@ -129,7 +129,7 @@ Pista: tratá ese `None` como "seguro que falló" y reenviá el mismo comando SI
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reenviando el comando con el MISMO `command_id` original, y documentá qué necesitaría el servidor para responder correctamente a ese reintento (pista: la respuesta del Tema 3, `findCommandResult(commandId)`).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el timeout real devolviendo estado desconocido del Paso 4, el duplicado provocado por generar un ID nuevo del Paso 5, y la corrección reusando el ID original del Paso 6; explicá por qué tratar un timeout como "falló con certeza" es tan equivocado como tratarlo como "funcionó con certeza". Siguiente paso: estudiar consistencia. Errores comunes: asumir orden y reintentar sin límite. Fuente oficial: https://sre.google/sre-book.
 
 ### Tema 2: Replicación, consistencia y decisiones explícitas
@@ -244,7 +244,7 @@ Pista: usá el valor de la réplica para decidir si facturar el envío como comp
 #### Paso 6 · Práctica independiente
 Identificá, para RutaFlow, una operación que SÍ toleraría leer de la réplica (pista: mostrar el historial de ubicaciones en un panel de analítica, Módulo 19 del track Cloud) frente a una que no (pista: decidir si cobrar o reembolsar) — documentando el criterio que usaste para distinguirlas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturación del Paso 5, y la clasificación de operaciones del Paso 6; explicá por qué "elegir una base AP o CP" no sustituye decidir, operación por operación, qué inconsistencia tolera el negocio. Siguiente paso: estudiar mensajes. Errores comunes: prometer consistencia sin coste y ocultar lecturas obsoletas. Fuente oficial: https://martinfowler.com/articles/patterns-of-distributed-systems.
 
 ### Tema 3: Mensajes que se procesan con efectos exactamente una vez
@@ -370,7 +370,7 @@ Pista: cambiá el segundo comando para que use `commandId: "cmd-2"` (distinto) p
 #### Paso 6 · Práctica independiente
 Agregá un `console.log` dentro de `repo.confirm` para contar cuántas veces se ejecuta de verdad, y repetí el comando original (`cmd-1`) cinco veces seguidas — confirmá que el contador queda en 1, sin importar cuántos reintentos reciba.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID distinto del Paso 5, y el contador en 1 tras cinco reintentos del Paso 6; explicá por qué la garantía es "exactamente una vez por `commandId`", no "exactamente una vez por envío" en términos absolutos. Siguiente paso: estudiar resiliencia. Errores comunes: confundir entrega con efecto y reintentar operaciones no idempotentes. Fuente oficial: https://microservices.io/patterns/data/transactional-outbox.html.
 
 ### Tema 4: Resiliencia y observabilidad orientadas a objetivos
@@ -488,7 +488,7 @@ Pista: cambiá el cálculo para usar `mean([e["ms"] for e in eventos])` como ún
 #### Paso 6 · Práctica independiente
 Agregá una alerta que dispare solo cuando el SLI caiga por debajo de un umbral sostenido (por ejemplo, menos de 99% durante más de 5 minutos, no por un solo evento lento aislado), y documentá qué acción humana concreta debería seguir esa alerta — una alerta sin acción clara es ruido, no observabilidad.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el SLI real calculado del Paso 4, el promedio engañoso del Paso 5, y la alerta con acción concreta del Paso 6; explicá por qué medir "lo que le importa al usuario" (confirmaciones a tiempo) es distinto de medir "lo que es fácil de medir" (CPU, promedio). Siguiente paso: estudiar sistemas operativos. Errores comunes: alertar sin acción y medir solo promedios. Fuente oficial: https://sre.google/sre-book/monitoring-distributed-systems/.
 
 ### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases
@@ -615,8 +615,8 @@ Agrega un cuarto nodo, `cliente`, que reciba el aviso de entrega de la moto, y v
 #### Paso 6 · Práctica independiente
 Simula en `dos_fases` que el coordinador cae después de recibir los votos y antes de decidir. Escribe qué estado queda en cada participante y por qué 2PC se considera un protocolo bloqueante.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
 **Fuente oficial:** [Lamport: Time, Clocks, and the Ordering of Events (1978)](https://lamport.azurewebsites.net/pubs/time-clocks.pdf), [Two-phase commit protocol (Wikipedia)](https://en.wikipedia.org/wiki/Two-phase_commit_protocol); Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3.
 **Conceptos clave:** reloj lógico, relación "ocurrió antes", eventos concurrentes, elección de líder, algoritmo del matón, commit en dos fases, protocolo bloqueante.
 **Cuándo no usarlo:** no implementes estos algoritmos en producción: usa herramientas probadas (etcd, ZooKeeper, transacciones de la base de datos, sagas). Implementarlos sirve para entender sus garantías y límites.
@@ -671,6 +671,20 @@ Latencia es tiempo por petición; throughput es cantidad completada por unidad d
 
 **Analogía:** abrir más cajas puede despachar más personas por minuto, pero no elimina el tiempo de cada cobro ni la capacidad del almacén. El límite es que nuestra espera asíncrona representa I/O simulado: no es un benchmark de CPU, disco, base de datos ni red real de Internet.
 
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    R["12 peticiones"] --> C1["Concurrencia 1"]
+    R --> C4["Concurrencia 4"]
+    C1 --> S1["12 peticiones en serie"]
+    C4 --> S4["3 rondas de 4 peticiones"]
+    S1 --> M1["p95 y throughput"]
+    S4 --> M4["p95 y throughput"]
+    M1 --> CMP["Comparar: bajar el tiempo total no baja la latencia por petición"]
+    M4 --> CMP
+```
+
 #### Paso 4 · Demostración guiada desde cero
 ```bash
 cp -R examples/rutaflow-material/capacity ejemplo-capacidad
@@ -721,7 +735,7 @@ try {
 #### Paso 6 · Práctica independiente
 Compara concurrencias 1, 2 y 4 con varias repeticiones. Añade un estado HTTP de fallo y cuéntalo por separado. Explica por qué 12 muestras locales no bastan para fijar un SLO de producción y qué medirías al saturar una dependencia.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** salidas, unidades, errores y condiciones del equipo. El siguiente paso es un ensayo con carga representativa y un presupuesto de recursos. **Errores comunes:** comparar máquinas distintas sin contexto, confundir percentil con máximo y asumir escala lineal para tareas CPU-bound. **Límites y decisión de uso:** no extrapoles esta simulación a una flota real ni prometas una capacidad a partir de una sola ejecución.
+#### Paso 7 · Cierre
+El siguiente paso es un ensayo con carga representativa y un presupuesto de recursos. En el proyecto integrador, guarda las dos líneas JSON en `docs/capacidad.md` y explica qué cambió entre concurrencia 1 y 4. **Errores comunes:** comparar máquinas distintas sin contexto, confundir percentil con máximo y asumir escala lineal para tareas CPU-bound. **Límites y decisión de uso:** no extrapoles esta simulación a una flota real ni prometas una capacidad a partir de una sola ejecución.
 
 **Fuente oficial:** [Node performance hooks](https://nodejs.org/api/perf_hooks.html).

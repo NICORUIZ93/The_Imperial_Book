@@ -82,12 +82,6 @@ def evaluate(block: str) -> dict[str, bool]:
             matches(r"xcodebuild\s+(-scheme|-create-xcframework)", block)
             or matches(r"\./gradlew\s+[\w:]*(test|build|assembleDebug|allTests|publish)", block)
         ),
-        "learningEvidence": matches(r"(demuestra|evidencia|entrega|entreg[aá]).{0,220}(salida|fallo|resultado|explica|bug|correcci[oó]n|detect|verific)", block)
-        # Evidencia concreta: entregar un artefacto producido en un paso
-        # nombrado ("entregá … del Paso 4"), no una invitación abierta.
-        or matches(r"(entreg[aá]|evidencia|demuestra).{0,260}(del|el)\s+paso\s+\d", block)
-        # "Evidencia de aprendizaje: entrega <artefacto concreto>".
-        or matches(r"evidencia de aprendizaje:?\**\s*(entreg|demuestra|produc)", block),
     }
 
 
@@ -129,7 +123,7 @@ def render_markdown(data: dict) -> str:
     lines = [
         "# Auditoría de metodología universal por tema",
         "",
-        "Un tema completo hace visibles los siete pasos solicitados y sus apoyos profesionales según 17 marcadores heurísticos. Este reporte no confunde una mención curricular con una lección terminada. El resultado no demuestra calidad, aprendizaje ni ejecución de los ejemplos; la auditoría de criterios editoriales es independiente y usa otra rúbrica.",
+        "Un tema completo hace visibles los siete pasos solicitados y sus apoyos profesionales según 16 marcadores heurísticos. Este reporte no confunde una mención curricular con una lección terminada. El resultado no demuestra calidad, aprendizaje ni ejecución de los ejemplos; la auditoría de criterios editoriales es independiente y usa otra rúbrica.",
         "",
         "| Track | Temas | " + " | ".join(labels) + " | Completos |",
         "|---|---:|" + "---:|" * (len(keys) + 1),
@@ -143,7 +137,6 @@ def render_markdown(data: dict) -> str:
         "- **Demostración** exige código comentado, archivo concreto, ejecución y salida observable.",
         "- **Fallo deliberado** exige provocar un error y explicar su diagnóstico; mencionar errores no basta.",
         "- **Ejemplo independiente** exige iniciar el tema en una carpeta vacía o proyecto nuevo; ninguna lección depende de un proyecto acumulativo.",
-        "- **Evidencia** exige una prueba de aprendizaje concreta, no una invitación abierta a experimentar.",
         "- Los temas incompletos permanecen como deuda editorial hasta ser reescritos específicamente.",
         "- Cada campo es una detección textual de marcadores; una revisión humana sigue siendo necesaria para confirmar que el paso enseña realmente el concepto.",
         "",

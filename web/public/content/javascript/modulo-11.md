@@ -95,9 +95,9 @@ Añade `entregadaEn` únicamente al estado entregado mediante una unión discrim
 
 Modela dirección, servicio y destinatario sin `any`, prueba asignaciones válidas e inválidas con `@ts-expect-error` documentado y explica qué campos pertenecen a creación, tránsito y entrega.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes hacer que estados imposibles fallen antes de ejecutar. El siguiente tema conservará relaciones de tipos al reutilizar repositorios y respuestas paginadas. **Evidencia:** entrega archivo, compilación limpia y diagnóstico `PERDIDA`; explica por qué se separaron `CrearGuia` y `Guia`.
+Ya puedes hacer que estados imposibles fallen antes de ejecutar. El siguiente tema conservará relaciones de tipos al reutilizar repositorios y respuestas paginadas.
 
 **Errores comunes:** usar `string` para estados cerrados; volver todo opcional; duplicar interfaces casi iguales; anotar lo que la inferencia ya sabe sin aportar contrato; creer que una interface valida datos en runtime.
 
@@ -183,9 +183,9 @@ Crea `Pagina<T>` con `items`, `total` y `siguienteCursor`, y devuelve `Pagina<Gu
 
 Implementa repositorios de Ruta y Guia, prueba inferencia y agrega `T extends { numero: string }` únicamente a una función que realmente lee `numero`. Explica cada parámetro de tipo con una frase.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes reutilizar estructura sin renunciar a precisión. El siguiente tema reducirá uniones y exigirá manejar cada evento de entrega. **Evidencia:** demuestra compilación, tipo inferido y error al guardar Usuario; explica por qué no se usó `any`.
+Ya puedes reutilizar estructura sin renunciar a precisión. El siguiente tema reducirá uniones y exigirá manejar cada evento de entrega.
 
 Este `RepositorioMemoria<T, Id>` es el mismo patrón que reutilizarás para cada entidad del proyecto integrador (SPA sin framework, Módulo 12): un repositorio de guías y otro de rutas, cada uno tipado con su propia entidad, sin duplicar la lógica de `Map` subyacente.
 
@@ -275,9 +275,9 @@ Escribe `esEventoGuia(valor: unknown): valor is EventoGuia` que compruebe objeto
 
 Añade eventos cancelada y reprogramada, crea pruebas por variante y procesa JSON válido e inválido desde `unknown`. Compara discriminante con checks por presencia usando `in`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes representar alternativas y mantener exhaustividad al evolucionar. El siguiente tema activará comprobaciones estrictas y validará datos externos antes de confiar en ellos. **Evidencia:** demuestra dos salidas, error al añadir variante y guard de runtime; explica por qué `never` prueba exhaustividad.
+Ya puedes representar alternativas y mantener exhaustividad al evolucionar. El siguiente tema activará comprobaciones estrictas y validará datos externos antes de confiar en ellos.
 
 Esta unión discriminada (`EventoGuia`) es la forma en la que el proyecto integrador (SPA sin framework, Módulo 12) modelará los eventos que llegan de la API en tiempo real; `assertNever` garantiza que agregar un nuevo tipo de evento en el backend rompa la compilación del frontend hasta decidir explícitamente cómo mostrarlo.
 
@@ -408,9 +408,9 @@ Extrae validadores reutilizables para peso positivo y fecha válida o usa un esq
 
 Migra un módulo sin `any`, prueba payloads nulo, incompleto, incorrecto y válido y compara errores de compilación con errores de runtime. Documenta cada opción no predeterminada de tsconfig.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes separar garantías estáticas de validación externa y mantener strict desde el inicio. El próximo módulo integrará contratos, UI, red, pruebas y rendimiento en una aplicación completa. **Evidencia:** entrega tsconfig, parser y tests, demuestra error de índice y payload inválido; explica por qué una interface desaparece al ejecutar.
+Ya puedes separar garantías estáticas de validación externa y mantener strict desde el inicio. El próximo módulo integrará contratos, UI, red, pruebas y rendimiento en una aplicación completa.
 
 **Errores comunes:** usar `any`; confiar en `as`; duplicar `noImplicitAny` sin entender que strict lo incluye; ignorar índices; afirmar que TypeScript valida JSON externo.
 
@@ -537,8 +537,8 @@ Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `n
 #### Paso 6 · Práctica independiente
 Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
 **Fuente oficial:** [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [TypeScript 4.9: satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html).
 **Conceptos clave:** sobrecarga, tipo mapeado, `keyof`, `Omit` y `Pick`, tipo condicional, remapeo con `as`, tipo de plantilla, `satisfies`.
 **Cuándo no usarlo:** no conviertas el código en un rompecabezas de tipos: si un tipo necesita varios niveles de condicionales para entenderse, probablemente una interfaz explícita es mejor.
@@ -664,8 +664,8 @@ Crea el decorador de método `@reintentar(3)` que repita la llamada si lanza un 
 #### Paso 6 · Práctica independiente
 Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y explica los errores que aparecen. Luego investiga qué modo usa la versión de Angular del track.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
 **Fuente oficial:** [TypeScript 5.0: Decorators](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), [TC39: Decorators proposal](https://github.com/tc39/proposal-decorators).
 **Conceptos clave:** decorador de clase, método y campo, objeto de contexto, inicializador, propuesta TC39, `experimentalDecorators`.
 **Cuándo no usarlo:** no uses decoradores para lógica de negocio central: esconden comportamiento. Úsalos para preocupaciones transversales como registro, validación o registro de servicios.

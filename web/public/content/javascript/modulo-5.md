@@ -74,9 +74,9 @@ Añade otro `.then` dentro de la microtarea y una promesa dentro del temporizado
 
 Implementa un procesamiento de 50 000 guías en fragmentos usando `setTimeout` para ceder control. Compara cuánto tarda en responder un temporizador de interfaz con la versión bloqueante.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya predices orden y distingues concurrencia de paralelismo. El siguiente tema representa resultados futuros con promesas. **Evidencia:** demuestra el resultado `A,D,C,B`, el fallo de predicción, el diagrama y la medición por fragmentos. Fuente oficial: [MDN — event loop](https://developer.mozilla.org/es/docs/Web/JavaScript/Event_loop).
+Ya predices orden y distingues concurrencia de paralelismo. El siguiente tema representa resultados futuros con promesas. Fuente oficial: [MDN — event loop](https://developer.mozilla.org/es/docs/Web/JavaScript/Event_loop).
 
 **Errores comunes:** creer que delay cero es inmediato; procesar microtareas infinitas; confundir APIs del entorno con el lenguaje; asumir varios hilos para JavaScript normal.
 
@@ -170,9 +170,9 @@ Agrega `.finally(() => console.log('Carga finalizada'))`. **Pista:** debe ejecut
 
 Envuelve una API de callback `buscar(numero, callback)` en una promesa. Prueba éxito, error y una implementación defectuosa que llama dos veces al callback; protege el contrato.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya modelas una operación futura con estado final inmutable y cadenas claras. El siguiente tema coordina varias promesas. **Evidencia:** demuestra el resultado exitoso, el rechazo, `finally` y la adaptación del callback. Fuente oficial: [MDN — Promise](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+Ya modelas una operación futura con estado final inmutable y cadenas claras. El siguiente tema coordina varias promesas. Fuente oficial: [MDN — Promise](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 **Errores comunes:** envolver APIs que ya devuelven promesas; olvidar retornar una promesa dentro de `then`; capturar y ocultar errores; confundir promesa con valor resuelto.
 
@@ -256,9 +256,9 @@ Implementa un timeout con `Promise.race([consulta, timeout])`. **Pista:** que `r
 
 Consulta dos réplicas con `Promise.any`, captura `AggregateError` cuando ambas fallen y registra cada causa. Construye una tabla que justifique qué combinador usarías en cuatro casos del proyecto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges combinadores por semántica de negocio y no por conveniencia. El siguiente tema observa cómo V8 analiza el código sin convertir detalles internos en reglas mágicas. **Evidencia:** demuestra el resultado parcial, el rechazo total, el timeout y `AggregateError`. Fuente oficial: [MDN — Promise concurrency](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise#promise_concurrency).
+Ya eliges combinadores por semántica de negocio y no por conveniencia. El siguiente tema observa cómo V8 analiza el código sin convertir detalles internos en reglas mágicas. Fuente oficial: [MDN — Promise concurrency](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise#promise_concurrency).
 
 **Errores comunes:** creer que `race` cancela perdedores; usar `all` para tareas independientes; ignorar `AggregateError.errors`; confundir orden de resultados con orden de finalización.
 
@@ -339,9 +339,9 @@ Pega solo la función en [AST Explorer](https://astexplorer.net/) y localiza dec
 
 Construye un benchmark con calentamiento, varias muestras y `performance.now()`. Compara entradas consistentes y mixtas sin concluir causalidad sobre TurboFan solo por una medición.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya separas semántica ECMAScript de decisiones internas de V8. El siguiente tema mide objetos retenidos y cachés limitadas. **Evidencia:** demuestra el resultado, el error de tipo, ambos AST y una tabla de mediciones con limitaciones. Fuentes oficiales: [V8 — Ignition and TurboFan](https://v8.dev/docs) y [ESTree](https://github.com/estree/estree).
+Ya separas semántica ECMAScript de decisiones internas de V8. El siguiente tema mide objetos retenidos y cachés limitadas. Fuentes oficiales: [V8 — Ignition and TurboFan](https://v8.dev/docs) y [ESTree](https://github.com/estree/estree).
 
 **Errores comunes:** usar un único tiempo; medir con logs dentro del bucle; atribuir toda diferencia al JIT; sacrificar validación por una optimización supuesta.
 
@@ -424,9 +424,9 @@ Añade `obtener(numero)` que refresque el orden LRU. **Pista:** elimina y vuelve
 
 Implementa límites por cantidad y TTL, limpia el temporizador al cerrar y compara tres escenarios. Documenta referencias retenidas, política de expulsión y mediciones repetidas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Completaste asincronía inicial entendiendo ejecución y memoria. El siguiente módulo usa `async`/`await`, cancelación y reintentos. **Evidencia:** demuestra el resultado limitado, el crecimiento sin expulsión, la política LRU y la limpieza de TTL. Fuente oficial: [V8 — garbage collection](https://v8.dev/blog/trash-talk).
+Completaste asincronía inicial entendiendo ejecución y memoria. El siguiente módulo usa `async`/`await`, cancelación y reintentos. Fuente oficial: [V8 — garbage collection](https://v8.dev/blog/trash-talk).
 
 **Errores comunes:** creer que GC evita toda fuga; forzar conclusiones con una muestra; guardar listeners sin retirarlos; confundir stack de llamadas con memoria heap.
 

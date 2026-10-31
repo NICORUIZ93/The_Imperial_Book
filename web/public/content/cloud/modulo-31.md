@@ -63,7 +63,7 @@ Resultado esperado: `confirmDelivery(command, repository)` recibe un `DeliveryRe
 Pista: reescribí `confirmDelivery` para que llame directamente a `new DynamoDBClient()` adentro de la función, en vez de recibir `repository` por parámetro — ese es el fallo deliberado de diseño: ahora la lógica de negocio quedó acoplada a AWS, y migrar a Azure exigiría reescribir y volver a probar `confirmDelivery` entero, no solo escribir un adaptador nuevo.
 #### Paso 6 · Práctica independiente
 Deshacé el Paso 5 y escribí un segundo adaptador que implemente `DeliveryRepository` contra un `Map` en memoria (simulando Cosmos DB sin necesitar Azure real), y confirmá que `confirmDelivery` funciona igual de bien con ese adaptador que con uno respaldado por DynamoDB, sin tocar ni una línea de la función.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la separación real confirmada del Paso 4, el acoplamiento roto del Paso 5, y el segundo adaptador del Paso 6; explicá qué parte de este diseño es portable entre proveedores y cuál sería específica de cada uno. Siguiente paso: Testcontainers. Errores comunes: abstraer detalles sin necesidad y filtrar tipos del proveedor. Fuente oficial: https://12factor.net/.
 
 ### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD
@@ -94,7 +94,7 @@ Resultado esperado: Node disponible.
 Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Arranca, prueba y destruye un contenedor.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-node/.
 **Conceptos clave:** motores reales, no simulaciones aproximadas; sin costo para pruebas de integración repetidas.
 
@@ -167,7 +167,7 @@ Resultado esperado: el entorno levanta con un único `docker-compose.yml`, y el 
 Pista: intentá conectarte de verdad por SFTP contra el servidor Transfer Family del Módulo 30 (`sftp -i /tmp/clave-socio socio-logistico@localhost`) — ese es el fallo deliberado que documenta este Tema: la conexión real falla, porque ese plano de datos específico todavía no está implementado, un límite real del emulador que hay que conocer antes de depender de él.
 #### Paso 6 · Práctica independiente
 Apagá el entorno completo con `docker compose down`, confirmá que los contenedores desaparecieron, y documentá en un README qué servicios de este track NO deberías dar por probados end-to-end solo porque su plano de gestión respondió bien (pista: Transfer Family del Módulo 30, ELB/CloudFront/Route53 del Módulo 22).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el entorno unificado levantado del Paso 4, el límite real confirmado del Paso 5, y la lista de servicios con plano de datos pendiente del Paso 6; explicá por qué ninguna cantidad de fidelidad en un emulador sustituye la validación final contra la nube real. Siguiente paso: módulos por lenguaje. Errores comunes: usar emulador en producción y asumir paridad total. Fuente oficial: https://docs.localstack.cloud/.
 
 ### Tema 4: Testcontainers — pruebas de integración automatizadas
@@ -333,7 +333,7 @@ Resultado esperado: Node disponible.
 Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Ejecuta suites en paralelo y verifica limpieza.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega tests, salida, fallo y corrección; explica el resultado. Siguiente paso: CI. Errores comunes: depender de puertos fijos y dejar contenedores vivos. Fuente oficial: https://testcontainers.com/.
 
 ## Laboratorio práctico

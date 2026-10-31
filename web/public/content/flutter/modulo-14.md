@@ -58,7 +58,7 @@ Pista: observa el diagnóstico antes de corregirlo, y añade un estado offline s
 #### Paso 6 · Práctica independiente
 Agrega un caso límite al `switch` exhaustivo y una prueba que confirme que la vista lo maneja.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: estado duplicado, secretos en código y probar solo online. Fuentes oficiales: https://riverpod.dev/ y https://docs.flutter.dev/.
 
 **Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
@@ -140,7 +140,7 @@ Pista: observa el diagnóstico antes de corregirlo, y añade un estado explícit
 #### Paso 6 · Práctica independiente
 Prueba una posición inválida (latitud fuera de rango) y documenta la decisión de rechazarla en el constructor de `PositionSample` en vez de dejarla llegar al mapa.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: claves públicas, permisos ignorados y posiciones sin timestamp. Fuentes oficiales: https://pub.dev/packages/geolocator y https://docs.flutter.dev/.
 
 **Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
@@ -279,7 +279,7 @@ Pista: observa el diagnóstico antes de corregirlo, y añade backoff antes de re
 #### Paso 6 · Práctica independiente
 Ignora eventos duplicados o con `sequence` menor a la última aplicada, y prueba el límite enviando el mismo evento dos veces seguidas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: listeners duplicados y mensajes sin versión. Fuentes oficiales: https://socket.io/docs/ y https://docs.flutter.dev/.
 
 ### Tema 4: Animaciones de localización
@@ -313,7 +313,7 @@ Pista: observa el diagnóstico antes de corregirlo, y añade cancelación del `A
 #### Paso 6 · Práctica independiente
 Prueba muestras que llegan fuera de orden y confirma que el marcador nunca retrocede visualmente por una muestra vieja llegada tarde.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: animar cada evento sin límite y bloquear el hilo UI. Fuentes oficiales: https://docs.flutter.dev/ui/animations.
 
 **Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
@@ -372,7 +372,7 @@ Pista: observa el diagnóstico antes de corregirlo, y añade un checksum a cada 
 #### Paso 6 · Práctica independiente
 Resuelve el conflicto entre un registro local marcado `pending` y uno que el servidor ya reporta como `synced`, decidiendo explícitamente cuál prevalece.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: imágenes sin compresión, duplicados y secretos en texto plano. Fuentes oficiales: https://docs.flutter.dev/cookbook/persistence.
 
 **Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
@@ -433,7 +433,7 @@ Pista: observa el diagnóstico antes de corregirlo, y añade un reintento acotad
 #### Paso 6 · Práctica independiente
 Protege el deep link recibido desde una notificación push: valida su formato antes de navegar, y confirma con el backend que el usuario tiene permiso sobre el recurso antes de mostrarlo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: reintentos infinitos, tokens en logs y confiar en payload push. Fuentes oficiales: https://pub.dev/packages/dio y https://firebase.google.com/docs/cloud-messaging.
 
 **Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.

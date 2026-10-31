@@ -29,18 +29,6 @@ Cada track utiliza tres escalas:
 
 La solución se consulta después de un intento verificable. Antes de abrirla, la persona escribe su predicción, el error encontrado o la decisión que tomó. Después compara, explica la diferencia y vuelve a implementar sin copiar línea por línea.
 
-## Evidencia de aprendizaje
-
-Ver una explicación no equivale a dominarla. Cada capítulo termina con cinco tipos posibles de evidencia:
-
-- artefacto funcional;
-- prueba automatizada o comprobación manual reproducible;
-- explicación del mecanismo;
-- decisión con alternativas y límites;
-- commit etiquetado y README actualizado.
-
-La rúbrica común exige implementación y verificación. En niveles avanzados también exige justificar trade-offs, medir comportamiento y preparar recuperación frente a fallos.
-
 ## Aplicación en el lector
 
 El lector presenta permanentemente la secuencia **Objetivo → Explicación → Demostración → Tarea → Repaso**. Las introducciones de sección explican qué hacer, el laboratorio muestra el resultado esperado, las soluciones se mantienen plegadas y los modos de estudio permiten concentrarse en aprender, practicar o repasar.
@@ -49,7 +37,7 @@ El lector presenta permanentemente la secuencia **Objetivo → Explicación → 
 
 Las rutas que dependen de tecnologías con versiones se revisan contra fuentes primarias. El registro [`official-sources.json`](official-sources.json) guarda la línea estable o LTS de referencia, las notas de versiones, la guía de migración, la fecha de revisión y los términos incorporados al contenido.
 
-La automatización mensual ejecuta la validación completa. Una revisión con más de 120 días falla deliberadamente para obligar a evaluar novedades, vulnerabilidades, retiros y cambios incompatibles. Una versión nueva no se incorpora por existir: primero se clasifica como estable, LTS, Current, preview o experimental y se añade una práctica de migración o compatibilidad con evidencia.
+La automatización mensual ejecuta la validación completa. Una revisión con más de 120 días falla deliberadamente para obligar a evaluar novedades, vulnerabilidades, retiros y cambios incompatibles. Una versión nueva no se incorpora por existir: primero se clasifica como estable, LTS, Current, preview o experimental y se añade una práctica de migración o compatibilidad verificable.
 
 ## Calidad del código en toda la academia
 

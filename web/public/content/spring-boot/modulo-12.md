@@ -236,9 +236,9 @@ public Tarea crear(String descripcion, String propietario) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, las tres capas (`controller`/`service`/`repository`) de un endpoint que crea una entidad, y un test `@SpringBootTest` con Testcontainers que confirme la persistencia real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya ensamblas una arquitectura por capas real, con esquema gestionado por Flyway y verificada contra PostgreSQL real vía Testcontainers. El siguiente tema añade seguridad JWT y una métrica de negocio a este mismo endpoint. **Evidencia:** entrega el resultado de `ArquitecturaIntegradaTest` en verde, y el `SchemaManagementException` real que produce el fallo deliberado. Fuente oficial: [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
+Ya ensamblas una arquitectura por capas real, con esquema gestionado por Flyway y verificada contra PostgreSQL real vía Testcontainers. El siguiente tema añade seguridad JWT y una métrica de negocio a este mismo endpoint. Fuente oficial: [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
 
 **Errores comunes:** mezclar lógica de negocio dentro del controller; confiar en `ddl-auto` en vez de migraciones versionadas para el proyecto final.
 
@@ -451,9 +451,9 @@ public ResponseEntity<Long> crear(@RequestParam String descripcion) { ... }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint protegido, un `Counter` de Micrometer incrementado en el servicio, y un test `MockMvc` que confirme el incremento real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya combinas seguridad, persistencia y observabilidad colaborando en una única operación real, verificada de extremo a extremo. El siguiente y último tema de este módulo cierra el track con una verificación automatizada de que el proyecto cumple el estándar de "productivo". **Evidencia:** entrega el resultado de `SeguridadYMetricaTest` en verde, y la regresión de seguridad real que produce el fallo deliberado al quitar `@PreAuthorize`. Fuente oficial: [Spring Security — Method Security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html).
+Ya combinas seguridad, persistencia y observabilidad colaborando en una única operación real, verificada de extremo a extremo. El siguiente y último tema de este módulo cierra el track con una verificación automatizada de que el proyecto cumple el estándar de "productivo". Fuente oficial: [Spring Security — Method Security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html).
 
 **Errores comunes:** dejar endpoints sensibles protegidos solo por autenticación general sin verificar el rol específico requerido; agregar métricas como una idea tardía en vez de incrementarlas en el mismo punto donde ocurre la operación de negocio real.
 
@@ -556,9 +556,9 @@ assertThat(ddlAuto).isIn("____", "____");
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que lea `ddl-auto` con `@Value` y falle si su valor es inseguro. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conviertes el estándar de "microservicio productivo" (seguridad, persistencia versionada, observabilidad, tests reales) en un test ejecutable que actúa como guardia automatizada contra regresiones de configuración. Esto cierra el track completo de Spring Boot; el laboratorio práctico (a continuación) aplica estos mismos principios a un proyecto propio de confirmación transaccional. **Evidencia:** entrega el resultado de `ProduccionReadyTest` en verde, y el mensaje de fallo real que produce reintroducir `ddl-auto=update`. Fuente oficial: [The Twelve-Factor App](https://12factor.net/) y [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
+Ya conviertes el estándar de "microservicio productivo" (seguridad, persistencia versionada, observabilidad, tests reales) en un test ejecutable que actúa como guardia automatizada contra regresiones de configuración. Esto cierra el track completo de Spring Boot; el laboratorio práctico (a continuación) aplica estos mismos principios a un proyecto propio de confirmación transaccional. Fuente oficial: [The Twelve-Factor App](https://12factor.net/) y [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
 
 **Errores comunes:** mezclar capas sin ownership claro; ignorar seguridad en endpoints de escritura; no medir el comportamiento real de negocio con métricas propias, dependiendo solo de métricas técnicas genéricas.
 

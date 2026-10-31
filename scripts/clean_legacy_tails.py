@@ -30,7 +30,6 @@ CLOSURE = re.compile(r"^####\s+Paso 7[^\n]*$", re.MULTILINE)
 NEXT_H2 = re.compile(r"^##\s+", re.MULTILINE)
 
 REQUIRED = (
-    "**Evidencia de aprendizaje:**",
     "**Errores comunes:**",
     "**Fuente oficial",
     "**Fuentes oficiales:**",
@@ -94,7 +93,6 @@ def dedupe_topic(topic_text: str) -> tuple[str, bool]:
         "**¿Por qué es importante?**",
         "**Analogía:**",
         "**Conceptos clave:**",
-        "**Evidencia de aprendizaje:**",
     ):
         positions = [match.start() for match in re.finditer(re.escape(marker), topic_text)]
         if len(positions) < 2:

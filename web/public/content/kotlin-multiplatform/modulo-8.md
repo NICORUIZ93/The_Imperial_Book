@@ -6,73 +6,137 @@
 ### Tema 1: El framework generado para iOS
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a generar el framework `.framework` nativo para iOS desde el módulo compartido, confirmando que es importable en Xcode sin ningún adaptador especial. Prerrequisitos: JDK 17+, Kotlin, Gradle, Xcode y macOS. Verifica java --version, gradle --version y xcodebuild -version.
+Al finalizar vas a identificar la estructura que debe tener el framework `Shared` para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode. Prerrequisitos: Tema 0 del track y, para generar el binario real, JDK 17+, Gradle y macOS con Xcode.
 
 #### Paso 2 · Contexto y caso real
-El equipo iOS necesita consumir la lógica de dominio compartida (`Tarea`, casos de uso) sin escribir ningún puente de comunicación manual entre runtimes — necesitan un framework nativo real, no una capa de interpretación.
+El equipo iOS de RutaFlow necesita consumir la lógica de dominio compartida (`Tarea`, casos de uso) desde SwiftUI. No quiere un puente entre procesos ni una capa de interpretación: quiere un framework nativo que se importe con `import Shared`. El problema aparece cuando una clase que el equipo Kotlin cree pública no está en la cabecera generada y Swift simplemente no la ve, sin un error de compilación que explique por qué.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Kotlin/Native compila el módulo compartido directamente a un binario nativo real (no una capa de interpretación ni un puente entre procesos), importable en Xcode exactamente como cualquier otro framework de terceros. La analogía: un componente fabricado en una fábrica extranjera pero completamente terminado según el estándar local exacto, instalable sin ninguna adaptación especial.
+Kotlin/Native compila el módulo compartido a un binario nativo para cada target de iOS: simulador Intel (`iosX64`), simulador Apple Silicon (`iosSimulatorArm64`) y dispositivo (`iosArm64`). El bloque `binaries.framework { baseName = "Shared" }` produce `Shared.framework`, con una cabecera umbrella, un modulemap y metadatos en `Info.plist`. Swift lo importa como cualquier framework de terceros.
 
-**Evidencia de aprendizaje:** entrega el framework generado e importado, la clase invisible reproducida por falta de `public`, y el segundo target de dispositivo físico agregado.
-**Conceptos clave:** compilación a binario nativo, importable como cualquier framework nativo.
+Solo los símbolos públicos cruzan la frontera. Una clase `internal` compila sin error, pero no se exporta a la cabecera; para Swift no existe. El modulemap declara qué cabeceras forman el módulo y la umbrella header agrupa los símbolos públicos. Si una cabecera queda fuera del modulemap, el código puede compilar en Kotlin y aun así ser invisible en Xcode.
 
-Este mismo framework `.framework` es el artefacto que consumirá la app iOS del proyecto integrador (app KMP completa, Módulo 11): el equipo iOS lo importa en Xcode exactamente como cualquier otro framework nativo, sin saber ni necesitar saber que se originó como Kotlin.
+Generar un framework por target tiene sentido cuando hay una app iOS que lo consume. Si el proyecto es solo Android, agregar targets iOS aumenta el tiempo de build sin un consumidor real. La distribución posterior se resuelve con Swift Package Manager o un XCFramework que agrupe los targets.
 
-**Cuándo no usarlo:** compilar y distribuir un framework nativo por target de iOS tiene sentido cuando realmente hay una app iOS consumiéndolo; si el proyecto es solo Android, generar targets iOS (`iosX64`, `iosArm64`, `iosSimulatorArm64`) agrega tiempo de build sin ningún consumidor real.
+**Conceptos clave:** Kotlin/Native, target, framework, `baseName`, cabecera umbrella, modulemap, símbolo público, `internal` y XCFramework.
 
-`kotlin { listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { it.binaries.framework { baseName = "Shared" } } }` configura Kotlin/Native (el compilador de Kotlin específico para producir binarios nativos, no bytecode JVM) para compilar el módulo compartido hacia un framework `.framework` completamente nativo para iOS, importable directamente en un proyecto Xcode exactamente de la misma forma en que se importaría cualquier otro framework de terceros escrito originalmente en Objective-C o Swift, sin que el desarrollador iOS necesite ningún conocimiento especial sobre que ese framework en realidad se originó como código Kotlin compilado.
-
-Este proceso de compilación produce un binario real y nativo (no una capa de interpretación ni un puente de comunicación entre runtimes separados), lo que significa que las llamadas entre código Swift y el framework Kotlin compilado tienen un overhead de rendimiento mínimo, comparable al de llamar a cualquier otro framework nativo genuino, en vez de atravesar una capa de traducción entre dos entornos de ejecución completamente distintos como ocurriría con soluciones de interoperabilidad basadas en puentes de comunicación entre procesos separados.
-
-**Analogía:** el framework generado por Kotlin/Native es como un componente fabricado en una fábrica extranjera pero completamente terminado y empaquetado según el estándar local exacto, de modo que se instala e integra sin ninguna adaptación especial, como si hubiera sido fabricado localmente desde el principio.
-
-**¿Por qué es importante?** Kotlin/Native compila el módulo compartido a un binario nativo real, importable en Xcode como cualquier otro framework, con overhead de rendimiento mínimo en las llamadas entre Swift y Kotlin.
-
-**Casos de uso reales:**
-- Un equipo iOS que integra el módulo `Shared` en su proyecto Xcode existente sin cambiar su flujo de trabajo habitual.
-- Publicar el framework como dependencia interna reutilizable entre varias apps iOS de la misma empresa.
-- Medir el impacto en tamaño de binario del framework generado antes de decidir cuánta lógica mover a `commonMain`.
-
-**Código del ejemplo:**
-
-```kotlin
-// build.gradle.kts
-kotlin {
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
-        it.binaries.framework { baseName = "Shared" }
-    }
-}
+```mermaid
+flowchart LR
+    KT["commonMain (Kotlin)"] --> NAT["Kotlin/Native"]
+    NAT --> SIM["iosSimulatorArm64"]
+    NAT --> DEV["iosArm64"]
+    SIM --> FW["Shared.framework"]
+    DEV --> FW
+    FW --> SWIFT["import Shared en Xcode"]
+    KT -. "internal no se exporta" .-> SWIFT
 ```
+
+**Analogía:** el framework es un componente terminado y empaquetado según el estándar local; si una pieza no se incluye en la caja, el instalador no puede verla aunque exista en la fábrica.
+
+**¿Por qué es importante?** Porque la diferencia entre “compila en Kotlin” y “Swift puede usarlo” depende de la exportación de símbolos y de la estructura del framework, no solo de que el build termine sin errores.
+
+**Límite de uso:** este tema no enseña a firmar ni a publicar el framework; se limita a su estructura y a la visibilidad de símbolos.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.kt` dentro.
+**Ejemplo independiente (desde cero):** crea un directorio de trabajo nuevo con la estructura mínima de un framework y un verificador. Los archivos representan lo que el build debe producir; no reemplazan la compilación real.
+
 ```bash
-gradle init --type kotlin-application
+mkdir ejemplo && cd ejemplo
+mkdir -p Shared.framework/Headers Shared.framework/Modules
 ```
 
-```kotlin
-// shared/build.gradle.kts
-kotlin {
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
-        it.binaries.framework { baseName = "Shared" }
-    }
+Crea `Shared.framework/Info.plist` con el tipo de paquete y el identificador:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleIdentifier</key><string>co.rutaflow.shared</string>
+  <key>CFBundlePackageType</key><string>FMWK</string>
+  <key>CFBundleName</key><string>Shared</string>
+</dict>
+</plist>
+```
+
+Crea `Shared.framework/Modules/module.modulemap` con la cabecera umbrella:
+
+```text
+framework module Shared {
+  umbrella header "Shared.h"
+  export *
 }
 ```
-```bash
-./gradlew linkDebugFrameworkIosSimulatorArm64
+
+Crea `Shared.framework/Headers/Shared.h` con una clase pública:
+
+```objc
+#import <Foundation/Foundation.h>
+
+@interface SharedTarea : NSObject
+@property (nonatomic, copy) NSString *titulo;
+@end
 ```
-Resultado esperado: Gradle genera `shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework`, importable directamente en un proyecto Xcode con `import Shared`, sin ningún código Objective-C intermedio escrito a mano.
+
+Crea `verificar_framework.py` para comprobar el paquete, el modulemap, las cabeceras exportadas y la clase pública:
+
+```python
+import plistlib
+from pathlib import Path
+
+framework = Path("Shared.framework")
+plist = plistlib.loads((framework / "Info.plist").read_bytes())
+if plist.get("CFBundlePackageType") != "FMWK":
+    raise SystemExit("fallo: Info.plist no declara un framework (FMWK)")
+
+modulemap = (framework / "Modules/module.modulemap").read_text(encoding="utf-8")
+if 'umbrella header "Shared.h"' not in modulemap:
+    raise SystemExit("fallo: module.modulemap sin umbrella header")
+
+cabeceras = sorted((framework / "Headers").glob("*.h"))
+exportadas = {ruta.name for ruta in cabeceras if ruta.name in modulemap}
+no_exportadas = [ruta.name for ruta in cabeceras if ruta.name not in exportadas]
+if no_exportadas:
+    raise SystemExit(f"fallo: cabeceras no exportadas: {', '.join(no_exportadas)}")
+
+header = (framework / "Headers/Shared.h").read_text(encoding="utf-8")
+if "@interface SharedTarea" not in header:
+    raise SystemExit("fallo: falta la clase pública SharedTarea")
+
+print(f"framework: {framework.name}")
+print(f"paquete: {plist['CFBundlePackageType']}")
+print('modulemap: umbrella header "Shared.h"')
+print("clase pública: SharedTarea")
+print(f"cabeceras exportadas: {len(exportadas)}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+cd ejemplo
+python3 verificar_framework.py
+```
+
+Resultado esperado:
+
+```text
+framework: Shared.framework
+paquete: FMWK
+modulemap: umbrella header "Shared.h"
+clase pública: SharedTarea
+cabeceras exportadas: 1
+```
+
+El script explica cada requisito: tipo de paquete, umbrella header, cabeceras incluidas en el modulemap y símbolo público esperado.
 
 #### Paso 5 · Práctica guiada
-Pista: declará la clase que querés exponer como `internal class` en vez de `public class` dentro de `commonMain`. Ese es el fallo deliberado: el framework compila sin errores, pero esa clase simplemente NO aparece en el framework generado ni es visible desde Swift, porque Kotlin/Native solo expone al binario nativo los símbolos marcados explícitamente como públicos.
+Pista: agregá `Shared.framework/Headers/Interna.h` con `@interface SharedTareaInterna` y no la incluyas en el modulemap; ese es el fallo deliberado: el verificador termina con `fallo: cabeceras no exportadas: Interna.h`, porque una cabecera fuera del modulemap no forma parte del módulo que Swift importa.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `public class`, y agregá un segundo target (`iosArm64`, para dispositivo físico) al mismo `forEach`, confirmando que `./gradlew linkDebugFrameworkIosArm64` genera un binario separado para ese target.
+Eliminá `Interna.h` y, si tenés Gradle y Xcode disponibles, generá el framework real con `./gradlew linkDebugFrameworkIosSimulatorArm64` y apuntá el verificador a `shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework`. Si no tenés el toolchain, documentá esa limitación y compará la estructura generada con la del ejercicio. Luego agregá `iosArm64` y explicá por qué produce un binario separado para dispositivo. Conectá el resultado con el proyecto integrador: la app iOS consume `Shared.framework` sin saber que se originó en Kotlin.
 
-#### Paso 7 · Cierre y evidencia
-Entregá el framework generado e importado del Paso 4, la clase invisible por falta de `public` del Paso 5, y el segundo target agregado del Paso 6; explicá por qué Kotlin/Native expone al binario nativo solo lo que está marcado explícitamente como público, igual que cualquier módulo de una API pública. Siguiente paso: mapeá los tipos de Kotlin hacia sus equivalentes en Swift. Errores comunes: declarar como `internal` una clase que necesita consumirse desde Swift; generar el framework solo para el simulador y olvidar el target de dispositivo físico. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html y https://kotlinlang.org/docs/native-objc-interop.html.
-**¿Por qué es importante?** Porque Kotlin/Native solo expone al binario nativo los símbolos marcados explícitamente como públicos; una clase `internal` compila sin error pero simplemente no existe para el consumidor Swift.
+#### Paso 7 · Cierre
+Entregá la salida del Paso 4, el fallo de exportación del Paso 5 y la configuración de targets del Paso 6; explicá por qué una clase `internal` compila pero no existe para Swift. Siguiente paso: mapear los tipos Kotlin hacia Swift en el Tema 2. Errores comunes: declarar `internal` una clase que Swift necesita, olvidar el target de dispositivo y asumir que un build exitoso implica que todos los símbolos se exportaron. **Fuentes oficiales:** https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html y https://kotlinlang.org/docs/native-objc-interop.html.
 
 ### Tema 2: Mapeo de tipos Kotlin ↔ Swift
 
@@ -85,7 +149,6 @@ Un desarrollador Swift maneja `Resultado<Tarea>` con un `switch` que cubre `Exit
 #### Paso 3 · Teoría, modelo mental y analogía
 Los tipos básicos de Kotlin se mapean directamente a sus equivalentes en Swift (`String`→`String`, `Int`→`Int32`); una `sealed class` se expone hacia Swift como una jerarquía de clases regular, manejable con `switch`, pero Swift no tiene el conocimiento especial de que proviene de un conjunto cerrado garantizado — no avisa si falta una rama. La analogía: una traducción directa para conceptos simples, pero una adaptación estructural que pierde una garantía del idioma de origen para conceptos más elaborados.
 
-**Evidencia de aprendizaje:** entrega el `switch` funcionando contra los casos conocidos, el caso nuevo no manejado silenciosamente al agregar `Cargando`, y la documentación/corrección agregada.
 **Conceptos clave:** correspondencia directa de tipos básicos, sealed class como jerarquía manejable con switch.
 
 Documentar este mapeo de tipos es indispensable para el proyecto integrador (app KMP completa, Módulo 11): cada `data class` y `sealed class` del dominio compartido (`Tarea`, `Resultado<T>`) cruzará esta misma frontera hacia las vistas SwiftUI de la app iOS.
@@ -145,7 +208,7 @@ Pista: agregá un tercer caso `Cargando` a la `sealed class Resultado` en Kotlin
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 documentando explícitamente (en un comentario o test) la lista completa de casos de `Resultado` que el equipo Swift debe revisar manualmente cada vez que el framework se actualiza, y agregá el manejo real de `Cargando` al `switch`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `switch` funcionando del Paso 4, el caso silenciosamente no manejado del Paso 5, y la documentación/corrección del Paso 6; explicá por qué la exhaustividad verificada de Kotlin no cruza la frontera hacia Swift automáticamente. Siguiente paso: exponé funciones suspend hacia Swift y elegí cómo distribuir el framework. Errores comunes: asumir que Swift avisará si falta un caso nuevo de una sealed class actualizada; usar un `default` que oculta silenciosamente casos nuevos en vez de uno que, como mínimo, registre un error visible. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/switch.
 **¿Por qué es importante?** Porque la exhaustividad verificada de una `sealed class` en Kotlin no cruza automáticamente hacia Swift; un caso nuevo puede caer silenciosamente en un `default` sin que nadie se entere hasta producción.
 
@@ -160,7 +223,6 @@ Una función `suspend obtenerTareas()` de Kotlin no tiene un equivalente sintác
 #### Paso 3 · Teoría, modelo mental y analogía
 Kotlin/Native exporta funciones suspend mediante completion handlers; desde Swift 5.5 también pueden importarse como funciones async. Para recibir errores de negocio en Swift, la función Kotlin debe declarar las excepciones con `@Throws`. La analogía: traducir "esperá aquí hasta que el resultado esté listo" hacia "cuando el resultado esté listo, ejecutá esta acción específica" — mismo efecto final, sintaxis distinta según las capacidades del idioma destino.
 
-**Evidencia de aprendizaje:** entrega el callback consumido funcionando, la `Task` colgada reproducida por falta de `resume` en la rama de error, y el wrapper corregido con su test de error.
 **Conceptos clave:** funciones suspend expuestas como callback, CocoaPods frente a SPM.
 
 `sharedRepository.obtenerTareas { tareas, error in if let tareas = tareas { mostrar(tareas) } }` demuestra cómo Kotlin/Native expone una función `suspend` (Módulo 2) hacia Swift: dado que Swift, en versiones anteriores a su propio soporte nativo de `async`/`await`, no tenía un concepto directamente equivalente a las funciones suspend de Kotlin, Kotlin/Native genera automáticamente una versión con callback tradicional para cada función suspend expuesta, cambiando la forma en que se invoca (con un cierre/callback que recibe el resultado o el error) en vez de la sintaxis lineal `await` que el mismo código tendría en Kotlin; con librerías más recientes y versiones más nuevas de Swift, esta interoperabilidad puede exponerse directamente como `async`/`await` nativo de Swift, acercando considerablemente la experiencia de uso entre ambos lenguajes.
@@ -261,7 +323,7 @@ Pista: envolvé ese callback en una función `async` propia de Swift usando `wit
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando `continuation.resume(throwing: error)` en la rama de error, y agregá un test que fuerce explícitamente el camino de error (simulando que `obtenerTareas` falla) confirmando que tu wrapper `async` relanza la excepción en vez de colgarse indefinidamente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el callback consumido del Paso 4, la `Task` colgada por falta de `resume` en la rama de error del Paso 5, y el wrapper corregido con su test del Paso 6; explicá por qué un wrapper `async` sobre un callback debe cubrir EXPLÍCITAMENTE ambas ramas (éxito y error), no solo la feliz. Con esto cerrás la interoperabilidad con iOS de este track. Errores comunes: asumir que Swift maneja las funciones suspend igual que Kotlin sin ninguna adaptación; escribir un wrapper `async`/`withCheckedThrowingContinuation` que no cubre la rama de error, dejando la `Task` colgada indefinidamente ante un fallo. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/withcheckedthrowingcontinuation(function:_:).
 **¿Por qué es importante?** Porque un wrapper `async` sobre un callback Kotlin debe resolver la continuation en AMBAS ramas (éxito y error); omitir la rama de error deja la `Task` de Swift colgada indefinidamente ante un fallo real.
 

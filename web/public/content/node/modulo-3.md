@@ -595,7 +595,7 @@ node --test pagina.test.mjs
 #### Paso 6 · Práctica independiente
 Añade casos de lista vacía, tamaño 1 y cursor mayor que el último ID. Después diseña el contrato HTTP: parámetro `after`, `size` y respuesta 400 para valores inválidos. Justifica por qué no convertir texto inválido silenciosamente a cero.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** pruebas, fallo/corrección y contrato escrito. El siguiente paso es llevar el filtro a SQL con orden único e índice, y medirlo con datos representativos. **Errores comunes:** ordenar por un campo no único, aceptar tamaños sin límite y paginar después de cargar todo en memoria. **Límites y decisión de uso:** aquí los datos están en memoria para aislar el algoritmo; eso no valida escalabilidad ni consistencia bajo concurrencia.
+#### Paso 7 · Cierre
+El siguiente paso es llevar el filtro a SQL con orden único e índice, y medirlo con datos representativos. **Errores comunes:** ordenar por un campo no único, aceptar tamaños sin límite y paginar después de cargar todo en memoria. **Límites y decisión de uso:** aquí los datos están en memoria para aislar el algoritmo; eso no valida escalabilidad ni consistencia bajo concurrencia.
 
 **Fuente oficial:** [Node test runner](https://nodejs.org/api/test.html).

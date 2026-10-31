@@ -110,9 +110,9 @@ export class App {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente Angular Native mínimo con un signal y un `pressable` que lo incremente. Compara después contra el Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un proyecto corriendo en un simulador/dispositivo real, que Angular Native renderiza vistas nativas directamente sobre Fabric, sin WebView intermedio, y que el modelo de componentes sigue siendo el Angular que ya conoces (standalone, signals). El siguiente tema profundiza en el sistema de estilos y en el preset de Tailwind. **Evidencia:** entrega capturas o el log de hot reload del Paso 5, y el error de elemento desconocido reproducido en el fallo deliberado. Fuente oficial: [ng-native/ng-native — README](https://github.com/ng-native/ng-native).
+Ya confirmas, con un proyecto corriendo en un simulador/dispositivo real, que Angular Native renderiza vistas nativas directamente sobre Fabric, sin WebView intermedio, y que el modelo de componentes sigue siendo el Angular que ya conoces (standalone, signals). El siguiente tema profundiza en el sistema de estilos y en el preset de Tailwind. Fuente oficial: [ng-native/ng-native — README](https://github.com/ng-native/ng-native).
 
 **Errores comunes:** asumir que se puede usar cualquier elemento HTML (`div`, `span`) como en Angular web — Angular Native expone un conjunto propio de elementos nativos (`view`, `text`, `pressable`, ...), no el DOM; olvidar declarar un elemento nativo en `imports` del componente standalone.
 
@@ -221,9 +221,9 @@ protected readonly urgentes = ____(() => this.entregas().filter(e => e.urgente).
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una lista con `@for` + `track`, un `computed()` derivado, y al menos una clase con variante `ios:`/`android:`. Compara después contra el Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas que el modelo de signals (`computed()`, actualización inmutable) es idéntico al de Angular web, y que los estilos — incluido el preset de Tailwind con variantes de plataforma — se resuelven en build time, no como CSS en runtime. El siguiente tema conecta el router y los servicios de Expo inyectados como servicios Angular. **Evidencia:** entrega la captura de la lista con la fila urgente resaltada, y la confirmación de que `urgentes()` queda congelado al quitar `computed()`. Fuente oficial: [ng-native/ng-native — README](https://github.com/ng-native/ng-native).
+Ya confirmas que el modelo de signals (`computed()`, actualización inmutable) es idéntico al de Angular web, y que los estilos — incluido el preset de Tailwind con variantes de plataforma — se resuelven en build time, no como CSS en runtime. El siguiente tema conecta el router y los servicios de Expo inyectados como servicios Angular. Fuente oficial: [ng-native/ng-native — README](https://github.com/ng-native/ng-native).
 
 **Errores comunes:** asumir que `styles` acepta cualquier propiedad CSS web (no todas tienen equivalente nativo); mutar un array de signal con `push`/`splice` esperando que `computed()` lo detecte.
 
@@ -348,9 +348,9 @@ protected readonly guia = this.ruta.snapshot.paramMap.get('guia');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos rutas con `@angular/router`, un componente que lee un parámetro de ruta con `inject(ActivatedRoute)`, y una llamada a un servicio inyectado que maneja explícitamente el caso de error/permiso denegado. Compara después contra el Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas que `@angular/router` y el patrón `inject()` de servicios son los mismos que en Angular web, aplicados sobre navegación nativa real y módulos de Expo, y que el camino de permiso denegado debe manejarse explícitamente igual que cualquier operación asíncrona que puede fallar. El siguiente y último tema evalúa, con criterio, qué tan lista está esta tecnología para un proyecto real. **Evidencia:** entrega la navegación entre pantallas funcionando, y el manejo explícito del permiso de ubicación denegado del Paso 5. Fuente oficial: [ng-native/ng-native — README](https://github.com/ng-native/ng-native).
+Ya confirmas que `@angular/router` y el patrón `inject()` de servicios son los mismos que en Angular web, aplicados sobre navegación nativa real y módulos de Expo, y que el camino de permiso denegado debe manejarse explícitamente igual que cualquier operación asíncrona que puede fallar. El siguiente y último tema evalúa, con criterio, qué tan lista está esta tecnología para un proyecto real. Fuente oficial: [ng-native/ng-native — README](https://github.com/ng-native/ng-native).
 
 **Errores comunes:** asumir que una API de permisos del sistema operativo siempre resuelve exitosamente, igual que se asumiría incorrectamente con cualquier `Promise` de red; no limpiar/cancelar una suscripción de ubicación en segundo plano al desmontar el componente, un error análogo al de no desuscribirse de un `Observable` en Angular web.
 
@@ -446,9 +446,9 @@ await ____(DetalleEntrega, { routeParams: { guia: 'RF-4471' } });
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, los cuatro pasos del diagrama de decisión del Paso 3 en el orden correcto. Compara después contra el original.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aplicas un criterio explícito y verificable (no el entusiasmo de una demo) para decidir si una dependencia en versión `0.x` es apta para un proyecto real, y confirmas con un test ejecutado realmente que la promesa de "testing sin simulador" del proyecto se cumple. Esto cierra el track de Angular. **Evidencia:** entrega el test del Paso 4 en verde, la checklist corregida del Paso 4 (fallo deliberado) con limitaciones reales del proyecto, y la decisión justificada del Paso 5. Fuentes oficiales: [ng-native/ng-native — README](https://github.com/ng-native/ng-native), podcast DevTalles episodio 276 "Angular Native" (11 de octubre de 2026, Fernando Herrera) como fuente de divulgación, no como fuente técnica primaria.
+Ya aplicas un criterio explícito y verificable (no el entusiasmo de una demo) para decidir si una dependencia en versión `0.x` es apta para un proyecto real, y confirmas con un test ejecutado realmente que la promesa de "testing sin simulador" del proyecto se cumple. Esto cierra el track de Angular. Fuentes oficiales: [ng-native/ng-native — README](https://github.com/ng-native/ng-native), podcast DevTalles episodio 276 "Angular Native" (11 de octubre de 2026, Fernando Herrera) como fuente de divulgación, no como fuente técnica primaria.
 
 **Errores comunes:** tratar la cobertura mediática/entusiasmo de la comunidad como evidencia de madurez técnica; adoptar una dependencia `0.x` para el camino crítico de un producto con clientes reales sin un plan explícito de reversión si una actualización rompe la API.
 

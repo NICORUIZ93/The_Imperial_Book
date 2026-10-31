@@ -90,9 +90,9 @@ Agrega un cuarto nivel de log `warn` para una situación específica (por ejempl
 
 Agrega un campo `duracionMs` calculado con `Date.now()` al inicio y fin de cada petición, y confirma que puedes calcular con Python la duración promedio de las peticiones registradas en los logs, algo que sería mucho más frágil de extraer de logs de texto libre.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya emites logs estructurados con campos consultables independientemente, sentando la base para cualquier sistema de logging centralizado. El siguiente tema construye el pipeline completo que recolecta, almacena e indexa estos logs. **Evidencia:** entrega la extracción exitosa del campo `componente` desde el log JSON, y explica por qué esa misma extracción no es posible de forma confiable sobre el log de texto libre equivalente. Fuente oficial: [The Twelve-Factor App — Logs](https://12factor.net/logs).
+Ya emites logs estructurados con campos consultables independientemente, sentando la base para cualquier sistema de logging centralizado. El siguiente tema construye el pipeline completo que recolecta, almacena e indexa estos logs. Fuente oficial: [The Twelve-Factor App — Logs](https://12factor.net/logs).
 
 **Errores comunes:** loguear la mayoría de eventos normales como `error`, generando ruido que dificulta identificar problemas reales; mezclar logs de texto libre y estructurados dentro del mismo servicio sin una convención consistente.
 
@@ -176,9 +176,9 @@ Indexa un segundo documento con `level: info` y ejecuta `curl ".../logs-app/_sea
 
 Detén el contenedor de Elasticsearch (`docker stop elasticsearch-demo`) e intenta el mismo `POST` de indexación; documenta en qué etapa del pipeline (recolección, indexación o visualización) fallaría un sistema real si Elasticsearch estuviera caído, y qué comportamiento esperarías de Filebeat en ese escenario (normalmente reintentos con buffer).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues las tres etapas de un pipeline de logging centralizado y dónde diagnosticar un problema en cada una. El siguiente tema compara este enfoque con una alternativa de menor coste operativo. **Evidencia:** entrega el resultado de la búsqueda exitosa del log indexado, y el resultado vacío al buscar una palabra nunca indexada. Fuente oficial: [Elastic — What is the ELK Stack](https://www.elastic.co/what-is/elk-stack).
+Ya distingues las tres etapas de un pipeline de logging centralizado y dónde diagnosticar un problema en cada una. El siguiente tema compara este enfoque con una alternativa de menor coste operativo. Fuente oficial: [Elastic — What is the ELK Stack](https://www.elastic.co/what-is/elk-stack).
 
 **Errores comunes:** asumir que un log existe en el sistema de búsqueda antes de confirmar que la etapa de recolección efectivamente lo envió; subestimar el coste de infraestructura de Elasticsearch a medida que crece el volumen de logs indexados.
 
@@ -255,9 +255,9 @@ Envía un segundo log con `level: info` al mismo stream `service=api`, y ejecuta
 
 Mide cuántos labels distintos tendría sentido usar para tus propios servicios (demasiados labels con alta cardinalidad, como un ID de usuario único por línea, degradan el rendimiento de Loki); documenta qué labels usarías y cuáles evitarías, y por qué.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya consultas logs de forma eficiente filtrando primero por labels, entendiendo el compromiso de diseño frente a Elasticsearch. El siguiente tema conecta logs de múltiples servicios de una misma petición. **Evidencia:** entrega el resultado de ambas consultas (por labels, y por labels + texto), y el resultado del rechazo al intentar una consulta sin ningún label. Fuente oficial: [Grafana Loki — LogQL](https://grafana.com/docs/loki/latest/query/).
+Ya consultas logs de forma eficiente filtrando primero por labels, entendiendo el compromiso de diseño frente a Elasticsearch. El siguiente tema conecta logs de múltiples servicios de una misma petición. Fuente oficial: [Grafana Loki — LogQL](https://grafana.com/docs/loki/latest/query/).
 
 **Errores comunes:** usar labels de alta cardinalidad (como un ID único por petición) degradando el índice de Loki; intentar una búsqueda de texto libre sin acotar primero por labels, esperando el mismo rendimiento que Elasticsearch.
 
@@ -353,9 +353,9 @@ Envía una segunda petición pasando tú mismo un `x-correlation-id` explícito 
 
 Agrega un tercer servicio C, invocado por B de la misma forma que A invoca a B, y confirma que el mismo correlation ID se propaga correctamente a través de los tres servicios en cadena.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya reconstruyes el flujo completo de una petición distribuida con una única búsqueda, gracias a la propagación consistente del correlation ID. Esto cierra el módulo de logging centralizado; el siguiente módulo cubre seguridad DevSecOps. **Evidencia:** entrega los logs de ambos servicios mostrando el mismo `correlationId`, y el resultado de la ruptura de correlación cuando B genera su propio ID en vez de propagar el recibido. Fuente oficial: [Distributed Tracing — Correlation IDs](https://microservices.io/patterns/observability/distributed-tracing.html).
+Ya reconstruyes el flujo completo de una petición distribuida con una única búsqueda, gracias a la propagación consistente del correlation ID. Esto cierra el módulo de logging centralizado; el siguiente módulo cubre seguridad DevSecOps. Fuente oficial: [Distributed Tracing — Correlation IDs](https://microservices.io/patterns/observability/distributed-tracing.html).
 
 **Errores comunes:** generar un correlation ID nuevo en cada servicio en vez de propagar el recibido, rompiendo la correlación; olvidar propagar la cabecera en alguna llamada saliente específica, dejando un "salto" sin trazabilidad en la cadena.
 

@@ -14,7 +14,6 @@ El proyecto integrador Fundamentos (el gestor de tareas por terminal) hasta ahor
 #### Paso 3 · Teoría, modelo mental y analogía
 Modelar relacionalmente significa decidir primero qué hechos existen como entidades independientes (una tarea, una categoría) y qué hechos son solo atributos de esas entidades (el texto de la tarea, el nombre de la categoría). Una clave primaria identifica una fila sin ambigüedad; una clave foránea declara que un valor de una tabla debe corresponder a una fila existente en otra. La cardinalidad describe cuántas filas de un lado se relacionan con cuántas del otro: una categoría tiene muchas tareas, pero cada tarea pertenece a una sola categoría (relación uno a muchos). La analogía: una categoría es como una carpeta física y cada tarea es un papel dentro de ella con el número de esa carpeta escrito en la esquina — el papel no repite el nombre completo de la carpeta, solo su número, y ese número debería corresponder siempre a una carpeta que realmente existe.
 
-**Evidencia de aprendizaje:** entregá el esquema `categorias`/`tareas`, la fila huérfana sin `PRAGMA`, el rechazo con `PRAGMA` y el `CASCADE` del Paso 5.
 **Escenario:** Tu base de RutaFlow crece a 50 000 entregas activas. Un conductor deja la empresa y alguien ejecuta `DELETE FROM conductor WHERE id=123`. El sistema debe decidir: ¿eliminar automáticamente sus entregas asignadas o rechazar la eliminación?
 
 **Tu tarea:**
@@ -149,7 +148,7 @@ Pista: volvé a crear la tabla `tareas` pero con `categoria_id INTEGER NOT NULL 
 #### Paso 6 · Práctica independiente
 Agregá una tabla `etiquetas` relacionada con `tareas` mediante una tabla intermedia `tarea_etiqueta` (relación muchos a muchos), dibujá el diagrama entidad-relación completo de categorías/tareas/etiquetas, y documentá qué pasa si borrás una etiqueta que todavía tiene tareas asociadas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el esquema `categorias`/`tareas`, los tres comportamientos del Paso 5 (sin `PRAGMA`, con `PRAGMA`, con `CASCADE`) y el diseño de `etiquetas` del Paso 6. Como siguiente paso, en el Tema 2 vas a escribir las consultas SQL (`INSERT`, `SELECT`, `JOIN`) sobre este mismo esquema. Errores comunes: asumir que declarar `REFERENCES` ya protege la integridad sin activar `PRAGMA foreign_keys`; confundir una relación uno-a-muchos con una muchos-a-muchos. Fuentes oficiales: https://www.sqlite.org/foreignkeys.html y https://www.sqlite.org/lang_createtable.html.
 **¿Por qué es importante?** Porque una clave foránea declarada pero no verificada da una falsa sensación de seguridad: el esquema "se ve" correcto, pero la base permite exactamente lo que la relación debería impedir.
 
@@ -163,8 +162,6 @@ El proyecto integrador Fundamentos necesita un comando `tarea listar --categoria
 
 #### Paso 3 · Teoría, modelo mental y analogía
 SQL se divide en DDL (`CREATE`, `ALTER`, `DROP`: define estructura) y DML (`INSERT`, `SELECT`, `UPDATE`, `DELETE`: opera sobre datos). Es un lenguaje declarativo: describís qué filas querés, no el algoritmo para encontrarlas — el motor decide cómo recorrer las tablas. Un `JOIN` combina filas de dos tablas según una condición de igualdad entre claves; sin esa condición, el resultado mezclaría cada fila de una tabla con cada fila de la otra. La analogía: pedís un reporte a alguien que conoce el archivo completo ("dame las tareas de la categoría trabajo, ordenadas por título") en vez de explicarle paso a paso cómo revisar cada carpeta — describís el qué, el motor decide el cómo.
-
-**Evidencia de aprendizaje:** entregá la inyección reproducida con texto concatenado, la misma entrada neutralizada con parámetros, y las consultas `UPDATE`/`DELETE`/`GROUP BY` del Paso 6.
 
 **Cuándo NO usar:** No uses `LEFT JOIN` si ambas tablas son obligatorias por requisito de negocio. No indexas todas las columnas; indexa solo las que filtras frecuentemente. No escribas SQL concatenado aunque sea una herramienta local: es inseguro y difícil de mantener.
 
@@ -294,7 +291,7 @@ Pista: escribí una función equivalente que busque por `titulo` con `LIKE` (por
 #### Paso 6 · Práctica independiente
 Escribí un `UPDATE` parametrizado que cambie el `titulo` de una tarea por `id`, un `DELETE` parametrizado que borre las tareas de una categoría dada, y una consulta con `GROUP BY categoria_id` que cuente, usando `JOIN`, cuántas tareas tiene cada categoría.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos versiones (insegura y parametrizada) del Paso 4, la variante con `LIKE` del Paso 5, y el `UPDATE`/`DELETE`/`GROUP BY` del Paso 6. Como siguiente paso, en el Tema 3 vas a crear un índice sobre esta misma tabla `tareas` y vas a medir con `EXPLAIN QUERY PLAN` si realmente acelera las consultas. Errores comunes: concatenar entrada de usuario en SQL aunque la base sea local; asumir que un `JOIN` siempre encuentra una fila coincidente del otro lado. Fuentes oficiales: https://www.sqlite.org/lang.html y https://docs.python.org/es/3/library/sqlite3.html.
 **¿Por qué es importante?** Porque cualquier entrada que llega desde afuera (un argumento de CLI, un formulario) puede contener texto diseñado para alterar tu consulta; parametrizar no es un detalle de estilo, es lo que separa código de dato.
 
@@ -308,8 +305,6 @@ El comando `tarea listar --estado pendiente` del proyecto integrador Fundamentos
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un índice es una estructura auxiliar ordenada que SQLite mantiene junto a la tabla para localizar filas por el valor de una columna sin recorrerlas todas. `EXPLAIN QUERY PLAN` muestra, sin ejecutar realmente la consulta sobre los datos, qué estrategia usaría el motor: `SCAN TABLE` significa "voy a revisar cada fila una por una"; `SEARCH TABLE ... USING INDEX` significa "voy directo a las filas que coinciden". Un índice no es gratis: ocupa espacio en disco y SQLite debe actualizarlo en cada `INSERT`/`UPDATE`/`DELETE` sobre esa columna, no solo en cada lectura. La analogía: buscar un apellido en una guía telefónica ordenada alfabéticamente (índice) es muy distinto de buscarlo en una pila de fichas sueltas sin orden (`SCAN`) — pero si alguien agrega una ficha nueva, mantener la guía ordenada cuesta más trabajo que agregar la ficha al final de la pila.
-
-**Evidencia de aprendizaje:** entregá los dos planes de consulta, el índice compuesto y la medición con datos generados.
 
 **Cuándo NO usar:** No crees índice en una columna con solo 2 valores (booleano). No indexas todas las columnas; solo las que filtran frecuentemente. No indexas una columna que rara vez se consulta porque ralentiza INSERT.
 
@@ -421,7 +416,7 @@ Pista: repetí el experimento filtrando por dos columnas (`WHERE estado='pendien
 #### Paso 6 · Práctica independiente
 Generá 5 000 tareas de prueba con un bucle en Python, medí el tiempo de la consulta por `estado` antes y después del índice con el módulo `time`, y documentá si la diferencia es perceptible con ese volumen o si recién se nota con más datos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los dos `EXPLAIN QUERY PLAN` (antes/después del índice) del Paso 4, el índice compuesto del Paso 5, y la medición de tiempo del Paso 6. Como siguiente paso, en el Tema 4 vas a envolver varias operaciones sobre estas mismas tablas dentro de una transacción para que un fallo a mitad de camino no deje la base a medio actualizar. Errores comunes: crear un índice por columna sin medir si realmente se usa; crear el mismo índice dos veces en una migración sin `IF NOT EXISTS`; medir con pocos datos y concluir que el índice "no sirve". Límites y decisión de uso: un índice no corrige un `SELECT *`, una paginación sin límite ni un modelo incoherente; primero se corrige la consulta y después se mide el plan. Fuentes oficiales: https://www.sqlite.org/eqp.html y https://www.sqlite.org/lang_createindex.html.
 
 ### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL
@@ -434,8 +429,6 @@ El proyecto integrador Fundamentos necesita que marcar una tarea como completada
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una transacción agrupa varias sentencias SQL como si fueran una sola unidad indivisible: o se aplican todas (`COMMIT`), o no se aplica ninguna (`ROLLBACK`). Esa garantía se resume en ACID: atomicidad (todo o nada), consistencia (las reglas declaradas — `CHECK`, `UNIQUE`, claves foráneas — se siguen cumpliendo), aislamiento (una transacción no ve resultados a medio terminar de otra) y durabilidad (lo confirmado con `COMMIT` sobrevive incluso a un corte de luz). Elegir SQL o NoSQL no es una cuestión de moda: depende de si tus datos necesitan esas garantías fuertes entre entidades relacionadas (pagos, reservas, un historial de cambios) o si cada registro es independiente y puede vivir sin relaciones estrictas (una sesión de caché, un documento con forma variable). La analogía: una transacción es una transferencia bancaria firmada ante un notario — o se completan todos los pasos del contrato, o el notario rompe el papel entero; no existe un mundo donde el dinero salió de una cuenta pero el contrato quedó "a medias".
-
-**Evidencia de aprendizaje:** entregá el camino feliz, el `ROLLBACK` reproducido, la transacción de tres pasos y la comparación SQL/NoSQL.
 
 **Cuándo NO usar:** No uses NoSQL para datos relacionales complejos sin reinventar restricciones. No mantengas transacciones largas (> 1s); fragmenta en operaciones más pequeñas. No assumes `READ COMMITTED` es suficiente para operaciones críticas sin entender race conditions.
 
@@ -576,7 +569,7 @@ Pista: repetí `completar_con_transaccion` con `simular_fallo=False` para confir
 #### Paso 6 · Práctica independiente
 Documentá una comparación de una línea cada caso: qué pasaría con este mismo escenario (completar tarea + historial) en una base de documentos sin transacciones multi-documento, y en qué casos esa falta de garantías sería aceptable para Fundamentos y en cuáles no.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el camino feliz y el `ROLLBACK` del Paso 4, la transacción de tres pasos del Paso 5, y la comparación SQL/NoSQL del Paso 6. Con esto cerrás el Módulo 4; como siguiente paso, en el Módulo 5 (Testing, depuración, Git y CI) vas a escribir tests automatizados y usar Git/CI para que estos mismos cambios de esquema y consultas queden verificados antes de integrarse. Errores comunes: olvidar `BEGIN` y asumir que dos `execute()` consecutivos ya son atómicos; dejar transacciones abiertas por mucho tiempo bloqueando otras escrituras; elegir NoSQL únicamente para evitar diseñar un esquema. Límites y decisión de uso: una transacción no corrige un modelo incoherente ni reemplaza la validación de entrada; y en bases distribuidas, confirmar entre regiones puede costar más latencia que la operación original. Fuentes oficiales: https://www.sqlite.org/lang_transaction.html y https://www.sqlite.org/atomiccommit.html.
 
 ### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana
@@ -720,8 +713,8 @@ Crea la vista `entregas_fallidas` con el nombre del mensajero y consúltala. **P
 #### Paso 6 · Práctica independiente
 Escribe la misma consulta de efectividad por zona sin subconsulta (solo con `JOIN` y `GROUP BY`) y compara el plan con `EXPLAIN QUERY PLAN`.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque reportes, auditorías y reglas de integridad son trabajo diario de backend, y las funciones de ventana aparecen en casi toda entrevista de SQL.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque reportes, auditorías y reglas de integridad son trabajo diario de backend, y las funciones de ventana aparecen en casi toda entrevista de SQL.
 **Fuente oficial:** [SQLite: CREATE TRIGGER](https://www.sqlite.org/lang_createtrigger.html), [SQLite: Window Functions](https://www.sqlite.org/windowfunctions.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
 **Conceptos clave:** subconsulta, subconsulta correlacionada, vista, trigger BEFORE y AFTER, RAISE, función de ventana, procedimiento almacenado.
 **Cuándo no usarlo:** no metas toda la lógica de negocio en triggers: son invisibles para quien lee el código de la aplicación y difíciles de probar. Úsalos para auditoría e invariantes que deben cumplirse siempre.
@@ -858,8 +851,8 @@ Crea la función `efectividad(p_mensajero text) RETURNS numeric` que devuelva el
 #### Paso 6 · Práctica independiente
 Reescribe `cerrar_dia` sin cursor, con un solo `INSERT ... SELECT`, y compara legibilidad y rendimiento con `EXPLAIN ANALYZE` sobre 100 000 filas generadas con `generate_series`.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque muchos sistemas empresariales (bancos, ERP, Oracle) concentran su lógica en procedimientos, y vas a mantenerlos o migrarlos.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque muchos sistemas empresariales (bancos, ERP, Oracle) concentran su lógica en procedimientos, y vas a mantenerlos o migrarlos.
 **Fuente oficial:** [PostgreSQL: PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
 **Conceptos clave:** PL/pgSQL, PL/SQL, función, procedimiento, `CALL`, cursor, `RAISE`, `EXCEPTION WHEN`, paquete de Oracle.
 **Cuándo no usarlo:** no pongas reglas de negocio complejas que cambian a menudo en la base de datos: son difíciles de versionar, probar y desplegar. Úsalos para procesos cercanos a los datos y por lotes.
@@ -974,8 +967,8 @@ Agrega una segunda hoja `Detalle` con todas las entregas, una fila por guía, y 
 #### Paso 6 · Práctica independiente
 Haz el camino inverso: lee un Excel de pedidos con columnas `guia`, `zona` y `kilos`, valida cada fila e insértala en SQLite, reportando las filas rechazadas.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque conectar datos con las herramientas que usa el negocio ahorra horas de trabajo manual y elimina errores de copiado.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque conectar datos con las herramientas que usa el negocio ahorra horas de trabajo manual y elimina errores de copiado.
 **Fuente oficial:** [openpyxl documentation](https://openpyxl.readthedocs.io/en/stable/), [openpyxl: Worksheet Tables](https://openpyxl.readthedocs.io/en/stable/worksheet_tables.html).
 **Conceptos clave:** agregar en SQL y presentar en Excel, `openpyxl`, fórmula, tabla de Excel, `number_format`, `data_only`.
 **Cuándo no usarlo:** si el reporte necesita actualizarse solo cada hora o lo usan muchas personas, un tablero conectado a la base de datos es mejor que archivos que se envían por correo.

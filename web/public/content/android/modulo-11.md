@@ -100,9 +100,9 @@ Genera un tercer alias dentro de la misma keystore (`keytool -genkeypair -keysto
 
 Documenta en una frase qué harías si sospecharas que la keystore de release de tu app se filtró (por ejemplo, se subió accidentalmente a un repositorio público), relacionándolo con por qué no puedes simplemente "rotarla" de la misma forma que rotarías una API key comprometida.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya generas una keystore real, la configuras para leerse desde variables de entorno, y explicas por qué su pérdida o filtración es un problema grave y en gran medida irreversible. El siguiente tema cubre el formato de artefacto que Google Play requiere para la distribución. **Evidencia:** entrega la huella digital SHA-256 real generada por `keytool`, y el resultado confirmando que dos keystores distintas producen huellas completamente diferentes. Fuente oficial: [Android Developers — Sign your app](https://developer.android.com/studio/publish/app-signing).
+Ya generas una keystore real, la configuras para leerse desde variables de entorno, y explicas por qué su pérdida o filtración es un problema grave y en gran medida irreversible. El siguiente tema cubre el formato de artefacto que Google Play requiere para la distribución. Fuente oficial: [Android Developers — Sign your app](https://developer.android.com/studio/publish/app-signing).
 
 **Errores comunes:** hardcodear las credenciales de la keystore en `build.gradle.kts`, exponiéndolas en el control de versiones; no mantener un respaldo seguro de la keystore original, arriesgando perder para siempre la capacidad de actualizar la app.
 
@@ -192,9 +192,9 @@ Extiende la simulación agregando una cuarta variante de densidad de pantalla (`
 
 Documenta en una frase, usando tus propios números reales (ejecutando `./gradlew bundleRelease` sobre un proyecto real si tienes uno, o estimando según los idiomas y densidades que tu app soporta), qué reducción de tamaño de descarga esperarías para tus propios usuarios comparado con un APK universal hipotético.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas por qué Google Play requiere un App Bundle en vez de un APK universal, y mides concretamente la reducción de tamaño que esto representa para cada usuario. El siguiente tema cubre el versionado y los tracks progresivos de validación antes de producción. **Evidencia:** entrega el porcentaje real de reducción de tamaño calculado, y el resultado del fallo mostrando cómo un recurso mal configurado anula esa ventaja. Fuente oficial: [Android Developers — About Android App Bundles](https://developer.android.com/guide/app-bundle).
+Ya explicas por qué Google Play requiere un App Bundle en vez de un APK universal, y mides concretamente la reducción de tamaño que esto representa para cada usuario. El siguiente tema cubre el versionado y los tracks progresivos de validación antes de producción. Fuente oficial: [Android Developers — About Android App Bundles](https://developer.android.com/guide/app-bundle).
 
 **Errores comunes:** incluir por error un recurso pesado en todas las variantes del bundle, anulando la ventaja de tamaño; seguir generando y distribuyendo un APK universal manualmente en vez de adoptar el formato `.aab` requerido por Play.
 
@@ -305,9 +305,9 @@ Extiende la simulación de `play_console_acepta_upload` para que además valide 
 
 Documenta en una frase, para un cambio hipotético de tu propia app (una corrección de bug menor frente a una nueva funcionalidad grande), qué incremento de `versionName` semver aplicarías en cada caso (`PATCH` vs `MINOR`) y por qué esa distinción comunica algo útil a tus usuarios.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues `versionCode` de `versionName`, y explicas el propósito de los tracks progresivos de validación antes de producción. Esto cierra el módulo de publicación en Google Play; el siguiente módulo del track aborda características avanzadas de la plataforma. **Evidencia:** entrega el resultado de la simulación mostrando qué `versionCode` serían aceptados o rechazados por Play Console, y explica por qué un `versionName` "hacia atrás" no sería detectado automáticamente por la plataforma. Fuente oficial: [Android Developers — Set up your app's version code](https://developer.android.com/studio/publish/versioning).
+Ya distingues `versionCode` de `versionName`, y explicas el propósito de los tracks progresivos de validación antes de producción. Esto cierra el módulo de publicación en Google Play; el siguiente módulo del track aborda características avanzadas de la plataforma. Fuente oficial: [Android Developers — Set up your app's version code](https://developer.android.com/studio/publish/versioning).
 
 **Errores comunes:** olvidar incrementar `versionCode` en un nuevo release, siendo rechazado por Play Console; ignorar la sección de Data Safety antes de publicar, arriesgando rechazo o suspensión de la app en revisión.
 

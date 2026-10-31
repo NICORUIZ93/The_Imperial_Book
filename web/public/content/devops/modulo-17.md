@@ -164,11 +164,9 @@ Ejecuta veinte peticiones seguidas con `for i in $(seq 1 20); do curl -s -o /dev
 
 Agrega a `server.mjs` una ruta `GET /api/catalogo` que cambie cada minuto, y ponle caché en el borde con `proxy_cache_path`, `proxy_cache`, `proxy_cache_valid 200 10s` y `add_header X-Cache-Status $upstream_cache_status always;`. Ejecuta la ruta tres veces y anota si ves `MISS` o `HIT`. Luego escribe una decisión de dos párrafos: qué cambia si ese catálogo se sirve desde una CDN, qué no cambia, y en qué caso concreto una CDN no ayudaría a RutaFlow (respuestas por usuario, `POST`, o un catálogo que cambia en cada petición).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Siguiente paso: el Tema 2 cambia de plano y ataca el crecimiento de los datos, donde el coste ya no está en el borde sino en cada consulta.
-
-**Evidencia de aprendizaje:** entrega la salida de `nginx -t` con la configuración válida, la secuencia de instancias que responde el balanceador, una respuesta 429 con su línea `limiting requests` del log, y la comparación `HIT`/`MISS` de la caché del Paso 6.
 
 **Errores comunes:** declarar `limit_req_zone` dentro de `server` (la directiva solo existe en `http`); usar `localhost` dentro de un contenedor para hablar con otro servicio; creer que añadir una instancia arregla un origen lento, cuando solo reparte la espera.
 
@@ -333,11 +331,9 @@ Crea un índice sobre `estado` y comprueba con `explain` una consulta `where est
 
 Inserta en el primario y cuenta en la réplica en el mismo segundo; repite hasta capturar una lectura obsoleta y anota cuánto tardó en converger. Elige después una clave de sharding para `envio` entre `cliente_id`, `creado_en` y un hash de `id`, y escribe las tres consultas que se volverían caras. Cierra con la decisión: ¿shardearías hoy o lo dejarías como hipótesis a medir?
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Siguiente paso: el Tema 3 trata lo que estas piezas cuestan cuando algo falla a mitad de camino: consistencia, reintentos y operaciones que no deben aplicarse dos veces.
-
-**Evidencia de aprendizaje:** entrega los dos planes, la tabla de conteos, el `count` de la réplica, la lectura obsoleta y la clave de sharding con sus consultas caras.
 
 **Errores comunes:** indexar columnas de baja cardinalidad y concluir que «el índice no funciona»; crear índices en migraciones transaccionales; asumir que la réplica es un respaldo (replica también el borrado); shardear antes de medir.
 
@@ -470,11 +466,9 @@ Haz que el reintento devuelva la misma respuesta que el primer cobro, en vez de 
 
 Guarda junto a la clave un hash del cuerpo de la petición y, si llega la misma clave con otro cuerpo, responde con conflicto en vez de aceptar el cambio. Añade después un lease de líder en Redis (`SET lider:cierre <id> NX PX 10000`) y explica con un ejemplo concreto por qué hace falta un *fencing token* además del lease, y qué pasa si el proceso se detiene más tiempo del que dura el `PX`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Siguiente paso: el Tema 4 mide lo que todo esto cuesta cuando el sistema está bajo carga, y lo traduce a un objetivo de servicio con presupuesto de error.
-
-**Evidencia de aprendizaje:** entrega las dos salidas de `cobro.sql` (`INSERT 0 1` y `INSERT 0 0`), el `SET NX` con su `nil`, el error de `on conflict` sin restricción, y una fila de tabla por cada decisión: qué pieza garantiza qué y con qué ventana de retención.
 
 **Errores comunes:** confiar solo en Redis con `EX` corto y perder la clave antes de que llegue el reintento; usar `on conflict` sin restricción única; tratar CAP como un menú de dos opciones y elegir «AP» sin decir qué se reconcilia ni cuándo.
 
@@ -658,11 +652,9 @@ Ejecuta `node carga.mjs http://127.0.0.1:8081/api/informe 200 20` y luego con `1
 
 Añade a `carga.mjs` un modo de tasa fija (cien peticiones por segundo durante treinta segundos, sin esperar respuesta) y compara su `p99` con el del modo de concurrencia fija. Escribe el SLO de RutaFlow para `/api/pedidos` y calcula, con tus números, cuánto presupuesto consume una hora de la corrida más lenta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Siguiente paso: el laboratorio integra las cuatro piezas en un solo sistema y un solo informe de capacidad.
-
-**Evidencia de aprendizaje:** entrega las dos corridas con percentiles, la comparación entre `/api/pedidos` y `/api/informe`, el error de conexión rechazada y una tabla con SLI, SLO, ventana y presupuesto consumido.
 
 **Errores comunes:** decidir con el promedio; mezclar el arranque en frío con el estado estable; usar pocas muestras para afirmar un `p99`; olvidar el código de salida y dar por buena una prueba que no midió nada.
 

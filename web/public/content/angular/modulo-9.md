@@ -145,9 +145,9 @@ readonly lista = this.items.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un store de signals con estado encapsulado y un test que confirme el singleton compartido y la ausencia de `.set`/`.update` en la versión expuesta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `TestBed` real, que un store de signals es un singleton compartido con encapsulación real en tiempo de ejecución, no solo una convención de tipos. El siguiente tema confirma con un reducer real de NgRx que las funciones reductoras nunca mutan el estado original. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado incorrecto (`set` definido) que produce el fallo deliberado. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con `TestBed` real, que un store de signals es un singleton compartido con encapsulación real en tiempo de ejecución, no solo una convención de tipos. El siguiente tema confirma con un reducer real de NgRx que las funciones reductoras nunca mutan el estado original. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** exponer un signal de estado sin `asReadonly()`, permitiendo que cualquier código externo lo modifique directamente sin pasar por los métodos del store; asumir que la encapsulación de tipos de TypeScript (que desaparece al compilar) es suficiente sin verificarla también en tiempo de ejecución.
 
@@ -299,9 +299,9 @@ export const carritoReducer = ____(estadoInicial, on(agregarItem, (estado, { ite
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una action, un reducer puro, y un test que confirme con `not.toBe()` que el estado original nunca se muta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un test real que compara referencias de objetos, que un reducer de NgRx nunca muta el estado original que recibe. El siguiente y último tema confirma en código que un store de signals y un reducer de NgRx equivalente alcanzan exactamente el mismo estado final ante la misma secuencia de operaciones, cuantificando la ceremonia real de cada enfoque. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado incorrecto (`estadoOriginal.items` modificado) que produce el fallo deliberado. Fuentes oficiales: [NgRx — Reducers](https://ngrx.io/guide/store/reducers).
+Ya confirmas, con un test real que compara referencias de objetos, que un reducer de NgRx nunca muta el estado original que recibe. El siguiente y último tema confirma en código que un store de signals y un reducer de NgRx equivalente alcanzan exactamente el mismo estado final ante la misma secuencia de operaciones, cuantificando la ceremonia real de cada enfoque. Fuentes oficiales: [NgRx — Reducers](https://ngrx.io/guide/store/reducers).
 
 **Errores comunes:** mutar el estado directamente dentro de un caso `on(...)` en vez de devolver un objeto nuevo con spread; olvidar `createSelector` y recalcular manualmente un valor derivado en cada componente, perdiendo la memoización automática.
 
@@ -404,9 +404,9 @@ expect(store.____()).toBe(selectTotal({ carrito: estadoNgrx }));
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que compare el resultado de un store de signals y un reducer de NgRx equivalentes ante la misma secuencia de operaciones. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, en código, que un store de signals y un reducer de NgRx equivalente alcanzan exactamente el mismo estado final, y documentas los criterios concretos (no la moda) que justificarían la ceremonia adicional de NgRx. Con esto cierras el módulo de gestión de estado: encapsulación real de un store (Tema 1), pureza real de un reducer (Tema 2), y equivalencia funcional entre ambos enfoques (Tema 3). El siguiente módulo aplica estos fundamentos al testing sistemático de toda la aplicación. **Evidencia:** entrega el resultado del test en verde, y el resultado incorrecto (`15` vs `17`) que produce el fallo deliberado. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals), [NgRx — Store](https://ngrx.io/guide/store).
+Ya confirmas, en código, que un store de signals y un reducer de NgRx equivalente alcanzan exactamente el mismo estado final, y documentas los criterios concretos (no la moda) que justificarían la ceremonia adicional de NgRx. Con esto cierras el módulo de gestión de estado: encapsulación real de un store (Tema 1), pureza real de un reducer (Tema 2), y equivalencia funcional entre ambos enfoques (Tema 3). El siguiente módulo aplica estos fundamentos al testing sistemático de toda la aplicación. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals), [NgRx — Store](https://ngrx.io/guide/store).
 
 **Errores comunes:** adoptar NgRx "por si acaso" sin ningún requisito concreto de historial, equipo grande, o side-effects complejos que lo justifique; asumir que un store de signals no puede escalar sin haber medido realmente en qué punto la ceremonia de NgRx empieza a pagar por sí misma.
 

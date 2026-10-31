@@ -113,9 +113,9 @@ Crea `src/dominio/ruta.js`, exporta `calcularParadas(entregas)` e impórtala des
 
 Reproduce el mismo dominio en una carpeta separada `comparacion-cjs/` con `module.exports` y `require`, sin mezclarlo con ESM. Ejecuta ambos programas y escribe una comparación de cuándo se conocen sus dependencias y qué formato escogerías para código nuevo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes dividir responsabilidades con el formato estándar del lenguaje y diagnosticar incompatibilidades con CommonJS. El siguiente tema aprovechará el análisis estático de ESM para reducir y dividir el bundle. **Evidencia:** entrega la estructura, demuestra la salida correcta y el fallo deliberado, y explica por qué `import` debe permanecer en el nivel superior.
+Ya puedes dividir responsabilidades con el formato estándar del lenguaje y diagnosticar incompatibilidades con CommonJS. El siguiente tema aprovechará el análisis estático de ESM para reducir y dividir el bundle.
 
 **Errores comunes:** omitir `"type": "module"`; olvidar `.js` en imports ejecutados por Node; mezclar `require` e `import` en el mismo archivo; confundir export nombrado con default; crear dependencias circulares entre dominio y entrada.
 
@@ -235,9 +235,9 @@ Abre las herramientas de red del navegador, recarga y verifica que el chunk de a
 
 Mide tamaño del chunk inicial, cantidad de solicitudes y tiempo de carga antes y después de mover un reporte pesado a `import()`. Conserva la división solamente si la medición mejora la experiencia; documenta también el coste de una solicitud adicional.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ahora diferencias quitar código imposible de alcanzar de aplazar código que sí se utilizará. El siguiente tema explica cómo Vite sirve módulos en desarrollo y cómo produce estos artefactos con Rollup. **Evidencia:** entrega la lista de archivos de `dist/assets`, la salida de búsqueda que prueba eliminación y carga diferida, y explica el resultado del fallo con efectos laterales.
+Ahora diferencias quitar código imposible de alcanzar de aplazar código que sí se utilizará. El siguiente tema explica cómo Vite sirve módulos en desarrollo y cómo produce estos artefactos con Rollup.
 
 **Errores comunes:** creer que minificación y tree-shaking son lo mismo; esperar eliminación fiable de CommonJS dinámico; introducir efectos laterales al importar; dividir funciones diminutas sin medir; validar solo el servidor de desarrollo y no el build.
 
@@ -354,9 +354,9 @@ Añade una tercera entrega y un estilo distinto para `ENTREGADA`. **Pista:** pri
 
 Mide cuánto tarda el arranque de desarrollo y cuánto ocupa `dist/assets`. Cambia código, reconstruye y explica por qué cambia el hash del archivo afectado. Conserva captura o salida de terminal como comparación reproducible.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes distinguir el servidor ágil de desarrollo del artefacto optimizado de producción. El siguiente tema formaliza formato de módulos, API pública y comandos repetibles en `package.json`. **Evidencia:** demuestra la interfaz, la estructura de `dist/`, el fallo de importación diagnosticado y explica qué responsabilidades cumplen esbuild y Rollup dentro de Vite.
+Ya puedes distinguir el servidor ágil de desarrollo del artefacto optimizado de producción. El siguiente tema formaliza formato de módulos, API pública y comandos repetibles en `package.json`.
 
 **Errores comunes:** ejecutar Vite con una versión de Node incompatible; editar archivos dentro de `dist`; desplegar el servidor de desarrollo; ignorar errores del build porque desarrollo funciona; asumir que esbuild produce el bundle final de Vite.
 
@@ -458,9 +458,9 @@ Añade scripts `lint` y `test` únicamente si instalaste herramientas reales par
 
 Entrega el repositorio a otra persona o a una carpeta limpia y comprueba que puede ejecutar instalación, `npm run dev` y `npm run check` leyendo solo README y scripts. Registra cualquier conocimiento implícito y conviértelo en requisito o comando explícito.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes leer `package.json` como contrato técnico y no como archivo incidental. El siguiente tema cargará una capacidad opcional mediante `import()` y usará `import.meta` para resolver recursos. **Evidencia:** entrega ambos manifiestos, demuestra build correcto, `EJSONPARSE` y ruta no exportada, y explica por qué la aplicación y la biblioteca no necesitan el mismo mapa `exports`.
+Ya puedes leer `package.json` como contrato técnico y no como archivo incidental. El siguiente tema cargará una capacidad opcional mediante `import()` y usará `import.meta` para resolver recursos.
 
 **Errores comunes:** poner comentarios o comas finales en JSON; usar rangos de dependencias sin lockfile; exponer todos los archivos internos; confundir `exports` con un alias del bundler; declarar scripts que no funcionan en una instalación limpia.
 
@@ -561,9 +561,9 @@ Añade un botón “Reintentar” y evita imports simultáneos con un estado `ca
 
 Carga bajo demanda un visor de mapa simulado, mide el chunk inicial y el diferido y diseña estados de cargando, listo y error accesibles. Prueba navegación lenta y documenta si la división aporta valor frente a incluir el código inicialmente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes convertir una capacidad opcional en un límite de carga observable y recuperable. El siguiente tema compara bundlers y transformadores para elegir herramientas por restricciones reales. **Evidencia:** demuestra la red antes y después del clic, la salida correcta, el fallo manejado y explica qué representa `import.meta.url`.
+Ya puedes convertir una capacidad opcional en un límite de carga observable y recuperable. El siguiente tema compara bundlers y transformadores para elegir herramientas por restricciones reales.
 
 **Errores comunes:** olvidar que `import()` devuelve una Promesa; no mostrar estado de carga; construir rutas imposibles de analizar; confundir `import.meta.url` con la URL de la página; crear chunks minúsculos sin medir.
 
@@ -677,9 +677,9 @@ Añade al ADR una matriz con compatibilidad de plugins, tiempo de build, tamaño
 
 Transforma un archivo pequeño con Babel o SWC y con esbuild en una carpeta experimental, registra comandos, tiempo y resultado, pero no migres el proyecto completo. Decide si la diferencia observada justifica complejidad adicional en este proyecto concreto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ahora puedes distinguir bundling de transformación y defender una herramienta mediante una decisión reversible. El próximo módulo aplicará pruebas automatizadas al código construido. **Evidencia:** entrega ADR, comando y salida de medición, fallo `ENOENT` diagnosticado y explica por qué Rollup, Babel y Webpack no son sustitutos equivalentes en todos los contextos.
+Ahora puedes distinguir bundling de transformación y defender una herramienta mediante una decisión reversible. El próximo módulo aplicará pruebas automatizadas al código construido.
 
 **Errores comunes:** migrar por tendencia; comparar desarrollo de una herramienta con producción de otra; ignorar plugins y navegadores objetivo; medir una sola ejecución sin entorno comparable; confundir transpilación con empaquetado.
 

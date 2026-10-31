@@ -133,9 +133,9 @@ public class ServicioTareas {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase de servicio anotada con `@Service` que reciba una dependencia por constructor, sin que la clase sepa qué implementación concreta recibe. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cómo el contenedor de Spring crea y conecta objetos por ti, confirmando con la aplicación real que una clase gestionada nunca necesita conocer la implementación concreta de sus dependencias. El siguiente tema compara este mecanismo (constructor) contra la alternativa de inyección por campo. **Evidencia:** entrega la respuesta HTTP de `/status` y el fallo real (`NoSuchBeanDefinitionException`) al quitar `@Service`. Fuente oficial: [Spring Framework — Beans](https://docs.spring.io/spring-framework/reference/core/beans.html).
+Ya distingues cómo el contenedor de Spring crea y conecta objetos por ti, confirmando con la aplicación real que una clase gestionada nunca necesita conocer la implementación concreta de sus dependencias. El siguiente tema compara este mecanismo (constructor) contra la alternativa de inyección por campo. Fuente oficial: [Spring Framework — Beans](https://docs.spring.io/spring-framework/reference/core/beans.html).
 
 **Errores comunes:** instanciar dependencias manualmente con `new` dentro de una clase gestionada por Spring; olvidar la anotación de estereotipo y descubrir el error solo cuando otro bean intenta depender de esa clase.
 
@@ -267,9 +267,9 @@ private ____ RepositorioTareas repositorio;
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase con inyección por constructor y su test unitario correspondiente instanciándola directamente con un mock. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues por qué la inyección por constructor permite inmutabilidad real y tests simples sin contenedor, confirmando con ejecución real que la alternativa por campo depende de un mecanismo externo. El siguiente tema cubre los estereotipos de Spring y cómo `spring-boot-starter-web` autoconfigura el proyecto. **Evidencia:** entrega el resultado del test con constructor y el error real al intentar el equivalente sin inyección por constructor. Fuente oficial: [Spring Framework — Dependency Injection](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html).
+Ya distingues por qué la inyección por constructor permite inmutabilidad real y tests simples sin contenedor, confirmando con ejecución real que la alternativa por campo depende de un mecanismo externo. El siguiente tema cubre los estereotipos de Spring y cómo `spring-boot-starter-web` autoconfigura el proyecto. Fuente oficial: [Spring Framework — Dependency Injection](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html).
 
 **Errores comunes:** usar `@Autowired` sobre un campo por costumbre en vez de preferir el constructor; declarar dependencias no-`final` sin necesidad, perdiendo la garantía de inmutabilidad verificada por el compilador.
 
@@ -360,9 +360,9 @@ public class GeneradorReporte { /* ... */ }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos beans (uno `singleton`, uno `prototype`) y traza a mano qué instancia devolvería cada uno tras dos resoluciones consecutivas. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues los estereotipos de Spring, qué autoconfigura `spring-boot-starter-web`, y cómo elegir entre `singleton` y `prototype` según si el estado del bean debe compartirse o no entre operaciones. Esto cierra los fundamentos de IoC y DI; el siguiente módulo aplica estos conceptos a la configuración externa de la aplicación. **Evidencia:** entrega el resultado con los dos `id()` distintos del bean `prototype` y el mismo `id()` repetido tras quitar el scope. Fuente oficial: [Spring Framework — Bean scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html).
+Ya distingues los estereotipos de Spring, qué autoconfigura `spring-boot-starter-web`, y cómo elegir entre `singleton` y `prototype` según si el estado del bean debe compartirse o no entre operaciones. Esto cierra los fundamentos de IoC y DI; el siguiente módulo aplica estos conceptos a la configuración externa de la aplicación. Fuente oficial: [Spring Framework — Bean scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html).
 
 **Errores comunes:** asumir que todo bean es `singleton` sin considerar si acumula estado por operación; confundir `@Service` con una anotación funcionalmente distinta de `@Component` (solo `@Repository` agrega comportamiento real).
 
@@ -376,7 +376,7 @@ Los estereotipos (`@Service`, `@Repository`, `@Controller`) que uses aquí son l
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con genera `academia-spring` en `start.spring.io`, descomprímelo en una carpeta vacía y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | API y configuración. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | datos, seguridad y mensajería. | Casos normales, límite y error automatizados. |

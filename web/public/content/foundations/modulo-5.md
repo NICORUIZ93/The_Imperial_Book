@@ -14,8 +14,6 @@ El proyecto integrador Fundamentos que vas a construir en este track ya guarda t
 #### Paso 3 · Teoría, modelo mental y analogía
 Depurar con evidencia significa tres cosas en orden: reproducir el fallo con el caso más pequeño posible, escribir una hipótesis verificable sobre la causa ANTES de cambiar nada, y modificar una sola variable por intento para saber con certeza qué fue lo que corrigió (o no corrigió) el problema. Un cambio que "podría ayudar" pero no ataca la hipótesis es una pista falsa: puede incluso parecer una mejora y aun así dejar el bug intacto. La analogía es la de un perito: no reordena la escena antes de fotografiarla, la documenta, propone una explicación y prueba solo esa explicación.
 
-**Evidencia de aprendizaje:** entrega el caso mínimo reproducido, la hipótesis escrita, la pista falsa descartada con su salida y la corrección confirmada.
-
 **Cuándo NO usar:** No cambies varias líneas a la vez "a ver si ahora funciona"; si el síntoma desaparece no vas a saber cuál cambio fue. No aceptes un cambio como corrección sin volver a ejecutar el caso mínimo que fallaba. No depures a fuerza de `print()` disperso sin una hipótesis escrita: perdés la capacidad de saber qué estabas probando.
 
 #### Profundización · Diseño: Depuración en Fundamentos CLI sin salida
@@ -26,7 +24,7 @@ Depurar con evidencia significa tres cosas en orden: reproducir el fallo con el 
 
 1. **Print debugging:** Agrega `print()` antes y después de cada función clave. ¿Dónde se detiene?
 2. **Debugger interactivo:** Usa `import pdb; pdb.set_trace()`. ¿Ventajas vs `print()`?
-3. **Evidencia:** Escribe un script que confirme dónde falla.
+3.
 4. **Producción:** ¿Logging (permanente) vs `print()` (transitorio)?
 
 **Escribe tu respuesta:**
@@ -113,7 +111,7 @@ Pista: antes de declarar "arreglado", volvé a correr EXACTAMENTE el mismo caso 
 #### Paso 6 · Práctica independiente
 Elegí una función real de tu propio `tareas.py` (no inventada) que sospeches que tiene un comportamiento incorrecto. Reproducí el caso mínimo que lo muestra, escribí la hipótesis en una línea ANTES de cambiar código, hacé un solo cambio y confirmá ejecutando de nuevo el mismo caso.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la reproducción del bug de `listar_pendientes`, la hipótesis escrita antes de corregir, la pista falsa que no cambió el síntoma y la corrección real confirmada; como siguiente paso, en el Tema 2 vas a convertir ese mismo caso mínimo en una prueba automatizada para que nadie tenga que reproducirlo a mano otra vez. Errores comunes: cambiar varias cosas a la vez antes de confirmar cuál funcionó; aceptar un cambio como "arreglo" sin volver a ejecutar el caso que fallaba; depurar sin escribir la hipótesis, lo que impide saber después qué se estaba probando. Fuentes oficiales: https://docs.python.org/es/3/library/pdb.html y https://docs.python.org/es/3/howto/logging.html.
 **¿Por qué es importante?** Porque sin un caso mínimo reproducible y una hipótesis escrita, "arreglar" un bug es indistinguible de cambiar cosas hasta que el síntoma visible desaparezca, aunque la causa real siga ahí.
 
@@ -127,8 +125,6 @@ Desde el Módulo 4, el proyecto Fundamentos no solo cuenta pendientes en memoria
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una prueba unitaria aísla una pieza pequeña y rápida: en este caso, `contar_pendientes(tareas)` operando sobre una lista en memoria, sin tocar disco. Una prueba de integración comprueba la colaboración real entre piezas: la misma regla de negocio, pero ejecutada contra una base SQLite real, con la consulta SQL real. Un doble de prueba (fake, stub o mock) reemplaza una pieza lenta o no determinista; el riesgo es que, si el doble es demasiado simple, deja de importar qué hace la pieza real que reemplaza — la prueba sigue en verde aunque esa pieza esté rota. La analogía: un simulador de vuelo que ignora el viento no te prepara para aterrizar con viento real, aunque todas sus lecciones salgan perfectas.
-
-**Evidencia de aprendizaje:** entrega la unitaria real, el fake que no detectó la consulta rota, y la integración que sí la detectó, con ambas corridas de `pytest -q`.
 
 **Cuándo NO usar:** No reemplaces tu base de datos con un doble en la única prueba que debería validar tu consulta real; usalo solo donde la base sea lenta o no determinista y haya otra prueba de integración cubriendo lo real. No escribas pruebas solo para subir cobertura sin una aserción que realmente pueda fallar. No uses E2E para validar una regla que una unitaria ya prueba más rápido.
 
@@ -256,7 +252,7 @@ Pista: antes de confiar en que una prueba "cubre" la base de datos, preguntate s
 #### Paso 6 · Práctica independiente
 Agregá una prueba de integración real (con `sqlite3.connect(":memory:")`) para otra función de tu capa de almacenamiento, y una prueba unitaria para la misma regla que no toque la base. Rompé a propósito la consulta SQL real y confirmá cuál de las dos pruebas lo detecta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la prueba unitaria de `contar_pendientes`, la prueba con el fake que no detectó la consulta rota, y la prueba de integración que sí la detectó; como siguiente paso, en el Tema 3 vas a usar Git para dejar registrado POR QUÉ agregaste esa prueba de integración, no solo que la agregaste. Errores comunes: confiar en una prueba unitaria para cubrir la base de datos; usar un doble tan simple que ignora el comportamiento real que debería simular; medir éxito solo por cobertura y no por qué detecta cada prueba. Fuentes oficiales: https://docs.pytest.org/en/stable/ y https://docs.python.org/es/3/library/sqlite3.html.
 **¿Por qué es importante?** Porque una suite en verde no garantiza nada por sí sola: garantiza solo lo que sus pruebas realmente ejecutaron, y un doble demasiado simple puede ejecutar menos de lo que parece.
 
@@ -270,8 +266,6 @@ El proyecto integrador Fundamentos acumula commits en `tareas.py` a medida que a
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Git guarda snapshots del proyecto conectados en una línea de commits; cada commit puede tener un mensaje corto y, opcionalmente, un cuerpo más largo. El mensaje corto debería decir QUÉ cambió en modo imperativo ("corrige", no "corregido"); el cuerpo debería decir POR QUÉ, con el contexto que el diff por sí solo no muestra. `git log` solo es útil como historial de decisiones si cada mensaje realmente registra una decisión. La analogía es un cuaderno de laboratorio: anotar solo "experimento 4" no te dice, meses después, qué hipótesis probaba ese experimento ni por qué cambiaste el procedimiento.
-
-**Evidencia de aprendizaje:** entrega el commit "fix" original, la explicación de por qué no alcanza, y el commit de reemplazo con mensaje que sí comunica la decisión.
 
 **Cuándo NO usar:** No hagas rebase ni `commit --amend` en ramas ya compartidas; reescribís historia que otra persona ya tiene clonada. No mezcles en un commit un refactor con una corrección de bug; separá ambas intenciones. No confíes en que el nombre del archivo modificado reemplaza al mensaje: un `git log --stat` nunca explica el motivo.
 
@@ -303,7 +297,6 @@ Cuándo usas reset vs revert: _________
 
 </details>
 
-**Evidencia de aprendizaje:** entrega historial, prueba, fallo corregido y checklist de revisión.
 **Conceptos clave:** repositorio, commit, diff, branch, merge, conflicto, remoto, pull request, revisión y trazabilidad.
 
 Git almacena snapshots conectados. Un commit profesional representa una intención coherente y explica por qué. Antes de confirmar revisa:
@@ -384,7 +377,7 @@ Pista: leé tu propio `git log --oneline` de los últimos días. Si no podés ex
 #### Paso 6 · Práctica independiente
 Elegí 3 commits reales de tu proyecto (de este módulo o de uno anterior) y reescribí sus mensajes como si los fuera a leer alguien dentro de un año: qué cambió y por qué, no solo qué archivo. Si alguno dice "fix", "cambios" o "wip", es tu candidato prioritario.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnosticarlo tres semanas después, y el commit de reemplazo con mensaje que explica el motivo; como siguiente paso, en el Tema 4 vas a automatizar en CI los controles de calidad que hasta ahora corriste a mano. Errores comunes: escribir "fix" o "cambios" confiando en que "ya se entiende"; mezclar en un commit un refactor con una corrección de bug, lo que oscurece cuál de las dos cosas motivó el cambio; reescribir con `git commit --amend` un commit que ya compartiste con otra persona. Fuentes oficiales: https://git-scm.com/book/es/v2 y https://docs.github.com/es/pull-requests.
 **¿Por qué es importante?** Porque el código muestra QUÉ existe hoy, pero solo el historial de commits puede explicar POR QUÉ se llegó hasta ahí — y esa información se pierde para siempre si el mensaje no la registra.
 
@@ -398,8 +391,6 @@ El proyecto Fundamentos ya tiene pruebas (Tema 2) e historial con buenos mensaje
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El análisis estático detecta problemas SIN ejecutar el programa: un linter como Ruff encuentra imports sin usar, variables no definidas y patrones riesgosos leyendo el código, no corriéndolo. CI (integración continua) ejecuta esos controles —lint, pruebas— automáticamente en un entorno recién creado, con un clon limpio del repositorio: ningún archivo que hayas creado a mano durante una sesión de prueba sobrevive ahí. Por eso una prueba que depende de "algo que ya está en mi carpeta" puede pasar en tu máquina y fallar en CI sin que el código haya cambiado — el entorno es el que cambió. La analogía: ensayar una receta en tu cocina, con ingredientes que ya tenías picados de ayer, no prueba que la receta funcione completa desde cero en otra cocina.
-
-**Evidencia de aprendizaje:** entrega el hallazgo de Ruff corregido, la prueba fallando en copia limpia, y la corrección con `tmp_path` pasando en ambos entornos.
 
 **Cuándo NO usar:** No deshabilites una regla de lint por conveniencia; corregí lo que señala. No ignores un fallo que "solo pasa en CI" asumiendo que CI está mal configurado; es más probable que tu entorno local tenga algo que CI no tiene. No dejes una prueba que dependa de archivos, variables de entorno o datos que no estén versionados o generados por la prueba misma.
 
@@ -431,7 +422,6 @@ Código no ejecutado por tests: _________
 
 </details>
 
-**Evidencia de aprendizaje:** entrega historial, prueba, fallo corregido y checklist de revisión.
 **Conceptos clave:** formatter, linter, análisis estático, type checking, pipeline, job, step, artefacto, CI, feedback y calidad continua.
 
 Herramientas estáticas detectan problemas sin ejecutar todos los caminos. Un formatter elimina discusiones de estilo; un linter encuentra patrones riesgosos; type checking detecta incompatibilidades; análisis de dependencias descubre vulnerabilidades conocidas. Ninguna sustituye pruebas.
@@ -531,7 +521,7 @@ Pista: para saber si una prueba de verdad corre en limpio, cloná el proyecto en
 #### Paso 6 · Práctica independiente
 Agregá al pipeline un segundo chequeo estático (por ejemplo `python3 -m py_compile src/tareas.py` o una regla adicional de `ruff check .`) y confirmá que ese chequeo falla con un commit roto ANTES de que llegue a ejecutarse `pytest`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `F401` detectado y corregido, la prueba que pasaba en tu máquina y fallaba en una copia limpia, y la corrección con `tmp_path` que ya no depende de archivos manuales; con esto cerrás el Módulo 5. Como siguiente paso, en el Módulo 6 vas a aplicar exactamente esta misma disciplina de evidencia a seguridad: vas a modelar amenazas contra el mismo proyecto Fundamentos y a probar que una acción no autorizada falla, con pruebas, no con suposiciones. Errores comunes: confiar en que una prueba "pasó en mi máquina" sin probarla en un entorno limpio; dejar que una prueba dependa de archivos no versionados; desactivar una regla de lint en vez de corregir lo que señala. Fuentes oficiales: https://docs.github.com/actions y https://docs.astral.sh/ruff/.
 **¿Por qué es importante?** Porque "funciona en mi máquina" no es una garantía: es una hipótesis sin probar sobre el entorno, y CI existe justamente para probarla en un lugar donde los atajos manuales no sobreviven.
 

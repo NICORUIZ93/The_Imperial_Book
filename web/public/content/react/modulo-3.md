@@ -33,7 +33,6 @@ graph TD
     style G fill:#e8f5e9
 ```
 
-**Evidencia de aprendizaje:** entrega formulario sin re-renders por tecla, campo controlado mezclado detectado y campo adicional confirmado.
 **Conceptos clave:** registro no controlado por debajo, rendimiento en formularios grandes.
 
 Manejar cada campo de un formulario con su propio `useState` individual (el enfoque controlado estudiado en el Módulo 1) funciona perfectamente bien para formularios pequeños, pero en formularios con muchos campos, cada tecla presionada en cualquier campo dispara un re-render de todo el componente formulario completo (dado que el estado vive en ese componente padre), un costo que se vuelve mensurable cuando el formulario tiene decenas de campos, cada uno re-renderizándose innecesariamente cada vez que cualquier otro campo cambia, no solo el que efectivamente recibió la tecla.
@@ -88,7 +87,7 @@ Pista: reemplazá el campo `destinatario` por una versión controlada con `useSt
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `destinatario` a `register`, y agregá un campo nuevo (`peso`) también con `register`, confirmando que agregar campos a React Hook Form no incrementa el costo de render de los campos existentes.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el formulario sin re-renders por tecla del Paso 4, el campo controlado mezclado del Paso 5, y el campo adicional del Paso 6; explicá por qué mezclar un campo controlado dentro de un formulario de React Hook Form reintroduce exactamente el costo que React Hook Form existe para evitar. Siguiente paso: estudia cómo validar ese formulario con un schema de zod. Errores comunes: mezclar campos controlados y no controlados en el mismo formulario sin necesidad, no medir realmente el costo de render antes de migrar a React Hook Form, y olvidar `{...register(...)}` en algún input dejándolo sin conectar. Fuentes oficiales: https://react-hook-form.com/get-started y https://react.dev/learn/sharing-state-between-components.
 **¿Por qué es importante?** React Hook Form evita el costo de re-renderizar el formulario completo en cada tecla, un problema de rendimiento mensurable en formularios con muchos campos.
 
@@ -162,9 +161,7 @@ Mantén el schema de zod pero agregá además validación manual en el `onSubmit
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el spread, y agregá un tercer paso (confirmación) que muestre un resumen de todos los datos acumulados de los pasos 1 y 2, confirmando que nada se perdió en el camino.
 
-**Evidencia de aprendizaje:** entrega schema con validación, pérdida de datos detectada y paso de confirmación con resumen completo.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el schema con validación del Paso 4, la pérdida de datos provocada en el Paso 5, y el paso de confirmación del Paso 6; explicá por qué `setDatos(prev => ({ ...prev, ...datosDelPaso }))` es necesario, dado que cada paso solo conoce sus propios campos, no los de los demás pasos. Siguiente paso: estudia cómo React normaliza los eventos del formulario. Errores comunes: sobrescribir el estado acumulado en vez de fusionarlo al avanzar de paso, duplicar reglas de validación entre el schema y código manual adicional, y no validar un paso antes de permitir avanzar al siguiente. Fuentes oficiales: https://zod.dev/ y https://react-hook-form.com/docs/useform.
 **¿Por qué es importante?** Un schema de zod centraliza y hace reutilizable la lógica de validación; conservar el estado combinado entre pasos evita que el usuario pierda datos ya ingresados al navegar entre pasos.
 
@@ -205,7 +202,7 @@ Pista: quitá `e.preventDefault()` del manejador — ese es el fallo deliberado:
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `e.preventDefault()`, y agregá un manejador `onKeyDown` en el campo de peso que llame a `e.preventDefault()` específicamente cuando se presione una tecla que no sea un dígito, evitando escribir letras en un campo numérico.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el manejador con `preventDefault` del Paso 4, la recarga de página provocada en el Paso 5, y el bloqueo de teclas no numéricas del Paso 6; explicá por qué `e.preventDefault()` dentro de un `SyntheticEvent` de React funciona de forma idéntica sin importar el navegador. Siguiente paso: estudia routing con React Router. Errores comunes: olvidar `preventDefault` en el submit de un formulario, confundir `e.target` con `e.currentTarget` en un evento con burbujeo, y depender de comportamiento específico de un navegador en vez de la API sintética unificada. Fuentes oficiales: https://react.dev/learn/responding-to-events y https://react.dev/reference/react-dom/components/common#react-event-object.
 
 **Diagrama:**
@@ -231,8 +228,6 @@ graph LR
 * Cuándo: usar `preventDefault` siempre en formularios para evitar recarga del navegador; `SyntheticEvent` garantiza consistencia entre navegadores en vez de depender de APIs nativas inconsistentes.
 
 **¿Por qué es importante?** El envoltorio de eventos sintéticos garantiza una API de eventos consistente entre navegadores, y sin `preventDefault` el comportamiento nativo del navegador destruye todo el estado de React acumulado.
-**Evidencia de aprendizaje:** entrega manejador con preventDefault, recarga de página provocada y bloqueo de teclas no numéricas.
-
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un formulario de registro multi-paso con React Hook Form y validación con zod.

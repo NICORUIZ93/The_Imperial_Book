@@ -83,7 +83,6 @@ Ahora, en `ContentView.swift` de RutaFlow, reemplaza `TarjetaEntreguaRow` por es
 - https://developer.apple.com/tutorials/swiftui
 - https://developer.apple.com/documentation/swiftui
 **¿Por qué es importante?** Porque extraer una vista propia componible (en vez de duplicar layout) hace que un cambio futuro se aplique automáticamente en todos los lugares donde se usa, sin mecanismos especiales frente a las vistas nativas de SwiftUI.
-**Evidencia de aprendizaje:** entrega `TarjetaEnvio` compuesta dentro de `ListaEnvios`, el código duplicado del fallo deliberado y su corrección por extracción.
 **Conceptos clave:** cualquier tipo que describe su UI mediante `body` es componible en cualquier lugar.
 
 ```swift
@@ -174,7 +173,9 @@ struct ListaEnviosConDuplicacion: View {
 Pista: cambiá el color SOLO en `TarjetaEnvio` y corré la app antes de tocar el código duplicado — así confirmás, una tarjeta a la vez, cuál de las tres sigue sin actualizarse en vez de sospechar de las tres al mismo tiempo.
 #### Paso 6 · Práctica independiente
 Extraé ese tercer envío de vuelta a una instancia de `TarjetaEnvio`, y agregale un estado `loading` que muestre un placeholder en vez de la guía real mientras el dato todavía no llegó.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
+
+Ya componés `TarjetaEnvio` como cualquier vista nativa y comprobás que cambiar el color en la tarjeta no alcanza al envío duplicado. El siguiente tema explica por qué el orden de `.padding()` y `.background()` cambia el resultado.
 
 ### Tema 2: Orden de modificadores y layout con stacks
 
@@ -309,9 +310,7 @@ Text("\(guia): \(estado)")
 #### Paso 6 · Práctica independiente
 Combiná `VStack`, `HStack` y `ZStack` para mostrar `TarjetaEnvio` con un ícono de estado superpuesto en la esquina (pista: `ZStack` superpone; necesitás un `HStack` adentro para alinear guía y estado lado a lado).
 
-**Evidencia de aprendizaje:** entrega las dos versiones con orden de modificadores distinto, el padding mal entendido del fallo deliberado y su corrección.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos versiones con orden distinto del Paso 4, el padding mal entendido del Paso 5, y el layout combinado del Paso 6; explicá por qué "el orden no debería importar" es la intuición equivocada más común al empezar con modificadores de SwiftUI. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
 
@@ -395,9 +394,7 @@ Pista: cambiá el Preview para que llame a una API real de RutaFlow en vez de pa
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a datos de muestra fijos, y agregá un estado `loading` y uno `error` como dos Previews adicionales separados (`#Preview("Cargando")`, `#Preview("Error")`), para poder ver los tres estados sin tocar código de red real.
 
-**Evidencia de aprendizaje:** entrega la grilla con Preview funcionando, el intento roto de llamar a una API real desde el Preview, y los tres estados (`loading`/`error`/datos) como Previews separados.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la grilla con Preview funcionando del Paso 4, el intento de red real roto del Paso 5, y los tres estados (`loading`/`error`/datos) del Paso 6; explicá por qué el sistema de Previews está pensado para datos de muestra, no para red real. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque el sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.
 

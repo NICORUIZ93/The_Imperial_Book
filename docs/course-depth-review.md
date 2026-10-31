@@ -18,7 +18,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 113 | 2 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
@@ -347,7 +347,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | devops / 12 | [Tema 4: Checklist de salida a producción](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 12 | [Tema 5: GitOps con ArgoCD y FluxCD](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 12 | [Tema 6: Platform Engineering — Internal Developer Platforms (IDPs)](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| devops / 13 | [Tema 1: El pipeline completo — de commit a producción verificada](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 13 | [Tema 1: El pipeline completo — de commit a producción verificada](../web/public/content/devops/modulo-13.md) | comprobar-script-test |
 | devops / 13 | [Tema 2: Uniendo cada módulo del track en un solo flujo](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 13 | [Tema 3: Cierre del track — checklist final y reflexión](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 14 | [Tema 1: Confiabilidad es una expectativa cuantificada](../web/public/content/devops/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
@@ -572,7 +572,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | foundations / 6 | [Tema 2: Identidad, contraseñas, sesiones y autorización](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 6 | [Tema 3: Criptografía aplicada, TLS, claves y secretos](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 6 | [Tema 4: Validación, vulnerabilidades web, privacidad y respuesta](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 6 | [Tema 5: Ingeniería social y phishing: detectar señales en enlaces y remitentes](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 6 | [Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo](../web/public/content/foundations/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 1: Requisitos, stakeholders y criterios verificables](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 2: Arquitectura guiada por atributos de calidad](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 3: Diseño modular, principios, patrones y refactoring](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |

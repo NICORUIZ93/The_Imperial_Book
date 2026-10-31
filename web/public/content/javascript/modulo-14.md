@@ -89,9 +89,9 @@ Deriva `DeliveryKind = DeliveryStatus["kind"]` y un `Record<DeliveryKind, string
 
 Modela devolución y reprogramación, crea un tipo `DeliverySummary` con `Pick` y pruebas `@ts-expect-error`. Compara unión exhaustiva con clase jerárquica y registra la decisión.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes hacer que evolución del dominio revele consumidores incompletos. El siguiente tema llevará cálculo tipado fuera del hilo principal con validación runtime. **Evidencia:** entrega compilación limpia, diagnóstico cancelled y tipos derivados; explica el resultado del fallo exhaustivo.
+Ya puedes hacer que evolución del dominio revele consumidores incompletos. El siguiente tema llevará cálculo tipado fuera del hilo principal con validación runtime.
 
 **Errores comunes:** usar enum/string sin payload específico; default que oculta variantes; `as never`; tipos condicionales ilegibles; confundir seguridad estática con validación externa.
 
@@ -185,9 +185,9 @@ Añade `requestId` a solicitud/respuesta y descarta respuestas antiguas. **Pista
 
 Implementa cancelación, timeout, error del worker y transferencia de ArrayBuffer. Mide coste de clonación y define umbral donde otro hilo aporta valor.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes operar un protocolo fuera del hilo con límites runtime. El siguiente tema decidirá cómo dividir y entregar ese código. **Evidencia:** entrega UI fluida, resultado, payload rechazado y terminate; explica el fallo pese a TypeScript.
+Ya puedes operar un protocolo fuera del hilo con límites runtime. El siguiente tema decidirá cómo dividir y entregar ese código.
 
 **Errores comunes:** confiar en MessageEvent tipado; olvidar terminate; perder correlación; enviar DOM/funciones; usar worker para tareas pequeñas sin medir.
 
@@ -276,9 +276,9 @@ Genera un reporte visual del bundle y establece presupuesto para chunk inicial. 
 
 Compara manualChunks con import dinámico, precarga y caché HTTP. Simula red lenta y fallo de chunk; diseña mensaje/reintento y decide si la división mejora LCP/INP.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes relacionar grafo, entrega y experiencia en vez de “hacer chunks”. El siguiente tema verificará que la interfaz resultante sea operable sin ratón ni visión. **Evidencia:** entrega builds antes/después, Network inicial/lazy y fallo ansioso; explica el resultado de la importación duplicada.
+Ya puedes relacionar grafo, entrega y experiencia en vez de “hacer chunks”. El siguiente tema verificará que la interfaz resultante sea operable sin ratón ni visión.
 
 **Errores comunes:** dividir sin medir; importar lazy y eager; publicar source maps; crear chunks diminutos; olvidar estado de error; comparar tamaño sin compresión.
 
@@ -373,9 +373,9 @@ Tras navegación SPA, enfoca el `h1` con `tabindex="-1"` y conserva un enlace �
 
 Audita lista, formulario, error y diálogo con teclado, lector, zoom 200%, contraste y reduced motion. Ejecuta axe, pero documenta problemas manuales que la automatización no detecta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes verificar operabilidad y comunicación, no solo atributos. El siguiente tema evaluará WebAssembly para cálculo medido, manteniendo un fallback accesible. **Evidencia:** entrega recorrido teclado, anuncio, prueba automática y fallo con div; explica el resultado de recuperar semántica nativa.
+Ya puedes verificar operabilidad y comunicación, no solo atributos. El siguiente tema evaluará WebAssembly para cálculo medido, manteniendo un fallback accesible.
 
 **Errores comunes:** div como botón; aria-label que contradice texto; quitar outline; feedback solo por color; mover foco sin razón; afirmar accesibilidad solo por Lighthouse.
 
@@ -469,9 +469,9 @@ Ejecuta warm-up y compara mediana de 100, 10 000 y 1 000 000 iteraciones. **Pist
 
 Prueba paridad JS/WASM, límites numéricos, módulo corrupto y navegador compatible. Registra tamaño comprimido, complejidad de toolchain y criterio de retirada.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El siguiente tema aislará decisiones experimentales de ML/Web3 con revisión humana. **Evidencia:** entrega build, paridad, medición y fallback al fallo; explica el resultado por tamaño de carga.
+Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El siguiente tema aislará decisiones experimentales de ML/Web3 con revisión humana.
 
 **Errores comunes:** usar WASM para DOM; ignorar frontera/memoria; medir solo ejecución caliente; no ofrecer fallback; adoptar toolchain sin beneficio reproducible.
 
@@ -557,9 +557,9 @@ Devuelve `{ score, factors }` y compara grupos sintéticos por zona/dispositivo.
 
 Compara regla explícita con un modelo pequeño local: precisión, latencia, tamaño, privacidad y explicabilidad. Escribe un ADR separado para Web3 que exija múltiples organizaciones sin autoridad común y contraste con base de datos firmada.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes aislar cómputo emergente detrás de límites éticos y reversibles. El siguiente tema tratará GPS como dato sensible con incertidumbre. **Evidencia:** entrega casos frontera, factores, análisis de sesgo y ADR; explica el resultado del fallo con entrada inválida.
+Ya puedes aislar cómputo emergente detrás de límites éticos y reversibles. El siguiente tema tratará GPS como dato sensible con incertidumbre.
 
 **Errores comunes:** llamar IA a una regla; automatizar sanciones; usar datos personales sin propósito/consentimiento; confundir blockchain con integridad; introducir dependencias pesadas antes de validar valor.
 
@@ -643,9 +643,9 @@ Simula los tres códigos de error y presenta alternativas. **Pista:** diferencia
 
 Rechaza para asignación automática muestras con más de 30 segundos o precisión peor que 100 m, pero permite mostrarlas como “aproximadas”. Prueba cleanup y batería.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Una coordenada solo es útil junto con precisión, tiempo y consentimiento. El siguiente tema estudia qué datos pueden persistirse en cada almacén. **Evidencia:** entrega salida con accuracy/fecha, fallback por permiso y cleanup; explica el resultado del fallo denegado.
+Una coordenada solo es útil junto con precisión, tiempo y consentimiento. El siguiente tema estudia qué datos pueden persistirse en cada almacén.
 
 **Errores comunes:** iniciar `watchPosition` al cargar; omitir `clearWatch`; tratar muestra vieja como actual; ocultar precisión; pedir high accuracy sin justificar batería.
 
@@ -722,9 +722,9 @@ Crea una base IndexedDB `academia-offline` y almacena confirmaciones con clave i
 
 Migra versión 1 a 2 agregando `createdAt`, prueba cuota, transacción abortada y reenvío idempotente. Documenta cookie `HttpOnly; Secure; SameSite` del servidor sin intentar crear HttpOnly desde JS.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-La persistencia se elige por semántica y amenaza, no por comodidad. El próximo tema validará formatos textuales complejos. **Evidencia:** entrega borrador, migración y matriz de almacenes; demuestra salida recuperada y explica el fallo JSON.
+La persistencia se elige por semántica y amenaza, no por comodidad. El próximo tema validará formatos textuales complejos.
 
 **Errores comunes:** guardar access tokens en almacenamiento legible; usar localStorage para colecciones grandes; ignorar transacciones/versiones; asumir persistencia permanente; confundir SameSite con solución total de CSRF.
 
@@ -801,9 +801,9 @@ Añade casos con espacios y minúsculas antes de decidir si normalizarlos. **Pis
 
 Prueba Unicode compuesto, límites y 10 000 caracteres; crea benchmark y compara parser manual. Documenta máximo de entrada y timeout/cancelación donde aplique.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes aplicar regex a formatos regulares con pruebas y límites. El siguiente tema organiza comportamientos mediante patrones deliberados. **Evidencia:** entrega parser, tabla de casos y benchmark; demuestra salida correcta y explica el fallo exponencial.
+Ya puedes aplicar regex a formatos regulares con pruebas y límites. El siguiente tema organiza comportamientos mediante patrones deliberados.
 
 **Errores comunes:** parsear HTML/JSON; olvidar anclas; ignorar flag u/v; normalizar ocultamente; aceptar regex ilegible sin casos límite; procesar entrada ilimitada.
 
@@ -883,9 +883,9 @@ Agrega `avoidTolls` registrándola en la factory `strategies`. **Pista:** la fun
 
 Implementa Observer con unsubscribe y compáralo con Pub/Sub para eventos entre módulos. Prueba cleanup, nombres y orden; documenta cuándo una llamada directa es más clara.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque ampliará plataforma offline, tiempo real y datos binarios. **Evidencia:** entrega tres strategies, Observer y comparación Pub/Sub; demuestra salidas y explica el fallo de clave sin resolver.
+Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque ampliará plataforma offline, tiempo real y datos binarios.
 
 **Errores comunes:** convertir todo en Singleton; if central creciente; Observer sin unsubscribe; bus global sin contratos; patrones que agregan capas sin variación real.
 
@@ -974,9 +974,9 @@ Cambia `CACHE` a `v2` y verifica eliminación de `v1`. **Pista:** una actualizac
 
 Implementa stale-while-revalidate solo para seguimiento público, prueba expiración, cuota, instalación fallida y cola idempotente. Documenta qué nunca se cachea.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes separar disponibilidad offline de confirmación remota. El siguiente tema mantendrá tiempo real con reconexión controlada. **Evidencia:** entrega shell offline, actualización v2 y política; demuestra salida offline y explica el fallo por caché vieja.
+Ya puedes separar disponibilidad offline de confirmación remota. El siguiente tema mantendrá tiempo real con reconexión controlada.
 
 **Errores comunes:** cachear todo; datos privados; llamar skipWaiting sin coordinar; no versionar; asumir que manifest garantiza offline; marcar acción pendiente como confirmada.
 
@@ -1060,9 +1060,9 @@ Añade reconexión exponencial con jitter y límite. **Pista:** cancela temporiz
 
 Añade heartbeat, deduplicación, resume token y estados offline/auth. Compara SSE cuando solo se reciben eventos y prueba conexiones repetidas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-El tiempo real requiere contrato, ciclo de vida y recuperación. El próximo tema trabajará con bytes. **Evidencia:** entrega estados, reconexión, deduplicación y cleanup; demuestra salida válida/inválida y explica el fallo JSON.
+El tiempo real requiere contrato, ciclo de vida y recuperación. El próximo tema trabajará con bytes.
 
 **Errores comunes:** socket por render; reconectar sin límite; confiar JSON; no deduplicar; heartbeat sin timeout; olvidar cleanup o autorización.
 
@@ -1135,9 +1135,9 @@ Añade versión y flags con `Uint8Array`, manteniendo coordenadas con DataView. 
 
 Transfiere buffer a Worker, comprueba original detached y mide frente a copiar. Prueba extremos Int32, offset y paquete truncado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Puedes convertir bytes en datos de dominio con contrato explícito. El siguiente tema separará características estables de propuestas experimentales. **Evidencia:** entrega protocolo, pruebas y transferencia; demuestra salida y explica fallo de endianness.
+Puedes convertir bytes en datos de dominio con contrato explícito. El siguiente tema separará características estables de propuestas experimentales.
 
 **Errores comunes:** usar buffer.length; asumir offset cero; omitir endianness; no validar tamaño; transferir y reutilizar buffer detached; olvidar escala/unidad.
 
@@ -1224,9 +1224,9 @@ Consulta compatibilidad antes de cargar un polyfill Temporal. **Pista:** usa imp
 
 Implementa secuencia perezosa con iterator helpers cuando existan y generadores como fallback; prueba ambos. Evalúa `using`/DisposableStack solo con soporte y necesidad de cleanup determinista.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Adoptar novedades es una decisión verificable. Con esto el track incorpora las brechas principales; el siguiente trabajo amplía Node y demás tracks. **Evidencia:** entrega matriz estado/soporte/coste, ambos adaptadores y fallback; demuestra salida y explica fallo sin detección.
+Adoptar novedades es una decisión verificable. Con esto el track incorpora las brechas principales; el siguiente trabajo amplía Node y demás tracks.
 
 **Errores comunes:** copiar novedades por año; confundir Stage con soporte; cargar polyfill inicial innecesario; usar Date para fecha civil futura sin zona; no probar fallback.
 

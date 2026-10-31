@@ -23,8 +23,6 @@ Ya separas I/O de CPU. El siguiente tema distribuirá procesos completos con `cl
 
 **Fuentes oficiales:** [Worker Threads](https://nodejs.org/api/worker_threads.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
 
-**Evidencia de aprendizaje:** entrega la salida del Worker, un input rechazado y la comparación de tiempos.
-
 **Conceptos clave:** hilo separado con su propia instancia de V8, `workerData`, paso de mensajes.
 
 Un Worker Thread de Node ejecuta JavaScript en un hilo genuinamente separado, cada uno con su propia instancia completa de V8 (a diferencia de los Web Workers del navegador estudiados en el Módulo 10 del track de JavaScript, que comparten conceptualmente el mismo principio de aislamiento pero en un contexto distinto), permitiendo ejecutar cómputo intensivo de CPU (procesar una imagen grande, realizar cálculos matemáticos pesados, comprimir datos) sin bloquear el Event Loop del hilo principal, que permanece libre para seguir atendiendo otras peticiones concurrentes de la aplicación mientras el Worker procesa en paralelo.
@@ -82,6 +80,8 @@ Mide un cálculo en el hilo principal y otro en Worker, entregando duración y c
 
 #### Paso 7 · Cierre y conexión
 
+Ya movés un cálculo CPU-bound fuera del hilo principal y observás que un timer sigue respondiendo. El siguiente tema reparte solicitudes entre procesos, no entre hilos.
+
 ### Tema 2: Cluster module y balanceo entre procesos
 
 #### Paso 1 · Objetivo y preparación
@@ -101,8 +101,6 @@ Ya entiendes memoria aislada y balanceo básico. El siguiente tema usará una co
 **Errores comunes:** compartir estado en memoria; multiplicar workers sin medir; no cerrar conexiones; reiniciar fallos infinitamente; confundir cluster con threads.
 
 **Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
-
-**Evidencia de aprendizaje:** entrega la salida con PIDs de dos respuestas y el diagnóstico de un worker detenido.
 
 **Conceptos clave:** un proceso por núcleo, memoria aislada, balanceo automático de conexiones.
 
@@ -167,6 +165,8 @@ Compara una instancia y dos workers bajo carga ligera; entrega PIDs y latencia, 
 
 #### Paso 7 · Cierre y conexión
 
+Ya comprobás que las respuestas llegan desde más de un PID y que matar un worker pierde las solicitudes en curso. El siguiente tema saca el trabajo lento del request y lo encola para un worker dedicado.
+
 ### Tema 3: Colas de trabajo con BullMQ
 
 #### Paso 1 · Objetivo y preparación
@@ -229,8 +229,6 @@ Encolar el trabajo lento en vez de ejecutarlo en el mismo request es el mismo pa
 
 **Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
 
-**Evidencia de aprendizaje:** entrega la salida de éxito, conexión fallida y reintento.
-
 ### Tema 4: PM2, memory leaks y heap snapshots
 
 #### Paso 1 · Objetivo y preparación
@@ -250,8 +248,6 @@ Ya puedes observar una fuga en vez de reiniciar a ciegas. El siguiente tema usar
 **Errores comunes:** medir solo RSS; tomar snapshots en producción sin plan; cachear sin límite; confundir Buffer externo con heap; reiniciar sin corregir.
 
 **Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
-
-**Evidencia de aprendizaje:** entrega dos salidas de memoria y la explicación de la referencia retenida.
 
 **Conceptos clave:** gestión de procesos, `--max-old-space-size`, snapshots de heap.
 
@@ -309,6 +305,8 @@ Reescribe el ejemplo con una caché de tamaño limitado y entrega una comparaci�
 
 #### Paso 7 · Cierre y conexión
 
+Ya reproducís una retención creciente de memoria y la comparás con una caché de tamaño limitado. El siguiente tema usa Redis para cachear, deduplicar y publicar eventos entre procesos.
+
 ### Tema 5: Redis para caché, idempotencia y Pub/Sub
 
 #### Paso 1 · Objetivo y preparación
@@ -328,8 +326,6 @@ Ya distingues caché, idempotencia y notificación. El siguiente módulo abordar
 **Errores comunes:** cachear sin TTL; usar `SET` sin NX para comandos únicos; confundir Pub/Sub con cola durable; no cerrar cliente; guardar secretos en URL.
 
 **Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/) y [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/).
-
-**Evidencia de aprendizaje:** entrega la salida `OK/null`, la expiración y una prueba de evento perdido.
 
 **Objetivo:** reducir lecturas repetidas de entregas, impedir comandos duplicados y comunicar cambios efímeros entre procesos con Redis.
 
@@ -442,6 +438,8 @@ Añade TTL de 2 segundos y comprueba que la tarifa desaparece. **Pista:** mide e
 Publica un evento con Pub/Sub y documenta qué ocurre si el suscriptor está desconectado; no lo presentes como persistencia.
 
 #### Paso 7 · Cierre y conexión
+
+Ya comprobás que la segunda consulta sale de Redis, que dos reservas con el mismo `commandId` devuelven `true` y `false`, y que sin `NX` la duplicación reaparece. El laboratorio combina caché, cola y procesos en una API medible.
 
 ## Laboratorio práctico
 

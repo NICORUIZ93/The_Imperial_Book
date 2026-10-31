@@ -23,8 +23,6 @@ Ya verificas cabeceras desde el cliente. El siguiente tema limitará abuso por I
 
 **Fuentes oficiales:** [Helmet](https://helmetjs.github.io/), [MDN HTTP headers](https://developer.mozilla.org/es/docs/Web/HTTP/Headers) y [OWASP Secure Headers](https://owasp.org/www-project-secure-headers/).
 
-**Evidencia de aprendizaje:** entrega la salida de cabeceras antes y después de retirar Helmet.
-
 **Conceptos clave:** cabeceras HTTP de seguridad, mitigación de ataques comunes del navegador.
 
 `helmet`, un middleware de Express (y también disponible para Fastify), establece automáticamente un conjunto de cabeceras HTTP que mitigan categorías conocidas de ataques del lado del navegador, con una única línea de configuración (`app.use(helmet())`) en vez de requerir que cada desarrollador configure manualmente cada cabecera individual conociendo exactamente su propósito específico. Entre las cabeceras que establece: `X-Content-Type-Options: nosniff` previene que el navegador intente adivinar el tipo de contenido de una respuesta de forma distinta a la declarada explícitamente en `Content-Type`, mitigando ciertos ataques que dependen de esa ambigüedad de interpretación; `Strict-Transport-Security` indica al navegador que solo debe comunicarse con el sitio mediante HTTPS en futuras visitas, incluso si el usuario intenta acceder explícitamente mediante HTTP, previniendo ataques de downgrade de protocolo.
@@ -103,6 +101,8 @@ Documenta qué cabeceras aplican a navegador y cuáles no protegen una llamada s
 
 #### Paso 7 · Cierre y conexión
 
+Ya comparás la respuesta con y sin `helmet()` y comprobás que las cabeceras desaparecen juntas. El siguiente tema limita cuántas solicitudes acepta una ruta.
+
 ### Tema 2: Rate limiting
 
 #### Paso 1 · Objetivo y preparación
@@ -122,8 +122,6 @@ Ya proteges una superficie concreta y conoces sus límites distribuidos. El sigu
 **Errores comunes:** confiar en IP detrás de proxy sin configurarlo; bloquear usuarios legítimos; no informar `Retry-After`; limitar solo en frontend; usar memoria local en clúster.
 
 **Fuentes oficiales:** [express-rate-limit](https://express-rate-limit.mintlify.app/), [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) y [OWASP API4](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/).
-
-**Evidencia de aprendizaje:** entrega la salida de las cuatro respuestas y sus cabeceras de límite.
 
 **Conceptos clave:** límite de peticiones por ventana de tiempo, prevención de abuso y fuerza bruta.
 
@@ -180,6 +178,8 @@ Compara memoria local con un store Redis para dos procesos y documenta por qué 
 
 #### Paso 7 · Cierre y conexión
 
+Ya ves las tres primeras solicitudes en 200 y la cuarta en 429, y sabés por qué un límite local no es global entre procesos. El siguiente tema mueve la defensa al dato: parámetros SQL y salida HTML.
+
 ### Tema 3: Inyección SQL y sanitización contra XSS
 
 #### Paso 1 · Objetivo y preparación
@@ -199,8 +199,6 @@ Ya distingues parametrización, validación y escape. El siguiente tema reunirá
 **Errores comunes:** usar blacklist SQL; escapar para SQL en vez de parametrizar; confiar en validación frontend; insertar HTML sin escape; loggear payloads sensibles.
 
 **Fuentes oficiales:** [node-postgres queries](https://node-postgres.com/features/queries), [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection) y [OWASP XSS](https://owasp.org/www-community/attacks/xss/).
-
-**Evidencia de aprendizaje:** entrega la salida de una consulta parametrizada y un payload XSS escapado.
 
 **Conceptos clave:** consultas parametrizadas, escape automático, sanitización de HTML.
 
@@ -261,6 +259,8 @@ Añade una prueba que intente `<img src=x onerror=alert(1)>` y entrega el texto 
 
 #### Paso 7 · Cierre y conexión
 
+Ya comprobás que el valor permanece en `params` y que el HTML se escapa, mientras la concatenación convierte el dato en instrucción. El siguiente tema recorre el Top 10 de OWASP API y audita dependencias.
+
 ### Tema 4: OWASP API Security Top 10 y auditoría de dependencias
 
 #### Paso 1 · Objetivo y preparación
@@ -280,8 +280,6 @@ Ya conviertes un reporte técnico en decisiones priorizadas. El siguiente módul
 **Errores comunes:** ejecutar `npm audit fix --force` sin revisar; ignorar severidad; confundir dependencia dev con runtime; cerrar avisos sin evidencia; publicar el reporte con secretos.
 
 **Fuentes oficiales:** [npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [OWASP API Security Top 10](https://owasp.org/API-Security/) y [Node security](https://nodejs.org/en/learn/getting-started/security-best-practices).
-
-**Evidencia de aprendizaje:** entrega la salida del reporte, una matriz de riesgos y una decisión justificada.
 
 **Conceptos clave:** marco de referencia de vulnerabilidades comunes de APIs, `npm audit`.
 
@@ -332,6 +330,8 @@ Clasifica un aviso como producción o desarrollo y decide si actualizar, reempla
 Construye una matriz con autenticación, autorización por objeto, consumo de recursos y SSRF; entrega amenaza, evidencia y mitigación.
 
 #### Paso 7 · Cierre y conexión
+
+Ya interpretás un reporte de `npm audit` como señal que exige lectura, no como veredicto automático. El siguiente tema conecta CVE, CWE y severidad dentro del pipeline.
 
 ### Tema 5: CVE, CWE y npm audit en el pipeline
 
@@ -421,8 +421,8 @@ Ejecuta `npm audit fix`, vuelve a correr `auditar.js` y documenta qué versión 
 #### Paso 6 · Práctica independiente
 Agrega `auditar.js` como paso de GitHub Actions y haz que solo bloquee con severidad `critical` en ramas de funcionalidad y con `high` en `main`. Justifica el umbral.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque la cadena de suministro es hoy una de las principales vías de ataque, y saber leer CVE y CWE te permite priorizar en vez de ignorar cientos de avisos.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque la cadena de suministro es hoy una de las principales vías de ataque, y saber leer CVE y CWE te permite priorizar en vez de ignorar cientos de avisos.
 **Fuente oficial:** [npm Docs: npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [MITRE CWE](https://cwe.mitre.org/), [Node.js Security Best Practices](https://nodejs.org/en/learn/getting-started/security-best-practices).
 **Conceptos clave:** CVE, CWE, GHSA, OWASP Top 10, severidad, `npm audit`, código de salida, umbral en CI.
 **Cuándo no usarlo:** no trates cada aviso como urgente: evalúa si el código vulnerable se usa realmente (alcanzabilidad) y documenta las excepciones aceptadas con fecha de revisión.

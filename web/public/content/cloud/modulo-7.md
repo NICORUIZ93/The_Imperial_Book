@@ -62,7 +62,7 @@ Resultado esperado: el simulador devuelve `EvalDecision: "allowed"` solo para es
 Pista: agregá un statement de más a `politica-minima.json` (`"Action": "dynamodb:*", "Resource": "*"`) y volvé a correr `simulate-custom-policy`, esta vez pidiendo `dynamodb:DeleteTable` sobre una tabla distinta (`arn:...table/ShipmentEvents` de otro ambiente, por ejemplo) — ese es el fallo deliberado: ahora el simulador responde `"allowed"` para borrar una tabla que `confirmar-entrega` nunca debería poder tocar. Quitá ese statement para corregirlo.
 #### Paso 6 · Práctica independiente
 Corré `simulate-custom-policy` pidiendo `s3:GetObject` sobre `arn:aws:s3:::pruebas-entrega/*` contra la política ya corregida, y confirmá que la respuesta es `implicitDeny` — documentá por qué esa denegación es correcta y esperada, no un bug.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la política mínima, el permiso excesivo del Paso 5 y su corrección, y la denegación esperada del Paso 6; explicá por qué "denegado por defecto" es más seguro que empezar permisivo e ir restringiendo. Siguiente paso: modelo de responsabilidad. Errores comunes: usar * y olvidar recursos. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html.
 
 ### Tema 2: Modelo de responsabilidad compartida
@@ -122,7 +122,7 @@ Resultado esperado: `EvalDecision: "allowed"` — AWS/Floci no impide que escrib
 Pista: ese `dynamodb:*`/`Resource: "*"` del Paso 4 ES el fallo deliberado — una política así, atada por error al rol real de `confirmar-entrega`, le daría a una función que solo debería escribir eventos la capacidad de borrar cualquier tabla DynamoDB de la cuenta. Corregilo reemplazándola por `politica-minima.json` del Tema 1 y repetí la simulación: ahora `EvalDecision` es `implicitDeny`.
 #### Paso 6 · Práctica independiente
 Listá, en una tabla de dos columnas, qué cubre Floci/AWS (que DynamoDB funcione, que los datos no se corrompan a nivel de infraestructura) frente a qué cubre RutaFlow (qué política se le asigna a cada rol, qué tablas son accesibles desde cuál función) — usando los dos resultados de `simulate-custom-policy` de este Tema como evidencia de cada lado.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los dos resultados del simulador (permitido con la política excesiva, denegado con la mínima) y la tabla de responsabilidades; explicá por qué ninguno de los dos resultados es un fallo de Floci/AWS. Siguiente paso: usuarios y roles. Errores comunes: asumir que el proveedor configura tu bucket. Fuente oficial: https://aws.amazon.com/compliance/shared-responsibility-model/.
 
 ### Tema 3: Usuarios, grupos y roles
@@ -177,7 +177,7 @@ Resultado esperado: `create-role` devuelve el rol con su `trust policy` restring
 Pista: creá un usuario IAM normal (`aws iam create-user --user-name usuario-de-prueba`) y probá `aws lambda update-function-configuration --function-name confirmar-entrega --role <Arn-del-usuario>` — ese es el fallo deliberado: `InvalidParameterValueException`, porque el campo `--role` de Lambda exige un rol que el servicio `lambda.amazonaws.com` pueda asumir, no el ARN de un usuario.
 #### Paso 6 · Práctica independiente
 Confirmá con `aws lambda get-function-configuration --function-name confirmar-entrega --query Role` que el rol asignado sigue siendo `RutaFlowConfirmarEntregaRole`, y documentá por escrito cuánto dura una credencial temporal obtenida al asumir ese rol frente a una clave de usuario IAM que nunca expira sola.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la creación del rol, su asignación a la función, y el error al intentar usar un usuario en su lugar; explicá por qué el `trust policy` restringido a `lambda.amazonaws.com` es parte de la seguridad, no un detalle de sintaxis. Siguiente paso: políticas. Errores comunes: claves largas en repositorio y no rotar. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html.
 
 ### Tema 4: Estructura de una política — acciones, recursos y condiciones
@@ -248,7 +248,7 @@ Resultado esperado: Node disponible.
 Pista: cambia Allow por Deny para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Escribe una policy de lectura de un bucket.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega JSON, salida, fallo y corrección; explica el resultado. Siguiente paso: auditoría. Errores comunes: Resource *, Deny inesperado y ARN mal formado. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html.
 
 ### Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales
@@ -308,7 +308,7 @@ Resultado esperado: `list-access-keys` muestra ambas claves — `$OLD_KEY` con `
 Pista: borrá del todo la clave vieja (`aws iam delete-access-key --user-name usuario-de-prueba --access-key-id "$OLD_KEY"`) y después probá `aws iam get-access-key-last-used --access-key-id "$OLD_KEY"` — ese es el fallo deliberado: `NoSuchEntity`, porque una clave borrada no deja rastro consultable, a diferencia de una simplemente inactiva.
 #### Paso 6 · Práctica independiente
 Confirmá con `aws iam list-access-keys --user-name usuario-de-prueba` que ahora solo aparece `$NEW_KEY`, y documentá por escrito cada cuánto tiempo correspondería repetir este ciclo completo para `usuario-de-prueba` si fuera una cuenta real de un desarrollador.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la creación de ambas claves, la desactivación de la vieja, el error `NoSuchEntity` del Paso 5 y la lista final con una sola clave activa; explicá por qué desactivar antes de borrar evita una ventana sin acceso válido. Siguiente paso: almacenamiento seguro. Errores comunes: compartir claves y no revisar CloudTrail. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html.
 
 ## Laboratorio práctico

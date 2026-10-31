@@ -132,9 +132,9 @@ fun crearClienteJson(engine: HttpClientEngine): HttpClient = HttpClient(engine) 
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `HttpClient` con `ContentNegotiation`, un modelo `@Serializable`, y una función `suspend` que consuma un endpoint, probada con `MockEngine`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya configuras un `HttpClient` compartido con deserialización automática, confirmando con el `HttpClient` real (contra un `MockEngine`) que produce exactamente la estructura esperada. El siguiente tema modela explícitamente qué ocurre cuando la petición falla. **Evidencia:** entrega el resultado de la prueba pasando en verde, y explica qué ocurriría al intentar deserializar una respuesta con forma incorrecta como si fuera la lista esperada. Fuente oficial: [Ktor docs — Client](https://ktor.io/docs/client-create-new-application.html).
+Ya configuras un `HttpClient` compartido con deserialización automática, confirmando con el `HttpClient` real (contra un `MockEngine`) que produce exactamente la estructura esperada. El siguiente tema modela explícitamente qué ocurre cuando la petición falla. Fuente oficial: [Ktor docs — Client](https://ktor.io/docs/client-create-new-application.html).
 
 **Errores comunes:** mantener implementaciones de cliente HTTP separadas por plataforma en vez de un único Ktor Client compartido; olvidar instalar `ContentNegotiation`, obligando a parsear JSON manualmente.
 
@@ -274,9 +274,9 @@ suspend fun obtenerPerfilSeguro(): Resultado<Perfil> = try {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `sealed class Resultado` con `Exito`/`Error`, y una función que envuelva una llamada real con `try`/`catch`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya modelas el resultado de una llamada de red como un tipo explícito, confirmando con el `HttpClient` real (éxito y fallo de conexión) que ambos casos se manejan sin propagar excepciones sin control. El siguiente tema centraliza el header de autenticación para que ninguna llamada individual lo repita manualmente. **Evidencia:** entrega el resultado de las dos pruebas pasando en verde (`Exito` con respuesta correcta, `Error` con fallo de conexión), y explica qué ocurre si se elimina el `try`/`catch` protector. Fuente oficial: [Kotlin docs — Exceptions](https://kotlinlang.org/docs/exceptions.html).
+Ya modelas el resultado de una llamada de red como un tipo explícito, confirmando con el `HttpClient` real (éxito y fallo de conexión) que ambos casos se manejan sin propagar excepciones sin control. El siguiente tema centraliza el header de autenticación para que ninguna llamada individual lo repita manualmente. Fuente oficial: [Kotlin docs — Exceptions](https://kotlinlang.org/docs/exceptions.html).
 
 **Errores comunes:** dejar que las excepciones de red se propaguen sin control en vez de modelar el resultado con un tipo explícito; capturar `Exception` genérica sin distinguir tipos de error que ameritarían un manejo distinto (timeout vs. credenciales inválidas).
 
@@ -412,9 +412,9 @@ val client = HttpClient {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un cliente con un interceptor de autenticación configurado una sola vez, y dos llamadas de ejemplo que se benefician de él sin repetir el header. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya centralizas el header de autenticación en un interceptor configurado una sola vez, confirmando con el `HttpClient` real que dos llamadas distintas lo reciben sin que el código de cada una lo repita. El siguiente y último tema del módulo agrega reintentos con backoff para peticiones que fallan temporalmente. **Evidencia:** entrega el resultado de la prueba pasando en verde con el header presente en ambas peticiones, y explica qué pasaría si el plugin `Auth` no estuviera instalado. Fuente oficial: [Ktor docs — Auth](https://ktor.io/docs/client-auth.html).
+Ya centralizas el header de autenticación en un interceptor configurado una sola vez, confirmando con el `HttpClient` real que dos llamadas distintas lo reciben sin que el código de cada una lo repita. El siguiente y último tema del módulo agrega reintentos con backoff para peticiones que fallan temporalmente. Fuente oficial: [Ktor docs — Auth](https://ktor.io/docs/client-auth.html).
 
 **Errores comunes:** repetir manualmente el header de autenticación en cada llamada en vez de centralizarlo en un interceptor; olvidar renovar el token en el interceptor tras su expiración, causando fallos silenciosos de autenticación.
 
@@ -562,9 +562,9 @@ suspend fun <T> conReintentos(maxIntentos: Int, bloque: suspend () -> T): T {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función de reintentos con backoff exponencial y un límite de intentos, explicando en una frase por qué el backoff evita saturar un servidor ya sobrecargado. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya implementas un mecanismo de reintentos con backoff exponencial, confirmando con tiempo virtual exacto que el mecanismo logra una respuesta exitosa dentro del límite de intentos configurado. Esto cierra el módulo de networking compartido; el siguiente módulo aplica estos mismos principios a la persistencia local con SQLDelight. **Evidencia:** entrega el resultado de la prueba pasando en verde con `currentTime == 150`, y explica qué ocurre cuando el servidor tarda más en recuperarse de lo que el límite de intentos permite. Fuente oficial: [AWS Architecture Blog — Exponential backoff and jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/).
+Ya implementas un mecanismo de reintentos con backoff exponencial, confirmando con tiempo virtual exacto que el mecanismo logra una respuesta exitosa dentro del límite de intentos configurado. Esto cierra el módulo de networking compartido; el siguiente módulo aplica estos mismos principios a la persistencia local con SQLDelight. Fuente oficial: [AWS Architecture Blog — Exponential backoff and jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/).
 
 **Errores comunes:** reintentar sin ningún backoff, empeorando potencialmente una sobrecarga temporal del servidor; no establecer un límite máximo de intentos, arriesgando un ciclo de reintentos indefinido ante un servidor genuinamente caído.
 
@@ -624,7 +624,7 @@ Añade un campo opcional nuevo al modelo con valor por defecto y confirma que un
 #### Paso 6 · Práctica independiente
 Serializa una lista de `Envio` y un objeto anidado (un `Envio` con una lista de `Evento`). Entrega el JSON generado y el objeto reconstruido.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la (de)serialización, el mapeo con `@SerialName` y el fallo por falta de `@Serializable`. **¿Por qué es importante?** Toda app conectada convierte JSON a objetos constantemente; en KMP, hacerlo en el código común con `kotlinx.serialization` es lo que permite compartir modelos y lógica de red entre Android e iOS sin duplicar. Es una pieza central del valor de KMP. Fuentes: [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization).
 **Conceptos clave:** `@Serializable`, `@SerialName`, serialización en compilación, `ignoreUnknownKeys`, multiplataforma.
 **Cuándo no usarlo:** para formatos binarios muy específicos o rendimiento extremo puedes necesitar otra estrategia, pero para JSON (el 99% de las APIs) kotlinx.serialization es la opción estándar en KMP.

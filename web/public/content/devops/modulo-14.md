@@ -72,7 +72,7 @@ Resultado esperado: `SLI: 99.9450%`, `Presupuesto: 1000 eventos` y `Consumido: 5
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `slo = 0.999` y calculá explícitamente cuántos minutos de presupuesto representa el 0.1% en un mes de 30 días (agregá `print(f"Minutos: {0.001 * 30 * 24 * 60:.1f}")` al script). Después llevá el cálculo al **proyecto integrador** RutaFlow: su SLI de `/envios` se mide contra `examples/rutaflow/devops/deployment.yaml`, que expone el viaje vía `rutaflow-delivery-api`; no confundas sus `readinessProbe`/`livenessProbe` con el SLO de negocio, porque un Pod "listo" (probe verde) puede dejar el viaje completo fuera del SLO si la dependencia de DynamoDB (Módulo Cloud 4) responde lenta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `sli.py` con la salida del Paso 4, la salida `presupuesto de error agotado` del SLO de 100% del Paso 5, y el cálculo de minutos del Paso 6; explicá por qué un SLO de 100% no es "más seguro" sino contraproducente en la práctica. Siguiente paso: estudia cómo una alerta debe conducir a una acción. Errores comunes: definir SLOs sin basarse en el comportamiento histórico real del servicio, confundir SLO con SLA, y no definir explícitamente qué eventos cuentan como "válidos" antes de medir. Límites y decisión de uso: un SLI no captura todo lo que el usuario percibe; no conviene usarlo como única señal si el viaje depende de una experiencia que las métricas del servidor no observan. Fuentes oficiales: https://sre.google/sre-book/service-level-objectives/ y https://prometheus.io/docs/practices/instrumentation/.
 
 ### Tema 2: Una alerta debe conducir a una acción
@@ -202,7 +202,7 @@ Pista: agregá `request_id: req-42` junto a `service` en `labels` y volvé a eje
 #### Paso 6 · Práctica independiente
 Movés `request_id` a `annotations`, donde no participa de agrupación ni enrutamiento, y confirmás que el verificador vuelve a pasar. Después agregás una segunda alerta para latencia y comprobás que ambas comparten severidad y runbook con nombres distintos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la salida del verificador del Paso 4, el fallo de cardinalidad del Paso 5, y la corrección y segunda alerta del Paso 6; explicá por qué un identificador de alta cardinalidad multiplica series en un label pero no en una annotation. Como siguiente paso, aplicá el mismo verificador a las otras alertas del servicio antes de conectarlas a Alertmanager. Errores comunes: colocar identificadores de alta cardinalidad en labels en vez de annotations, alertas sin runbook vinculado, y alertar por causa interna en vez de por síntoma observado por el usuario. Fuentes oficiales: https://prometheus.io/docs/practices/naming/ y https://sre.google/workbook/alerting-on-slos/.
 
 ### Tema 3: Construir una imagen no demuestra de dónde proviene
@@ -216,7 +216,6 @@ Cualquiera con acceso al registry de RutaFlow podría, en teoría, subir una ima
 #### Paso 3 · Teoría, modelo mental y analogía
 Un SBOM inventaría componentes, una firma vincula identidad con digest; ninguno por sí solo prueba ausencia de vulnerabilidad, pero juntos permiten rechazar lo que no proviene del builder confiable. La analogía: el SBOM es la lista de ingredientes; la firma sella el paquete; la procedencia registra la cocina.
 
-**Evidencia de aprendizaje:** entrega SBOM y firma verificados, aceptación de origen no autorizado detectada y política de admisión confirmada.
 **Conceptos clave:** dependency graph, SBOM, provenance, digest, signature, attestation, trusted builder, least privilege, OIDC, admission policy, SLSA y reproducibility.
 
 Fija dependencias y acciones por versión/digest, reduce permisos y usa credenciales efímeras mediante identidad federada. Un SBOM inventaría componentes; no afirma que sean seguros. Un escáner compara hallazgos conocidos; tampoco prueba ausencia de vulnerabilidad. La procedencia describe quién y cómo construyó. Una firma vincula identidad con digest; solo es útil si el consumidor verifica política y protege la identidad firmante.
@@ -329,7 +328,7 @@ Pista: quitá la línea `subject:` de `politica.yaml` y volvé a ejecutar. Ese e
 #### Paso 6 · Práctica independiente
 Restaurá `subject` con el repositorio `rutaflow/api` y agregá una regla que rechace una imagen por digest no promovido. Documentá qué parte de la cadena —SBOM, firma, política de admisión— impide cada uno de estos casos: imagen reconstruida fuera del pipeline, tag mutable y firma válida de otro repositorio. En el proyecto integrador RutaFlow, la política debe proteger `rutaflow-delivery-api` del manifiesto de `examples/rutaflow/devops/`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la salida del verificador del Paso 4, el fallo sin `subject` del Paso 5, y la política ampliada del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Como siguiente paso, conectá esta política al webhook de admisión del clúster y probá el rechazo con una imagen sin firma. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
 
 ### Tema 4: Una plataforma interna es un producto con límites
@@ -416,7 +415,7 @@ kubectl apply --dry-run=server -f examples/rutaflow/devops/deployment.yaml
 
 Resultado esperado: `opa eval` devuelve un arreglo vacío porque `rutaflow-delivery-api` ya declara `runAsNonRoot: true` en su `securityContext`; si alguien quitara esa línea, la política lo rechazaría antes de llegar al clúster, no después.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la política Rego del Paso 4, la métrica de adopción incompleta del Paso 5, y las métricas de producto corregidas del Paso 6; explicá por qué "centralizar sin escuchar" crea otro cuello de botella en vez de resolver el problema original. Siguiente paso: cerrá el módulo integrando SLO, alertas, supply chain y platform engineering en la operación completa de RutaFlow. Errores comunes: medir adopción de una plataforma interna sin medir satisfacción ni tiempo real de onboarding, escribir políticas sin mensajes de error reparables, y centralizar la plataforma sin ningún canal de feedback de los equipos que la usan. Límites y decisión de uso: un golden path no reemplaza el criterio de dominio; forzar el caso común y eliminar las vías de escape convierte la plataforma en otro cuello de botella. Fuentes oficiales: https://www.openpolicyagent.org/docs/latest/ y https://internaldeveloperplatform.org/.
 
 ## Revisión oficial de plataforma — julio de 2026
@@ -442,7 +441,7 @@ La entrega incluye repositorio reproducible, consultas, alertas, timeline, evide
 
 Derivado de la [documentación oficial](https://kubernetes.io/docs/concepts/), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 60 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Sistemas | `Linux` · `processes` · `signals` · `permissions` · `systemd` · `networks` · `DNS` · `TLS` · `storage` · `troubleshooting` · `scripting` | plataforma |
 | Contenedores | `OCI` · `image layers` · `BuildKit` · `rootless` · `Compose` · `registries` · `scanning` · `SBOM` · `signatures` · `runtime security` | plataforma |

@@ -59,7 +59,7 @@ Resultado esperado: el desglose incluye `S3` con un costo distinto de cero, refl
 Pista: repetí la consulta con `--time-period Start=2026-02-01,End=2026-01-01` (fecha de fin anterior a la de inicio) — ese es el fallo deliberado: la API rechaza el rango con un error de validación, porque un período que termina antes de empezar no tiene ningún significado posible.
 #### Paso 6 · Práctica independiente
 Eliminá el bucket (`aws s3 rb s3://demo-costo-antes`) y volvé a consultar `get-cost-and-usage` — confirmá que el costo de S3 bajó en la siguiente consulta, reflejando que ya no existe.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el costo reflejado tras crear el bucket del Paso 4, el rango inválido rechazado del Paso 5, y el costo actualizado tras borrarlo del Paso 6; explicá por qué estos números nunca deberían usarse para un presupuesto real. Siguiente paso: precios. Errores comunes: mezclar fechas y no etiquetar recursos. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html.
 
 ### Tema 2: Pricing — catálogo de tarifas de referencia
@@ -120,7 +120,7 @@ Resultado esperado: `get-products` devuelve un string que es en realidad JSON se
 Pista: repetí la consulta filtrando por `Field=instanceType,Value=x9.enorme` (un tipo que no existe en la instantánea) — ese es el fallo deliberado: `PriceList` vuelve vacío en vez de fallar con un error, porque la instantánea de Floci es intencionalmente mínima, no un espejo completo de AWS real.
 #### Paso 6 · Práctica independiente
 Repetí la consulta cambiando `regionCode` a otra región cubierta por la instantánea y compará el precio devuelto — documentá si la diferencia (o su ausencia) te sorprendió.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la tarifa real de `t3.micro` del Paso 4, el `PriceList` vacío del Paso 5, y la comparación entre regiones del Paso 6; explicá por qué esta instantánea mínima nunca debería usarse para cotizar un presupuesto real. Siguiente paso: exportación. Errores comunes: precio sin unidad y moneda incorrecta. Fuente oficial: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html.
 
 ### Tema 3: BCM Data Exports — reportes de costo en formato estándar
@@ -176,7 +176,7 @@ Resultado esperado: `create-export` devuelve un `ExportArn`; `s3 ls` muestra un 
 Pista: cambiá `"Format"` a `"CSV"` — ese es el fallo deliberado: `create-export` falla con `ValidationException`, porque solo Parquet está implementado en Floci hoy, aunque la documentación de AWS real mencione otros formatos.
 #### Paso 6 · Práctica independiente
 Descargá el archivo `.parquet` generado y confirmá con alguna herramienta local (por ejemplo, leerlo con `duckdb` o `pandas`) que sus columnas siguen el esquema FOCUS, no una estructura ad hoc inventada por Floci.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el export FOCUS generado del Paso 4, el formato CSV rechazado del Paso 5, y la validación de columnas del Paso 6; explicá por qué la estandarización del esquema es lo que permite comparar costos entre proveedores distintos. Siguiente paso: tags. Errores comunes: exportar sin retención y no validar columnas. Fuente oficial: https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html.
 
 ### Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta
@@ -237,7 +237,7 @@ Resultado esperado: `get-resources` devuelve ambos ARNs —el bucket `demo-factu
 Pista: probá `tag-resources --resource-arn-list arn:aws:s3:::este-bucket-no-existe --tags Proyecto=rutaflow` — ese es el fallo deliberado (al revés de lo que esperarías): la llamada se acepta sin error, porque el servicio no valida que el ARN corresponda a un recurso real en otro servicio emulado; la etiqueta queda "flotando" sobre un recurso que nunca existió.
 #### Paso 6 · Práctica independiente
 Usá `get-tag-keys` y `get-tag-values` para auditar qué claves y valores de etiqueta existen actualmente, y confirmá que `Proyecto`/`rutaflow` aparece en ambos listados — documentá qué política obligatoria impondrías (por ejemplo, "todo recurso nuevo debe tener `Proyecto` desde su creación") para que esto no dependa de acordarse después.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el descubrimiento cruzado del Paso 4, el ARN inexistente aceptado sin validar del Paso 5, y la política propuesta del Paso 6; explicá por qué ese comportamiento de "aceptar ARNs arbitrarios" es útil y riesgoso a la vez. Siguiente paso: identidad. Errores comunes: claves inconsistentes y tags ausentes en recursos nuevos. Fuente oficial: https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/Welcome.html.
 
 ### Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta
@@ -296,7 +296,7 @@ Resultado esperado: la primera llamada confirma la cuenta por defecto (`00000000
 Pista: creá una tabla DynamoDB usando las credenciales de la cuenta `222222222222`, y después intentá leerla con las credenciales por defecto de `000000000000` — ese es el fallo deliberado si lo esperás ver: `ResourceNotFoundException`, porque esa tabla simplemente no existe en la cuenta `000000000000`; el aislamiento multi-cuenta es real, no cosmético.
 #### Paso 6 · Práctica independiente
 Documentá, para un pipeline real de RutaFlow, por qué el primer paso antes de cualquier despliegue debería ser `get-caller-identity` — qué desastre evitaría detectar a tiempo que el pipeline apunta a la cuenta equivocada.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos identidades confirmadas del Paso 4, el aislamiento entre cuentas del Paso 5, y la justificación del smoke test del Paso 6; explicá por qué las credenciales temporales de alcance limitado son el principio de seguridad central que atraviesa todo este módulo. Siguiente paso: gobierno. Errores comunes: operar cuenta equivocada y no validar región. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html.
 
 ## Laboratorio práctico

@@ -36,7 +36,6 @@ Un equipo de una plataforma de entregas reporta que "el programa no corre en el 
 #### Paso 3 · Teoría, modelo mental y analogía
 `javac` traduce código fuente Java a bytecode (`.class`); `java` invoca la JVM, que carga ese bytecode y lo ejecuta. Son dos pasos separados y cada uno puede fallar por razones distintas. La analogía: `javac` es como imprimir un documento desde un procesador de texto, y `java` es como abrirlo después con un lector específico — si el lector busca el archivo impreso en la carpeta equivocada, no importa cuán bien se haya impreso.
 
-**Evidencia de aprendizaje:** entrega `Saludo.java`, el `.class` generado, la salida de `javap -c` con al menos dos instrucciones identificadas, y el `ClassNotFoundException` provocado junto a su corrección.
 **Conceptos clave:** bytecode, portabilidad, `javac`/`java`.
 
 **Diagrama interactivo:** [Del código Java a la JVM](/visuals/temas/java/modulo-0-tema-1-bytecode.html).
@@ -95,7 +94,7 @@ Pista: ejecuta `javap -c -classpath out Saludo` y localiza la instrucción `invo
 #### Paso 6 · Práctica independiente
 Crea una segunda clase `Version.java` que imprima `System.getProperty("java.version")`. Compílala junto a `Saludo.class` dentro de `out` y ejecuta `javap -c -classpath out Version`; identifica cuál instrucción de bytecode corresponde a la llamada a `getProperty`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `Saludo.java`, `out/Saludo.class`, la salida de `javap` y el `ClassNotFoundException` provocado junto a su corrección; como siguiente paso, en el Tema 2 identificarás exactamente qué significa cada palabra de la firma de `main` que la JVM buscó aquí. Errores comunes: ejecutar `java` apuntando con `-cp` a la carpeta del código fuente en vez de a la carpeta de salida compilada, olvidar recompilar después de modificar el `.java`, y asumir que `javac` ejecuta el programa en vez de solo compilarlo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html y https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html.
 **¿Por qué es importante?** Porque diagnosticar un `ClassNotFoundException` o un `NoClassDefFoundError` en producción exige saber, sin adivinar, que la JVM busca bytecode compilado en un classpath explícito, no código fuente.
 
@@ -110,7 +109,6 @@ Un desarrollador junior copia un método `main` desde un tutorial y le agrega `p
 #### Paso 3 · Teoría, modelo mental y analogía
 La JVM no ejecuta cualquier método: busca específicamente uno llamado `main`, público, estático, sin retorno, que reciba un arreglo de `String`. Cualquier desviación de esa firma exacta lo vuelve invisible para la JVM, aunque el resto de la clase compile perfectamente. La analogía: es como una convocatoria con un formato de postulación obligatorio — una postulación correcta en el fondo pero distinta en el formato exigido simplemente no se procesa.
 
-**Evidencia de aprendizaje:** entrega `PuntoEntrada.java`, su ejecución con `args` reales, y el fallo de la JVM al quitar `static` junto a la explicación de por qué ocurre.
 **Conceptos clave:** punto de entrada, pertenencia a la clase frente a instancia.
 
 `public static void main(String[] args)` es la firma exacta que la JVM busca como punto de entrada de cualquier programa Java ejecutable, y cada palabra de esa firma tiene un significado preciso y necesario: `public` hace que el método sea accesible desde cualquier lugar, incluyendo desde fuera de la propia clase, necesario porque la JVM (que no es parte del código de la aplicación) necesita poder invocarlo desde el exterior; `static` indica que el método pertenece a la clase en sí, no a una instancia particular de esa clase, siendo esto crucial porque la JVM invoca `main` sin haber creado previamente ningún objeto de esa clase — si `main` no fuera `static`, la JVM necesitaría una instancia ya existente para invocarlo, pero no existe ninguna todavía en ese punto de la ejecución.
@@ -151,7 +149,7 @@ Pista: cambia la firma a `public static void main(String args)` (sin los corchet
 #### Paso 6 · Práctica independiente
 Modifica `PuntoEntrada` para que espere dos argumentos (origen y destino de una guía) y valide `args.length >= 2` antes de leerlos. Documenta qué mensaje debería mostrar si falta alguno, en vez de dejar que el programa termine con `ArrayIndexOutOfBoundsException` sin ningún control.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `PuntoEntrada.java`, la ejecución con un argumento real, y el intento sin `static` junto a su corrección; como siguiente paso, en el Tema 3 distinguirás qué herramienta exacta instalaste junto con esa JVM que acabas de invocar. Errores comunes: agregar modificadores de acceso distintos a `public`, omitir `static` asumiendo que Java creará una instancia automáticamente, y declarar `args` con un tipo distinto a `String[]`. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html y https://dev.java/learn/getting-started/.
 **¿Por qué es importante?** Porque un error de firma en `main` no se reporta como un error de compilación, sino como un fallo al arrancar la JVM — un tipo de diagnóstico distinto que hay que saber reconocer.
 
@@ -166,7 +164,6 @@ Un pipeline de despliegue falla en el servidor con `javac: command not found`, a
 #### Paso 3 · Teoría, modelo mental y analogía
 La JVM ejecuta bytecode; el JRE agrega las librerías estándar que ese bytecode necesita en tiempo de ejecución; el JDK agrega además las herramientas para desarrollar, como `javac`. Cada nivel incluye al anterior. La analogía: la JVM es el motor de un vehículo, el JRE es el vehículo completo listo para circular, y el JDK es ese mismo vehículo más un taller de herramientas para repararlo — necesario solo para quien lo construye o modifica, no para quien simplemente lo conduce.
 
-**Evidencia de aprendizaje:** entrega la salida de `Entorno` con el nombre de la VM, el error provocado por el nombre de herramienta incorrecto, y una frase propia que distinga JDK, JRE y JVM.
 **Conceptos clave:** desarrollo frente a ejecución, herramientas incluidas en cada nivel.
 
 La JVM es específicamente la máquina virtual que ejecuta bytecode, el componente mínimo necesario para correr cualquier programa Java ya compilado; el JRE (Java Runtime Environment) incluye la JVM más las librerías estándar necesarias para que los programas Java se ejecuten correctamente (las clases básicas como `String`, `ArrayList`, etc., que un programa típico necesita en tiempo de ejecución, no solo el motor de ejecución del bytecode en sí); el JDK (Java Development Kit) incluye el JRE completo más las herramientas necesarias específicamente para desarrollar programas Java, no solo ejecutarlos (`javac` el compilador, un debugger, `javap` para inspeccionar bytecode, y otras herramientas de desarrollo).
@@ -210,7 +207,7 @@ Pista: ejecuta `java -cp out Entorno` en una carpeta `out` vacía, sin haber cor
 #### Paso 6 · Práctica independiente
 Ejecuta `java -XshowSettings:properties -version` y localiza en la salida la propiedad `java.home`. Explica con tus palabras por qué esa ruta corresponde a la instalación completa del JDK y no a un JRE separado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda la salida de `Entorno`, el error provocado por el nombre de herramienta incorrecto y la explicación de JDK/JRE/JVM; como siguiente paso, en el Tema 4 empezarás a distinguir qué guarda cada variable según su tipo. Errores comunes: instalar solo un JRE cuando se necesita compilar, escribir mal el nombre de una herramienta y asumir que es un error de Java, y mezclar instalaciones de distintos proveedores sin que `JAVA_HOME` apunte a la correcta. Fuentes oficiales: https://dev.java/learn/jvm/ y https://docs.oracle.com/en/java/javase/25/.
 **¿Por qué es importante?** Porque un pipeline de CI/CD que falla por falta de `javac` en el servidor de build, o que instala de más un JDK completo en un servidor que solo ejecuta, es un error de configuración que se diagnostica en segundos si se distingue JDK de JRE.
 
@@ -225,7 +222,6 @@ Un reporte de entregas muestra el mismo paquete con pesos distintos en dos panta
 #### Paso 3 · Teoría, modelo mental y analogía
 Un tipo primitivo guarda su valor directamente en la variable; copiarlo produce una copia independiente. Un tipo referencia guarda una dirección hacia un objeto en el heap; copiar la variable copia esa dirección, no el objeto, así que ambas variables terminan apuntando al mismo objeto compartido. La analogía: un primitivo es como llevar el efectivo en el bolsillo; una referencia es como llevar la llave de una caja fuerte — prestar una copia de la llave no crea una segunda caja fuerte.
 
-**Evidencia de aprendizaje:** entrega `ValoresYReferencias.java`, la salida que demuestra el aliasing del arreglo, y el `NullPointerException` del wrapper `null` junto a la corrección que lo evita.
 **Conceptos clave:** valor directo frente a apuntador a un objeto, wrappers.
 
 Un tipo primitivo (`int edad = 30;`) almacena su valor directamente en la variable (típicamente en la pila de ejecución, un área de memoria de acceso rápido y de ciclo de vida ligado al alcance donde la variable se declara), sin ninguna capa de indirección adicional; un tipo referencia (`String nombre = "Ana";`) almacena en la variable no el dato en sí, sino una referencia (conceptualmente un apuntador) hacia un objeto real ubicado en el heap (un área de memoria separada, gestionada por el recolector de basura, Módulo 11), de modo que la variable "apunta hacia" ese objeto en vez de contenerlo directamente.
@@ -284,7 +280,7 @@ Pista: en `ValoresYReferencias`, después de `rutaB[0] = 99;` agrega `rutaA = ne
 #### Paso 6 · Práctica independiente
 Declara `Long totalGuias = null;` dentro de un método que calcule `totalGuias + 1`, sin ejecutarlo todavía. Predice por escrito si lanzará `NullPointerException` y en qué línea exacta; luego ejecútalo para confirmar tu predicción.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `ValoresYReferencias.java`, la salida `5 9 | 99 99`, y el `NullPointerException` del wrapper `null` junto a su corrección; como siguiente paso, en el Tema 5 aplicarás esta misma distinción a conversiones entre tipos y a `String`. Errores comunes: asumir que copiar un arreglo copia sus elementos, usar un wrapper (`Integer`) con `null` como si fuera un primitivo sin validar antes, y confundir reasignar una referencia con mutar el objeto al que apunta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html y https://dev.java/learn/language-basics/.
 **¿Por qué es importante?** Porque un `NullPointerException` durante *unboxing* automático, o una mutación compartida de un arreglo que "nadie modificó", son errores de producción que solo se explican entendiendo esta distinción, nunca adivinando.
 
@@ -336,11 +332,9 @@ Pista: cambia `new BigDecimal("19.90")` por `new BigDecimal(19.90)` (literal `do
 #### Paso 6 · Práctica independiente
 Agrega una segunda tarifa escrita con coma decimal (`"19,90"` en vez de `"19.90"`). Predice por escrito si `new BigDecimal("19,90")` lanza una excepción o produce un valor incorrecto; ejecútalo para confirmar tu predicción y explica por qué el formato del texto importa.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `Conversiones.java`, la salida `238.80`/`true`, y el `NumberFormatException` provocado por `"doce"` junto a su corrección; como siguiente paso, en el Tema 6 usarás tipos y comparaciones similares dentro de condiciones y ciclos. Errores comunes: usar `double` para dinero, comparar `String` con `==` en vez de `equals`, y asumir que un texto externo siempre llega en el formato numérico esperado. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/math/BigDecimal.html y https://dev.java/learn/language-basics/.
 **¿Por qué es importante?** Porque un error de redondeo en dinero causado por `double`, o una comparación de `String` con `==` que "funciona en pruebas" por el *string pool* y falla con datos reales, son errores silenciosos que solo una conversión y comparación correctas evitan desde el origen.
-**Evidencia de aprendizaje:** entrega `Conversiones.java`, la salida `238.80`/`true`, y el `NumberFormatException` provocado por una entrada no numérica junto a su corrección.
-
 Convertir con `BigDecimal` desde texto (nunca `double`) para valores monetarios es exactamente la regla que aplicará el proyecto integrador de este track en cualquier campo de precio o tarifa, evitando errores de precisión que un `double` introduciría silenciosamente.
 
 **Cuándo no usarlo:** `BigDecimal` es más lento y verboso que `double`; para cálculos donde la precisión decimal exacta no importa (una posición en pantalla, un porcentaje aproximado de progreso), `double` sigue siendo la opción correcta — resérvalo para dinero y cualquier cálculo donde un error de redondeo tenga consecuencias reales.
@@ -395,10 +389,9 @@ Pista: en vez de agregar la rama para `CANCELADA`, agrega una rama `default -> "
 #### Paso 6 · Práctica independiente
 Agrega un nuevo estado `DEVUELTA` al `enum Estado`. Antes de tocar el `switch`, predice por escrito el mensaje de error exacto que dará el compilador; luego agrega la rama faltante y confirma que el mensaje predicho coincide con el real.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `ControlEntrega.java`, el error de exhaustividad provocado por `CANCELADA` y su corrección; como siguiente paso, en el Tema 7 aplicarás límites de ciclo igualmente explícitos al recorrer arreglos. Errores comunes: agregar un `default` "por si acaso" que oculta casos nuevos sin manejar, usar `&` en vez de `&&` cuando el lado derecho depende de que el izquierdo ya haya validado algo, y usar `<=` en una condición de ciclo pensada para `<`. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/jls/se21/html/jls-14.html y https://dev.java/learn/language-basics/switch-expressions/.
 **¿Por qué es importante?** Porque un `switch` con `default` oculta en silencio cualquier estado nuevo que el negocio agregue después, mientras un `switch` exhaustivo sin `default` convierte ese mismo olvido en un error de compilación inmediato.
-**Evidencia de aprendizaje:** entrega `ControlEntrega.java`, el mensaje `Conductor en recorrido`, y el error de exhaustividad provocado al agregar `CANCELADA` junto a su corrección.
 **Conceptos clave:** agrupación explícita, cortocircuito, ramas exhaustivas y ciclos terminables.
 
 La precedencia determina qué operación se evalúa primero, pero depender de que el lector memorice toda la tabla dificulta mantener el código. Usa paréntesis para expresar la intención cuando se combinan operadores. `&&` y `||` realizan cortocircuito: la expresión derecha no se evalúa si el resultado ya está decidido. Ese mecanismo permite verificar `paquete != null && paquete.pesoKg() > 0` sin desreferenciar `null`; usar `&` obliga a evaluar ambos lados y produciría `NullPointerException`.
@@ -441,7 +434,6 @@ Un método que "limpia" un arreglo de paradas reasignando el parámetro a un arr
 #### Paso 3 · Teoría, modelo mental y analogía
 Java siempre pasa argumentos por valor: al pasar un objeto, el método recibe una copia de la referencia, no una segunda referencia independiente ni el objeto mismo. Ambas copias apuntan al mismo objeto, así que mutar el contenido se observa desde ambos lados, pero reasignar el parámetro solo cambia la copia local. La analogía: copiar una referencia es entregar una segunda dirección de la misma bodega, no construir otra bodega — cambiar la mercancía se ve desde ambas direcciones, pero cambiar el papel con la dirección no mueve la bodega original.
 
-**Evidencia de aprendizaje:** entrega `Argumentos.java`, la salida `[99, 2, 3]` explicada, y el `ArrayIndexOutOfBoundsException` provocado por recorrer con `<=` junto a su corrección.
 **Conceptos clave:** tamaño fijo, autoboxing, aliasing y Java siempre pasa por valor.
 
 Un arreglo conserva una secuencia contigua de elementos de un mismo tipo y su longitud no cambia después de crearlo. Los índices comienzan en cero; el último índice válido es `length - 1`. Para una colección que crece o decrece usa `ArrayList` (Módulo 2), no copies arreglos manualmente en cada inserción.
@@ -508,7 +500,7 @@ Pista: cambia la firma de `modificar` para que reciba `int primerElemento` (el v
 #### Paso 6 · Práctica independiente
 Crea un segundo arreglo `int[] pesos` con una posición menos que `paradas`, e intenta recorrer ambos arreglos con el mismo índice `i` dentro de un único ciclo. Identifica en qué iteración exacta ocurre `ArrayIndexOutOfBoundsException` sobre `pesos`, y corrige el límite del ciclo para que use el tamaño correcto de cada arreglo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `Argumentos.java`, la salida `[99, 2, 3]` y el `ArrayIndexOutOfBoundsException` provocado por `<=` junto a su corrección; como siguiente paso, en el Tema 8 aplicarás esta misma frontera de validación a entradas externas como fechas y texto. Errores comunes: decir que Java pasa objetos por referencia, usar `<=` en el límite de un ciclo sobre `length`, y asumir que reasignar un parámetro arreglo cambia el arreglo del llamador. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Arrays.html y https://dev.java/learn/arrays/.
 **¿Por qué es importante?** Porque confundir "pasar por referencia" con cómo Java realmente pasa argumentos lleva a predecir mutaciones que no ocurren, o a no anticipar las que sí ocurren, en cualquier método que reciba un arreglo u objeto mutable.
 
@@ -562,11 +554,9 @@ Pista: ejecuta el programa sin ningún argumento (`java -cp out FechaEntrega`). 
 #### Paso 6 · Práctica independiente
 Agrega una segunda validación con `Integer.parseInt(args[1])` para un número de intentos de reentrega, y maneja también `NumberFormatException` dentro del mismo `catch` multi-tipo junto a `DateTimeParseException` y `ArrayIndexOutOfBoundsException`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda `FechaEntrega.java`, la ejecución con una fecha válida y con `2026-02-31`; como siguiente paso, aplica esta misma validación en la frontera al proyecto progresivo del track. Errores comunes: aceptar una fecha como texto sin validarla antes de usarla, usar `Date`/`Calendar` para código nuevo, y usar una semilla fija de `Random` para generar un valor con implicaciones de seguridad. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/LocalDate.html y https://dev.java/learn/date-time/.
 **¿Por qué es importante?** Porque una fecha imposible aceptada sin validar, o un valor sensible generado con una semilla fija predecible, son errores que solo se previenen eligiendo la API correcta en la frontera, no corrigiéndolos después de que ya causaron daño.
-**Evidencia de aprendizaje:** entrega `FechaEntrega.java`, la ejecución con `2026-07-22` y con `2026-02-31`, y una frase propia que explique cuándo usar `Random` frente a `SecureRandom`.
-
 Elegir `java.time` sobre `Date`/`Calendar`, y recibir el reloj como dependencia en vez de llamar `LocalDate.now()` directamente, es exactamente lo que necesitará el proyecto integrador de este track para que su lógica de fechas sea probable de forma determinista.
 
 **Cuándo no usarlo:** `Random` con semilla fija es apropiado para pruebas reproducibles; usar esa misma semilla fija para generar tokens, contraseñas o cualquier valor con implicaciones de seguridad es exactamente el error que `SecureRandom` existe para prevenir — la elección depende de si el valor generado protege algo o no.
@@ -575,7 +565,7 @@ Elegir `java.time` sobre `Date`/`Calendar`, y recibir el reloj como dependencia 
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-java && cd academia-java && git init && gradle init --type java-application`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | dominio y colecciones. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | I/O, concurrencia y datos. | Casos normales, límite y error automatizados. |

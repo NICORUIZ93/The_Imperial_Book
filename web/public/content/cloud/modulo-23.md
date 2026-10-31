@@ -72,7 +72,7 @@ Resultado esperado: la primera lectura falla (cache miss, nadie cacheó esa posi
 Pista: guardá la misma posición con `EX 0` (TTL cero) — ese es el fallo deliberado de rendimiento: la clave expira (o nunca llega a existir de forma útil) de inmediato, así que CADA lectura vuelve a ser un cache miss, forzando una consulta a la base de datos en cada refresco del mapa — exactamente lo que el caché debía evitar.
 #### Paso 6 · Práctica independiente
 Repetí la lectura después de que pasen los 10 segundos del Paso 4 y confirmá el cache miss; medí (con `time`) cuánto tarda un `GET` que sí encuentra la clave contra uno que no, para ver la diferencia real de latencia entre hit y miss.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ciclo completo de miss→set→hit del Paso 4, el TTL cero roto del Paso 5, y la medición de latencia del Paso 6; explicá por qué la posición GPS de un conductor es un buen candidato para cache-aside y el saldo de una factura (Módulo 13) no lo sería. Siguiente paso: Valkey. Errores comunes: datos obsoletos y cachear errores. Fuente oficial: https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/database-caching-strategies-using-redis.html.
 
 ### Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación
@@ -125,7 +125,7 @@ Resultado esperado: `docker ps` muestra un contenedor real `valkey/valkey:8` cor
 Pista: conectate con `redis-cli -h localhost -p 6379` sin consultar primero qué puerto real le tocó a `demo-cache` — ese es el fallo deliberado: si ese puerto fijo no es el que Floci asignó de verdad, la conexión falla o, peor, conecta accidentalmente a OTRO clúster que sí esté en el puerto 6379.
 #### Paso 6 · Práctica independiente
 Conectate con `docker exec -it <container-id> valkey-cli info server` y confirmá el campo `redis_version` real, y probá `SET`/`GET`/`EXPIRE` directamente para confirmar que el motor responde exactamente como un Redis real, no una reimplementación aproximada.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contenedor real confirmado del Paso 4, el error de puerto fijo del Paso 5, y la verificación de versión del Paso 6; explicá por qué que el motor sea real (no simulado) importa para confiar en el comportamiento de comandos avanzados. Siguiente paso: descubrimiento. Errores comunes: tratar caché como fuente permanente y no limitar memoria. Fuente oficial: https://docs.aws.amazon.com/elasticache/latest/dg/WhatIs.html.
 
 ### Tema 3: Creación de clústeres y conexión con clientes estándar
@@ -161,7 +161,7 @@ Resultado esperado: el puerto devuelto cae dentro del rango 6379–6399, y `ping
 Pista: probá `aws elasticache describe-replication-groups --replication-group-id demo-cache-que-no-existe` — ese es el fallo deliberado: `ReplicationGroupNotFoundFault`, dejando claro que consultar el endpoint de un grupo que nunca creaste no devuelve un puerto "por defecto", directamente falla.
 #### Paso 6 · Práctica independiente
 Creá un segundo clúster (`demo-cache-2`) y confirmá que `describe-replication-groups` le asigna un puerto distinto al de `demo-cache` — la prueba concreta de que el puerto no se puede asumir fijo en el código.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el puerto resuelto y el `PONG` del Paso 4, el error de grupo inexistente del Paso 5, y los dos puertos distintos del Paso 6; explicá por qué hardcodear `6379` en el servicio de RutaFlow sería un error incluso si "funciona hoy". Siguiente paso: autenticación. Errores comunes: fijar IP y no esperar estado available. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/elasticache/describe-replication-groups.html.
 **Conceptos clave:** `CreateReplicationGroup`, `DescribeReplicationGroups`, puerto de conexión dinámico.
 
@@ -245,7 +245,7 @@ Resultado esperado: `describe-users` muestra a `lector-posiciones` con `AccessSt
 Pista: generá un token IAM para este usuario y esperá a que expire (o simulá la expiración) antes de usarlo — ese es el fallo deliberado: `ValidateIamAuthToken` lo rechaza igual que un ElastiCache real rechazaría un token vencido, sin excepciones por "todavía está cerca de la hora de expiración".
 #### Paso 6 · Práctica independiente
 Probá con ese mismo usuario un comando `SET posicion:c-891 ...` (escritura, no solo lectura) y confirmá que se rechaza por la cadena de acceso (`+get` sin `+set`); documentá qué cadena de acceso le darías en cambio al servicio que SÍ escribe las posiciones.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el usuario de solo lectura creado, el token expirado rechazado del Paso 5, y la escritura denegada del Paso 6; explicá por qué un usuario con `+@all` sobre `~*` (como el de ejemplo genérico de la documentación) sería un error de mínimo privilegio para este caso específico. Siguiente paso: eventos. Errores comunes: tokens en logs y permisos amplios. Fuente oficial: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html.
 
 ## Laboratorio práctico

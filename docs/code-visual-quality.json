@@ -3,14 +3,14 @@
     "foundations": {
       "topics": 99,
       "code": 99,
-      "commentedCode": 92,
-      "mermaid": 69,
+      "commentedCode": 93,
+      "mermaid": 70,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
       "filePath": 98,
       "runCommand": 99,
-      "officialSource": 13
+      "officialSource": 14
     },
     "cloud": {
       "topics": 156,
@@ -27,14 +27,14 @@
     "devops": {
       "topics": 113,
       "code": 113,
-      "commentedCode": 65,
-      "mermaid": 63,
+      "commentedCode": 67,
+      "mermaid": 66,
       "archifyVisual": 1,
-      "asciiVisual": 42,
+      "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
       "filePath": 113,
       "runCommand": 112,
-      "officialSource": 35
+      "officialSource": 36
     },
     "javascript": {
       "topics": 88,
@@ -100,7 +100,7 @@
       "topics": 91,
       "code": 91,
       "commentedCode": 77,
-      "mermaid": 47,
+      "mermaid": 48,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
@@ -112,7 +112,7 @@
       "topics": 56,
       "code": 56,
       "commentedCode": 45,
-      "mermaid": 31,
+      "mermaid": 32,
       "archifyVisual": 0,
       "asciiVisual": 22,
       "misleadingDiagramLabel": 0,
@@ -123,8 +123,8 @@
     "android": {
       "topics": 58,
       "code": 58,
-      "commentedCode": 52,
-      "mermaid": 14,
+      "commentedCode": 53,
+      "mermaid": 15,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
@@ -160,7 +160,7 @@
       "topics": 29,
       "code": 29,
       "commentedCode": 27,
-      "mermaid": 24,
+      "mermaid": 26,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
@@ -170,13 +170,6 @@
     }
   },
   "priorityDebt": [
-    {
-      "track": "foundations",
-      "module": 10,
-      "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
-      "missingCode": false,
-      "missingComments": true
-    },
     {
       "track": "foundations",
       "module": 11,
@@ -545,20 +538,6 @@
       "track": "devops",
       "module": 12,
       "topic": "Tema 4: Checklist de salida a producción",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 13,
-      "topic": "Tema 1: El pipeline completo — de commit a producción verificada",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 13,
-      "topic": "Tema 2: Uniendo cada módulo del track en un solo flujo",
       "missingCode": false,
       "missingComments": true
     },
@@ -1616,13 +1595,6 @@
       "track": "android",
       "module": 11,
       "topic": "Tema 3: Versionado, tracks y políticas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "android",
-      "module": 13,
-      "topic": "Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
       "missingCode": false,
       "missingComments": true
     },

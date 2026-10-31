@@ -325,7 +325,7 @@ test('biblioteca: filtra por área y encuentra temas reales sin perder accesos',
   await expect(page.locator('.card')).toContainText('Kotlin MP');
   await page.locator('.card-topics summary').click();
   await expect(page.locator('.card-topics')).toContainText('Antes de empezar');
-  await expect(page.locator('.card-topics')).toContainText('Evidencia de trabajo');
+  await expect(page.locator('.card-topics')).toContainText('Resultado del curso');
 });
 
 test('tema: la ruta propia enfoca un solo tema y vuelve al capítulo', async ({ page }) => {

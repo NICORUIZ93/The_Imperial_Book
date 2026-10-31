@@ -37,10 +37,9 @@ Pista: cambiá el Bundle Identifier a `com.rutaflow.conductor.test` sin crear un
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el Bundle Identifier a `com.rutaflow.conductor`, y agregá la capability de Push Notifications en Signing & Capabilities — confirmá que Xcode regenera automáticamente el provisioning profile para incluir esa nueva capacidad, sin que tengas que crearlo manualmente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el Archive válido del Paso 4, el error de firma del Paso 5, y la capability agregada del Paso 6; explicá con tus propias palabras qué vincula exactamente un provisioning profile (certificado + App ID + capacidades, y en desarrollo, dispositivos). Siguiente paso: estudia cómo archivar y subir a TestFlight. Errores comunes: compartir certificados entre proyectos sin necesidad, cambiar el Bundle Identifier sin crear el App ID correspondiente, y versionar certificados o perfiles en el repositorio. Fuentes oficiales: https://developer.apple.com/help/account/ y https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases.
 **¿Por qué es importante?** Porque un provisioning profile inválido o faltante es la causa más común de que un Archive no se pueda firmar ni subir, y entender qué vincula exactamente evita adivinar la solución.
-**Evidencia de aprendizaje:** entrega Archive válido, error de firma detectado y capability agregada.
 **Conceptos clave:** distinción entre desarrollo y distribución, vínculo entre identidad, app y dispositivos autorizados.
 
 Un certificado de **desarrollo** firma builds destinados a correr en dispositivos físicos específicamente registrados durante el desarrollo activo, permitiendo probar la app en un iPhone o iPad real del propio equipo antes de cualquier distribución más amplia; un certificado de **distribución** firma builds destinados a TestFlight y a la App Store, un nivel de firma distinto que autoriza la distribución más allá del círculo cerrado de dispositivos de desarrollo registrados manualmente. El provisioning profile vincula estos tres elementos en un único artefacto: el certificado (la identidad criptográfica del desarrollador o la organización), el App ID (el identificador único de la app específica), y, en el caso de perfiles de desarrollo, la lista explícita de dispositivos físicos autorizados a instalar ese build.
@@ -98,10 +97,9 @@ Pista: intentá subir el mismo Archive una segunda vez sin incrementar `CFBundle
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 incrementando `CFBundleVersion`, generando un nuevo Archive y subiéndolo; una vez procesado, agregá un segundo tester interno (otro miembro del equipo) y confirmá que recibe la invitación para instalar el build desde TestFlight.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el build disponible en TestFlight del Paso 4, el rechazo por versión duplicada del Paso 5, y el segundo tester agregado del Paso 6; explicá por qué probar con TestFlight antes de enviar a revisión de la App Store reduce el riesgo de que un conductor real sea el primero en encontrar un bug grave. Siguiente paso: estudia qué metadata necesita completarse antes de la revisión. Errores comunes: subir sin incrementar el número de build, no probar el build subido antes de promoverlo a revisión, y agregar testers externos sin completar antes la revisión beta que Apple exige para ese grupo. Fuentes oficiales: https://developer.apple.com/testflight/ y https://developer.apple.com/help/app-store-connect/.
 **¿Por qué es importante?** Porque probar con TestFlight antes de la revisión de la App Store detecta problemas con un grupo controlado de impacto limitado, en vez de descubrirlos directamente en producción.
-**Evidencia de aprendizaje:** entrega build disponible en TestFlight, rechazo por versión duplicada y segundo tester agregado.
 **Conceptos clave:** proceso formal de empaquetado, validación beta con impacto limitado antes de producción.
 
 ```
@@ -200,9 +198,7 @@ Pista: subí un nuevo build incrementando `CFBundleVersion` a 43, pero dejá `CF
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 incrementando también `CFBundleShortVersionString` a "1.3.1" cuando el cambio sea visible para el usuario, y documentá en el changelog de App Store Connect qué cambió en esta versión respecto a la anterior.
 
-**Evidencia de aprendizaje:** entrega metadata completa, confusión de versión detectada y changelog documentado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la metadata completa del Paso 4, la confusión de versión detectada en el Paso 5, y el changelog del Paso 6; explicá la diferencia entre incrementar solo `CFBundleVersion` (necesario en cada subida, invisible para el usuario) e incrementar también `CFBundleShortVersionString` (cuando el cambio es visible y merece comunicarse). Siguiente paso: estudia cómo automatizar este proceso con CI. Errores comunes: olvidar incrementar `CFBundleVersion` antes de subir, cambiar la versión visible sin que el cambio lo justifique, y omitir la política de privacidad o el cuestionario de privacidad. Fuentes oficiales: https://developer.apple.com/help/app-store-connect/ y https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion.
 **¿Por qué es importante?** Porque la metadata obligatoria (especialmente la política de privacidad) es un requisito no negociable antes de la revisión, y confundir versión de build con versión visible comunica mal los cambios al usuario.
 

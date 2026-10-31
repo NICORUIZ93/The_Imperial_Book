@@ -38,10 +38,9 @@ mvn -pl app -am verify -Ddomain.jackson=2.18.3
 #### Paso 6 · Práctica independiente
 Ejecuta `mvn validate '-Drequired.java=[99,)'` para provocar un requisito imposible con tu JDK 25; restaura el valor por defecto. No uses `[22,)` para hacer fallar JDK 25, porque sí lo cumple. Genera `mvn help:effective-pom` y explica la versión resultante. Como extensión, sustituye la propiedad compartida por un BOM en dependencyManagement y elimina las versiones explícitas de los hijos antes de comprobar su efecto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el fallo de Enforcer por versiones divergentes, la corrección con la versión común, y el fallo por versión de JDK incompatible; como siguiente paso compara el mismo problema resuelto con Gradle. Errores comunes: usar perfiles de Maven para secretos o reglas de negocio en vez de solo diferencias del proceso de build, y mantener dos builds de producción (Maven y Gradle) en paralelo sin necesidad. Fuentes oficiales: https://maven.apache.org/enforcer/maven-enforcer-plugin/.
 **¿Por qué es importante?** Un build empresarial debe detectar versiones divergentes y entornos inválidos antes de producir un artefacto aparentemente correcto.
-**Evidencia de aprendizaje:** entrega el fallo de Enforcer, su corrección con la versión común y el fallo por JDK incompatible.
 **Conceptos clave:** reactor, `dependencyManagement`, BOM, perfiles, Enforcer y wrapper.
 
 Maven distingue declarar una versión administrada de incorporar una dependencia: `dependencyManagement` fija la versión que usarán los módulos cuando declaren el artefacto, pero no lo añade al classpath. Un BOM coordina familias compatibles. El reactor calcula el orden de construcción entre módulos; `mvn -pl api -am verify` construye el módulo elegido y sus dependencias internas.
@@ -98,10 +97,9 @@ Pista: agrega deliberadamente la hora actual (`System.currentTimeMillis()`) al m
 #### Paso 6 · Práctica independiente
 Ejecuta `./gradlew --write-verification-metadata sha256 help` para fijar checksums de dependencias, y `./gradlew build --configuration-cache`; si aparece una advertencia de lectura no declarada, identifica la tarea responsable y corrígela.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambos hashes SHA-256 (antes y después de quitar el timestamp), y el archivo de verification metadata generado; como siguiente paso organiza el proyecto en módulos sin ciclos. Errores comunes: subir credenciales a `gradle.properties`, y asumir que la caché de build acelera tareas no deterministas. Fuentes oficiales: https://docs.gradle.org/current/userguide/build_cache.html.
 **¿Por qué es importante?** El mismo commit debe producir el mismo contenido y dependencias tanto en una laptop limpia como en CI.
-**Evidencia de aprendizaje:** entrega los hashes comparados antes/después de eliminar el timestamp del manifest.
 **Conceptos clave:** wrapper, toolchains, dependency locking, verification metadata, build cache y configuration cache.
 
 El wrapper fija la versión de Gradle y toolchains selecciona el JDK de compilación. El bloqueo de dependencias registra versiones resueltas; la verificación valida checksum o firma para detectar artefactos modificados. Un build reproducible también evita timestamps o orden no determinista dentro de archivos y separa entradas/salidas de cada tarea.
@@ -160,10 +158,9 @@ Pista: importa deliberadamente una clase de `infrastructure` desde `domain` para
 #### Paso 6 · Práctica independiente
 Ejecuta `./gradlew projects` y `./gradlew build`, confirma que el grafo de dependencias coincide con el diagrama esperado, y agrega una segunda regla ArchUnit que impida un ciclo entre `application` e `infrastructure`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el fallo de ArchUnit provocado por el import prohibido, su corrección, y la salida de `./gradlew projects` confirmando el grafo sin ciclos; como siguiente paso escribe pruebas unitarias con JUnit y Mockito. Errores comunes: convertir cada paquete en un módulo sin que el límite lo justifique, y dejar convention plugins que expresan decisiones inestables. Fuentes oficiales: https://www.archunit.org/.
 **¿Por qué es importante?** Un ciclo entre módulos revela responsabilidades mal ubicadas y dificulta pruebas, despliegue y evolución independiente.
-**Evidencia de aprendizaje:** entrega el fallo de ArchUnit, su corrección y el grafo de módulos verificado.
 **Conceptos clave:** API frente a implementación, dirección de dependencia, convenciones y pruebas de arquitectura.
 
 Separar módulos solo aporta valor cuando cada límite tiene una responsabilidad y una API pequeña. `domain` no conoce frameworks; `application` depende de domain; adaptadores implementan puertos; `api` ensambla. `api(project(...))` expone tipos a consumidores, mientras `implementation` mantiene la dependencia interna.
@@ -224,10 +221,9 @@ Pista: elimina deliberadamente la llamada real al fake de repositorio dentro del
 #### Paso 6 · Práctica independiente
 Agrega `verifyNoMoreInteractions(notificacion)` después del `verify` y observa cómo bloquea un refactor inocuo que agrega una segunda notificación legítima; documenta cuándo esa aserción estricta vale la pena y cuándo no.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el test completo, el fallo provocado al vaciar el repositorio y su corrección, y el análisis de `verifyNoMoreInteractions`; como siguiente paso escribe una prueba de integración real con Testcontainers. Errores comunes: mockear la clase bajo prueba en vez de sus dependencias, y verificar cada llamada privada acoplando la suite a la implementación. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/ y https://assertj.github.io/doc/.
 **¿Por qué es importante?** Una suite rápida pierde valor si permite falsos positivos o se rompe ante cualquier refactor interno.
-**Evidencia de aprendizaje:** entrega el test, el fallo detectado por la aserción de estado y el análisis de `verifyNoMoreInteractions`.
 **Conceptos clave:** pirámide de pruebas, extensión, fakes, mocks, captors y aserciones de dominio.
 
 JUnit ejecuta pruebas; Mockito reemplaza colaboradores; AssertJ expresa resultados. Un mock no demuestra que SQL, JSON o HTTP funcionen. Prefiere objetos reales para valores y fakes para repositorios sencillos; usa mocks cuando la interacción forma parte del contrato o provocar el caso real resulta lento o inseguro.
@@ -290,10 +286,9 @@ Pista: rompe deliberadamente el nombre de una columna en la migración (`monto` 
 #### Paso 6 · Práctica independiente
 Agrega WireMock simulando una respuesta HTTP `429 Too Many Requests` seguida de una respuesta exitosa, y verifica que tu cliente HTTP reintenta con un límite acotado en vez de reintentar indefinidamente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el fallo de SQL provocado por el nombre de columna incorrecto, su corrección, y la prueba de reintento acotado con WireMock; como siguiente paso configura logging estructurado para diagnosticar en producción. Errores comunes: reutilizar una base mutable compartida entre pruebas, y usar esperas fijas en vez de esperar una condición observable. Fuentes oficiales: https://testcontainers.com/ y https://wiremock.org/.
 **¿Por qué es importante?** Los adaptadores fallan en sus contratos concretos, no en la interfaz idealizada por una prueba unitaria.
-**Evidencia de aprendizaje:** entrega el fallo SQL provocado, su corrección y la prueba de reintento con WireMock.
 **Conceptos clave:** frontera real, Testcontainers, migraciones, WireMock, aislamiento y contrato.
 
 Una integración ejercita al menos dos componentes reales y el protocolo entre ellos. Testcontainers levanta una versión explícita de PostgreSQL; una migración crea el esquema usado en producción; WireMock simula HTTP a nivel de red. Esto detecta problemas que un mock de método no puede representar: tipos SQL, headers, timeouts y serialización.
@@ -352,10 +347,9 @@ Pista: **Fallo deliberado:** quita el `try-with-resources` y usa `MDC.put(...)` 
 #### Paso 6 · Práctica independiente
 Agrega un appender en memoria a la configuración de test, escribe una prueba que confirme que ningún campo del log contiene un token o email completo, y verifica que un stack trace de una excepción aparece una sola vez (no una vez por cada capa que la propaga).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el `traceId` contaminado provocado por el pool de hilos, su corrección con `try-with-resources`, y la prueba que rechaza datos sensibles en los logs; como siguiente paso ejecuta el laboratorio completo del capítulo. Errores comunes: registrar tokens o documentos de identidad en texto plano, y loguear la misma excepción en cada capa multiplicando ruido. Fuentes oficiales: https://logback.qos.ch/manual/mdc.html.
 **¿Por qué es importante?** Durante un incidente se necesita reconstruir una operación sin exponer datos personales ni buscar texto ambiguo entre millones de líneas.
-**Evidencia de aprendizaje:** entrega el `traceId` contaminado, su corrección y la prueba de datos sensibles.
 **Conceptos clave:** fachada, implementación, niveles, contexto, JSON, datos sensibles y cardinalidad.
 
 SLF4J es una fachada; Logback es una implementación. Parametrizar `log.info("guia={} estado={}", guia, estado)` evita concatenar cuando el nivel está deshabilitado. MDC adjunta `traceId`, `guiaId` o centro al hilo actual, pero debe limpiarse; con pools o virtual threads, un contexto abandonado puede contaminar otra operación.

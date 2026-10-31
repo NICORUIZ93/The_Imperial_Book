@@ -125,9 +125,9 @@ fun PantallaTareas(tareas: List<Tarea>) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función `@Composable` compartida que reciba una lista de un modelo de dominio y la muestre en una `LazyColumn`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues qué significa `@Composable` en código compartido y por qué el motor gráfico (no la anotación) determina el target. El siguiente tema construye sobre esta misma pantalla agregándole estado observable. **Evidencia:** entrega el resultado del test `runComposeUiTest` confirmando los nodos de texto esperados, y explica por qué una dependencia Android en `commonMain` rompe iOS en compilación. Fuente oficial: [Compose Multiplatform docs](https://www.jetbrains.com/lp/compose-multiplatform/).
+Ya distingues qué significa `@Composable` en código compartido y por qué el motor gráfico (no la anotación) determina el target. El siguiente tema construye sobre esta misma pantalla agregándole estado observable. Fuente oficial: [Compose Multiplatform docs](https://www.jetbrains.com/lp/compose-multiplatform/).
 
 **Errores comunes:** asumir que `@Composable` por sí solo vuelve portable cualquier código dentro de la función; importar una dependencia exclusiva de plataforma dentro de `commonMain` sin notar el error hasta que falla la compilación de la otra plataforma.
 
@@ -303,9 +303,9 @@ var contador by remember { ____(0) }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `runComposeUiTest` que confirme cuántas veces cambia el texto renderizado tras las asignaciones `1, 2, 2, 3`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues estado observable de una variable plana, y confirmas con `runComposeUiTest` (composición real, sin emulador) por qué Compose evita recomponer cuando el valor no cambia. El siguiente tema aplica un theme y una navegación compartidos sobre este mismo modelo de estado. **Evidencia:** entrega el resultado de `OptimizacionIgualdadTest` (1 recomposición adicional tras 2 asignaciones, una repetida) y explica por qué la variable plana hizo fallar `assertExists()` pese a que `contador` seguía cambiando en memoria. Fuente oficial: [Compose docs — State](https://developer.android.com/develop/ui/compose/state).
+Ya distingues estado observable de una variable plana, y confirmas con `runComposeUiTest` (composición real, sin emulador) por qué Compose evita recomponer cuando el valor no cambia. El siguiente tema aplica un theme y una navegación compartidos sobre este mismo modelo de estado. Fuente oficial: [Compose docs — State](https://developer.android.com/develop/ui/compose/state).
 
 **Errores comunes:** guardar estado que la UI necesita mostrar en una variable plana en vez de `mutableStateOf`; asumir que toda asignación siempre dispara recomposición sin considerar la optimización por igualdad de valor.
 
@@ -449,9 +449,9 @@ fun AppTheme(content: @Composable () -> Unit) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función de theme compartido y una simulación en dos plataformas confirmando colores idénticos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya defines un theme y (conceptualmente) un grafo de navegación una única vez en código compartido, confirmando que ambas plataformas reciben valores idénticos en vez de arriesgar divergencias acumuladas. El siguiente tema reconoce dónde este modelo de compartir todo encuentra límites reales. **Evidencia:** entrega la comparación de esquemas entre ambas plataformas (`True`) y el caso de divergencia del fallo deliberado. Fuente oficial: [Compose Multiplatform docs — Theming](https://www.jetbrains.com/lp/compose-multiplatform/).
+Ya defines un theme y (conceptualmente) un grafo de navegación una única vez en código compartido, confirmando que ambas plataformas reciben valores idénticos en vez de arriesgar divergencias acumuladas. El siguiente tema reconoce dónde este modelo de compartir todo encuentra límites reales. Fuente oficial: [Compose Multiplatform docs — Theming](https://www.jetbrains.com/lp/compose-multiplatform/).
 
 **Errores comunes:** definir dos sistemas de diseño separados por plataforma que divergen silenciosamente con el tiempo; duplicar el grafo de navegación en vez de compartirlo, arriesgando flujos inconsistentes entre plataformas.
 
@@ -583,9 +583,9 @@ val integracionApplePay = TipoIntegracion.____
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clasificación de al menos cuatro casos concretos (dos estándar, dos exclusivos de sistema) según el criterio del Paso 3. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aplicas un criterio explícito para decidir cuándo una integración necesita SwiftUI nativo o un puente `expect`/`actual` en vez de UI compartida, evitando asumir paridad completa donde no existe. El siguiente módulo profundiza en interoperabilidad directa con iOS más allá de la UI. **Evidencia:** entrega la clasificación de los 6 casos con el conteo de cuántos requieren puente nativo, y explica por qué clasificar Apple Pay como estándar sería un error. Fuente oficial: [Compose Multiplatform 1.8.0 — Compose for iOS is Stable](https://blog.jetbrains.com/kotlin/2025/05/compose-multiplatform-1-8-0-released-compose-multiplatform-for-ios-is-stable-and-production-ready/).
+Ya aplicas un criterio explícito para decidir cuándo una integración necesita SwiftUI nativo o un puente `expect`/`actual` en vez de UI compartida, evitando asumir paridad completa donde no existe. El siguiente módulo profundiza en interoperabilidad directa con iOS más allá de la UI. Fuente oficial: [Compose Multiplatform 1.8.0 — Compose for iOS is Stable](https://blog.jetbrains.com/kotlin/2025/05/compose-multiplatform-1-8-0-released-compose-multiplatform-for-ios-is-stable-and-production-ready/).
 
 **Errores comunes:** asumir que absolutamente toda integración nativa está disponible igual en iOS que en Android; descubrir la necesidad de un puente nativo solo después de que la compilación falla, en vez de clasificar el caso de antemano.
 

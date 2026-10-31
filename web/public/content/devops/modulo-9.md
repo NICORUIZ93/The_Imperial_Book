@@ -81,9 +81,9 @@ Agrega una etiqueta `method` al counter `http_requests_total` (`labelNames: ['st
 
 Agrega un segundo gauge que registre el tamaño de una cola simulada (`const colaSize = new client.Gauge(...)`, incrementado y decrementado según una lista en memoria), y confirma que su comportamiento en `/metrics` refleja subidas y bajadas, a diferencia del counter que solo crece.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo usar cada tipo de métrica según su patrón de comportamiento real. El siguiente tema convierte estos valores crudos en información interpretable con PromQL. **Evidencia:** entrega la salida de `/metrics` mostrando los tres tipos con valores reales, y explica por qué un counter que retrocede es una señal de instrumentación incorrecta. Fuente oficial: [Prometheus — Metric Types](https://prometheus.io/docs/concepts/metric_types/).
+Ya distingues cuándo usar cada tipo de métrica según su patrón de comportamiento real. El siguiente tema convierte estos valores crudos en información interpretable con PromQL. Fuente oficial: [Prometheus — Metric Types](https://prometheus.io/docs/concepts/metric_types/).
 
 **Errores comunes:** usar un counter para un valor que legítimamente sube y baja (como conexiones activas); no definir etiquetas suficientemente ricas al instrumentar, limitando qué preguntas se pueden responder después sin reinstrumentar.
 
@@ -162,9 +162,9 @@ Agrega una segunda instancia de la aplicación (otro contenedor en un puerto dis
 
 Provoca artificialmente algunas respuestas con `status="500"` (modificando `app.js` para fallar aleatoriamente una fracción de las veces) y calcula la tasa de error real con la consulta completa del Paso 2; compara el resultado contra la proporción real que configuraste en el código.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conviertes contadores acumulados en tasas y proporciones interpretables directamente. El siguiente tema visualiza estas mismas consultas en dashboards. **Evidencia:** entrega el resultado de `rate()` con tráfico real generado, y explica por qué aplicar `rate()` a un gauge no tiene sentido conceptual. Fuente oficial: [Prometheus — Querying basics](https://prometheus.io/docs/prometheus/latest/querying/basics/).
+Ya conviertes contadores acumulados en tasas y proporciones interpretables directamente. El siguiente tema visualiza estas mismas consultas en dashboards. Fuente oficial: [Prometheus — Querying basics](https://prometheus.io/docs/prometheus/latest/querying/basics/).
 
 **Errores comunes:** aplicar `rate()` sobre un gauge en vez de un counter; olvidar `sum()` al combinar métricas de múltiples réplicas, obteniendo series separadas en vez de un valor agregado.
 
@@ -250,9 +250,9 @@ Agrega un segundo panel al `dashboard.json` con la consulta de tasa de error del
 
 Investiga y documenta cómo agregarías una variable de plantilla (`templating`) al dashboard para poder elegir entre múltiples instancias de la aplicación desde un desplegable, sin duplicar el dashboard completo por instancia.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya visualizas consultas PromQL en tiempo real organizadas en torno a preguntas operativas reales. El siguiente tema convierte estas mismas consultas en alertas automáticas. **Evidencia:** entrega la respuesta `"status": "success"` de la creación del dashboard, y el resultado del fallo de conexión con la URL de datasource incorrecta. Fuente oficial: [Grafana — Provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/).
+Ya visualizas consultas PromQL en tiempo real organizadas en torno a preguntas operativas reales. El siguiente tema convierte estas mismas consultas en alertas automáticas. Fuente oficial: [Grafana — Provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/).
 
 **Errores comunes:** configurar la URL del datasource apuntando a `localhost` en vez de al nombre de red correcto cuando Grafana corre en un contenedor distinto de Prometheus; construir un dashboard con demasiados paneles sin priorizar las preguntas operativas realmente importantes.
 
@@ -342,9 +342,9 @@ Agrega una segunda regla de alerta sobre latencia p95 elevada, usando `histogram
 
 Reduce el umbral de la regla original a `> 0.01` (1%, muy sensible) y observa cuántas veces se dispara con tráfico normal; documenta en qué punto un umbral demasiado sensible produciría fatiga de alertas en un equipo real.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya diseñas reglas de alerta que solo notifican ante problemas sostenidos y reales, no ante ruido momentáneo. El siguiente tema formaliza qué nivel de estas métricas es aceptable con SLI/SLO/SLA. **Evidencia:** entrega el estado de la alerta (`pending`/`firing`) con `for: 30s`, y el resultado del disparo inmediato con `for: 0s` ante un pico momentáneo. Fuente oficial: [Prometheus — Alerting rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/).
+Ya diseñas reglas de alerta que solo notifican ante problemas sostenidos y reales, no ante ruido momentáneo. El siguiente tema formaliza qué nivel de estas métricas es aceptable con SLI/SLO/SLA. Fuente oficial: [Prometheus — Alerting rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/).
 
 **Errores comunes:** omitir `for`, disparando alertas ante cualquier fluctuación momentánea; alertar sobre causas internas específicas (CPU de un servidor) en vez de síntomas observables por el usuario.
 
@@ -421,9 +421,9 @@ Cambia la ventana de la consulta de `[5m]` a `[30d]` (simulando la ventana real 
 
 Calcula cuántos minutos de presupuesto de error representan un SLO de 99.9% sobre un mes de 30 días, y documenta ese cálculo junto con una decisión razonada de cuándo el equipo podría "gastar" ese presupuesto en un despliegue de mayor riesgo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya mides un SLI real, defines un SLO con margen interno, y calculas el presupuesto de error resultante. El siguiente tema estandariza cómo se instrumenta el código para no acoplarse a Prometheus específicamente. **Evidencia:** entrega el valor del SLI calculado con PromQL, y explica el riesgo de fijar el SLO igual al SLA sin margen interno. Fuente oficial: [Google SRE Book — Service Level Objectives](https://sre.google/sre-book/service-level-objectives/).
+Ya mides un SLI real, defines un SLO con margen interno, y calculas el presupuesto de error resultante. El siguiente tema estandariza cómo se instrumenta el código para no acoplarse a Prometheus específicamente. Fuente oficial: [Google SRE Book — Service Level Objectives](https://sre.google/sre-book/service-level-objectives/).
 
 **Errores comunes:** fijar el SLO igual o más laxo que el SLA externo, sin margen de seguridad interno; definir un SLO sin una consulta PromQL concreta que lo mida, dejándolo como una aspiración no verificable.
 
@@ -512,9 +512,9 @@ Agrega un segundo contador `otel_errores_total` y confirma que aparece igualment
 
 Investiga (documentando, sin necesariamente instalarlo) cómo se vería la misma instrumentación exportando hacia un backend de trazas distribuidas en vez de Prometheus, y qué cambiaría exactamente en el código de la aplicación (la respuesta esperada: nada en el código de instrumentación, solo la configuración del exportador).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya instrumentas código de forma neutral al backend de observabilidad elegido. El siguiente tema conecta todas las prácticas de este track con métricas de madurez del equipo completo. **Evidencia:** entrega la métrica exportada por OpenTelemetry en formato Prometheus, y explica por qué eliminar el exportador no rompe la instrumentación en sí, solo su destino. Fuente oficial: [OpenTelemetry — Concepts](https://opentelemetry.io/docs/concepts/).
+Ya instrumentas código de forma neutral al backend de observabilidad elegido. El siguiente tema conecta todas las prácticas de este track con métricas de madurez del equipo completo. Fuente oficial: [OpenTelemetry — Concepts](https://opentelemetry.io/docs/concepts/).
 
 **Errores comunes:** seguir importando bibliotecas específicas de un backend directamente en el código de negocio, perdiendo la independencia que OpenTelemetry ofrece; asumir que OpenTelemetry reemplaza a Prometheus, cuando en realidad es una capa de instrumentación que se complementa con él como backend de destino.
 
@@ -593,9 +593,9 @@ Calcula la Deployment Frequency del historial de ejemplo: cuenta cuántos tags d
 
 Diseña (documentando, sin necesariamente implementar completo) cómo calcularías MTTR usando el historial de alertas `firing`→resuelta de Alertmanager, y Change Failure Rate contando cuántos de los últimos 10 despliegues fueron seguidos por un `helm rollback` o `terraform apply` de reversión dentro de la hora siguiente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya calculas Lead Time real a partir de tu propio historial de Git, y sabes qué datos necesitarías para las otras tres métricas DORA. Esto cierra el módulo de observabilidad; el siguiente módulo cubre logging estructurado y correlación de peticiones entre servicios. **Evidencia:** entrega el cálculo de Lead Time con las fechas reales, y explica el error de medirlo desde el primer commit del proyecto en vez del commit específico del cambio. Fuente oficial: [DORA — DevOps Research and Assessment](https://dora.dev/).
+Ya calculas Lead Time real a partir de tu propio historial de Git, y sabes qué datos necesitarías para las otras tres métricas DORA. Esto cierra el módulo de observabilidad; el siguiente módulo cubre logging estructurado y correlación de peticiones entre servicios. Fuente oficial: [DORA — DevOps Research and Assessment](https://dora.dev/).
 
 **Errores comunes:** medir Lead Time desde el inicio del proyecto en vez de por cambio individual; ignorar que las cuatro métricas deben mejorar juntas, tratando velocidad y estabilidad como si estuvieran necesariamente en tensión.
 

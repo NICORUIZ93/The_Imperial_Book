@@ -59,9 +59,7 @@ Pista: agrega deliberadamente un elemento con tarifa negativa para provocar un f
 #### Paso 6 · Práctica independiente
 Agrega `Collectors.groupingBy` para agrupar las entregas por estado, y `reduce` para calcular el total de tarifas sin usar `sum()`; confirma que el resultado de `reduce` coincide con el de `mapToDouble().sum()`.
 
-**Evidencia de aprendizaje:** entrega ambas versiones (bucle manual y stream) con el mismo resultado, y el agrupamiento por estado con `Collectors.groupingBy`.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambas versiones (bucle y stream), la comparación de resultados y el agrupamiento por estado; como siguiente paso estudia Optional. Errores comunes: mutar una variable externa al stream desde dentro de un `map`/`forEach` (efecto secundario oculto), reutilizar el mismo stream dos veces (lanza `IllegalStateException`, un stream solo se consume una vez), y usar `forEach` con lógica compleja cuando `collect`/`reduce` expresarían mejor la intención. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
 **¿Por qué es importante?** Porque un pipeline declarativo solo es más claro que un bucle manual si de verdad describe la transformación sin ocultar efectos secundarios dentro de un `map` o `filter` que debería ser una función pura.
 
@@ -117,9 +115,7 @@ Pista: cambia deliberadamente la firma a que devuelva `Entrega` directamente (pu
 #### Paso 6 · Práctica independiente
 Agrega `orElse(entregaPorDefecto)` y `orElseGet(() -> calcularAlternativa())` como dos formas adicionales de manejar la ausencia, y explica en qué caso usarías cada una de las tres.
 
-**Evidencia de aprendizaje:** entrega `buscarPorId` devolviendo `Optional<Entrega>`, las tres formas de manejar la ausencia (`orElseThrow`/`orElse`/`orElseGet`), y el `NullPointerException` provocado al volver a `null` sin verificar.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el repositorio, las tres formas de manejar ausencia y el `NullPointerException` provocado al usar `null`; como siguiente paso estudia streams paralelos. Errores comunes: llamar `.get()` sobre un `Optional` sin verificar `isPresent()` antes (lanza `NoSuchElementException` igual que un `null` no verificado lanzaría `NullPointerException`), usar `Optional` como tipo de un campo o parámetro en vez de como tipo de retorno, y envolver en `Optional` un valor que en realidad nunca debería estar ausente. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
 **¿Por qué es importante?** Porque `Optional` como tipo de retorno obliga, en el propio sistema de tipos, a que el código que llama considere explícitamente el caso de ausencia antes de compilar, en vez de descubrirlo en producción con un `NullPointerException`.
 
@@ -134,7 +130,6 @@ Verificar si un número grande es primo para una lista de un millón de candidat
 #### Paso 3 · Teoría, modelo mental y analogía
 `parallelStream()` divide el trabajo entre varios hilos gestionados por `ForkJoinPool.commonPool()`; el overhead de dividir y recombinar solo se justifica con datasets grandes y operaciones CPU-intensivas. La analogía: dividir una tarea grande entre varios trabajadores que después deben coordinarse para combinar resultados parciales — para una tarea pequeña, coordinar cuesta más que hacerla solo.
 
-**Evidencia de aprendizaje:** entrega la medición con rango grande (donde paralelizar gana) y con rango pequeño (donde no gana o pierde), y la conclusión sobre cuándo se justifica el paralelismo.
 **Conceptos clave:** `parallelStream()`, overhead de paralelización, `Clase::metodo`.
 
 Antes de paralelizar cualquier procesamiento pesado del proyecto integrador de este track, medirás igual que aquí si el dataset y la operación justifican el overhead de `parallelStream()`.
@@ -179,7 +174,7 @@ Pista: repite la misma medición con un rango pequeño (2 a 100) para provocar u
 #### Paso 6 · Práctica independiente
 Reemplaza las lambdas `n -> esPrimo(n)` por la referencia a método `this::esPrimo`, y confirma que el comportamiento y el tiempo medido no cambian, solo la legibilidad del código.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambas mediciones (rango grande y pequeño) y la conclusión sobre cuándo paraleliza realmente; como siguiente paso estudia concurrencia con `ExecutorService`. Errores comunes: asumir que `parallelStream()` siempre es más rápido sin medir, paralelizar un pipeline con efectos secundarios sobre estado compartido mutable (introduce condiciones de carrera reales), y paralelizar una colección pequeña donde el overhead de coordinación supera cualquier beneficio. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
 **¿Por qué es importante?** Porque el beneficio de `parallelStream()` depende del tamaño real del dataset y del costo de la operación, nunca es automático — medir con datos reales es la única forma confiable de saber si realmente ayuda en un caso concreto.
 
@@ -220,10 +215,9 @@ Pista: reemplazá `gather(Gatherers.windowSliding(3))` por un simple `filter(Ent
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `gather(Gatherers.windowSliding(3))`, y agregá una prueba con una secuencia mixta (a tiempo, atrasada, a tiempo, atrasada, atrasada, atrasada) confirmando que solo se detecta la racha real de 3 consecutivas al final.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el pipeline con `Gatherers.windowSliding` del Paso 4, la detección de atrasos aislados sin relación de orden del Paso 5, y la prueba con secuencia mixta del Paso 6; explicá qué tipo de lógica (que depende de la relación entre elementos vecinos) `filter`/`map` no pueden expresar pero un gatherer sí. Siguiente paso: aplica el mismo criterio de "medir antes de paralelizar" a streams paralelos. Errores comunes: intentar resolver lógica de ventana/vecindad con filter/map puro, usar gather() para transformaciones simples que map ya resuelve, y no considerar el costo de materializar cada ventana como una lista nueva. Fuentes oficiales: https://openjdk.org/jeps/485 y https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html.
 **¿Por qué es importante?** Porque una transformación declarativa puede hacer visible la regla, pero solo si la operación elegida puede expresar genuinamente la relación entre elementos que el caso real requiere.
-**Evidencia de aprendizaje:** entrega pipeline con gatherer, detección incorrecta sin relación de orden reproducida y prueba con secuencia mixta confirmada.
 **Conceptos clave:** Stream.gather(), Gatherers.windowSliding, estado entre elementos vecinos, operación intermedia personalizada.
 
 Cada regla de negocio del proyecto integrador de este track que dependa de la relación entre elementos consecutivos (ej. detectar una racha de reintentos fallidos) se beneficia de un gatherer en vez de intentar forzarla con filter/map puro.

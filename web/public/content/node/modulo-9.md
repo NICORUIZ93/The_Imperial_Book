@@ -23,8 +23,6 @@ Ya produces logs útiles para máquinas y personas. El siguiente tema añadirá 
 
 **Fuentes oficiales:** [Node console](https://nodejs.org/api/console.html) y [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html).
 
-**Evidencia de aprendizaje:** entrega la salida JSON y demuestra que un secreto fue redactado.
-
 **Conceptos clave:** logs en JSON frente a texto libre, indexación y filtrado.
 
 `console.log` con mensajes de texto libre es adecuado para desarrollo local, pero se vuelve rápidamente insuficiente en producción, donde los logs de una aplicación real necesitan ser indexados, filtrados y correlacionados por herramientas de agregación de logs (Datadog, CloudWatch, Grafana Loki, mencionadas también en el Módulo 10 del track DevOps), capacidades que dependen de que cada línea de log tenga una estructura consistente y parseable, no texto libre arbitrario donde cada desarrollador elige su propio formato inconsistente de mensaje.
@@ -81,6 +79,8 @@ Filtra eventos por `LOG_LEVEL` y entrega salida de desarrollo y producción, sin
 
 #### Paso 7 · Cierre y conexión
 
+Ya escribís líneas JSON con timestamp y verificás que un campo de autorización se redacta antes de salir. El siguiente tema agrega un identificador que ata esos eventos a una misma solicitud.
+
 ### Tema 2: Correlation ID por request
 
 #### Paso 1 · Objetivo y preparación
@@ -104,8 +104,6 @@ Este mismo correlation ID es el que necesitarás en el proyecto integrador (API 
 **Errores comunes:** reutilizar IDs globales; aceptar cualquier texto; loggear PII; perder el ID en callbacks; usarlo como autenticación.
 
 **Fuentes oficiales:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html), [`crypto.randomUUID`](https://nodejs.org/api/crypto.html#cryptorandomuuidoptions) y [W3C Trace Context](https://www.w3.org/TR/trace-context/).
-
-**Evidencia de aprendizaje:** entrega dos requests, uno con ID válido y otro rechazado, con sus logs.
 
 **Conceptos clave:** rastreo de una petición específica, `req.log` con contexto adjunto.
 
@@ -166,6 +164,8 @@ Propaga el ID a una función asíncrona y entrega una salida con tres eventos qu
 
 #### Paso 7 · Cierre y conexión
 
+Ya propagás un identificador validado por tres eventos de la misma operación y rechazás uno de 5000 caracteres. El siguiente tema define qué ocurre cuando el proceso falla o recibe una señal de apagado.
+
 ### Tema 3: Excepciones no capturadas y graceful shutdown
 
 #### Paso 1 · Objetivo y preparación
@@ -189,8 +189,6 @@ El proyecto integrador (API productiva, Módulo 12) correrá orquestado (Docker/
 **Errores comunes:** llamar `process.exit` inmediatamente; ignorar conexiones; continuar tras excepción fatal; no tener timeout; no probar SIGTERM.
 
 **Fuentes oficiales:** [Node process signals](https://nodejs.org/api/process.html#signal-events), [`server.close`](https://nodejs.org/api/net.html#serverclosecallback) y [12-factor disposability](https://12factor.net/disposability).
-
-**Evidencia de aprendizaje:** entrega la salida de SIGINT, el cierre y un error fatal diagnosticado.
 
 **Conceptos clave:** `uncaughtException`, `unhandledRejection`, `SIGTERM`, apagado ordenado.
 
@@ -247,6 +245,8 @@ Envía SIGTERM durante una respuesta lenta y entrega evidencia de que la respues
 
 #### Paso 7 · Cierre y conexión
 
+Ya distinguís una excepción no capturada de un cierre ordenado y verificás que `SIGTERM` no corta una respuesta en curso. El siguiente tema compara estilos de contrato: REST, GraphQL y gRPC.
+
 ### Tema 4: REST, GraphQL y gRPC
 
 #### Paso 1 · Objetivo y preparación
@@ -266,8 +266,6 @@ Ya puedes justificar un estilo por contrato y consumidor. El siguiente tema expo
 **Errores comunes:** usar GraphQL sin límites; confundir gRPC con seguridad; diseñar REST como acciones; ignorar versionado; no documentar errores.
 
 **Fuentes oficiales:** [HTTP semantics](https://httpwg.org/specs/), [GraphQL specification](https://spec.graphql.org/) y [gRPC](https://grpc.io/docs/what-is-grpc/).
-
-**Evidencia de aprendizaje:** entrega tres contratos comparados y las salidas 200/404/406.
 
 **Conceptos clave:** estilos de diseño de API, sobreconsulta/subconsulta, contratos tipados, RPC binario.
 
@@ -325,6 +323,8 @@ Implementa content negotiation con `Accept` y entrega respuestas `application/js
 
 #### Paso 7 · Cierre y conexión
 
+Ya comprobás que `/paquete/RF-1` devuelve 404 por contrato, no por serialización, y negociás el formato con `Accept`. El siguiente tema mide y traza esas respuestas con Prometheus y OpenTelemetry.
+
 ### Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry
 
 #### Paso 1 · Objetivo y preparación
@@ -344,8 +344,6 @@ Ya distingues métrica agregada de traza individual. El siguiente módulo tratar
 **Errores comunes:** etiquetas de cardinalidad infinita; contar usuarios como labels; no cerrar spans; exponer `/metrics` públicamente; usar logs como única métrica.
 
 **Fuentes oficiales:** [prom-client](https://github.com/siimon/prom-client), [Prometheus data model](https://prometheus.io/docs/concepts/data_model/) y [OpenTelemetry Node](https://opentelemetry.io/docs/languages/js/).
-
-**Evidencia de aprendizaje:** entrega la salida de `/metrics`, una métrica mal definida diagnosticada y un span documentado.
 
 **Objetivo:** medir tráfico, errores y duración de la API, y seguir una petición entre servicios sin depender de suposiciones.
 
@@ -460,6 +458,8 @@ Añade un histograma de duración alrededor del handler. **Pista:** observa `fin
 Instala OpenTelemetry en una copia y crea un span manual con atributos `route` y `status_code`; entrega la consola y explica qué exportador usarías en producción.
 
 #### Paso 7 · Cierre y conexión
+
+Ya exponés un histograma con etiquetas acotadas, detectás una etiqueta de alta cardinalidad y creás un span manual con ruta y estado. El laboratorio integra este registro con el resto del track.
 
 ## Laboratorio práctico
 

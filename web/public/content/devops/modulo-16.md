@@ -116,9 +116,9 @@ Agrega una segunda petición a la colección que haga `GET {{baseUrl}}/no-existe
 
 Agrega una variable `nombreServicio` al environment con el valor `"RutaFlow"`, y un tercer test en la petición de salud que confirme `pm.expect(pm.variables.get('nombreServicio')).to.eql('RutaFlow')`, demostrando que una colección puede leer variables del environment dentro de su propio script de test, no solo en la URL.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya ejecutas una colección Postman real desde la terminal con Newman, separando la definición de las peticiones (colección) de dónde apuntan (environment). El siguiente tema agrega scripts y aserciones más completas sobre el cuerpo de la respuesta. **Evidencia:** entrega la salida de `newman run` con 2 aserciones en verde, y el error real de `Invalid IP address` reproducido al usar `localhost` en vez de una IP explícita. Fuentes oficiales: [Postman — Collection Format](https://learning.postman.com/docs/collections/collection-utility-functions/) y [Newman — npm](https://www.npmjs.com/package/newman).
+Ya ejecutas una colección Postman real desde la terminal con Newman, separando la definición de las peticiones (colección) de dónde apuntan (environment). El siguiente tema agrega scripts y aserciones más completas sobre el cuerpo de la respuesta. Fuentes oficiales: [Postman — Collection Format](https://learning.postman.com/docs/collections/collection-utility-functions/) y [Newman — npm](https://www.npmjs.com/package/newman).
 
 **Errores comunes:** hardcodear la URL completa en cada petición en vez de usar `{{baseUrl}}`, obligando a editar toda la colección para cambiar de entorno; usar `localhost` en vez de una IP explícita y tropezar con resolución DNS inconsistente entre máquinas.
 
@@ -226,9 +226,9 @@ Declara `const cuerpo = pm.response.json();` dos veces seguidas dentro del mismo
 
 Guarda el `id` recibido en `Crear envio` con `pm.collectionVariables.set('envioId', cuerpo.id)`, y agrega una tercera petición `GET {{baseUrl}}/envios/{{envioId}}` (necesitarás agregar ese endpoint al servidor) que confirme que el envío creado es consultable con el mismo ID. Documenta por qué esta dependencia entre peticiones exige que corran en el orden declarado en la colección.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escribes aserciones que validan el cuerpo real de una respuesta JSON, no solo su código de estado, y reconoces un error de script antes de que oculte una prueba incompleta. El siguiente tema ejecuta esta misma colección con reportes exportables y presta atención exacta al código de salida que un pipeline de CI necesita leer. **Evidencia:** entrega la salida con las 5 aserciones en verde, y el resultado real del `AssertionError` reproducido al cambiar el valor esperado. Fuentes oficiales: [Postman — Test scripts](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/) y [Postman — pm.expect (Chai)](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/).
+Ya escribes aserciones que validan el cuerpo real de una respuesta JSON, no solo su código de estado, y reconoces un error de script antes de que oculte una prueba incompleta. El siguiente tema ejecuta esta misma colección con reportes exportables y presta atención exacta al código de salida que un pipeline de CI necesita leer. Fuentes oficiales: [Postman — Test scripts](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/) y [Postman — pm.expect (Chai)](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/).
 
 **Errores comunes:** confirmar solo el código de estado HTTP sin validar el cuerpo de la respuesta; declarar una variable con un nombre que colisiona con el ámbito del sandbox, produciendo un `SyntaxError` confuso de diagnosticar si no se lee el mensaje completo.
 
@@ -309,9 +309,9 @@ En un shell compatible (bash/zsh), ejecuta `npx newman run collection-fallo.json
 
 Agrega el reportero `json` (`--reporters cli,json --reporter-json-export resultado.json`) y escribe un script corto en Python o Node que lea `resultado.json` y cuente cuántas aserciones fallaron, sin depender de parsear la salida de texto de `cli`. Corrige la colección (vuelve `'creado'` a su valor correcto) y confirma que el conteo da `0`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya generas reportes exportables de una corrida de Newman, y reconoces por qué canalizar su salida sin cuidado puede ocultar un fallo real que un pipeline de CI necesitaba detectar. El siguiente tema presenta Jenkins, la otra pieza de este módulo, antes de integrarlos juntos en el Tema 5. **Evidencia:** entrega `reporte.html` generado, y la demostración del código de salida perdido (`$?` = 0 tras la tubería) frente al código de salida real (`1`) capturado sin canalizar. Fuentes oficiales: [Newman — reporteros](https://github.com/postmanlabs/newman#newman-run-options) y [Bash — PIPESTATUS](https://www.gnu.org/software/bash/manual/html_node/Pipelines.html).
+Ya generas reportes exportables de una corrida de Newman, y reconoces por qué canalizar su salida sin cuidado puede ocultar un fallo real que un pipeline de CI necesitaba detectar. El siguiente tema presenta Jenkins, la otra pieza de este módulo, antes de integrarlos juntos en el Tema 5. Fuentes oficiales: [Newman — reporteros](https://github.com/postmanlabs/newman#newman-run-options) y [Bash — PIPESTATUS](https://www.gnu.org/software/bash/manual/html_node/Pipelines.html).
 
 **Errores comunes:** canalizar la salida de Newman hacia otro comando y leer `$?`, perdiendo el código de salida real; olvidar instalar `newman-reporter-html` por separado y asumir que viene incluido con Newman.
 
@@ -422,9 +422,9 @@ Agrega una tercera etapa `Lint` antes de `Build` que ejecute `sh 'echo revisando
 
 Escribe, sin mirar el Paso 4, un `Jenkinsfile` declarativo de memoria con al menos dos etapas, y valídalo con el mismo flujo de `crumbIssuer` + `pipeline-model-converter/validate`. Documenta en un comentario qué parte del flujo (obtener el crumb, o la sintaxis del propio `Jenkinsfile`) te costó recordar primero.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya levantas Jenkins desde cero, confirmas que no trae plugins preinstalados, instalas el soporte de Pipeline vía su propia API REST, y validas la sintaxis de un `Jenkinsfile` con el linter real antes de crear ningún job. El siguiente y último tema de este módulo crea un job real, ejecuta ese pipeline, e integra Newman dentro de él. **Evidencia:** entrega el resultado exitoso de la validación del Paso 4, y el error de línea exacta reproducido al romper deliberadamente la sintaxis. Fuentes oficiales: [Jenkins — Pipeline syntax](https://www.jenkins.io/doc/book/pipeline/syntax/) y [Jenkins — Docker image](https://github.com/jenkinsci/docker/blob/master/README.md).
+Ya levantas Jenkins desde cero, confirmas que no trae plugins preinstalados, instalas el soporte de Pipeline vía su propia API REST, y validas la sintaxis de un `Jenkinsfile` con el linter real antes de crear ningún job. El siguiente y último tema de este módulo crea un job real, ejecuta ese pipeline, e integra Newman dentro de él. Fuentes oficiales: [Jenkins — Pipeline syntax](https://www.jenkins.io/doc/book/pipeline/syntax/) y [Jenkins — Docker image](https://github.com/jenkinsci/docker/blob/master/README.md).
 
 **Errores comunes:** asumir que la imagen oficial de Jenkins trae el soporte de Pipeline preinstalado; olvidar el token CSRF (`Jenkins-Crumb`) en una petición que modifica estado y recibir un `403` confuso sin leer el mensaje real (`No valid crumb was included`).
 
@@ -499,9 +499,9 @@ Consulta `http://localhost:8080/job/qa-pipeline-falla/1/consoleText` y localiza 
 
 Reemplaza el `step` simulado por el comando real `sh 'npx newman run collection.json -e environment.json'`, apuntando a la colección del Tema 2. Documenta qué necesitarías agregar para que funcione dentro del contenedor de Jenkins (pista: Node.js no viene instalado en la imagen base de Jenkins; investiga el plugin NodeJS de Jenkins o un agente Docker con Node ya instalado como las dos soluciones estándar de la industria para este problema específico).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya creaste un job de Jenkins real a partir de un `Jenkinsfile`, lo ejecutaste, y confirmaste — leyendo el resultado real vía API, no solo mirando la interfaz — que el código de salida de un `step` se propaga automáticamente hasta el resultado del build. Esto cierra el módulo de QA Automation y el track completo de DevOps; el siguiente paso es aplicar esta misma etapa QA directamente al pipeline real de tu proyecto. **Evidencia:** entrega el `resultado: SUCCESS` del primer job y el `resultado: FAILURE` del segundo, junto con la línea exacta del log que explica el fallo. Fuentes oficiales: [Jenkins — Pipeline steps reference](https://www.jenkins.io/doc/pipeline/steps/) y [Jenkins REST API](https://www.jenkins.io/doc/book/using/remote-access-api/).
+Ya creaste un job de Jenkins real a partir de un `Jenkinsfile`, lo ejecutaste, y confirmaste — leyendo el resultado real vía API, no solo mirando la interfaz — que el código de salida de un `step` se propaga automáticamente hasta el resultado del build. Esto cierra el módulo de QA Automation y el track completo de DevOps; el siguiente paso es aplicar esta misma etapa QA directamente al pipeline real de tu proyecto. Fuentes oficiales: [Jenkins — Pipeline steps reference](https://www.jenkins.io/doc/pipeline/steps/) y [Jenkins REST API](https://www.jenkins.io/doc/book/using/remote-access-api/).
 
 **Errores comunes:** asumir que Node.js está disponible dentro del contenedor de Jenkins sin instalarlo o configurarlo explícitamente; no leer el log completo del build (`consoleText`) y quedarse solo con el resultado `FAILURE` sin saber qué etapa específica falló.
 
@@ -580,5 +580,5 @@ curl --fail http://127.0.0.1:8091/sensor.json
 #### Paso 6 · Práctica independiente
 Documenta formato, revisión Git, variables, secretos, ejecución CI y reportes mediante una matriz con evidencia de tu versión. **Límites:** el servidor estático no prueba POST, autenticación ni concurrencia; vuelve a la API del Tema 1 para esa comparación.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega `comparacion-api.md`, solicitudes y salida de curl, respuesta 404 y fallo de aserción. **Errores comunes:** contar requests como pruebas, comparar cuerpos diferentes, exportar tokens. Antes del siguiente tema explica qué se comparó, qué evidencia falta y qué decisión habilita. **Fuente oficial:** [Bruno documentation](https://docs.usebruno.com/). La interacción con Bruno queda por ejecutar en una instalación local; este ejercicio no afirma que se haya comprobado su interfaz en esta revisión.

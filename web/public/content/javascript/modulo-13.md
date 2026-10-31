@@ -114,9 +114,9 @@ Añade CSP `Report-Only` sin `unsafe-inline`, registra violaciones y documenta c
 
 Dibuja activos, actores y fronteras; prueba protocolos, claves `__proto__`, texto y atributos. Explica diferencias CORS/autenticación y CSRF/XSS, y revisa una dependencia con lockfile.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes conservar datos como datos y aplicar defensa según contexto. El siguiente tema demostrará cómo recursos alcanzables sobreviven al GC. **Evidencia:** entrega threat model, prueba XSS, rechazo de URL y reporte CSP; explica el resultado del fallo con `innerHTML`.
+Ya puedes conservar datos como datos y aplicar defensa según contexto. El siguiente tema demostrará cómo recursos alcanzables sobreviven al GC.
 
 **Errores comunes:** confiar en datos internos; sanitizar con regex; aceptar cualquier protocolo; usar CORS como autenticación; guardar tokens accesibles a XSS; desplegar CSP permisiva para silenciar alertas.
 
@@ -211,9 +211,9 @@ Incluye worker, observer e intervalo y devuelve un cleanup idempotente. **Pista:
 
 Automatiza ciclos, toma tres snapshots comparables, busca Detached DOM y documenta retained size y ruta a raíz. Compara WeakMap con una caché limitada; no lo presentes como solución universal.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes diferenciar memoria temporal de retención accidental. El siguiente tema observará fallos con contexto mínimo y privacidad. **Evidencia:** entrega test, snapshots antes/después y ruta de retención; explica el resultado al omitir abort.
+Ya puedes diferenciar memoria temporal de retención accidental. El siguiente tema observará fallos con contexto mínimo y privacidad.
 
 **Errores comunes:** concluir por un snapshot; olvidar timers/observers/workers; conservar historial ilimitado; creer que GC entiende intención; usar WeakMap para ocultar una caché sin límites.
 
@@ -314,9 +314,9 @@ Agrega deduplicación por huella y muestreo configurable. **Pista:** conserva si
 
 Envuelve un error HTTP con `new Error(mensaje, { cause })`, crea frontera UI y evento mínimo. Prueba reporter caído, offline, unhandledrejection y source map almacenado fuera del bundle público.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes observar sin registrar indiscriminadamente. El siguiente tema adaptará capacidades, moneda, texto y tiempo sin alterar el dato de dominio. **Evidencia:** entrega prueba de privacidad, evento correlacionado y reporter fallido; explica el resultado peligroso del spread.
+Ya puedes observar sin registrar indiscriminadamente. El siguiente tema adaptará capacidades, moneda, texto y tiempo sin alterar el dato de dominio.
 
 **Errores comunes:** capturar y continuar en estado corrupto; enviar stack al usuario; registrar request completo; usar blacklist; convertir handlers globales en estrategia primaria; crear bucle de telemetría.
 
@@ -420,9 +420,9 @@ Ordena nombres con `Intl.Collator` y corta por grafemas con `Intl.Segmenter`. **
 
 Define browserslist, prueba fallback, reduced motion, teclado, conexión lenta y zona con cambio de día. Compara polyfill con transpilation y mide el coste del primero antes de incluirlo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes tratar compatibilidad e internacionalización como datos y capacidades. El siguiente módulo profundizará APIs Master y decisiones avanzadas. **Evidencia:** entrega matriz locale/zona/capacidad, salida formateada y fallback; explica el fallo por zona implícita.
+Ya puedes tratar compatibilidad e internacionalización como datos y capacidades. El siguiente módulo profundizará APIs Master y decisiones avanzadas.
 
 **Errores comunes:** analizar user-agent; concatenar símbolo monetario; omitir zona; cortar Unicode con slice; confundir polyfill y transpilación; desactivar movimiento sin ofrecer estado final.
 
@@ -494,7 +494,7 @@ Trabaja sobre el proyecto del módulo 12 y conserva una rama o tag previo para c
 
 Derivado de la [documentación oficial](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 42 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Lenguaje | `gramática y tipos` · `coerción e igualdad` · `alcance y closures` · `prototipos` · `clases y campos privados` · `símbolos` · `Proxy y Reflect` | widget web |
 | Datos | `arrays inmutables` · `Map y Set` · `WeakMap y WeakSet` · `typed arrays` · `ArrayBuffer y DataView` · `Temporal` · `Intl y Unicode` | widget web |

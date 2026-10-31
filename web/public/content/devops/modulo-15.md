@@ -73,10 +73,9 @@ Pista: provoca un fallo deliberado determinista cambiando temporalmente el healt
 #### Paso 6 · Práctica independiente
 Detén solo `db` después de arrancar y comprueba que la API devuelve 503; vuelve a iniciarla y verifica recuperación. `depends_on` ordena el arranque, no ofrece disponibilidad continua ni reinicia automáticamente dependientes. Repite con el volumen de laboratorio vacío y explica cómo interval, timeout y retries influyen en la espera.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el compose con healthcheck del Paso 4, el bloqueo por dependencia unhealthy del Paso 5, y el ajuste de reintentos del Paso 6; explicá la diferencia entre "el contenedor existe" y "el servicio está listo". Siguiente paso: aplica el mismo principio de disponibilidad verificada a Kubernetes con probes. Errores comunes: confiar en `depends_on` sin condición para servicios con arranque lento, healthchecks que prueban el proceso en vez del servicio real, y timeouts de healthcheck más cortos que el arranque real del servicio. Fuentes oficiales: https://docs.docker.com/compose/compose-file/05-services/#healthcheck y https://docs.docker.com/compose/compose-file/05-services/#depends_on.
 **¿Por qué es importante?** Un arranque local que "funciona la mayoría de las veces" por orden de contenedores esconde una condición de carrera que reaparece en CI o en un despliegue real bajo más carga.
-**Evidencia de aprendizaje:** entrega compose con healthcheck, fallo de healthcheck reproducido y reintentos calibrados correctamente.
 **Conceptos clave:** healthcheck, depends_on, service_healthy, BuildKit, multi-stage build, cache mount, profile y readiness.
 
 * Código: `docker-compose.yml`
@@ -145,10 +144,9 @@ Pista: quitá la annotation `"helm.sh/hook": pre-upgrade` del Job, dejándolo co
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la annotation `pre-upgrade`, y agregá un segundo hook `post-upgrade` con `hook-weight: "1"` que verifique con un `curl` al endpoint `/health` que la nueva versión responde antes de considerar el release exitoso.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el hook `pre-upgrade` del Paso 4, la carrera de tiempos del Paso 5, y la verificación `post-upgrade` del Paso 6; explicá por qué un recurso "normal" del chart no tiene garantía de orden frente a un hook explícito. Siguiente paso: estudia cómo un service mesh añade control de tráfico entre versiones. Errores comunes: Jobs de migración sin `hook-delete-policy` que acumulan ejecuciones viejas, hooks sin `hook-weight` cuando el orden entre varios hooks importa, y no verificar el resultado del hook antes de continuar. Fuentes oficiales: https://helm.sh/docs/topics/charts_hooks/ y https://helm.sh/docs/topics/chart_template_guide/.
 **¿Por qué es importante?** Un chart de Helm sin hooks ordenados puede pasar todas las pruebas manuales y aun así causar una ventana real de errores en cada despliegue a producción.
-**Evidencia de aprendizaje:** entrega hook pre-upgrade funcionando, carrera de tiempos reproducida y verificación post-upgrade agregada.
 **Conceptos clave:** Helm hook, hook-weight, hook-delete-policy, Job, release, CRD, values override y upgrade.
 
 * Código: `chart/templates/hooks/migrate.yaml`
@@ -222,10 +220,9 @@ Pista: desplegá los pods del canary con la etiqueta `track: canary` en vez de `
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 ajustando la etiqueta del Deployment del canary a `version: v2` exactamente como la espera el `DestinationRule`, y verificá con `istioctl proxy-config endpoints <pod> --cluster "outbound|80|v2|rutaflow-api.default.svc.cluster.local"` que el subset ahora tiene endpoints reales antes de aumentar el peso del canary.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el split 90/10 del Paso 4, los 503 del subset vacío del Paso 5, y la verificación de endpoints del Paso 6; explicá por qué un subset sin pods que cumplan su selector no "reparte menos tráfico" sino que falla ese porcentaje por completo. Siguiente paso: estudia cómo GitOps aplica estos mismos manifiestos de forma declarativa y auditable. Errores comunes: subsets cuyo selector de etiquetas no coincide con los pods reales, mTLS en modo STRICT que bloquea un servicio sin sidecar inyectado, y aumentar el peso del canary sin verificar antes que tiene endpoints sanos. Fuentes oficiales: https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/ y https://istio.io/latest/docs/concepts/traffic-management/.
 **¿Por qué es importante?** Un split de tráfico mal configurado no se nota en pruebas del 100%, pero convierte un canary de bajo riesgo en una fracción real de usuarios recibiendo errores.
-**Evidencia de aprendizaje:** entrega VirtualService/DestinationRule funcionando, 503 por subset vacío reproducido y verificación de endpoints confirmada.
 **Conceptos clave:** sidecar, mTLS, VirtualService, DestinationRule, subset, traffic shifting, canary, circuit breaking, retry y observability.
 
 **Diagrama:**
@@ -296,10 +293,9 @@ Pista: durante el pico de tráfico simulado, corré `kubectl scale deployment ru
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 de la forma correcta para GitOps: actualizá `replicas: 10` directamente en el manifiesto del repositorio `infra` y fusioná ese cambio (incluso como un merge de emergencia), para que Argo CD reconcilie hacia el nuevo valor en vez de revertirlo; documentá el cambio de emergencia en el mismo commit.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la Application con self-heal del Paso 4, la mitigación revertida silenciosamente del Paso 5, y el cambio correcto vía Git del Paso 6; explicá por qué un `kubectl edit` manual en un clúster gestionado por GitOps es una mitigación temporal engañosa, no una solución. Siguiente paso: estudia cómo Ansible gestiona configuración fuera del clúster con la misma disciplina declarativa. Errores comunes: mitigar incidentes con cambios manuales en clústeres con self-heal activo, no tener un procedimiento documentado de "cambio de emergencia vía Git", y dejar `automated.prune` activo sin revisar qué recursos elimina. Fuentes oficiales: https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/ y https://opengitops.dev/.
 **¿Por qué es importante?** La ventaja de GitOps (nunca diverger silenciosamente) se convierte en una trampa operativa si el equipo de guardia no sabe que cualquier cambio fuera de Git será revertido.
-**Evidencia de aprendizaje:** entrega Application con self-heal funcionando, reversión silenciosa reproducida y cambio de emergencia vía Git documentado.
 **Conceptos clave:** declarative state, reconciliation loop, drift, selfHeal, prune, pull model, Application, sync wave, rollback y auditability.
 
 **Diagrama:**
@@ -357,10 +353,9 @@ Pista: reemplazá la tarea `lineinfile` por `shell: echo "RUTAFLOW_API_KEY={{ ap
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la tarea `lineinfile` con `regexp` y `state: present`, y verificá la idempotencia corriendo el playbook dos veces seguidas (`ansible-playbook site.yml` x2) confirmando que la segunda ejecución reporta `changed=0` para esa tarea.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el secreto cifrado y la tarea idempotente del Paso 4, la duplicación de línea del Paso 5, y la verificación de `changed=0` del Paso 6; explicá por qué `shell`/`command` nunca son idempotentes por sí mismos, a diferencia de los módulos declarativos de Ansible. Siguiente paso: cerrá el módulo conectando estas prácticas con las métricas DORA que miden el impacto real de todo el pipeline. Errores comunes: guardar secretos sin `ansible-vault`, usar `shell`/`command` para tareas que ya tienen un módulo idempotente equivalente, y no verificar `changed=0` en una segunda ejecución antes de confiar en un playbook. Fuentes oficiales: https://docs.ansible.com/ansible/latest/vault_guide/index.html y https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html.
 **¿Por qué es importante?** Un playbook no idempotente se comporta distinto la primera y la décima vez que corre, lo que vuelve impredecible cualquier servidor que reciba más de un cambio a lo largo del tiempo.
-**Evidencia de aprendizaje:** entrega secreto cifrado con vault, duplicación de línea reproducida y `changed=0` verificado en segunda ejecución.
 **Conceptos clave:** inventory, role, Vault, idempotency, módulo vs shell, handler, fact, playbook, tag y changed.
 
 **Diagrama:**
@@ -414,10 +409,9 @@ Pista: calculá la "frecuencia de despliegue" contando el total de ejecuciones d
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 filtrando únicamente los despliegues que llegaron a producción y pasaron la verificación posterior (el mismo gate de Trivy y el smoke test del Módulo 13), y recalculá la frecuencia real; comparala con el número inflado del Paso 5 para dimensionar la distorsión.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el cálculo correcto de las 4 métricas DORA del Paso 4, la frecuencia inflada del Paso 5, y la frecuencia real corregida del Paso 6; explicá por qué contar ejecuciones de pipeline en vez de despliegues exitosos a producción invalida la métrica como señal de mejora real. Siguiente paso: usá estas cuatro métricas para decidir en qué parte del pipeline de RutaFlow invertir el próximo esfuerzo de mejora. Errores comunes: medir actividad del pipeline en vez de entregas reales a producción, calcular MTTR solo desde la detección y no desde el inicio real del incidente, y no definir qué cuenta como "cambio que falla" de forma consistente entre equipos. Fuentes oficiales: https://dora.dev/guides/dora-metrics-four-keys/ y https://cloud.google.com/blog/products/devops-sre/the-2019-accelerate-state-of-devops-report.
 **¿Por qué es importante?** Las métricas DORA solo sirven como señal real de mejora si miden entrega efectiva a producción; contar actividad del pipeline en su lugar produce un número que sube sin que el equipo entregue más valor.
-**Evidencia de aprendizaje:** entrega las 4 métricas DORA calculadas, frecuencia inflada detectada y frecuencia real corregida con la comparación documentada.
 **Conceptos clave:** deployment frequency, lead time for changes, change failure rate, MTTR, Four Keys, DevSecOps, shift left, security gate, elite performer y Accelerate.
 
 **Diagrama:**

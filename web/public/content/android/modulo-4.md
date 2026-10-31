@@ -112,9 +112,9 @@ Agrega un cuarto caso a `EstadoUI` (`object Vacio`, para cuando `repo.obtenerTar
 
 Documenta en una frase por qué `EstadoUI` se modela como `sealed class` en vez de, por ejemplo, tres variables booleanas independientes (`cargando`, `error`, `exito`), y qué estados inválidos (por ejemplo, `cargando = true` y `exito = true` simultáneamente) esa segunda alternativa permitiría por error que `sealed class` evita estructuralmente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya expones un estado de pantalla con `StateFlow`, garantizando un valor actual siempre disponible y protegido de mutación externa. El siguiente tema cubre cómo observar ese `StateFlow` desde Compose de forma consciente del ciclo de vida. **Evidencia:** entrega el resultado de la simulación mostrando que un observador tardío recibe el valor actual de inmediato, y explica por qué `_estado` debe ser `private` para proteger la dirección única del flujo de datos. Fuente oficial: [Android Developers — StateFlow and SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow).
+Ya expones un estado de pantalla con `StateFlow`, garantizando un valor actual siempre disponible y protegido de mutación externa. El siguiente tema cubre cómo observar ese `StateFlow` desde Compose de forma consciente del ciclo de vida. Fuente oficial: [Android Developers — StateFlow and SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow).
 
 **Errores comunes:** exponer `MutableStateFlow` directamente en vez de su versión de solo lectura, permitiendo que la UI mute el estado sin pasar por el `ViewModel`; olvidar el valor inicial de `MutableStateFlow`, lo cual ni siquiera compila porque `StateFlow` exige un valor desde su creación.
 
@@ -207,9 +207,9 @@ Agrega una función `onReintentar: () -> Unit` como parámetro de `PantallaTarea
 
 Documenta en una frase qué diferencia de comportamiento observarías en los logs si cambiaras `collectAsStateWithLifecycle` por `collectAsState` simple en una pantalla real, dejando la app en background varios minutos y luego revisando cuántas veces se recolectó el `StateFlow` durante ese período.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya observas un `StateFlow` de forma consciente del ciclo de vida, y explicas por qué UDF hace que el flujo de datos sea predecible y protegido por el propio sistema de tipos. El siguiente tema cubre el caso de eventos de un solo uso, donde `StateFlow` no es la herramienta correcta. **Evidencia:** entrega el resultado de la simulación de ahorro de recolecciones en background, y explica por qué la UI no puede compilar código que mute `estado` directamente. Fuente oficial: [Android Developers — collectAsStateWithLifecycle](https://developer.android.com/topic/libraries/architecture/lifecycle#lifecycle-aware-flow-collection).
+Ya observas un `StateFlow` de forma consciente del ciclo de vida, y explicas por qué UDF hace que el flujo de datos sea predecible y protegido por el propio sistema de tipos. El siguiente tema cubre el caso de eventos de un solo uso, donde `StateFlow` no es la herramienta correcta. Fuente oficial: [Android Developers — collectAsStateWithLifecycle](https://developer.android.com/topic/libraries/architecture/lifecycle#lifecycle-aware-flow-collection).
 
 **Errores comunes:** usar `collectAsState` simple en pantallas de producción, desperdiciando recursos en background; que la UI intente modificar el estado directamente en vez de notificar una intención al `ViewModel`.
 
@@ -331,9 +331,9 @@ Agrega un segundo evento a `EventoTarea` (`data class TareaEliminada(val id: Str
 
 Documenta en una tabla de dos columnas, para tres señales reales de tu propio proyecto (por ejemplo: lista de resultados, mensaje de error puntual, navegación tras pago exitoso), si cada una debería modelarse con `StateFlow` o `SharedFlow`, justificando la decisión según si un observador tardío debería o no recibir ese valor/evento.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya modelas eventos de un solo uso con `SharedFlow`, evitando que se repitan incorrectamente tras una recomposición, y distingues claramente cuándo usar `StateFlow` frente a `SharedFlow`. Esto cierra el módulo de estado con StateFlow y Compose; el siguiente módulo del track aborda networking con Retrofit para conectar este estado con datos reales de red. **Evidencia:** entrega el resultado de la simulación mostrando que el observador tardío de `SharedFlow` no recibe el evento pasado, y el resultado del fallo al modelar incorrectamente ese mismo evento con `StateFlow`. Fuente oficial: [Android Developers — SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow#sharedflow).
+Ya modelas eventos de un solo uso con `SharedFlow`, evitando que se repitan incorrectamente tras una recomposición, y distingues claramente cuándo usar `StateFlow` frente a `SharedFlow`. Esto cierra el módulo de estado con StateFlow y Compose; el siguiente módulo del track aborda networking con Retrofit para conectar este estado con datos reales de red. Fuente oficial: [Android Developers — SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow#sharedflow).
 
 **Errores comunes:** modelar un evento de un solo uso con `StateFlow`, causando que se repita en recomposiciones posteriores; olvidar recolectar `eventos` dentro de un `LaunchedEffect` en la UI, perdiendo emisiones si el composable aún no está observando.
 
@@ -431,7 +431,7 @@ En Windows usa `gradlew.bat assembleDebug`. Instala y ejecuta con Run de Android
 #### Paso 6 · Práctica independiente
 Ensaya muerte de proceso del sistema: con la app en segundo plano y un dispositivo ADB seleccionado ejecuta `adb shell am kill com.example.restauracion`, y vuelve desde recientes. Registra si se restaura el texto y las condiciones del dispositivo. No uses force-stop ni borres datos para afirmar que probaste el mismo escenario. Diseña además dónde guardarías una observación que debe sobrevivir al cierre explícito del usuario.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** captura antes/después de rotación y registro del ensayo de proceso, diferenciando resultados observados de esperados. El siguiente paso es SavedStateHandle y persistencia de borradores. **Errores comunes:** confundir recomposición con recreación, guardar objetos grandes y esperar que ViewModel sobreviva a cualquier terminación. **Límites y decisión de uso:** este ejemplo no promete conservación tras force-stop, desinstalación o borrado de datos.
+#### Paso 7 · Cierre
+El siguiente paso es SavedStateHandle y persistencia de borradores. **Errores comunes:** confundir recomposición con recreación, guardar objetos grandes y esperar que ViewModel sobreviva a cualquier terminación. **Límites y decisión de uso:** este ejemplo no promete conservación tras force-stop, desinstalación o borrado de datos.
 
 **Fuente oficial:** [Android: guardar estado Compose](https://developer.android.com/develop/ui/compose/state-saving).

@@ -487,8 +487,6 @@ Ya puedes construir una cadena de streams que falla de forma segura: propaga el 
 
 **Fuentes oficiales:** [`stream.pipeline`](https://nodejs.org/api/stream.html#streampipelinestreams-options), [`stream/promises.pipeline`](https://nodejs.org/api/stream.html#streampromisespipeline) y [`AbortController` en Node](https://nodejs.org/api/globals.html#class-abortcontroller).
 
-**Evidencia de aprendizaje:** entrega la salida completa del Paso 4, el fallo sin capturar reproducido en el Paso 5 junto con la salida parcial ya limpiada tras restaurar el `catch`, y la cancelación con `AbortController` verificada sin dejar un archivo a medio escribir.
-
 **Transferencia al proyecto integrador «API operativa de entregas»:** Compón lectura, transformación y escritura del export mediante `pipeline`, limpia la salida parcial ante cualquier fallo y agrega cancelación explícita. Interrumpe el destino y verifica que no queda un archivo parcial anunciado como completo ni una lectura activa sin consumidor.
 
 ## Construcción guiada del capítulo

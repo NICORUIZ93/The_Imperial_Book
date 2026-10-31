@@ -99,9 +99,7 @@ Pista: cambiá `ConfirmarEntregaBoton` para que declare su propio `@State privat
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `@Binding`, y agregá una tercera vista (`ResumenRuta`) que también reciba el mismo `$entregado` — confirmá que las tres vistas (detalle, botón, resumen) siempre muestran el mismo valor, sin que ninguna tenga que "sincronizarse" explícitamente con las otras.
 
-**Evidencia de aprendizaje:** entrega el `@Binding` compartido funcionando, el estado divergente provocado al reemplazarlo por un `@State` propio, y las tres vistas sincronizadas sin copia.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `@Binding` compartido funcionando del Paso 4, el estado divergente del Paso 5, y las tres vistas sincronizadas del Paso 6; explicá por qué "copiar el valor a otro `@State` para tenerlo a mano" crea exactamente el bug que acabás de provocar. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque copiar un valor compartido en un `@State` propio "para tenerlo a mano" crea dos fuentes de verdad que pueden divergir, exactamente el bug que `@Binding` existe para evitar al referenciar el estado del padre en vez de copiarlo.
 
@@ -153,10 +151,9 @@ xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 1
 Pista: agregá `Text(vm.conductorActivo)` dentro del `body` de `ListaEnvios` "solo para tenerlo a mano", sin usarlo realmente en la lógica visible — ese es el fallo deliberado: ahora `ListaEnvios` SÍ se redibuja cada vez que `conductorActivo` cambia, aunque la lista de envíos en sí no haya cambiado, porque `@Observable` rastrea exactamente qué leíste, no qué "parece que vas a necesitar".
 #### Paso 6 · Práctica independiente
 Quitá el `Text(vm.conductorActivo)` innecesario del Paso 5, y agregá una segunda vista `ContadorPendientes` que lea solo `vm.envios.count` — confirmá que ninguna de las dos vistas se redibuja de más cuando cambia una propiedad que la otra no lee.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el redibujado granular confirmado del Paso 4, el redibujado de más provocado del Paso 5, y las dos vistas independientes del Paso 6; explicá por qué `@Observable` mejora sobre el viejo `ObservableObject`+`@Published`, que notificaba a cualquier observador del objeto completo. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque `@Observable` redibuja únicamente las vistas que efectivamente leyeron la propiedad que cambió, evitando la sobre-notificación del viejo `ObservableObject`+`@Published`, que redibujaba a cualquier observador del objeto completo.
-**Evidencia de aprendizaje:** entrega el redibujado granular confirmado, el redibujado de más provocado al leer una propiedad sin usarla, y las dos vistas independientes que no se redibujan entre sí.
 **Conceptos clave:** redibujado granular basado en la propiedad específica leída, no en el objeto completo.
 
 ```swift
@@ -284,9 +281,7 @@ Pista: quitá `.environment(ServicioAPI())` del `WindowGroup` pero dejá `@Envir
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la inyección, y agregá una segunda vista intermedia entre `ListaEnvios` y `DetalleEnvio` que NO lea `ServicioAPI` en absoluto — confirmá que esa vista intermedia no necesita saber nada sobre `ServicioAPI` para que `DetalleEnvio` siga funcionando.
 
-**Evidencia de aprendizaje:** entrega la inyección funcionando a través de varios niveles, el crash reproducido por ambiente faltante, y la vista intermedia que no necesita conocer la dependencia.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la inyección funcionando a través de varios niveles del Paso 4, el crash por ambiente faltante del Paso 5, y la vista intermedia ignorante de la dependencia del Paso 6; explicá por qué esto resuelve el mismo "prop drilling" que Context API resuelve en React. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio que no la usa, resolviendo en SwiftUI el mismo problema que Context API resuelve en React.
 

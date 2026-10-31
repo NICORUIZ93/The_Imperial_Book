@@ -97,9 +97,9 @@ java -D____=layertools -jar target/*.jar list
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, el comando `layertools list`, sus cuatro capas esperadas, y un Dockerfile que las copie en el orden correcto. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya inspeccionas las capas reales de un JAR de Spring Boot con `layertools`, sin necesitar Docker corriendo para verificar la separación. El siguiente tema reduce el tiempo de arranque compilando a un binario nativo con GraalVM. **Evidencia:** entrega la salida real de `layertools list`, la confirmación por filesystem de `target/extracted/`, y el error real `Unable to find layers.idx` del fallo deliberado. Fuente oficial: [Spring Boot — Container Images](https://docs.spring.io/spring-boot/reference/packaging/container-images/).
+Ya inspeccionas las capas reales de un JAR de Spring Boot con `layertools`, sin necesitar Docker corriendo para verificar la separación. El siguiente tema reduce el tiempo de arranque compilando a un binario nativo con GraalVM. Fuente oficial: [Spring Boot — Container Images](https://docs.spring.io/spring-boot/reference/packaging/container-images/).
 
 **Errores comunes:** empaquetar todo en una única capa de Docker sin usar `layertools`; usar la etiqueta `latest` en vez de una versión inmutable, dificultando el rollback.
 
@@ -207,9 +207,9 @@ find target/spring-aot/main/sources -name "*ApplicationContextInitializer.java"
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase `RuntimeHintsRegistrar`, la anotación que la registra, y el comando `process-aot` que confirma su efecto en disco. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya ejecutas el procesamiento AOT real de Spring Boot e inspeccionas en disco el código que generaría la base de una compilación nativa, sin necesitar GraalVM instalado. El siguiente tema conecta los health checks de Actuator con las decisiones reales que Kubernetes toma sobre el pod. **Evidencia:** entrega la salida de `find target/spring-aot/main/sources -name "*ApplicationContextInitializer.java"`, y la explicación del error real de GraalVM que documenta el fallo deliberado. Fuente oficial: [Spring Boot — GraalVM Native Images](https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html).
+Ya ejecutas el procesamiento AOT real de Spring Boot e inspeccionas en disco el código que generaría la base de una compilación nativa, sin necesitar GraalVM instalado. El siguiente tema conecta los health checks de Actuator con las decisiones reales que Kubernetes toma sobre el pod. Fuente oficial: [Spring Boot — GraalVM Native Images](https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html).
 
 **Errores comunes:** asumir que `native-image` no requiere ninguna configuración adicional de reflexión; ejecutar directamente un build nativo completo (varios minutos) en vez de `process-aot` (segundos) durante la iteración de desarrollo.
 
@@ -348,9 +348,9 @@ management:
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, la configuración YAML que habilita los probes, y un test `MockMvc` que confirme el `503` real en readiness tras publicar `ReadinessState.REFUSING_TRAFFIC`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con peticiones HTTP reales que los endpoints de probes de Kubernetes reflejan el estado genuino de disponibilidad de la aplicación. Esto cierra el módulo de empaquetado y despliegue; el siguiente módulo aborda observabilidad distribuida con trazas y logs correlacionados. **Evidencia:** entrega el resultado de `ProbesTest` en verde, y el `404` real que produce el fallo deliberado al deshabilitar los probes. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
+Ya confirmas con peticiones HTTP reales que los endpoints de probes de Kubernetes reflejan el estado genuino de disponibilidad de la aplicación. Esto cierra el módulo de empaquetado y despliegue; el siguiente módulo aborda observabilidad distribuida con trazas y logs correlacionados. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
 
 **Errores comunes:** no habilitar `probes.enabled=true` fuera de un clúster Kubernetes real, recibiendo `404` en pruebas locales; acoplar `livenessProbe` a dependencias externas, causando reinicios en cascada ante un fallo de infraestructura ajeno al proceso mismo.
 

@@ -14,7 +14,6 @@ Una aplicación de entregas que mezcla directamente lógica de negocio con detal
 #### Paso 3 · Teoría, modelo mental y analogía
 Separar el código en `dominio/` (conceptos centrales sin dependencias externas), `servicio/` (lógica de negocio) e `infraestructura/` (persistencia, clientes externos) da a cada capa una razón de cambio distinta y bien delimitada. La analogía: una empresa organizada en departamentos con responsabilidades claramente delimitadas, donde un cambio en el proveedor logístico externo no debería requerir que el departamento de diseño de producto cambie nada de su propio trabajo.
 
-**Evidencia de aprendizaje:** entrega la estructura de `dominio/`, `servicio/` e `infraestructura/`, y la confirmación de que el dominio no depende de ningún detalle de infraestructura concreta.
 **Conceptos clave:** separación dominio/servicio/infraestructura, cohesión por responsabilidad.
 
 El proyecto integrador organiza el código en capas claramente separadas: `dominio/` contiene los modelos de datos inmutables usando records y sealed interfaces (Módulo 7), representando los conceptos centrales del negocio sin ninguna dependencia hacia detalles de infraestructura; `servicio/` contiene la lógica de negocio propiamente dicha, incluyendo el procesamiento concurrente de tareas usando virtual threads (Módulo 5) para operaciones con I/O; `infraestructura/` contiene los detalles concretos de persistencia y clientes externos, la capa más propensa a cambiar según decisiones técnicas específicas (qué base de datos usar, qué API externa consumir) sin que ese cambio deba afectar la lógica de negocio central en `servicio/`.
@@ -58,7 +57,7 @@ Pista: importá directamente una clase de `infrastructure` (por ejemplo, un clie
 #### Paso 6 · Práctica independiente
 Agregá una segunda regla de negocio a `DeliveryService` (por ejemplo, exigir una dirección de destino no vacía), y una prueba unitaria en `domain` que confirme que ningún import real de `infrastructure` aparece en ese módulo — podés verificarlo simplemente con `grep -r "infrastructure" domain/src` y confirmando que no hay coincidencias.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el árbol de capas, el `module-info` o estructura de paquetes, y una prueba que confirme que el dominio compila sin ninguna dependencia de infraestructura; como siguiente paso integra concurrencia y testing en esa misma estructura. Errores comunes: filtrar lógica de negocio dentro de un controlador o adaptador, acceder a infraestructura directamente desde el dominio, y mezclar las tres capas en un único paquete plano "por simplicidad". Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
 **¿Por qué es importante?** Porque separar el código en capas con razones de cambio distintas y bien delimitadas facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin rastrear ese impacto a través de código mezclado.
 
@@ -73,7 +72,6 @@ Procesar cientos de tareas de entrega concurrentemente, donde algunas fallan y o
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada tarea se envía a un `Executors.newVirtualThreadPerTaskExecutor()` (Módulo 5), y su resultado se modela como `sealed interface ResultadoProcesamiento permits Exito, Error {}` (Módulo 7), con el compilador garantizando que el código que procesa esos resultados maneje explícitamente ambos casos. La analogía: una línea de producción con múltiples estaciones simultáneas donde cada producto terminado se etiqueta explícitamente como aprobado o rechazado, nunca como "desconocido".
 
-**Evidencia de aprendizaje:** entrega el procesamiento concurrente con `ResultadoProcesamiento`, y las pruebas que verifican la lógica de negocio con mocks, sin infraestructura real.
 **Conceptos clave:** procesamiento paralelo con resultado modelado como sealed interface, tests aislados con mocks.
 
 El procesamiento concurrente del proyecto integrador combina virtual threads (Módulo 5) para procesar múltiples tareas en paralelo con un modelo de resultado expresado como sealed interface (Módulo 7): `sealed interface ResultadoProcesamiento permits Exito, Error {}`, con `record Exito(String datos) implements ResultadoProcesamiento {}` y `record Error(String motivo) implements ResultadoProcesamiento {}`, permitiendo que cada tarea procesada concurrentemente devuelva explícitamente si tuvo éxito o falló, sin recurrir a lanzar excepciones para el caso de fallo esperado (un fallo individual de una tarea entre muchas no debería necesariamente interrumpir el procesamiento del resto), y con el compilador garantizando, mediante pattern matching exhaustivo (Módulo 7), que el código que procesa esos resultados maneje explícitamente ambos casos posibles.
@@ -120,7 +118,7 @@ Pista: reemplazá el manejo de errores por tarea para que, en vez de capturar la
 #### Paso 6 · Práctica independiente
 Agregá una prueba con Mockito que mockee el colaborador que decide si una tarea específica falla, y verificá con JUnit 5 que el lote completo de 10 resultados (8 `Exito` + 2 `Error`) se recolecta aunque las tareas fallidas no sean las mismas en cada corrida.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el procesamiento con virtual threads, el `ResultadoProcesamiento` sellado con sus casos `Exito`/`Error`, y las pruebas con Mockito aislando la lógica de negocio; como siguiente paso configura el build reproducible que cierra el track. Errores comunes: lanzar virtual threads sin ningún límite de concurrencia real hacia un recurso externo, usar excepciones para un fallo individual esperado en vez de modelarlo como resultado explícito, y mockear la clase bajo prueba en vez de sus dependencias. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
 **¿Por qué es importante?** Porque modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar éxito y error explícitamente, con el compilador garantizando que ningún caso quede sin cubrir, sin recurrir a excepciones para un fallo individual esperado.
 
@@ -159,11 +157,9 @@ Pista: agregá deliberadamente `System.currentTimeMillis()` como parte de la ver
 #### Paso 6 · Práctica independiente
 Documentá en el `README.md` del proyecto el comando único (`./gradlew run`) que permite a cualquier persona clonar el repositorio y ejecutar la aplicación completa sin pasos manuales adicionales, y verificá siguiendo únicamente esas instrucciones desde una copia nueva del repositorio.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el comando único de ejecución documentado, y confirma que un checkout limpio del repositorio compila y corre sin pasos manuales adicionales; con esto cerrás el track completo de Java. Como siguiente paso aplica esta misma disciplina de capas, concurrencia y build reproducible al track de Spring Boot. Errores comunes: documentar un comando de ejecución que depende de un paso manual previo no escrito en ningún lado, dejar dependencias sin versión fijada que pueden resolver distinto en cada máquina, y omitir instrucciones de cómo correr los tests junto con la aplicación. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
 **¿Por qué es importante?** Porque un build reproducible ejecutable con un solo comando documentado elimina la fricción de configuración manual y garantiza el mismo resultado en cualquier máquina, cerrando el ciclo completo del proyecto integrador: dominio, concurrencia, tests y despliegue reproducible.
-**Evidencia de aprendizaje:** entrega el comando único de ejecución documentado, y la confirmación de que un checkout limpio corre sin pasos manuales adicionales.
-
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir la aplicación integradora completa con arquitectura por capas, procesamiento concurrente, tests y build reproducible.

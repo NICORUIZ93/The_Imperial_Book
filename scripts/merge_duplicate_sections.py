@@ -35,7 +35,6 @@ MERGE_MARKERS = (
     "**¿Por qué es importante?**",
     "**Analogía:**",
     "**Conceptos clave:**",
-    "**Evidencia de aprendizaje:**",
 )
 
 GENERIC_SCAFFOLD = re.compile(

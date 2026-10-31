@@ -128,9 +128,9 @@ suscripcion.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un Observable con lógica productora y de limpieza instrumentadas con espías, y un test que confirme evaluación perezosa y cancelación real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada sin suscriptor) y genuinamente cancelable (la limpieza real detiene el trabajo subyacente), a diferencia de una Promesa. El siguiente tema confirma con `fakeAsync`/`tick` cómo `switchMap` cancela automáticamente un Observable interno cuando llega un nuevo valor. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado incorrecto (`receptor` invocado tras `unsubscribe`) que produce el fallo deliberado. Fuentes oficiales: [RxJS — Observable](https://rxjs.dev/guide/observable).
+Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada sin suscriptor) y genuinamente cancelable (la limpieza real detiene el trabajo subyacente), a diferencia de una Promesa. El siguiente tema confirma con `fakeAsync`/`tick` cómo `switchMap` cancela automáticamente un Observable interno cuando llega un nuevo valor. Fuentes oficiales: [RxJS — Observable](https://rxjs.dev/guide/observable).
 
 **Errores comunes:** asumir que `unsubscribe()` cancela automáticamente cualquier operación asíncrona subyacente sin que el productor implemente su propia función de limpieza; confundir "nadie está escuchando el resultado" con "la operación se detuvo realmente".
 
@@ -267,9 +267,9 @@ entrada$.pipe(____((texto) => api.buscar(texto)))
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `switchMap` y un test `fakeAsync` que confirme que solo la respuesta más reciente se propaga. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `fakeAsync`/`tick` sobre un `Subject` real, que `switchMap` cancela el Observable interno anterior cuando llega un nuevo valor, resolviendo condiciones de carrera reales. El siguiente tema confirma con un componente real destruido que `takeUntilDestroyed` completa automáticamente una suscripción, evitando la fuga de memoria clásica. **Evidencia:** entrega el resultado del test en verde, y el resultado incorrecto (ambos resultados presentes) que produce el fallo deliberado con `mergeMap`. Fuentes oficiales: [RxJS — switchMap](https://rxjs.dev/api/operators/switchMap).
+Ya confirmas, con `fakeAsync`/`tick` sobre un `Subject` real, que `switchMap` cancela el Observable interno anterior cuando llega un nuevo valor, resolviendo condiciones de carrera reales. El siguiente tema confirma con un componente real destruido que `takeUntilDestroyed` completa automáticamente una suscripción, evitando la fuga de memoria clásica. Fuentes oficiales: [RxJS — switchMap](https://rxjs.dev/api/operators/switchMap).
 
 **Errores comunes:** usar `mergeMap` donde la semántica correcta es "solo me interesa la respuesta más reciente" (caso de uso de `switchMap`); olvidar `debounceTime`/`distinctUntilChanged` antes de `switchMap`, disparando peticiones innecesarias en cada tecla.
 
@@ -401,9 +401,9 @@ this.eventos$.pipe(____()).subscribe(evento => this.procesar(evento));
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con una suscripción usando `takeUntilDestroyed()` y un test que confirme que deja de recibir eventos tras `fixture.destroy()`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed()` completa automáticamente una suscripción exactamente al destruirse el componente, sin ningún `ngOnDestroy` manual. El siguiente y último tema confirma con `fakeAsync`/`tick` cómo `exhaustMap` previene el doble envío de un formulario ignorando clics mientras una petición sigue en curso. **Evidencia:** entrega el resultado del test en verde, y el resultado incorrecto (`[1, 2]`) que produce el fallo deliberado. Fuentes oficiales: [Angular — takeUntilDestroyed](https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed).
+Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed()` completa automáticamente una suscripción exactamente al destruirse el componente, sin ningún `ngOnDestroy` manual. El siguiente y último tema confirma con `fakeAsync`/`tick` cómo `exhaustMap` previene el doble envío de un formulario ignorando clics mientras una petición sigue en curso. Fuentes oficiales: [Angular — takeUntilDestroyed](https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed).
 
 **Errores comunes:** usar `subscribe()` manual sin `takeUntilDestroyed()` ni `async` pipe, dejando la limpieza a la memoria del desarrollador en vez de al framework; usar `takeUntilDestroyed()` fuera de un contexto de inyección sin pasar explícitamente un `DestroyRef`.
 
@@ -524,9 +524,9 @@ click$.pipe(____(() => api.enviar()))
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `exhaustMap` y un test `fakeAsync` con un espía que confirme exactamente una invocación ante dos clics rápidos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un espía real y `fakeAsync`/`tick`, que `exhaustMap` previene el doble envío ignorando clics mientras una operación sigue en curso. Con esto cierras el módulo de RxJS: Observable vs Promise (Tema 1), `switchMap` cancela condiciones de carrera (Tema 2), `takeUntilDestroyed` evita fugas de memoria (Tema 3), y los operadores de aplanamiento correctos según la semántica deseada (Tema 4). El siguiente módulo aplica estos flujos a peticiones HTTP reales con `HttpClient` e interceptores. **Evidencia:** entrega el resultado del test en verde, y el resultado incorrecto (`enviarSpy` invocado 2 veces) que produce el fallo deliberado. Fuentes oficiales: [RxJS — exhaustMap](https://rxjs.dev/api/operators/exhaustMap).
+Ya confirmas, con un espía real y `fakeAsync`/`tick`, que `exhaustMap` previene el doble envío ignorando clics mientras una operación sigue en curso. Con esto cierras el módulo de RxJS: Observable vs Promise (Tema 1), `switchMap` cancela condiciones de carrera (Tema 2), `takeUntilDestroyed` evita fugas de memoria (Tema 3), y los operadores de aplanamiento correctos según la semántica deseada (Tema 4). El siguiente módulo aplica estos flujos a peticiones HTTP reales con `HttpClient` e interceptores. Fuentes oficiales: [RxJS — exhaustMap](https://rxjs.dev/api/operators/exhaustMap).
 
 **Errores comunes:** usar `mergeMap` o `concatMap` para prevenir doble envío (ambos SÍ ejecutan ambas llamadas, solo cambia el orden/paralelismo, no la prevención); asumir que `exhaustMap` "cancela" la nueva emisión en vez de simplemente ignorarla (no la cancela, ni siquiera la procesa).
 

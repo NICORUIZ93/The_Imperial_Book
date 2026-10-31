@@ -4,6 +4,8 @@ Cada tema comienza en su propia carpeta vacía. El proyecto integrador existe ap
 
 ## Aprende construyendo
 
+Cada tema se estudia en su propia carpeta y termina con una comprobación ejecutable; el orden importa porque cada uno reutiliza el modelo del anterior.
+
 ## Antes de comenzar: preparación del entorno
 
 Instala [Node.js LTS](https://nodejs.org/en/download), [Visual Studio Code](https://code.visualstudio.com/) y [Git](https://git-scm.com/downloads). En Windows abre PowerShell; en macOS o Linux abre Terminal. Verifica:
@@ -104,7 +106,7 @@ Agrega `let intentos = 0`, increméntalo dos veces e inclúyelo en la salida. **
 
 Crea `const conductor = { nombre: 'Ana', disponible: true }`; cambia únicamente `disponible` y muestra el objeto. Después intenta reasignar `conductor` y explica con tus palabras por qué una operación funciona y la otra falla.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Aprendiste a comunicar intención con `const` y `let`. El próximo tema explica qué clases de valores guardan esas variables. Demuestra el aprendizaje entregando la salida correcta, el `TypeError` provocado y una explicación de dos frases. Fuente oficial: [MDN — declaraciones y variables](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Grammar_and_types#declaraciones).
 
@@ -174,7 +176,7 @@ Agrega `paradas: []` y predice `typeof envio.paradas`. **Pista:** después compr
 
 Escribe `describirTipo(valor)` para distinguir `null`, array y los resultados normales de `typeof`. Prueba al menos nueve valores sin copiar una tabla de respuestas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Ya puedes inspeccionar un dato antes de operar con él. El siguiente tema muestra por qué JavaScript a veces convierte tipos automáticamente. Entrega la salida, el fallo de `BigInt` y los nueve casos de tu función. Fuente oficial: [MDN — tipos y estructuras](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Data_structures).
 
@@ -242,7 +244,7 @@ Prueba `''`, `'0'`, `'7'` y `'7.5'`. **Pista:** escribe primero tu predicción y
 
 Crea `convertirPeso(texto)` que acepte decimales positivos y rechace vacío, `NaN`, cero e infinito. Integra la función en el objeto de entrega del Tema 1.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Aprendiste a validar en la frontera y mantener comparaciones predecibles. El siguiente tema construye mensajes legibles usando plantillas. Evidencia: tabla de cinco entradas con predicción y resultado. Fuente oficial: [MDN — igualdad estricta](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Strict_equality).
 
@@ -304,7 +306,7 @@ Agrega conductor opcional. **Pista:** usa `envio.conductor?.nombre ?? 'sin asign
 
 Construye `resumenRuta` con número de paradas, distancia y conductor. Luego muestra el resultado en un `<output>` usando `textContent` y explica por qué no elegiste `innerHTML`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Ahora puedes presentar datos sin perder legibilidad ni confundir ausencia con cero. El siguiente tema separa el lenguaje de las APIs de cada entorno. Evidencia: salidas con destino ausente, vacío y definido. Fuente oficial: [MDN — template literals](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Template_literals).
 
@@ -383,9 +385,9 @@ Recibe la guía mediante `process.argv[2]` en la CLI. **Pista:** valida ausencia
 
 Agrega un formulario web que reciba guía y estado, pero conserva `resumenEnvio` sin referencias a `document` ni `process`. Demuestra la misma regla con una prueba de Node.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Completaste un primer incremento del proyecto ejecutable en dos entornos. **Evidencia:** demuestra ambos resultados y el fallo deliberado; después explica qué parte es dominio y qué parte adaptador. El siguiente módulo introduce funciones y control de flujo. Fuentes oficiales: [Node.js ECMAScript modules](https://nodejs.org/api/esm.html) y [MDN — DOM](https://developer.mozilla.org/es/docs/Web/API/Document_Object_Model).
+Completaste un primer incremento del proyecto ejecutable en dos entornos. El siguiente módulo profundiza en operadores, control de flujo y funciones sobre estas mismas herramientas. Fuentes oficiales: [Node.js ECMAScript modules](https://nodejs.org/api/esm.html) y [MDN — DOM](https://developer.mozilla.org/es/docs/Web/API/Document_Object_Model).
 
 **Errores comunes:** abrir módulos con `file://`; importar una ruta incorrecta; usar `document` en Node; mezclar reglas del dominio con la actualización del DOM.
 

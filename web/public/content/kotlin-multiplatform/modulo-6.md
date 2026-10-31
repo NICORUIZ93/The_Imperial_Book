@@ -135,9 +135,9 @@ SELECT * FROM Tarea WHERE completada = 0;
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un esquema `.sq` con una tabla y al menos dos queries nombradas (una de selección, una de inserción). Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras esquemas y queries tipadas en SQL real, confirmando contra SQLite real que un nombre de columna incorrecto es detectable, y explicando por qué SQLDelight adelanta esa detección a tiempo de compilación. El siguiente tema resuelve cómo el mismo esquema se ejecuta contra un driver distinto por plataforma. **Evidencia:** entrega el resultado de la query correcta y el error real de la columna mal escrita, y explica la diferencia entre detectar ese error en compilación (SQLDelight) frente a en ejecución (un ORM dinámico). Fuente oficial: [SQLDelight docs](https://cashapp.github.io/sqldelight/2.0.2/multiplatform_sqlite/).
+Ya declaras esquemas y queries tipadas en SQL real, confirmando contra SQLite real que un nombre de columna incorrecto es detectable, y explicando por qué SQLDelight adelanta esa detección a tiempo de compilación. El siguiente tema resuelve cómo el mismo esquema se ejecuta contra un driver distinto por plataforma. Fuente oficial: [SQLDelight docs](https://cashapp.github.io/sqldelight/2.0.2/multiplatform_sqlite/).
 
 **Errores comunes:** confiar en un ORM dinámico sin verificación de tipos en compilación, descubriendo errores de SQL solo en producción; nombrar una query de forma ambigua que no refleja lo que realmente hace.
 
@@ -278,9 +278,9 @@ ____ fun crearDriver(): SqlDriver
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un contrato `expect`/`actual` para un driver de SQLDelight, con sus dos implementaciones (Android e iOS). Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues las queries compartidas del driver específico de plataforma, confirmando que el mismo conjunto de queries produce resultados idénticos sin importar la configuración de conexión subyacente. El siguiente tema evoluciona el esquema con el tiempo sin perder datos existentes. **Evidencia:** entrega el resultado idéntico de ambos drivers ante las mismas queries, y explica por qué `AndroidSqliteDriver` no podría usarse directamente en `commonMain`. Fuente oficial: [SQLDelight docs — Drivers](https://cashapp.github.io/sqldelight/2.0.2/multiplatform_sqlite/).
+Ya distingues las queries compartidas del driver específico de plataforma, confirmando que el mismo conjunto de queries produce resultados idénticos sin importar la configuración de conexión subyacente. El siguiente tema evoluciona el esquema con el tiempo sin perder datos existentes. Fuente oficial: [SQLDelight docs — Drivers](https://cashapp.github.io/sqldelight/2.0.2/multiplatform_sqlite/).
 
 **Errores comunes:** intentar compartir el driver de SQLite entre plataformas en vez de usar `expect`/`actual`; mezclar lógica de negocio dentro de la implementación `actual` del driver, que debería limitarse exclusivamente a la configuración de conexión.
 
@@ -403,9 +403,9 @@ ALTER TABLE Tarea ____ COLUMN fechaLimite TEXT;
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una migración `.sqm` que agregue una columna a una tabla existente, y verifica mentalmente (o con SQLite real) que preserva los datos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escribes migraciones versionadas que evolucionan el esquema sin perder datos existentes, confirmando contra SQLite real que los valores por defecto se aplican correctamente a filas preexistentes. El siguiente y último tema del módulo agrupa múltiples escrituras relacionadas en una transacción atómica. **Evidencia:** entrega el resultado antes/después de la migración mostrando los datos preservados, y explica por qué `DROP TABLE` + recrear no es equivalente a una migración incremental. Fuente oficial: [SQLDelight docs — Migrations](https://cashapp.github.io/sqldelight/2.0.2/android_migrations/).
+Ya escribes migraciones versionadas que evolucionan el esquema sin perder datos existentes, confirmando contra SQLite real que los valores por defecto se aplican correctamente a filas preexistentes. El siguiente y último tema del módulo agrupa múltiples escrituras relacionadas en una transacción atómica. Fuente oficial: [SQLDelight docs — Migrations](https://cashapp.github.io/sqldelight/2.0.2/android_migrations/).
 
 **Errores comunes:** modificar el esquema directamente (recreando la tabla) en vez de usar una migración incremental, perdiendo datos existentes; numerar las migraciones fuera de secuencia, dejando el esquema en un estado inconsistente para algunos dispositivos.
 
@@ -583,9 +583,9 @@ database.____ {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una transacción de dos escrituras relacionadas con un fallo deliberado, verificando que ambas se revierten juntas. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya agrupas escrituras relacionadas en una transacción atómica, confirmando contra SQLite real que un fallo a mitad de camino revierte TODAS las escrituras de esa transacción, no solo la que falló explícitamente. Esto cierra el módulo de persistencia compartida; el siguiente módulo aplica estos fundamentos a la UI compartida con Compose Multiplatform. **Evidencia:** entrega el estado de ambas tablas tras la transacción exitosa y tras la fallida, y explica qué diferencia produce omitir la transacción (el fallo deliberado). Fuente oficial: [SQLDelight docs — Transactions](https://cashapp.github.io/sqldelight/2.0.2/multiplatform_sqlite/#transactions).
+Ya agrupas escrituras relacionadas en una transacción atómica, confirmando contra SQLite real que un fallo a mitad de camino revierte TODAS las escrituras de esa transacción, no solo la que falló explícitamente. Esto cierra el módulo de persistencia compartida; el siguiente módulo aplica estos fundamentos a la UI compartida con Compose Multiplatform. Fuente oficial: [SQLDelight docs — Transactions](https://cashapp.github.io/sqldelight/2.0.2/multiplatform_sqlite/#transactions).
 
 **Errores comunes:** realizar escrituras relacionadas sin una transacción que las agrupe, arriesgando estados parciales inconsistentes ante un fallo a mitad de camino; envolver operaciones que NO están relacionadas en una misma transacción innecesariamente, ampliando el alcance de un posible rollback más de lo necesario.
 

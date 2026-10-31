@@ -6,13 +6,13 @@ El lector ofrece cuatro prompts para **cada tema**, con su título, ruta y texto
 
 ## Tutor paso a paso (página 1)
 
-Explica qué es y para qué sirve en una frase. Usa una analogía sencilla indicando dónde deja de funcionar. Divide el mecanismo en pasos pequeños. Construye un ejemplo mínimo y un caso real con archivo, comando, explicación y salida. Expón tres errores concretos, diagnóstico y corrección. Pregunta una cosa por vez y espera respuesta. Si falla, ofrece otra explicación antes de mostrar solución. Cierra con una tarea que pueda hacerse hoy y evidencia para avanzar.
+Explica qué es y para qué sirve en una frase. Usa una analogía sencilla indicando dónde deja de funcionar. Divide el mecanismo en pasos pequeños. Construye un ejemplo mínimo y un caso real con archivo, comando, explicación y salida. Expón tres errores concretos, diagnóstico y corrección. Pregunta una cosa por vez y espera respuesta. Si falla, ofrece otra explicación antes de mostrar solución. Cierra con una tarea que pueda hacerse hoy y una comprobación para avanzar.
 
 El tono será accesible para una persona principiante y mantendrá precisión profesional. Una analogía facilita entrada; luego hay que enseñar sintaxis, contratos, dependencias y límites reales.
 
 ## Ruta de 30 pasos (página 21)
 
-Genera exactamente 30 pasos, agrupados en fundamentos, aplicación, integración y decisiones profesionales. Cada paso declara prerrequisito, objetivo medible, ejemplo básico, caso real, práctica y evidencia. No se promete nivel experto por completar una lista ni en un número fijo de días.
+Genera exactamente 30 pasos, agrupados en fundamentos, aplicación, integración y decisiones profesionales. Cada paso declara prerrequisito, objetivo medible, ejemplo básico, caso real, práctica y comprobación. No se promete nivel experto por completar una lista ni en un número fijo de días.
 
 ## Revisión profesional (página 55)
 
@@ -24,6 +24,6 @@ Define pregunta, alcance, método, fuentes primarias consultadas, ejemplo reprod
 
 ## Criterio profesional aplicado a todas las rutas
 
-Un tema debe enseñar definición y mecanismo, partir de un ejemplo básico y llegar a un problema real; indicar prerrequisitos, archivo, ejecución, salida, errores, práctica independiente, decisión de uso y evidencia. El contrato editorial y las auditorías se conservan como controles separados. Los prompts y preguntas no generan una calificación, ni marcan progreso, ni subsanan contenido ausente.
+Un tema debe enseñar definición y mecanismo, partir de un ejemplo básico y llegar a un problema real; indicar prerrequisitos, archivo, ejecución, salida, errores, práctica independiente, decisión de uso y comprobación. El contrato editorial y las auditorías se conservan como controles separados. Los prompts y preguntas no generan una calificación, ni marcan progreso, ni subsanan contenido ausente.
 
 Antes de aceptar una ampliación, compara la afirmación con documentación primaria, ejecuta su ejemplo cuando el entorno lo permita y registra lo que no se pudo comprobar. No contabilices un título o una referencia como dominio de la materia.

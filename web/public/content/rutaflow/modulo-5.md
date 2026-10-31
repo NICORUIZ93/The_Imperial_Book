@@ -127,7 +127,7 @@ Ejecuta `python3 rutas.py` desde `rutaflow-labs/tema-1-grafos-y-problema-de-ruta
 
 Implementa una función `mejor_ruta(grafo, origen, destino)` que calcule ambos caminos (por `km` y por `min`), devuelva el de menor tiempo real por defecto, y además reporte cuántos minutos se habrían perdido si el sistema hubiera elegido por distancia. No copies la solución del paso anterior; escribe primero el contrato y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega el archivo `rutas.py`, la salida de ambas rutas y una breve explicación de por qué la ruta más corta en kilómetros no siempre es la mejor asignación. El siguiente tema toma las coordenadas de estas paradas y resuelve de dónde salen: **Tema 2: Geocoding y map matching** convierte una dirección de texto en las coordenadas que este grafo necesita como nodos. **Fuente oficial:** [Python docs — heapq (cola de prioridad usada en Dijkstra)](https://docs.python.org/3/library/heapq.html).
 
@@ -247,7 +247,7 @@ Esto imprime `{'ciudad': 'Cali', 'localidad': 'San Fernando', 'lat': 3.4372, 'lo
 
 Implementa una función `geocodificar_verificado(direccion, ciudad_esperada)` que, además de filtrar por ciudad, rechace el resultado si la localidad devuelta no está en una lista de localidades válidas conocidas para esa ciudad, y registre cuántos candidatos alternativos existían. No copies la solución del paso anterior; escribe primero el contrato y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `geocoding.py`, la salida correcta, la salida del fallo deliberado (coordenadas en la ciudad equivocada) y una breve explicación de por qué una respuesta válida no garantiza la ciudad correcta. El siguiente tema toma estas coordenadas ya verificadas y las sigue en movimiento: **Tema 3: Streaming y ETA con incertidumbre** usa la posición geocodificada como punto de partida de cada actualización GPS. **Fuente oficial:** [Nominatim — Search API (parámetros viewbox y bounded)](https://nominatim.org/release-docs/latest/api/Search/).
 
@@ -391,7 +391,7 @@ Esto imprime `ETA ingenuo: 10.0 min, basado en evento de 10:00:05` — el ping t
 
 Implementa una función `actualizar_posicion(estado, evento)` que aplique la regla de "solo el más nuevo por `evento_time` gana", devuelva un nuevo estado sin mutar el anterior, y pueda recibir los eventos en cualquier orden de llegada sin cambiar el resultado final. No copies la solución del paso anterior; escribe primero el contrato y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `eta.py`, las dos salidas (ETA correcto y el ingenuo) con la diferencia entre ambas, y una breve explicación de por qué el orden de llegada nunca debe ser la fuente de verdad del tiempo. Con esto cierra el recorrido del Módulo 5: desde el grafo de rutas (Tema 1), pasando por coordenadas verificadas por ciudad (Tema 2), hasta un ETA que resiste datos tardíos (Tema 3). El Módulo 6 retoma estas rutas, posiciones y ETAs ya confiables como entrada para facturación, recaudo y liquidaciones. **Fuente oficial:** [RFC 6455 — The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455) (la especificación solo garantiza orden de entrega dentro de una misma conexión; una reconexión por reintento abre una conexión nueva y no hereda esa garantía, por eso el `evento_time` del mensaje — no el orden de llegada — debe ser la fuente de verdad).
 
@@ -415,6 +415,25 @@ El temario de RutaFlow pide Socket.IO en app y backend. El laboratorio Spring 14
 Socket.IO añade handshake, eventos, acknowledgements y salas sobre sus transportes. Una sala agrupa conexiones; no acredita propiedad de un envío. La identidad autenticada debe autorizar cada suscripción en el servidor. En este laboratorio solo existe ENV-42 y una credencial de prueba; no fingimos que equivale a OAuth2/JWT ni a autorización multiusuario.
 
 **Analogía:** dos radios necesitan el mismo protocolo de conversación, no solo una antena. El límite es que reconectar la radio no reproduce mensajes perdidos. El número de secuencia evita aplicar un dato anterior; un producto también necesita snapshot o replay, persistencia, backpressure y límites por identidad.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente Socket.IO
+    participant G as Gateway
+    participant H as Publicador HTTP
+    C->>G: handshake con token
+    G-->>C: conexión aceptada
+    C->>G: seguir-envio ENV-42
+    Note over G: unir la sala ENV-42
+    G-->>C: ack ok
+    H->>G: POST /posiciones/ENV-42
+    Note over G: validar token, secuencia y coordenadas
+    G-->>C: evento posicion
+    H->>G: POST duplicado con sequence 1
+    G-->>H: 409
+```
 
 #### Paso 4 · Demostración guiada desde cero
 Desde una copia del repositorio prepara una carpeta propia:
@@ -538,8 +557,8 @@ Debes ver 202 en HTTP y el evento en Dart. El servidor solo escucha loopback: el
 #### Paso 6 · Práctica independiente
 Añade un segundo envío con un mapa de permisos por identidad de prueba, y demuestra que una identidad de A no se puede unir a B aunque conozca su ID. Añade una consulta de snapshot para recuperar la secuencia actual al reconectar. No deduzcas que «se conectó» significa «no perdió datos».
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** salida de prueba, 202/401/409, suscripción rechazada y evento recibido. El siguiente tema conecta las posiciones con una ruta calculada. **Errores comunes:** conectar socket_io_client al endpoint STOMP, confiar en IDs del cliente y registrar tokens completos. **Límites y decisión de uso:** el gateway usa memoria y credencial fija solo para aislar compatibilidad; no es una implementación lista para Internet ni una garantía de entrega durable.
+#### Paso 7 · Cierre
+El siguiente tema conecta las posiciones con una ruta calculada. En el proyecto integrador RutaFlow, este gateway alimenta el mapa con posiciones validadas desde `gateway.mjs`. **Errores comunes:** conectar socket_io_client al endpoint STOMP, confiar en IDs del cliente y registrar tokens completos. **Límites y decisión de uso:** el gateway usa memoria y credencial fija solo para aislar compatibilidad; no es una implementación lista para Internet ni una garantía de entrega durable.
 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/) y [compatibilidad Dart/servidor](https://pub.dev/packages/socket_io_client).
 
@@ -646,7 +665,7 @@ Para probar el motor real, prepara un dataset y un perfil siguiendo el README of
 #### Paso 6 · Práctica independiente
 Añade un rechazo de métricas NaN y una prueba de coordenadas fuera de rango. Diseña cómo conservarías el último resultado si el proveedor falla, indicando antigüedad al usuario. Decide cuándo usar Table para construir una matriz y por qué eso todavía no resuelve ventanas horarias ni capacidad del vehículo.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** entrega la URL construida, la salida de las pruebas del contrato y el rechazo de `NoRoute` con su diagnóstico. El siguiente paso es registrar una respuesta obtenida de un dataset real. **Errores comunes:** invertir coordenadas, convertir segundos dos veces y confundir ajuste GPS con optimización de flota. **Límites y decisión de uso:** el laboratorio de contrato no acredita despliegue Docker ni calidad de los mapas; esas dos pruebas quedan separadas.
+#### Paso 7 · Cierre
+El siguiente paso es registrar una respuesta obtenida de un dataset real. **Errores comunes:** invertir coordenadas, convertir segundos dos veces y confundir ajuste GPS con optimización de flota. **Límites y decisión de uso:** el laboratorio de contrato no acredita despliegue Docker ni calidad de los mapas; esas dos pruebas quedan separadas.
 
 **Fuentes oficiales:** [OSRM API](https://project-osrm.org/docs/v5.24.0/api/) y [preparación del motor](https://github.com/Project-OSRM/osrm-backend).

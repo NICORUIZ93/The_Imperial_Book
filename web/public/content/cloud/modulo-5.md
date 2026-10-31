@@ -160,9 +160,8 @@ Resultado esperado: el primer `invoke` (cold start, entorno nuevo) tarda notable
 Pista: subí un `funcion.zip` vacío (`zip funcion-vacio.zip` sin agregar `index.js`) e intentá `create-function` con ese zip — ese es el fallo deliberado: la invocación falla con `Runtime.HandlerNotFound: index.handler is undefined or not exported`, porque el zip no contiene ningún archivo `index.js`.
 #### Paso 6 · Práctica independiente
 Invocá `confirmar-entrega` tres veces seguidas y cronometrá cada una con `time`; confirmá que, a partir de la segunda, los tiempos son consistentemente más bajos que el primero.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los tiempos de las tres invocaciones y el error del zip vacío del Paso 5; explicá cuál invocación fue el cold start y por qué. Siguiente paso: la estructura del handler. Errores comunes: asumir estado persistente y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html.
-### Fallo Deliberado: Runtime.HandlerNotFound en Lambda
 
 ### Tema 2: Estructura de una función Lambda
 
@@ -314,9 +313,7 @@ Pista: invocá con `recipientPin` de solo 4 dígitos (`"1234"`) para provocar el
 #### Paso 6 · Práctica independiente
 Invocá sin `shipmentId` en el payload y confirmá que también falla, con un `errorMessage` distinto al del Paso 5 — las dos validaciones del `if` son independientes.
 
-**Evidencia de aprendizaje:** entrega el `salida.json` exitoso del Paso 4, el `errorMessage` de PIN corto del Paso 5 y el de `shipmentId` ausente del Paso 6, con una explicación de qué parte del `if` disparó cada uno.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId` ausente; explicá qué parte de `event` corresponde a cada validación. Siguiente paso: runtimes. Errores comunes: depender de memoria global y no validar event. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html.
 
 ### Tema 3: Runtimes — Node.js, Python, Java, Go
@@ -445,7 +442,7 @@ Resultado esperado: `salida.json` muestra `{"shipmentId":"env-4471","status":"de
 Pista: antes de empaquetar en Paso 4, intenta correr `aws lambda invoke` SIN haber instalado `@aws-sdk/client-dynamodb` — ese es el fallo deliberado: `{"errorType":"Runtime.ImportModuleError","errorMessage":"Error: Cannot find module '@aws-sdk/client-dynamodb'"}`. El runtime sin la dependencia empaquetada no puede encontrar el módulo, así que la función falla.
 #### Paso 6 · Práctica independiente
 Confirmá con `unzip -l funcion.zip` que `node_modules/@aws-sdk/client-dynamodb` quedó dentro del paquete, y volvé a invocar para confirmar que la función ejecuta sin error y escribe en ShipmentEvents.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el error `Import ModuleError` del Paso 5, la confirmación de `unzip` del Paso 6 y el resultado exitoso de la Lambda escribiendo en ShipmentEvents; explicá por qué el empaquetado correcto de dependencias es lo que conecta esta función con Módulo 4. Siguiente paso: payload. Errores comunes: versiones flotantes y tamaños de zip muy grandes. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html.
 
 ### Tema 4: Payload de entrada y respuesta
@@ -577,7 +574,7 @@ Resultado esperado: `salida.json` trae `{"statusCode":200,"body":"{\"shipmentId\
 Pista: invocá con `recipientPin` de 4 dígitos (`"1234"`) para provocar el fallo deliberado — esa vez, a diferencia de Tema 2, tu función NO lanza excepción sino que devuelve un `statusCode: 400` con un mensaje de error estructurado en el `body`. La diferencia es que en Tema 2 el fallo era una excepción (error fatal), pero acá en Tema 4 la función sigue ejecutándose y responde "gracefully" con un error HTTP, exactamente como lo hará cuando se conecte a API Gateway en Módulo 6.
 #### Paso 6 · Práctica independiente
 Invocá con `recipientPin` de 4 dígitos y confirmá que esta vez la función sí responde (no falla como en el Tema 2), pero con `statusCode: 400` en vez de 200 — la diferencia entre un error de tu lógica y un error de formato de entrada.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la respuesta 200, el error de parseo de payload del Paso 5 y la respuesta 400 del Paso 6; explicá la diferencia entre los tres. Siguiente paso: versiones. Errores comunes: mensajes ambiguos y no distinguir 4xx de 5xx. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html.
 
 ### Tema 5: Versionado y alias
@@ -669,7 +666,7 @@ Resultado esperado: `publish-version` devuelve `"Version": "1"`; invocar `confir
 Pista: corré `aws lambda update-alias --function-name confirmar-entrega --name produccion --function-version 9` (una versión que no existe) para provocar el fallo deliberado — `ResourceNotFoundException: Version 9 does not exist`. El alias no se mueve a una versión inexistente, protegiendo de un rollback roto.
 #### Paso 6 · Práctica independiente
 Modificá `index.js` otra vez (cualquier cambio chico), `update-function-code`, publicá una versión 2, y simulá un rollback: moveé `produccion` a la versión 2 con `update-alias`, confirmá con `invoke`, y después volvé a moverlo a la versión 1 — sin volver a desplegar ningún código.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la publicación de la versión 1, el error de versión inexistente del Paso 5 y el rollback del Paso 6; explicá por qué mover un alias es más seguro que editar `$LATEST` directamente en producción. Siguiente paso: triggers. Errores comunes: editar $LATEST en producción y no registrar cambios. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html.
 
 ### Tema 6: Integración con S3, DynamoDB Streams y API Gateway
@@ -756,7 +753,7 @@ Resultado esperado: sin que invoques `confirmar-entrega` manualmente, el mapping
 Pista: mandá un mensaje con `recipientPin` de 4 dígitos (inválido) a la misma cola — ese es el fallo deliberado: el mapping sigue invocando la función (SQS no valida el contenido del mensaje), la función lanza la excepción de validación, y el mensaje vuelve a quedar visible en la cola para reintento en vez de confirmarse, exactamente el comportamiento de `DeliveryCommandsDLQ` que viste en el Módulo 3.
 #### Paso 6 · Práctica independiente
 Compará esta integración (asíncrona, SQS invoca sin esperar respuesta) contra la del Tema 1 (invocación directa y síncrona con `aws lambda invoke`, donde sí esperás el resultado en el momento); identificá cuál de las dos es la que realmente usa RutaFlow en producción.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la creación del mapping, el item nuevo en `ShipmentEvents` sin invocación manual, y el comportamiento del mensaje inválido del Paso 5; explicá por qué esta es la forma real en que RutaFlow conecta su cola con esta función. Siguiente paso: API Gateway. Errores comunes: duplicados y no configurar reintentos. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html.
 
 ## Laboratorio práctico

@@ -51,7 +51,7 @@ Resultado esperado: el `grep` confirma que la clave está ahí, en texto plano, 
 Pista: ese `.env` del Paso 4 ES el fallo deliberado — corré `git log --all --oneline -- .env` (si llegaste a commitearlo alguna vez) para confirmar que, aunque borres el archivo ahora, el historial de Git seguiría teniendo la clave para siempre. Corregilo borrando el archivo (`rm .env`) y confirmando con `aws secretsmanager get-secret-value --secret-id /rutaflow/sms-gateway-api-key --query SecretString --output text` que la aplicación puede seguir obteniendo la clave sin que exista en ningún archivo local.
 #### Paso 6 · Práctica independiente
 Documentá, en una frase, cada cuánto correspondería rotar `/rutaflow/sms-gateway-api-key` si el proveedor de SMS sufriera una filtración, y qué comando usarías para revisar quién accedió a ese secreto en los últimos días (pista: es un servicio distinto de Secrets Manager, el mismo que audita accesos IAM en general).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la clave expuesta en `.env`, su migración a Secrets Manager, y la respuesta del Paso 6; explicá por qué borrar un archivo no borra su historial de Git. Siguiente paso: cifrado. Errores comunes: secretos en logs y acceso global. Fuente oficial: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html.
 
 ### Tema 2: KMS y envelope encryption
@@ -107,7 +107,7 @@ Resultado esperado: el `decrypt` final devuelve exactamente `sk_live_rutaflow_de
 Pista: creá una política que deniegue `kms:Decrypt` sobre `alias/rutaflow-backup` para el rol `RutaFlowConfirmarEntregaRole` (Módulo 7), simulala con `aws iam simulate-custom-policy`, y confirmá `implicitDeny` — ese es el fallo deliberado que corresponde: `confirmar-entrega` nunca debería poder descifrar el respaldo completo, solo leer el secreto puntual que ya tiene permitido en Secrets Manager.
 #### Paso 6 · Práctica independiente
 Documentá por escrito qué pasaría si perdieras `respaldo-secreto.enc` sin haber guardado nunca la clave KMS que lo cifró (pista: sin la clave maestra, ese archivo queda irrecuperable para siempre, no solo "difícil de leer").
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ciclo completo de cifrado/descifrado, la denegación simulada del Paso 5 y la reflexión del Paso 6; explicá por qué cifrar el respaldo completo con la clave maestra sería más lento que usar una clave de datos efímera. Siguiente paso: parámetros. Errores comunes: compartir claves maestras y perder contexto. Fuente oficial: https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html.
 
 ### Tema 3: SSM Parameter Store vs Secrets Manager
@@ -128,7 +128,7 @@ Resultado esperado: `get-parameter` devuelve la URL sin ningún cifrado de por m
 Pista: usá `aws iam simulate-custom-policy` con la política `policy-crud.json` del Módulo 9 (la de `lambda-crud-tareas`, que nunca menciona `ssm:GetParameter` ni `secretsmanager:GetSecretValue`) contra la acción `ssm:GetParameter` sobre `/rutaflow/sms-gateway-url` — ese es el fallo deliberado: `implicitDeny`, el mismo patrón de "denegado por defecto" del Módulo 7, ahora aplicado a configuración, no solo a datos.
 #### Paso 6 · Práctica independiente
 Clasificá estos cinco valores de RutaFlow como "SSM Parameter Store" o "Secrets Manager", justificando cada uno en una frase: la URL del proveedor de SMS, la API key del proveedor de SMS, el nombre de la tabla `ShipmentEvents`, la contraseña de una futura base de datos relacional (Módulo 13), y el `BatchSize` del event source mapping del Módulo 5.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el parámetro creado, la denegación simulada del Paso 5 y la clasificación justificada del Paso 6; explicá qué regla usaste para decidir cada caso. Siguiente paso: mensajería. Errores comunes: guardar secretos como configuración común y no rotar. Fuente oficial: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html.
 **Conceptos clave:** configuración general frente a secretos sensibles con rotación automática.
 

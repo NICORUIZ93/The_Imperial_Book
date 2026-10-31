@@ -109,8 +109,8 @@ Agrega un contador de comparaciones a `insertion_sort` y a `merge_sort` y ejecú
 #### Paso 6 · Práctica independiente
 Ordena una lista de paquetes `(peso, guia)` por peso con `merge_sort` adaptado y comprueba que dos paquetes con el mismo peso conservan su orden original (estabilidad). Repite con `quick_sort` y explica si se conserva.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. Entrega la tabla de comparaciones, la prueba de estabilidad y el `RecursionError` del fallo deliberado con su explicación. **¿Por qué es importante?** porque las preguntas de entrevista sobre ordenamiento no buscan que reemplaces `sorted()`, sino que sepas razonar sobre complejidad, estabilidad, memoria y peor caso.
+#### Paso 7 · Cierre
+Entrega la tabla de comparaciones, la prueba de estabilidad y el `RecursionError` del fallo deliberado con su explicación. **¿Por qué es importante?** porque las preguntas de entrevista sobre ordenamiento no buscan que reemplaces `sorted()`, sino que sepas razonar sobre complejidad, estabilidad, memoria y peor caso.
 **Fuente oficial:** [Sorting algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Sorting_algorithm), [Sorting HOW TO (docs.python.org)](https://docs.python.org/3/howto/sorting.html); Baase y Van Gelder, cap. 4.
 **Conceptos clave:** divide y vencerás, pivote, mezcla, estabilidad, O(n log n) frente a O(n²), peor caso.
 **Cuándo no usarlo:** en código de producción usa `sorted()` o `list.sort()` (Timsort): está optimizado en C y es estable. Implementa tu propio ordenamiento solo para aprender o cuando tengas una restricción muy concreta (por ejemplo, datos que no caben en memoria).
@@ -219,8 +219,8 @@ Implementa **Prim** (crece el árbol desde un nodo, agregando siempre la arista 
 #### Paso 6 · Práctica independiente
 Resuelve el problema de **selección de actividades**: dadas franjas `(inicio, fin)` de citas de entrega, elige el máximo número de citas que no se solapen ordenando por hora de fin. Escribe en dos frases por qué aquí la elección codiciosa sí es óptima.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
+#### Paso 7 · Cierre
+Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
 **Fuente oficial:** [Greedy algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Greedy_algorithm), [Kruskal's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Kruskal%27s_algorithm); Baase y Van Gelder, cap. 8.
 **Conceptos clave:** elección codiciosa, contraejemplo, union-find, árbol de expansión mínima, Kruskal, Prim.
 **Cuándo no usarlo:** cuando no puedes justificar la propiedad de elección codiciosa. Si un contraejemplo pequeño la rompe, usa programación dinámica o búsqueda exhaustiva.
@@ -329,8 +329,8 @@ Agrega la función `ruta_mas_rapida(origen, destino)` que detenga el algoritmo e
 #### Paso 6 · Práctica independiente
 Implementa Bellman-Ford sobre el mismo mapa con la arista negativa y comprueba que detecta el ciclo negativo en vez de quedarse en bucle. Después escribe en un README cuándo usarías BFS, Dijkstra o Bellman-Ford.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. Entrega las rutas calculadas, la comparación con parada temprana y Bellman-Ford. **¿Por qué es importante?** porque "camino más corto" es una de las preguntas de entrevista más frecuentes y la base de mapas, redes y planificación de rutas.
+#### Paso 7 · Cierre
+Entrega las rutas calculadas, la comparación con parada temprana y Bellman-Ford. **¿Por qué es importante?** porque "camino más corto" es una de las preguntas de entrevista más frecuentes y la base de mapas, redes y planificación de rutas.
 **Fuente oficial:** [Dijkstra's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm), [heapq (docs.python.org)](https://docs.python.org/3/library/heapq.html); Baase y Van Gelder, caps. 8-9.
 **Conceptos clave:** grafo con pesos, relajación, cola de prioridad (heapq), camino reconstruido, pesos negativos, Bellman-Ford.
 **Cuándo no usarlo:** si todos los tramos cuestan lo mismo, BFS es más simple y rápido. Si hay pesos negativos, usa Bellman-Ford. Para mapas reales enormes se usan variantes como A* con heurística o jerarquías de contracción.
@@ -440,8 +440,8 @@ Construye a mano la tabla de fallos de `"AABAAAB"` y compárala con la salida de
 #### Paso 6 · Práctica independiente
 Implementa **Rabin-Karp** (hash rodante) y compáralo con KMP buscando varios patrones a la vez. Escribe cuándo preferirías cada uno.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
+#### Paso 7 · Cierre
+Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
 **Fuente oficial:** [Knuth–Morris–Pratt algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm); Baase y Van Gelder, cap. 11.
 **Conceptos clave:** búsqueda ingenua, prefijo-sufijo, tabla de fallos, KMP, coincidencias solapadas, hash rodante.
 **Cuándo no usarlo:** en Python, `str.find`, `in` y el módulo `re` ya están optimizados en C: úsalos en código real. Implementa KMP para aprender, para entrevistas o cuando trabajes sobre flujos donde no puedes retroceder.
@@ -541,8 +541,8 @@ Mejora la heurística con **2-opt**: toma la ruta del vecino más cercano y, mie
 #### Paso 6 · Práctica independiente
 Investiga y explica con tus palabras otro problema NP-completo que aparezca en logística (por ejemplo, la mochila al cargar un camión) y qué heurística usarías.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. Entrega la tabla de tiempos, la mejora con 2-opt y tu explicación del segundo problema. **¿Por qué es importante?** porque reconocer un problema intratable te evita prometer una solución "óptima y rápida" imposible y te lleva a negociar requisitos: calidad suficiente, límite de tiempo o tamaño acotado.
+#### Paso 7 · Cierre
+Entrega la tabla de tiempos, la mejora con 2-opt y tu explicación del segundo problema. **¿Por qué es importante?** porque reconocer un problema intratable te evita prometer una solución "óptima y rápida" imposible y te lleva a negociar requisitos: calidad suficiente, límite de tiempo o tamaño acotado.
 **Fuente oficial:** [NP-completeness (Wikipedia)](https://en.wikipedia.org/wiki/NP-completeness), [Travelling salesman problem (Wikipedia)](https://en.wikipedia.org/wiki/Travelling_salesman_problem); Baase y Van Gelder, cap. 13.
 **Conceptos clave:** P, NP, NP-completo, reducción, crecimiento factorial, heurística, aproximación, 2-opt.
 **Cuándo no usarlo:** no uses heurísticas cuando el tamaño es pequeño y fijo (fuerza bruta es exacta y simple) ni cuando necesitas una garantía de optimalidad que el negocio sí exige: ahí van los solvers de programación entera.

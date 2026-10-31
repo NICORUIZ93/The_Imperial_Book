@@ -42,8 +42,6 @@ flowchart LR
 
 **Límites y decisión de uso:** Una cola no convierte por sí sola un efecto en exactamente una vez. La entrega puede repetirse o demorarse; usa identidad estable del mensaje y una operación de negocio idempotente, y distingue recepción de confirmación del procesamiento.
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
-**Evidencia de aprendizaje:** entrega la salida de `send-message` y `receive-message` del Paso 4, y el fallo `NonExistentQueue` que provocaste a propósito en el Paso 5.
-
 #### Paso 4 · Demostración guiada
 ```bash
 QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
@@ -60,7 +58,7 @@ provocar el fallo deliberado — `send-message` lo rechaza con
 Enviá un segundo mensaje distinto, recibilo, y confirmá con
 `aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
 que la cola sigue teniendo el mensaje — todavía no lo borraste, eso es el Tema 2.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `send-message`, el `receive-message`, y el error de la cola inexistente. Siguiente
 paso: visibilidad. Errores comunes: asumir que `receive-message` borra el mensaje. Fuente
 oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html.
@@ -130,7 +128,7 @@ que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
 Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
 repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al
 menos una vez".
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los 2 intentos de `receive-message` (antes y después del timeout) mostrando que el
 mensaje reapareció solo. Siguiente paso: DLQ. Errores comunes: borrar el mensaje antes de
 terminar de procesarlo de verdad. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
@@ -201,7 +199,7 @@ Pista: contá cuántas veces recibiste el mensaje antes de que apareciera en la 
 Confirmá con
 `aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
 que la cola principal quedó en 0 — el mensaje problemático ya no bloquea nada ahí.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la configuración de RedrivePolicy, y el mensaje apareciendo en la DLQ. Siguiente paso:
 colas FIFO. Errores comunes: poner `maxReceiveCount` en 1, moviendo a la DLQ mensajes que
 habrían funcionado en un segundo intento. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html.
@@ -279,7 +277,7 @@ parámetro no existe.
 Enviá 3 mensajes más, esta vez con `--message-group-id env-5000` (un envío distinto) y
 confirmá que SQS los deja intercalarse con los del grupo `env-4471` sin problema — el orden
 solo se garantiza DENTRO de un mismo grupo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los 3 mensajes en orden del Paso 4, el error de `MissingParameter`, y la confirmación
 de que 2 grupos distintos no se bloquean entre sí. Siguiente paso: eventos. Errores comunes:
 usar FIFO para todo "por si acaso", perdiendo el rendimiento de Standard sin necesitarlo.

@@ -79,9 +79,9 @@ Crea dos seguimientos con cantidades distintas. **Pista:** si comparten eventos,
 
 Limita el historial a cinco eventos y añade `ultimoEstado()`. Prueba cero, uno y seis eventos sin exponer el array.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya encapsulas estado por instancia y sabes que privacidad no implica inmutabilidad. El siguiente tema explica cuándo se inicializan los enlaces. **Evidencia:** demuestra el resultado de dos instancias aisladas, la fuga deliberada y el límite. Fuente oficial: [MDN — closures](https://developer.mozilla.org/es/docs/Web/JavaScript/Closures).
+Ya encapsulas estado por instancia y sabes que privacidad no implica inmutabilidad. El siguiente tema explica cuándo se inicializan los enlaces. Fuente oficial: [MDN — closures](https://developer.mozilla.org/es/docs/Web/JavaScript/Closures).
 
 **Errores comunes:** declarar estado fuera de la factory; devolver referencias mutables; capturar objetos innecesarios; confundir memoria local con persistencia.
 
@@ -159,9 +159,9 @@ Predice declaración de función, expresión con `var` y flecha con `const` invo
 
 Divide factory y arranque en `src/repositorio.js` y `src/main.js`. Importar el primero no debe abrir conexiones; demuestra que el efecto ocurre solo en `main`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues hoisting de inicialización. El siguiente tema muestra cómo cada llamada ocupa el call stack. **Evidencia:** demuestra el resultado de tres predicciones, los errores observados y el módulo sin efectos al importar. Fuente oficial: [MDN — hoisting](https://developer.mozilla.org/es/docs/Glossary/Hoisting).
+Ya distingues hoisting de inicialización. El siguiente tema muestra cómo cada llamada ocupa el call stack. Fuente oficial: [MDN — hoisting](https://developer.mozilla.org/es/docs/Glossary/Hoisting).
 
 **Errores comunes:** afirmar que `let` no se eleva; convertir todo a declaraciones; iniciar conexiones al importar; confundir `undefined` con función válida.
 
@@ -248,9 +248,9 @@ Agrega `asignarRuta` entre lote y guía, vuelve a ejecutar y localiza el nuevo f
 
 Implementa suma recursiva de paradas con caso base y versión iterativa. Prueba lista vacía y 20 000 elementos; explica qué versión soporta mejor la profundidad.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conviertes una traza en una historia de ejecución. El siguiente tema explica por qué un método pierde `this` al separarlo de su objeto. **Evidencia:** demuestra el resultado de la traza, el `RangeError` y ambas versiones del recorrido. Fuente oficial: [MDN — call stack](https://developer.mozilla.org/en-US/docs/Glossary/Call_stack).
+Ya conviertes una traza en una historia de ejecución. El siguiente tema explica por qué un método pierde `this` al separarlo de su objeto. Fuente oficial: [MDN — call stack](https://developer.mozilla.org/en-US/docs/Glossary/Call_stack).
 
 **Errores comunes:** leer solo el mensaje; capturar y relanzar sin causa; olvidar el caso base; confundir call stack con scope chain.
 
@@ -332,9 +332,9 @@ Invoca el método con `call` y `apply` usando otro centro. **Pista:** ambos ejec
 
 Programa el método con `setTimeout` de tres formas: suelto, con `bind` y con una arrow envolvente. Registra resultados y justifica cuál usarías si también necesitas argumentos dinámicos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya separas scope léxico de receptor dinámico. El siguiente tema compara factories con clases y módulos. **Evidencia:** demuestra los resultados como método, suelto, `call`, `apply`, `bind` y temporizador. Fuente oficial: [MDN — `this`](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/this).
+Ya separas scope léxico de receptor dinámico. El siguiente tema compara factories con clases y módulos. Fuente oficial: [MDN — `this`](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/this).
 
 **Errores comunes:** definir con arrow un método que necesita receptor; asumir que `this` depende de dónde se escribió; ejecutar `bind` esperando una llamada inmediata; encadenar bind varias veces.
 
@@ -424,9 +424,9 @@ Crea dos repositorios con generadores distintos. **Pista:** cada factory debe co
 
 Añade `actualizarEstado(id, estado)` que no exponga referencias y rechace IDs inexistentes. Sustituye el generador por un doble determinista en una prueba.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes crear componentes pequeños por composición e inyección. El siguiente tema formaliza cómo el motor encuentra sus variables. **Evidencia:** demuestra el resultado de repositorios aislados, la corrupción deliberada y su corrección. Fuente oficial: [MDN — factory functions y closures](https://developer.mozilla.org/es/docs/Web/JavaScript/Closures).
+Ya puedes crear componentes pequeños por composición e inyección. El siguiente tema formaliza cómo el motor encuentra sus variables. Fuente oficial: [MDN — factory functions y closures](https://developer.mozilla.org/es/docs/Web/JavaScript/Closures).
 
 **Errores comunes:** compartir estado fuera de la factory; entregar objetos internos; usar una factory para ocultar dependencias globales; asumir que clases siempre son superiores.
 
@@ -510,9 +510,9 @@ Invoca `procesarBogota` directamente y desde dos funciones diferentes. **Pista:*
 
 Crea procesadores para Bogotá y Medellín, intercala llamadas y dibuja dos diagramas Mermaid: scope chain estable de cada closure y call stack de una llamada concreta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Completaste el modelo de ejecución sin confundir resolución léxica con orden dinámico. El siguiente módulo estudia prototipos y clases. **Evidencia:** demuestra el resultado estable, las trazas diferentes, el `ReferenceError` y ambos diagramas. Fuente oficial: [ECMAScript — execution contexts](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html).
+Completaste el modelo de ejecución sin confundir resolución léxica con orden dinámico. El siguiente módulo estudia prototipos y clases. Fuente oficial: [ECMAScript — execution contexts](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html).
 
 **Errores comunes:** creer que el llamador aporta scope; confundir scope chain con stack; depender de variables globales; presentar nombres internos del motor como API pública.
 

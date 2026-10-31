@@ -56,7 +56,7 @@ Carga: 9.0 C
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El trapecio es exacto aquí porque la corriente es lineal; para señales curvas existe error de discretización.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué unidad tiene la derivada de carga?
@@ -111,7 +111,7 @@ Vth=2.500 V; Rth=500 ohm; salida=1.667 V
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Con fuentes dependientes se conservan sus relaciones y se aplica una fuente de prueba; no se borran todas las fuentes sin criterio.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué conserva Kirchhoff?
@@ -166,7 +166,7 @@ Ganancia=10.0; salida=2.00 V
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo no incluye caída de salida, slew rate ni corriente máxima. En la página 65 del PDF identifica primero polaridades y si cada símbolo es Zener; prueba cada hipótesis de conducción mediante KCL y desigualdades. No traslades la caída de 0.5 V a cualquier componente real.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿De dónde sale la energía amplificada?
@@ -223,7 +223,7 @@ python3 examples/electronics/digital.py
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Una simulación booleana no verifica rebotes, tiempos de setup/hold ni metastabilidad.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué diferencia lógica combinacional y secuencial?
@@ -278,7 +278,7 @@ ADC=2048; reconstruido=1.6504 V
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** No se conectan voltajes fuera del rango de un pin. La arquitectura real requiere reloj, datasheet y niveles compatibles.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué hace el ADC?
@@ -333,7 +333,7 @@ Trama válida: False
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El ejemplo opera sobre bits ideales; no modela BER, sincronización ni presupuesto de enlace.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué modula una portadora?
@@ -388,7 +388,7 @@ Diferencia máxima: 0.000000
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El teorema ideal no garantiza reconstrucción con ruido, banda desconocida o reloj irregular.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué conserva una muestra?
@@ -445,7 +445,7 @@ python3 examples/electronics/dsp.py
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** No suavices señales de seguridad sin especificar tiempo máximo de detección. Conserva muestras originales.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Por qué aparece retardo?
@@ -502,7 +502,7 @@ Temperatura: 50.00 °C
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Dos puntos no prueban linealidad ni cubren deriva temporal; no extrapoles sin caracterización.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué es offset?
@@ -558,7 +558,7 @@ Temperatura: 23.33 °C
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** La simulación no certifica un controlador físico; mide retardo, saturación y margen de estabilidad.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué variable se realimenta?
@@ -615,7 +615,7 @@ Duty=0.417; pérdidas=0.556 W
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Estos cálculos no dimensionan inductancia, MOSFET, SOA, aislamiento ni compensación del convertidor; el laboratorio es numérico.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué significa duty?
@@ -668,7 +668,7 @@ Espacio=0.20 mm; cumple=False
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. **Próximamente:** proyecto real de KiCad (esquemático + layout) con ERC/DRC ejecutados y capturados. Fuente específica: https://docs.kicad.org/
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué compara DRC?
@@ -743,7 +743,7 @@ Deadlines incumplidos en 200 ms simulados: 0
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo ignora jitter, inversión de prioridad y WCET real. La validación de tiempo exige mediciones y análisis de planificación.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué es un deadline?
@@ -797,7 +797,7 @@ python3 examples/electronics/bajo-nivel.py
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Un contrato binario no gestiona ownership ni sincronización. Para C usa compilación con warnings y AddressSanitizer en un entorno compatible.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué significa little-endian?
@@ -850,7 +850,7 @@ Tensión inducida: -0.010 V
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo supone geometría y campo uniformes; no reemplaza simulación EM ni ensayos de compatibilidad.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué cambia para inducir tensión?
@@ -904,7 +904,7 @@ Error máximo=0.40 °C; acepta=True
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Tres muestras no demuestran exactitud en todo rango; define cobertura, condiciones y evidencia antes de aprobar.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué hace verificable un requisito?
@@ -957,7 +957,7 @@ Motor habilitado: False
 #### Paso 6 · Práctica independiente
 Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Python simula lógica, no es runtime PLC ni implementación de seguridad funcional. Consulta documentación del controlador y edición aplicable del estándar; un interlock didáctico no certifica una máquina.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
 
 1. ¿Qué ocurre en un scan?

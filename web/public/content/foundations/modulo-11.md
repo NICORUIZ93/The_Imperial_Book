@@ -106,7 +106,7 @@ Ejecutá el `round_robin.py` de más abajo con los procesos `gps` (ráfaga 5) y 
 Pista: cambiá `quantum = 0` y volvé a correr el simulador — ese es el fallo deliberado: el programa nunca avanza, porque ningún proceso consume CPU con un quantum nulo; `quantum` tiene que ser mayor que cero para que el planificador tenga sentido.
 #### Paso 6 · Práctica independiente
 Agregá un tercer proceso `photo` con ráfaga 7 y contá cuántos turnos completos necesita hasta llegar a cero.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: algoritmos. Errores comunes: confundir proceso e hilo. Fuente oficial: https://pages.cs.wisc.edu/~remzi/OSTEP/.
 
 ### Tema 2: Algoritmos, autómatas, lenguajes y compiladores
@@ -223,7 +223,7 @@ Ejecutá el `tracking_parser.py` de más abajo contra `"RF-2048"`, `"RF-20A8"` y
 Pista: quitá la comprobación `digits == 4` del `return` final, dejando que acepte cualquier cantidad de dígitos — ese es el fallo deliberado: `"RF-12345"` (5 dígitos) pasaría a ser válido, aceptando guías con una forma distinta a la que RutaFlow realmente usa.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `digits == 4`, y extendé el autómata para aceptar un prefijo de país opcional (`CO-RF-2048`) sin usar expresiones regulares — dibujando los estados nuevos a mano antes de programarlos.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: datos. Errores comunes: mezclar análisis y ejecución. Fuente oficial: https://craftinginterpreters.com/.
 
 ### Tema 3: Bases de datos, almacenes analíticos y minería de datos
@@ -245,7 +245,7 @@ Ejecutá el `delivery_data.py` de más abajo y confirmá que agrupa minutos de e
 Pista: intentá insertar una entrega con `minutes = 0` — ese es el fallo deliberado: la restricción `CHECK(minutes > 0)` rechaza el dato con un error real de SQLite, no en silencio; si quitaras esa restricción, el promedio seguiría calculándose, pero sobre un dato que no debería existir.
 #### Paso 6 · Práctica independiente
 Agregá columnas `fecha` y `estado`, calculá entregas completadas por día, y documentá qué índice crearías para que esa consulta no tenga que recorrer la tabla completa cada vez (pista: el mismo problema de Query vs Scan del Módulo 4 del track Cloud).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: inteligencia artificial. Errores comunes: ignorar cardinalidad. Fuente oficial: https://www.postgresql.org/docs/.
 
 **Cuándo NO usar:** No cachés consultas analíticas sin timestamp; son históricas. No confundas correlación con causalidad.
@@ -411,7 +411,7 @@ Ejecutá el `delay_baseline.py` de más abajo y confirmá `predicción=28.0, mae
 Pista: calculá la predicción usando TODOS los minutos (entrenamiento + prueba mezclados) en vez de solo `training_minutes` — ese es el fallo deliberado (fuga de datos): el modelo "adivinaría" mejor de lo que realmente podría en producción, porque ya vio los datos que se supone debía predecir.
 #### Paso 6 · Práctica independiente
 Dejá `training_minutes` vacío y confirmá que el programa falla por división por cero — la corrección correcta no es inventar un valor de reemplazo, sino validar la entrada y registrar el incidente antes de publicar cualquier predicción.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: gráficos. Errores comunes: fuga de datos y sesgo no medido. Fuente oficial: https://scikit-learn.org/stable/user_guide.html.
 
 ### Tema 5: Gráficos y cómputo científico
@@ -511,7 +511,7 @@ Ejecutá el `transform.py` de más abajo y confirmá que rotar `(1.0, 0.0)` por 
 Pista: quitá el `round(..., 6)` de la impresión final — ese es el fallo deliberado: vas a ver un número diminuto distinto de cero donde esperabas exactamente `0.0` (algo como `6.123e-17`); no es un error de la fórmula de rotación, es precisión finita de punto flotante, y confundir ambas cosas lleva a "corregir" código que ya era correcto.
 #### Paso 6 · Práctica independiente
 Rotá tres puntos que formen una pequeña ruta (por ejemplo, tres paradas de un envío) y verificá que la distancia entre cada par de puntos antes y después de rotar sea la misma — la propiedad real que una rotación debe conservar.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: redes. Errores comunes: ejes ambiguos y datos sin unidad. Fuente oficial: https://matplotlib.org/stable/users/explain/quick_start.html.
 
 ### Tema 6: Redes, seguridad, web e ingeniería profesional
@@ -593,7 +593,7 @@ Ejecutá el `evidence.py` de más abajo y confirmá que `Finding` imprime sus tr
 Pista: cambiá `frozen=True` por `False` en `Finding`, y modificá `finding.evidence` DESPUÉS de haber tomado la decisión — ese es el fallo deliberado: técnicamente funciona, pero destruye la trazabilidad; alguien podría reescribir la evidencia original para que coincida con la decisión ya tomada, en vez de que la decisión siga respaldada por lo que realmente se observó.
 #### Paso 6 · Práctica independiente
 Restaurá `frozen=True`, agregá los campos `risk` y `owner` a `Finding`, y escribí un hallazgo real sobre el SLI de `confirmar-entrega` del Módulo 10 de este track (la latencia del proveedor de SMS) con sus cuatro campos completos.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: especialización. Errores comunes: seguridad como añadido y documentación desactualizada. Fuente oficial: https://owasp.org/www-project-top-ten/.
 
 ## Fuentes para continuar

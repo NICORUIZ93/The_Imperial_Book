@@ -23,8 +23,6 @@ Ya construyes una imagen reproducible. El siguiente tema separará configuració
 
 **Fuentes oficiales:** [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/), [Node Docker](https://github.com/nodejs/docker-node) y [Dockerfile reference](https://docs.docker.com/reference/dockerfile/).
 
-**Evidencia de aprendizaje:** entrega el build, la respuesta `ok` y el fallo de archivo ausente.
-
 **Conceptos clave:** etapa de build frente a etapa final, exclusión de devDependencies.
 
 Un Dockerfile multi-stage (concepto introducido en profundidad en el Módulo 2 del track DevOps) separa el proceso de construcción de una imagen en etapas distintas, cada una con su propio propósito: una etapa de "build" instala todas las dependencias (incluyendo `devDependencies` necesarias para compilar TypeScript o ejecutar un bundler), copia el código fuente completo, y ejecuta el proceso de compilación; una etapa final, considerablemente más ligera, copia únicamente el resultado ya compilado de la etapa de build (`COPY --from=build /app/dist ./dist`) e instala solo las dependencias de producción (`npm ci --omit=dev`, aprovechando la distinción entre `dependencies` y `devDependencies` estudiada en el Módulo 1), sin incluir nunca en la imagen final el código fuente sin compilar, las herramientas de build, ni ninguna dependencia exclusiva de desarrollo.
@@ -99,6 +97,8 @@ Ejecuta como usuario no root y entrega `docker inspect` con puerto y usuario.
 
 #### Paso 7 · Cierre y conexión
 
+Ya construís una imagen multi-stage que responde `ok` y falla de forma explícita si falta el código. El siguiente tema separa configuración por ambiente y declara salud con liveness y readiness.
+
 ### Tema 2: Variables de entorno por ambiente y healthchecks
 
 #### Paso 1 · Objetivo y preparación
@@ -118,8 +118,6 @@ Ya separas liveness, readiness y configuración. El siguiente tema tratará proc
 **Errores comunes:** hornear secretos en imagen; usar readiness como liveness; devolver siempre 200; no validar tipos; imprimir todo `process.env`.
 
 **Fuentes oficiales:** [Docker HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [Kubernetes probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/) y [Node process.env](https://nodejs.org/api/process.html#processenv).
-
-**Evidencia de aprendizaje:** entrega las salidas live/ready y el error de `PORT` inválido.
 
 **Conceptos clave:** configuración externalizada, misma imagen en todos los entornos, `HEALTHCHECK`.
 
@@ -180,6 +178,8 @@ Escribe un `HEALTHCHECK` Docker que consulte `/live` y documenta por qué no deb
 
 #### Paso 7 · Cierre y conexión
 
+Ya distinguís `/live` de `/ready` y comprobás que un `PORT` no numérico detiene el arranque. El siguiente tema reemplaza procesos supervisados por contenedores y evita cortar el servicio al actualizar.
+
 ### Tema 3: PM2, contenedores y zero-downtime deploys
 
 #### Paso 1 · Objetivo y preparación
@@ -199,8 +199,6 @@ Ya entiendes que zero-downtime es un protocolo completo, no un comando aislado. 
 **Errores comunes:** recargar sin healthcheck; olvidar migraciones compatibles; asumir estado local; no drenar sockets; no conservar versión anterior.
 
 **Fuentes oficiales:** [PM2 reload](https://pm2.keymetrics.io/docs/usage/cluster-mode/), [Docker restart](https://docs.docker.com/engine/containers/start-containers-automatically/) y [12-factor disposability](https://12factor.net/disposability).
-
-**Evidencia de aprendizaje:** entrega la salida v1/v2 y un rollback provocado.
 
 **Conceptos clave:** responsabilidades desplazadas al orquestador, rolling update.
 
@@ -258,6 +256,8 @@ Simula una versión que responde 500 y documenta el procedimiento de rollback.
 
 #### Paso 7 · Cierre y conexión
 
+Ya servís `v2` sin perder supervisión y comprobás que un puerto ocupado conserva la versión anterior. El siguiente tema pone Nginx delante del proceso y compara esa operación con serverless.
+
 ### Tema 4: Nginx como reverse proxy y serverless
 
 #### Paso 1 · Objetivo y preparación
@@ -277,8 +277,6 @@ Ya distingues proxy, backend y función bajo demanda. El siguiente módulo cerra
 **Errores comunes:** exponer backend directamente; confiar en headers sin proxy confiable; olvidar timeouts; usar serverless para procesos largos; no medir cold starts.
 
 **Fuentes oficiales:** [Nginx reverse proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/), [AWS Lambda handler](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html) y [Docker networking](https://docs.docker.com/engine/network/).
-
-**Evidencia de aprendizaje:** entrega la salida de respuesta por proxy, error 502 diagnosticado y contrato serverless.
 
 **Conceptos clave:** reverse proxy, balanceo de carga con Nginx, funciones serverless.
 
@@ -345,6 +343,8 @@ Añade un header `X-Request-ID` en proxy y backend. **Pista:** preserva el valor
 Escribe una función serverless que reciba `{ name }` y devuelva 400 si falta; entrega el contrato y una comparación de cold start.
 
 #### Paso 7 · Cierre y conexión
+
+Ya ves `backend` a través del proxy y un 502 cuando el upstream apunta a un puerto equivocado. El laboratorio empaqueta la API completa con la imagen multi-stage de este módulo.
 
 ## Laboratorio práctico
 

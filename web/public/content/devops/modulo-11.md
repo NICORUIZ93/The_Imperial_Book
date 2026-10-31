@@ -90,9 +90,9 @@ Actualiza `package.json` para fijar `lodash` a una versión reciente sin CVEs co
 
 Repite el escaneo comparando la imagen `node:18-alpine` (Módulo 2, imagen minimalista) contra `node:18` (imagen completa, sin `-alpine`) usando la misma aplicación, y documenta cuántas vulnerabilidades adicionales reporta la imagen completa solo por el software adicional instalado en su sistema base.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escaneas imágenes propias y priorizas hallazgos por severidad con criterio, en vez de tratar cada CVE como igualmente urgente. El siguiente tema integra este escaneo como un paso automático del pipeline. **Evidencia:** entrega el reporte de Trivy mostrando la CVE de `lodash@4.17.15`, y el resultado del fallo al escanear una imagen inexistente. Fuente oficial: [Trivy — Vulnerability Scanning](https://trivy.dev/latest/docs/scanner/vulnerability/).
+Ya escaneas imágenes propias y priorizas hallazgos por severidad con criterio, en vez de tratar cada CVE como igualmente urgente. El siguiente tema integra este escaneo como un paso automático del pipeline. Fuente oficial: [Trivy — Vulnerability Scanning](https://trivy.dev/latest/docs/scanner/vulnerability/).
 
 **Errores comunes:** tratar cada CVE reportada como igualmente urgente sin revisar si el componente afectado realmente se usa de forma vulnerable en la aplicación; escanear solo una vez de forma manual y nunca repetir el escaneo cuando se publican nuevas CVEs para las mismas dependencias ya instaladas.
 
@@ -186,9 +186,9 @@ Agrega al mismo workflow un segundo step que solo se ejecute si el escaneo fue e
 
 Agrega un segundo umbral de severidad (`HIGH`) que solo genere una advertencia sin bloquear el pipeline (usando `continue-on-error: true` en ese step específico), documentando la diferencia entre un hallazgo que bloquea y uno que solo notifica.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conviertes el escaneo de seguridad en un gate automático y obligatorio del pipeline, eliminando la dependencia de que alguien lo ejecute manualmente. El siguiente tema aborda cómo gestionar secretos de forma segura dentro de ese mismo pipeline. **Evidencia:** entrega el código de salida distinto de cero del escaneo contra la imagen vulnerable, y explica por qué ese mismo mecanismo bloquearía el pull request en un pipeline real. Fuente oficial: [Trivy — GitHub Actions integration](https://trivy.dev/latest/docs/ecosystem/ci/).
+Ya conviertes el escaneo de seguridad en un gate automático y obligatorio del pipeline, eliminando la dependencia de que alguien lo ejecute manualmente. El siguiente tema aborda cómo gestionar secretos de forma segura dentro de ese mismo pipeline. Fuente oficial: [Trivy — GitHub Actions integration](https://trivy.dev/latest/docs/ecosystem/ci/).
 
 **Errores comunes:** bloquear el pipeline ante cualquier severidad (incluyendo baja/media) generando fricción y fatiga de alertas; escanear una etiqueta genérica como `latest` en vez de la imagen exacta del commit, perdiendo trazabilidad precisa.
 
@@ -263,9 +263,9 @@ Almacena un segundo secreto distinto (por ejemplo, una contraseña de base de da
 
 Detén el contenedor `vault-dev` (`docker stop vault-dev`) e intenta leer el secreto nuevamente; documenta qué comportamiento esperarías de una aplicación real si Vault estuviera temporalmente inaccesible durante su arranque, y por qué eso es preferible a que la aplicación tuviera el secreto hardcodeado como alternativa de respaldo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues por qué un secreto hardcodeado es un antipatrón grave y cómo Vault provee inyección segura con auditoría. El siguiente tema aplica el mismo principio de mínimo privilegio a las credenciales del propio pipeline de CI/CD. **Evidencia:** entrega el resultado exitoso de `vault kv get`, el `grep` vacío confirmando ausencia del secreto en archivos versionados, y el fallo de autenticación al omitir el token. Fuente oficial: [HashiCorp Vault — Secrets Engines](https://developer.hashicorp.com/vault/docs/secrets).
+Ya distingues por qué un secreto hardcodeado es un antipatrón grave y cómo Vault provee inyección segura con auditoría. El siguiente tema aplica el mismo principio de mínimo privilegio a las credenciales del propio pipeline de CI/CD. Fuente oficial: [HashiCorp Vault — Secrets Engines](https://developer.hashicorp.com/vault/docs/secrets).
 
 **Errores comunes:** hardcodear un secreto "temporalmente" durante desarrollo y olvidar removerlo antes de hacer commit; almacenar el token raíz de Vault (u otro secreto maestro) con el mismo nivel de protección que un secreto de aplicación individual.
 
@@ -389,9 +389,9 @@ Agrega un segundo recurso permitido al `Role` acotado (por ejemplo, permiso de l
 
 Investiga y documenta en una frase cómo OIDC permite a un pipeline de GitHub Actions obtener credenciales temporales de un proveedor de nube sin almacenar ningún secreto de larga duración en la configuración de CI, comparando ese enfoque con almacenar una clave de acceso permanente como secreto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya acotas los permisos de un token de pipeline al mínimo necesario, limitando el radio de daño ante una filtración. El siguiente tema cubre el inventario de dependencias (SBOM) que complementa este conjunto de defensas de la cadena de suministro. **Evidencia:** entrega la comparación entre el `ClusterRoleBinding` amplio y el `Role`/`RoleBinding` acotado, explicando qué acción específica permite uno y deniega el otro. Fuente oficial: [Kubernetes — Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
+Ya acotas los permisos de un token de pipeline al mínimo necesario, limitando el radio de daño ante una filtración. El siguiente tema cubre el inventario de dependencias (SBOM) que complementa este conjunto de defensas de la cadena de suministro. Fuente oficial: [Kubernetes — Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
 
 **Errores comunes:** conceder `cluster-admin` "temporalmente para probar" y olvidar revertirlo; no revisar periódicamente si los permisos concedidos siguen siendo realmente necesarios a medida que el pipeline evoluciona.
 
@@ -478,9 +478,9 @@ Genera un segundo SBOM después de actualizar `lodash` a una versión reciente (
 
 Investiga qué formato de SBOM (CycloneDX o SPDX) usa o prefiere alguna herramienta que ya conozcas, y documenta en una frase la diferencia práctica principal entre ambos formatos estándar.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya generas un inventario preciso de dependencias que acelera drásticamente la respuesta ante vulnerabilidades reportadas en el ecosistema. El siguiente tema distingue tres categorías de análisis de seguridad que se complementan con todo lo visto hasta ahora. **Evidencia:** entrega el resultado de la consulta rápida identificando `lodash@4.17.15` en el SBOM, y el fallo al consultar un SBOM que no fue generado de antemano. Fuente oficial: [CycloneDX — Software Bill of Materials Standard](https://cyclonedx.org/).
+Ya generas un inventario preciso de dependencias que acelera drásticamente la respuesta ante vulnerabilidades reportadas en el ecosistema. El siguiente tema distingue tres categorías de análisis de seguridad que se complementan con todo lo visto hasta ahora. Fuente oficial: [CycloneDX — Software Bill of Materials Standard](https://cyclonedx.org/).
 
 **Errores comunes:** generar el SBOM solo una vez de forma manual en vez de automatizarlo en cada build; almacenar el SBOM en un lugar no vinculado a la versión específica de la imagen que describe, perdiendo trazabilidad.
 
@@ -560,9 +560,9 @@ Corrige `app.js` escapando la entrada `nombre` antes de interpolarla en el HTML 
 
 Detén el contenedor `app-vulnerable` y documenta, para tu propio proyecto o ejercicio, un ejemplo concreto de qué esperarías que SAST detectara que DAST no podría (y viceversa), basándote en la diferencia de alcance entre analizar código estático y probar comportamiento en ejecución.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues qué detecta específicamente cada una de SAST, DAST y SCA, y por qué un programa de seguridad maduro las integra en distintos puntos del ciclo de desarrollo. Esto cierra el módulo de seguridad DevSecOps; el siguiente módulo del track continúa con la práctica avanzada de la disciplina. **Evidencia:** entrega el resultado del `curl` mostrando el XSS reflejado sin escapar antes de la corrección, y explica por qué ese mismo resultado desaparece después de escapar la entrada. Fuente oficial: [OWASP — Vulnerability Scanning Tools](https://owasp.org/www-community/Vulnerability_Scanning_Tools).
+Ya distingues qué detecta específicamente cada una de SAST, DAST y SCA, y por qué un programa de seguridad maduro las integra en distintos puntos del ciclo de desarrollo. Esto cierra el módulo de seguridad DevSecOps; el siguiente módulo del track continúa con la práctica avanzada de la disciplina. Fuente oficial: [OWASP — Vulnerability Scanning Tools](https://owasp.org/www-community/Vulnerability_Scanning_Tools).
 
 **Errores comunes:** depender de una sola categoría de análisis (típicamente solo SCA) asumiendo erróneamente que eso cubre todos los riesgos relevantes; ejecutar DAST solo una vez antes de un lanzamiento importante en vez de integrarlo regularmente contra cada versión desplegada al entorno de pruebas.
 
@@ -673,8 +673,8 @@ Agrega una columna con el tiempo de respuesta de cada puerto abierto y ordena lo
 #### Paso 6 · Práctica independiente
 Escanea con `nmap -sV` un contenedor tuyo de Docker Compose (Módulo 3) y redacta un informe: puertos expuestos, cuáles no deberían estarlo, qué banners revelan versiones y cómo cerrarlos.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque conocer tu superficie de ataque antes que un atacante es la base de DevSecOps.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque conocer tu superficie de ataque antes que un atacante es la base de DevSecOps.
 **Fuente oficial:** [Nmap Reference Guide](https://nmap.org/book/man.html), [socket (docs.python.org)](https://docs.python.org/3/library/socket.html), [OWASP Web Security Testing Guide: Information Gathering](https://owasp.org/www-project-web-security-testing-guide/).
 **Conceptos clave:** reconocimiento, escaneo TCP connect, abierto, cerrado y filtrado, banner, `nmap -sV`, alcance y autorización.
 **Cuándo no usarlo:** nunca contra redes, IPs o dominios que no te pertenecen o sin autorización escrita. En la nube, revisa también las políticas del proveedor sobre pruebas de penetración.

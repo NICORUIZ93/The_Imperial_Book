@@ -100,9 +100,7 @@ Pista: invoca el mismo programa con `../../../etc/passwd` como nombre de archivo
 #### Paso 6 · Práctica independiente
 Agrega `Files.copy` para respaldar el comprobante leído a un directorio de archivo, y una prueba que confirme que un nombre con `..` es rechazado antes de tocar el sistema de archivos.
 
-**Evidencia de aprendizaje:** entrega `LectorComprobantes` con su validación de directorio base, la prueba de traversal (`../../../etc/passwd`) correctamente rechazada, y la lectura válida de un comprobante real.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el validador de rutas, la prueba de traversal rechazada y la lectura válida; como siguiente paso estudia serialización con Jackson. Errores comunes: concatenar rutas con `+` en vez de `resolve()`, confiar en la extensión del archivo sin validar la ruta completa resuelta, y normalizar antes de resolver en vez de después (el orden importa: primero `resolve`, después `normalize()`). Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html.
 **¿Por qué es importante?** Porque aceptar un nombre de archivo externo sin validar que la ruta resuelta permanezca dentro del directorio permitido es exactamente el tipo de vulnerabilidad (path traversal) que permite leer archivos arbitrarios del sistema, no solo los comprobantes esperados.
 
@@ -117,7 +115,6 @@ Una API de entregas necesita convertir un objeto `Entrega` a JSON para responder
 #### Paso 3 · Teoría, modelo mental y analogía
 `ObjectMapper` serializa un objeto Java a JSON y deserializa en la dirección inversa, inspeccionando la estructura de la clase por reflexión. Los `record` (Módulo 7) son un modelo de datos particularmente natural para esto, sin anotaciones adicionales en el caso simple. La analogía: un traductor bidireccional entre dos idiomas que traduce automáticamente basándose en la estructura conocida de cada objeto.
 
-**Evidencia de aprendizaje:** entrega el `record Entrega` serializado a JSON, la deserialización que reconstruye un objeto `equals()` al original, y el error de Jackson al faltar un campo obligatorio.
 **Conceptos clave:** `ObjectMapper`, serializar/deserializar, records como modelos de datos.
 
 Cada respuesta de API del proyecto integrador de este track usará esta misma combinación (`record` + Jackson) para convertir entidades de dominio a JSON y viceversa.
@@ -161,7 +158,7 @@ Pista: modifica deliberadamente el JSON de entrada para que le falte el campo `p
 #### Paso 6 · Práctica independiente
 Agrega un segundo `record` anidado (por ejemplo `Entrega` con un campo `Destinatario` propio) y confirma que Jackson serializa/deserializa la estructura anidada completa sin configuración adicional.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el `record`, el JSON serializado y la confirmación de igualdad tras el ciclo completo; como siguiente paso estudia archivos grandes y recursos del classpath. Errores comunes: olvidar un constructor sin argumentos o getters/setters esperando que Jackson los necesite para un `record` (no los necesita), asumir que un campo faltante en el JSON se completa con un valor por defecto silencioso en vez de fallar, y no fijar una versión concreta de Jackson en el proyecto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://github.com/FasterXML/jackson-docs.
 **¿Por qué es importante?** Porque serializar y deserializar manualmente campo por campo es repetitivo y propenso a errores de sincronización entre el modelo Java y el JSON; Jackson automatiza esa conversión inspeccionando la estructura real del `record`, y falla con un mensaje específico cuando algo no coincide.
 
@@ -176,7 +173,6 @@ Un reporte diario de entregas puede tener cientos de miles de líneas; cargarlo 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `BufferedReader` procesa línea por línea, manteniendo en memoria solo la línea actual; `getResourceAsStream` carga un recurso empaquetado en el propio JAR, disponible sin importar dónde se despliegue la aplicación. La analogía: leer un libro página por página en vez de intentar sostenerlo completo en la memoria de una sola mirada.
 
-**Evidencia de aprendizaje:** entrega la medición de memoria con `BufferedReader` (constante) frente a `readAllLines()` (creciente), y la carga exitosa de un recurso del classpath tras empaquetar la aplicación en un JAR.
 **Conceptos clave:** procesamiento línea por línea, evitar cargar todo en memoria, `getResourceAsStream`.
 
 Cualquier exportación o reporte grande del proyecto integrador de este track deberá procesarse línea por línea como aquí, nunca cargando el archivo completo en memoria primero.
@@ -223,7 +219,7 @@ Pista: reemplaza deliberadamente `BufferedReader`/`readLine()` por `Files.readAl
 #### Paso 6 · Práctica independiente
 Agrega un `config.json` en `src/main/resources` y cárgalo con `getResourceAsStream("/config.json")`; confirma que funciona igual después de empaquetar la aplicación en un JAR.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambas mediciones de memoria y la carga del recurso del classpath; como siguiente paso estudia records y pattern matching. Errores comunes: leer todo el archivo con `readAllBytes`/`readAllLines` sin considerar su tamaño real, olvidar que `getResourceAsStream` devuelve `null` (no lanza excepción) si el recurso no existe en el classpath, y no cerrar el `BufferedReader` con try-with-resources dejando el descriptor de archivo abierto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html.
 **¿Por qué es importante?** Porque cargar un archivo de cientos de miles de líneas completo en memoria antes de procesarlo puede agotar la memoria disponible, mientras que procesarlo línea por línea mantiene un uso de memoria acotado sin importar el tamaño real del archivo.
 

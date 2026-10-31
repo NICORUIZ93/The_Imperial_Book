@@ -160,9 +160,9 @@ titulo = input.____<string>();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `input.required()` y `output()`, y un test que confirme tanto el error real al omitir el input como la recepción real del output. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con el error real `NG0950` de Angular, que `input.required()` hace cumplir su contrato en tiempo de ejecución, no solo en la documentación. El siguiente tema confirma con una comprobación real sobre el DOM por qué `track` con un identificador estable preserva la identidad de los nodos al reordenar una lista. **Evidencia:** entrega el resultado de ambos tests en verde, y el error real `NG0950` que produce el fallo deliberado al omitir el input. Fuentes oficiales: [Angular — Inputs](https://angular.dev/guide/components/inputs), [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con el error real `NG0950` de Angular, que `input.required()` hace cumplir su contrato en tiempo de ejecución, no solo en la documentación. El siguiente tema confirma con una comprobación real sobre el DOM por qué `track` con un identificador estable preserva la identidad de los nodos al reordenar una lista. Fuentes oficiales: [Angular — Inputs](https://angular.dev/guide/components/inputs), [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** olvidar los paréntesis al leer un input declarado con `input()` (confundir `titulo`, la función, con `titulo()`, su valor); asumir que un input requerido se valida en tiempo de compilación cuando en realidad el error `NG0950` ocurre en tiempo de ejecución, durante la detección de cambios.
 
@@ -302,9 +302,9 @@ npx ng test --watch=false
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una lista con `@for` y `track` por id, y un test que confirme con `toBe(...)` que reordenar preserva la identidad del nodo DOM. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con una comparación real de identidad de nodos del DOM, que `track` con un identificador estable preserva los elementos existentes al reordenar, mientras `track $index` fuerza recreaciones innecesarias. El siguiente tema confirma con contenido proyectado real, verificado sobre `fixture.nativeElement`, cómo `ng-content` posiciona marcado arbitrario del padre. **Evidencia:** entrega el resultado del test en verde, y la ruptura de identidad que produce el fallo deliberado al usar `track $index`. Fuentes oficiales: [Angular — @for](https://angular.dev/guide/templates/control-flow), [Angular — Control flow](https://angular.dev/guide/templates).
+Ya confirmas, con una comparación real de identidad de nodos del DOM, que `track` con un identificador estable preserva los elementos existentes al reordenar, mientras `track $index` fuerza recreaciones innecesarias. El siguiente tema confirma con contenido proyectado real, verificado sobre `fixture.nativeElement`, cómo `ng-content` posiciona marcado arbitrario del padre. Fuentes oficiales: [Angular — @for](https://angular.dev/guide/templates/control-flow), [Angular — Control flow](https://angular.dev/guide/templates).
 
 **Errores comunes:** usar `track $index` cuando los datos tienen un identificador único disponible; asumir que el rendimiento de listas reordenadas frecuentemente no importa hasta que la lista crece lo suficiente para volverse perceptible.
 
@@ -447,9 +447,9 @@ npx ng test --watch=false
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `ng-content` (con y sin selector nombrado), y un test que confirme sobre el DOM real que el contenido del padre se proyecta correctamente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con contenido proyectado real verificado sobre el DOM, que `ng-content` posiciona marcado arbitrario del padre en la plantilla del hijo, incluyendo múltiples slots nombrados. El siguiente tema confirma con un espía real el orden exacto en que Angular invoca los hooks de ciclo de vida de un componente. **Evidencia:** entrega el resultado del test en verde, y el contenido faltante en el slot que produce el fallo deliberado al quitar el atributo del selector. Fuentes oficiales: [Angular — Content projection](https://angular.dev/guide/components/content-projection).
+Ya confirmas, con contenido proyectado real verificado sobre el DOM, que `ng-content` posiciona marcado arbitrario del padre en la plantilla del hijo, incluyendo múltiples slots nombrados. El siguiente tema confirma con un espía real el orden exacto en que Angular invoca los hooks de ciclo de vida de un componente. Fuentes oficiales: [Angular — Content projection](https://angular.dev/guide/components/content-projection).
 
 **Errores comunes:** intentar usar `ng-content` para que un padre controle detalles internos de un hijo (inputs y outputs siguen siendo el contrato público adecuado para eso); olvidar que el contenido proyectado no puede ser inspeccionado ni transformado por el componente que lo recibe.
 
@@ -586,9 +586,9 @@ fixture.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente que registra el orden real de sus hooks de ciclo de vida en un arreglo, y un test que confirme esa secuencia exacta con `detectChanges()` y `fixture.destroy()`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un espía real y `fixture.destroy()`, el orden exacto en que Angular invoca los hooks de ciclo de vida, y que ninguna limpieza ocurre automáticamente sin una destrucción explícita. El siguiente tema aplica `viewChild.required()` y las fases `write`/`read` de `afterNextRender` para medir el DOM de forma segura. **Evidencia:** entrega el resultado del test en verde, y la ausencia de `'ngOnDestroy'` que produce el fallo deliberado al omitir `fixture.destroy()`. Fuentes oficiales: [Angular — Lifecycle hooks](https://angular.dev/guide/components/lifecycle).
+Ya confirmas, con un espía real y `fixture.destroy()`, el orden exacto en que Angular invoca los hooks de ciclo de vida, y que ninguna limpieza ocurre automáticamente sin una destrucción explícita. El siguiente tema aplica `viewChild.required()` y las fases `write`/`read` de `afterNextRender` para medir el DOM de forma segura. Fuentes oficiales: [Angular — Lifecycle hooks](https://angular.dev/guide/components/lifecycle).
 
 **Errores comunes:** no limpiar recursos en `ngOnDestroy` (suscripciones manuales, temporizadores, observers), produciendo fugas de memoria reales; usar `ngAfterViewChecked` para lógica que debería vivir en `ngOnInit` o en un callback de render, dado su coste de invocarse en cada ciclo de detección de cambios.
 
@@ -735,9 +735,9 @@ private readonly panel = viewChild.____<ElementRef<HTMLElement>>('panel');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `viewChild.required()` y `afterNextRender()` separando sus fases `write` y `read`, junto con un test que confirme el error real al eliminar la referencia de la plantilla. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un componente real y un test que verifica tanto el error de `viewChild.required()` como el piso de `Math.max(240, ...)`, que Angular puede consultar y medir el DOM de forma segura después del render, sin comprometer la compatibilidad con SSR. Esto cierra el módulo de componentes; como siguiente paso, continúa con el módulo 2 de este track (signals en profundidad). **Evidencia:** entrega el resultado del test en verde, y el error real que produce el fallo deliberado al eliminar `#header` de la plantilla. Fuentes oficiales: [Angular — Queries (viewChild)](https://angular.dev/guide/components/queries), [Angular — afterNextRender](https://angular.dev/api/core/afterNextRender).
+Ya confirmas, con un componente real y un test que verifica tanto el error de `viewChild.required()` como el piso de `Math.max(240, ...)`, que Angular puede consultar y medir el DOM de forma segura después del render, sin comprometer la compatibilidad con SSR. Esto cierra el módulo de componentes; como siguiente paso, continúa con el módulo 2 de este track (signals en profundidad). Fuentes oficiales: [Angular — Queries (viewChild)](https://angular.dev/guide/components/queries), [Angular — afterNextRender](https://angular.dev/api/core/afterNextRender).
 
 **Errores comunes:** usar `ngAfterViewChecked` para medir y actualizar estado en cada ciclo, en vez de `afterNextRender()` una sola vez; depender de una medición del DOM para producir el HTML inicial de SSR, donde esos callbacks nunca se ejecutan.
 
@@ -809,7 +809,7 @@ Añade un parámetro al pipe para elegir la unidad (`{{ metros | distancia:'mill
 #### Paso 6 · Práctica independiente
 Crea una directiva `appSoloNumeros` que impida escribir letras en un input (escuchando el evento de teclado con `HostListener`). Entrega el input que rechaza caracteres no numéricos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-números. **¿Por qué es importante?** Directivas y pipes son el mecanismo de Angular para no repetir lógica de presentación y comportamiento: un pipe de fecha/moneda/distancia y una directiva de permisos o resaltado se usan en decenas de plantillas. Saber crearlos propios es lo que distingue usar Angular de dominarlo. Fuentes: [Angular — Pipes](https://angular.dev/guide/templates/pipes) y [Angular — Attribute directives](https://angular.dev/guide/directives/attribute-directives).
 **Conceptos clave:** pipe puro de transformación, directiva de atributo, `ElementRef`, `HostListener`, importación en standalone.
 **Cuándo no usarlo:** no crees una directiva/pipe para algo que se usa en un solo sitio y una sola vez; su valor está en la reutilización. Para lógica compleja de negocio, un servicio es más apropiado que un pipe.
@@ -818,7 +818,6 @@ Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-n
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** olvidar añadir el pipe o la directiva a los `imports` del componente standalone, produciendo el error real "The pipe 'distancia' could not be found"; usar `HostListener`/`HostBinding` para un cambio de estilo que una clase condicional en la plantilla ya resolvería de forma más simple.
 **Fuente oficial:** [documentación de Angular](https://angular.dev/).
-**Evidencia de aprendizaje:** entrega el pipe `distancia` y la directiva `appResaltar` funcionando sobre la tabla de envíos, el error real "could not be found" provocado al quitar el pipe de los `imports`, y la directiva `appSoloNumeros` del Paso 6 verificada con un input que rechaza letras.
 ### Tema 7: Pipes puros e impuros, AsyncPipe y signals
 
 #### Paso 1 · Objetivo y preparación
@@ -978,8 +977,8 @@ Agrega un método `agregarCopiando` que agregue el paquete creando un array nuev
 #### Paso 6 · Práctica independiente
 Reemplaza `camiones$ | async` por `toSignal(camiones$)` y compara las dos formas en legibilidad y manejo de la suscripción.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los datos que "no se actualizan" son una de las quejas más comunes en Angular, y casi siempre se deben a mutaciones o a pipes impuros usados para taparlas.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque los datos que "no se actualizan" son una de las quejas más comunes en Angular, y casi siempre se deben a mutaciones o a pipes impuros usados para taparlas.
 **Fuente oficial:** [Angular: Pipes](https://angular.dev/guide/templates/pipes), [Angular: AsyncPipe](https://angular.dev/api/common/AsyncPipe).
 **Conceptos clave:** pipe puro, pipe impuro, igualdad por referencia, mutación frente a inmutabilidad, `AsyncPipe`, `signal.update`, `toSignal`.
 **Cuándo no usarlo:** no marques un pipe como impuro para "arreglar" datos que no se refrescan: corrige la mutación. Los pipes impuros pesados se ejecutan decenas de veces por segundo.

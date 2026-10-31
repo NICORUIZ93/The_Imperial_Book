@@ -71,7 +71,7 @@ Resultado esperado: los tres comandos devuelven sus ARN respectivos — `demo-al
 Pista: registrá un target con un ID de instancia que nunca lanzaste (`aws elbv2 register-targets --target-group-arn "$TG_ARN" --targets Id=i-00000000falso`) — ese es el fallo deliberado: el registro se acepta sin error inmediato, pero `describe-target-health` nunca va a reportar esa instancia como saludable porque simplemente no existe.
 #### Paso 6 · Práctica independiente
 Agregá una regla de enrutamiento por ruta (`aws elbv2 create-rule --listener-arn "$LISTENER_ARN" --priority 10 --conditions Field=path-pattern,Values='/api/*' --actions Type=forward,TargetGroupArn="$TG_ARN"`) y confirmá con `describe-rules` que la regla por defecto automática sigue existiendo junto a la nueva.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `demo-alb` con su listener y grupo objetivo, el target inválido del Paso 5, y la regla de ruta del Paso 6; explicá qué parte de este flujo es idéntica a como lo harías con Terraform contra un ALB real. Siguiente paso: certificados. Errores comunes: healthcheck superficial y reglas solapadas. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html.
 
 ### Tema 2: ACM — certificados TLS con criptografía real
@@ -131,7 +131,7 @@ Resultado esperado: `describe-certificate` devuelve `ISSUED` de inmediato, con u
 Pista: documentá qué pasaría contra AWS real si pidieras un certificado para un dominio que no controlás y nunca agregaras el registro DNS de validación — ese es el fallo deliberado que Floci no puede reproducir: el certificado se quedaría en `PENDING_VALIDATION` indefinidamente, nunca en `ISSUED`, porque ahí sí hay una comprobación real detrás.
 #### Paso 6 · Práctica independiente
 Documentá, para `api.demo.example.com`, cuándo ACM intentaría renovar automáticamente este certificado en AWS real (pista: unos 60 días antes de expirar, siempre que el registro DNS de validación siga existiendo) y qué rompería esa renovación automática si alguien borrara ese registro de Route53 por error.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el certificado emitido del Paso 4, el escenario de validación pendiente del Paso 5, y la renovación documentada del Paso 6; explicá por qué la emisión instantánea de Floci es útil para practicar pero no para medir tiempos reales. Siguiente paso: caché. Errores comunes: certificados vencidos y claves expuestas. Fuente oficial: https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html.
 
 ### Tema 3: CloudFront — distribución de contenido y control de acceso al origen
@@ -198,7 +198,7 @@ Resultado esperado: la distribución pasa a `Deployed` de inmediato con un `Doma
 Pista: intentá borrar esta distribución directamente con `aws cloudfront delete-distribution --id "$DIST_ID" --if-match <etag>` sin deshabilitarla antes — ese es el fallo deliberado: `DistributionNotDisabled`, porque CloudFront exige desactivar explícitamente una distribución (`update-distribution` con `Enabled=false`) antes de permitir borrarla.
 #### Paso 6 · Práctica independiente
 Creá una invalidación sobre `/envio-4471/*` (`aws cloudfront create-invalidation --distribution-id "$DIST_ID" --invalidation-batch '{"Paths":{"Quantity":1,"Items":["/envio-4471/*"]},"CallerReference":"inv-1"}'`) y confirmá que se marca `Completed` de inmediato, simulando el caso real de "el conductor volvió a subir la foto, hay que forzar que ya no se sirva la versión cacheada vieja".
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la distribución creada sobre `pruebas-entrega`, el error de borrado sin deshabilitar del Paso 5, y la invalidación del Paso 6; explicá por qué nunca deberías cachear sin control de acceso al origen una foto de entrega que podría ser sensible. Siguiente paso: DNS. Errores comunes: cachear datos privados y olvidar invalidación. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html.
 
 ### Tema 4: Route53 — zonas alojadas y registros de recursos
@@ -255,7 +255,7 @@ Resultado esperado: la zona nace con registros `SOA`/`NS` automáticos, y el `CN
 Pista: intentá borrar el registro `SOA` del vértice de la zona (`Action: DELETE` sobre ese registro) — ese es el fallo deliberado: Route53 lo rechaza, porque esos registros los gestiona el propio servicio automáticamente, no son tuyos para borrar.
 #### Paso 6 · Práctica independiente
 Agregá un health check HTTP sobre el destino real, y documentá qué TTL elegirías para el `CNAME` si tuvieras que cambiar de distribución CloudFront con frecuencia durante pruebas (pista: un TTL bajo acelera la propagación de cambios futuros, a costa de más consultas DNS).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la zona y el `CNAME` creados, el intento de borrar el `SOA` del Paso 5, y la decisión de TTL del Paso 6; explicá por qué Floci no puede confirmar que `fotos.demo.example.com` resuelva de verdad desde tu navegador. Siguiente paso: TLS. Errores comunes: TTL excesivo y healthcheck ausente. Fuente oficial: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html.
 
 ### Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real
@@ -326,7 +326,7 @@ Resultado esperado: el listener de `demo-alb` ahora tiene adjunto el certificado
 Pista: apuntá el `CNAME` de `api.demo.example.com` al `DomainName` de la distribución CloudFront del Tema 3 en vez de al del ALB — ese es el fallo deliberado: técnicamente el registro se crea sin error, pero la API de seguimiento (que vive en el ALB, no en CloudFront) deja de ser alcanzable por ese nombre, un error de "apunté bien el DNS pero al servicio equivocado".
 #### Paso 6 · Práctica independiente
 Corregí el `CNAME` de vuelta al nombre del ALB, y documentá qué pasaría si el certificado adjunto al listener fuera para un dominio distinto a `api.demo.example.com` (pista: el navegador mostraría una advertencia de certificado no coincidente, aunque la conexión TLS en sí se establezca).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la cadena completa declarada en el Paso 4, el `CNAME` apuntado al destino equivocado del Paso 5, y la corrección más la reflexión sobre dominios no coincidentes del Paso 6; explicá por qué las fotos (CloudFront) y la API (ALB) de RutaFlow necesitan cadenas DNS separadas aunque comparten el mismo dominio base. Siguiente paso: observabilidad. Errores comunes: terminación en lugar incorrecto y mixed content. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-certificates.html.
 
 ## Laboratorio práctico

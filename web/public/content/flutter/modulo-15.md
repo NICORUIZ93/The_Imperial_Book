@@ -41,12 +41,10 @@ Pista: antes de corregir, lee el mensaje de fallo completo (`Expected: no matchi
 #### Paso 6 · Práctica independiente
 Agrega un segundo test que confirme que, con al menos un envío en la lista, el texto "Sin envíos" NO aparece (`findsNothing`), cubriendo ambos estados del mismo widget.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el test del estado vacío del Paso 4, la aserción invertida del Paso 5, y el segundo test del estado con datos del Paso 6; explica por qué `WidgetTester` permite verificar el árbol de widgets sin el costo de un emulador real. Como siguiente paso, usa `pumpAndSettle` para probar interacciones asíncronas e integration tests de extremo a extremo. Errores comunes: usar `tester.pump()` una sola vez para un widget con animaciones o datos asíncronos que necesitan varios frames; probar implementación interna (variables privadas) en vez del resultado visible para el usuario. Fuentes oficiales: https://docs.flutter.dev/testing/overview y https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html.
 
 **¿Por qué es importante?** Un widget test confirma el comportamiento visible real del árbol de widgets sin el costo de un emulador, detectando regresiones de UI antes de que lleguen a producción.
-
-**Evidencia de aprendizaje:** entrega el test del estado vacío, la aserción invertida reproducida, y el segundo test del estado con datos.
 
 **Conceptos clave:** WidgetTester, pump(), árbol de widgets en memoria, testWidgets.
 
@@ -118,12 +116,10 @@ Pista: coloca la aserción del resultado ANTES de `respuesta.complete`. El fallo
 #### Paso 6 · Práctica independiente
 Agrega un test que complete el Future con error y otro que desmonte el widget antes de responder. Verifica mensaje recuperable y ausencia de setState después de dispose. Conserva golden e integration tests como capas distintas: los primeros comparan píxeles con entorno fijado y los segundos recorren la app en un dispositivo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el test con `pumpAndSettle()` del Paso 4, la falla intermitente con `pump()` único del Paso 5, y el caso de animación infinita del Paso 6; explica por qué una falla intermitente en un test (no un fallo consistente) suele señalar una sincronización asíncrona faltante, no un bug aleatorio real. Como siguiente paso, mide el rendimiento de una lista con `RepaintBoundary` y Keys correctas. Errores comunes: usar un único `pump()` para estados asíncronos que necesitan varios frames; aplicar `pumpAndSettle()` a una pantalla con una animación intencionalmente infinita, sin un timeout explícito. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/integration-tests.
 
 **¿Por qué es importante?** `pumpAndSettle()` evita fallas intermitentes esperando explícitamente a que la UI se estabilice, pero falla por timeout ante animaciones genuinamente infinitas — una limitación que hay que conocer, no un bug.
-
-**Evidencia de aprendizaje:** entrega el test con pumpAndSettle funcionando, la falla intermitente con pump único reproducida, y el caso de animación infinita documentado.
 
 **Conceptos clave:** pumpAndSettle(), estabilización de frames, falla intermitente como señal de sincronización faltante.
 
@@ -173,12 +169,10 @@ Pista: medí con el profiler ANTES de aplicar cualquier corrección — sin una 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `RepaintBoundary` y `ValueKey(envios[i].id)` (el id real, estable entre reordenamientos), y medí con el profiler de DevTools el conteo de widgets repintados antes y después, documentando la diferencia numérica.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la lista con `RepaintBoundary`/`Key` correcta del Paso 4, el checkbox en la fila equivocada del Paso 5, y la medición comparada del Paso 6; explica por qué medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real. Como siguiente paso, aislá el dominio de negocio con Clean Architecture. Errores comunes: usar el índice de una lista como Key en vez de un identificador estable del dato real; optimizar con RepaintBoundary sin medir primero cuál widget realmente se repinta de más. Fuentes oficiales: https://docs.flutter.dev/perf/best-practices y https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html.
 
 **¿Por qué es importante?** Medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real; una Key basada en índice en vez de identidad real produce bugs de estado visual asociado a la fila equivocada.
-
-**Evidencia de aprendizaje:** entrega la lista optimizada del Paso 4, el bug de Key por índice reproducido, y la medición de repintado comparada.
 
 **Conceptos clave:** RepaintBoundary, Key por identidad real vs índice, profiler antes de optimizar.
 
@@ -227,12 +221,10 @@ Pista: ejecutá `flutter analyze` o buscá manualmente `import 'package:dio` den
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el import de `dio` del dominio, implementando `EnvioRepository` con `Dio` en una clase de la capa `data` (no `domain`), y agrega un test que instancie `MarcarEntregadoUseCase` con un repositorio falso (sin ningún HTTP real), confirmando que la lógica de negocio se prueba completamente aislada de la infraestructura.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega las capas separadas del Paso 4, la dependencia de `Dio` filtrada al dominio del Paso 5, y el test aislado con repositorio falso del Paso 6; explica por qué la dirección de las dependencias (siempre hacia el centro) es lo que realmente define Clean Architecture, no solo tener carpetas con esos nombres. Como siguiente paso, hacé que esos textos sean traducibles con internacionalización completa. Errores comunes: crear carpetas `domain`/`application`/`data` sin hacer cumplir realmente la dirección de dependencias; agregar capas ceremoniales a un proyecto tan simple que no las necesita. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
 
 **¿Por qué es importante?** La dirección de las dependencias (siempre hacia el dominio, nunca al revés) es lo que permite cambiar infraestructura sin tocar ni volver a probar la lógica de negocio.
-
-**Evidencia de aprendizaje:** entrega las capas separadas, la dependencia filtrada al dominio reproducida, y el test aislado con repositorio falso.
 
 **Conceptos clave:** domain/application/data, dirección de dependencias, repositorio abstracto, aislamiento de infraestructura.
 
@@ -285,12 +277,10 @@ Pista: corré `flutter gen-l10n` inmediatamente después de agregar la clave a u
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando `estadoEntregado` también a `app_en.arb`, y agrega un test que recorra todas las claves de `app_es.arb` confirmando que cada una tiene su equivalente en `app_en.arb`, para detectar claves faltantes automáticamente en CI en vez de descubrirlas manualmente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega las traducciones funcionando del Paso 4, la clave faltante en un idioma del Paso 5, y el test de paridad de claves del Paso 6; explica por qué verificar automáticamente que ambos archivos `.arb` tengan las mismas claves evita descubrir una traducción faltante recién en producción. Como siguiente paso, generá y firmá el artefacto de build final. Errores comunes: agregar una clave de traducción a un solo idioma sin verificar los demás; formatear fechas o números manualmente en vez de usar las utilidades de `intl` sensibles al `Locale`. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization y https://pub.dev/packages/intl.
 
 **¿Por qué es importante?** Una clave de traducción faltante en un idioma produce un error detectable (en build o en runtime), nunca una traducción silenciosamente incorrecta — pero solo si algo (un test de paridad) la busca activamente.
-
-**Evidencia de aprendizaje:** entrega las traducciones funcionando, la clave faltante reproducida, y el test de paridad de claves agregado.
 
 **Conceptos clave:** archivos .arb, AppLocalizations, Locale, paridad de claves entre idiomas.
 
@@ -378,7 +368,7 @@ Pista: compara huellas completas, no solo el nombre del certificado. Registra el
 #### Paso 6 · Práctica independiente
 Incrementa la versión del laboratorio y prueba actualizar una instalación firmada con la misma clave. Comprueba que conserva sus datos. Documenta custodia y recuperación sin incluir contraseñas ni claves privadas en la evidencia.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega las salidas de verificación, el fallo y su corrección. Como siguiente paso, prepara una distribución interna siguiendo los requisitos de la tienda elegida. **Errores comunes:** generar una clave sin conectarla a Gradle, confundir claves de subida y distribución, subir secretos al repositorio y asumir que un build release ya implica una firma correcta.
 
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Genera una versión firmada para distribución interna y registra su certificado y número de build. Prueba actualización sobre una instalación con cambios offline pendientes sin publicar claves ni contraseñas.

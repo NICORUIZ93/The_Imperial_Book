@@ -35,7 +35,7 @@ Resultado esperado: Docker disponible.
 Pista: detén Docker para provocar un fallo deliberado, registra el mensaje y corrígelo.
 #### Paso 6 · Práctica independiente
 Repite en tu sistema y conserva captura y salida.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: modelo mental. Errores comunes: PATH, daemon detenido y credenciales reales. Fuente oficial: https://floci.io/.
 
 **¿Por qué es importante?** Un entorno diagnosticable evita que diferencias del sistema operativo se confundan con fallos del servicio cloud.
@@ -145,7 +145,7 @@ Resultado esperado: Docker disponible.
 Pista: apunta al endpoint incorrecto para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Dibuja proveedores, servicios y puertos.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega diagrama, salida, fallo y corrección; explica el resultado. Siguiente paso: CLI y SDK. Errores comunes: confundir API y UI. Fuente oficial: https://floci.io/.
 
 ### Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK
@@ -184,7 +184,7 @@ Resultado esperado: los tres `echo` muestran endpoints con `localhost` en los pu
 Pista: comentá la línea `eval "$(floci env)"` y repetí el primer `echo` — ese es el fallo deliberado: `AWS_ENDPOINT_URL` queda vacío o apunta al endpoint real de AWS, el síntoma exacto de un override que nunca se aplicó, y la razón por la que nunca deberías ejecutar un comando destructivo sin haber impreso el endpoint primero.
 #### Paso 6 · Práctica independiente
 Ejecutá una misma operación conceptual (crear un contenedor de almacenamiento) en los tres proveedores y compará cómo cada CLI expresa el mismo concepto con su propia sintaxis — el mismo patrón "principios portables, sintaxis específica" del Módulo 31.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los tres endpoints confirmados del Paso 4, el override ausente del Paso 5, y la comparación de sintaxis del Paso 6; explicá por qué "imprimir el endpoint antes de destruir nada" es el hábito de seguridad más simple de este módulo. Siguiente paso: ciclo de vida. Errores comunes: endpoint equivocado y perfiles mezclados. Fuente oficial: https://floci.io/aws/.
 
 **¿Por qué es importante?** Usar clientes oficiales contra endpoints locales permite transferir el aprendizaje sin inventar una API educativa paralela.
@@ -276,7 +276,7 @@ Resultado esperado: Docker disponible.
 Pista: conserva un estado incompatible para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Prueba iniciar, reiniciar y limpiar.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: automatización. Errores comunes: datos accidentales y limpieza destructiva. Fuente oficial: https://floci.io/labs/.
 
 ### Tema 5: Automatización, UI y agentes
@@ -357,7 +357,7 @@ Resultado esperado: el `test` confirma el endpoint local antes de crear nada; `h
 Pista: eliminá `AWS_ENDPOINT_URL` en una terminal aislada y ejecutá `aws s3 ls` sin credenciales reales — ese es el fallo deliberado: el comando debe fallar o intentar contactar AWS real (cancelalo si eso pasa); la corrección no es poner una clave productiva, es restaurar el endpoint local con `eval "$(floci env)"`.
 #### Paso 6 · Práctica independiente
 Agregá a las instrucciones del agente una regla comprobable: "detente si el endpoint no contiene `localhost`" — y probá que un comando con el endpoint correcto sí se ejecuta, mientras uno sin esa variable se detiene antes de llegar a AWS real.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el bucket creado y verificado del Paso 4, el fallo sin endpoint del Paso 5, y la regla del agente del Paso 6; explicá por qué montar el socket Docker le da a un agente más control del que debería tener fuera de un runner aislado y efímero. Siguiente paso: servicios AWS. Errores comunes: confiar solo en UI y no versionar scripts. Fuente oficial: https://floci.io/.
 
 ### Tema 6: Servicios AWS incorporados en la documentación actual
@@ -427,7 +427,7 @@ Resultado esperado: el entorno de cómputo queda creado y `describe-compute-envi
 Pista: probá `aws lightsail create-instances` asumiendo la misma fidelidad de emulación completa que viste en EC2 (Módulo 21) — ese es el fallo deliberado: Lightsail en esta tabla es un servicio de plano simplificado, no necesariamente con el mismo nivel de motor real que EC2; documentá la diferencia antes de asumir paridad total.
 #### Paso 6 · Práctica independiente
 Elegí otro servicio de la tabla (por ejemplo Cloud Map o CloudWatch Metrics) que no hayas probado, y repetí el mismo patrón crear → describir con su comando equivalente.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el entorno de AWS Batch confirmado del Paso 4, la asunción de paridad corregida del Paso 5, y el segundo servicio probado del Paso 6; explicá por qué relacionar cada servicio nuevo con un problema real de RutaFlow evita memorizar un catálogo sin entenderlo. Siguiente paso: Azure. Errores comunes: asumir paridad total y no consultar fuentes. Fuente oficial: https://floci.io/aws/.
 
 ### Tema 7: Servicios Azure que completan el recorrido
@@ -507,7 +507,7 @@ Resultado esperado: `cmp` no imprime nada cuando ambos archivos son idénticos �
 Pista: intentá descargar un blob de un contenedor que nunca creaste (`evidencias-inexistente`) — ese es el fallo deliberado: el comando falla con un error claro de recurso no disponible, no con un archivo vacío silencioso; corregilo apuntando al contenedor real `evidencias`.
 #### Paso 6 · Práctica independiente
 Agregale metadatos `tipo=evidencia` y `guia=RF-101` al blob, y recuperalos con `az storage blob metadata show` — conectando este ejercicio con el patrón real: el objeto guarda el archivo, la metadata o la base de datos conserva el estado transaccional de la entrega.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ciclo completo subir/bajar/comparar del Paso 4, el contenedor inexistente del Paso 5, y los metadatos agregados del Paso 6; explicá qué cambiaría y qué seguiría igual si esta misma evidencia viviera en S3 en vez de Blob Storage. Siguiente paso: GCP. Errores comunes: traducir nombres literalmente y omitir límites. Fuente oficial: https://floci.io/az/.
 
 ### Tema 8: Servicios GCP que completan el recorrido
@@ -587,7 +587,7 @@ Resultado esperado: `cmp` termina con código `0` — el evento `RF-102` subió 
 Pista: si `gcloud` te pide iniciar sesión en cualquier momento de este flujo — ese es el fallo deliberado: significa que faltan los overrides locales; detenete ahí mismo, nunca inicies sesión real para "que funcione", y corregilo con `floci gcp env --service gcs,pubsub` aplicado de nuevo.
 #### Paso 6 · Práctica independiente
 Confirmá explícitamente que el endpoint de Storage contiene `localhost:4588` después de aplicar los overrides, y compará ese mismo flujo de "guardar y recuperar una evidencia" entre Cloud Storage (este Tema), Blob Storage (Tema 7) y S3 (Módulo 2) — mismo problema, tres sintaxis.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ciclo completo del evento `RF-102` del Paso 4, la señal de alerta de login real del Paso 5, y la comparación de los tres proveedores del Paso 6; explicá por qué GCP necesita un proyecto local explícito además del endpoint, a diferencia de AWS. Siguiente paso: floci-ui, el explorador visual multi-nube. Errores comunes: confundir documento con tabla. Fuente oficial: https://floci.io/gcp/.
 
 ### Tema 9: floci-ui — explorador visual multi-nube
@@ -614,7 +614,7 @@ Resultado esperado: el secreto `rutaflow/api-key` aparece inmediatamente en la s
 Pista: abrí el editor JSON clave-valor de `floci-ui` sobre ese secreto, cambiá `valor-inicial` a `valor-editado` desde la UI, y confirmá desde CLI con `aws secretsmanager get-secret-value --secret-id rutaflow/api-key` — ese es el fallo deliberado si asumís que la UI es solo de lectura: también escribe contra el mismo backend real, así que un cambio hecho ahí (por error, o por otra persona del equipo) modifica el estado real que tus scripts y tests después leerán, sin quedar registrado en ningún control de versiones.
 #### Paso 6 · Práctica independiente
 Corregí esa asunción documentando en `src/labs/modulo-34/floci-ui-reglas.md` qué cambios son aceptables hacer desde la UI (exploración, verificación visual) y cuáles deben hacerse siempre desde código versionado; después, recreá el secreto desde CLI con el valor correcto para dejar el estado consistente con lo que el código espera.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el secreto creado por CLI y visible en la UI del Paso 4, la edición cruzada desde la UI del Paso 5, y la corrección documentada del Paso 6; explicá por qué una herramienta visual que también permite escribir necesita una regla explícita de "qué se edita ahí y qué se edita en código", igual que cualquier consola de administración de un proveedor real. Siguiente paso: laboratorios oficiales reconstruidos en español. Errores comunes: asumir que una consola visual es solo de lectura cuando también permite escribir; tratar un cambio hecho desde la UI como si estuviera versionado o fuera reproducible por otra persona del equipo. Fuentes oficiales: https://floci.io/ y https://github.com/floci-io/floci-ui.
 
 **¿Por qué es importante?** `floci-ui` opera sobre el mismo estado real que CLI/SDK/IaC, no sobre datos de muestra separados; un cambio hecho ahí es tan real (y tan poco versionado) como uno hecho a mano en la consola de un proveedor real.
@@ -629,8 +629,6 @@ flowchart LR
   UI["floci-ui (proyecto aparte)"] --> F
   F --> E["Mismo estado real: buckets, tablas, secretos, colas"]
 ```
-
-**Evidencia de aprendizaje:** entrega el secreto creado por CLI visible en la UI, la edición cruzada reproducida, y la regla documentada de qué se edita en UI vs en código.
 
 **Conceptos clave:** floci-ui como proyecto separado, mismo estado real que CLI/SDK, panel multi-nube, UI como escritura real, no solo observación.
 
@@ -657,7 +655,7 @@ Resultado esperado: Docker disponible.
 Pista: omite un prerrequisito para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Repite el laboratorio y documenta diferencias.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: copiar comandos sin observar y no guardar logs. Fuente oficial: https://floci.io/labs/.
 
 **¿Por qué es importante?** Un laboratorio guiado convierte documentación de referencia en predicción, ejecución, fallo y evidencia verificable.
@@ -731,7 +729,7 @@ Resultado esperado: Node disponible.
 Pista: afirma paridad total para provocar un fallo deliberado de diseño y corrígelo.
 #### Paso 6 · Práctica independiente
 Construye matriz local/real y criterios de promoción.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: validación real. Errores comunes: usar datos reales en local y no probar IAM, cuotas o recuperación. Fuente oficial: https://floci.io/.
 
 **¿Por qué es importante?** Reconocer qué no reproduce el entorno local evita trasladar conclusiones falsas sobre seguridad, escala, coste o disponibilidad.

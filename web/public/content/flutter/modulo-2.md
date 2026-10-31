@@ -84,9 +84,7 @@ Pista: reemplazá el `LayoutBuilder` por `MediaQuery.of(context).size.width > 40
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el `LayoutBuilder`, y agregá un tercer caso de layout (`ListaEnviosMuyCompacta`) para cuando `constraints.maxWidth` sea menor a 250, confirmando que cada variante responde al espacio real del panel, no al de la pantalla.
 
-**Evidencia de aprendizaje:** entrega LayoutBuilder correctamente usado, overflow por MediaQuery detectado y tercera variante de layout confirmada.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `LayoutBuilder` correctamente usado del Paso 4, el overflow provocado por `MediaQuery` del Paso 5, y la tercera variante del Paso 6; explicá cuándo el ancho total de la pantalla y el espacio disponible de un widget específico dejan de ser el mismo número. Siguiente paso: estudia cómo Flutter calcula tamaños con constraints. Errores comunes: usar `MediaQuery` para decidir el layout de un widget anidado que no ocupa toda la pantalla, anidar `LayoutBuilder` innecesariamente en widgets que sí ocupan la pantalla completa, y no probar el layout en al menos dos proporciones de pantalla distintas. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/LayoutBuilder-class.html y https://docs.flutter.dev/ui/layout/constraints.
 **¿Por qué es importante?** `LayoutBuilder` es más preciso que `MediaQuery` cuando el widget que decide su layout no ocupa toda la pantalla, dado que refleja el espacio real disponible para ese widget en su posición actual del árbol.
 
@@ -159,9 +157,7 @@ Pista: quitá `Expanded` y dejá el `ListView` directamente como hijo de `Column
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `Expanded`, y explicá por escrito, en tus propias palabras, por qué el error específico menciona constraints no acotadas y de dónde debería haber venido el límite faltante.
 
-**Evidencia de aprendizaje:** entrega layout corregido con Expanded, error de constraints no acotadas detectado y explicación escrita del protocolo.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el layout corregido con `Expanded` del Paso 4, el error de constraints no acotadas del Paso 5, y tu explicación escrita del Paso 6; explicá por qué entender el protocolo "constraints go down, sizes go up" permite diagnosticar este tipo de error leyendo el mensaje de la excepción, en vez de probar soluciones al azar. Siguiente paso: estudia breakpoints propios y SafeArea. Errores comunes: anidar un widget que ocupa todo el espacio disponible dentro de un padre que no impone límites, usar `Expanded` fuera de un `Row`/`Column`/`Flex`, y asumir que un `Container` sin tamaño explícito siempre se comporta igual sin importar su padre. Fuentes oficiales: https://docs.flutter.dev/ui/layout/constraints y https://docs.flutter.dev/ui/layout/box-constraints.
 **¿Por qué es importante?** Entender el protocolo "constraints go down, sizes go up" explica de forma predecible por qué un widget termina con el tamaño final que tiene, permitiendo diagnosticar errores de layout leyendo el mensaje real de la excepción.
 
@@ -243,9 +239,7 @@ Pista: en una pantalla nueva (`DetalleEnvio`), escribí directamente `if (ancho 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `DetalleEnvio` a usar `segunAncho()`, y quitá `SafeArea` deliberadamente de una pantalla para confirmar visualmente (en un dispositivo con notch) que el contenido queda oculto, antes de restaurarlo.
 
-**Evidencia de aprendizaje:** entrega función centralizada de breakpoints, inconsistencia por hardcodear detectada y comprobación visual de SafeArea.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la función centralizada del Paso 4, la inconsistencia por hardcodear del Paso 5, y la comprobación visual de `SafeArea` del Paso 6; explicá por qué centralizar breakpoints en una función reutilizable evita exactamente la clase de inconsistencia que ocurrió en el Paso 5. Siguiente paso: cerrá el módulo con la pantalla responsive completa. Errores comunes: dispersar comparaciones numéricas de breakpoints en cada widget, omitir `SafeArea` asumiendo que todos los dispositivos tienen los mismos insets, y definir breakpoints basados en orientación cuando el ancho real disponible es lo que importa. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/SafeArea-class.html y https://docs.flutter.dev/ui/layout.
 **¿Por qué es importante?** Centralizar los breakpoints en una función reutilizable evita inconsistencias de comparaciones numéricas dispersas; `SafeArea` importa de forma variable según el dispositivo específico.
 

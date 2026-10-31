@@ -6,262 +6,330 @@
 ### Tema 1: El pipeline completo — de commit a producción verificada
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a trazar, de principio a fin, el pipeline CI/CD completo de RutaFlow: desde un `git push` hasta la verificación post-despliegue con rollback automático si las métricas se degradan. Prerrequisitos: módulos 1-12 completos.
+Al finalizar vas a validar, con un script, que el pipeline de RutaFlow encadena sus etapas con gates bloqueantes y etiqueta la imagen con el hash del commit. Prerrequisitos: módulos 1-12 completos y Python 3 con PyYAML; no necesitás un clúster real para comprobar la configuración.
 
 #### Paso 2 · Contexto y caso real
-A lo largo del track construiste cada etapa de este pipeline por separado (tests en CI, escaneo de seguridad, Helm, Prometheus, rollback) — nadie confirmó todavía que esas etapas realmente se conectan entre sí como un flujo único y coherente.
+A lo largo del track construiste cada etapa por separado: tests, escaneo, build, despliegue y verificación. Nadie confirmó todavía que esas etapas estén realmente conectadas. En RutaFlow, un pipeline que ejecuta Trivy pero no falla ante una vulnerabilidad crítica produce una falsa sensación de seguridad: el escaneo aparece en verde y la imagen vulnerable se publica igual.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un pipeline CI/CD maduro encadena etapas donde cada una es un gate real: si una falla, la siguiente no se ejecuta — una línea de ensamblaje donde ningún vehículo avanza sin pasar el control de calidad de la estación anterior.
-**Conceptos clave:** flujo end-to-end, etapas encadenadas, gates bloqueantes, verificación post-despliegue.
+Un pipeline maduro es una cadena de gates: cada etapa recibe la salida de la anterior y solo continúa si su resultado es aceptable. `needs` expresa la dependencia; el código de salida de una acción decide si el job falla. Un gate que solo imprime un reporte no bloquea nada. La verificación post-despliegue también es un gate: compara métricas contra una línea base y dispara rollback si la tasa de error se degrada.
 
-Este proyecto integrador construye, en un único flujo continuo, el pipeline que representa la síntesis de todo el track: un desarrollador hace `git push` de un commit (Módulo 1); esto dispara automáticamente un pipeline de CI (Módulo 4) que ejecuta tests automatizados y, como gate bloqueante, un escaneo de vulnerabilidades con Trivy sobre la imagen construida (Módulo 11); si el escaneo encuentra una vulnerabilidad crítica sin resolver, el pipeline se detiene ahí mismo y no avanza, exactamente como se practicó en el laboratorio del Módulo 11. Si el escaneo pasa, la imagen se etiqueta y se publica en un registry (Módulo 2), y el pipeline continúa hacia la etapa de despliegue.
+La trazabilidad empieza antes del despliegue. La imagen se etiqueta con el hash del commit, no solo con `latest`; el escaneo registra el resultado exacto; el despliegue usa ese mismo digest. Sin esa cadena, un incidente en producción obliga a adivinar qué versión está corriendo.
 
-La etapa de despliegue usa Helm (Módulo 7) para aplicar el chart actualizado con la nueva versión de la imagen contra un clúster de Kubernetes, aprovechando el `Deployment` con estrategia de `RollingUpdate` (Módulo 6) para una transición sin caída de servicio, con los `livenessProbe` y `readinessProbe` configurados (Módulo 7) asegurando que Kubernetes solo enruta tráfico hacia los Pods nuevos una vez que están efectivamente listos para recibirlo. El `HorizontalPodAutoscaler` (Módulo 7) queda activo para ajustar automáticamente la cantidad de réplicas según la carga real observada.
+**Conceptos clave:** flujo end-to-end, gates bloqueantes, `needs`, código de salida, etiqueta por commit, verificación post-despliegue y rollback.
 
-Inmediatamente después del despliegue, la etapa de verificación consulta las métricas expuestas a Prometheus (Módulo 9) —tasa de peticiones, tasa de error, latencia p95— comparando su comportamiento inmediatamente después del despliegue contra la línea base previa; si la tasa de error se eleva de forma anómala tras el despliegue, esto debería disparar automáticamente (o alertar para disparar manualmente) el procedimiento de rollback (Módulo 5), revirtiendo la implementación de Kubernetes al `ReplicaSet` anterior de forma prácticamente instantánea.
-
-Todo este flujo, de principio a fin, es exactamente lo que un pipeline de CI/CD maduro en una organización real ejecuta de forma rutinaria decenas o cientos de veces al día, y cada etapa individual de este flujo es, precisamente, uno de los módulos que ya dominaste de forma aislada en este track; este proyecto integrador es la oportunidad de verlos operar juntos, como un sistema coherente, en vez de como piezas independientes estudiadas por separado.
-
-**Analogía:** un pipeline CI/CD completo es como una línea de ensamblaje de una fábrica de automóviles moderna, donde cada estación de la línea (soldadura, pintura, control de calidad, ensamblaje final, prueba de manejo) corresponde a una etapa específica del pipeline, y ningún vehículo avanza a la siguiente estación hasta que pasa satisfactoriamente el control de calidad de la estación anterior —igual que ningún despliegue avanza hasta pasar el gate de escaneo de seguridad.
-
-**¿Por qué es importante?** Ver el pipeline completo operar de principio a fin, con cada gate y cada verificación realmente funcionando, es la validación final de que el conocimiento adquirido módulo a módulo en este track se combina en un sistema coherente y realmente operativo, no solo en una colección de técnicas aisladas.
-
-**Diagrama:**
-
+```mermaid
+flowchart LR
+    PUSH["git push"] --> TEST["test"]
+    TEST --> BUILD["build"]
+    BUILD --> SCAN["scan Trivy"]
+    SCAN -->|"CRITICAL: falla"| STOP["detener"]
+    SCAN -->|"sin críticas"| DEPLOY["deploy con Helm"]
+    DEPLOY --> VER["verificar métricas"]
+    VER -->|"normal"| OK["fin"]
+    VER -->|"anómalo"| RB["rollback"]
 ```
-git push ──▶ CI: tests ──▶ CI: escaneo Trivy ──▶ [¿crítica? ──▶ STOP]
-                                    │ (pasa)
-                                    ▼
-                        build + push a registry
-                                    │
-                                    ▼
-                    Helm upgrade (Deployment RollingUpdate,
-                    liveness/readinessProbe, HPA activo)
-                                    │
-                                    ▼
-                verificación: métricas Prometheus/Grafana
-                                    │
-                    ┌───────────────┴───────────────┐
-              normal: fin exitoso          anómalo: rollback (Helm/kubectl)
-```
+
+**Analogía:** es una línea de ensamblaje donde cada estación mide antes de dejar avanzar la pieza; una estación que solo anota el defecto sin detener la cinta no protege el producto final.
+
+**¿Por qué es importante?** Porque el valor de un pipeline no está en ejecutar etapas, sino en impedir que un artefacto defectuoso llegue a producción.
+
+**Límite de uso:** validar el YAML no demuestra que GitHub Actions, Docker ni el registry funcionen en tu cuenta; comprueba la estructura y las dependencias del flujo, no su ejecución real.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `.github/workflows/complete-pipeline.yml` dentro.
+**Ejemplo independiente (desde cero):** crea un directorio de trabajo nuevo con el workflow y el validador; no hace falta un repositorio remoto ni credenciales de nube.
+
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo && cd ejemplo
 ```
 
-Crea `.github/workflows/complete-pipeline.yml` en tu repositorio y ejecuta el pipeline completo con `git push`:
+Crea `.github/workflows/pipeline.yml` con cuatro jobs encadenados y un escaneo que falla ante vulnerabilidades críticas:
+
+```yaml
+name: pipeline
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker build -t registry.rutaflow.app/api:${{ github.sha }} .
+  scan:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: registry.rutaflow.app/api:${{ github.sha }}
+          severity: CRITICAL
+          exit-code: "1"
+  deploy:
+    needs: scan
+    runs-on: ubuntu-latest
+    steps:
+      - run: helm upgrade --install api ./chart --set image.tag=${{ github.sha }}
+```
+
+Crea `verificar_pipeline.py` para comprobar el orden, las dependencias y el gate de seguridad:
+
+```python
+import sys
+from pathlib import Path
+
+import yaml
+
+flujo = yaml.safe_load(Path(".github/workflows/pipeline.yml").read_text(encoding="utf-8"))
+jobs = flujo["jobs"]
+orden = ["test", "build", "scan", "deploy"]
+
+for anterior, siguiente in zip(orden, orden[1:]):
+    if jobs[siguiente].get("needs") != anterior:
+        sys.exit(f"fallo: {siguiente} no depende de {anterior}")
+
+escaneo = jobs["scan"]["steps"][0]["with"]
+if str(escaneo.get("exit-code")) != "1" or escaneo.get("severity") != "CRITICAL":
+    sys.exit("fallo: el escaneo no bloquea ante una vulnerabilidad CRITICAL")
+
+print("jobs:", " -> ".join(orden))
+print("gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)")
+print("imagen etiquetada con el hash del commit: True")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 verificar_pipeline.py
+```
+
+Resultado esperado:
 
 ```text
-git push → CI: tests → CI: escaneo Trivy → [¿crítica? → STOP]
-                              │ (pasa)
-                              ▼
-                  build + push a registry (tag = hash del commit)
-                              │
-                              ▼
-              helm upgrade (RollingUpdate, liveness/readinessProbe)
-                              │
-                              ▼
-          verificación: métricas Prometheus vs línea base previa
-                              │
-              ┌───────────────┴───────────────┐
-        normal: fin exitoso          anómalo: rollback automático
+jobs: test -> build -> scan -> deploy
+gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)
+imagen etiquetada con el hash del commit: True
 ```
-Resultado esperado: un commit con una vulnerabilidad crítica introducida deliberadamente detiene el pipeline en la etapa de escaneo, antes de llegar a construir o publicar ninguna imagen; un commit limpio atraviesa las seis etapas y termina con el nuevo `Deployment` corriendo y verificado contra sus métricas reales.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
-```
+
+El script explica cada comprobación: `needs` define el orden, `exit-code` distingue un gate real de un reporte informativo y el tag con `github.sha` evita depender de `latest`.
+
 #### Paso 5 · Práctica guiada
-Pista: configurá el job de escaneo de Trivy para que imprima el reporte de vulnerabilidades pero sin `exit-code: 1` — ese es el fallo deliberado: el pipeline completo "pasa" en verde aunque Trivy haya encontrado una vulnerabilidad crítica real, porque el job de escaneo nunca falla realmente, solo informa; el gate existe en el papel, pero no bloquea nada en la práctica.
+Pista: cambiá `exit-code: "1"` por `exit-code: "0"` y volvé a ejecutar `python3 verificar_pipeline.py`; ese es el fallo deliberado: el validador termina con `fallo: el escaneo no bloquea ante una vulnerabilidad CRITICAL`, porque el job de Trivy informaría el hallazgo pero no detendría el pipeline.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 configurando `exit-code: 1` en Trivy para severidad crítica, y agregá `needs: [scan]` explícito en el job de build/push, confirmando que ahora una vulnerabilidad crítica real detiene el pipeline antes de publicar la imagen.
+Restaurá `exit-code: "1"` y agregá un job `verify` que dependa de `deploy` y falle si la tasa de error supera un umbral. Luego conectá el ejercicio con el proyecto integrador: el pipeline real de RutaFlow debe promover el mismo digest que pasó el escaneo, no reconstruir “la misma versión” para producción. Documentá qué parte del flujo pudiste validar con el script y cuál requiere un runner real.
 
-**Evidencia de aprendizaje:** entrega pipeline completo trazado, gate sin bloqueo real detectado y corrección verificada con una vulnerabilidad crítica real.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el pipeline completo trazado del Paso 4, el gate que no bloqueaba realmente del Paso 5, y la corrección verificada del Paso 6; explicá la diferencia entre un gate que "informa" y un gate que efectivamente detiene el flujo. Siguiente paso: estudia cómo cada módulo del track se conecta en este mismo flujo. Errores comunes: un escaneo de seguridad que solo informa sin bloquear, un despliegue sin verificación post-despliegue real, y un rollback documentado pero nunca ejecutado de verdad. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
-**¿Por qué es importante?** Ver el pipeline completo operar de principio a fin, con cada gate realmente funcionando, es la validación final de que el conocimiento del track se combina en un sistema coherente, no solo en técnicas aisladas.
+#### Paso 7 · Cierre
+Entregá la salida del Paso 4, el fallo del gate del Paso 5 y el flujo ampliado del Paso 6; explicá la diferencia entre informar un hallazgo y bloquear el despliegue. Siguiente paso: unir la trazabilidad de todas las etapas en el Tema 2. Errores comunes: escanear sin bloquear, desplegar sin verificación y documentar un rollback que nunca se ejecutó. **Fuentes oficiales:** https://docs.github.com/es/actions/using-jobs/using-jobs-in-a-workflow y https://trivy.dev/latest/docs/configuration/others/.
 
 ### Tema 2: Uniendo cada módulo del track en un solo flujo
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a diseñar explícitamente las conexiones entre etapas del pipeline de RutaFlow: qué resultado de una etapa determina si la siguiente se ejecuta, y cómo se traza un incidente hacia atrás hasta su commit de origen. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a reconstruir la cadena commit → imagen → escaneo → despliegue a partir de eventos trazables y a detectar cuándo un pipeline perdió esa trazabilidad. Prerrequisitos: Tema 1 de este módulo y Python 3.
 
 #### Paso 2 · Contexto y caso real
-Tener cada módulo (CI, escaneo, Helm, observabilidad) funcionando por separado no es lo mismo que tenerlos conectados — nadie confirmó todavía que, ante un incidente real en producción, el equipo pueda reconstruir exactamente qué commit lo causó y qué escaneo pasó o falló en el camino.
+En RutaFlow, un incidente en producción un viernes por la noche obliga al equipo a responder tres preguntas: qué imagen está corriendo, de qué commit salió y qué escaneo pasó. Si las etapas solo comparten un tag `latest`, la respuesta se pierde porque el tag se sobrescribió varias veces. La trazabilidad no es un log decorativo: es la diferencia entre diagnosticar en minutos y reconstruir a ciegas.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-La integración horizontal implica que la salida de una etapa se convierte en la entrada de la siguiente, y que cada etapa deja evidencia trazable (tag con hash del commit, logs con correlation ID) que permite reconstruir la cadena completa ante un incidente.
-**Conceptos clave:** integración horizontal, dependencias entre etapas, trazabilidad end-to-end.
+La integración horizontal significa que la salida de una etapa es la entrada de la siguiente. El commit produce una imagen con su hash; el escaneo registra el resultado de ese digest; el despliegue usa exactamente ese digest. Un `correlation_id` compartido permite agrupar los eventos de una misma ejecución aunque provengan de sistemas distintos.
 
-Construir el proyecto integrador no es simplemente ejecutar cada módulo del track por separado en secuencia, sino diseñar deliberadamente las conexiones entre ellos: la salida de una etapa se convierte en la entrada de la siguiente, y el estado de una etapa determina si la siguiente se ejecuta en absoluto. Por ejemplo, el resultado del escaneo Trivy del Módulo 11 (¿aprobado o rechazado?) determina directamente si la etapa de build/push del Módulo 2 se ejecuta; el resultado de la verificación post-despliegue del Módulo 9 (¿métricas normales o anómalas?) determina si se ejecuta el rollback del Módulo 5.
+La trazabilidad se diseña, no se improvisa. Etiquetar con `latest` elimina la identidad de la versión; construir de nuevo “la misma versión” rompe la cadena porque el nuevo binario puede diferir. El digest es inmutable: dos builds distintos no comparten digest. Los logs deben incluir commit, digest, etapa y correlation ID, sin secretos ni datos personales.
 
-Esta integración horizontal también implica trazabilidad: dado un incidente en producción, debe ser posible recorrer hacia atrás la cadena completa —¿qué versión de la imagen está corriendo?, ¿de qué commit se construyó?, ¿pasó el escaneo de seguridad y con qué resultado exacto?, ¿qué pipeline lo desplegó y cuándo?— sin lagunas de información entre etapas. Etiquetar las imágenes con el hash del commit (no solo con `latest`, un antipatrón mencionado en el Módulo 2), y registrar logs correlacionables con un `correlation ID` (Módulo 10) en cada etapa, son las dos prácticas concretas que hacen posible esta trazabilidad completa de punta a punta.
+**Conceptos clave:** integración horizontal, dependencia entre etapas, digest inmutable, correlation ID, trazabilidad end-to-end y promoción de artefactos.
 
-Diseñar el proyecto integrador también obliga a resolver decisiones de orden que en los módulos individuales quedaban implícitas: ¿el escaneo de seguridad ocurre antes o después del build de la imagen final? (Después, típicamente, escaneando la imagen ya construida, aunque algunas organizaciones también escanean dependencias antes del build). ¿La verificación post-despliegue espera un tiempo fijo o monitorea continuamente durante una ventana? (Una ventana de monitoreo continuo, típicamente varios minutos, detecta mejor problemas que tardan en manifestarse que una verificación puntual inmediata).
-
-Completar honestamente este ejercicio de integración —no solo enumerar qué módulos se conectan, sino realmente trazar cómo fluye la información y las decisiones entre ellos— es lo que distingue a alguien que "conoce Docker, Kubernetes, Terraform y Prometheus por separado" de alguien que "sabe operar un sistema DevOps completo", que es precisamente el objetivo de este track y de este proyecto final.
-
-**Analogía:** conocer cada módulo por separado es como conocer cada instrumento de una orquesta individualmente; integrarlos en un pipeline completo es como dirigir la orquesta entera tocando junta, donde el valor real no está en cada instrumento aislado sino en cómo se coordinan entre sí en el tiempo correcto.
-
-**¿Por qué es importante?** La mayoría del valor real de un pipeline CI/CD maduro está precisamente en las conexiones entre etapas (gates, verificaciones, rollback automático), no en cada etapa aislada; un pipeline que ejecuta las mismas etapas pero sin gates reales que realmente bloqueen, o sin verificación real que dispare rollback real, ofrece mucha menos protección real que uno donde esas conexiones están genuinamente implementadas y probadas.
-
-**Diagrama:**
-
+```mermaid
+flowchart LR
+    C["commit 4f2c1ab"] --> I["imagen @sha256:9a1"]
+    I --> S["scan aprobado"]
+    S --> D["deploy del mismo digest"]
+    C -. "correlation_id c-77" .- S
+    D -. "correlation_id c-77" .- C
 ```
-Commit (hash) ──▶ Imagen etiquetada con ese hash (no "latest")
-      │                              │
-      └── trazable hacia atrás ──────┘
-                    │
-         logs con correlation ID
-         en CADA etapa del pipeline
-                    │
-      permite reconstruir, ante un incidente:
-      ¿qué commit → qué imagen → pasó qué escaneo →
-      lo desplegó qué pipeline → cuándo?
-```
+
+**Analogía:** es el número de guía de un envío: permite seguir el paquete por cada centro de distribución sin abrir la caja ni confiar en la memoria de cada operador.
+
+**¿Por qué es importante?** Porque sin una cadena verificable no se puede atribuir un incidente a un cambio concreto ni demostrar que la versión desplegada pasó los controles.
+
+**Límite de uso:** este ejercicio valida eventos simulados; no reemplaza los logs reales de GitHub Actions, del registry ni del clúster.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/logging/correlation.ts` dentro.
+**Ejemplo independiente (desde cero):** crea un directorio de trabajo nuevo con un archivo de eventos y el verificador; los eventos representan una ejecución, no requieren servicios externos.
+
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo && cd ejemplo
 ```
 
-Crea `src/logging/correlation.ts` en tu aplicación Node para propagar el correlation ID, y ejecuta `helm` y `kubectl` para verificar trazabilidad:
+Crea `eventos.jsonl` con las cuatro etapas de una misma ejecución:
+
+```json
+{"etapa":"commit","commit":"4f2c1ab","correlation_id":"c-77"}
+{"etapa":"build","commit":"4f2c1ab","imagen":"registry.rutaflow.app/api@sha256:9a1","correlation_id":"c-77"}
+{"etapa":"scan","commit":"4f2c1ab","resultado":"aprobado","correlation_id":"c-77"}
+{"etapa":"deploy","commit":"4f2c1ab","imagen":"registry.rutaflow.app/api@sha256:9a1","correlation_id":"c-77"}
+```
+
+Crea `trazabilidad.py` para comprobar que todos los eventos comparten commit, digest y correlation ID:
+
+```python
+import json
+import sys
+from pathlib import Path
+
+eventos = [
+    json.loads(linea)
+    for linea in Path("eventos.jsonl").read_text(encoding="utf-8").splitlines()
+    if linea.strip()
+]
+if len({e.get("correlation_id") for e in eventos}) != 1:
+    sys.exit("fallo: la cadena no comparte correlation_id")
+
+commit = eventos[0]["commit"]
+if any(e.get("commit") != commit for e in eventos):
+    sys.exit("fallo: hay etapas de otro commit")
+
+imagenes = {e["imagen"] for e in eventos if "imagen" in e}
+if len(imagenes) != 1 or any(":latest" in imagen for imagen in imagenes):
+    sys.exit("fallo: la imagen no es trazable por digest")
+
+escaneo = next(e for e in eventos if e["etapa"] == "scan")
+if escaneo["resultado"] != "aprobado":
+    sys.exit("fallo: se desplegó sin un escaneo aprobado")
+
+print(f"commit: {commit}")
+print(f"imagen: {imagenes.pop()}")
+print("etapas:", " -> ".join(e["etapa"] for e in eventos))
+print("cadena completa: True")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 trazabilidad.py
+```
+
+Resultado esperado:
 
 ```text
-Commit (hash) → Imagen etiquetada con ese hash (nunca solo "latest")
-      │                              │
-      └── trazable hacia atrás ──────┘
-                    │
-         logs con correlation ID en CADA etapa
-                    │
-      ante un incidente: ¿qué commit → qué imagen →
-      pasó qué escaneo → lo desplegó qué pipeline → cuándo?
+commit: 4f2c1ab
+imagen: registry.rutaflow.app/api@sha256:9a1
+etapas: commit -> build -> scan -> deploy
+cadena completa: True
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+El script explica cada condición: un solo correlation ID, un solo commit, un solo digest inmutable y un escaneo aprobado antes del despliegue.
 
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
-Resultado esperado: dado un incidente real en producción, el equipo de RutaFlow puede recorrer hacia atrás la cadena completa (imagen corriendo → tag → commit → resultado del escaneo → pipeline que lo desplegó) consultando únicamente el tag de la imagen y los logs con correlation ID, sin ninguna laguna de información.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
-```
 #### Paso 5 · Práctica guiada
-Pista: etiquetá la imagen de producción con `rutaflow:latest` en vez de con el hash del commit, "para no complicar el pipeline" — ese es el fallo deliberado: un incidente en producción un viernes a la noche no permite saber qué commit específico está corriendo realmente, porque `latest` se sobrescribió varias veces desde el último despliegue intencional, y reconstruir la cadena de trazabilidad se vuelve imposible.
+Pista: cambiá el digest del evento `deploy` por `registry.rutaflow.app/api:latest` y volvé a ejecutar; ese es el fallo deliberado: el verificador termina con `fallo: la imagen no es trazable por digest`, porque `latest` no identifica qué binario exacto se desplegó.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el etiquetado al hash del commit (manteniendo `latest` solo como etiqueta adicional de conveniencia), y agregá un correlation ID propagado desde el pipeline de CI hasta los logs de la aplicación desplegada, confirmando que ahora se puede trazar un log específico hasta el pipeline exacto que lo generó.
+Restaurá el digest y agregá un evento `rollback` que también comparta el correlation ID y el commit. Verificá que la cadena siga completa y documentá cómo localizarías el commit de origen si el incidente ocurriera después de tres despliegues. Aplicá la misma regla al proyecto integrador: cada etapa del pipeline de RutaFlow debe registrar el digest y un correlation ID, no solo un mensaje humano.
 
-**Evidencia de aprendizaje:** entrega diseño de conexiones entre etapas, pérdida de trazabilidad detectada y corrección con hash + correlation ID.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el diseño de conexiones entre etapas del Paso 4, la pérdida de trazabilidad por usar solo `latest` del Paso 5, y la corrección con hash + correlation ID del Paso 6; explicá por qué la mayoría del valor real de un pipeline maduro está en las conexiones entre etapas, no en cada etapa aislada. Siguiente paso: cerrá el track con el checklist final y la reflexión. Errores comunes: etiquetar imágenes de producción únicamente con `latest`, no propagar un correlation ID entre etapas del pipeline y la aplicación desplegada, y dejar implícitas decisiones de orden sin documentarlas. Fuentes oficiales: https://12factor.net/ y https://sre.google/sre-book/.
-**¿Por qué es importante?** La mayoría del valor real de un pipeline CI/CD maduro está en las conexiones entre etapas (gates, verificaciones, rollback automático), no en cada etapa aislada.
+#### Paso 7 · Cierre
+Entregá la salida del Paso 4, el fallo por tag mutable del Paso 5 y la cadena con rollback del Paso 6; explicá por qué un digest es más útil que un número de versión para atribuir un incidente. Siguiente paso: cerrar el track con el checklist del Tema 3. Errores comunes: etiquetar solo con `latest`, no propagar el correlation ID y asumir que el commit visible en el panel es el que está corriendo. **Fuentes oficiales:** https://docs.docker.com/engine/reference/commandline/pull/ y https://www.sre.google/sre-book/postmortem-culture/.
 
 ### Tema 3: Cierre del track — checklist final y reflexión
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a auto-evaluar tu dominio de los catorce módulos del track respondiendo, sin consultar notas, un checklist de preguntas concretas sobre decisiones reales de DevOps en RutaFlow. Prerrequisitos: Temas 1-2 de este módulo.
+Al finalizar vas a responder un checklist de decisiones reales del pipeline de RutaFlow y a comprobar, con un evaluador, si tus respuestas están ancladas en artefactos concretos. Prerrequisitos: Temas 1-2 de este módulo y Python 3.
 
 #### Paso 2 · Contexto y caso real
-Completar el proyecto integrador no garantiza por sí solo que cada concepto estudiado módulo a módulo quedó consolidado — nadie verificó todavía si podés explicar, sin ayuda, por qué se tomó cada decisión específica del pipeline que acabás de construir.
+Completar el proyecto no garantiza que puedas explicar por qué tomaste cada decisión. En una revisión de incidentes, una respuesta como “GitOps es usar Git como fuente de verdad” suena correcta pero no demuestra que entiendas por qué el operador del clúster necesita menos credenciales que un runner de CD. El equipo de RutaFlow necesita respuestas que puedan confrontarse con archivos y comandos reales.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Aplicar la misma disciplina de checklist usada en producción (Módulo 12) al propio aprendizaje es una forma de verificar honestamente el dominio real, distinto de simplemente haber "visto" cada tema una vez.
-**Conceptos clave:** consolidación, checklist de dominio del track, próximos pasos de aprendizaje.
+Un checklist de dominio es útil si cada respuesta cita una decisión verificable: un manifiesto, un comando, una métrica o una prueba. La diferencia entre reconocer un término y dominarlo aparece cuando hay que justificar una elección frente a una alternativa. La reflexión final conecta los módulos en un modelo mental, no en una lista de definiciones.
 
-Al completar este proyecto integrador, vale la pena hacer una pausa deliberada de consolidación, revisando explícitamente los catorce módulos de este track como un cuerpo de conocimiento coherente en vez de una lista de temas independientes: desde los fundamentos de Linux y Git (Módulos 0-1), pasando por Docker y su orquestación local (Módulos 2-3), CI y CD (Módulos 4-5), Kubernetes y su ecosistema (Módulos 6-7), infraestructura como código (Módulo 8), observabilidad y logging (Módulos 9-10), seguridad DevSecOps (Módulo 11), la transición a producción real (Módulo 12), hasta este proyecto integrador final (Módulo 13) que los conecta todos.
+El cierre también debe declarar límites: qué se ejecutó, qué se documentó y qué sigue pendiente. Un checklist honesto no se aprueba por escribir mucho, sino por anclar cada respuesta a un artefacto y reconocer lo que no se probó.
 
-Una forma útil de verificar honestamente ese dominio es aplicar la misma disciplina de checklist del Módulo 12 al propio aprendizaje: ¿puedes explicar, sin consultar notas, la diferencia entre un `Deployment` y un `StatefulSet`? ¿Puedes razonar por qué GitOps reduce la superficie de exposición de credenciales frente al CD tradicional? ¿Puedes diseñar, desde cero, una estrategia de despliegue canary con un umbral de rollback automático razonable? Si alguna de estas preguntas genera duda, revisar el módulo correspondiente antes de considerar el track completamente consolidado es una inversión de tiempo bien empleada.
-
-Este track conecta directamente con el track Cloud (donde practicaste directamente contra servicios de AWS/Azure/GCP emulados), y las prácticas de este track —CI/CD, contenedores, Kubernetes, IaC, observabilidad, seguridad— son exactamente las que un equipo de ingeniería real aplica sobre la infraestructura cloud que ese otro track enseña a construir; dominar ambos tracks en conjunto es sustancialmente más valioso que dominar cada uno de forma aislada, porque reflejan cómo trabajan juntos en la práctica real de la industria.
-
-Como paso siguiente natural después de este track, profundizar en cualquiera de sus módulos de forma individual —por ejemplo, explorando Service Mesh en mayor detalle, o profundizando en Chaos Engineering como práctica avanzada de resiliencia— es un camino razonable, así como aplicar directamente este pipeline completo a un proyecto personal real, que es, en última instancia, la mejor forma de consolidar de forma duradera todo lo aprendido en este track.
-
-**Analogía:** completar este proyecto integrador es como terminar de construir el motor completo de un automóvil después de haber estudiado cada pieza por separado (pistones, válvulas, sistema de encendido); ver el motor completo arrancar y funcionar coherentemente es la prueba final de que cada pieza individual fue realmente comprendida, no solo memorizada de forma aislada.
-
-**¿Por qué es importante?** La reflexión final de consolidación no es un paso opcional decorativo: es lo que convierte catorce módulos de conocimiento técnico específico en un modelo mental coherente y duradero de cómo opera un sistema DevOps real de principio a fin, que es, en definitiva, el objetivo genuino de todo el track.
-
-**Diagrama:**
+**Conceptos clave:** consolidación, checklist de dominio, respuesta anclada, decisión verificable, límite declarado y próximos pasos.
 
 ```mermaid
-graph TD
-    A["Módulos 0-1<br/>Fundamentos<br/>Linux, Git"]
-    B["Módulos 2-3<br/>Contenedores<br/>Docker, Compose"]
-    C["Módulos 4-5<br/>CI/CD<br/>Pipelines"]
-    D["Módulos 6-7<br/>Kubernetes<br/>Helm, Ingress"]
-    E["Módulo 8<br/>IaC<br/>Terraform"]
-    F["Módulos 9-10<br/>Observabilidad<br/>Métricas, Logs"]
-    G["Módulo 11<br/>Seguridad<br/>DevSecOps"]
-    H["Módulo 12<br/>Producción<br/>Secretos, GitOps"]
-    I["Módulo 13<br/>ESTE PROYECTO<br/>Todo integrado"]
-    
-    A --> I
-    B --> I
-    C --> I
-    D --> I
-    E --> I
-    F --> I
-    G --> I
-    H --> I
-    
-    style I fill:#e8f5e9
+flowchart LR
+    Q["pregunta de dominio"] --> A["respuesta"]
+    A --> ART["artefacto: archivo, comando o métrica"]
+    ART -->|"existe y coincide"| OK["respuesta anclada"]
+    ART -->|"no existe"| GEN["respuesta genérica"]
 ```
 
-* Código: `docs/cierre-track-checklist.md`
+**Analogía:** es la diferencia entre decir “sé nadar” y mostrar el registro de una travesía cronometrada; la segunda respuesta se puede verificar.
 
----
+**¿Por qué es importante?** Porque el objetivo del track no es haber visto catorce módulos, sino poder defender decisiones de operación con evidencia.
+
+**Límite de uso:** el evaluador mide si una respuesta nombra una decisión técnica; no juzga si la decisión es correcta ni sustituye una revisión humana.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `examples/rutaflow/devops/deployment.yaml` dentro.
+**Ejemplo independiente (desde cero):** crea un directorio de trabajo nuevo con el checklist y el evaluador; no necesitás el clúster ni el repositorio de RutaFlow.
+
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo && cd ejemplo
 ```
 
-Crea `docs/cierre-track-checklist.md` en tu proyecto y documenta tus respuestas, ejecutando `kubectl` contra el mismo `examples/rutaflow/devops/deployment.yaml` del proyecto integrador para verificar cada decisión (por ejemplo, `kubectl explain deployment.spec.strategy` para la pregunta 3):
+Crea `checklist.md` con tres respuestas ancladas a decisiones del pipeline:
+
+```markdown
+## 1. Deployment frente a StatefulSet
+Usamos Deployment porque la API no necesita identidad estable ni almacenamiento propio; el estado vive en Postgres, no en el Pod.
+
+## 2. GitOps y credenciales
+El operador dentro del clúster lee del repositorio y no guarda credenciales de despliegue externas, a diferencia del runner de CD.
+
+## 3. Canary y rollback
+Desplegamos el 10 % con Helm y revertimos con rollback si la tasa de error supera el 1 % durante 5 minutos.
+```
+
+Crea `evaluar_checklist.py` para detectar respuestas cortas, genéricas o sin decisión técnica:
+
+```python
+import re
+import sys
+from pathlib import Path
+
+texto = Path("checklist.md").read_text(encoding="utf-8")
+bloques = re.split(r"^##\s+", texto, flags=re.MULTILINE)[1:]
+genericas = ("es usar git como fuente de verdad", "es una buena práctica")
+fallos = []
+
+for bloque in bloques:
+    titulo, _, respuesta = bloque.partition("\n")
+    respuesta = respuesta.strip()
+    if len(re.findall(r"\w+", respuesta)) < 12:
+        fallos.append(f"{titulo}: respuesta demasiado corta")
+    if any(generica in respuesta.lower() for generica in genericas):
+        fallos.append(f"{titulo}: respuesta genérica sin artefacto")
+    if not re.search(r"(Deployment|StatefulSet|Helm|Postgres|operador|runner|canary|rollback)", respuesta, re.IGNORECASE):
+        fallos.append(f"{titulo}: sin decisión técnica nombrada")
+
+if fallos:
+    sys.exit("fallo: " + "; ".join(fallos))
+
+print(f"preguntas respondidas: {len(bloques)}")
+print("respuestas ancladas a una decisión: True")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 evaluar_checklist.py
+```
+
+Resultado esperado:
 
 ```text
-Checklist de auto-evaluación (sin consultar notas):
-1. ¿Diferencia entre Deployment y StatefulSet, y cuándo usar cada uno?
-2. ¿Por qué GitOps reduce la superficie de exposición de credenciales
-   frente al CD tradicional?
-3. ¿Cómo diseñarías, desde cero, un despliegue canary con un umbral
-   de rollback automático razonable?
+preguntas respondidas: 3
+respuestas ancladas a una decisión: True
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+El evaluador explica cada regla: longitud mínima para evitar respuestas vacías, lista de frases genéricas y exigencia de nombrar una decisión técnica concreta.
 
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
-Resultado esperado: respondés las tres preguntas con una justificación concreta anclada en una decisión real del pipeline de RutaFlow que construiste, confirmando que el conocimiento quedó conectado a una aplicación práctica, no memorizado de forma aislada.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
-```
 #### Paso 5 · Práctica guiada
-Pista: respondé la pregunta sobre GitOps con una definición genérica copiada ("GitOps es usar Git como fuente de verdad") sin conectarla con ninguna decisión específica del pipeline de RutaFlow — ese es el fallo deliberado: esa respuesta "suena" correcta pero no demuestra que entendiste por qué esa propiedad reduce exposición de credenciales en tu propio pipeline, y no te prepara para defender esa decisión frente a alguien que pregunte "¿por qué no simplemente CD tradicional acá?".
+Pista: reemplazá la respuesta de GitOps por “GitOps es usar Git como fuente de verdad” y volvé a ejecutar; ese es el fallo deliberado: el evaluador termina con `fallo: 2. GitOps y credenciales: respuesta demasiado corta; ... respuesta genérica sin artefacto`, porque la frase no cita el operador, el runner ni ninguna decisión del pipeline.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 reescribiendo la respuesta conectándola con una decisión real de tu propio pipeline (el operador de GitOps dentro del clúster nunca necesita credenciales de despliegue externas, a diferencia de un runner de CD tradicional que sí las necesita), y repetí el ejercicio para las otras dos preguntas.
+Reescribí la respuesta de GitOps conectándola con una decisión real del proyecto integrador: el operador dentro del clúster no guarda credenciales de despliegue externas, mientras que un runner de CD tradicional sí las necesita. Agregá una cuarta pregunta sobre rollback y respondela con una métrica y un umbral concretos.
 
-**Evidencia de aprendizaje:** entrega checklist respondido, respuesta genérica sin anclaje detectada y las tres respuestas reescritas con conexión al pipeline propio.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el checklist respondido del Paso 4, la respuesta genérica sin anclaje real detectada en el Paso 5, y las tres respuestas reescritas con conexión al pipeline propio del Paso 6; explicá por qué una respuesta "de libro" sin conexión a una decisión real no demuestra dominio genuino. Siguiente paso: aplicá este mismo pipeline completo a un proyecto personal real para consolidarlo de forma duradera. Errores comunes: dar por completado el track sin poder explicar las decisiones propias sin notas, confundir haber "visto" un tema con haberlo dominado, y no conectar este track con el track Cloud que lo complementa directamente. Fuente oficial: https://sre.google/sre-book/.
-**¿Por qué es importante?** La reflexión final de consolidación convierte catorce módulos de conocimiento técnico específico en un modelo mental coherente y duradero de cómo opera un sistema DevOps real.
+#### Paso 7 · Cierre
+Entregá el checklist del Paso 4, el fallo del Paso 5 y las respuestas ampliadas del Paso 6; explicá por qué una respuesta de libro sin conexión a una decisión real no demuestra dominio. Siguiente paso: aplicar este pipeline a un proyecto personal y registrar qué partes se ejecutaron y cuáles quedaron documentadas. Errores comunes: confundir haber visto un tema con haberlo dominado, no declarar límites de ejecución y cerrar el track sin poder explicar las decisiones propias. **Fuentes oficiales:** https://www.sre.google/sre-book/postmortem-culture/ y https://12factor.net/.
 
 ## Laboratorio práctico
 

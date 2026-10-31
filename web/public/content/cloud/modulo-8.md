@@ -70,7 +70,7 @@ Resultado esperado: `diff` no muestra ninguna diferencia — el mismo archivo qu
 Pista: reintentá el `upload` apuntando la cadena de conexión al puerto de Queue Storage (10001) en vez del puerto de Blob (10000) — ese es el fallo deliberado: la conexión falla o el servicio rechaza la operación, porque Queue Storage no entiende peticiones de blobs aunque esté en la misma cuenta de almacenamiento.
 #### Paso 6 · Práctica independiente
 Relacioná cada pieza de RutaFlow con su servicio Azure correcto: la foto de entrega (Blob Storage), el mensaje "confirmar entrega" (Queue Storage), el historial de eventos del envío (Cosmos DB) — y justificá por qué ninguno de los tres es intercambiable con otro.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ciclo completo de subida/descarga en Blob Storage, el error de puerto equivocado del Paso 5 y la relación de los tres servicios del Paso 6; explicá qué cambia y qué no cambia al portar `pruebas-entrega` de S3 a Blob Storage. Siguiente paso: GCP. Errores comunes: asumir nombres idénticos entre nubes. Fuente oficial: https://learn.microsoft.com/azure/.
 
 ### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions
@@ -141,7 +141,7 @@ Resultado esperado: el `pull` devuelve el mismo JSON que publicaste — el mismo
 Pista: publicá un mensaje contra `delivery-commands-fallback` (un topic que nunca creaste) — ese es el fallo deliberado: `NOT_FOUND: Resource not found`, a diferencia de SQS donde al menos la URL de la cola identifica el recurso; en Pub/Sub el topic tiene que existir antes de poder publicar nada en él.
 #### Paso 6 · Práctica independiente
 Creá una segunda suscripción (`delivery-commands-sub-2`) sobre el mismo topic, publicá un mensaje nuevo, y confirmá que AMBAS suscripciones reciben su propia copia con `pull` — algo que SQS no haría con una sola cola y dos consumidores compitiendo por el mismo mensaje.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la publicación y recepción exitosa, el error de topic inexistente del Paso 5, y la doble recepción del Paso 6; explicá por qué Pub/Sub no es un calco exacto de SQS aunque resuelva el mismo problema de negocio. Siguiente paso: comparación. Errores comunes: confundir documento con tabla y evento con cola. Fuente oficial: https://cloud.google.com/docs.
 
 ### Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio
@@ -247,7 +247,7 @@ Resultado esperado: ese es el fallo deliberado — `FAILED_PRECONDITION: The sub
 Pista: corregí el error del Paso 4 recreando la suscripción con `gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --enable-message-ordering --project mi-proyecto-local`, y repetí el `publish` con `--ordering-key` — ahora sí se acepta, porque tanto el productor como la suscripción acordaron explícitamente mantener el orden.
 #### Paso 6 · Práctica independiente
 Armá una tabla de tres columnas (AWS / Azure / GCP) solo para la fila "mensajería", anotando qué necesita cada uno para garantizar orden (SQS FIFO vs Pub/Sub con `--enable-message-ordering`), y decidí cuál requeriría menos cambios de configuración si RutaFlow migrara hoy.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el error de ordenamiento no habilitado y su corrección, y la tabla comparativa del Paso 6; explicá por qué "SQS y Pub/Sub son equivalentes" es una simplificación que un caso real como este rompe. Siguiente paso: seguridad multi-cloud. Errores comunes: elegir por popularidad y omitir salida. Fuente oficial: https://cloud.google.com/architecture.
 
 ## Laboratorio práctico

@@ -155,9 +155,9 @@ class TareaControllerTest {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@WebMvcTest` con un servicio mockeado y una aserción sobre el código de estado HTTP. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya pruebas la capa web de forma aislada y rápida con `@WebMvcTest`, confirmando con `MockMvc` real el comportamiento del controller sin depender de la lógica de negocio real. El siguiente tema aborda cómo probar la capa de persistencia contra una base de datos real, no aproximada. **Evidencia:** entrega el resultado de `TareaControllerTest` en verde, y el error real `NoSuchBeanDefinitionException` que produce el fallo deliberado. Fuente oficial: [Spring Boot — Testing the Web Layer](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-mvc-tests).
+Ya pruebas la capa web de forma aislada y rápida con `@WebMvcTest`, confirmando con `MockMvc` real el comportamiento del controller sin depender de la lógica de negocio real. El siguiente tema aborda cómo probar la capa de persistencia contra una base de datos real, no aproximada. Fuente oficial: [Spring Boot — Testing the Web Layer](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-mvc-tests).
 
 **Errores comunes:** cargar el contexto completo (`@SpringBootTest`) para probar lógica que un slice más rápido cubriría igual de bien; olvidar `@MockitoBean` para una dependencia del controller, causando `NoSuchBeanDefinitionException`.
 
@@ -315,9 +315,9 @@ static void propiedades(DynamicPropertyRegistry registry) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@DataJpaTest @Testcontainers` con un `PostgreSQLContainer` real y una aserción sobre una entidad guardada y leída. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya pruebas la capa de persistencia contra una base de datos real y desechable, en vez de una aproximación que podría comportarse distinto en producción. El siguiente y último tema de este módulo aborda cuándo vale la pena pagar el costo del contexto completo. **Evidencia:** entrega el resultado de `TareaRepositoryTestcontainersTest` en verde, y la comparación mostrando que una función específica de PostgreSQL falla contra H2 pero funciona contra el contenedor real. Fuente oficial: [Testcontainers — Spring Boot integration](https://java.testcontainers.org/modules/databases/postgres/).
+Ya pruebas la capa de persistencia contra una base de datos real y desechable, en vez de una aproximación que podría comportarse distinto en producción. El siguiente y último tema de este módulo aborda cuándo vale la pena pagar el costo del contexto completo. Fuente oficial: [Testcontainers — Spring Boot integration](https://java.testcontainers.org/modules/databases/postgres/).
 
 **Errores comunes:** confiar en H2 en memoria para verificar comportamiento específico de PostgreSQL; no declarar el contenedor como `static`, levantando uno nuevo innecesariamente por cada método de test, incrementando el tiempo total de la suite.
 
@@ -456,9 +456,9 @@ class CrearTareaEndToEndTest { }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@SpringBootTest` con `MockMvc` y una aserción directa contra un repositorio real confirmando persistencia. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues los tres niveles de la pirámide de tests (unitarios, slices, `@SpringBootTest` completo) y confirmas con evidencia real por qué cada uno responde una pregunta distinta que los otros no cubren. Esto cierra el módulo de testing; el siguiente módulo aborda cómo documentar y observar esta misma API en producción. **Evidencia:** entrega el resultado de `CrearTareaEndToEndTest` en verde, y el resultado del fallo deliberado mostrando cómo un bug de persistencia real pasa desapercibido para un test de slice pero es detectado por el test end-to-end. Fuente oficial: [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
+Ya distingues los tres niveles de la pirámide de tests (unitarios, slices, `@SpringBootTest` completo) y confirmas con evidencia real por qué cada uno responde una pregunta distinta que los otros no cubren. Esto cierra el módulo de testing; el siguiente módulo aborda cómo documentar y observar esta misma API en producción. Fuente oficial: [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
 
 **Errores comunes:** usar `@SpringBootTest` para todo, incluso pruebas simples de lógica de negocio que un test unitario con Mockito cubriría igual de bien y mucho más rápido; no tener NINGÚN `@SpringBootTest`, confiando únicamente en slices que, como demuestra el fallo deliberado, pueden dejar pasar bugs de integración entre capas.
 

@@ -33,7 +33,6 @@ graph TD
     style E fill:#e8f5e9
 ```
 
-**Evidencia de aprendizaje:** entrega contador con el bug detectado y corrección con forma funcional.
 **Conceptos clave:** valor capturado por closure, forma funcional del setter.
 
 #### Por qué los Hooks dependen del orden de llamada
@@ -121,7 +120,7 @@ Pista: dejá el código del Paso 4 y esperá que `intentos` llegue a 2 "porque l
 #### Paso 6 · Práctica independiente
 Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirmá que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
 **¿Por qué es importante?** Porque depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
 
@@ -166,7 +165,6 @@ graph TD
     style H fill:#ffeb3b
 ```
 
-**Evidencia de aprendizaje:** entrega prueba de render sin cambio visual, aclaración del malentendido y comparación con cambio real.
 **Conceptos clave:** fase de render (cálculo), fase de commit (aplicación al DOM real).
 
 React separa internamente el trabajo de actualizar la interfaz en dos fases distintas: la fase de render, durante la cual React ejecuta la función del componente (y de todos sus componentes hijos afectados) para calcular una descripción de qué debería verse en pantalla (una nueva versión del árbol de elementos producido por JSX/`createElement`, Módulo 0), sin todavía tocar el DOM real del navegador; y la fase de commit, durante la cual React compara esa nueva descripción con la anterior (un proceso llamado reconciliation) y aplica al DOM real únicamente los cambios mínimos necesarios para reflejar las diferencias encontradas.
@@ -215,7 +213,7 @@ Pista: afirmá que "si el `console.log` se imprime de nuevo, significa que algo 
 #### Paso 6 · Práctica independiente
 Corregí tu conclusión del Paso 5 agregando una segunda prueba: actualizá `pin` a un valor distinto y confirmá explícitamente (mirando el input renderizado) que esta vez sí hubo un cambio visual, a diferencia del Paso 4 donde el valor era idéntico.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explicá por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
 **¿Por qué es importante?** Entender que renderizar no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect`, no directamente en el cuerpo del componente.
 
@@ -251,7 +249,6 @@ graph TD
     style E fill:#c8e6c9
 ```
 
-**Evidencia de aprendizaje:** entrega prueba de un solo render, ruptura del batching detectada y cuarta actualización confirmada.
 **Conceptos clave:** agrupación de múltiples `setState`, un único re-render.
 
 Cuando múltiples llamadas a funciones de actualización de estado ocurren dentro del mismo manejador de evento (`setA(1); setB(2); setC(3);` dentro de una misma función `manejarClick`), React no vuelve a renderizar el componente inmediatamente después de cada llamada individual, sino que agrupa (batchea) todas esas actualizaciones y ejecuta un único ciclo de render y commit que refleja el efecto combinado de las tres, en vez de tres ciclos separados de render y commit, uno por cada llamada individual a una función de actualización de estado.
@@ -304,7 +301,7 @@ Pista: envolvé cada `setState` dentro de su propio `setTimeout(() => ..., 0)` p
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando los `setTimeout` innecesarios, y agregá una cuarta actualización de estado (`setUltimoIntento(new Date())`) al mismo manejador — confirmá que sigue siendo un único render adicional, no cuatro.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explicá por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
 **¿Por qué es importante?** El batching evita ciclos de render y commit redundantes cuando múltiples actualizaciones de estado ocurren en el mismo manejador, aplicando únicamente el estado final combinado en un único ciclo.
 
@@ -372,7 +369,7 @@ Pista: quitá el atributo `value` del input, dejando solo `onChange` ("para que 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `value={pin}`, y agregá un segundo input controlado para la guía del envío, con su propia validación (sin espacios) — confirmá que ambos campos están sincronizados con su estado de React respectivo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización del Paso 5, y el segundo campo del Paso 6; explicá por qué quitar `value` (dejando solo `onChange`) convierte un input controlado en no controlado, y qué se pierde exactamente al hacerlo. Siguiente paso: estudia efectos con `useEffect`. Errores comunes: dejar `onChange` sin `value` (input no controlado accidental), mezclar un input controlado con manipulación directa del DOM vía referencia, y no considerar el costo de un re-render por tecla en formularios extremadamente grandes. Fuentes oficiales: https://react.dev/reference/react-dom/components/input y https://react.dev/learn/sharing-state-between-components.
 
 * Ejecutar: `npm test -- --match="*controlled*"`
@@ -381,8 +378,6 @@ Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización d
 * Cuándo: usar componentes controlados para validación y transformación en tiempo real; no conviene en formularios con miles de campos donde el costo de re-render por tecla se vuelve relevante (usa React Hook Form en ese caso).
 
 **¿Por qué es importante?** Los componentes controlados hacen del estado de React la única fuente de verdad del valor de un input, permitiendo validación y transformación centralizada en cada cambio.
-**Evidencia de aprendizaje:** entrega input de PIN controlado, pérdida de sincronización detectada y segundo campo agregado.
-
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un formulario controlado con validación en tiempo real, demostrando actualizaciones funcionales y batching.

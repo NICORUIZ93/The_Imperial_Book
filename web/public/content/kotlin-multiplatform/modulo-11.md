@@ -14,7 +14,6 @@ Un desarrollador nuevo se incorpora al proyecto integrador y no tiene claro si d
 #### Paso 3 · Teoría, modelo mental y analogía
 La arquitectura organiza `shared/src/commonMain/kotlin/` en `dominio/` (modelos y casos de uso) y `data/` (repositorios combinando Ktor y SQLDelight), con `commonTest/` verificando esa lógica con fakes; `androidApp/` e `iosApp/` contienen solo la UI específica de cada plataforma. La analogía es una fábrica central que produce el componente común, distribuido hacia dos plantas de ensamblaje final especializadas.
 
-**Evidencia de aprendizaje:** entrega estructura documentada, duplicación evitable detectada y criterio de capas documentado en el README.
 **Conceptos clave:** capas compartidas frente a UI específica o compartida, tests con fakes.
 
 El proyecto integrador organiza el código compartido en `shared/src/commonMain/kotlin/` con `dominio/` (modelos y casos de uso, Módulo 4) y `data/` (`TareaRepositoryImpl` combinando Ktor para datos remotos y SQLDelight para caché local, Módulos 5-6), con `commonTest/` conteniendo los tests que verifican esa lógica compartida usando fakes (Módulo 9); `androidApp/` e `iosApp/` contienen la UI específica de cada plataforma (ya sea nativa completa — Jetpack Compose en Android, SwiftUI en iOS consumiendo el `Shared.framework`, Módulo 8 — o Compose Multiplatform compartido, Módulo 7, según la decisión de arquitectura tomada para ese proyecto específico).
@@ -76,7 +75,7 @@ Pista: cuando el desarrollador nuevo pregunta dónde poner la nueva validación,
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 moviendo la validación a `dominio/` en `commonMain`, escribiendo su test en `commonTest`, y documentando en el README del proyecto el criterio explícito: "toda regla de negocio nueva vive en `commonMain` salvo que dependa genuinamente de una API nativa de plataforma".
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la estructura documentada del Paso 4, la duplicación evitable del Paso 5, y el criterio documentado del Paso 6; explicá por qué una decisión de arquitectura sin un criterio explícito y escrito termina resolviéndose caso por caso de forma inconsistente entre desarrolladores. Siguiente paso: implementá la sincronización de datos remotos con caché local dentro de `data/`. Errores comunes: no documentar explícitamente el criterio de qué vive en `commonMain` frente a cada plataforma, dejar que cada desarrollador decida el límite caso por caso sin un criterio compartido, y mezclar lógica de UI dentro de `dominio/`. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-discover-project.html y https://kotlinlang.org/docs/multiplatform-architect-your-app.html.
 **¿Por qué es importante?** El proyecto integrador demuestra el patrón central de KMP en su forma más completa: maximizar código compartido verificado una única vez, aislando en cada plataforma únicamente lo que genuinamente requiere integración nativa específica.
 
@@ -91,7 +90,6 @@ Un usuario de la app de tareas entra a un túnel sin señal y la app muestra una
 #### Paso 3 · Teoría, modelo mental y analogía
 El patrón "red primero, con fallback a caché local" combina ambas capas de persistencia en una única fuente de verdad: si la petición remota tiene éxito, actualiza la caché local antes de leerla; si falla, recurre directamente a los datos ya existentes en la caché. La analogía es un asistente que consulta primero la fuente más actualizada, pero recurre a la última copia confiable si esa fuente no está accesible.
 
-**Evidencia de aprendizaje:** entrega repositorio con fallback funcionando, pantalla de error sin manejo reproducida y verificación manual sin red confirmada.
 **Conceptos clave:** repositorio como única fuente de verdad, fallback offline.
 
 ```kotlin
@@ -165,7 +163,7 @@ Pista: quitá el bloque `try/catch` dejando solo la llamada directa a `api.get(.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `try/catch` con fallback a `db.tareaQueries.selectTodas()`, y verificá manualmente el comportamiento apagando el servidor Floci local (Módulo 5) y confirmando que la pantalla sigue mostrando las tareas de la última sincronización exitosa.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el repositorio con fallback del Paso 4, la pantalla de error reproducida del Paso 5, y la verificación manual sin red del Paso 6; explicá por qué "simplificar" eliminando el manejo de errores de red convierte un problema de conectividad temporal en una falla completa de la aplicación. Siguiente paso: cerrá el track reflexionando sobre qué compartir realmente entre Android e iOS. Errores comunes: no implementar ningún fallback offline en el repositorio, decidir compartir la lógica de sincronización pero duplicarla por error en cada plataforma, y no probar manualmente el comportamiento sin conexión antes de confiar en el fallback. Fuentes oficiales: https://ktor.io/docs/client-exceptions.html y https://cashapp.github.io/sqldelight/.
 **¿Por qué es importante?** Combinar Ktor y SQLDelight en el repositorio compartido, con fallback offline a la caché local, hace que ambas plataformas se beneficien exactamente del mismo comportamiento de resiliencia ante conectividad intermitente, sin duplicar esa lógica de sincronización por separado.
 
@@ -180,7 +178,6 @@ En la retrospectiva final del proyecto integrador, alguien del equipo pregunta "
 #### Paso 3 · Teoría, modelo mental y analogía
 La promesa realista de KMP es compartir específicamente lo que es redundancia pura entre plataformas (lógica de negocio, networking, persistencia), dejando la UI como decisión de arquitectura deliberada: nativa por fidelidad, o Compose Multiplatform por velocidad de desarrollo compartido. La analogía es una cocina central que prepara los ingredientes base compartidos, mientras cada sucursal presenta el plato final según las preferencias de su clientela local.
 
-**Evidencia de aprendizaje:** entrega documento de cierre, meta de 100% compartido sin trade-offs detectada y decisión final justificada y documentada.
 **Conceptos clave:** compartir donde la duplicación es redundancia, UI nativa donde importa la experiencia específica.
 
 KMP no reemplaza el desarrollo nativo completo ni pretende hacerlo: la promesa realista y consolidada de KMP es compartir específicamente la lógica de negocio, el networking, y la persistencia (Módulos 4-6), áreas donde la duplicación entre Android e iOS es efectivamente redundancia pura sin ningún beneficio real (la lógica de filtrar tareas pendientes, o de sincronizar datos remotos con caché local, no tiene ninguna razón conceptual para diferir entre plataformas), mientras la UI puede seguir siendo completamente nativa por plataforma donde la experiencia específica de cada sistema operativo importa genuinamente (aprovechando al máximo las convenciones, gestos y patrones de interacción nativos específicos que los usuarios de cada plataforma esperan), o compartida con Compose Multiplatform (Módulo 7) cuando el equipo decide priorizar la velocidad de desarrollo compartido sobre la fidelidad exacta a las convenciones nativas de cada plataforma.
@@ -235,7 +232,7 @@ Pista: respondé la pregunta de la retrospectiva con "sí, compartamos la navega
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reemplazando la meta de "100% compartido" por una decisión explícita basada en las prioridades reales del equipo: si la fidelidad nativa importa genuinamente, la UI se mantiene nativa; si la velocidad de entrega importa más, se evalúa Compose Multiplatform con ese trade-off documentado explícitamente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el documento de cierre del Paso 4, la meta de "100% compartido" sin evaluar trade-offs del Paso 5, y la decisión documentada con su justificación del Paso 6; explicá por qué maximizar el porcentaje de código compartido no es, por sí mismo, un objetivo válido de arquitectura. Siguiente paso: si el proyecto crece, estudia cómo mantener la frontera compartida estable frente a múltiples equipos consumidores. Errores comunes: tratar "porcentaje compartido" como una métrica de éxito en sí misma, forzar una UI compartida sin evaluar si los modelos de interacción nativos realmente convergen, y no documentar la decisión para que el próximo proyecto no repita la misma discusión sin contexto. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-samples.html y https://kotlinlang.org/docs/multiplatform.html.
 **¿Por qué es importante?** Entender que KMP comparte específicamente lo que es redundancia pura entre plataformas, dejando la UI como una decisión de arquitectura deliberada, evita expectativas poco realistas sobre qué KMP puede y debe compartir.
 

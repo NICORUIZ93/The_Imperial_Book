@@ -172,9 +172,9 @@ public Health health() {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `HealthIndicator` que dependa del estado de un componente simulado, y un test `MockMvc` que confirme ambos estados posibles. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya expones `/actuator/health` con un indicador personalizado que refleja el estado real de una dependencia, confirmado con `MockMvc` en ambos escenarios. El siguiente tema agrega métricas de negocio, no solo estado binario. **Evidencia:** entrega el resultado de ambos tests de `ActuatorHealthTest` en verde, y el resultado del fallo deliberado mostrando un `UP` falso que esconde una dependencia caída. Fuente oficial: [Spring Boot Actuator — Health Information](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health).
+Ya expones `/actuator/health` con un indicador personalizado que refleja el estado real de una dependencia, confirmado con `MockMvc` en ambos escenarios. El siguiente tema agrega métricas de negocio, no solo estado binario. Fuente oficial: [Spring Boot Actuator — Health Information](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health).
 
 **Errores comunes:** exponer todos los endpoints de Actuator públicamente sin restricción, algunos de los cuales revelan configuración interna sensible; escribir un `HealthIndicator` con lógica invertida o incompleta, produciendo una señal falsamente positiva peor que no tener ninguna señal.
 
@@ -335,9 +335,9 @@ public void crear(String descripcion) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un `Counter` de Micrometer registrado en el constructor, y un test que confirme su incremento exacto tras dos llamadas. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya registras métricas de negocio custom con Micrometer, confirmando con un test real tanto el valor interno del `MeterRegistry` como su exposición en `/actuator/metrics`. El siguiente y último tema de este módulo distingue dos señales de salud con propósitos operativos distintos. **Evidencia:** entrega el resultado de `PedidoServiceMetricaTest` en verde, y el resultado del fallo deliberado mostrando el contador sin incrementar pese a las llamadas reales. Fuente oficial: [Micrometer — Application Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+Ya registras métricas de negocio custom con Micrometer, confirmando con un test real tanto el valor interno del `MeterRegistry` como su exposición en `/actuator/metrics`. El siguiente y último tema de este módulo distingue dos señales de salud con propósitos operativos distintos. Fuente oficial: [Micrometer — Application Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
 
 **Errores comunes:** exponer solo métricas técnicas genéricas sin ninguna métrica de negocio custom; usar un valor de alta cardinalidad (como un ID de usuario único) como etiqueta, generando una explosión de series de métricas distintas que degrada el sistema de monitoreo.
 
@@ -492,9 +492,9 @@ AvailabilityChangeEvent.publish(publisher, this, ReadinessState.____);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme que marcar la aplicación como no lista afecta `/actuator/health/readiness` pero no `/actuator/health/liveness`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues liveness de readiness con evidencia real, confirmando que un cambio de disponibilidad afecta la señal correcta sin disparar un reinicio innecesario. Esto cierra el módulo de observabilidad; el siguiente módulo aborda cómo documentar y versionar esta misma API. **Evidencia:** entrega el resultado de `LivenessReadinessTest` en verde, y la explicación de por qué apuntar la sonda de liveness al endpoint de readiness en la configuración de Kubernetes causaría reinicios innecesarios. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
+Ya distingues liveness de readiness con evidencia real, confirmando que un cambio de disponibilidad afecta la señal correcta sin disparar un reinicio innecesario. Esto cierra el módulo de observabilidad; el siguiente módulo aborda cómo documentar y versionar esta misma API. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
 
 **Errores comunes:** usar un único endpoint de salud genérico en Kubernetes en vez de separar liveness de readiness, causando reinicios innecesarios; apuntar por error la sonda de liveness hacia el endpoint de readiness (o viceversa) en la configuración de despliegue.
 

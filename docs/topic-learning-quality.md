@@ -4,22 +4,22 @@ Esta auditoría mide exclusivamente la presencia de criterios en el contenido ed
 
 | Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 57 | 58 | 58 | 57 | 0 | 0 |
+| android | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 0 | 0 |
 | angular | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 0 | 0 |
 | cloud | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 0 | 0 |
-| devops | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 112 | 113 | 113 | 112 | 0 | 0 |
+| devops | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 0 | 0 |
 | flutter | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 0 | 0 |
-| foundations | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 98 | 99 | 99 | 98 | 0 | 0 |
+| foundations | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 0 | 0 |
 | ios | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 0 | 0 |
 | java | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 0 | 0 |
 | javascript | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 0 | 0 |
 | kotlin-multiplatform | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 0 | 0 |
 | node | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 0 | 0 |
 | react | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 0 | 0 |
-| rutaflow | 29 | 29 | 29 | 28 | 29 | 29 | 29 | 28 | 29 | 29 | 27 | 0 | 0 |
-| spring-boot | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 90 | 91 | 91 | 90 | 0 | 0 |
-| **Total** | **1100** | **1100** | **1100** | **1099** | **1100** | **1100** | **1100** | **1095** | **1100** | **1100** | **1094** | **0** | **0** |
+| rutaflow | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 0 | 0 |
+| spring-boot | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 0 | 0 |
+| **Total** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **0** | **0** |
 
 ## Regla editorial
 
-Un término listado en el sílabo no está cubierto hasta que el Markdown explique su modelo mental, muestre una aplicación específica, indique una decisión o límite y proponga evidencia verificable. El lector no genera diagramas decorativos para ocultar esa deuda. Esta auditoría solo registra indicios textuales y no sustituye la validación de siete pasos, la revisión técnica ni la ejecución de ejemplos.
+Un término listado en el sílabo no está cubierto hasta que el Markdown explique su modelo mental, muestre una aplicación específica, indique una decisión o límite y proponga una práctica verificable. El lector no genera diagramas decorativos para ocultar esa deuda. Esta auditoría solo registra indicios textuales y no sustituye la validación de siete pasos, la revisión técnica ni la ejecución de ejemplos.

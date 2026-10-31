@@ -78,7 +78,7 @@ Resultado esperado: `buildStatus` pasa a `SUCCEEDED` y `aws s3 ls s3://demo-arte
 Pista: cambiá el comando de la fase `build` por uno que falle (`exit 1`) — ese es el fallo deliberado: `buildStatus` pasa a `FAILED`, confirmando que Floci reporta el resultado real del contenedor, no un éxito fabricado de antemano.
 #### Paso 6 · Práctica independiente
 Corregí el comando y, además de `salida.txt`, generá un checksum del artefacto (`sha256sum salida.txt > salida.sha256`) agregándolo también a `artifacts.files`, para poder verificar más adelante que el artefacto desplegado es exactamente el que se compiló.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el build exitoso del Paso 4, el `FAILED` real del Paso 5, y el checksum agregado del Paso 6; explicá por qué que la compilación sea real (no fabricada) importa para confiar en que un buildspec que funciona en Floci va a funcionar igual en CodeBuild real. Siguiente paso: artefactos. Errores comunes: dependencias flotantes y builds no reproducibles. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html.
 
 ### Tema 2: buildspec.yml — fases y artefactos
@@ -109,7 +109,7 @@ Resultado esperado: Node disponible.
 Pista: apunta a una carpeta de artefactos inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Publica logs y artefacto.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: despliegue. Errores comunes: incluir archivos secretos y rutas relativas incorrectas. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html.
 **Conceptos clave:** `phases`, `artifacts.files`, `artifacts.base-directory`, `buildspecOverride`.
 
@@ -209,7 +209,7 @@ Resultado esperado: `demo-app` y `demo-grupo` quedan creados usando la estrategi
 Pista: probá `aws deploy create-deployment-group --application-name demo-app --deployment-group-name grupo-ecs --deployment-config-name CodeDeployDefault.ECSAllAtOnce` sobre `demo-app` (creada con `--compute-platform Lambda`) — ese es el fallo deliberado: la configuración elegida es para ECS, incompatible con la plataforma de cómputo real de la aplicación, y la llamada se rechaza.
 #### Paso 6 · Práctica independiente
 Listá las 17 configuraciones predefinidas con `aws deploy list-deployment-configs`, y compará `LambdaCanary10Percent5Minutes` (lo que usa `demo-grupo`) contra `LambdaAllAtOnce` — documentá qué riesgo asumirías si cambiaras a esta última para el servicio de seguimiento.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `demo-app`/`demo-grupo` creados con canary, el error de plataforma incompatible del Paso 5, y la comparación de riesgo del Paso 6; explicá por qué elegir la estrategia de despliegue es una decisión de riesgo, no solo un parámetro técnico. Siguiente paso: hooks. Errores comunes: grupo sin healthcheck y ventanas de mantenimiento ausentes. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html.
 
 ### Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias
@@ -265,7 +265,7 @@ Resultado esperado: el estado pasa de `InProgress` (10% del tráfico en la versi
 Pista: simulá un lifecycle hook fallido con `aws deploy put-lifecycle-event-hook-execution-status --deployment-id "$ID" --lifecycle-event-hook-execution-id <id> --status Failed` — ese es el fallo deliberado: CodeDeploy revierte automáticamente el alias `live` a la versión 1 y marca el despliegue completo como `Failed`, sin que vos tengas que deshacer nada manualmente.
 #### Paso 6 · Práctica independiente
 Confirmá con `aws lambda get-alias --function-name demo-tracking --name live` que, tras el rollback del Paso 5, el alias efectivamente volvió a `FunctionVersion: 1`; documentá cuánto tráfico real llegó a ver la versión 2 antes de la reversión (pista: el 10% configurado en la ventana de 5 minutos, nunca el 100%).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el despliegue canary exitoso del Paso 4, el rollback automático del Paso 5, y la confirmación del alias revertido del Paso 6; explicá por qué este patrón es más seguro que cambiar el alias a mano con un script propio. Siguiente paso: ECS. Errores comunes: no validar métricas y rollback manual tardío. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-lambda.html.
 
 ### Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB
@@ -329,7 +329,7 @@ Resultado esperado: CodeDeploy crea un conjunto de tareas verde apuntando a la n
 Pista: hacé que el healthcheck del grupo objetivo verde falle a propósito (por ejemplo, apuntándolo a un puerto que el contenedor nuevo no escucha) — ese es el fallo deliberado: CodeDeploy nunca promueve ese conjunto verde a `PRIMARY`, y el tráfico sigue sirviéndose desde el azul, sin que los clientes de RutaFlow noten nada.
 #### Paso 6 · Práctica independiente
 Corregí el healthcheck, confirmá que el conjunto verde se promueve a `PRIMARY` y el azul se elimina, y después documentá cómo sería un rollback manual si el problema se hubiera detectado recién después de la promoción completa (pista: ya no hay conjunto azul al que volver automáticamente, a diferencia de mientras el despliegue seguía en curso).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el despliegue Blue/Green en curso del Paso 4, el healthcheck fallido sin promoción del Paso 5, y la promoción exitosa más la reflexión de rollback del Paso 6; explicá por qué Blue/Green reduce el riesgo de downtime comparado con un despliegue in-place. Siguiente paso: observabilidad. Errores comunes: targets mezclados y rollback sin datos. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-ecs.html.
 
 ## Laboratorio práctico

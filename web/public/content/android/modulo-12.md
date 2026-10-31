@@ -112,9 +112,9 @@ Agrega una segunda pantalla completa (`DetalleTareaViewModel`, siguiendo exactam
 
 Documenta en una frase qué cambiaría en el diagrama de capas si decidieras reemplazar Retrofit por Ktor Client (Kotlin Multiplatform, Módulo 5), y por qué ese cambio no debería requerir ninguna modificación en el `ViewModel` ni en la UI.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya integras Compose, navegación, StateFlow, Room y Retrofit en una única arquitectura MVVM+UDF coherente, confirmando programáticamente que cada capa se comunica en una única dirección. El siguiente tema profundiza en cómo la inyección de dependencias de Hilt se extiende a absolutamente toda la app. **Evidencia:** entrega el resultado del modelo de capas sin violaciones, y explica por qué una violación (UI accediendo a Room directamente) rompería la testeabilidad aislada del sistema. Fuente oficial: [Android Developers — Guide to app architecture](https://developer.android.com/topic/architecture).
+Ya integras Compose, navegación, StateFlow, Room y Retrofit en una única arquitectura MVVM+UDF coherente, confirmando programáticamente que cada capa se comunica en una única dirección. El siguiente tema profundiza en cómo la inyección de dependencias de Hilt se extiende a absolutamente toda la app. Fuente oficial: [Android Developers — Guide to app architecture](https://developer.android.com/topic/architecture).
 
 **Errores comunes:** dejar que un composable acceda directamente a Room o Retrofit "por conveniencia", rompiendo la separación de capas; mezclar lógica de UI dentro del repositorio, violando la única responsabilidad de cada capa.
 
@@ -207,9 +207,9 @@ Extiende el `grep` de auditoría para también detectar instanciación manual de
 
 Documenta en una frase por qué reemplazar `TareaRepository` real por `TareaRepositoryFake` (Módulo 9) en un test sería imposible de hacer limpiamente si `ViewModelMalInyectado` fuera el patrón usado en toda la app, en vez del patrón de Hilt.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con una auditoría real de código, que ninguna clase de la app instancia manualmente sus dependencias, y explicas por qué eso habilita el testing completo del sistema. El siguiente tema cierra el track reflexionando sobre qué hace a una app Android profesionalmente completa. **Evidencia:** entrega el resultado del `grep` detectando la violación deliberada, y su ausencia tras corregirla, explicando por qué esa ausencia total es la señal correcta de un sistema completamente inyectado. Fuente oficial: [Android Developers — Hilt and Dagger annotations](https://developer.android.com/training/dependency-injection/hilt-android).
+Ya confirmas, con una auditoría real de código, que ninguna clase de la app instancia manualmente sus dependencias, y explicas por qué eso habilita el testing completo del sistema. El siguiente tema cierra el track reflexionando sobre qué hace a una app Android profesionalmente completa. Fuente oficial: [Android Developers — Hilt and Dagger annotations](https://developer.android.com/training/dependency-injection/hilt-android).
 
 **Errores comunes:** dejar una única clase con instanciación manual "por simplicidad", rompiendo la testeabilidad completa del sistema; no automatizar esta auditoría en CI, dependiendo de que alguien la recuerde manualmente en cada code review.
 
@@ -300,9 +300,9 @@ Agrega una sexta dimensión a la checklist (`publicacion_lista`, verificando la 
 
 Reflexiona por escrito (una frase por pregunta) sobre las dos preguntas de cierre de este Tema: qué parte específica de este proyecto integrador (Compose, Room, Hilt, o su combinación) resultó más difícil de integrar correctamente, y qué cambiarías en esta arquitectura si la app debiera escalar a diez pantallas adicionales.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya articulas, con una checklist verificable contra artefactos de código reales, qué hace a una app Android profesionalmente completa más allá de su UI visual. Esto cierra el track completo de Android: desde la estructura de un proyecto (Módulo 0) hasta la integración completa de arquitectura, DI y testing en este proyecto final. **Evidencia:** entrega el resumen de la checklist ejecutada contra el proyecto real, y el contraste con el resultado 0/5 de un directorio vacío, explicando por qué esta verificación mide artefactos reales y no solo intenciones. Fuente oficial: [Android Developers — App architecture guide, testing section](https://developer.android.com/topic/architecture/testing).
+Ya articulas, con una checklist verificable contra artefactos de código reales, qué hace a una app Android profesionalmente completa más allá de su UI visual. Esto cierra el track completo de Android: desde la estructura de un proyecto (Módulo 0) hasta la integración completa de arquitectura, DI y testing en este proyecto final. Fuente oficial: [Android Developers — App architecture guide, testing section](https://developer.android.com/topic/architecture/testing).
 
 **Errores comunes:** considerar el proyecto "completo" solo por tener una UI atractiva, sin verificar las otras cuatro dimensiones; no ejecutar nunca una checklist objetiva, confiando únicamente en una impresión subjetiva de que "el proyecto está bien".
 

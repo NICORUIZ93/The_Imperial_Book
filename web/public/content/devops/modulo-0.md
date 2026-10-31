@@ -104,9 +104,9 @@ Sobre `script.sh`, ejecuta `chmod u+x,go-rwx script.sh` y confirma con `ls -l` q
 
 Crea `publico.txt`, hazlo legible por cualquiera pero no escribible ni por el propio propietario salvo lectura (`444`), y explica en un comentario dentro del archivo por qué esa combinación sería inapropiada para `credenciales.env`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo usar `600`, `644` o `754` según quién necesita leer, escribir o ejecutar. El siguiente tema aplica esta misma lógica de control a procesos en ejecución, no solo a archivos. **Evidencia:** entrega la salida de `ls -l` mostrando los tres cambios de permiso y la explicación del fallo `Permission denied` con su corrección. Fuente oficial: [GNU Coreutils — chmod](https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html).
+Ya distingues cuándo usar `600`, `644` o `754` según quién necesita leer, escribir o ejecutar. El siguiente tema aplica esta misma lógica de control a procesos en ejecución, no solo a archivos. Fuente oficial: [GNU Coreutils — chmod](https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html).
 
 **Errores comunes:** confundir el orden de los tres dígitos octales (propietario-grupo-otros, siempre en ese orden); aplicar `chmod -R 777` como solución rápida sin entender qué permisos realmente hacían falta, dejando el archivo o carpeta expuesto sin necesidad.
 
@@ -181,9 +181,9 @@ Lanza `tarea-larga.sh` en segundo plano con `&`, confirma que aparece en `jobs`,
 
 Modifica `tarea-larga.sh` para capturar también `SIGHUP` e imprimir "recargando configuración" sin terminar el proceso. Envía la señal con `kill -HUP $!` y confirma que el proceso sigue vivo después.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo un proceso puede protegerse con `trap` y cuándo el kernel lo termina sin aviso. El siguiente tema usa pipes y filtros para inspeccionar la salida de estos mismos procesos. **Evidencia:** entrega la salida comparando `SIGTERM` (con `trap`) y `SIGKILL` (sin `trap`), explicando la diferencia observada. Fuente oficial: [GNU C Library — Signal Handling](https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html).
+Ya distingues cuándo un proceso puede protegerse con `trap` y cuándo el kernel lo termina sin aviso. El siguiente tema usa pipes y filtros para inspeccionar la salida de estos mismos procesos. Fuente oficial: [GNU C Library — Signal Handling](https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html).
 
 **Errores comunes:** depender de `SIGKILL` como primera opción en scripts de apagado en vez de intentar `SIGTERM` primero; olvidar `wait` después de lanzar un proceso en segundo plano dentro de un script, lo que puede hacer que el script padre termine antes que el hijo.
 
@@ -260,9 +260,9 @@ Agrega una línea `WARN` al log y filtra por `grep -E "ERROR|WARN"`. **Pista:** 
 
 Usa `sed 's/ERROR/CRITICO/g'` sobre una copia del log y confirma con `grep -c CRITICO` que el conteo coincide con el `grep ERROR` original.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya filtras, transformas y cuentas texto sin escribir un programa dedicado. El siguiente tema convierte estos comandos sueltos en scripts robustos con manejo de errores. **Evidencia:** entrega el conteo correcto y la explicación del fallo con la columna `$5`. Fuente oficial: [GNU Awk User's Guide](https://www.gnu.org/software/gawk/manual/gawk.html).
+Ya filtras, transformas y cuentas texto sin escribir un programa dedicado. El siguiente tema convierte estos comandos sueltos en scripts robustos con manejo de errores. Fuente oficial: [GNU Awk User's Guide](https://www.gnu.org/software/gawk/manual/gawk.html).
 
 **Errores comunes:** asumir que el número de columna es siempre el mismo en logs de formato variable; olvidar escapar `$` al pasar el pipe completo como argumento de `docker run ... sh -c "..."`.
 
@@ -341,9 +341,9 @@ Demuestra con `false | true; echo $?` en tu terminal (fuera del script) que sin 
 
 Agrega una tercera variable `NIVEL_LOG="${NIVEL_LOG:-info}"` y una condición que solo escriba en el log si `NIVEL_LOG` es "debug" o "info".
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conviertes un script frágil en uno resistente a fallos silenciosos. El siguiente tema programa la ejecución periódica de scripts como este con cron. **Evidencia:** entrega la salida de las dos ejecuciones idempotentes y la del fallo `unbound variable` con su corrección. Fuente oficial: [GNU Bash Reference Manual — The Set Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html).
+Ya conviertes un script frágil en uno resistente a fallos silenciosos. El siguiente tema programa la ejecución periódica de scripts como este con cron. Fuente oficial: [GNU Bash Reference Manual — The Set Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html).
 
 **Errores comunes:** colocar `set -euo pipefail` después de líneas que ya podrían fallar; asumir que `set -e` detiene el script dentro de un `if` o el lado izquierdo de un `&&` (no lo hace, por diseño de bash).
 
@@ -421,9 +421,9 @@ Cambia la expresión a `0 * * * *` (una vez por hora) y explica por qué no ver�
 
 Agrega una segunda línea a `mi-crontab` que ejecute `tarea.sh` únicamente de lunes a viernes a las 9:00 AM (`0 9 * * 1-5`) y verifica la sintaxis con `crontab -l` dentro del contenedor.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya programas tareas periódicas y sabes diagnosticar el entorno mínimo de cron. El siguiente tema endurece la seguridad del servidor donde correrían estas tareas. **Evidencia:** entrega el contenido de `tarea.log` con al menos una ejecución y la explicación del fallo de ruta relativa. Fuente oficial: [crontab(5) — man7.org](https://man7.org/linux/man-pages/man5/crontab.5.html).
+Ya programas tareas periódicas y sabes diagnosticar el entorno mínimo de cron. El siguiente tema endurece la seguridad del servidor donde correrían estas tareas. Fuente oficial: [crontab(5) — man7.org](https://man7.org/linux/man-pages/man5/crontab.5.html).
 
 **Errores comunes:** usar rutas relativas dentro de scripts programados por cron; olvidar redirigir la salida a un log, dejando fallos completamente silenciosos.
 
@@ -494,9 +494,9 @@ Genera una segunda clave (`clave_ci`) pensada para un pipeline de CI/CD (sin pas
 
 Escribe las reglas de `ufw` (`ufw allow 22/tcp`, `ufw allow 80,443/tcp`, `ufw enable`) que aplicarías a un servidor que solo debe exponer SSH y tráfico web, y explica qué pasaría con una petición al puerto 3306 (MySQL) bajo esa configuración.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya generas y autorizas claves SSH, y entiendes por qué el firewall deniega por defecto. El siguiente tema aplica estos mismos principios de control de acceso a nivel de red completa. **Evidencia:** entrega el conteo de claves autorizadas y la explicación del rechazo por permisos abiertos. Fuente oficial: [OpenSSH — sshd_config](https://man.openbsd.org/sshd_config).
+Ya generas y autorizas claves SSH, y entiendes por qué el firewall deniega por defecto. El siguiente tema aplica estos mismos principios de control de acceso a nivel de red completa. Fuente oficial: [OpenSSH — sshd_config](https://man.openbsd.org/sshd_config).
 
 **Errores comunes:** dejar habilitada la autenticación por contraseña "por si acaso" junto a la de clave, debilitando la mejora; olvidar aplicar `chmod 600` a `authorized_keys` y a la clave privada.
 
@@ -567,9 +567,9 @@ Ejecuta `nslookup` sobre un subdominio inexistente (`noexiste.example.com`) y ex
 
 Investiga y anota el TTL del registro `A` de `example.com` (con `nslookup` o `dig`) y explica en una frase por qué un cambio de DNS no se refleja instantáneamente para todos los usuarios.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya diagnosticas problemas de red separando resolución DNS de conectividad de capa 4. El siguiente tema conecta esta base de redes con la cultura y el ciclo de vida completo de DevOps. **Evidencia:** entrega la salida de `nslookup` y `nc -vz` para el puerto abierto y para el fallo deliberado, con su explicación. Fuente oficial: [IETF RFC 1035 — DNS](https://www.rfc-editor.org/rfc/rfc1035).
+Ya diagnosticas problemas de red separando resolución DNS de conectividad de capa 4. El siguiente tema conecta esta base de redes con la cultura y el ciclo de vida completo de DevOps. Fuente oficial: [IETF RFC 1035 — DNS](https://www.rfc-editor.org/rfc/rfc1035).
 
 **Errores comunes:** confundir un fallo de resolución DNS con un puerto cerrado; asumir que un cambio de DNS es instantáneo sin considerar el TTL configurado.
 
@@ -637,9 +637,9 @@ Agrega una fila a `ciclo.md` indicando qué fase corresponde a Docker (siguiente
 
 Escribe en `ciclo.md` un ejemplo concreto de un incidente detectado en Monitor que cambió una decisión de Plan, en no más de tres líneas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya tienes el mapa mental completo sobre el que colocarás cada herramienta del resto del track. El siguiente tema construye la entrada de red (NGINX) del proyecto. **Evidencia:** entrega `ciclo.md` con la fila de Docker añadida y explica el resultado del ejemplo de retroalimentación Monitor→Plan que agregaste. Fuente oficial: [Atlassian — What is DevOps](https://www.atlassian.com/devops).
+Ya tienes el mapa mental completo sobre el que colocarás cada herramienta del resto del track. El siguiente tema construye la entrada de red (NGINX) del proyecto. Fuente oficial: [Atlassian — What is DevOps](https://www.atlassian.com/devops).
 
 **Errores comunes:** tratar el ciclo como una lista lineal de una sola pasada; aprender herramientas sin conectar cada una con la fase del ciclo que resuelve.
 
@@ -791,9 +791,9 @@ Repite la petición 20 veces con `for i in $(seq 20); do curl -s -o /dev/null -w
 
 Agrega `backend-b` al `compose.yaml` y al upstream con pesos 80/20, ejecuta 100 peticiones y cuenta respuestas por `instance`. Explica por qué una muestra pequeña no demuestra exactamente la proporción configurada, y cómo añadirías health checks y TLS en producción.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya sabes levantar un proxy inverso, leer sus logs estructurados y diagnosticar un backend caído. El siguiente módulo empaqueta este mismo backend como imagen Docker reproducible. **Evidencia:** entrega la salida de `curl -i` con `200`, el log JSON de acceso, y el `502` con su diagnóstico desde `docker compose logs edge`. Fuente oficial: [NGINX — Reverse Proxy](https://nginx.org/en/docs/http/ngx_http_proxy_module.html).
+Ya sabes levantar un proxy inverso, leer sus logs estructurados y diagnosticar un backend caído. El siguiente módulo empaqueta este mismo backend como imagen Docker reproducible. Fuente oficial: [NGINX — Reverse Proxy](https://nginx.org/en/docs/http/ngx_http_proxy_module.html).
 
 **Errores comunes:** publicar también el puerto del backend en vez de mantenerlo en la red privada; aceptar `X-Forwarded-For` de cualquier origen sin configurar proxies confiables.
 
@@ -908,8 +908,8 @@ Agrega a `caro` al grupo `despacho` sin quitarle sus otros grupos y comprueba qu
 #### Paso 6 · Práctica independiente
 Escribe una regla de sudo que permita a todo el grupo `despacho` (`%despacho`) ver el journal del servicio, pero no reiniciarlo. Valídala con `visudo -cf` y `sudo -l -U`.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque usuarios compartidos y `sudo` sin límites son de los hallazgos más comunes en auditorías de seguridad, y el principio de mínimo privilegio empieza en el sistema operativo.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque usuarios compartidos y `sudo` sin límites son de los hallazgos más comunes en auditorías de seguridad, y el principio de mínimo privilegio empieza en el sistema operativo.
 **Fuente oficial:** [Ubuntu Server: User management](https://documentation.ubuntu.com/server/how-to/security/user-management/), [sudoers(5)](https://man7.org/linux/man-pages/man5/sudoers.5.html).
 **Conceptos clave:** uid y gid, grupo primario y secundario, `chown`, `chmod`, bit setgid, `usermod -aG`, `sudoers.d`, `visudo -c`, mínimo privilegio.
 **Cuándo no usarlo:** en contenedores y plataformas gestionadas no crees usuarios interactivos: define un usuario no root en la imagen (`USER` en el Dockerfile) y gestiona el acceso con la identidad de la plataforma (IAM, RBAC).
@@ -1033,8 +1033,8 @@ Agrega al servicio `Restart=on-failure` no aplica a `oneshot`; en su lugar agreg
 #### Paso 6 · Práctica independiente
 En una máquina virtual con systemd real, habilita el timer, fuerza una ejecución, provoca un error (borra `pendientes.csv`) y encuentra el mensaje con `journalctl -u reporte-despacho.service -p err`.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque systemd gestiona los servicios de casi todos los servidores Linux, y saber leer el journal es lo primero en un incidente.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque systemd gestiona los servicios de casi todos los servidores Linux, y saber leer el journal es lo primero en un incidente.
 **Fuente oficial:** [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html), [systemd.service(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html), [journalctl(1)](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html).
 **Conceptos clave:** unidad, `.service`, `.timer`, `OnCalendar`, `Persistent`, `Type=oneshot`, journal, `journalctl -u`, `systemd-analyze verify`, endurecimiento con `ProtectHome` y `NoNewPrivileges`.
 **Cuándo no usarlo:** dentro de contenedores no uses systemd: el orquestador (Docker, Kubernetes) cumple ese papel con políticas de reinicio, CronJobs y logs del contenedor.
@@ -1047,7 +1047,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-devops && cd academia-devops && git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | scripts y contenedores. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | CI/CD, Kubernetes e IaC. | Casos normales, límite y error automatizados. |

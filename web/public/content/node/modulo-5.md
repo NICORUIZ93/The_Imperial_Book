@@ -499,8 +499,6 @@ Agrega una tabla `movimientos_inventario` e inserta un movimiento dentro de la m
 
 Ya puedes elegir un pool con liberación explícita y diseñar una operación atómica. El siguiente tema comparará MongoDB y Mongoose en un ejemplo nuevo, con un modelo de documentos separado del modelo relacional.
 
-**Evidencia de aprendizaje:** entrega la salida de las consultas antes y después del `ROLLBACK`, y explica qué invariantes permanecieron intactas.
-
 **Errores comunes:** usar `pool.query` para cada paso de una transacción y terminar en conexiones distintas; olvidar `release`; llamar `COMMIT` después de un error; confiar solo en una lectura previa de stock; confundir pool grande con mayor rendimiento garantizado.
 
 **Fuentes oficiales:** [node-postgres pools](https://node-postgres.com/features/pooling), [node-postgres transactions](https://node-postgres.com/features/transactions), [PostgreSQL transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html) y [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html).

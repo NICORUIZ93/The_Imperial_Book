@@ -121,9 +121,9 @@ Crea `src/Reglas.java` con un `Predicate<String>` que valide un correo, una `Fun
 
 **Resultado esperado:** el correo normalizado se registra una sola vez y la fecha aparece en el formato ISO.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: componer estas formas sin anidar lambdas. **Evidencia de aprendizaje:** entrega `Formas.java`, la salida `[log] Turno AM | ENV-2 -> Medellín` y el error de compilación de la lambda de dos parámetros junto con su diagnóstico.
+Siguiente paso: componer estas formas sin anidar lambdas.
 
 **Errores comunes:** usar `Function` cuando la intención es decidir; olvidar que `Consumer` no devuelve nada; crear un `Supplier` que en realidad depende de un parámetro; asumir que una lambda con dos parámetros encaja en una interfaz de uno.
 
@@ -221,9 +221,9 @@ Crea `src/ReglasEnvio.java` con tres `Predicate<Envio>` (peso, destino y estado)
 
 **Resultado esperado:** cada envío rechazado muestra el motivo, y un envío válido no produce ningún mensaje.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: aplicar composición a colecciones con Streams. **Evidencia de aprendizaje:** entrega `Composicion.java`, la salida de los tres `println` y la comparación entre validar antes y después de normalizar.
+Siguiente paso: aplicar composición a colecciones con Streams.
 
 **Errores comunes:** confundir `andThen` con `compose`; validar antes de normalizar; encadenar `or` donde la regla pedía `and`; usar `negate` para esconder una condición que debería tener nombre propio.
 
@@ -339,9 +339,9 @@ Crea `src/Informe.java` que calcule el peso total de los envíos con `mapToDoubl
 
 **Resultado esperado:** el programa imprime el total y el conteo en una sola pasada, y puedes explicar dónde ocurrió el trabajo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: decidir cuándo Streams no conviene. **Evidencia de aprendizaje:** entrega `Pereza.java`, la salida que demuestra la pereza y la excepción completa de reutilizar el Stream con su corrección.
+Siguiente paso: decidir cuándo Streams no conviene.
 
 **Errores comunes:** creer que `filter` ejecuta el trabajo al declararlo; usar `peek` para lógica de negocio; reutilizar un Stream; usar `parallelStream` sin medir; esconder efectos en `map`.
 

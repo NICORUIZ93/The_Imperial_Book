@@ -53,7 +53,7 @@ Resultado esperado: el bucket se crea normalmente; el servidor devuelve un `Serv
 Pista: intentá crear un usuario sobre este servidor sin pasarle ningún `--role` de IAM — ese es el fallo deliberado: `create-user` rechaza la llamada, porque Transfer Family necesita saber con qué permisos ese usuario va a poder leer o escribir en el bucket subyacente; sin rol, no hay forma de resolver ese acceso.
 #### Paso 6 · Práctica independiente
 Documentá qué directorio de inicio, qué rol IAM de mínimo privilegio (Módulo 7) y qué política de retención le darías al socio logístico — pista: su rol no debería poder leer ni escribir fuera de su propio prefijo dentro de `demo-intercambio-socios`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el servidor y el bucket creados del Paso 4, el error de usuario sin rol del Paso 5, y el diseño de aislamiento del Paso 6; explicá por qué Transfer Family es la herramienta correcta aquí y no, por ejemplo, URLs pre-firmadas de S3 directamente. Siguiente paso: servidor. Errores comunes: compartir claves y rutas sin aislamiento. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html.
 
 ### Tema 2: Ciclo de vida del servidor y modelo de usuarios
@@ -115,7 +115,7 @@ Resultado esperado: `socio-logistico` queda creado con su directorio `/uploads`;
 Pista: intentá `aws transfer delete-server --server-id "$SERVER_ID"` ANTES de haber corrido `stop-server` (mientras el servidor sigue `ONLINE`) — ese es el fallo deliberado: la llamada se rechaza, el mismo patrón de protección contra eliminación accidental que ya viste con bóvedas de Backup y grupos objetivo de ELB.
 #### Paso 6 · Práctica independiente
 Agregá un segundo usuario (`otro-socio`) con un `--home-directory` distinto sobre el mismo servidor, y confirmá con `describe-user` que cada uno ve solo su propia carpeta — nunca reutilices el mismo usuario para dos socios externos distintos.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el usuario y el estado `OFFLINE` del Paso 4, el borrado rechazado del Paso 5, y los dos usuarios aislados del Paso 6; explicá por qué un servidor debe estar `OFFLINE` antes de poder eliminarse. Siguiente paso: claves. Errores comunes: usuario sin home y estado no esperado. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/create-server.html.
 
 ### Tema 3: Claves públicas SSH y autenticación de usuarios
@@ -180,7 +180,7 @@ Resultado esperado: `describe-user` muestra la clave pública recién importada 
 Pista: importá una segunda "clave" con contenido inventado (`--ssh-public-key-body "esto-no-es-una-clave-ssh-real"`) — ese es el fallo deliberado que advierte este Tema: Floci la acepta igual, sin validación criptográfica real, a diferencia de un Transfer Family real donde esa misma llamada sí se validaría contra el formato de clave esperado.
 #### Paso 6 · Práctica independiente
 Documentá, para `socio-logistico`, cada cuánto correspondería rotar su clave SSH, y qué comando usarías para revocar el acceso de inmediato si esa clave se filtrara (pista: eliminar la clave pública importada, no la cuenta del usuario entera).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la clave importada del Paso 4, la clave inválida aceptada sin validar del Paso 5, y el plan de rotación/revocación del Paso 6; explicá por qué Floci no necesita validar criptográficamente para que practiques la lógica de gestión de usuarios. Siguiente paso: límites del emulador. Errores comunes: compartir privada y asumir validación local completa. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/requirements-roles.html.
 
 ### Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente
@@ -238,7 +238,7 @@ Resultado esperado: `describe-server` confirma el plano de gestión completo (es
 Pista: probá conectarte de verdad con un cliente SFTP (`sftp -i /tmp/clave-socio socio-logistico@localhost`) — ese es el fallo deliberado que confirma el límite real: la conexión falla o no responde, porque la transferencia efectiva de archivos por SFTP (el plano de datos) todavía no está implementada en Floci, aunque toda la configuración alrededor sí lo esté.
 #### Paso 6 · Práctica independiente
 Escribí en un README qué validarías contra AWS real antes de confiar en este flujo para producción (la conectividad SFTP efectiva), separado explícitamente de lo que ya quedó probado acá (la gestión completa de servidores, usuarios y claves).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el plano de gestión confirmado del Paso 4, el intento real de SFTP fallido del Paso 5, y el README con la frontera documentada del Paso 6; explicá por qué reportar este módulo como "probado end-to-end" en una demo sería engañoso para el equipo. Siguiente paso: integración. Errores comunes: afirmar transferencia real por ver API verde. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html.
 
 ## Laboratorio práctico

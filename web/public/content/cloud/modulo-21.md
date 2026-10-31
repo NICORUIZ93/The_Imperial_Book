@@ -78,7 +78,7 @@ Resultado esperado: Node disponible.
 Pista: usa una imagen inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Inicia, inspecciona y detén una instancia simulada.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: seguridad. Errores comunes: instancias sin apagado y puertos abiertos. Fuente oficial: https://docs.aws.amazon.com/ec2/.
 
 ### Tema 2: AMIs, grupos de seguridad y claves SSH
@@ -132,7 +132,7 @@ Resultado esperado: `create-security-group` devuelve el `GroupId`; `import-key-p
 Pista: "deniega" el puerto 22 quitando la regla de ingreso (`aws ec2 revoke-security-group-ingress --group-id "$GROUP_ID" --protocol tcp --port 22 --cidr 0.0.0.0/0`) y probá conectarte por SSH igual al puerto publicado del contenedor — ese es el fallo deliberado que advierte este Tema: la conexión sigue funcionando, porque el security group vive en el registro de Floci, no en la red puente de Docker que realmente enruta el tráfico.
 #### Paso 6 · Práctica independiente
 Documentá cuál sería la regla mínima real (no `0.0.0.0/0`) que usarías en AWS de verdad para `demo-nodo` — pista: el rango de IPs de tu propia red de oficina, no "cualquier IP del mundo" — y por qué esa regla sí importaría en un entorno real aunque no lo haga aquí.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el security group y la clave creados, la conexión que no se bloqueó en el Paso 5, y la regla mínima documentada del Paso 6; explicá por qué no deberías validar reglas de firewall de producción contra Floci. Siguiente paso: UserData. Errores comunes: claves en repositorio y 0.0.0.0/0 innecesario. Fuente oficial: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html.
 
 ### Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia
@@ -198,7 +198,7 @@ Resultado esperado: Node disponible.
 Pista: usa una instrucción inválida para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Verifica idempotencia y logs de arranque.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega script, salida, fallo y corrección; explica el resultado. Siguiente paso: escalado. Errores comunes: secretos en UserData y usar IMDSv1. Fuente oficial: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html.
 
 ### Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos
@@ -256,7 +256,7 @@ Resultado esperado: ambos comandos terminan sin salida (éxito silencioso); `des
 Pista: probá crear un grupo con `--min-size 3 --max-size 1` (mínimo mayor que máximo) — ese es el fallo deliberado: `ValidationError`, porque esa combinación no tiene ningún valor de capacidad deseada que pueda satisfacer ambos límites a la vez.
 #### Paso 6 · Práctica independiente
 Corregí los valores a `--min-size 1 --max-size 3 --desired-capacity 1`, confirmá que el grupo queda con una sola instancia activa, y documentá qué pasaría si subieras `--desired-capacity` a 5 (más que el máximo): el grupo lo rechazaría, no lo "ajustaría solo" al máximo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `demo-asg` creado con éxito, el error de mínimo/máximo invertido del Paso 5, y la verificación de límites del Paso 6; explicá por qué separar "qué lanzar" (la configuración de lanzamiento) de "cuántos mantener" (el grupo) es el mismo patrón declarativo de Kubernetes o ECS. Siguiente paso: políticas. Errores comunes: capacidad deseada inconsistente y healthcheck ausente. Fuente oficial: https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html.
 
 ### Tema 5: El reconciliador de capacidad y las políticas de escalado
@@ -315,7 +315,7 @@ Resultado esperado: el historial de actividades muestra el reconciliador lanzand
 Pista: probá `aws autoscaling set-desired-capacity --auto-scaling-group-name demo-asg --desired-capacity 10` (más que el `--max-size 3` del Tema 4) — ese es el fallo deliberado: la API rechaza el cambio con un error de validación, porque la capacidad deseada nunca puede exceder el máximo declarado, sin importar qué tan urgente sea el pico de demanda.
 #### Paso 6 · Práctica independiente
 Bajá `desired-capacity` de nuevo a 1 y observá en `describe-scaling-activities` el evento de scale-in correspondiente; documentá qué lifecycle hook agregarías (`PutLifecycleHook`) para ejecutar un script de "drenado" antes de que una instancia se termine, en vez de cortarla de golpe mientras procesa una entrega.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el scale-out real del Paso 4, el límite rechazado del Paso 5, y el scale-in más el lifecycle hook propuesto del Paso 6; explicá por qué este mismo patrón de reconciliación continua aparece también en Kubernetes y Terraform. Siguiente paso: VPC. Errores comunes: escalar por métrica ruidosa y olvidar cooldown. Fuente oficial: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html.
 
 ### Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico
@@ -366,7 +366,7 @@ Crea un segundo security group para el balanceador que permita el puerto 443 (HT
 #### Paso 6 · Práctica independiente
 Dibuja (o describe) la ruta completa de una petición de un usuario: Internet → Gateway → subred pública (balanceador) → subred privada (app) → base de datos, indicando qué security group permite cada salto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la VPC con sus subredes, el security group restrictivo y el análisis del fallo `0.0.0.0/0`. **¿Por qué es importante?** La VPC y los security groups son la base de la seguridad de red en la nube; el error de exponer una base de datos a internet es tan común como grave. Diseñar el flujo del tráfico (qué es público, qué es privado) es una decisión de arquitectura que tomarás en cada proyecto cloud. Fuentes: [AWS — VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html).
 **Conceptos clave:** VPC y CIDR, subred pública vs privada, Internet Gateway, security group, principio de mínima exposición.
 **Cuándo no usarlo:** para un experimento local efímero no necesitas diseñar subredes; pero en cuanto hay datos reales o producción, la segmentación de red no es opcional.

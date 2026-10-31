@@ -111,7 +111,7 @@ Postgres responde con `ERROR: envio_eventos es append-only: UPDATE no está perm
 
 Escribe una función `registrar_evento(envio_id, tipo)` en PL/pgSQL (o en Node usando `pg`) que inserte un evento nuevo y nunca actualice uno existente, incluso si se la llama dos veces con los mismos datos. No reutilices el trigger como atajo para evitar escribir la validación en la función; el objetivo es razonar el contrato antes de delegarlo.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `schema.sql`, la salida de la consulta con los dos eventos, y la salida exacta del error del trigger al intentar el `UPDATE`. El **Tema 2: Geografía con precisión útil** retoma esta misma tabla `envios` para ubicar conductores cerca del punto de recogida con PostGIS. **Fuente oficial:** [PostgreSQL — PL/pgSQL Trigger Procedures](https://www.postgresql.org/docs/current/plpgsql-trigger.html).
 
@@ -221,7 +221,7 @@ Postgres no lanza ningún error: devuelve `0.0060...` para `Conductor RF-01`, po
 
 Escribe una función `conductores_cercanos(lat, lon, radio_metros)` en PL/pgSQL que reciba coordenadas y un radio, use `ST_DWithin` sobre la columna `geography` con índice, y devuelva los conductores ordenados por distancia ascendente. Debe fallar explícitamente (con una excepción clara) si se la llama contra una columna `geometry` sin castear.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `conductores.sql`, la salida con la distancia correcta en metros y la salida del fallo deliberado mostrando la distancia en grados. El **Tema 3: Ledger de doble partida** deja la geografía y pasa a la contabilidad: cómo registrar el cobro en efectivo del envío `RF-4471` sin descuadrar el libro contable. **Fuente oficial:** [PostGIS — ST_DWithin](https://postgis.net/docs/ST_DWithin.html).
 
@@ -336,7 +336,7 @@ Repite la consulta de verificación: ahora devuelve `asiento_id = 2 | total_debi
 
 Implementa una función `registrar_asiento(movimientos[])` (en PL/pgSQL con una transacción explícita, o en Node con una transacción de `pg`) que inserte todos los movimientos de un asiento y haga `ROLLBACK` si `SUM(debito) <> SUM(credito)` antes de confirmar, en vez de insertarlos y detectar el desbalance después.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `ledger.sql`, la salida vacía de la verificación para el asiento balanceado y la fila expuesta por el asiento 2 desbalanceado. Con los Temas 1, 2 y 3 completos, el **Módulo 2: Backend: envíos, asignación e idempotencia** conecta este modelo de datos, geografía y ledger con el backend real de RutaFlow que los expone como API. **Fuente oficial:** [PostgreSQL — Constraints (CHECK)](https://www.postgresql.org/docs/current/ddl-constraints.html).
 

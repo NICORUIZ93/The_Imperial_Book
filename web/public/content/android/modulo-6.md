@@ -125,9 +125,9 @@ Agrega una segunda entidad `Ruta` a `AppDatabase.kt` (con `id`, `nombre`) y su p
 
 Documenta en una frase qué error de compilación esperarías de Room (no solo en tiempo de ejecución) si escribieras `@Query("SELECT * FROM TareaQueNoExiste")` referenciando una tabla que nunca declaraste como `@Entity`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras `@Entity`, `@Dao` y `@Database` de Room, y explicas cómo verifica las queries en tiempo de compilación frente al tipado dinámico de SQLite puro. El siguiente tema conecta esta capa con `Flow` reactivo y las migraciones de esquema. **Evidencia:** entrega el resultado del rechazo de SQLite ante una columna inexistente, y explica por qué Room detecta ese mismo tipo de error antes, en tiempo de compilación. Fuente oficial: [Android Developers — Room persistence library](https://developer.android.com/training/data-storage/room).
+Ya declaras `@Entity`, `@Dao` y `@Database` de Room, y explicas cómo verifica las queries en tiempo de compilación frente al tipado dinámico de SQLite puro. El siguiente tema conecta esta capa con `Flow` reactivo y las migraciones de esquema. Fuente oficial: [Android Developers — Room persistence library](https://developer.android.com/training/data-storage/room).
 
 **Errores comunes:** olvidar `@PrimaryKey` en una `@Entity`, lo cual Room rechaza en tiempo de compilación; devolver tipos no soportados directamente desde un `@Dao` sin un `TypeConverter` para tipos complejos.
 
@@ -247,9 +247,9 @@ Escribe una segunda migración `MIGRATION_2_3` (agregando una columna `fechaVenc
 
 Documenta en una frase por qué un DAO que devuelve `Flow<List<Tarea>>` haría innecesario, en la mayoría de los casos, un botón de "refrescar" manual en la UI, a diferencia de un DAO que devolviera `List<Tarea>` simple.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas por qué un `Flow` de Room mantiene la UI sincronizada automáticamente, y escribes migraciones que preservan datos existentes al evolucionar el esquema. El siguiente tema construye sobre esto la estrategia offline-first completa. **Evidencia:** entrega el resultado de la migración preservando ambas tareas existentes, y el error de discrepancia de esquema al omitirla. Fuente oficial: [Android Developers — Migrate your Room database](https://developer.android.com/training/data-storage/room/migrating-db-versions).
+Ya explicas por qué un `Flow` de Room mantiene la UI sincronizada automáticamente, y escribes migraciones que preservan datos existentes al evolucionar el esquema. El siguiente tema construye sobre esto la estrategia offline-first completa. Fuente oficial: [Android Developers — Migrate your Room database](https://developer.android.com/training/data-storage/room/migrating-db-versions).
 
 **Errores comunes:** usar `fallbackToDestructiveMigration()` en producción, perdiendo silenciosamente todos los datos del usuario ante cualquier cambio de esquema no migrado explícitamente; olvidar incrementar la `version` en `@Database` al agregar una migración nueva.
 
@@ -369,9 +369,9 @@ Agrega un `StateFlow<Boolean>` adicional a `TareaRepositoryImpl` llamado `sincro
 
 Documenta en una frase qué pasaría con la experiencia de usuario si `sincronizar()` lanzara una excepción de red no capturada (por ejemplo, un `IOException`, Módulo 5) y esa excepción no se manejara dentro del propio repositorio, relacionándolo con por qué offline-first exige manejar errores de sincronización sin que afecten la lectura del caché ya exitosa.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya implementas un repositorio offline-first donde la UI siempre lee del caché local mientras la red sincroniza en segundo plano, sin acoplar la disponibilidad de la app a la conectividad. Esto cierra el módulo de persistencia local; el siguiente módulo del track aborda trabajo en background con WorkManager. **Evidencia:** entrega el resultado mostrando que la UI sigue mostrando datos sin conexión y se actualiza tras sincronizar, y explica por qué una UI acoplada directamente a la red no tendría ese mismo comportamiento. Fuente oficial: [Android Developers — Offline-first apps](https://developer.android.com/topic/architecture/data-layer/offline-first).
+Ya implementas un repositorio offline-first donde la UI siempre lee del caché local mientras la red sincroniza en segundo plano, sin acoplar la disponibilidad de la app a la conectividad. Esto cierra el módulo de persistencia local; el siguiente módulo del track aborda trabajo en background con WorkManager. Fuente oficial: [Android Developers — Offline-first apps](https://developer.android.com/topic/architecture/data-layer/offline-first).
 
 **Errores comunes:** hacer que la UI dependa directamente de la respuesta de la API en vez de Room, rompiendo offline-first; no separar la lectura (siempre local) de la sincronización (en background), acoplando accidentalmente ambas responsabilidades.
 

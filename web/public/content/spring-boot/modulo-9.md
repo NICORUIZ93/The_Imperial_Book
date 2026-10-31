@@ -323,9 +323,9 @@ StepVerifier.create(flux)
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `StepVerifier` que confirme la cardinalidad de un `Mono` (cero o un elemento) y de un `Flux` (varios elementos en orden). Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues `Mono` de `Flux` por su cardinalidad, y confirmas con `StepVerifier` real que ambos son perezosos hasta la suscripción. El siguiente tema compone llamadas HTTP salientes sin bloquear el thread durante la espera. **Evidencia:** entrega el resultado de ambos tests de `MonoFluxPerezosoTest` en verde, y el mensaje de error real que produce el fallo deliberado. Fuente oficial: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
+Ya distingues `Mono` de `Flux` por su cardinalidad, y confirmas con `StepVerifier` real que ambos son perezosos hasta la suscripción. El siguiente tema compone llamadas HTTP salientes sin bloquear el thread durante la espera. Fuente oficial: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
 
 **Errores comunes:** llamar `.block()` dentro de un flujo reactivo para "simplificar" el código, anulando por completo el beneficio no bloqueante; asumir que declarar un `Mono`/`Flux` ya ejecutó su lógica, sin considerar que nada ocurre hasta la suscripción.
 
@@ -483,9 +483,9 @@ public Mono<Double> calcularTarifaCompleta(String trackingCode) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `WebClient` con dos llamadas HTTP compuestas por `flatMap`, y un test con `MockWebServer` que confirme el resultado. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya compones llamadas HTTP dependientes con `WebClient` sin bloquear el thread, confirmado contra un servidor HTTP real y desechable. El siguiente y último tema de este módulo aborda cuándo esta complejidad adicional realmente vale la pena. **Evidencia:** entrega el resultado de `TarifaClientTest` en verde, y el timeout real que produce el fallo deliberado al faltar una respuesta encolada. Fuente oficial: [Spring — WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html).
+Ya compones llamadas HTTP dependientes con `WebClient` sin bloquear el thread, confirmado contra un servidor HTTP real y desechable. El siguiente y último tema de este módulo aborda cuándo esta complejidad adicional realmente vale la pena. Fuente oficial: [Spring — WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html).
 
 **Errores comunes:** usar `RestTemplate` (bloqueante y legado) en vez de `WebClient` para llamadas reactivas; no considerar qué ocurre si una de las llamadas compuestas falla o tarda demasiado, dejando el flujo completo colgado indefinidamente.
 
@@ -610,9 +610,9 @@ String resultado = Mono.just("dato").____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint con un `.block()` indebido y un test `WebTestClient` que confirme el error 5xx real que produce. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas, con la evidencia de una excepción real de Reactor, por qué mezclar código bloqueante en un pipeline reactivo es un antipatrón activamente rechazado, no solo desaconsejado en teoría. Esto cierra el módulo de programación reactiva; el siguiente módulo aborda cómo estructurar el código de dominio con principios de arquitectura hexagonal. **Evidencia:** entrega el resultado de `BloqueoDeliberadoTest` en verde (confirmando el error real de Reactor), y la comparación con el endpoint no bloqueante equivalente respondiendo `200 OK`. Fuente oficial: [Project Reactor — Blocking calls](https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking).
+Ya explicas, con la evidencia de una excepción real de Reactor, por qué mezclar código bloqueante en un pipeline reactivo es un antipatrón activamente rechazado, no solo desaconsejado en teoría. Esto cierra el módulo de programación reactiva; el siguiente módulo aborda cómo estructurar el código de dominio con principios de arquitectura hexagonal. Fuente oficial: [Project Reactor — Blocking calls](https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking).
 
 **Errores comunes:** usar `.block()` dentro de un flujo reactivo para "simplificar" el código, anulando el beneficio no bloqueante y arriesgando la excepción real de Reactor en producción; migrar un CRUD simple a WebFlux sin medir si la concurrencia real del sistema justifica la complejidad adicional.
 

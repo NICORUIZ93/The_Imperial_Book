@@ -146,7 +146,7 @@ Al ejecutar esta versión, la asignación se aprueba (`estado: "asignado"`) aunq
 
 Implementa una función `autorizarAsignacion(claims, envioId)` que separe la verificación de rol de la verificación de pertenencia del envío, y que pueda probarse sin un servidor HTTP real, pasándole distintos payloads de `claims` simulados. No copies la solución del paso anterior; escribe primero el contrato y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `contrato.yaml`, `src/asignar.js`, la salida exitosa, la salida del fallo deliberado y una breve explicación de por qué el rol debe salir del token. El siguiente tema toma esta misma acción de asignar un conductor y la lleva al nivel del caso de uso completo: qué pasa con el envío y con la capacidad del conductor cuando la operación debe ser todo-o-nada. **Fuente oficial:** [RFC 8725 — JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725).
 
@@ -285,7 +285,7 @@ Repetí la prueba con la caída simulada: ahora el `catch` revierte ambas tablas
 
 Implementa `transferirCapacidad(origenId, destinoId, cantidad)` que mueva cupo entre dos conductores de forma atómica (ambas cuentas cambian o ninguna), reutilizando el patrón de snapshot y rollback de este paso. No copies la solución del paso anterior; escribe primero el contrato y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `src/transaccion.js`, la salida consistente, la salida del fallo con la caída simulada y la salida ya corregida con rollback. El siguiente tema toma este mismo problema de atomicidad y lo extiende al momento de publicar el evento de la asignación: ¿qué pasa si la transacción se confirma pero el mensaje a la cola se pierde? **Fuente oficial:** [PostgreSQL — Transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html).
 
@@ -424,7 +424,7 @@ El envío quedó `entregado` en la base, pero la cola está vacía: el evento se
 
 Implementa `relayConReintentos(outbox, cola, maxIntentos)` que, si publicar una fila falla, la reintente hasta `maxIntentos` veces antes de marcarla como fallida, sin perder ni duplicar filas ya publicadas. No copies la solución del paso anterior; escribe primero el contrato y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `src/outbox.js`, la salida del flujo correcto, la salida del fallo sin outbox y la explicación de por qué el evento se pierde en ese caso. Con este tema el backend de envíos queda transaccional, autorizado y observable de punta a punta; el próximo módulo conecta estos tres temas con el resto de RutaFlow en el flujo end-to-end de un envío real. **Fuente oficial:** [microservices.io — Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html).
 
@@ -496,7 +496,7 @@ node --test contrato.test.mjs
 #### Paso 6 · Práctica independiente
 Añade una prioridad opcional con valor predeterminado `normal` y valores permitidos `normal`/`urgente`. Mantén el comportamiento de v1 y prueba una prioridad desconocida. Escribe una política de retirada de v1 con evidencia de uso, comunicación y fecha revisable.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** fixtures de ambas versiones, fallo semántico y corrección. El siguiente paso conecta esta frontera con la API y sus respuestas 400/422, conservando validación en servidor. **Errores comunes:** renombrar campos sin migrar, aceptar texto numérico por coerción y eliminar clientes antiguos sin observar uso. **Límites y decisión de uso:** compatibilidad de este comando no prueba la del sistema completo; hay que ensayar también base de datos, eventos y clientes reales.
+#### Paso 7 · Cierre
+El siguiente paso conecta esta frontera con la API y sus respuestas 400/422, conservando validación en servidor. **Errores comunes:** renombrar campos sin migrar, aceptar texto numérico por coerción y eliminar clientes antiguos sin observar uso. **Límites y decisión de uso:** compatibilidad de este comando no prueba la del sistema completo; hay que ensayar también base de datos, eventos y clientes reales.
 
 **Fuentes oficiales:** [Node test runner](https://nodejs.org/api/test.html) y [compatibilidad de diseño de APIs de Google](https://google.aip.dev/180).

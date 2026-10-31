@@ -62,7 +62,7 @@ Resultado esperado: Athena devuelve filas reales leídas directamente de los obj
 Pista: declará la tabla con una columna `velocidad` que ningún archivo real tiene, y corré `SELECT velocidad FROM rutaflow_analytics.ubicaciones` — ese es el fallo deliberado: la consulta puede devolver `NULL` para todas las filas (o fallar, según el formato) porque el esquema declarado no coincide con lo que realmente hay en los archivos; Glue Catalog describe lo que vos le dijiste, no lo que los archivos contienen de verdad.
 #### Paso 6 · Práctica independiente
 Corregí la tabla quitando `velocidad` y agregando solo las columnas reales (`conductorId`, `lat`, `lon`), y conservá la salida de una consulta exitosa como evidencia de que el esquema ahora coincide con los datos reales.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la tabla catalogada, la consulta con la columna inventada del Paso 5, y la corrección del Paso 6; explicá por qué "schema-on-read" significa que el esquema puede mentir si nadie lo mantiene sincronizado. Siguiente paso: formato. Errores comunes: esquema desactualizado y permisos excesivos. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/what-is.html.
 
 ### Tema 2: Glue Crawler y Athena
@@ -133,7 +133,7 @@ Resultado esperado: `get-table` muestra las columnas que el crawler encontró de
 Pista: subí manualmente a `rutaflow-ubicaciones-historico` un archivo con una fila en formato JSON junto a los que Firehose ya depositó en CSV — ese es el fallo deliberado de inferencia: el crawler, al encontrar formatos mezclados en la misma ruta, puede fallar en inferir un esquema único consistente, o crear más de una tabla donde esperabas una sola.
 #### Paso 6 · Práctica independiente
 Compará, en una tabla de dos columnas, el esquema que declaraste a mano en el Tema 1 contra el que el crawler descubrió en este Tema — identificá cualquier diferencia y documentá cuál de los dos confiarías más si los archivos cambiaran sin avisarte.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el esquema descubierto por el crawler, el problema de formatos mezclados del Paso 5, y la comparación del Paso 6; explicá cuándo conviene declarar el esquema a mano y cuándo dejar que el crawler lo infiera. Siguiente paso: particiones. Errores comunes: confiar ciegamente en inferencia y no versionar esquema. Fuente oficial: https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html.
 
 ### Tema 3: Parquet vs CSV, y partition pruning
@@ -187,7 +187,7 @@ Resultado esperado: `DataScannedInBytes` reporta solo los bytes de los archivos 
 Pista: repetí la misma consulta de negocio pero SIN el `WHERE` de partición (`SELECT conductorId FROM rutaflow_analytics.ubicaciones`) y compará `DataScannedInBytes` — ese es el fallo deliberado de coste: escaneás TODOS los archivos históricos para responder una pregunta que, en la mayoría de los casos reales, solo necesitaba un día específico.
 #### Paso 6 · Práctica independiente
 Convertí mentalmente (o con `CREATE TABLE AS SELECT`) los mismos datos de CSV a Parquet, y documentá por qué, incluso sin particiones, Parquet ya reduciría los bytes escaneados para una consulta que solo pide `conductorId` de una tabla con muchas más columnas.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los bytes escaneados con partición del Paso 4, los bytes sin partición del Paso 5, y la comparación CSV/Parquet del Paso 6; explicá por qué particionar y elegir el formato correcto son dos palancas de costo independientes, no la misma. Siguiente paso: analítica. Errores comunes: particiones pequeñas y formato no columnar. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/partitions.html.
 
 ## Laboratorio práctico

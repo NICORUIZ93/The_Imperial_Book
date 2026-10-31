@@ -23,8 +23,6 @@ Ya tienes límites visibles entre capas. El siguiente tema conectará los concep
 
 **Fuentes oficiales:** [Node modules](https://nodejs.org/api/esm.html) y [Clean Architecture, Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
-**Evidencia de aprendizaje:** entrega la salida 200, el fallo 400 y un adaptador sustituido.
-
 **Conceptos clave:** separación de responsabilidades, rutas, controladores, servicios, repositorio.
 
 Una arquitectura por capas organiza el código de una API en niveles con responsabilidades claramente delimitadas y sin superposición: las rutas (estudiadas en el Módulo 4) definen únicamente los endpoints HTTP y delegan inmediatamente hacia los controladores, sin contener ninguna lógica de negocio propia; los controladores traducen entre el mundo HTTP (extraer parámetros de la petición, formatear la respuesta) y el mundo de la lógica de negocio, invocando a los servicios correspondientes; los servicios contienen la lógica de negocio real (reglas de validación de dominio, cálculos, orquestación de múltiples operaciones), completamente ajenos a los detalles de HTTP o de la base de datos específica usada; y el repositorio encapsula el acceso a los datos (usando Prisma, estudiado en el Módulo 5, o cualquier otro mecanismo de persistencia), sin contener ninguna lógica de negocio propia más allá de las operaciones de acceso a datos mismas.
@@ -84,6 +82,8 @@ Reemplaza memoria por un adaptador de archivo y entrega pruebas de ambos sin mod
 
 #### Paso 7 · Cierre y conexión
 
+Ya respondés con el objeto creado y comprobás que la validación ausente devuelve 400 desde la aplicación. El siguiente tema reúne las piezas del track en una API ejecutable.
+
 ### Tema 2: Uniendo cada módulo del track
 
 #### Paso 1 · Objetivo y preparación
@@ -103,8 +103,6 @@ Ya integraste un servicio mínimo reproducible. El siguiente tema hará una revi
 **Errores comunes:** saltar validación; no documentar puertos; integrar sin prueba; compartir estado global; confundir demo con producción.
 
 **Fuentes oficiales:** [Node HTTP](https://nodejs.org/api/http.html), [npm scripts](https://docs.npmjs.com/cli/using-npm/scripts) y [12-factor](https://12factor.net/).
-
-**Evidencia de aprendizaje:** entrega README, salida de arranque y prueba de configuración inválida.
 
 **Conceptos clave:** integración horizontal de todo el track en un único proyecto coherente.
 
@@ -159,6 +157,8 @@ Escribe README con instalación, prueba, variables y apagado; otra persona debe 
 
 #### Paso 7 · Cierre y conexión
 
+Ya levantás la API integrada y comprobás que un puerto inválido falla en configuración, no en una respuesta ambigua. El siguiente tema audita qué falta para operar esa API en producción.
+
 ### Tema 3: Qué le falta a esta API para producción real
 
 #### Paso 1 · Objetivo y preparación
@@ -178,8 +178,6 @@ Ya conviertes arquitectura en criterios operables. El siguiente tema comparará 
 **Errores comunes:** checklist sin evidencia; medir solo cobertura; omitir recuperación; no asignar responsables; llamar “producción” a un entorno sin alertas.
 
 **Fuentes oficiales:** [SRE workbook](https://sre.google/workbook/), [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/) y [12-factor](https://12factor.net/).
-
-**Evidencia de aprendizaje:** entrega checklist completo y un runbook con un fallo simulado.
 
 **Conceptos clave:** honestidad sobre las limitaciones del proyecto, próximos pasos de aprendizaje.
 
@@ -239,6 +237,8 @@ Escribe un runbook de incidente con detección, mitigación, rollback y aprendiz
 
 #### Paso 7 · Cierre y conexión
 
+Ya revisás un checklist donde una fila sin comprobación queda pendiente y no se asume cubierta. El siguiente tema ordena las decisiones de migración a microservicios, colas y TypeScript.
+
 ### Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript
 
 #### Paso 1 · Objetivo y preparación
@@ -258,8 +258,6 @@ Ya puedes elegir evolución por evidencia. El siguiente tema profundizará geolo
 **Errores comunes:** microservicios por moda; ignorar consistencia; adoptar TypeScript sin plan; colas sin idempotencia; no medir costo operativo.
 
 **Fuentes oficiales:** [TypeScript handbook](https://www.typescriptlang.org/docs/handbook/intro.html), [microservices](https://martinfowler.com/articles/microservices.html) y [messaging patterns](https://www.enterpriseintegrationpatterns.com/).
-
-**Evidencia de aprendizaje:** entrega una matriz comparativa y una decisión reversible.
 
 **Conceptos clave:** descomposición en servicios, Kafka/RabbitMQ, tipado estático en Node.
 
@@ -319,6 +317,8 @@ Propón una migración incremental con un límite reversible y entrega el criter
 
 #### Paso 7 · Cierre y conexión
 
+Ya comparás opciones con costo y criterio de rollback en la misma tabla. El siguiente tema aplica el mismo rigor a posiciones espaciales y reconexiones en tiempo real.
+
 ### Tema 5: Posiciones espaciales y Socket.IO con orden recuperable
 
 #### Paso 1 · Objetivo y preparación
@@ -338,8 +338,6 @@ Ya validas geodatos y orden lógico. El siguiente tema tratará archivos y push 
 **Errores comunes:** aceptar coordenadas sin rango; confiar en orden de llegada; guardar historial infinito; usar socket como base durable; mezclar identidad con ubicación.
 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/), [RFC 7946 GeoJSON](https://www.rfc-editor.org/rfc/rfc7946) y [Node events](https://nodejs.org/api/events.html).
-
-**Evidencia de aprendizaje:** entrega la salida de una secuencia válida, un error de coordenadas y recuperación simulada.
 
 **Conceptos clave:** validación geográfica, SRID, índice espacial, autorización por recurso, secuencia y reanudación.
 
@@ -455,6 +453,8 @@ Simula reconexión y entrega eventos recuperados y una posición descartada por 
 
 #### Paso 7 · Cierre y conexión
 
+Ya verificás que cada posición válida recibe una secuencia creciente y que `lat: 200` se rechaza sin incrementarla. El siguiente tema trata adjuntos y notificaciones sin confundirlos con autorización.
+
 ### Tema 6: Archivos y notificaciones push sin convertirlos en autorización
 
 #### Paso 1 · Objetivo y preparación
@@ -474,8 +474,6 @@ Ya separas almacenamiento, autorización y notificación. Este cierre deja prepa
 **Errores comunes:** concatenar paths; sobrescribir archivos; servir uploads como código; guardar tokens push como permisos; no limpiar temporales.
 
 **Fuentes oficiales:** [Node path](https://nodejs.org/api/path.html), [fs promises](https://nodejs.org/api/fs.html#promises-api) y [OWASP File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
-
-**Evidencia de aprendizaje:** entrega la salida de archivo válido, path rechazado y flujo de push fallido sin pérdida de autorización.
 
 **Conceptos clave:** carga multipart, límites, almacenamiento de objetos, metadatos mínimos, Firebase Admin y fuente de verdad.
 
@@ -545,6 +543,8 @@ Limita tamaño y extensión permitida. **Pista:** valida bytes antes de escribir
 Diseña una cola de notificación posterior al guardado y entrega el caso donde el push falla sin deshacer el archivo.
 
 #### Paso 7 · Cierre y siguiente paso
+
+Ya comprobás que `../../secreto` no sale de `uploads/` y que un push fallido no debe deshacer el archivo guardado. Con esto cierras el track: el laboratorio reúne la API completa con sus controles.
 
 ## Laboratorio práctico
 

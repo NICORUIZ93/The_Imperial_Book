@@ -111,9 +111,9 @@ Modifica el script de persistencia para encolar dos trabajos distintos en la mis
 
 Documenta en una frase por qué subir una foto grande (Tema 1, casos de uso) es un candidato apropiado para `CoroutineWorker` en vez de un simple `viewModelScope.launch`, relacionándolo con qué pasaría si el usuario cierra la app a mitad de la subida en cada uno de los dos enfoques.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escribes un `CoroutineWorker` y explicas por qué WorkManager garantiza su ejecución eventual incluso si el proceso de la app termina. El siguiente tema cubre cómo condicionar ese trabajo a requisitos del sistema y ejecutarlo periódicamente. **Evidencia:** entrega el resultado mostrando la cola en memoria vacía tras el "reinicio" simulado frente al trabajo recuperado desde el archivo persistente, y explica cuándo `Result.retry()` es apropiado frente a `Result.failure()`. Fuente oficial: [Android Developers — WorkManager overview](https://developer.android.com/topic/libraries/architecture/workmanager).
+Ya escribes un `CoroutineWorker` y explicas por qué WorkManager garantiza su ejecución eventual incluso si el proceso de la app termina. El siguiente tema cubre cómo condicionar ese trabajo a requisitos del sistema y ejecutarlo periódicamente. Fuente oficial: [Android Developers — WorkManager overview](https://developer.android.com/topic/libraries/architecture/workmanager).
 
 **Errores comunes:** lanzar trabajo crítico con `viewModelScope.launch` en vez de WorkManager, perdiéndolo si el usuario cierra la app; devolver `Result.failure()` ante un error transitorio, perdiendo la oportunidad de reintento automático.
 
@@ -221,9 +221,9 @@ Agrega una constraint adicional (`setRequiresCharging(true)`, requiriendo que el
 
 Documenta en una frase por qué usar `NetworkType.UNMETERED` (solo wifi) en vez de `NetworkType.CONNECTED` (cualquier red) sería la elección correcta para sincronizar un backup de fotos grande, pero no para sincronizar un pequeño conjunto de tareas de texto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya configuras constraints de red y batería para un trabajo periódico, y explicas por qué WorkManager prioriza la salud del dispositivo sobre la puntualidad exacta. El siguiente tema cubre cómo notificar al usuario sobre el resultado de ese trabajo. **Evidencia:** entrega el resultado de los cuatro escenarios simulados, confirmando que solo se ejecuta cuando ambas constraints se cumplen simultáneamente, y explica por qué Android ajusta un intervalo menor a 15 minutos automáticamente. Fuente oficial: [Android Developers — WorkManager constraints](https://developer.android.com/topic/libraries/architecture/workmanager/how-to/define-work#work-constraints).
+Ya configuras constraints de red y batería para un trabajo periódico, y explicas por qué WorkManager prioriza la salud del dispositivo sobre la puntualidad exacta. El siguiente tema cubre cómo notificar al usuario sobre el resultado de ese trabajo. Fuente oficial: [Android Developers — WorkManager constraints](https://developer.android.com/topic/libraries/architecture/workmanager/how-to/define-work#work-constraints).
 
 **Errores comunes:** configurar un intervalo periódico menor a 15 minutos esperando que se respete exactamente; olvidar constraints de batería en trabajo no urgente, ejecutándolo incluso con batería crítica.
 
@@ -338,9 +338,9 @@ Agrega una segunda notificación (distinta, con otro texto) que se dispare espec
 
 Documenta en una frase qué comando de `adb` (mencionado en el Paso 3 de este Tema) usarías para confirmar que un trabajo periódico sigue registrado en el sistema después de cerrar completamente la app, y qué información específica de esa salida confirmaría la garantía de persistencia del Tema 1.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya disparas notificaciones condicionadas al resultado real de un trabajo en background, y verificas la persistencia de ese trabajo tras cerrar la app. Esto cierra el módulo de trabajo en segundo plano; el siguiente módulo del track aborda Material Design y theming. **Evidencia:** entrega el log de eventos mostrando la secuencia completa desde la sincronización hasta la notificación vista sin abrir la app, y explica por qué notificar incondicionalmente (sin importar el resultado real) rompería la confianza del usuario en esas notificaciones. Fuente oficial: [Android Developers — WorkManager and notifications](https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work#simple-workrequest).
+Ya disparas notificaciones condicionadas al resultado real de un trabajo en background, y verificas la persistencia de ese trabajo tras cerrar la app. Esto cierra el módulo de trabajo en segundo plano; el siguiente módulo del track aborda Material Design y theming. Fuente oficial: [Android Developers — WorkManager and notifications](https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work#simple-workrequest).
 
 **Errores comunes:** disparar la notificación de éxito incondicionalmente, sin importar si el trabajo realmente tuvo éxito; olvidar crear el canal de notificación (`NotificationChannel`) requerido en versiones recientes de Android antes de poder notificar.
 

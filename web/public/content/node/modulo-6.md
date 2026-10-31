@@ -90,9 +90,9 @@ Añade un registro de intento fallido sin guardar la contraseña. Entrega la sal
 
 #### Paso 7 · Cierre y conexión
 
-### Tema 2: JWT — access y refresh tokens
+Ya guardás una contraseña como sal más derivación y comprobás que la misma clave produce una huella distinta en cada ejecución. El siguiente tema cambia el objeto que se firma: un JWT transporta identidad entre cliente y API sin consultar la base en cada solicitud.
 
-**Evidencia de aprendizaje:** entrega la salida de verificación de un token válido, uno alterado y uno vencido, indicando el código de respuesta esperado.
+### Tema 2: JWT — access y refresh tokens
 
 #### Paso 1 · Objetivo y preparación
 
@@ -169,8 +169,6 @@ Una ruta pública puede consultar el estado de un envío, mientras que cancelar 
 El middleware es un control en la entrada: valida el token y añade un usuario confiable a la solicitud. El siguiente control comprueba permisos. Nunca uses el `role` enviado por el cliente sin verificar la firma.
 
 Ya separas autenticación y autorización. El siguiente tema explicará OAuth y proveedores externos desde una carpeta nueva.
-
-**Evidencia de aprendizaje:** entrega tres respuestas (`401`, `403` y `200`) y explica qué comprobación produjo cada una.
 
 **Errores comunes:** devolver 403 cuando falta identidad; confiar en headers de rol; imprimir tokens; olvidar `return` tras responder; permitir algoritmos inesperados.
 
@@ -250,6 +248,8 @@ Registra un identificador de correlación, nunca el token completo, y entrega re
 
 #### Paso 7 · Cierre y conexión
 
+Ya separás autenticación (¿quién eres?) de autorización (¿qué puedes hacer?) con respuestas 401 y 403 distintas. El siguiente tema delega la identidad en un proveedor OAuth y traslada el mismo control a tokens emitidos por terceros.
+
 ### Tema 4: OAuth 2.0 y Passport.js
 
 #### Paso 1 · Objetivo y preparación
@@ -269,8 +269,6 @@ Ya distingues delegación, PKCE y autenticación. El siguiente tema tratará ses
 **Errores comunes:** omitir PKCE; aceptar cualquier `redirect_uri`; confundir access token con identidad; almacenar client secret en una app móvil.
 
 **Fuentes oficiales:** [OAuth 2.0 RFC 6749](https://www.rfc-editor.org/rfc/rfc6749), [PKCE RFC 7636](https://www.rfc-editor.org/rfc/rfc7636) y [OAuth Security BCP](https://www.rfc-editor.org/rfc/rfc9700).
-
-**Evidencia de aprendizaje:** entrega la URL con challenge y el diagrama del intercambio, sin incluir secretos.
 
 **Conceptos clave:** delegación de autenticación a un proveedor externo, estrategias de Passport.
 
@@ -331,6 +329,8 @@ Dibuja en Mermaid la secuencia navegador → proveedor → callback → API y et
 
 #### Paso 7 · Cierre y conexión
 
+Ya recorrés el flujo authorization code con PKCE y comprobás que el intercambio falla sin `code_challenge`. El siguiente tema conserva la sesión en el servidor y protege las escrituras con cookie y token CSRF.
+
 ### Tema 5: Sesiones, cookies seguras y protección CSRF
 
 #### Paso 1 · Objetivo y preparación
@@ -350,8 +350,6 @@ Ya puedes explicar cookies, sesión y CSRF como controles distintos. El siguient
 **Errores comunes:** guardar sesión en texto; omitir `HttpOnly`; usar `Secure` sin HTTPS local; confiar solo en `SameSite`; imprimir tokens.
 
 **Fuentes oficiales:** [MDN cookies](https://developer.mozilla.org/es/docs/Web/HTTP/Cookies), [OWASP CSRF](https://owasp.org/www-community/attacks/csrf) y [Express cookies](https://expressjs.com/en/api.html#res.cookie).
-
-**Evidencia de aprendizaje:** entrega las salidas de formulario válido, token ausente y token CSRF incorrecto con sus códigos.
 
 **Objetivo:** autenticar el panel operativo con una sesión almacenada en el servidor, una cookie protegida y una defensa explícita contra solicitudes falsificadas.
 
@@ -491,9 +489,9 @@ Reemplaza la sesión fija por un identificador aleatorio con expiración. Entreg
 
 #### Paso 7 · Cierre y conexión
 
-### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida
+Ya demostrás que la cookie de sesión sola no autoriza una escritura: sin el campo `csrf` la operación recibe 403. El siguiente tema une login, emisión de tokens, middleware y logout en un flujo completo.
 
-**Evidencia de aprendizaje:** entrega la secuencia completa de tres respuestas (`POST /api/auth/login` devuelve un token; `GET /api/usuarios` sin token responde `401`; `GET /api/usuarios` con `Authorization: Bearer <token>` responde `200`), con sus códigos de estado.
+### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 #### Paso 1 · Objetivo y preparación
 

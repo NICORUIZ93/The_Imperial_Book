@@ -89,9 +89,9 @@ Usa `Promise.all` para iniciar ambas consultas y mide cerca de 50 ms. **Pista:**
 
 Modela `consultarGuia → consultarRuta`, donde el segundo paso necesita el ID del primero. Combina esa secuencia con otra entrega independiente y dibuja dependencias y concurrencia.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usas `await` para dependencias y combinadores para concurrencia. El siguiente tema clasifica y propaga errores. **Evidencia:** demuestra el resultado, los dos tiempos y el flujo mixto. Fuente oficial: [MDN — async function](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/async_function).
+Ya usas `await` para dependencias y combinadores para concurrencia. El siguiente tema clasifica y propaga errores. Fuente oficial: [MDN — async function](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/async_function).
 
 **Errores comunes:** creer que `async` devuelve un valor directo; esperar operaciones independientes una por una; usar `await` fuera de contexto compatible; confundir pausa con bloqueo.
 
@@ -180,9 +180,9 @@ Crea `ErrorHttp` con propiedad `status`. **Pista:** conserva `cause` al envolver
 
 Clasifica red, HTTP, JSON inválido y validación de dominio. Escribe un caso reproducible por categoría y demuestra que `finally` se ejecuta en todos sin devolver silenciosamente `[]` cuando eso oculte el fallo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya manejas errores donde existe contexto para decidir y propagas los demás con causa. El siguiente tema cancela solicitudes obsoletas. **Evidencia:** demuestra éxito, 404, datos inválidos y limpieza en todos los caminos. Fuente oficial: [MDN — try...catch](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/try...catch).
+Ya manejas errores donde existe contexto para decidir y propagas los demás con causa. El siguiente tema cancela solicitudes obsoletas. Fuente oficial: [MDN — try...catch](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/try...catch).
 
 **Errores comunes:** asumir que fetch rechaza 404; capturar y devolver vacío siempre; perder la causa original; omitir `finally` para indicadores de carga.
 
@@ -255,9 +255,9 @@ Conserva un controlador activo y cancélalo antes de cada nueva búsqueda. **Pis
 
 Combina debounce, cancelación y un contador de solicitud. Prueba respuesta fuera de orden, cancelación intencional y fallo real; solo el último debe mostrar error.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya evitas actualizaciones obsoletas y distingues cancelación de fallo. El siguiente tema limita tiempo y reintenta solo operaciones seguras. **Evidencia:** demuestra el resultado cancelado, la carrera sin protección y la búsqueda final correcta. Fuente oficial: [MDN — AbortController](https://developer.mozilla.org/es/docs/Web/API/AbortController).
+Ya evitas actualizaciones obsoletas y distingues cancelación de fallo. El siguiente tema limita tiempo y reintenta solo operaciones seguras. Fuente oficial: [MDN — AbortController](https://developer.mozilla.org/es/docs/Web/API/AbortController).
 
 Cada campo de búsqueda o filtro en vivo del proyecto integrador (SPA sin framework, Módulo 12) necesitará este mismo par debounce + `AbortController` para no mostrar resultados obsoletos cuando el usuario escribe más rápido de lo que responde la API.
 
@@ -340,9 +340,9 @@ Implementa espera `base * 2 ** intento + jitter`. **Pista:** inyecta la función
 
 Clasifica red, 408, 429, 400 y 500; respeta `Retry-After`, limita presupuesto total y exige idempotencia para comandos. Escribe pruebas deterministas de éxito al tercer intento y fallo permanente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aplicas resiliencia sin convertir reintentos en duplicación o tormenta de tráfico. El siguiente tema crea secuencias perezosas con generadores. **Evidencia:** demuestra el resultado, timeout cancelado, backoff inyectado y matriz de errores reintentables. Fuente oficial: [MDN — AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static).
+Ya aplicas resiliencia sin convertir reintentos en duplicación o tormenta de tráfico. El siguiente tema crea secuencias perezosas con generadores. Fuente oficial: [MDN — AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static).
 
 **Errores comunes:** reintentar 400; omitir jitter; no cancelar el intento vencido; reintentar comandos no idempotentes; ignorar `Retry-After`.
 
@@ -430,9 +430,9 @@ Implementa `function* entregasOrdenadas(prioritarias, normales)` que delegue pri
 
 Crea un generador infinito de números de guía `RF-000001`, `RF-000002`, etc., y una función que consuma solamente los primeros cinco. Explica por qué el programa no reserva memoria para una colección infinita y añade una prueba que verifique el quinto identificador.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes producir datos bajo demanda y reconocer cuándo un array completo es innecesario. El siguiente tema estudia cómo interceptar operaciones sobre objetos con Proxy y Reflect. **Evidencia:** entrega el archivo, demuestra la salida de las tres llamadas a `.next()`, el fallo controlado para tamaño cero y explica en qué línea se pausa y se reanuda el generador.
+Ya puedes producir datos bajo demanda y reconocer cuándo un array completo es innecesario. El siguiente tema estudia cómo interceptar operaciones sobre objetos con Proxy y Reflect.
 
 **Errores comunes:** creer que invocar la función ejecuta su cuerpo; ignorar `done`; crear un ciclo infinito sin limitar el consumo; usar un generador esperando paralelismo o comportamiento asíncrono; olvidar validar que el estado avance.
 
@@ -524,9 +524,9 @@ Añade una lista `camposPermitidos` y rechaza la escritura de una propiedad desc
 
 Construye un Proxy que cuente lecturas de `estado`, escribe pruebas para lectura, escritura válida e inválida y compara esta solución con un método explícito `entrega.cambiarEstado()`. Documenta por qué elegirías el método para reglas del negocio y el Proxy para observabilidad o adaptación en una frontera.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ahora distingues una intercepción transversal de una regla de dominio y sabes delegar sin romper invariantes. El próximo módulo organiza estas capacidades en módulos, herramientas y una aplicación mantenible. **Evidencia:** entrega el archivo y demuestra la salida correcta, el fallo por estado inválido y explica el resultado de reemplazar `Reflect.set` por `false`.
+Ahora distingues una intercepción transversal de una regla de dominio y sabes delegar sin romper invariantes. El próximo módulo organiza estas capacidades en módulos, herramientas y una aplicación mantenible.
 
 **Errores comunes:** esconder reglas esenciales dentro de traps difíciles de rastrear; olvidar devolver el booleano de `set`; violar invariantes de propiedades no configurables; provocar recursión leyendo el Proxy dentro de su propio trap; asumir que el Proxy y el objeto original tienen la misma identidad.
 

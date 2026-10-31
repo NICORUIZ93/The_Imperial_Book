@@ -65,7 +65,7 @@ Resultado esperado: `filter-log-events` devuelve exactamente la línea que menci
 Pista: emití un segundo evento de log SIN `shipmentId` (`"message":"accion=confirmar status=delivered"`) — ese es el fallo deliberado: `filter-log-events --filter-pattern "env-5002"` sobre ese log nunca lo va a encontrar, aunque sea la línea correcta, porque nunca incluyó el identificador que necesitabas para correlacionarlo.
 #### Paso 6 · Práctica independiente
 Emití logs para dos envíos distintos (`env-4471` y `env-5002`) intercalados en el mismo stream, y confirmá que `filter-log-events --filter-pattern "env-5002"` devuelve solo las líneas de ese envío, sin mezclarse con las de `env-4471` aunque estén en el mismo log group.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el log correlacionado por `shipmentId`, el log sin ID del Paso 5 y su diagnóstico, y la separación limpia del Paso 6; explicá por qué `shipmentId` es un correlation ID mejor que un UUID genérico para este caso. Siguiente paso: métricas. Errores comunes: datos sensibles en logs y texto no estructurado. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html.
 
 ### Tema 2: Metric filters y alarmas
@@ -119,7 +119,7 @@ Resultado esperado: `get-metric-statistics` muestra `Sum: 1` — la línea de lo
 Pista: emití un log con un error distinto (`"message":"shipmentId=env-6002 recipientPin invalido"`, sin la frase exacta "comando de entrega inválido") — ese es el fallo deliberado: la métrica `ComandosInvalidos` NO sube, porque el filtro compara el patrón de texto literal, no el significado del error; un error real de validación puede pasar completamente desapercibido si el mensaje no coincide con el patrón exacto configurado.
 #### Paso 6 · Práctica independiente
 Creá una alarma sobre `ComandosInvalidos` con `aws cloudwatch put-metric-alarm --alarm-name RutaFlowComandosInvalidos --namespace RutaFlow --metric-name ComandosInvalidos --statistic Sum --period 300 --threshold 5 --comparison-operator GreaterThanThreshold --evaluation-periods 1`, y documentá qué umbral tendría sentido real (¿5 en 5 minutos es demasiado sensible o demasiado laxo para esta alarma?).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el metric filter funcionando, el error que no coincidió en el Paso 5, y la alarma del Paso 6; explicá por qué el patrón de texto exacto es tanto la fortaleza como el punto débil de un metric filter. Siguiente paso: trazas. Errores comunes: umbral sin objetivo y alarmas ruidosas. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Metric_Streams.html.
 
 ### Tema 3: Diagnóstico sistemático y X-Ray
@@ -150,7 +150,7 @@ Resultado esperado: Node disponible.
 Pista: oculta una señal para provocar un fallo deliberado de diagnóstico y corrígelo.
 #### Paso 6 · Práctica independiente
 Escribe timeline, hipótesis y prueba.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega timeline, salida, fallo y corrección; explica el resultado. Siguiente paso: seguridad operacional. Errores comunes: culpar sin evidencia y no registrar decisiones. Fuente oficial: https://sre.google/sre-book/incident-response/.
 **Conceptos clave:** encontrar la causa raíz con evidencia, no adivinando.
 

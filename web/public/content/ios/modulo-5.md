@@ -42,10 +42,9 @@ Resultado esperado: llamar `confirmarEntrega(guia: "RF-4471", pin: "837201")` de
 Pista: no verifiques `http.statusCode` y pasá directo a decodificar `datos` aunque la respuesta sea un 400 (recipientPin inválido, Módulo 6 del Cloud) — ese es el fallo deliberado: `JSONDecoder` va a fallar al intentar decodificar un cuerpo de error como si fuera `ConfirmacionEntrega`, o peor, va a "tener éxito" decodificando campos que no significan lo que creés, porque nunca confirmaste que la petición realmente tuvo éxito.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la verificación de `statusCode`, y agregá un segundo `struct` `ErrorEntrega: Codable` para decodificar el cuerpo de error cuando el status no sea 200, en vez de descartarlo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la confirmación decodificada del Paso 4, el fallo de decodificar un error como éxito del Paso 5, y el `ErrorEntrega` agregado del Paso 6; explicá por qué nunca hay que asumir éxito solo porque la petición no lanzó una excepción de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 **¿Por qué es importante?** Porque una petición HTTP puede completar sin excepción de red y seguir representando un fallo; verificar el `statusCode` antes de decodificar evita tratar un cuerpo de error como si fuera una respuesta exitosa.
-**Evidencia de aprendizaje:** entrega la confirmación decodificada funcionando, el fallo reproducido al decodificar un error como éxito, y el `ErrorEntrega` agregado para el cuerpo de error.
 **Conceptos clave:** petición de red como función suspendible, parsing generado automáticamente.
 
 ```swift
@@ -122,10 +121,9 @@ Resultado esperado: un `switch` sobre `ErrorEntrega` en el punto de manejo te ob
 Pista: reemplazá las tres categorías por un único `throw NSError(domain: "red", code: -1)` genérico en cada punto de fallo — ese es el fallo deliberado: ahora todo error se ve igual en el punto de manejo, y la app no puede distinguir "revisá tu conexión" de "tu PIN está mal escrito", mostrando el mismo mensaje confuso para dos problemas completamente distintos.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `ErrorEntrega`, y agregá un cuarto caso `decodificacion` para cuando `JSONDecoder` falla aunque el `statusCode` fuera 200 (una respuesta exitosa pero con un formato inesperado).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `switch` exhaustivo sobre `ErrorEntrega` del Paso 4, el error genérico indiferenciado del Paso 5, y el cuarto caso agregado del Paso 6; explicá por qué el compilador puede obligarte a manejar cada caso de un enum propio, pero no de un `NSError` genérico. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 **¿Por qué es importante?** Porque un enum de error propio verificado exhaustivamente por el compilador permite mostrar un mensaje específico por categoría de fallo, algo que un `NSError` genérico no puede garantizar.
-**Evidencia de aprendizaje:** entrega el `switch` exhaustivo sobre `ErrorEntrega`, el error genérico indiferenciado reproducido, y el cuarto caso de decodificación agregado.
 **Conceptos clave:** categorías explícitas de fallo, mensajes específicos por caso.
 
 ```swift
@@ -243,9 +241,7 @@ Pista: quitá el `catch ErrorEntrega.pinInvalido` específico, dejando que ese e
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `catch` específico, y envolvé la llamada completa en una `Task` que se cancele si el conductor sale de `DetalleEnvio` antes de que termine — confirmá que cancelar a mitad de un backoff no deja ninguna llamada de red "colgada" de fondo.
 
-**Evidencia de aprendizaje:** entrega el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido reproducido, y la cancelación agregada.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido del Paso 5, y la cancelación del Paso 6; explicá por qué reintentar un error 4xx (como PIN inválido) es un desperdicio que nunca cambia el resultado, a diferencia de un error transitorio de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 **¿Por qué es importante?** Porque reintentar indiscriminadamente desperdicia llamadas de red en errores que nunca van a cambiar de resultado (un PIN inválido), mientras que cancelar una tarea obsoleta evita procesar una respuesta que ya no corresponde a la intención actual del usuario.
 

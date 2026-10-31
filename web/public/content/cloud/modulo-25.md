@@ -53,7 +53,7 @@ Resultado esperado: la regla queda registrada y consultable — lista para que, 
 Pista: corré `aws configservice describe-compliance-by-config-rule --config-rule-names pruebas-entrega-versionado` esperando ver `COMPLIANT` o `NON_COMPLIANT` — ese es el fallo deliberado (o más bien, la limitación real que advierte este Tema): la respuesta es siempre `INSUFFICIENT_DATA`, porque Floci nunca evalúa si `pruebas-entrega` realmente tiene versionado activo, solo gestiona el plano de la regla en sí.
 #### Paso 6 · Práctica independiente
 Agrupá esta regla dentro de un paquete de conformidad (`put-conformance-pack`) junto a una segunda regla imaginaria sobre cifrado, y documentá por escrito quién sería el responsable de revisar manualmente el cumplimiento real mientras Floci no lo evalúe.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la regla creada, el `INSUFFICIENT_DATA` del Paso 5, y el paquete de conformidad del Paso 6; explicá por qué `INSUFFICIENT_DATA` nunca debería reportarse como "cumple" en ningún dashboard real. Siguiente paso: AppConfig. Errores comunes: reglas sin responsable y falsos positivos. Fuente oficial: https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html.
 
 ### Tema 2: AppConfig — desplegar configuración sin redeployar código
@@ -113,7 +113,7 @@ Resultado esperado: la versión 1 de la configuración queda registrada con `mod
 Pista: intentá publicar un contenido JSON mal formado (`--content '{modo_mantenimiento: false'`, sin cerrar llaves ni comillas) como una nueva versión — ese es el fallo deliberado: la llamada se rechaza antes de crear la versión, porque AppConfig exige que el contenido sea JSON válido según el `--content-type` declarado.
 #### Paso 6 · Práctica independiente
 Creá una segunda versión con `"modo_mantenimiento": true`, desplegala al entorno `dev` con una estrategia inmediata, y simulá un rollback desplegando de nuevo la versión 1 — confirmá que ambas versiones siguen existiendo por separado, nunca se sobrescriben.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la aplicación/entorno/perfil creados, el JSON inválido rechazado del Paso 5, y el despliegue más rollback del Paso 6; explicá por qué separar "cambios de configuración" de "cambios de código" permite reaccionar en minutos. Siguiente paso: sesiones. Errores comunes: configuración global y sin validación. Fuente oficial: https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html.
 
 ### Tema 3: AppConfigData — el plano de datos que consume tu aplicación
@@ -180,7 +180,7 @@ Resultado esperado: tras el despliegue del Tema 2, `get-latest-configuration` de
 Pista: guardá el token de la respuesta anterior, y llamá `get-latest-configuration` DOS VECES con el mismo token viejo (sin usar el token nuevo que cada respuesta te devuelve) — ese es el fallo deliberado: reusar un token ya consumido no te da la configuración más reciente de forma confiable, porque el protocolo espera que siempre avances al token que la última respuesta te entregó.
 #### Paso 6 · Práctica independiente
 Llamá `get-latest-configuration` dos veces seguidas con el token correcto (encadenando cada nuevo token) sin que nadie despliegue nada entre medio, y confirmá que la segunda respuesta viene vacía — ahorrando ancho de banda cuando no hay novedades.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la lectura real del flag del Paso 4, el error de reusar un token viejo del Paso 5, y la respuesta vacía por no-cambio del Paso 6; explicá por qué el servicio de seguimiento debería abrir una sola sesión y reusar el token, no abrir una sesión nueva en cada petición. Siguiente paso: backups. Errores comunes: polling excesivo y tokens compartidos. Fuente oficial: https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-retrieving-simplified.html.
 
 ### Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios
@@ -240,7 +240,7 @@ Resultado esperado: la bóveda, el plan y la selección quedan creados y encaden
 Pista: creá un segundo plan de respaldo pero olvidá agregarle una `backup-selection` con ningún recurso — ese es el fallo deliberado: el plan existe y corre según su cron, pero como no protege ningún recurso real, nunca genera ningún punto de recuperación; un plan sin selección es, en la práctica, un plan que no respalda nada.
 #### Paso 6 · Práctica independiente
 Documentá, para `ShipmentEvents`, qué retención tendría sentido (pista: `Lifecycle.DeleteAfterDays` en la regla del plan) y qué RPO/RTO reales implicaría un cron diario a las 12:00 si el incidente ocurriera a las 11:59.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el plan y selección creados sobre `ShipmentEvents`, el plan sin recursos del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué centralizar el respaldo reduce el riesgo de que un servicio quede sin protección por descuido. Siguiente paso: jobs. Errores comunes: backup sin restore y selección incompleta. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html.
 
 ### Tema 5: El ciclo de vida de un trabajo de respaldo
@@ -306,7 +306,7 @@ Resultado esperado: el estado pasa de `CREATED` a `RUNNING` y, tras unos segundo
 Pista: iniciá un segundo job y, mientras todavía está en `RUNNING`, corré `aws backup stop-backup-job --backup-job-id <ese-id>` — ese es el fallo deliberado si lo hacés pensando que podés "pausar y reanudar": el job queda cancelado por completo, no pausado; si todavía necesitás ese respaldo, hay que iniciar un job nuevo desde cero.
 #### Paso 6 · Práctica independiente
 Confirmá con `describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'` que el contador subió por el job `COMPLETED` del Paso 4, y después intentá borrar `demo-boveda` con `delete-backup-vault` — confirmá el error `InvalidRequestException`, porque ahora sí hay un punto de recuperación real protegiéndola.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el job completado del Paso 4, la cancelación irreversible del Paso 5, y la bóveda protegida del Paso 6; explicá por qué asumir éxito apenas se crea el job (en vez de esperar `COMPLETED`) sería un error antes de empezar una migración riesgosa. Siguiente paso: continuidad. Errores comunes: asumir éxito por creación y no revisar estado final. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/working-with-backups.html.
 
 ## Laboratorio práctico
@@ -404,7 +404,7 @@ Windows puede usar `py restaurar.py`. **Resultado esperado:** `Contenido y estru
 #### Paso 6 · Práctica independiente
 Añade un campo de versión y rechaza una copia que no lo incluya, aunque sea JSON válido. Mide cuánto tardas en restaurar y verificar. Define un RPO y un RTO para un caso pequeño y explica qué datos y pasos faltaría medir en cloud real.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** resultado de restauración, archivo recuperado, hash y error de corrupción y procedimiento con tiempo observado. El siguiente paso es ensayar la exportación/restauración del servicio concreto en un entorno aislado. **Errores comunes:** restaurar encima del origen, confundir JSON válido con datos completos y guardar referencia y copia sin protección independiente. **Límites y decisión de uso:** el ejercicio valida archivos locales, no AWS Backup, snapshots consistentes, cifrado ni recuperación regional.
+#### Paso 7 · Cierre
+El siguiente paso es ensayar la exportación/restauración del servicio concreto en un entorno aislado. **Errores comunes:** restaurar encima del origen, confundir JSON válido con datos completos y guardar referencia y copia sin protección independiente. **Límites y decisión de uso:** el ejercicio valida archivos locales, no AWS Backup, snapshots consistentes, cifrado ni recuperación regional.
 
 **Fuentes oficiales:** [AWS recuperación y continuidad](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html) y [Python hashlib](https://docs.python.org/3/library/hashlib.html).

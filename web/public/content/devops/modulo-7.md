@@ -93,9 +93,9 @@ Crea un segundo archivo `values-produccion.yaml` con `replicaCount: 10`, e insta
 
 Ejecuta `helm history mi-api` para ver el historial de revisiones generado por los `install`/`upgrade` anteriores, y usa `helm rollback mi-api 1` para volver a la primera revisión; confirma con `kubectl get deployment` que las réplicas volvieron al valor original.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya parametrizas el mismo conjunto de manifiestos para múltiples entornos sin duplicarlos. El siguiente tema expone múltiples servicios detrás de un único punto de entrada HTTP. **Evidencia:** entrega los valores de réplicas antes y después del `upgrade`, y explica el resultado de la plantilla con la clave mal escrita. Fuente oficial: [Helm — Charts](https://helm.sh/docs/topics/charts/).
+Ya parametrizas el mismo conjunto de manifiestos para múltiples entornos sin duplicarlos. El siguiente tema expone múltiples servicios detrás de un único punto de entrada HTTP. Fuente oficial: [Helm — Charts](https://helm.sh/docs/topics/charts/).
 
 **Errores comunes:** referenciar una clave de `values.yaml` con un nombre distinto al real, fallando silenciosamente en vez de con un error explícito; instalar directamente sin `helm template` primero, perdiendo la oportunidad de revisar el YAML renderizado antes de aplicarlo.
 
@@ -189,9 +189,9 @@ Agrega una tercera regla con `path: /docs` bajo el mismo host `api.local`, enrut
 
 Investiga (documentando sin necesariamente configurarlo) qué anotación de tu Ingress Controller específico habilitarías para terminar TLS automáticamente con un certificado, y qué recurso adicional (como un `Secret` de tipo `kubernetes.io/tls`) necesitarías referenciar.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya enrutas múltiples servicios HTTP compartiendo un único punto de entrada externo. El siguiente tema escala automáticamente las réplicas detrás de estos Services según demanda real. **Evidencia:** entrega la salida de `kubectl describe ingress` mostrando ambas reglas correctamente asociadas, y explica el resultado de la ambigüedad con el host duplicado. Fuente oficial: [Kubernetes — Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+Ya enrutas múltiples servicios HTTP compartiendo un único punto de entrada externo. El siguiente tema escala automáticamente las réplicas detrás de estos Services según demanda real. Fuente oficial: [Kubernetes — Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/).
 
 **Errores comunes:** crear un objeto Ingress sin tener un Ingress Controller instalado, esperando que enrute tráfico igualmente; duplicar un host sin distinguir por path, generando reglas ambiguas.
 
@@ -264,9 +264,9 @@ Detén la carga de CPU (`kubectl scale deployment carga-cpu --replicas=0` y vuel
 
 Cambia `--max=4` a `--max=2` mientras el HPA ya había escalado a 4 réplicas, y confirma que Kubernetes reduce automáticamente hasta respetar el nuevo máximo, incluso si la métrica de CPU seguiría justificando más réplicas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escalas automáticamente según demanda real, con límites explícitos que evitan tanto capacidad insuficiente como coste descontrolado. El siguiente tema verifica que cada réplica esté realmente sana antes de recibir tráfico o de considerarse viva. **Evidencia:** entrega la progresión de réplicas observada en `kubectl get hpa --watch` y el resultado de `<unknown>` sin metrics-server. Fuente oficial: [Kubernetes — HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+Ya escalas automáticamente según demanda real, con límites explícitos que evitan tanto capacidad insuficiente como coste descontrolado. El siguiente tema verifica que cada réplica esté realmente sana antes de recibir tráfico o de considerarse viva. Fuente oficial: [Kubernetes — HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
 
 **Errores comunes:** configurar un HPA sin definir `requests.cpu` en el Deployment, dejando sin base de cálculo el porcentaje objetivo; establecer un máximo sin considerar el coste de infraestructura ante un consumo anómalo sostenido (por ejemplo, un bug, no tráfico legítimo).
 
@@ -374,9 +374,9 @@ Agrega un `startupProbe` con `failureThreshold: 30` y `periodSeconds: 1` apuntan
 
 Modifica `app.js` para que `/live` falle permanentemente después de 20 segundos (simulando un bloqueo real irrecuperable), y confirma que en ese caso sí ocurre un reinicio automático, a diferencia del escenario de solo-no-listo del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo un problema requiere reiniciar un contenedor y cuándo solo requiere dejar de enrutarle tráfico temporalmente. El siguiente tema aplica mínimo privilegio a las identidades que operan dentro del clúster. **Evidencia:** entrega los valores de `ready` en ambos momentos y el `restartCount` confirmando cero reinicios durante la transición normal, y el resultado del fallo con la probe mal configurada. Fuente oficial: [Kubernetes — Configure Liveness, Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
+Ya distingues cuándo un problema requiere reiniciar un contenedor y cuándo solo requiere dejar de enrutarle tráfico temporalmente. El siguiente tema aplica mínimo privilegio a las identidades que operan dentro del clúster. Fuente oficial: [Kubernetes — Configure Liveness, Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
 
 **Errores comunes:** apuntar la liveness probe a una ruta que verifica dependencias externas fluctuantes; olvidar un `startupProbe` en aplicaciones con arranque lento, causando reinicios prematuros durante la inicialización legítima.
 
@@ -467,9 +467,9 @@ Crea un segundo Role que permita `create` sobre `pods` (no solo lectura) y un se
 
 Investiga la diferencia entre un `Role` y un `ClusterRole` ejecutando `kubectl auth can-i list nodes --as=system:serviceaccount:default:lector-limitado` (los Nodes no son específicos de ningún namespace) y explica por qué un `Role` namespaced nunca podría otorgar ese permiso, sin importar cómo se configure.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aplicas mínimo privilegio real a las identidades que operan dentro del clúster, verificando con `can-i` antes de asumir qué puede hacer cada una. El siguiente tema centraliza seguridad y observabilidad de la comunicación entre servicios. **Evidencia:** entrega las tres respuestas de `can-i` (antes del binding, después con `list` permitido, y `delete` denegado), y explica el resultado del recurso cambiado en el fallo deliberado. Fuente oficial: [Kubernetes — RBAC](https://kubernetes.io/docs/reference/access-control/rbac/).
+Ya aplicas mínimo privilegio real a las identidades que operan dentro del clúster, verificando con `can-i` antes de asumir qué puede hacer cada una. El siguiente tema centraliza seguridad y observabilidad de la comunicación entre servicios. Fuente oficial: [Kubernetes — RBAC](https://kubernetes.io/docs/reference/access-control/rbac/).
 
 **Errores comunes:** usar la ServiceAccount por defecto con permisos amplios en vez de crear una específica y mínima por carga de trabajo; olvidar que un Role sin un RoleBinding no concede ningún acceso, exactamente igual que una política IAM sin adjuntar.
 
@@ -562,9 +562,9 @@ Investiga (documentando, sin instalarlo completo en este laboratorio) los pasos 
 
 Compara en un documento propio el coste operativo (un componente más que entender y depurar) contra el beneficio (mTLS automático, observabilidad centralizada) para una arquitectura hipotética de 3 microservicios frente a una de 30 microservicios, concluyendo en qué punto la adopción se justifica.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya entiendes el mecanismo estructural de un service mesh (sidecar compartiendo red con la app) y cuándo su complejidad adicional se justifica. El siguiente tema compara dos estrategias de despliegue a nivel de Deployment, más básicas que un service mesh pero igual de decisivas. **Evidencia:** entrega la salida confirmando ambos contenedores en el mismo Pod, y tu conclusión documentada sobre cuándo adoptar un service mesh. Fuente oficial: [Istio — What is Istio](https://istio.io/latest/docs/overview/what-is-istio/).
+Ya entiendes el mecanismo estructural de un service mesh (sidecar compartiendo red con la app) y cuándo su complejidad adicional se justifica. El siguiente tema compara dos estrategias de despliegue a nivel de Deployment, más básicas que un service mesh pero igual de decisivas. Fuente oficial: [Istio — What is Istio](https://istio.io/latest/docs/overview/what-is-istio/).
 
 **Errores comunes:** adoptar un service mesh completo antes de tener suficientes microservicios comunicándose entre sí para justificar su complejidad operativa; asumir que un sidecar se configura solo, sin entender que requiere instalación y configuración explícita del plano de control del mesh.
 
@@ -630,11 +630,9 @@ Mientras el despliegue con `Recreate` está en curso, corré `while true; do cur
 
 Repetí la misma medición de downtime con el Deployment del Módulo 6 (`strategy.type: RollingUpdate`, el default) y compará ambos resultados documentados lado a lado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entregá el despliegue con `Recreate` y la ventana de cero pods del Paso 4, la interrupción real reproducida por confundir ambas estrategias del Paso 5, y la medición de downtime comparada del Paso 6; explicá por qué `Recreate` es la excepción deliberada para casos de incompatibilidad real entre versiones, no una alternativa intercambiable con `RollingUpdate`. Esto cierra el módulo de Kubernetes avanzado; el siguiente módulo cubre infraestructura como código con Terraform. Errores comunes: usar `Recreate` por costumbre o simplicidad percibida en un servicio con tráfico real; no medir el downtime real antes de asumir que una estrategia "debería" comportarse como la otra. Fuentes oficiales: [Kubernetes — Deployment strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Kubernetes — Recreate Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment).
-
-**Evidencia de aprendizaje:** entrega el despliegue con Recreate y la ventana de cero pods, la interrupción real reproducida por confundir ambas estrategias, y la medición de downtime comparada documentada.
 
 **Cuándo no usarlo:** para un servicio con tráfico real y sin una incompatibilidad genuina entre versiones, `Recreate` solo introduce downtime innecesario; `RollingUpdate` (el default) es la elección correcta en casi todos los casos.
 

@@ -115,7 +115,7 @@ Pista: cambiá la postcondición para afirmar `transition(current, requested) ==
 #### Paso 6 · Práctica independiente
 Agregá una quinta transición inválida a mano al diccionario (`ShipmentStatus.DELIVERED: {ShipmentStatus.CREATED}`) y volvé a correr la prueba del Paso 4 — documentá si la prueba generativa la detecta como problema o simplemente la acepta como parte del contrato ahora ampliado (pista: la prueba generativa valida CONSISTENCIA con `ALLOWED_TRANSITIONS`, no que `ALLOWED_TRANSITIONS` en sí sea la regla de negocio correcta).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contraejemplo real encontrado del Paso 5, y la reflexión sobre qué SÍ y qué NO valida una prueba generativa del Paso 6; explicá por qué una prueba que pasa con casos elegidos a mano no es lo mismo que una que busca activamente contraejemplos. Errores comunes: confundir la condición con el contrato completo, escribir una postcondición que solo describe el camino feliz, y asumir que pasar unos pocos casos a mano prueba lo mismo que una búsqueda activa de contraejemplos. Fuente oficial: https://hypothesis.readthedocs.io/en/latest/.
 **¿Por qué es importante?** Porque una precondición y una postcondición escritas explícitamente convierten un contrato implícito en algo que una prueba generativa puede atacar y confirmar, no solo algo que "se entiende" leyendo el código.
 ### Tema 2: Conjuntos, relaciones, funciones e inducción
@@ -204,7 +204,7 @@ Pista: agregá `from domain import ShipmentStatus` e insertá `ALLOWED_TRANSITIO
 #### Paso 6 · Práctica independiente
 Deshacé el Paso 5 y comprobá la propiedad reflexiva: ¿existe algún par `(a, a)`? Documentá por qué permitir `DELIVERED → DELIVERED` (idempotencia) es una decisión de negocio distinta de permitir retroceder de estado, y cómo cambia la relación en cada caso. En el proyecto integrador Fundamentos, usá esta propiedad para justificar qué transiciones del gestor de tareas no deben existir.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la salida de las tres propiedades del Paso 4, la relación rota del Paso 5, y el análisis de reflexividad del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como orden parcial (no equivalencia) es la razón matemática detrás de la regla "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
 
 ### Tema 3: Conteo, grafos y estructuras conectadas
@@ -313,7 +313,7 @@ Pista: agregá `print("con ciclo:", tiene_ciclo({**grafo, "delivered": {"created
 #### Paso 6 · Práctica independiente
 Deshacé el Paso 5 y calculá a mano un orden topológico de los cuatro estados. Luego agregá un nodo `cancelled` con aristas desde `created` y `assigned`, y documentá cuántos órdenes topológicos válidos aparecen y por qué el orden deja de ser único. En el proyecto integrador RutaFlow, aplicá el mismo chequeo al grafo de dependencias de los módulos antes de fijar el orden de build.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la salida del DAG del Paso 4, el ciclo detectado del Paso 5, y el análisis del orden topológico del Paso 6; explicá por qué un ciclo en este grafo sería un defecto de diseño, no solo una curiosidad matemática. Como siguiente paso, aplicá `tiene_ciclo` a las dependencias reales de tu proyecto antes de automatizar el orden de build. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
 ### Tema 4: Probabilidad y evidencia para decisiones técnicas
 
@@ -412,7 +412,7 @@ Pista: repetí la medición con solo 3 repeticiones en vez de 30, y afirmá una 
 #### Paso 6 · Práctica independiente
 Repetí el Paso 4 con 1000 paradas en vez de 200, y compará el p95 de ambos tamaños — documentá si el crecimiento del tiempo es lineal, cuadrático o algo distinto, usando los números reales medidos, no la complejidad teórica O(n²) citada en el docstring de la función.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la distribución con 30 repeticiones del Paso 4, la conclusión frágil con 3 repeticiones del Paso 5, y la comparación de tamaños del Paso 6; explicá por qué el tamaño de muestra y los percentiles importan más que un único número de "tiempo promedio" al decidir cuántas paradas por zona puede manejar RutaFlow. Errores comunes: sacar conclusiones de una muestra demasiado chica, reportar solo el promedio y ocultar la dispersión, y no documentar bajo qué condiciones (tamaño de entrada, hardware, repeticiones) se midió. Fuente oficial: https://docs.python.org/3/library/statistics.html.
 **¿Por qué es importante?** Porque decidir cuántas paradas por zona puede manejar RutaFlow con un solo promedio esconde exactamente la cola larga que determina si el sistema se siente lento en el peor caso, no en el caso típico.
 

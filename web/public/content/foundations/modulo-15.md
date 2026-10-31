@@ -98,8 +98,8 @@ Renombra y divide esta función: `def p(d): return [x for x in d if x[1] > 30 an
 #### Paso 6 · Práctica independiente
 Toma una función larga de uno de tus proyectos anteriores, escribe primero una verificación de su salida actual y luego refactorízala con estas reglas. Documenta cada paso en un commit separado.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque el código se lee muchas más veces de las que se escribe, y la mayor parte del costo de un sistema está en mantenerlo.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque el código se lee muchas más veces de las que se escribe, y la mayor parte del costo de un sistema está en mantenerlo.
 **Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
 **Conceptos clave:** nombres que revelan intención, una sola responsabilidad, nivel de abstracción, número mágico, argumento bandera, refactor con red de seguridad.
 **Cuándo no usarlo:** no renombres de forma masiva código que no entiendes ni tienes cubierto con pruebas: primero agrega la verificación, luego refactoriza en pasos pequeños.
@@ -200,8 +200,8 @@ Agrega la excepción `EnvioCancelado` para las guías canceladas y manéjala en 
 #### Paso 6 · Práctica independiente
 Busca en un proyecto tuyo tres comentarios que expliquen *qué* hace el código y reemplázalos por mejores nombres o funciones; conserva solo los que expliquen *por qué*.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores silenciosos son de los más caros, y los comentarios desactualizados engañan más que la ausencia de comentarios.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque los errores silenciosos son de los más caros, y los comentarios desactualizados engañan más que la ausencia de comentarios.
 **Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
 **Conceptos clave:** código de error, excepción con nombre, camino feliz, `raise from`, comentario de intención, comentario redundante, comentario desactualizado.
 **Cuándo no usarlo:** no uses excepciones para el flujo normal (por ejemplo, para salir de un bucle). En sistemas donde el error es un resultado esperado y frecuente, un tipo resultado explícito también es válido.
@@ -302,8 +302,8 @@ Agrega a `Pedido` el método `etiqueta()` que devuelva `"BOG-Chapinero"` (o `"SI
 #### Paso 6 · Práctica independiente
 Revisa un proyecto tuyo con `grep -rE "\.\w+\.\w+\.\w+"` y clasifica cada cadena encontrada: ¿es navegación por una estructura de datos (aceptable) o por objetos con comportamiento (a corregir)?
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque el acoplamiento a la estructura interna es lo que hace que un cambio pequeño en el modelo rompa medio sistema.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque el acoplamiento a la estructura interna es lo que hace que un cambio pequeño en el modelo rompa medio sistema.
 **Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
 **Conceptos clave:** objeto, estructura de datos, encapsulamiento, ley de Demeter, "dile, no le preguntes", choque de trenes, acoplamiento.
 **Cuándo no usarlo:** en DTOs, JSON o resultados de consultas, que son estructuras de datos puras, navegar campos anidados es normal: Demeter aplica a objetos con comportamiento.
@@ -400,8 +400,8 @@ Agrega la regla "más de 30 kg no se aceptan" escribiendo primero una prueba con
 #### Paso 6 · Práctica independiente
 Ejecuta tus pruebas en orden aleatorio (por ejemplo, con `pytest -p random_order`) y corrige cualquier prueba que dependa de otra.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque solo una suite confiable permite refactorizar sin miedo, que es la base de todo lo visto en este módulo.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque solo una suite confiable permite refactorizar sin miedo, que es la base de todo lo visto en este módulo.
 **Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
 **Conceptos clave:** F.I.R.S.T., un concepto por prueba, nombre descriptivo, prueba no determinista, independencia, `unittest`.
 **Cuándo no usarlo:** las pruebas de integración y extremo a extremo no pueden ser tan rápidas: sepáralas de las unitarias y ejecútalas en otra etapa del pipeline.

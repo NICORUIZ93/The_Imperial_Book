@@ -165,7 +165,7 @@
     },
     {
       "path": "docs/METODOLOGIA-DE-APRENDIZAJE.md",
-      "lines": 57,
+      "lines": 45,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -174,7 +174,6 @@
         "## Ciclo de cada cap\u00edtulo",
         "## Tama\u00f1o de las experiencias",
         "## Regla para mostrar soluciones",
-        "## Evidencia de aprendizaje",
         "## Aplicaci\u00f3n en el lector",
         "## Mantenimiento tecnol\u00f3gico",
         "## Calidad del c\u00f3digo en toda la academia"
@@ -182,7 +181,7 @@
     },
     {
       "path": "docs/PLAN-TOTAL-DE-CAMBIO.md",
-      "lines": 245,
+      "lines": 365,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -609,7 +608,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1883,
+      "lines": 1855,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -641,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12476,
+      "lines": 12478,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -682,7 +681,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 53,
+      "lines": 48,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -696,7 +695,7 @@
     },
     {
       "path": "docs/editorial-contract.md",
-      "lines": 51,
+      "lines": 50,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -796,7 +795,7 @@
     },
     {
       "path": "docs/lesson-substance-baseline.json",
-      "lines": 865,
+      "lines": 825,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -804,7 +803,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9973,
+      "lines": 9940,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -934,12 +933,13 @@
     },
     {
       "path": "docs/quality-metrics.md",
-      "lines": 35,
+      "lines": 46,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00e9tricas de calidad editorial",
+        "## Muestra de profundidad",
         "## Cobertura de pruebas de la aplicaci\u00f3n",
         "## C\u00f3mo usar los resultados"
       ]
@@ -1001,7 +1001,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28915,
+      "lines": 27801,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1009,7 +1009,7 @@
     },
     {
       "path": "docs/seven-step-methodology.md",
-      "lines": 31,
+      "lines": 30,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -5842,7 +5842,7 @@
     },
     {
       "path": "scripts/audit_lesson_substance.py",
-      "lines": 347,
+      "lines": 346,
       "kind": "automation-script",
       "symbols": [
         "norm",
@@ -5872,7 +5872,7 @@
     },
     {
       "path": "scripts/audit_seven_step_methodology.py",
-      "lines": 181,
+      "lines": 174,
       "kind": "automation-script",
       "symbols": [
         "matches",
@@ -6052,7 +6052,7 @@
     },
     {
       "path": "scripts/clean_legacy_tails.py",
-      "lines": 184,
+      "lines": 182,
       "kind": "automation-script",
       "symbols": [
         "legacy_candidates",
@@ -6130,7 +6130,7 @@
     },
     {
       "path": "scripts/merge_duplicate_sections.py",
-      "lines": 179,
+      "lines": 178,
       "kind": "automation-script",
       "symbols": [
         "topic_slice",
@@ -6168,27 +6168,6 @@
         "hashlib",
         "json",
         "pathlib"
-      ],
-      "headings": []
-    },
-    {
-      "path": "scripts/relocate_evidence_to_close.py",
-      "lines": 145,
-      "kind": "automation-script",
-      "symbols": [
-        "topic_slice",
-        "relocate",
-        "guard",
-        "improve_topic",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "argparse",
-        "re",
-        "sys",
-        "pathlib",
-        "audit_lesson_substance"
       ],
       "headings": []
     },
@@ -6551,7 +6530,7 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 550,
+      "lines": 549,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6567,7 +6546,7 @@
         "# (genera el proyecto \"Empty Activity\" con Android Studio dentro de esta carpeta)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -6587,7 +6566,7 @@
         "# compila con Gradle el archivo Kotlin generado a continuaci\u00f3n",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: ViewModel sobrevive a la rotaci\u00f3n"
       ]
     },
@@ -6609,7 +6588,7 @@
         "# confirma en ejecuci\u00f3n real la diferencia de identidad entre lambdas",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -6628,7 +6607,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: App Bundle vs APK",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -6650,13 +6629,13 @@
         "# Este script python3 verifica que la integraci\u00f3n conecta las capas en el orden correcto",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Inyecci\u00f3n de dependencias en toda la app"
       ]
     },
     {
       "path": "web/public/content/android/modulo-13.md",
-      "lines": 612,
+      "lines": 626,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6671,7 +6650,7 @@
         "# compila con Gradle el archivo Kotlin generado a continuaci\u00f3n",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Proteger datos exige conocer copias y ciclo de vida"
       ]
     },
@@ -6691,7 +6670,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Finders, assertions y actions navegan el \u00e1rbol sem\u00e1ntico",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -6714,7 +6693,7 @@
         "# paquete com.rutaflow.repartidor, guardado dentro de esta carpeta",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -6734,7 +6713,7 @@
         "# compila con Gradle el archivo Kotlin generado a continuaci\u00f3n",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: State hoisting"
       ]
     },
@@ -6755,7 +6734,7 @@
         "# compila con Gradle el archivo Kotlin generado a continuaci\u00f3n",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Argumentos tipados y deep links"
       ]
     },
@@ -6776,7 +6755,7 @@
         "# compila con Gradle el archivo Kotlin generado a continuaci\u00f3n",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: collectAsStateWithLifecycle y UDF"
       ]
     },
@@ -6797,7 +6776,7 @@
         "# Script en python3 que levanta un servidor HTTP real de prueba en el puerto 8000",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Manejo de errores HTTP"
       ]
     },
@@ -6819,7 +6798,7 @@
         "# el esquema equivalente que Room generar\u00eda a partir de la @Entity Tarea",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -6839,7 +6818,7 @@
         "# Este script python3 modela el mismo grafo de dependencias para verificar el principio",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: @Provides y @Binds"
       ]
     },
@@ -6860,7 +6839,7 @@
         "# Este script python3 modela la persistencia de la solicitud de trabajo en un archivo real",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Constraints y trabajo peri\u00f3dico"
       ]
     },
@@ -6881,7 +6860,7 @@
         "# Este script python3 (unittest) ejecuta un test real contra un repositorio fake",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Compose UI Testing"
       ]
     },
@@ -6908,7 +6887,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-1.md",
-      "lines": 1018,
+      "lines": 1017,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6922,7 +6901,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Control de flujo nativo \u2014 @if, @for, @switch",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -6943,7 +6922,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Angular Testing Library",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -6964,7 +6943,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Hidrataci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -6985,7 +6964,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Leer la gu\u00eda de actualizaci\u00f3n antes de modificar archivos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7006,7 +6985,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Integrando routing, store y formularios",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7027,7 +7006,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: La seguridad autom\u00e1tica tiene fronteras expl\u00edcitas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7048,7 +7027,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Pruebas de Signals",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7069,7 +7048,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Signals, estilos nativos compilados y el preset de Tailwind",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7090,7 +7069,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mutaci\u00f3n frente a actualizaci\u00f3n inmutable",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7112,7 +7091,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: inject() frente a inyecci\u00f3n por constructor"
       ]
     },
@@ -7132,7 +7111,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Guards funcionales",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7153,7 +7132,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Validadores as\u00edncronos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7174,7 +7153,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Operadores clave \u2014 debounceTime, distinctUntilChanged, switchMap, combineLatest",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7195,7 +7174,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Interceptores funcionales",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7216,7 +7195,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Organizaci\u00f3n por feature",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7237,7 +7216,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: NgRx \u2014 actions, reducers y selectors",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7259,7 +7238,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Fundamentos de redes \u2014 direcciones IP, puertos, HTTP y APIs"
       ]
     },
@@ -7279,7 +7258,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Im\u00e1genes y capas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7300,7 +7279,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: KMS y envelope encryption",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7321,7 +7300,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: EventBridge: bus de eventos con filtrado declarativo",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7342,7 +7321,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Metric filters y alarmas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7363,7 +7342,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Snapshots y restore",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7384,7 +7363,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Task Definition y ECS Cluster",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7405,7 +7384,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Change sets",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7426,7 +7405,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Choice state, Retry y Catch",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7447,7 +7426,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: MSK (Kafka gestionado) y consumer groups",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7468,7 +7447,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Access Token, ID Token y Refresh Token",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7489,14 +7468,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Glue Crawler y Athena",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-2.md",
-      "lines": 493,
+      "lines": 488,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7533,7 +7512,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -7553,7 +7532,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: AMIs, grupos de seguridad y claves SSH"
       ]
     },
@@ -7574,7 +7553,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: ACM \u2014 certificados TLS con criptograf\u00eda real"
       ]
     },
@@ -7595,7 +7574,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Arquitectura de ElastiCache en Floci \u2014 contenedores reales, no simulaci\u00f3n"
       ]
     },
@@ -7616,7 +7595,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: buildspec.yml \u2014 fases y artefactos"
       ]
     },
@@ -7637,7 +7616,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: AppConfig \u2014 desplegar configuraci\u00f3n sin redeployar c\u00f3digo"
       ]
     },
@@ -7658,7 +7637,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Firehose vs Kinesis Data Streams \u2014 qui\u00e9n consume los datos"
       ]
     },
@@ -7679,7 +7658,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Fuentes de datos y resolvers"
       ]
     },
@@ -7721,13 +7700,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Pricing \u2014 cat\u00e1logo de tarifas de referencia"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-3.md",
-      "lines": 330,
+      "lines": 328,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7741,7 +7720,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Ciclo de vida de un mensaje",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7763,7 +7742,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Ciclo de vida del servidor y modelo de usuarios"
       ]
     },
@@ -7783,7 +7762,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7804,7 +7783,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Una landing zone convierte gobierno en una base repetible",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7825,14 +7804,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Kubernetes administrado, ECS y Service Mesh",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-34.md",
-      "lines": 783,
+      "lines": 781,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7848,12 +7827,12 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-4.md",
-      "lines": 727,
+      "lines": 726,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7869,12 +7848,12 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/cloud/modulo-5.md",
-      "lines": 858,
+      "lines": 855,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7895,7 +7874,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-6.md",
-      "lines": 405,
+      "lines": 402,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7909,7 +7888,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Recursos, m\u00e9todos y stages",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7930,7 +7909,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Modelo de responsabilidad compartida",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7951,7 +7930,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: floci-gcp \u2014 Cloud Storage, Pub/Sub, Firestore, Cloud Functions",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -7972,7 +7951,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8014,7 +7993,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Rebase interactivo vs merge",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8035,7 +8014,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Pipeline ELK/EFK",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8056,7 +8035,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Integraci\u00f3n en el pipeline",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8077,14 +8056,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Gesti\u00f3n de secretos cloud-native",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/devops/modulo-13.md",
-      "lines": 290,
+      "lines": 358,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8098,14 +8077,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Uniendo cada m\u00f3dulo del track en un solo flujo",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 458,
+      "lines": 457,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8119,14 +8098,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Una alerta debe conducir a una acci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/devops/modulo-15.md",
-      "lines": 458,
+      "lines": 452,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8140,7 +8119,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Kubernetes extensible y Helm avanzado",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8161,14 +8140,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Scripts y assertions \u2014 pruebas automatizadas sobre datos reales",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/devops/modulo-17.md",
-      "lines": 690,
+      "lines": 682,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8182,7 +8161,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Datos que crecen: \u00edndices, r\u00e9plicas, sharding y la elecci\u00f3n SQL/NoSQL",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8224,7 +8203,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Capas e invalidaci\u00f3n de cach\u00e9",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8245,7 +8224,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Variables de entorno y .env",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8266,14 +8245,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Cach\u00e9 de dependencias en CI",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/devops/modulo-5.md",
-      "lines": 728,
+      "lines": 739,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8287,7 +8266,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Canary releases",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8308,14 +8287,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Service (ClusterIP, NodePort, LoadBalancer)",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/devops/modulo-7.md",
-      "lines": 674,
+      "lines": 672,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8329,7 +8308,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Ingress Controllers y reglas de enrutamiento",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8350,7 +8329,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: State remoto y locking",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8371,7 +8350,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: PromQL esencial",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8398,7 +8377,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-0.md",
-      "lines": 486,
+      "lines": 482,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8413,13 +8392,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Clases y mixins"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-1.md",
-      "lines": 408,
+      "lines": 405,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8433,14 +8412,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Layout con Row, Column y Stack, y ciclo de vida",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-10.md",
-      "lines": 247,
+      "lines": 241,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8454,14 +8433,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Adaptaci\u00f3n Material vs Cupertino",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-11.md",
-      "lines": 402,
+      "lines": 457,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8475,14 +8454,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Iconos y splash screens",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-12.md",
-      "lines": 291,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8496,14 +8475,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Uniendo los m\u00f3dulos del track",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-13.md",
-      "lines": 419,
+      "lines": 414,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8517,7 +8496,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Los secretos no pertenecen al binario",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8539,13 +8518,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Google Maps y localizaci\u00f3n en tiempo real"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-15.md",
-      "lines": 395,
+      "lines": 385,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8559,14 +8538,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: pumpAndSettle, golden e integration tests",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-2.md",
-      "lines": 274,
+      "lines": 268,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8580,14 +8559,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: C\u00f3mo Flutter calcula tama\u00f1os",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-3.md",
-      "lines": 258,
+      "lines": 252,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8601,14 +8580,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Guards y deep linking",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-4.md",
-      "lines": 708,
+      "lines": 703,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8622,14 +8601,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Riverpod",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-5.md",
-      "lines": 332,
+      "lines": 328,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8643,14 +8622,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: json_serializable",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-6.md",
-      "lines": 376,
+      "lines": 370,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8664,14 +8643,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: sqflite vs Hive",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-7.md",
-      "lines": 461,
+      "lines": 453,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8685,14 +8664,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Plugins federados",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-8.md",
-      "lines": 501,
+      "lines": 495,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8706,14 +8685,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Flutter DevTools y detecci\u00f3n de jank",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/flutter/modulo-9.md",
-      "lines": 285,
+      "lines": 279,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8727,7 +8706,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mocking con mocktail",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8755,7 +8734,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-1.md",
-      "lines": 650,
+      "lines": 646,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8770,13 +8749,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Variables, tipos, expresiones y cambios de estado"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 728,
+      "lines": 742,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8792,7 +8771,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -8813,7 +8792,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -8833,7 +8812,7 @@
         "# Trapecios: aproximan el \u00e1rea entre dos muestras.",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Circuitos DC y AC: Kirchhoff, Th\u00e9venin y Norton"
       ]
     },
@@ -8853,7 +8832,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Algoritmos codiciosos y \u00e1rbol de expansi\u00f3n m\u00ednima",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8874,7 +8853,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: State: un objeto que cambia de comportamiento seg\u00fan su estado",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -8897,12 +8876,12 @@
         "# DESPU\u00c9S: nombres que revelan intenci\u00f3n y funciones peque\u00f1as de un solo nivel de abstracci\u00f3n",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-2.md",
-      "lines": 938,
+      "lines": 934,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8917,13 +8896,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Pilas, colas y abstracciones de comportamiento"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-3.md",
-      "lines": 713,
+      "lines": 709,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8938,13 +8917,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: HTTP como contrato observable"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-4.md",
-      "lines": 1013,
+      "lines": 1006,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8959,13 +8938,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: SQL para definir, escribir, consultar y relacionar"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-5.md",
-      "lines": 565,
+      "lines": 555,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8980,13 +8959,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Pruebas con prop\u00f3sito y niveles adecuados"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-6.md",
-      "lines": 533,
+      "lines": 1688,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9000,7 +8979,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Identidad, contrase\u00f1as, sesiones y autorizaci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9021,7 +9000,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Arquitectura guiada por atributos de calidad",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9042,7 +9021,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Memoria y concurrencia sin magia",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9063,14 +9042,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Conjuntos, relaciones, funciones e inducci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-0.md",
-      "lines": 529,
+      "lines": 524,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9091,7 +9070,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-1.md",
-      "lines": 431,
+      "lines": 428,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9107,12 +9086,12 @@
         "# Pega el c\u00f3digo anterior en ContentView.swift y a\u00f1ade #Preview { ListaEnvios() }",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u00b7 Fallo deliberado",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-10.md",
-      "lines": 405,
+      "lines": 399,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9126,14 +9105,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Accesibilidad con VoiceOver",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-11.md",
-      "lines": 237,
+      "lines": 233,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9147,14 +9126,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Archivar, subir y TestFlight",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-12.md",
-      "lines": 274,
+      "lines": 268,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9168,14 +9147,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Sincronizaci\u00f3n entre red y persistencia local",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-13.md",
-      "lines": 640,
+      "lines": 630,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9189,14 +9168,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Proteger datos es controlar todas sus copias",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-14.md",
-      "lines": 472,
+      "lines": 465,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9210,14 +9189,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: ViewInspector con criterio",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 319,
+      "lines": 314,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9233,12 +9212,12 @@
         "# Genera un paquete Swift ejecutable (no requiere plantilla de Xcode)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-3.md",
-      "lines": 244,
+      "lines": 240,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9252,14 +9231,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Sheets, full screen covers y TabView",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 324,
+      "lines": 319,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9273,14 +9252,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Actors para estado mutable seguro",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-5.md",
-      "lines": 279,
+      "lines": 275,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9294,14 +9273,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Errores tipados",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-6.md",
-      "lines": 263,
+      "lines": 259,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9315,14 +9294,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: @Query y operaciones de escritura",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-7.md",
-      "lines": 235,
+      "lines": 232,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9336,14 +9315,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Operadores: debounce y combineLatest",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-8.md",
-      "lines": 267,
+      "lines": 264,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9357,14 +9336,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Capas del proyecto e inyecci\u00f3n por inicializador",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-9.md",
-      "lines": 287,
+      "lines": 283,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9378,14 +9357,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Testing de c\u00f3digo async",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 618,
+      "lines": 608,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9400,13 +9379,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: public static void main \u2014 qu\u00e9 significa cada palabra"
       ]
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 301,
+      "lines": 296,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9420,14 +9399,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Herencia y sobreescritura",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 229,
+      "lines": 226,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9443,12 +9422,12 @@
         "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 312,
+      "lines": 308,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9464,12 +9443,12 @@
         "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 566,
+      "lines": 562,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9485,12 +9464,12 @@
         "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 190,
+      "lines": 186,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9504,14 +9483,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Integrando concurrencia, modelado y testing",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 419,
+      "lines": 415,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9527,12 +9506,12 @@
         "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 392,
+      "lines": 386,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9546,14 +9525,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "#### Aplicaci\u00f3n pr\u00e1ctica",
         "### Tema 2: Gradle y builds reproducibles"
       ]
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 195,
+      "lines": 193,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9574,7 +9553,7 @@
     },
     {
       "path": "web/public/content/java/modulo-17.md",
-      "lines": 155,
+      "lines": 153,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9595,7 +9574,7 @@
     },
     {
       "path": "web/public/content/java/modulo-18.md",
-      "lines": 158,
+      "lines": 156,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9630,14 +9609,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Expresiones regulares con Pattern y Matcher",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-2.md",
-      "lines": 215,
+      "lines": 212,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9651,7 +9630,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Gen\u00e9ricos, wildcards y type erasure",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9672,14 +9651,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-3.md",
-      "lines": 213,
+      "lines": 210,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9693,14 +9672,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: try-with-resources",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-4.md",
-      "lines": 278,
+      "lines": 272,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9714,14 +9693,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Optional \u2014 evitar null expl\u00edcitamente",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 485,
+      "lines": 480,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9735,14 +9714,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: CompletableFuture",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-6.md",
-      "lines": 253,
+      "lines": 249,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9756,14 +9735,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Serializaci\u00f3n con Jackson",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 303,
+      "lines": 299,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9777,14 +9756,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: sealed \u2014 jerarqu\u00edas cerradas y exhaustividad",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/java/modulo-8.md",
-      "lines": 281,
+      "lines": 277,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9800,12 +9779,12 @@
         "# Gradle (equivalente)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/java/modulo-9.md",
-      "lines": 217,
+      "lines": 214,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9819,14 +9798,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mockito \u2014 aislar dependencias",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/javascript/modulo-0.md",
-      "lines": 399,
+      "lines": 401,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9841,7 +9820,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Tipos primitivos y `typeof`"
       ]
     },
@@ -9861,7 +9840,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Par\u00e1metros por defecto y rest/spread",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9882,7 +9861,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Memoizaci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9903,7 +9882,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Generics",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9924,7 +9903,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Estado de aplicaci\u00f3n con un store propio",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9945,7 +9924,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Memoria administrada no significa memoria infinita",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9966,7 +9945,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Workers y ejecuci\u00f3n fuera del hilo principal",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -9987,7 +9966,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Hoisting y Temporal Dead Zone",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10008,7 +9987,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: class, extends y super",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10029,7 +10008,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Set y Map frente a Array y Object",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10050,7 +10029,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Promesas",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10071,7 +10050,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: try/catch en flujos as\u00edncronos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10092,7 +10071,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Tree-shaking y code-splitting",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10113,7 +10092,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Delegaci\u00f3n de eventos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10134,7 +10113,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mocks, spies y fakes",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10178,12 +10157,12 @@
         "# ejecuta el test Kotlin del m\u00f3dulo compartido",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 274,
+      "lines": 271,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10197,14 +10176,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Fastlane",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "lines": 264,
+      "lines": 261,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10218,14 +10197,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Sincronizaci\u00f3n de datos remotos con cach\u00e9 local",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-12.md",
-      "lines": 446,
+      "lines": 445,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10239,14 +10218,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-13.md",
-      "lines": 342,
+      "lines": 336,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10260,7 +10239,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Interop con C",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10283,7 +10262,7 @@
         "# ejecuta el test Kotlin del m\u00f3dulo compartido, con tiempo virtual",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -10303,7 +10282,7 @@
         "# crea la estructura de source sets y compila el m\u00f3dulo compartido con Gradle",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: expect/actual"
       ]
     },
@@ -10325,7 +10304,7 @@
         "# ejecuta el test Kotlin del m\u00f3dulo compartido",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -10346,7 +10325,7 @@
         "# ejecuta el test Kotlin del m\u00f3dulo compartido contra el HttpClient real",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -10367,7 +10346,7 @@
         "# Gradle falla en generaci\u00f3n de c\u00f3digo, antes de compilar ning\u00fan test",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -10387,13 +10366,13 @@
         "# Gradle ejecuta la composici\u00f3n real (misma funci\u00f3n compartida) sobre Skiko en JVM",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Estado y recomposici\u00f3n \u2014 mutableStateOf y por qu\u00e9 la UI se redibuja"
       ]
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-8.md",
-      "lines": 290,
+      "lines": 352,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10407,14 +10386,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mapeo de tipos Kotlin \u2194 Swift",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-9.md",
-      "lines": 260,
+      "lines": 256,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10428,7 +10407,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Fakes en vez de mocks",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -10554,14 +10533,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Un contrato HTTP es comportamiento, no solo documentaci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/node/modulo-14.md",
-      "lines": 486,
+      "lines": 474,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10575,14 +10554,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: GraphQL avanzado y Federation",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/node/modulo-2.md",
-      "lines": 538,
+      "lines": 536,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10624,7 +10603,7 @@
     },
     {
       "path": "web/public/content/node/modulo-4.md",
-      "lines": 691,
+      "lines": 689,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10645,7 +10624,7 @@
     },
     {
       "path": "web/public/content/node/modulo-5.md",
-      "lines": 636,
+      "lines": 634,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10666,7 +10645,7 @@
     },
     {
       "path": "web/public/content/node/modulo-6.md",
-      "lines": 652,
+      "lines": 650,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10687,7 +10666,7 @@
     },
     {
       "path": "web/public/content/node/modulo-7.md",
-      "lines": 588,
+      "lines": 586,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10708,7 +10687,7 @@
     },
     {
       "path": "web/public/content/node/modulo-8.md",
-      "lines": 470,
+      "lines": 468,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10750,7 +10729,7 @@
     },
     {
       "path": "web/public/content/react/modulo-0.md",
-      "lines": 468,
+      "lines": 461,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10766,12 +10745,12 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
       "path": "web/public/content/react/modulo-1.md",
-      "lines": 413,
+      "lines": 408,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10786,13 +10765,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Render frente a commit"
       ]
     },
     {
       "path": "web/public/content/react/modulo-10.md",
-      "lines": 318,
+      "lines": 312,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10806,14 +10785,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: use client para interactividad",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-11.md",
-      "lines": 308,
+      "lines": 303,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10827,14 +10806,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Hooks gen\u00e9ricos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-12.md",
-      "lines": 290,
+      "lines": 285,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10848,14 +10827,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Integrando rutas, TanStack Query y Zustand",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-13.md",
-      "lines": 481,
+      "lines": 474,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10869,14 +10848,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: La composici\u00f3n visual debe conservar sem\u00e1ntica y foco",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-14.md",
-      "lines": 489,
+      "lines": 479,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10890,14 +10869,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Server Actions y seguridad",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-2.md",
-      "lines": 541,
+      "lines": 536,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10911,14 +10890,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: useRef \u2014 valores mutables sin re-render",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-3.md",
-      "lines": 263,
+      "lines": 258,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10932,14 +10911,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Validaci\u00f3n con zod y formularios multi-paso",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-4.md",
-      "lines": 295,
+      "lines": 290,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10953,14 +10932,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Cu\u00e1ndo Context es suficiente y cu\u00e1ndo no",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-5.md",
-      "lines": 281,
+      "lines": 277,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10974,14 +10953,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Loaders \u2014 datos antes de renderizar",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-6.md",
-      "lines": 359,
+      "lines": 356,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10995,14 +10974,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mutations e invalidaci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-7.md",
-      "lines": 355,
+      "lines": 348,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11016,14 +10995,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Redux Toolkit \u2014 slices y ceremonia",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-8.md",
-      "lines": 267,
+      "lines": 262,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11037,14 +11016,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Mock Service Worker (MSW)",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/react/modulo-9.md",
-      "lines": 409,
+      "lines": 401,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11058,7 +11037,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: React.memo con criterio",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11100,7 +11079,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto",
+        "#### Paso 7 \u00b7 Cierre y proyecto",
         "### Tema 2: Geograf\u00eda con precisi\u00f3n \u00fatil",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11121,7 +11100,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto",
+        "#### Paso 7 \u00b7 Cierre y proyecto",
         "### Tema 2: Casos de uso y transacciones",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11142,7 +11121,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto",
+        "#### Paso 7 \u00b7 Cierre y proyecto",
         "### Tema 2: Mapas operativos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11163,14 +11142,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto",
+        "#### Paso 7 \u00b7 Cierre y proyecto",
         "### Tema 2: GPS, permisos y bater\u00eda",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/rutaflow/modulo-5.md",
-      "lines": 653,
+      "lines": 672,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11186,12 +11165,12 @@
         "# que ya incluye congestion conocida en ese tramo y horario.",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto"
+        "#### Paso 7 \u00b7 Cierre y proyecto"
       ]
     },
     {
       "path": "web/public/content/rutaflow/modulo-6.md",
-      "lines": 490,
+      "lines": 505,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11205,7 +11184,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto",
+        "#### Paso 7 \u00b7 Cierre y proyecto",
         "### Tema 2: Recaudo, liquidaci\u00f3n y conciliaci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11227,7 +11206,7 @@
         "# main.tf \u2014 infraestructura m\u00ednima de api-envios en Kubernetes",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre, evidencia y proyecto",
+        "#### Paso 7 \u00b7 Cierre y proyecto",
         "### Tema 2: SLO y respuesta a incidentes"
       ]
     },
@@ -11269,13 +11248,13 @@
         "# descarga y arranca con Maven el proyecto generado por Spring Initializr",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: application.yml vs application.properties"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1370,
+      "lines": 1369,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11291,7 +11270,7 @@
         "# src/main/resources/config/servicio-pedidos.yml",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -11310,7 +11289,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: GraalVM native image",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11352,7 +11331,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Recuperaci\u00f3n implica duplicaci\u00f3n segura",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11373,14 +11352,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: MySQL y datos espaciales",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1148,
+      "lines": 1163,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11394,14 +11373,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Contenedores Testcontainers reutilizados entre clases",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-16.md",
-      "lines": 153,
+      "lines": 150,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11416,13 +11395,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 183,
+      "lines": 180,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11437,13 +11416,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 164,
+      "lines": 161,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11458,13 +11437,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 192,
+      "lines": 191,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11480,7 +11459,7 @@
         "#### Construye el writer y el step",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -11500,13 +11479,13 @@
         "# descarga el proyecto y ejecuta las pruebas Java con Maven",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Validaci\u00f3n con Bean Validation y ResponseEntity"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 676,
+      "lines": 674,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11521,13 +11500,13 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 529,
+      "lines": 526,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11542,7 +11521,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia"
       ]
     },
@@ -11562,7 +11541,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11583,14 +11562,14 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: El problema N+1 y su correcci\u00f3n",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 870,
+      "lines": 869,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11604,7 +11583,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11626,7 +11605,7 @@
         "# src/main/resources/application.yml",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Fallar r\u00e1pido al arranque"
       ]
     },
@@ -11646,7 +11625,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: @DataJpaTest con Testcontainers",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11667,7 +11646,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: M\u00e9tricas de negocio con Micrometer",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -11688,7 +11667,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
+        "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Dead-letter queue",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
@@ -12757,7 +12736,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 547,
+      "lines": 535,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12765,7 +12744,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1163,
+      "lines": 1104,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12985,7 +12964,7 @@
     },
     {
       "path": "web/src/app/progress.service.spec.ts",
-      "lines": 99,
+      "lines": 64,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12996,7 +12975,7 @@
     },
     {
       "path": "web/src/app/progress.service.ts",
-      "lines": 244,
+      "lines": 184,
       "kind": "angular-app",
       "symbols": [
         "ProgressService",

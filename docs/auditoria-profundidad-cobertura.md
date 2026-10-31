@@ -21,8 +21,8 @@ cobertura vigente. La crítica de que los temas se sienten básicos y superficia
 es válida: contar comandos, código o encabezados no mide si una persona puede
 construir, explicar, depurar y extender un sistema real.
 
-La revisión actual registra señales de sustancia en 283/1.100 temas, bloques
-repetidos en 182, andamiaje genérico en 109 y secciones heredadas en 184/245
+La revisión actual registra señales de sustancia en 273/1.100 temas, bloques
+repetidos en 172, andamiaje genérico en 99 y secciones heredadas en 183/245
 módulos. Son señales heurísticas, no veredictos tema por tema. La revisión
 pedagógica humana sigue pendiente para todos los temas y solo 13 de 14
 laboratorios nuevos seleccionados figuran como comprobados con límites. Por
@@ -229,6 +229,6 @@ que la lección ya enseñaba, sin inventar ejemplos ni duplicar demos entre tema
 `audit_seven_step_methodology.py --check`, `build_editorial_backlog.py --check` y
 `audit_topic_learning_quality.py --check --require-practicable --min-practicable 1007`
 pasan en verde. La validación estructural de `validate.sh` (tracks, módulos, temas,
-diagramas) también. **Sigue siendo necesaria una revisión humana**: que los 17 marcadores
+diagramas) también. **Sigue siendo necesaria una revisión humana**: que los 16 marcadores
 estén presentes no certifica que cada paso enseñe perfectamente; certifica que la
 estructura de siete pasos está completa y es reproducible.

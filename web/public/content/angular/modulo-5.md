@@ -138,9 +138,9 @@ email: new FormControl('', { nonNullable: true, validators: [Validators.required
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `FormGroup` con dos controles validados y un test directo (sin `TestBed`) que confirme el error específico de cada validador. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un `FormGroup` evaluado directamente sin renderizar HTML, que cada validador reporta su clave de error específica. El siguiente tema confirma con `fakeAsync`/`tick` el estado `PENDING` real que Angular gestiona mientras un validador asíncrono resuelve. **Evidencia:** entrega el resultado de los 3 tests en verde, y el resultado del fallo deliberado (`errors?.['email']` como `undefined`). Fuentes oficiales: [Angular — Reactive forms](https://angular.dev/guide/forms/reactive-forms).
+Ya confirmas, con un `FormGroup` evaluado directamente sin renderizar HTML, que cada validador reporta su clave de error específica. El siguiente tema confirma con `fakeAsync`/`tick` el estado `PENDING` real que Angular gestiona mientras un validador asíncrono resuelve. Fuentes oficiales: [Angular — Reactive forms](https://angular.dev/guide/forms/reactive-forms).
 
 **Errores comunes:** testear un `FormGroup` únicamente a través de renderizar su template y simular eventos del DOM, perdiendo la ventaja real de una prueba unitaria directa y más rápida; mostrar un único mensaje de error genérico en vez de consultar la clave específica del validador que falló.
 
@@ -292,9 +292,9 @@ expect(control.status).toBe('INVALID');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `AsyncValidatorFn` y un test `fakeAsync` que confirme el estado `PENDING` inmediato y la resolución tras `tick`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `fakeAsync`/`tick`, el ciclo completo de estado `VALID → PENDING → INVALID/VALID` que Angular gestiona automáticamente para validadores asíncronos. El siguiente tema confirma con `push`/`removeAt` reales que un `FormArray` crece y decrece dinámicamente, con validación independiente por control. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado incorrecto (`PENDING` en vez de `INVALID`) que produce el fallo deliberado. Fuentes oficiales: [Angular — Async validators](https://angular.dev/guide/forms/reactive-forms#async-validators).
+Ya confirmas, con `fakeAsync`/`tick`, el ciclo completo de estado `VALID → PENDING → INVALID/VALID` que Angular gestiona automáticamente para validadores asíncronos. El siguiente tema confirma con `push`/`removeAt` reales que un `FormArray` crece y decrece dinámicamente, con validación independiente por control. Fuentes oficiales: [Angular — Async validators](https://angular.dev/guide/forms/reactive-forms#async-validators).
 
 **Errores comunes:** verificar solo el resultado final de una validación asíncrona sin confirmar el estado `PENDING` intermedio, dejando sin probar el indicador visual de carga; usar `setTimeout` real en un test en vez de `fakeAsync`/`tick`, haciendo la prueba lenta e indeterminista.
 
@@ -431,9 +431,9 @@ form.controls.telefonos.____(new FormControl('', { nonNullable: true, validators
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `FormArray` con `push` y `removeAt`, y un test que confirme la validación independiente de cada control. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `push`/`removeAt` reales, que un `FormArray` gestiona un número dinámico de controles con validación completamente independiente entre ellos. El siguiente y último tema confirma con `ngModel` real en un componente renderizado que template-driven forms sigue siendo válido para casos triviales, y qué error real de compilación produce olvidar `FormsModule`. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado incorrecto (`length` sin cambiar) que produce el fallo deliberado. Fuentes oficiales: [Angular — FormArray](https://angular.dev/api/forms/FormArray).
+Ya confirmas, con `push`/`removeAt` reales, que un `FormArray` gestiona un número dinámico de controles con validación completamente independiente entre ellos. El siguiente y último tema confirma con `ngModel` real en un componente renderizado que template-driven forms sigue siendo válido para casos triviales, y qué error real de compilación produce olvidar `FormsModule`. Fuentes oficiales: [Angular — FormArray](https://angular.dev/api/forms/FormArray).
 
 **Errores comunes:** asumir que `removeAt` con un índice inválido lanza un error (falla silenciosamente); olvidar que los índices de los controles restantes se recalculan tras un `removeAt`, invalidando referencias guardadas al índice anterior.
 
@@ -562,9 +562,9 @@ imports: [____],
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente standalone con `[(ngModel)]` correctamente configurado y un test que confirme la sincronización DOM → componente con un evento `input` real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un componente renderizado y un evento `input` real del DOM, que `[(ngModel)]` sincroniza en ambas direcciones, y reproduces el error real `NG8002` que ocurre al olvidar `FormsModule`. Con esto cierras el módulo de formularios: `FormGroup` testeado sin DOM (Tema 1), validación asíncrona con `PENDING` real (Tema 2), `FormArray` dinámico (Tema 3) y `ngModel` para casos triviales (Tema 4). El siguiente módulo aplica estos formularios a peticiones HTTP reales con `HttpClient`. **Evidencia:** entrega el resultado del test en verde junto con el mensaje exacto del error `NG8002` del fallo deliberado. Fuentes oficiales: [Angular — Template-driven forms](https://angular.dev/guide/forms/template-driven-forms).
+Ya confirmas, con un componente renderizado y un evento `input` real del DOM, que `[(ngModel)]` sincroniza en ambas direcciones, y reproduces el error real `NG8002` que ocurre al olvidar `FormsModule`. Con esto cierras el módulo de formularios: `FormGroup` testeado sin DOM (Tema 1), validación asíncrona con `PENDING` real (Tema 2), `FormArray` dinámico (Tema 3) y `ngModel` para casos triviales (Tema 4). El siguiente módulo aplica estos formularios a peticiones HTTP reales con `HttpClient`. Fuentes oficiales: [Angular — Template-driven forms](https://angular.dev/guide/forms/template-driven-forms).
 
 **Errores comunes:** usar `ngModel` para un formulario con validación cruzada o arrays dinámicos, perdiendo la robustez y testabilidad de Reactive Forms sin necesidad real; olvidar `FormsModule` en un componente standalone y interpretar erróneamente el `NG8002` resultante como un bug del propio binding en vez de un import faltante.
 

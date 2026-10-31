@@ -73,9 +73,7 @@ Pista: reemplazá `.task { ... }` por `Task { ... }` suelto (sin vincularlo al c
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `.task`, y agregá un timeout real con `Task.sleep` + `race` manual (o `withTimeout` si tu versión de Swift lo soporta) para que `obtenerEnvio` falle explícitamente si tarda más de 3 segundos, en vez de esperar indefinidamente.
 
-**Evidencia de aprendizaje:** entrega la carga cancelable con `.task`, la tarea huérfana reproducida con `Task` suelto, y el timeout agregado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la carga cancelable del Paso 4, la tarea huérfana del Paso 5, y el timeout agregado del Paso 6; explicá por qué `.task` resuelve un problema que `Task` suelto dentro de `onAppear` no resuelve. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 **¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
 
@@ -118,10 +116,9 @@ Resultado esperado: tras 100 confirmaciones concurrentes, el contador llega exac
 Pista: reemplazá `actor ContadorEntregas` por `class ContadorEntregas` (sin protección) y repetí las 100 confirmaciones concurrentes — ese es el fallo deliberado: el resultado final rara vez es exactamente 101; algunas actualizaciones se pisan entre sí, la misma condición de carrera del Módulo 8 de Foundations, ahora sin ningún mecanismo que la prevenga.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `actor`, y agregá un método `reiniciar()` al actor para poner el contador en cero al empezar un nuevo día — confirmá que llamarlo desde fuera del actor también exige `await`, igual que `confirmar()`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contador correcto con `actor` del Paso 4, la condición de carrera real con `class` del Paso 5, y el método `reiniciar()` del Paso 6; explicá por qué el compilador rechaza acceder a `confirmadasHoy` sin `await` desde fuera del actor. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 **¿Por qué es importante?** Porque un `actor` serializa el acceso a su estado mutable y previene data races que una `class` normal no previene, sin que el desarrollador escriba ningún lock manual.
-**Evidencia de aprendizaje:** entrega el contador correcto con `actor`, la condición de carrera reproducida al cambiarlo por `class`, y el método `reiniciar()` agregado.
 **Conceptos clave:** acceso serializado garantizado por el compilador, sin locks manuales.
 
 ```swift
@@ -228,9 +225,7 @@ Pista: quitá `@MainActor` de `DetalleEnvioViewModel` y llamá `cargar(guia:)` d
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `@MainActor`, y agregá una tercera consulta en paralelo (`obtenerHistorialRuta`) al mismo `TaskGroup`/`async let`, confirmando que las tres corren simultáneamente sin que el código se vuelva secuencial por accidente.
 
-**Evidencia de aprendizaje:** entrega las dos consultas paralelas funcionando, el riesgo de hilo expuesto al quitar `@MainActor`, y la tercera consulta agregada al mismo grupo.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos consultas paralelas del Paso 4, el crash potencial sin `@MainActor` del Paso 5, y la tercera consulta agregada del Paso 6; explicá por qué el compilador puede detectar el error de hilo del Paso 5 en tiempo de compilación, no solo en producción. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 **¿Por qué es importante?** Porque `TaskGroup`/`async let` ejecutan tareas independientes en paralelo reduciendo el tiempo total de espera, y `@MainActor` detecta en tiempo de compilación una actualización de UI insegura desde un hilo en segundo plano, en vez de dejarla como un crash intermitente en producción.
 
@@ -317,7 +312,7 @@ swiftc -parse-as-library Cancelacion.swift -o cancelacion
 #### Paso 6 · Práctica independiente
 Crea una variante sin `cancel` y con una espera de 50 ms: muestra el envío. Añade un error de dominio y demuestra que usa el catch de fallo real. Después describe cómo vincularías una consulta al identificador del detalle visible.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** tres casos separados: éxito, cancelación y fallo real. El siguiente paso es integrar el mecanismo con URLSession y `.task(id:)`. **Errores comunes:** usar `try?` para esconder cancelación, suponer que cancelar mata el hilo y reutilizar estado de un detalle antiguo. **Límites y decisión de uso:** el programa de consola valida el mecanismo, no la UI, el simulador ni el comportamiento de una red real.
+#### Paso 7 · Cierre
+El siguiente paso es integrar el mecanismo con URLSession y `.task(id:)`. **Errores comunes:** usar `try?` para esconder cancelación, suponer que cancelar mata el hilo y reutilizar estado de un detalle antiguo. **Límites y decisión de uso:** el programa de consola valida el mecanismo, no la UI, el simulador ni el comportamiento de una red real.
 
 **Fuentes oficiales:** [Swift concurrency](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/) y [Task.checkCancellation](https://developer.apple.com/documentation/swift/task/checkcancellation()).

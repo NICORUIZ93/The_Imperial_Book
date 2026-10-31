@@ -311,7 +311,7 @@ Crea `packages/tracking` con una función pura que valide coordenadas y úsala d
 
 #### Paso 7 · Cierre y conexión
 
-El dominio compartido evoluciona sin publicaciones intermedias. El siguiente tema automatizará tareas en un proyecto independiente. La evidencia debe mostrar el enlace local y la dirección de dependencia.
+El dominio compartido evoluciona sin publicaciones intermedias. El siguiente tema automatizará tareas en un proyecto independiente. El README del workspace debe mostrar el enlace local y la dirección de dependencia.
 
 **Errores comunes:** ejecutar instalación dentro de cada paquete; crear dependencias circulares; confundir hoisting con declaración; omitir `private` en la raíz; adoptar monorepo sin necesidad organizacional.
 
@@ -537,8 +537,8 @@ Publica la versión 1.1.0 con una función nueva `cotizarExpress` sin romper a l
 #### Paso 6 · Práctica independiente
 Monta un registro local con Verdaccio (`npx verdaccio`), configura `.npmrc` con `@rutaflow:registry=http://localhost:4873` y publica el paquete allí. Documenta dónde queda el token y por qué no va en Git.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque compartir código entre servicios mediante paquetes versionados es práctica diaria, y un `files` mal configurado puede publicar secretos o notas internas.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque compartir código entre servicios mediante paquetes versionados es práctica diaria, y un `files` mal configurado puede publicar secretos o notas internas.
 **Fuente oficial:** [npm Docs: Creating and publishing scoped public packages](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages), [Node.js: Package entry points (exports)](https://nodejs.org/api/packages.html#package-entry-points).
 **Conceptos clave:** tarball, `files`, `exports`, `npm pack --dry-run`, semver, `npm version`, scope, `.npmrc`, registro privado.
 **Cuándo no usarlo:** si el código solo lo usa un servicio, o si varios paquetes viven en el mismo repositorio, los workspaces (Tema 3) evitan publicar en cada cambio.
@@ -669,8 +669,8 @@ Renombra `legado.cjs` a `legado.js` sin cambiar su código y explica el error qu
 #### Paso 6 · Práctica independiente
 Crea un paquete *dual* que exponga una versión ESM y otra CommonJS con `exports` condicionales (`"import"` y `"require"`) e impórtalo desde ambos tipos de archivo.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque casi todo proyecto Node real está a mitad de camino entre los dos sistemas, y estos errores bloquean despliegues.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque casi todo proyecto Node real está a mitad de camino entre los dos sistemas, y estos errores bloquean despliegues.
 **Fuente oficial:** [Node.js: Modules: ECMAScript modules](https://nodejs.org/api/esm.html), [Node.js: Loading ECMAScript modules using require()](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
 **Conceptos clave:** ESM, CommonJS, campo `type`, `.mjs` y `.cjs`, `createRequire`, `import.meta.url`, `require(esm)`, exports condicionales.
 **Cuándo no usarlo:** en un proyecto nuevo no mezcles: usa solo ESM. La mezcla es una herramienta de migración, no un diseño.

@@ -94,9 +94,7 @@ Pista: quitá la línea `guard session.puedeLeer(id) else { throw LinkError.forb
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `.forbidden`, no que simplemente "no hace nada".
 
-**Evidencia de aprendizaje:** entrega función con validación completa, acceso indebido provocado y test de autorización.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
 **¿Por qué es importante?** Porque una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
 
@@ -189,9 +187,7 @@ Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .u
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que registre solo que "la sesión se guardó" (sin el valor), más una función `cerrarSesion(conductorID:)` que borre el token de Keychain con `SecItemDelete`.
 
-**Evidencia de aprendizaje:** entrega guardado en Keychain, filtración en logs detectada y función de cierre de sesión.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
 **¿Por qué es importante?** Porque las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
 
@@ -298,9 +294,7 @@ Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reinte
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
 
-**Evidencia de aprendizaje:** entrega outbox con idempotencia, duplicación provocada y backoff agregado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
 **¿Por qué es importante?** Porque la conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
 
@@ -385,9 +379,7 @@ Pista: definí el indicador "tasa de éxito de sincronización" pero no establec
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
 
-**Evidencia de aprendizaje:** entrega signpost instrumentado, métrica sin umbral detectada y umbral con acción definida.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
 **¿Por qué es importante?** Porque todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
 
@@ -454,7 +446,7 @@ Añade un método `borrar(cuenta:)` que elimine el token al cerrar sesión. Pist
 #### Paso 6 · Práctica independiente
 Protege la lectura del token con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` y explica la diferencia frente a `WhenUnlocked` respecto a backups y migración a otro dispositivo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿Por qué es importante?** Toda app con login maneja un token, y dónde lo guardas es una decisión de seguridad real: el Keychain es el único lugar correcto en iOS. Equivocarse aquí es una de las fallas de seguridad móvil más comunes. Fuentes: [Apple — Keychain Services](https://developer.apple.com/documentation/security/keychain_services).
 **Conceptos clave:** Keychain vs UserDefaults, `SecItemAdd`/`SecItemCopyMatching`, atributos de accesibilidad, cifrado del sistema.
 **Cuándo no usarlo:** no uses Keychain para datos no sensibles o grandes (preferencias de UI, cachés): es más lento y limitado; resérvalo para secretos.
@@ -463,7 +455,6 @@ Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿P
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** llamar a `SecItemAdd` directamente para "actualizar" un token sin borrar antes el item existente con `SecItemDelete` para la misma cuenta — si ya hay un item guardado con ese `kSecAttrAccount`, `SecItemAdd` devuelve `errSecDuplicateItem` y el token viejo se queda guardado en el Keychain en vez de reemplazarse.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
-**Evidencia de aprendizaje:** entrega el token guardado y leído del Paso 4, el fallo de texto plano en `UserDefaults` diagnosticado en ese mismo paso, y la lectura en `nil` tras `borrar(cuenta:)` del Paso 5.
 ### Tema 6: Permisos y privacidad — pedir acceso con criterio
 
 #### Paso 1 · Objetivo y preparación
@@ -518,7 +509,7 @@ Maneja el estado `.denied` mostrando un mensaje que explique cómo habilitar el 
 #### Paso 6 · Práctica independiente
 Añade el permiso de notificaciones (`UNUserNotificationCenter.requestAuthorization`) con su propia lógica de estado, y explica por qué conviene pedirlo tras una acción que lo justifique, no al arrancar.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la solicitud de ubicación, el manejo de denegación y el crash por motivo faltante. **¿Por qué es importante?** Los permisos son la frontera de privacidad del usuario y un punto de revisión de la App Store. Pedirlos bien (con motivo claro, en el momento adecuado, manejando la negativa) es diferencia directa entre una app que se aprueba y una que se rechaza o se desinstala. Fuentes: [Apple — Requesting authorization](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
 **Conceptos clave:** clave de uso en Info.plist, solicitud en runtime, estados de autorización, denegación irreversible.
 **Cuándo no usarlo:** no pidas un permiso que no vas a usar de inmediato ni "por si acaso": cada permiso extra reduce la confianza y puede costar la aprobación en la App Store.
@@ -527,7 +518,6 @@ Entrega la solicitud de ubicación, el manejo de denegación y el crash por moti
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** pedir `requestWhenInUseAuthorization()` antes de declarar la clave `NSLocationWhenInUseUsageDescription` en `Info.plist` — la app no muestra un diálogo vacío, crashea de inmediato, y el mensaje de la consola rara vez deja claro a primera vista que el problema es una clave faltante en `Info.plist`, no un bug en el código Swift.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
-**Evidencia de aprendizaje:** entrega el diálogo de permiso concedido del Paso 4, el fallo por clave faltante en `Info.plist` diagnosticado en ese mismo paso, y el manejo del estado `.denied` del Paso 5.
 ### Tema 7: Notificaciones push con APNs
 
 #### Paso 1 · Objetivo y preparación
@@ -587,7 +577,7 @@ Maneja `didFailToRegisterForRemoteNotificationsWithError` para registrar (log) e
 #### Paso 6 · Práctica independiente
 Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y almacena el device token por usuario, y explica por qué el token puede cambiar y hay que actualizarlo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
 **Conceptos clave:** APNs como intermediario, device token, permiso vs registro, payload de notificación.
 **Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
@@ -623,7 +613,7 @@ La entrega contiene código, pruebas, capturas del perfil, tabla de amenazas, po
 
 Derivado de la [documentación oficial](https://developer.apple.com/documentation/swiftui), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 56 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Swift | `value types` · `optionals` · `protocols` · `generics` · `errors` · `collections` · `ARC` · `ownership` · `Swift packages` | app conductor |
 | SwiftUI | `View` · `identity` · `state` · `Observation` · `environment` · `layout` · `navigation` · `animations` · `gestures` · `localization` | app conductor |

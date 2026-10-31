@@ -55,7 +55,7 @@ Resultado esperado: `get-records` devuelve el ping GPS que publicaste, con su `D
 Pista: pedí un nuevo iterador con `--shard-iterator-type LATEST` (en vez de `TRIM_HORIZON`) después de publicar un segundo ping — ese es el fallo deliberado: un consumidor que "reinicia" sin guardar su posición anterior y usa `LATEST` se salta todo lo publicado antes de pedir ese iterador nuevo, perdiendo pings de ubicación que sí estaban disponibles.
 #### Paso 6 · Práctica independiente
 Pedí un segundo iterador independiente con `TRIM_HORIZON` (simulando el consumidor de analítica, separado del mapa en vivo) y confirmá que lee exactamente los mismos registros desde el principio, sin que el primer consumidor haya "gastado" ninguno.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ping leído con `TRIM_HORIZON`, el ping perdido por `LATEST` del Paso 5, y la lectura independiente del Paso 6; explicá por qué SQS no podría alimentar dos consumidores independientes con el mismo ping. Siguiente paso: offsets. Errores comunes: borrar eventos y confundir stream con cola. Fuente oficial: https://docs.aws.amazon.com/streams/latest/dev/introduction.html.
 
 ### Tema 2: MSK (Kafka gestionado) y consumer groups
@@ -120,7 +120,7 @@ Resultado esperado: `--describe` muestra el offset actual del grupo `mapa-en-viv
 Pista: corré `kafka-consumer-groups.sh --reset-offsets --group mapa-en-vivo --topic ubicacion-conductores --to-offset 0 --execute --bootstrap-server localhost:9092` por error (pensando que afectaría solo mensajes nuevos) — ese es el fallo deliberado: el grupo entero vuelve a leer desde el principio del topic en su próxima lectura, reprocesando pings de ubicación que el mapa en vivo ya había mostrado hace rato.
 #### Paso 6 · Práctica independiente
 Creá el grupo `alertas-desvio` leyendo el mismo topic `ubicacion-conductores`, confirmá con `kafka-consumer-groups.sh --describe --group alertas-desvio` que su offset es completamente independiente del de `mapa-en-vivo` (incluso después del reset accidental del Paso 5), y documentá por qué eso es exactamente lo que se espera.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el offset por grupo del Paso 4, el reset accidental del Paso 5 y la independencia confirmada en el Paso 6; explicá por qué un offset compartido entre grupos rompería el aislamiento que este Tema busca demostrar. Siguiente paso: Firehose. Errores comunes: compartir offset entre grupos y no hacer commit. Fuente oficial: https://docs.aws.amazon.com/kinesis/latest/dev/key-concepts.html.
 
 ### Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka
@@ -143,7 +143,7 @@ Resultado esperado: el registro queda en el buffer de Firehose y, pasado el inte
 Pista: probá `aws firehose create-delivery-stream --delivery-stream-name ubicaciones-invalido --s3-destination-configuration RoleARN=arn:aws:iam::000000000000:role/rol-sin-permiso-s3,BucketARN=arn:aws:s3:::rutaflow-ubicaciones-historico` con un rol que nunca tuvo permiso de escritura sobre ese bucket — ese es el fallo deliberado: Firehose acepta registros pero nunca logra entregarlos al destino, acumulando errores de entrega en silencio hasta que alguien revisa las métricas de Firehose.
 #### Paso 6 · Práctica independiente
 Construí una tabla de dos filas (alertas de desvío del Tema 2 / histórico de este Tema) con tres columnas (¿necesita lógica personalizada por registro?, latencia tolerable, mantenimiento del consumidor) y completala para justificar por qué una usa Kinesis Data Streams y la otra Firehose.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la entrega exitosa a S3 del Paso 4, el fallo de permisos del Paso 5, y la tabla comparativa del Paso 6; explicá la misma distinción "control fino vs conveniencia gestionada" que ya viste entre contenedores y Lambda en el Módulo 14. Siguiente paso: analytics. Errores comunes: ignorar buffering y coste por destino. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
 **Conceptos clave:** streaming de bajo nivel con control fino frente a entrega automatizada hacia un destino final.
 

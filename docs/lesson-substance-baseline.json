@@ -150,18 +150,6 @@
     "devops/0/Tema 9: NGINX y proxies desde cero": [
       "bloque-repetido"
     ],
-    "devops/13/Tema 1: El pipeline completo — de commit a producción verificada": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "devops/13/Tema 2: Uniendo cada módulo del track en un solo flujo": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "devops/13/Tema 3: Cierre del track — checklist final y reflexión": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
     "devops/15/Tema 1: Docker y Compose avanzados": [
       "andamiaje-generico"
     ],
@@ -205,14 +193,6 @@
       "bloque-repetido"
     ],
     "flutter/10/Tema 3: Accesibilidad con Semantics y dark mode": [
-      "bloque-repetido"
-    ],
-    "flutter/11/Tema 1: Builds de release para cada plataforma": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "flutter/11/Tema 2: Iconos y splash screens": [
-      "andamiaje-generico",
       "bloque-repetido"
     ],
     "flutter/11/Tema 3: CI/CD con Codemagic o Fastlane": [
@@ -420,22 +400,6 @@
       "bloque-repetido"
     ],
     "foundations/5/Tema 4: Calidad estática, revisión e integración continua": [
-      "bloque-repetido"
-    ],
-    "foundations/6/Tema 1: Activos, amenazas, riesgos y límites de confianza": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/6/Tema 2: Identidad, contraseñas, sesiones y autorización": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/6/Tema 3: Criptografía aplicada, TLS, claves y secretos": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/6/Tema 4: Validación, vulnerabilidades web, privacidad y respuesta": [
-      "andamiaje-generico",
       "bloque-repetido"
     ],
     "foundations/8/Tema 2: Memoria y concurrencia sin magia": [
@@ -701,10 +665,6 @@
     ],
     "kotlin-multiplatform/13/Tema 1: Kotlin/Native": [
       "andamiaje-generico"
-    ],
-    "kotlin-multiplatform/8/Tema 1: El framework generado para iOS": [
-      "andamiaje-generico",
-      "bloque-repetido"
     ],
     "kotlin-multiplatform/8/Tema 2: Mapeo de tipos Kotlin ↔ Swift": [
       "bloque-repetido"

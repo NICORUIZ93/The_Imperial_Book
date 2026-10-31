@@ -106,9 +106,9 @@ Agrega un segundo endpoint a `servidor_prueba.py` (`/tareas/<id>`, respondiendo 
 
 Documenta en una frase por qué declarar `ApiService` como una interfaz (en vez de una clase con métodos concretos) facilita testear un `ViewModel` que la use, sustituyéndola por una implementación falsa en un test (Módulo 9 de este track).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras un endpoint HTTP con Retrofit como función `suspend`, leíble de forma lineal sin callbacks anidados. El siguiente tema formaliza cómo distinguir y manejar los distintos tipos de error que esa llamada puede producir. **Evidencia:** entrega el resultado del `curl` mostrando el JSON de tareas exitoso, y el código `404` al consultar una ruta inexistente, explicando por qué eso correspondería a una `HttpException`, no a una `IOException`. Fuente oficial: [Retrofit — Square, Inc.](https://square.github.io/retrofit/).
+Ya declaras un endpoint HTTP con Retrofit como función `suspend`, leíble de forma lineal sin callbacks anidados. El siguiente tema formaliza cómo distinguir y manejar los distintos tipos de error que esa llamada puede producir. Fuente oficial: [Retrofit — Square, Inc.](https://square.github.io/retrofit/).
 
 **Errores comunes:** olvidar el modificador `suspend` en la función de la interfaz, lo que rompe la integración con coroutines; asumir que la deserialización siempre tendrá éxito sin considerar respuestas con forma inesperada.
 
@@ -210,9 +210,9 @@ Agrega un `catch` adicional antes de `IOException` que capture específicamente 
 
 Documenta en una frase una política de reintento automático razonable (cuántas veces, con qué espera entre intentos) específicamente para el caso `IOException`, y por qué esa misma política no debería aplicarse a un `HttpException` con código 404.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues `HttpException` de `IOException` en un `ViewModel`, dando mensajes específicos y accionables para cada caso. El siguiente tema cubre cómo aplicar transformaciones transversales (logging, autenticación) a todas las peticiones sin repetir código en cada llamada. **Evidencia:** entrega el resultado del código `200` con el servidor activo y la falla de conexión tras detenerlo, y explica por qué capturar `Exception` genérica pierde esa distinción sin fallar en tiempo de ejecución. Fuente oficial: [Square — Retrofit HttpException](https://square.github.io/retrofit/2.x/retrofit/retrofit2/HttpException.html).
+Ya distingues `HttpException` de `IOException` en un `ViewModel`, dando mensajes específicos y accionables para cada caso. El siguiente tema cubre cómo aplicar transformaciones transversales (logging, autenticación) a todas las peticiones sin repetir código en cada llamada. Fuente oficial: [Square — Retrofit HttpException](https://square.github.io/retrofit/2.x/retrofit/retrofit2/HttpException.html).
 
 **Errores comunes:** capturar `Exception` genérica sin distinguir categorías, perdiendo la posibilidad de mensajes específicos; reintentar automáticamente ante cualquier tipo de error, incluyendo errores definitivos como un 404 donde reintentar no cambiaría el resultado.
 
@@ -327,9 +327,9 @@ Agrega un tercer interceptor que mida y loguee la duración de cada petición (u
 
 Documenta en una frase por qué `HttpLoggingInterceptor().apply { level = ... BODY }` debería configurarse en un nivel menos verboso (o deshabilitarse por completo) en builds de producción, relacionándolo con lo que ya sabes sobre no exponer datos sensibles en logs (DevOps, Módulo 10, logging estructurado).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya configuras interceptores de OkHttp para logging y autenticación, y explicas concretamente por qué su orden de registro afecta qué información capturan los logs. Esto cierra el módulo de networking; el siguiente módulo del track aborda persistencia local con Room. **Evidencia:** entrega el resultado de ambas peticiones del servidor de prueba (con y sin header), y explica por qué invertir el orden de interceptores hace que el log no refleje la petición ya autenticada. Fuente oficial: [Square — OkHttp Interceptors](https://square.github.io/okhttp/features/interceptors/).
+Ya configuras interceptores de OkHttp para logging y autenticación, y explicas concretamente por qué su orden de registro afecta qué información capturan los logs. Esto cierra el módulo de networking; el siguiente módulo del track aborda persistencia local con Room. Fuente oficial: [Square — OkHttp Interceptors](https://square.github.io/okhttp/features/interceptors/).
 
 **Errores comunes:** dejar `HttpLoggingInterceptor` en nivel `BODY` (verboso, incluyendo cuerpos completos con posibles datos sensibles) en builds de producción; registrar el interceptor de autenticación después del de logging cuando se necesita depurar problemas relacionados con el header.
 

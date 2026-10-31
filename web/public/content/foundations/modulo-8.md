@@ -97,7 +97,7 @@ Pista: enviá `kill -9 "$PID"` mientras el proceso sigue durmiendo. Ese es el fa
 #### Paso 6 · Práctica independiente
 Cambiá `lento.py` para que registre una señal con `signal.signal(signal.SIGTERM, ...)` y escriba "cierre ordenado" antes de salir. Comparé `kill -TERM` (imprime el mensaje, sale con 0) con `kill -9` (no imprime nada, sale con 137) y documentá por qué esa diferencia importa para un worker que escribe en una base de datos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la salida de `ps` del Paso 4, los códigos de salida de SIGKILL y SIGTERM del Paso 5, y el manejador de señal del Paso 6; explicá la diferencia entre ambas señales en términos de qué puede y qué no puede hacer tu código antes de terminar. Como siguiente paso, aplicá el mismo diagnóstico a un proceso que escribe en SQLite y comprobá qué deja a medio hacer un SIGKILL. Errores comunes: usar `kill -9` como primer recurso en vez de SIGTERM, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
 ### Tema 2: Memoria y concurrencia sin magia
 
@@ -206,7 +206,7 @@ Pista: ese resultado inconsistente del Paso 4 ES el fallo deliberado — corrél
 #### Paso 6 · Práctica independiente
 Corregí el Paso 4 envolviendo la lectura-cálculo-escritura en un `Lock()` (como en el ejemplo de `retirar()` de este mismo Tema), y confirmá que ahora el resultado es siempre `0`, sin importar cuántas veces repitas la corrida.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y determinista del Paso 6; explicá por qué un lock en un solo proceso no alcanzaría si la asignación de vehículos corriera en dos procesos o instancias distintas. Errores comunes: asumir que una línea de código como `capacidad -= 1` es atómica, proteger con un lock de un solo proceso una operación que en realidad corre en varios procesos distintos, y bloquear una sección más grande de la necesaria sacrificando rendimiento sin motivo. Fuentes oficiales: https://docs.python.org/3/library/threading.html.
 **¿Por qué es importante?** Porque las pruebas secuenciales de `reservar_lugar()` pueden pasar siempre y el sistema real fallar solo bajo tráfico concurrente — la condición de carrera no se ve leyendo el código línea por línea.
 ### Tema 3: Linux como entorno observable
@@ -285,7 +285,7 @@ Pista: matá el proceso con `kill -9 "$PID"` y repetí `curl --fail --silent htt
 #### Paso 6 · Práctica independiente
 Repetí el Paso 4 redirigiendo la salida del servidor a un log (`> servicio.log 2>&1 &`) y seguilo con `tail -f servicio.log` mientras hacés una petición. Documentá qué evidencia adicional aporta el log que `ps` y `ss` no muestran, y limpiá el proceso con `kill -TERM "$PID"` al terminar.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los tres ángulos de diagnóstico del Paso 4, el código de salida del `curl` tras el fallo del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Como siguiente paso, repetí el diagnóstico con un servicio que exponga `/health` y compará qué responde cuando el proceso vive pero la base no. Errores comunes: reiniciar el servicio antes de capturar `ps`, `lsof` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/lsof.8.html y https://man7.org/linux/man-pages/man8/ss.8.html.
 ### Tema 4: Contenedores: aislamiento reproducible
 
@@ -373,7 +373,7 @@ Pista: quitá `USER rutaflow` del Dockerfile y volvé a construir — ese es el 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `USER rutaflow`, escribí un archivo dentro de `/data` desde el contenedor, recreá el contenedor por completo (`docker rm` + `docker run` de nuevo con el mismo volumen), y confirmá que el archivo sigue ahí — la prueba de que el volumen, no el contenedor, es lo que persiste.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contenedor corriendo como usuario no root del Paso 4, el root innecesario detectado del Paso 5, y la persistencia confirmada del Paso 6; explicá por qué "funciona en mi máquina" suele ocultar justo estas diferencias de identidad y filesystem. Errores comunes: correr el proceso del contenedor como root por omisión, guardar datos que deben persistir en la capa escribible del contenedor en vez de un volumen, y asumir que `EXPOSE` publica un puerto cuando solo lo documenta. Fuentes oficiales: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/.
 **¿Por qué es importante?** Porque un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
 
@@ -490,8 +490,8 @@ Cuenta cuánto tiempo espera cada mensajero para obtener sus dos radios y muestr
 #### Paso 6 · Práctica independiente
 Escribe una versión de lectores-escritores que dé prioridad a los escritores y demuestra con un experimento que un escritor ya no espera indefinidamente.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los interbloqueos no lanzan errores: congelan sistemas en producción, y reconocer la espera circular es la clave para diagnosticarlos.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque los interbloqueos no lanzan errores: congelan sistemas en producción, y reconocer la espera circular es la clave para diagnosticarlos.
 **Fuente oficial:** [threading (docs.python.org)](https://docs.python.org/3/library/threading.html), [Dining philosophers problem (Wikipedia)](https://en.wikipedia.org/wiki/Dining_philosophers_problem); Robert C. Martin, *Código limpio*, cap. 13.
 **Conceptos clave:** interbloqueo, condiciones de Coffman, espera circular, orden global de recursos, inanición, lectores-escritores, `threading.Lock`.
 **Cuándo no usarlo:** si puedes evitar compartir estado (colas, mensajes, datos inmutables), hazlo: es más simple que coordinar locks.

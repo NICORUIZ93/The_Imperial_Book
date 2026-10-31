@@ -14,7 +14,6 @@ Un pedido puede requerir cliente y producto, pero incluir opciones variables com
 #### Paso 3 · Teoría, modelo mental y analogía
 Builder separa la configuración y validación de un producto del objeto ya construido: se expresan pasos nombrados y `build()` entrega un resultado completo o informa por qué no puede crearlo. El Builder fluido anidado de este ejercicio reduce parámetros telescópicos; el Builder GoF también puede usar constructores distintos que ejecutan una secuencia común para crear representaciones diferentes. Una clase directora que guarda secuencias reutilizables es opcional, no un requisito universal del patrón.
 
-**Evidencia de aprendizaje:** entrega tu implementación, demuestra la salida normal y el fallo diagnosticado, y dibuja cómo dos constructores GoF podrían reutilizar los mismos pasos para producir representaciones distintas. No atribuyas al ejemplo existente un director: su Builder anidado es fluido y no usa uno.
 **Conceptos clave:** encadenamiento fluido, evitar confusión de orden de argumentos.
 
 Un constructor con muchos parámetros, varios de ellos opcionales (`new Pedido("Ana", "Laptop", 2, null, true, false, 15.5, ...)`), es propenso a errores de uso: es fácil confundir el orden de los argumentos posicionales, especialmente cuando varios comparten el mismo tipo (¿cuál booleano corresponde a qué opción específica?), y no queda ninguna indicación clara en el sitio de la llamada de qué representa cada valor individual sin consultar constantemente la firma del constructor. El patrón Builder (`Pedido pedido = Pedido.builder().cliente("Ana").producto("Laptop").cantidad(2).build();`) resuelve este problema encadenando llamadas a métodos con nombres descriptivos, uno por cada campo que se desea establecer, en el orden que resulte más natural para quien construye el objeto, omitiendo directamente cualquier campo opcional que no aplique en ese caso específico, sin necesidad de pasar `null` o valores por defecto explícitos como marcadores de posición para cada campo omitido.
@@ -65,7 +64,7 @@ Pista: omite deliberadamente `.codigo(...)` para provocar el fallo de validació
 #### Paso 6 · Práctica independiente
 Compara este diseño con un constructor tradicional de 6 parámetros posicionales para el mismo `Pedido`; documenta con un ejemplo concreto qué llamada es más fácil de leer y por qué.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el `Pedido.java` con su Builder, el fallo de validación provocado y la comparación contra el constructor posicional. Ejecuta `java examples/java/patrones-rutaflow/CreationalPatternsDemo.java` desde la raíz; la línea `builder=Ana:RF-1:2` confirma la ruta exitosa de la implementación de referencia. Como siguiente paso compara patrones que coordinan la creación de objetos. Errores comunes: compartir un Builder mutable entre hilos, omitir validación en `build()` y usar Builder para objetos con pocos campos obligatorios. Fuente contrastada: https://refactoring.guru/design-patterns/builder.
 **¿Por qué es importante?** Porque los patrones son vocabulario para resolver problemas, no plantillas obligatorias.
 ### Tema 2: Factory Method y Strategy
@@ -79,7 +78,6 @@ RutaFlow puede enviar avisos por más de un canal y calcular tarifas con políti
 #### Paso 3 · Teoría, modelo mental y analogía
 Una Factory simple concentra una selección (por ejemplo, un `switch`) en una función o clase. Factory Method define un método de creación en un creador y permite que sus subclases elijan el producto concreto; el resto del flujo del creador trabaja con el contrato común. Strategy no crea objetos: intercambia el algoritmo que ejecutará un consumidor. La analogía: una Factory Method cambia la cocina que prepara un producto; Strategy cambia la receta que usa el mismo servicio.
 
-**Evidencia de aprendizaje:** ejecuta `CreationalPatternsDemo.java`, identifica el método de creación sobrescrito y añade un creador nuevo sin modificar el flujo `notificar`.
 **Conceptos clave:** Factory simple, Factory Method, producto común, creador, punto de variación, Strategy e inyección.
 
 En una Factory simple, `SimpleNotificadorFactory.crear("email")` puede devolver `EmailNotificador` y `crear("sms")` puede devolver `SmsNotificador`; el consumidor solo ve `Notificador`. Añadir una opción suele requerir editar la selección centralizada. Factory Method mueve la creación a un método que una subclase concreta implementa. En `CreationalPatternsDemo.java`, `EmailFactory` y `SmsFactory` eligen el producto, mientras el método heredado `notificar` ejecuta el mismo flujo con la abstracción `Notificador`. La extensión evita editar ese flujo, aunque añade tipos y no elimina la necesidad de componer el creador adecuado en algún punto.
@@ -154,7 +152,7 @@ Pista: llama a `SimpleNotificadorFactory.crear("whatsapp")` para provocar delibe
 #### Paso 6 · Práctica independiente
 Agrega una segunda `CalculadoraDescuento` (por ejemplo `DescuentoBlackFriday`) e inyéctala en el mismo consumidor sin editar su clase. Compara tres decisiones y anota dónde ocurre cada una: escoger un creador Factory Method, seleccionar un algoritmo Strategy y rechazar un tipo desconocido en la Factory simple.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda las dos formas de Factory, el fallo por tipo desconocido y su diagnóstico, una tercera implementación de Factory Method y dos Strategies intercambiadas sin cambiar el consumidor. Como siguiente paso revisa si cada clase tiene una responsabilidad clara. Errores comunes: llamar Factory Method a cualquier `switch`, usar Factory Method cuando basta una función, y usar Strategy cuando no existe una segunda política real. Fuentes: https://refactoring.guru/design-patterns/factory-method y https://refactoring.guru/design-patterns/strategy.
 **¿Por qué es importante?** Distinguir selección de creación de selección de algoritmo evita condicionales dispersos y abstracciones que no responden a una variación real.
 ### Tema 3: Abstract Factory y familias de productos compatibles
@@ -208,10 +206,9 @@ Provoca una incompatibilidad creando a mano `new InternacionalFactory().crearEti
 #### Paso 6 · Práctica independiente
 Agrega una familia `ExpressFactory` con etiqueta y guía propias, sin cambiar el servicio consumidor. Añade una prueba o demostración que compruebe que la configuración express crea ambos productos de esa familia; registra además qué política debe rechazar una modalidad desconocida y dónde se comunica el error.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el diagrama de productos y variantes, la salida del programa, el fallo deliberado diagnosticado y la nueva familia compatible. En el Proyecto integrador (Módulo 13), justifica qué configuración selecciona la familia y quién la inyecta; no hagas que el dominio lea variables de entorno. Errores comunes: usar Abstract Factory para un solo producto, mezclar productos de fábricas distintas o añadir muchas interfaces cuando no hay familias que deban mantenerse coherentes. Lectura contrastada: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas PDF 96–111; referencia técnica: https://refactoring.guru/design-patterns/abstract-factory.
 **¿Por qué es importante?** Una configuración entrega objetos individualmente válidos, pero el diseño también debe preservar compatibilidad entre productos relacionados.
-**Evidencia de aprendizaje:** demuestra la variante local e internacional y añade una tercera sin modificar la lógica consumidora.
 **Conceptos clave:** familia de productos, fábrica abstracta, fábrica concreta, contrato de producto, composición y selección en el arranque.
 
 **Diagrama: familia local**
@@ -249,7 +246,6 @@ SOLID son cinco principios para gestionar razones de cambio y contratos; no son 
 
 “Programa a una interfaz” no obliga a introducir abstracciones sin necesidad: el contrato debe expresar una variación real, como las estrategias de tarifa del tema anterior.
 
-**Evidencia de aprendizaje:** presenta la refactorización, asigna cada responsabilidad a su tipo y demuestra una política nueva sin editar el consumidor.
 **Conceptos clave:** encapsular variación, programar contra contratos, composición, SRP, OCP, LSP, ISP y DIP.
 
 El principio de responsabilidad única (la "S" de SOLID) es, en la práctica, el más fácil de violar sin notarlo gradualmente con el tiempo: una clase `Pedido` que originalmente solo modelaba los datos de un pedido, pero que con el tiempo acumuló también la lógica de enviar emails de confirmación y de generar PDFs de factura, tiene en realidad tres razones distintas y no relacionadas para cambiar (un cambio en el modelo de datos del pedido, un cambio en cómo se envían emails, un cambio en cómo se generan PDFs), cada una debería justificar modificar una clase distinta y separada (`Pedido`, `EmailService`, `PdfGenerator`), en vez de acumularse todas en la misma clase original, que termina acoplando responsabilidades sin relación real entre sí.
@@ -302,7 +298,7 @@ Pista: cambia únicamente el formato del PDF y registra qué responsabilidades a
 #### Paso 6 · Práctica independiente
 Completa la extracción y divide la interfaz de persistencia en `ConsultaEntrega` y `ActualizaEntrega` si algún consumidor solo necesita leer. Documenta cómo un adaptador de base de datos podría implementar esos contratos y por qué una subclase que rechaza operaciones prometidas rompería la sustitución (LSP).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda la versión mezclada y la refactorizada, identifica dónde aplicarían OCP, LSP, ISP y DIP y justifica qué abstracción aporta valor. Errores comunes: interpretar OCP como “nunca editar código”, fortalecer precondiciones en una subclase, crear interfaces gigantes o separar clases sin razones de cambio distintas. Lectura contrastada: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas PDF 35–75; referencia técnica: https://dev.java/learn/classes-objects/.
 **¿Por qué es importante?** Una solución debe admitir los cambios probables y conservar contratos, no acumular patrones por nombre.
 
@@ -375,7 +371,7 @@ La clase deliberadamente defectuosa reutiliza la misma lista. Debes obtener `jav
 
 Añade un subtipo `ColdPackageTemplate` con temperatura máxima. Haz que su `copy()` conserve el subtipo sin que el cliente haga `instanceof`. Documenta qué campos copias, cuáles compartes por ser inmutables y qué harías con un cliente HTTP. Compara Prototype con Builder: Prototype parte de un ejemplar configurado; Builder reúne pasos para crear un producto nuevo. En el proyecto integrador, úsalo solo si existen configuraciones repetidas que una prueba pueda demostrar.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entrega `PackageTemplate.java`, el fallo por referencia compartida, la corrección y una tabla de política de copia por campo. Errores comunes: llamar “copia profunda” a una nueva instancia que comparte listas, copiar una conexión externa o depender de la clase concreta en el cliente. Como siguiente tema, usa composición para elegir qué relación estructural necesitas.
 
@@ -431,7 +427,7 @@ Después cambia `new AuthorizedQuoteProxy(new RealQuote(), true)` a `false`. Deb
 
 Añade `PushChannel` sin modificar `TrackingAlert` y una segunda abstracción `DeliveryDelayAlert` que use los mismos canales. Dibuja la matriz de dos alertas por tres canales y explica cómo Bridge evita seis subclases combinadas. Modela después un `PackageGroup` con tres niveles y prueba una hoja vacía. En el proyecto integrador, registra qué cambio real justifica cada patrón. No implementes Flyweight hasta definir qué estado es intrínseco, qué estado llega desde el contexto y cómo medirías memoria antes y después.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entrega las salidas normales, los dos fallos diagnosticados, el proxy con conteos y la matriz de Bridge. Para cada patrón escribe una frase con el cambio que aísla. Errores comunes: llamar Adapter a todo wrapper, convertir Facade en objeto omnisciente, usar Proxy para añadir responsabilidades de presentación y aplicar Flyweight sin evidencia de presión de memoria. El siguiente paso es leer los capítulos completos cuando el disco externo esté disponible y contrastar los diagramas con estas adaptaciones Java.
 

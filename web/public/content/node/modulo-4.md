@@ -586,7 +586,7 @@ Haz que el cliente también envíe mensajes al servidor (por ejemplo, "confirmar
 #### Paso 6 · Práctica independiente
 Añade "salas": varios clientes conectados y el servidor empuja la posición solo a los que siguen esa guía concreta. Entrega la prueba con dos clientes y guías distintas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el servidor empujando posiciones, el mensaje cliente→servidor y las salas. **¿Por qué es importante?** El tiempo real (posiciones GPS, chats, notificaciones, dashboards en vivo) es un requisito común y WebSocket es su base. El proyecto RutaFlow usa Socket.IO, que se apoya en WebSocket; entender el mecanismo crudo explica qué hace la librería por debajo. Fuentes: [MDN — WebSocket](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API) y [ws](https://github.com/websockets/ws).
 **Conceptos clave:** conexión persistente bidireccional, handshake/upgrade, push del servidor, polling vs WebSocket.
 **Cuándo no usarlo:** si los datos cambian rara vez o el cliente solo consulta de vez en cuando, HTTP normal es más simple y cacheable; WebSocket se justifica cuando hay actualizaciones frecuentes empujadas por el servidor.
@@ -595,7 +595,6 @@ Entrega el servidor empujando posiciones, el mensaje cliente→servidor y las sa
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** asumir que un mensaje de WebSocket llegó completo u ordenado sin verificar realmente su contenido; cerrar el socket sin limpiar el `setInterval`/los listeners asociados, dejando temporizadores corriendo tras la desconexión.
 **Fuente oficial:** [documentación de Node.js](https://nodejs.org/docs/latest/api/).
-**Evidencia de aprendizaje:** entrega la captura de los mensajes push recibidos sin pedirlos, el polling comparado y descartado en el Paso 4, y las salas con dos guías distintas verificadas en el Paso 6.
 ### Tema 6: Subida de archivos — multipart y validación segura
 
 #### Paso 1 · Objetivo y preparación
@@ -654,7 +653,7 @@ Añade un manejador de errores que convierta el error de `multer` (archivo muy g
 #### Paso 6 · Práctica independiente
 Guarda la referencia del archivo (nombre, tamaño, guía) en una estructura en memoria y expón `GET /entregas/:guia/evidencia` que devuelva la metadata. No guardes el binario en la base; guarda la ruta.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la subida válida, el rechazo por tamaño/tipo y la metadata consultable. **¿Por qué es importante?** La subida de archivos (fotos, documentos, comprobantes) es un requisito casi universal, y es una superficie de ataque clásica. Hacerlo con validación de tipo/tamaño y nombres controlados es lo que separa una feature de una vulnerabilidad. Fuentes: [multer](https://github.com/expressjs/multer) y [OWASP — File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
 **Conceptos clave:** `multipart/form-data`, `multer`, límite de tamaño, filtro de tipo MIME, el servidor como frontera de validación.
 **Cuándo no usarlo:** para archivos grandes o de producción a escala, no los guardes en el disco del servidor de app: usa almacenamiento de objetos (S3/Floci, track Cloud) y URLs pre-firmadas; `multer` a disco es para aprender y para cargas pequeñas.
@@ -663,7 +662,6 @@ Entrega la subida válida, el rechazo por tamaño/tipo y la metadata consultable
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** confiar en la extensión del nombre de archivo en vez de validar `file.mimetype` real; omitir `limits.fileSize`, dejando que un archivo arbitrariamente grande agote disco o memoria antes de que `fileFilter` pueda rechazarlo.
 **Fuente oficial:** [documentación de Node.js](https://nodejs.org/docs/latest/api/).
-**Evidencia de aprendizaje:** entrega la subida válida guardada en `uploads/`, el rechazo real por tamaño o tipo reproducido en el Paso 4, y la metadata consultable del Paso 6 verificada con una petición `GET`.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API REST con Express que incluya middleware de logging, validación con Zod y manejo de errores centralizado, y repetir el ejercicio con Fastify para comparar.

@@ -42,7 +42,7 @@ Resultado esperado: `terraform plan` detecta que `ShipmentEvents` ya existe (imp
 Pista: quitá temporalmente `dynamodb_table` del bloque `backend` y corré `terraform apply` dos veces en paralelo desde dos terminales — ese es el fallo deliberado: sin tabla de bloqueo, ambas ejecuciones pueden escribir al mismo archivo de estado remoto a la vez, corrompiéndolo o perdiendo los cambios de una de las dos.
 #### Paso 6 · Práctica independiente
 Agregá una fase `terraform plan` al `buildspec` de `demo-build` (Módulo 24) que corra en cada build, y una fase separada `terraform apply -auto-approve` que solo se ejecute cuando el build corresponda a la rama principal — la misma separación plan-en-PR/apply-en-merge de cualquier pipeline real.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el estado remoto bloqueado del Paso 4, la corrupción evitable sin lock del Paso 5, y la fase de CI del Paso 6; explicá por qué declarar `ShipmentEvents` en Terraform no sustituye todo lo que ya aprendiste del servicio en el Módulo 4, solo cambia cómo se crea y se versiona. Siguiente paso: Kubernetes y Service Mesh. Errores comunes: secretos en Git y probar solo el camino feliz. Fuente oficial: https://developer.hashicorp.com/terraform/language/state/locking.
 **Conceptos clave:** estado remoto, bloqueo de estado, `terraform plan` en CI, `apply` solo en merge, importación de recursos existentes.
 
@@ -93,7 +93,7 @@ Resultado esperado: el servicio ECS del planificador (Módulo 14) muestra su `de
 Pista: instalar App Mesh o un sidecar Envoy sobre `demo-planificador-service` HOY, cuando solo existe un servicio consumiendo la tabla `ShipmentEvents` directamente — ese es el fallo deliberado de sobre-ingeniería: agregarías latencia, complejidad de configuración y un nuevo punto de fallo (el propio sidecar) sin ningún beneficio real, porque no hay todavía múltiples servicios que necesiten mTLS entre sí.
 #### Paso 6 · Práctica independiente
 Documentá la condición concreta que justificaría migrar: "si RutaFlow tuviera 3+ servicios en contenedores hablando entre sí con reintentos y cifrado propios, un service mesh (o EKS con Istio) empezaría a pagar su complejidad" — y compará esa condición contra el estado real de hoy (1 servicio, ECS puro).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el estado real de `demo-planificador-service` del Paso 4, el sidecar innecesario del Paso 5, y la condición de migración documentada del Paso 6; explicá por qué "está de moda" nunca es la razón correcta para adoptar Kubernetes o un service mesh. Siguiente paso: EC2, VPC, RDS, S3 y DynamoDB avanzados. Errores comunes: adoptar un mesh sin múltiples servicios y confundir ECS con Kubernetes. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
 **Conceptos clave:** service mesh, sidecar, mTLS entre servicios, condición real de adopción, ECS vs EKS vs mesh.
 
@@ -198,7 +198,7 @@ Resultado esperado: `ShipmentEvents` queda replicándose también hacia `us-west
 Pista: escribí un item directamente en la réplica de lectura con `put-item` apuntando a su endpoint — ese es el fallo deliberado: una réplica de lectura de RDS rechaza escrituras por diseño (`ERROR: cannot execute INSERT in a read-only transaction`), porque su único propósito es servir consultas sin afectar la fuente de verdad.
 #### Paso 6 · Práctica independiente
 Documentá qué pasaría con la tabla global de `ShipmentEvents` si las dos regiones recibieran una escritura distinta para el mismo `shipmentId`+`sequence` casi al mismo tiempo (pista: DynamoDB global tables resuelve conflictos por "último escritor gana" según timestamp, no por orden de llegada a cada región).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la tabla global y la réplica de lectura creadas del Paso 4, el rechazo de escritura del Paso 5, y la resolución de conflictos documentada del Paso 6; explicá por qué ninguna de las dos técnicas se justificaba en los módulos anteriores, cuando RutaFlow corría en una sola región. Siguiente paso: Lambda, API Gateway y observabilidad avanzada. Errores comunes: escribir en una réplica de lectura y asumir orden global en tablas multi-región. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html.
 
 ### Tema 4: Lambda, API Gateway y observabilidad avanzada
@@ -256,7 +256,7 @@ Resultado esperado: el tiempo de esta invocación ya no muestra el cold start qu
 Pista: invocá una tercera vez simultánea mientras las 2 ejecuciones aprovisionadas están ocupadas — ese es el fallo deliberado: esa tercera invocación sí sufre un cold start real, porque la concurrencia aprovisionada cubre un número fijo de ejecuciones simultáneas, no invocaciones ilimitadas sin arranque en frío.
 #### Paso 6 · Práctica independiente
 Habilitá X-Ray sobre `confirmar-entrega` y sobre el método `POST /entregas` de API Gateway (Módulo 6), hacé una invocación real a través de la API, y revisá el segmento de traza resultante — identificá cuánto tiempo se fue en API Gateway vs en la Lambda vs en el `PutItem` a `ShipmentEvents`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la invocación sin cold start del Paso 4, el cold start real de la tercera invocación simultánea del Paso 5, y la traza X-Ray desglosada del Paso 6; explicá por qué la concurrencia aprovisionada tiene un costo fijo incluso sin tráfico, a diferencia del modelo de pago por invocación del Módulo 5. Siguiente paso: seguridad, auditoría y FinOps. Errores comunes: aprovisionar de más sin medir tráfico real y no instrumentar X-Ray en toda la cadena. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html.
 
 ### Tema 5: Seguridad, auditoría y FinOps
@@ -312,7 +312,7 @@ Resultado esperado: el presupuesto queda creado con una notificación al 80% de 
 Pista: simulá con `aws iam simulate-custom-policy` que el rol `RutaFlowConfirmarEntregaRole` (Módulo 7) tiene permiso `budgets:ModifyBudget` además de sus permisos normales de DynamoDB/SQS — ese es el fallo deliberado: una función que solo necesita confirmar entregas nunca debería poder modificar ni apagar la alarma de presupuesto que la vigila a ella misma indirectamente; es el mismo principio de mínimo privilegio del Módulo 7, aplicado a gobierno financiero.
 #### Paso 6 · Práctica independiente
 Documentá qué pasaría si ese presupuesto se cruzara de verdad: ¿quién lo revisa?, ¿qué decisión tomaría (investigar un bug, escalar capacidad a propósito, ignorarlo porque es tráfico real de crecimiento)? Una alarma sin un responsable definido es tan inútil como no tenerla.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el presupuesto con alarma del Paso 4, el permiso excesivo detectado del Paso 5, y el plan de respuesta del Paso 6; explicá por qué auditoría y FinOps son, en el fondo, la misma disciplina de "ver lo que está pasando antes de que sea demasiado tarde" aplicada a dos cosas distintas (permisos, costo). Siguiente paso: microservicios, Big Data, AI/ML y multi-cloud. Errores comunes: alarmas sin responsable y permisos financieros amplios. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html.
 
 ### Tema 6: Microservicios, Big Data, AI/ML y multi-cloud
@@ -366,7 +366,7 @@ Resultado esperado: tres respuestas reales de tres piezas distintas que YA exist
 Pista: intentá justificar agregar Kafka/MSK (Módulo 17) completo para un volumen de eventos que hoy cabe perfecto en SQS+SNS (Módulo 11) — ese es el fallo deliberado de esta síntesis final: adoptar la pieza "de Big Data" o "de microservicios" más grande disponible, en vez de la que el volumen y la complejidad reales de RutaFlow justifican hoy.
 #### Paso 6 · Práctica independiente
 Dibujá (en papel o en un README) el mapa completo: qué parte de RutaFlow es multi-cloud de verdad (Módulo 8: AWS + Azure + GCP para el mismo caso de ubicaciones), qué parte es Big Data (Athena/Firehose/Kinesis), qué parte es IA (Bedrock/Textract), y qué parte sigue siendo, simplemente, un backend serverless bien diseñado sin ninguna etiqueta de moda encima.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las tres piezas reales confirmadas del Paso 4, el sobre-dimensionamiento evitado del Paso 5, y el mapa completo del Paso 6; explicá por qué "usar microservicios/Big Data/IA" nunca fue el objetivo de ningún módulo de este track — resolver un problema real con la herramienta correcta sí lo fue, y estas etiquetas son solo la forma en que la industria nombra el resultado. Siguiente paso: cerrar el track. Errores comunes: adoptar una pieza grande sin el volumen que la justifique y nombrar la arquitectura antes de construirla. Fuente oficial: https://aws.amazon.com/architecture/.
 
 ## Trazabilidad de la auditoría original

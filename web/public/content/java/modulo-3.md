@@ -14,7 +14,6 @@ Leer un archivo de configuración puede fallar por una condición externa previs
 #### Paso 3 · Teoría, modelo mental y analogía
 Las checked exceptions obligan al compilador a verificar que el código las declare o las maneje; las unchecked no imponen esa obligación porque típicamente señalan errores de programación. La analogía: un formulario de aduana obligatorio (checked) frente a una alarma de incendio que puede activarse sin aviso (unchecked).
 
-**Evidencia de aprendizaje:** entrega `LectorConfig` con su `throws IOException` declarado, el error de compilación al quitarlo, y la `IndexOutOfBoundsException` unchecked propagándose sin declaración.
 **Conceptos clave:** obligación de manejo verificada en compilación, indicación de bug.
 
 Distinguir qué falla es una condición externa recuperable (checked) de qué es un bug (unchecked) es la misma decisión que tomarás en cada capa del proyecto integrador de este track al diseñar su manejo de errores.
@@ -58,7 +57,7 @@ Pista: quita deliberadamente `throws IOException` del método `leer` para provoc
 #### Paso 6 · Práctica independiente
 Clasifica en una tabla tres excepciones más de la biblioteca estándar (`FileNotFoundException`, `NullPointerException`, `NumberFormatException`) como checked o unchecked, y explica en una frase por qué esa clasificación tiene sentido para cada una.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda el código, la salida del `throws` obligatorio y la excepción unchecked no declarada; como siguiente paso estudia try-with-resources. Errores comunes: declarar `throws Exception` genérico en vez de la excepción checked específica, envolver cada excepción unchecked en un `try/catch` "por si acaso" sin que exista una recuperación real posible, y tratar una `NullPointerException` como si fuera una condición externa recuperable en vez de un bug a corregir. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
 **¿Por qué es importante?** Porque forzar al compilador a verificar una excepción checked solo tiene sentido para condiciones externas genuinamente recuperables; aplicar esa misma obligación a algo que en realidad es un bug de programación solo ensucia la firma de los métodos sin ganar nada.
 
@@ -73,7 +72,6 @@ Un lector de reportes de entregas abre un archivo grande; si el procesamiento fa
 #### Paso 3 · Teoría, modelo mental y analogía
 Declarar el recurso dentro del paréntesis del `try` garantiza `close()` automático al salir del bloque, sea por finalización normal o por excepción. La analogía: un sistema de préstamo de bicicletas que garantiza la devolución automática a su estación, incluso si el ciclista tuvo un percance en el camino.
 
-**Evidencia de aprendizaje:** entrega la clase `AutoCloseable` propia, la salida que confirma el cierre con y sin excepción, y el orden inverso de cierre al declarar dos recursos en el mismo `try`.
 **Conceptos clave:** `AutoCloseable`, cierre garantizado incluso ante error.
 
 Cualquier recurso propio del proyecto integrador de este track (una conexión, un archivo temporal) que necesite liberarse siempre debe implementar `AutoCloseable` y abrirse dentro de un try-with-resources, nunca con un `finally` manual.
@@ -115,7 +113,7 @@ Pista: comenta la excepción lanzada a mitad de bloque para provocar un fallo de
 #### Paso 6 · Práctica independiente
 Declara dos recursos en el mismo try-with-resources y confirma, mirando el orden de los mensajes en consola, que Java los cierra en el orden inverso al que los abrió.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda la clase `AutoCloseable`, la salida con y sin excepción, y el orden de cierre de dos recursos; como siguiente paso estudia excepciones personalizadas. Errores comunes: cerrar un recurso manualmente en un `finally` que se salta si el `try` lanza una excepción antes de llegar ahí, olvidar que los recursos se cierran en orden inverso al que se abrieron, y envolver un recurso que no implementa `AutoCloseable` esperando que try-with-resources lo cierre igual. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
 **¿Por qué es importante?** Porque un recurso que no se cierra ante una excepción (un archivo, una conexión) se queda abierto indefinidamente, y un `finally` manual escrito a mano es fácil de olvidar o de escribir mal, mientras que try-with-resources garantiza el cierre sin ese riesgo.
 
@@ -130,7 +128,6 @@ Un intento de retirar más saldo del disponible en una billetera de conductor es
 #### Paso 3 · Teoría, modelo mental y analogía
 Una excepción personalizada (`SaldoInsuficienteException`) comunica con precisión qué condición ocurrió; un catch vacío oculta el error, dejando el bug invisible hasta que sus consecuencias aparezcan mucho después y sin relación aparente con la causa. La analogía: desactivar la alarma de incendio sin investigar qué la activó.
 
-**Evidencia de aprendizaje:** entrega `SaldoInsuficienteException`, la salida silenciosa del catch vacío (el antipatrón), y la salida registrada tras reemplazarlo por `log.error(...)`.
 **Conceptos clave:** modelar errores de dominio, antipatrón del catch vacío.
 
 Cada regla de negocio violable del proyecto integrador de este track (saldo insuficiente, cuenta bloqueada, entrega duplicada) debería tener su propia excepción de dominio, nunca un `RuntimeException` genérico ni un catch vacío que la oculte.
@@ -183,7 +180,7 @@ Pista: usa deliberadamente el catch vacío para provocar el antipatrón (el reti
 #### Paso 6 · Práctica independiente
 Agrega una segunda excepción de dominio (`CuentaBloqueadaException`) y un bloque que capture ambas por separado, reaccionando distinto a cada una en vez de tratarlas como un `Exception` genérico.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambas excepciones, la salida silenciosa del catch vacío y la salida registrada tras corregirlo; como siguiente paso estudia streams. Errores comunes: usar un catch vacío "para que no se rompa el programa", capturar `Throwable`/`Exception` genérico en vez del tipo de dominio específico cuando sí se necesita reaccionar distinto a cada caso, y devolver el stack trace completo al cliente final en vez de un mensaje de dominio junto con el registro técnico interno. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
 **¿Por qué es importante?** Porque una excepción de dominio específica permite reaccionar distinto según qué regla de negocio se violó, mientras que un catch vacío convierte cualquier error real en un bug invisible que solo se descubre mucho después, por sus consecuencias, no por su causa.
 

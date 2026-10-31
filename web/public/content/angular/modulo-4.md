@@ -157,9 +157,9 @@ npx ng test --watch=false
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos configuraciones de `Routes` (correcta e incorrecta según el orden del comodín) y un test con `RouterTestingHarness` que confirme el contraste real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con navegación real del router de Angular, que el orden del array `Routes` determina exactamente qué ruta se activa, y que un comodín mal ubicado produce un bug real y reproducible. El siguiente tema confirma, invocando un guard funcional directamente como función pura, la ventaja real de testabilidad que describe su prosa. **Evidencia:** entrega el resultado de ambos tests en verde, y la interceptación indebida que produce el fallo deliberado al mover el comodín al principio. Fuentes oficiales: [Angular — Routing](https://angular.dev/guide/routing), [Angular — Common router tasks](https://angular.dev/guide/routing/common-router-tasks).
+Ya confirmas, con navegación real del router de Angular, que el orden del array `Routes` determina exactamente qué ruta se activa, y que un comodín mal ubicado produce un bug real y reproducible. El siguiente tema confirma, invocando un guard funcional directamente como función pura, la ventaja real de testabilidad que describe su prosa. Fuentes oficiales: [Angular — Routing](https://angular.dev/guide/routing), [Angular — Common router tasks](https://angular.dev/guide/routing/common-router-tasks).
 
 **Errores comunes:** colocar la ruta comodín `**` antes de rutas específicas, interceptando URLs que deberían coincidir con una ruta más específica; asumir que Angular reordena automáticamente las rutas por especificidad, cuando en realidad respeta estrictamente el orden declarado.
 
@@ -306,9 +306,9 @@ const resultado = TestBed.____(injector, () => authGuard({} as any, {} as any));
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un guard funcional y un test que lo invoque directamente, confirmando tanto el bloqueo como el permiso. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, invocando un guard funcional directamente como función pura, la ventaja real de testabilidad que distingue a los guards funcionales de las clases guard históricas. El siguiente tema confirma con un espía real que `loadComponent` no descarga su chunk hasta que la navegación efectivamente ocurre. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado incorrecto (`true` sin verificación) que produce el fallo deliberado. Fuentes oficiales: [Angular — Router guards](https://angular.dev/guide/routing/common-router-tasks#preventing-unauthorized-access).
+Ya confirmas, invocando un guard funcional directamente como función pura, la ventaja real de testabilidad que distingue a los guards funcionales de las clases guard históricas. El siguiente tema confirma con un espía real que `loadComponent` no descarga su chunk hasta que la navegación efectivamente ocurre. Fuentes oficiales: [Angular — Router guards](https://angular.dev/guide/routing/common-router-tasks#preventing-unauthorized-access).
 
 **Errores comunes:** probar un guard funcional únicamente a través de navegación completa (`RouterTestingHarness`), perdiendo la ventaja real de una prueba unitaria directa y más rápida; olvidar que `inject()` dentro de un guard requiere un contexto de inyección, incluso al invocarlo directamente en un test.
 
@@ -443,9 +443,9 @@ const factorySpy = jasmine.____('cargarAdmin').and.callFake(() => Promise.resolv
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una ruta con `loadComponent` envuelta en un espía y un test con `RouterTestingHarness` que confirme que el chunk no se descarga antes de navegar. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un espía real sobre la función de importación dinámica, que `loadComponent` respeta estrictamente la carga bajo demanda. El siguiente tema confirma, con `RouterTestingHarness`, cómo Angular llena automáticamente un `input()` de componente a partir de un parámetro de ruta. **Evidencia:** entrega el resultado del test en verde junto con el conteo de invocaciones del espía antes y después de cada navegación. Fuentes oficiales: [Angular — Lazy loading](https://angular.dev/guide/routing/common-router-tasks#lazy-loading).
+Ya confirmas, con un espía real sobre la función de importación dinámica, que `loadComponent` respeta estrictamente la carga bajo demanda. El siguiente tema confirma, con `RouterTestingHarness`, cómo Angular llena automáticamente un `input()` de componente a partir de un parámetro de ruta. Fuentes oficiales: [Angular — Lazy loading](https://angular.dev/guide/routing/common-router-tasks#lazy-loading).
 
 **Errores comunes:** confiar únicamente en la inspección manual de la pestaña Network para verificar lazy loading, sin ninguna prueba automatizada que detecte una regresión futura; olvidar que combinar un guard con `loadComponent` en la misma ruta evita también el coste de descarga cuando el guard rechaza el acceso.
 
@@ -569,9 +569,9 @@ provideRouter(rutasConParametro, ____())
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una ruta con parámetro `:id`, un componente con `id = input<string>()`, y un test con `RouterTestingHarness` que confirme el valor recibido. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, navegando con `RouterTestingHarness` hacia una URL con parámetro dinámico, que Angular llena automáticamente un `input()` de componente a partir de esa URL, siempre que `withComponentInputBinding()` esté activo. Con esto cierras el módulo de routing: dominas configuración de rutas (Tema 1), guards funcionales probados directamente (Tema 2), lazy loading verificado con espías (Tema 3) y parámetros de ruta confirmados con input binding (Tema 4). El siguiente módulo aplica estos fundamentos a formularios reactivos. **Evidencia:** entrega el resultado del test en verde junto con el resultado del fallo deliberado sin `withComponentInputBinding()`. Fuentes oficiales: [Angular — Route parameters](https://angular.dev/guide/routing/common-router-tasks#activated-route).
+Ya confirmas, navegando con `RouterTestingHarness` hacia una URL con parámetro dinámico, que Angular llena automáticamente un `input()` de componente a partir de esa URL, siempre que `withComponentInputBinding()` esté activo. Con esto cierras el módulo de routing: dominas configuración de rutas (Tema 1), guards funcionales probados directamente (Tema 2), lazy loading verificado con espías (Tema 3) y parámetros de ruta confirmados con input binding (Tema 4). El siguiente módulo aplica estos fundamentos a formularios reactivos. Fuentes oficiales: [Angular — Route parameters](https://angular.dev/guide/routing/common-router-tasks#activated-route).
 
 **Errores comunes:** olvidar `withComponentInputBinding()` y asumir que el input simplemente no se está declarando bien; confundir un parámetro de ruta (identifica el recurso) con un query param (modifica cómo se muestra ese recurso, sin cambiar cuál es).
 
@@ -667,7 +667,7 @@ Abre `http://localhost:4200`. **Resultado esperado:** escribe una nota, pulsa «
 #### Paso 6 · Práctica independiente
 Añade un botón «Descartar cambios» que restaure `text` desde `saved`. Comprueba escribir, guardar, volver a editar, descartar y salir. No debe mostrar aviso después de descartar.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** matriz de acciones y estado de la ruta, con el caso cancelado y aceptado. El siguiente paso es persistir borradores y gestionar errores del guardado real. **Errores comunes:** llamar «guardado» a texto no confirmado por el servidor, usar el guard como autorización y suponer que cubre cierre de pestaña. **Límites y decisión de uso:** este diálogo nativo es una demostración mínima; una UI personalizada necesita foco, teclado y semántica correctos.
+#### Paso 7 · Cierre
+El siguiente paso es persistir borradores y gestionar errores del guardado real. **Errores comunes:** llamar «guardado» a texto no confirmado por el servidor, usar el guard como autorización y suponer que cubre cierre de pestaña. **Límites y decisión de uso:** este diálogo nativo es una demostración mínima; una UI personalizada necesita foco, teclado y semántica correctos.
 
 **Fuente oficial:** [Angular route guards](https://angular.dev/guide/routing/route-guards).

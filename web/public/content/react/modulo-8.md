@@ -61,10 +61,9 @@ Pista: escribí deliberadamente una segunda versión del mismo test usando `docu
 #### Paso 6 · Práctica independiente
 Confirmá que la versión del Paso 4 (con `getByRole`) sigue pasando sin ningún cambio después del rediseño, y documentá explícitamente qué detalle de implementación cambió (la clase CSS) frente a qué se mantuvo igual (el rol y el nombre accesible del botón).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el test resiliente del Paso 4, la comparación con el selector de clase roto del Paso 5, y la confirmación del Paso 6; explicá qué detalle de implementación cambió y por qué no debería haber roto ningún test de comportamiento. Siguiente paso: estudia cómo interceptar la llamada de red real con MSW. Errores comunes: consultar por clase CSS o estructura del DOM en vez de por rol/texto, usar `getByText` con un texto que cambia seguido por copywriting en vez de un rol estable, y usar `container.querySelector` como escape hatch habitual en vez de ocasional. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/intro/ y https://testing-library.com/docs/queries/byrole/.
 **¿Por qué es importante?** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable.
-**Evidencia de aprendizaje:** entrega test resiliente por rol, comparación con selector de clase roto y explicación del cambio cosmético.
 **Conceptos clave:** `getByRole`, `getByText`, resiliencia a refactors.
 
 React Testing Library promueve deliberadamente consultar el DOM renderizado de la misma forma en que un usuario real (o una tecnología asistiva como un lector de pantalla) identificaría un elemento: por su rol semántico de accesibilidad (`screen.getByRole('button', { name: /enviar/i })`) o por el texto visible que muestra (`screen.getByText(/enviado con éxito/i)`), evitando deliberadamente consultas basadas en detalles internos de implementación como nombres de clases CSS o la estructura exacta del árbol DOM interno (`getByClassName`, deliberadamente no ofrecido como API principal por la librería), un principio de diseño idéntico al estudiado para Angular Testing Library en el Módulo 10 del track de Angular.
@@ -151,9 +150,7 @@ Pista: dentro de un test agregá `server.use(http.post('/api/envios/:id/confirma
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agregá una prueba explícita del caso de error verificando que `DetalleEnvio` muestra un mensaje de error apropiado, no una pantalla en blanco.
 
-**Evidencia de aprendizaje:** entrega handler de éxito, fuga de handler sin reset detectada y prueba del caso de error.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explicá por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
 **¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo probar el código de producción exactamente como se ejecutaría en producción real, sin mockear `fetch` de forma frágil.
 
@@ -230,9 +227,7 @@ Pista: quitá `act(...)` y llamá directamente `result.current.setZona('NORTE')`
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `act`, y agregá una segunda prueba que confirme que llamar `setZona('')` (cadena vacía) hace que `useFiltroZona` vuelva al valor por defecto `'todas'`, en vez de guardar una cadena vacía inválida.
 
-**Evidencia de aprendizaje:** entrega test aislado del hook, advertencia de act detectada y segunda prueba del valor por defecto.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el test aislado del Paso 4, la advertencia de React por falta de `act` del Paso 5, y la segunda prueba del Paso 6; explicá por qué testear este hook con `renderHook` en vez de envolverlo en un componente visual mantiene la prueba enfocada específicamente en su lógica de estado. Siguiente paso: cerrá el módulo integrando los tres enfoques en la suite completa de RutaFlow. Errores comunes: envolver un hook en un componente visual completo solo para poder testearlo, no envolver actualizaciones de estado en `act`, y testear un hook personalizado únicamente a través de pruebas end-to-end de componentes, sin ninguna prueba aislada de su lógica. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/api/#renderhook y https://react.dev/reference/react/act.
 **¿Por qué es importante?** `renderHook` aísla la prueba de un hook personalizado de cualquier componente visual innecesario, manteniendo la prueba enfocada específicamente en la lógica de estado y efectos del hook.
 

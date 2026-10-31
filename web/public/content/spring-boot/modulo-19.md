@@ -116,13 +116,12 @@ Implementa dos steps: validar archivo y luego importar. Compara `Tasklet` para r
 
 Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processor que normalice códigos y writer persistente con `JdbcBatchItemWriter`. Agrega conteos leídos, filtrados, escritos y fallidos. Verifica que la memoria usada no crece linealmente con el total de filas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Entrega job, archivo fixture, test del step y conteos del lote como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no elijas Batch para una petición HTTP inmediata y pequeña; una cola/eventos o una operación síncrona pueden ser más apropiadas. **Evidencia:** tests con más de un chunk y SQL o logs que demuestren límites transaccionales.
+Entrega job, archivo fixture, test del step y conteos del lote como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no elijas Batch para una petición HTTP inmediata y pequeña; una cola/eventos o una operación síncrona pueden ser más apropiadas.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** usar `chunk(1, ...)` en producción pensando que así se evitan problemas, cuando en realidad multiplica el número de transacciones y el costo por fila, y confundir un `ItemProcessor` que retorna `null` (filtra el registro) con una fila que falló: sin un listener que cuente los filtrados, el reporte de "filas escritas" no explica por qué hay menos que las leídas.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida de `./mvnw test` mostrando que `RF-1002` (importe cero) fue filtrado por el `ItemProcessor`, el log comparado de `chunk(1, ...)` contra `chunk(2, ...)` con sus confirmaciones, y la explicación de qué chunk se revirtió al forzar el error de parseo.
 ### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
 #### Paso 1 · Objetivo y preparación
@@ -183,9 +182,9 @@ Añade retry acotado para un error temporal de base y skip para una fila con cam
 
 Diseña un plan para un lote de un millón de filas: chunk size, paginación, restart, deduplicación, archivo de errores y métricas. Como extensión, particiona por rangos disjuntos y programa el job con un scheduler; verifica que dos workers no reclamen el mismo rango.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Entrega test de fallo y reinicio, parámetros exactos, conteos y política documentada de retry/skip para el proyecto integrador de RutaFlow: el lote de liquidación debe poder reanudarse sin duplicar pagos. **Cuándo no usarlo:** no llames `skip` a errores de infraestructura ni configures retry infinito; no ejecutes jobs simultáneos con parámetros que colisionan. **Evidencia:** log del primer fallo, reanudación y resultado final conciliado. Referencia: [Spring Batch Reference](https://docs.spring.io/spring-batch/reference/).
+Entrega test de fallo y reinicio, parámetros exactos, conteos y política documentada de retry/skip para el proyecto integrador de RutaFlow: el lote de liquidación debe poder reanudarse sin duplicar pagos. **Cuándo no usarlo:** no llames `skip` a errores de infraestructura ni configures retry infinito; no ejecutes jobs simultáneos con parámetros que colisionan.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** generar un `run.id` o parámetro distinto en cada reintento pensando que "empezar limpio" es más seguro, cuando en realidad eso crea una nueva instancia de job que vuelve a procesar el archivo desde cero, y marcar con `skip` errores de infraestructura (como una pérdida de conectividad) que en realidad necesitan `retry`, descartando filas que sí eran recuperables.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).

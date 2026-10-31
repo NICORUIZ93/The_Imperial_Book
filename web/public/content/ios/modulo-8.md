@@ -61,10 +61,9 @@ Pista: agregale a `cargar()` un `print` de depuración que inspeccione `UIApplic
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando la referencia a `UIApplication`, y escribí una prueba de `EnviosViewModel` que lo construya con un `ServicioAPI` falso (que devuelve una lista fija de guías) y confirme que `envios` queda poblado después de `cargar()`, sin ningún `import SwiftUI` en el archivo de test.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ViewModel extraído del Paso 4, el acoplamiento a UIKit detectado en el Paso 5, y la prueba sin SwiftUI del Paso 6; explicá por qué una vista que decide qué hacer con el resultado de una llamada de red es tan difícil de testear como un ViewModel que importa UIKit en su lógica de negocio. Siguiente paso: estudia cómo organizar las carpetas del proyecto por capa. Errores comunes: ViewModel que importa SwiftUI, lógica de negocio en el `body`, y pruebas que necesitan renderizar la vista completa. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque separar qué se ve de cómo se comporta permite probar la lógica de negocio sin renderizar ninguna vista.
-**Evidencia de aprendizaje:** entrega ViewModel extraído, acoplamiento detectado y prueba sin SwiftUI.
 **Conceptos clave:** la vista describe, el ViewModel orquesta y decide.
 
 Una vista que mezcla fetching de red, decisiones sobre errores y formateo de datos directamente en su `body` se vuelve progresivamente difícil de mantener y, más grave aún, imposible de testear sin renderizar la vista completa; extraer esa lógica a un `@Observable` ViewModel deja a la vista con la única responsabilidad de describir cómo se ve el estado actual (`vm.envios`), mientras el ViewModel decide qué hacer con cada resultado de `ServicioAPI` — el mismo problema y la misma solución arquitectónica estudiada de forma independiente en Android con `ViewModel` (Módulo 4 de ese track) y en React con hooks personalizados (Módulo 3 del track de React).
@@ -132,10 +131,9 @@ Pista: cambiá el inicializador a `init() { self.servicio = ServicioAPI() }`, si
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el parámetro al inicializador, y movés `ServicioAPI` a su propia carpeta `Servicios/` y `Envio` (el modelo de datos) a `Dominio/` — confirmá que `ViewModels/` no importa nada de `Vistas/`, y que `Dominio/` no importa nada de `Servicios/`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el inicializador con valor por defecto del Paso 4, la dependencia fija detectada en el Paso 5, y la estructura de carpetas del Paso 6; explicá por qué un valor por defecto en el inicializador (`servicio: ServicioAPI = ServicioAPI()`) no es lo mismo que un singleton global, aunque en producción ambos acaben usando "la misma" implementación real. Siguiente paso: estudia cuándo esta arquitectura simple no alcanza. Errores comunes: servicio creado dentro del ViewModel sin parámetro, carpetas organizadas por pantalla en vez de por capa, y Dominio que importa Servicios. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
 **¿Por qué es importante?** Porque la inyección por inicializador permite sustituir dependencias en tests sin singletons globales difíciles de aislar.
-**Evidencia de aprendizaje:** entrega inicializador con default, dependencia fija detectada y carpetas separadas por capa.
 **Conceptos clave:** inyección por inicializador, límites explícitos entre capas.
 
 Organizar el proyecto en carpetas que reflejan estas responsabilidades (en vez de agrupar archivos solo por pantalla) hace visible la arquitectura directamente en la estructura del proyecto, y ayuda a que cualquier persona nueva en el equipo sepa dónde debería vivir código nuevo según su responsabilidad. Pasar `ServicioAPI` por el inicializador del ViewModel (con un valor por defecto que apunta a la implementación real) en vez de acceder a un singleton global (`ServicioAPI.shared`) permite sustituir esa dependencia por una falsa en tests sin ninguna configuración adicional — el mismo principio de inyección por constructor estudiado en Spring Boot (Módulo 0 de ese track) y en Hilt para Android (Módulo 7 de ese track).
@@ -198,10 +196,9 @@ Pista: agregá un tercer ViewModel (`ResumenRutaViewModel`) que vuelva a copiar 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 haciendo que `ResumenRutaViewModel` también use `EsEnvioAtrasado`, y agregá el margen de tolerancia de 15 minutos solo dentro de `EsEnvioAtrasado.ejecutar` — confirmá que los tres ViewModels reflejan el nuevo comportamiento sin que ninguno haya cambiado su propio código.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la duplicación provocada en el Paso 5, la corrección centralizada del Paso 6, y una frase explicando en qué punto decidiste que la regla merecía su propio caso de uso en vez de quedarse copiada; mencioná también cuándo NO conviene: una regla usada en un solo ViewModel no necesita todavía esta capa. Siguiente paso: estudia testing con XCTest. Errores comunes: extraer un caso de uso para lógica usada en un solo lugar, duplicar reglas "porque es solo una línea", y adoptar arquitecturas complejas (como TCA) antes de que la app lo necesite genuinamente. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
 **¿Por qué es importante?** Porque reconocer cuándo una regla se duplica evita tanto la sub-arquitectura (lógica copiada entre ViewModels) como la sobre-arquitectura (casos de uso para reglas usadas una sola vez).
-**Evidencia de aprendizaje:** entrega duplicación provocada, corrección centralizada y criterio escrito de cuándo aplica.
 **Conceptos clave:** caso de uso como regla de negocio reutilizable; límite entre MVVM simple y capas adicionales.
 
 Para apps con varios ViewModels que comparten lógica de negocio sustancial, o con flujos de navegación complejos coordinados entre pantallas, algunos equipos adoptan además TCA (The Composable Architecture), una arquitectura de terceros que estructura estado y acciones de forma más explícita y testeable a gran escala, a costa de una curva de aprendizaje y un boilerplate inicial mayor que el MVVM simple de este módulo. Reconocer cuándo MVVM simple empieza a quedarse corto es una habilidad tan importante como saber implementarlo bien desde el principio: introducir complejidad arquitectónica antes de necesitarla también tiene un costo de mantenimiento.

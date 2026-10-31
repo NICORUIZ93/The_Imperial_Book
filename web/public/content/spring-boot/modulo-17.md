@@ -93,13 +93,12 @@ Agrega un reporte con `JOIN` entre `envio` y `parada`; mapea el resultado a un D
 
 Implementa búsqueda paginada y un reporte de RutaFlow por estado y fecha. Decide si JdbcTemplate, JPA o una combinación expresa mejor cada consulta. Mide tiempos solo con datos representativos; la elección no se basa en que un estilo sea universalmente más rápido.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Entrega el repository, el test de slice y la consulta de reporte como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no disperses SQL en controladores ni construyas un framework DAO genérico sin necesidad. **Evidencia:** tests para parámetros, ausencia y paginación.
+Entrega el repository, el test de slice y la consulta de reporte como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no disperses SQL en controladores ni construyas un framework DAO genérico sin necesidad.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** concatenar directamente un valor recibido del usuario dentro del SQL en lugar de pasarlo como parámetro `?` (abre la puerta a inyección), y dejar que el repository JDBC devuelva filas crudas al controlador en vez de mapearlas a un DTO dentro del DAO.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida de `./mvnw test -Dtest=EnvioJdbcRepositoryTest` mostrando el fallo con la concatenación SQL vulnerable, la corrección parametrizada que lo deja en verde, y el resultado del reporte con `JOIN` paginado y ordenado contra la allowlist.
 ### Tema 2: `@Transactional`, rollback y límites de transacción
 
 #### Paso 1 · Objetivo y preparación
@@ -173,10 +172,9 @@ Prueba explícitamente una checked exception y decide si la política requiere `
 
 Implementa una liquidación de RutaFlow con deduplicación por `operation_id`. Incluye restricción única, rollback, segundo intento idempotente y una prueba donde una excepción de negocio no deja escrituras parciales.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Entrega test de rollback, test de repetición y nota sobre el límite transaccional para el proyecto integrador de RutaFlow. **Cuándo no usarlo:** no mantengas una transacción abierta durante HTTP, archivos o espera humana; usa outbox/saga para coordinar efectos externos. **Evidencia:** ambos estados consistentes después del éxito y del error.
+Entrega test de rollback, test de repetición y nota sobre el límite transaccional para el proyecto integrador de RutaFlow. **Cuándo no usarlo:** no mantengas una transacción abierta durante HTTP, archivos o espera humana; usa outbox/saga para coordinar efectos externos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** anotar con `@Transactional` un método privado o invocarlo desde otro método del mismo bean (self-invocation) esperando que el proxy de Spring lo intercepte igual, y mantener la transacción abierta mientras se espera una respuesta HTTP o se escribe en Kafka, extendiendo el límite transaccional fuera de la base de datos.
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-**Evidencia de aprendizaje:** entrega la salida del test que fuerza el fallo de la segunda escritura mostrando que ninguna de las dos tablas quedó con datos parciales, el resultado de mover `@Transactional` a una llamada interna (sin rollback), y la explicación de qué anomalía evita tu prueba de carrera con `@Version`.

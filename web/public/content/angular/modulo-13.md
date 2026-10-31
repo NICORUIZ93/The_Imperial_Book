@@ -157,9 +157,9 @@ const harness = await ____.create();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un guard funcional y un test con `RouterTestingHarness` que confirme tanto el bloqueo sin sesión como el acceso permitido con sesión. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con navegación real del router de Angular, que la separación `tareas/` / `auth/` funciona como puntos de integración explícitos y verificables. El siguiente tema confirma que el store compartido mantiene una única instancia entre componentes mediante una ruta protegida y perezosa. **Evidencia:** entrega el resultado de ambos tests en verde, y el acceso indebido que produce el fallo deliberado sin la verificación real del guard. Fuentes oficiales: [Angular — Router testing](https://angular.dev/guide/routing), [Angular — Overview](https://angular.dev/overview).
+Ya confirmas, con navegación real del router de Angular, que la separación `tareas/` / `auth/` funciona como puntos de integración explícitos y verificables. El siguiente tema confirma que el store compartido mantiene una única instancia entre componentes mediante una ruta protegida y perezosa. Fuentes oficiales: [Angular — Router testing](https://angular.dev/guide/routing), [Angular — Overview](https://angular.dev/overview).
 
 **Errores comunes:** un guard que devuelve `false` sin redirigir, dejando al usuario en una pantalla en blanco sin indicación de qué hacer; mezclar lógica de autenticación dentro de la feature de tareas, rompiendo la separación de responsabilidades.
 
@@ -294,9 +294,9 @@ export class TareasStore { /* ... */ }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos componentes que inyectan el mismo store y un test `toBe(...)` que confirme su identidad compartida. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con una comparación de identidad de objeto real, que `providedIn: 'root'` garantiza una única instancia de store compartida entre todos los componentes que la inyectan. El siguiente y último tema del track confirma con `HttpTestingController` real que `TareasStore` sincroniza correctamente ese estado compartido con un backend real. **Evidencia:** entrega el resultado de ambos tests en verde, y la ruptura de identidad que produce el fallo deliberado al registrar el store a nivel de componente. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — HttpClient](https://angular.dev/guide/http).
+Ya confirmas, con una comparación de identidad de objeto real, que `providedIn: 'root'` garantiza una única instancia de store compartida entre todos los componentes que la inyectan. El siguiente y último tema del track confirma con `HttpTestingController` real que `TareasStore` sincroniza correctamente ese estado compartido con un backend real. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — HttpClient](https://angular.dev/guide/http).
 
 **Errores comunes:** registrar un store compartido a nivel de componente (`providers: [...]` en el decorador) en vez de `providedIn: 'root'`, creando instancias separadas sin quererlo; exponer el signal mutable directamente en vez de con `asReadonly()`, permitiendo que cualquier componente lo modifique sin pasar por un método público.
 
@@ -444,9 +444,9 @@ const peticion = httpMock.____('/api/tareas');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un store con `HttpClient` y `computed()`, y un test con `HttpTestingController` que confirme tanto la petición como la derivación correcta tras `flush(...)`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `HttpTestingController` real interceptando la petición genuina de `TareasStore`, que la combinación de signals, `computed` y `HttpClient` funciona de extremo a extremo. Esto cierra el track de Angular completo; como siguiente paso, aplica este mismo patrón integrador a un proyecto propio que combine routing, store y formularios. **Evidencia:** entrega el resultado del test en verde, y el valor incorrecto (`3` en vez de `2`) que produce el fallo deliberado sin el filtro real en `computed()`. Fuentes oficiales: [Angular — Testing HTTP requests](https://angular.dev/guide/http/testing), [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con `HttpTestingController` real interceptando la petición genuina de `TareasStore`, que la combinación de signals, `computed` y `HttpClient` funciona de extremo a extremo. Esto cierra el track de Angular completo; como siguiente paso, aplica este mismo patrón integrador a un proyecto propio que combine routing, store y formularios. Fuentes oficiales: [Angular — Testing HTTP requests](https://angular.dev/guide/http/testing), [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** omitir `httpMock.verify()`, dejando pasar peticiones duplicadas o inesperadas sin detectarlas; un `computed()` que olvida su lógica de filtrado real, dejando de aportar ningún valor derivado sobre el signal base.
 

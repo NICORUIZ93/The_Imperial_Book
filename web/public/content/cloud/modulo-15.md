@@ -62,7 +62,7 @@ Resultado esperado: Terraform disponible.
 Pista: declara un recurso inválido para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Añade variables, outputs y un módulo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega archivos, salida, fallo y corrección; explica el resultado. Siguiente paso: plan. Errores comunes: estado local perdido y secretos en variables. Fuente oficial: https://developer.hashicorp.com/terraform/docs.
 
 ### Tema 2: Change sets
@@ -115,7 +115,7 @@ Resultado esperado: Terraform disponible.
 Pista: modifica una variable para provocar un fallo deliberado de validación y corrígelo.
 #### Paso 6 · Práctica independiente
 Guarda plan y revisa cambios peligrosos.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: drift. Errores comunes: aplicar sin revisar y no fijar versiones. Fuente oficial: https://developer.hashicorp.com/terraform/cli/commands/plan.
 
 ### Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta
@@ -162,7 +162,7 @@ Resultado esperado: Terraform disponible.
 Pista: cambia un recurso manualmente para provocar un fallo deliberado de convergencia y corrígelo.
 #### Paso 6 · Práctica independiente
 Documenta importación y reconciliación.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega diff, salida, fallo y corrección; explica el resultado. Siguiente paso: CI/CD. Errores comunes: aceptar cambios manuales y no proteger estado. Fuente oficial: https://developer.hashicorp.com/terraform/language/state.
 
 ## Laboratorio práctico

@@ -62,7 +62,7 @@ Resultado esperado: AMBAS colas reciben su propia copia del mismo mensaje — `c
 Pista: desuscribí `analitica-entregas` (`aws sns unsubscribe --subscription-arn <arn-de-esa-suscripción>`) y publicá un segundo mensaje — ese es el fallo deliberado: `notificaciones-cliente` sigue recibiendo todo con normalidad, pero `analitica-entregas` nunca va a ver ese segundo mensaje, porque ya no está suscrita, sin que `confirmar-entrega` se entere de que algo cambió del lado de los consumidores.
 #### Paso 6 · Práctica independiente
 Agregá una tercera cola `auditoria-entregas`, suscribila al mismo topic, publicá un tercer mensaje, y confirmá que las tres colas activas (`notificaciones-cliente`, `auditoria-entregas`, y `analitica-entregas` si la volviste a suscribir) reciben copia, cada una de forma completamente aislada de las demás.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos colas recibiendo el mismo mensaje del Paso 4, la desuscripción silenciosa del Paso 5, y la tercera cola del Paso 6; explicá por qué `confirmar-entrega` nunca necesitó cambiar su código al agregar o quitar consumidores. Siguiente paso: filtrado. Errores comunes: asumir orden global y no monitorizar suscriptores. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/welcome.html.
 
 ### Tema 2: EventBridge: bus de eventos con filtrado declarativo
@@ -128,7 +128,7 @@ Resultado esperado: ambos `put-events` responden con éxito (EventBridge siempre
 Pista: probá `aws events put-rule --name ReglaRota --event-bus-name rutaflow-eventos --event-pattern '{"detail":{"estado": "entregado"}}'` (sin los corchetes de array alrededor de `"entregado"`) — ese es el fallo deliberado: `InvalidEventPatternException`, porque EventBridge exige que los valores de un patrón vengan siempre dentro de un array, aunque sea de un solo elemento.
 #### Paso 6 · Práctica independiente
 Definí tres eventos de prueba con `estado`: `"entregado"` (válido, dispara la regla), `"ENTREGADO"` en mayúsculas (límite: EventBridge compara el string exacto, así que esto NO dispara la regla aunque el significado de negocio sea el mismo), y `"cancelado"` (claramente inválido para esta regla) — confirmá el comportamiento de cada uno con `put-events`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la regla creada, el evento filtrado correctamente del Paso 4, el patrón inválido del Paso 5, y los tres casos del Paso 6; explicá por qué EventBridge compara el string exacto y no el significado. Siguiente paso: combinar SNS y SQS. Errores comunes: filtros demasiado amplios y eventos sin versión. Fuente oficial: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html.
 
 ### Tema 3: SNS + SQS juntos, y Azure Event Hubs
@@ -150,7 +150,7 @@ Resultado esperado: `ApproximateNumberOfMessages` muestra 2 — nadie llamó a `
 Pista: el fallo real que este patrón evita es el contrario — probá qué pasaría SIN la cola: si `notificaciones-cliente` fuera un endpoint HTTP directo (en vez de SQS) y ese endpoint estuviera caído en el momento exacto de la publicación, SNS reintentaría un número limitado de veces y después descartaría el mensaje para siempre. Documentá esa diferencia como el "fallo deliberado" conceptual de este Tema: la ausencia de la cola, no un comando roto.
 #### Paso 6 · Práctica independiente
 "Reanudá" el consumidor corriendo `aws sqs receive-message --queue-url "$NOTIF_Q" --max-number-of-messages 10` y confirmá que los dos mensajes del Paso 4 aparecen completos, con el mismo contenido que se publicó, demostrando que la espera no corrompió ni perdió nada.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los dos mensajes retenidos del Paso 4, la comparación conceptual del Paso 5 y la recepción completa del Paso 6; explicá por qué SNS+SQS es más robusto que SNS entregando directo a un endpoint HTTP. Siguiente paso: observabilidad. Errores comunes: publicar sin DLQ y olvidar visibilidad. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html.
 **Conceptos clave:** combinar fan-out con garantía de entrega, no perder mensajes si un consumidor está temporalmente caído.
 

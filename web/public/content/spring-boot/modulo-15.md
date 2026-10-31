@@ -111,9 +111,9 @@ StepVerifier.create(flux, 0)
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Flux` con `doOnRequest` y un test que confirme, con demanda inicial `0`, que el backpressure real limita lo emitido. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya demuestras con `reactor-test` que el backpressure de Reactive Streams es un mecanismo real de demanda explícita, no una descripción abstracta. El siguiente tema acelera la suite de tests reutilizando contenedores de Testcontainers entre clases. **Evidencia:** entrega el resultado de `BackpressureRealTest` en verde, y la demanda ilimitada real que produce el fallo deliberado sin `StepVerifier.create(flux, 0)`. Fuentes oficiales: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
+Ya demuestras con `reactor-test` que el backpressure de Reactive Streams es un mecanismo real de demanda explícita, no una descripción abstracta. El siguiente tema acelera la suite de tests reutilizando contenedores de Testcontainers entre clases. Fuentes oficiales: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
 
 **Errores comunes:** asumir que backpressure "simplemente funciona" sin verificar la demanda real solicitada; dejar que un consumidor por defecto solicite demanda ilimitada cuando el caso de uso requiere control explícito.
 
@@ -239,9 +239,9 @@ String id = POSTGRES.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase base con un contenedor compartido arrancado estáticamente, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aplicas el patrón oficial de contenedor compartido de Testcontainers, confirmado con evidencia real del `containerId`, para acelerar una suite de tests con múltiples clases. El siguiente tema congela reglas arquitectónicas de un diseño hexagonal con una herramienta que las verifica automáticamente. **Evidencia:** entrega el resultado de ambos tests en verde, y el error de conexión real que produce el fallo deliberado sin el arranque estático. Fuentes oficiales: [Testcontainers — Manual Container Lifecycle Control](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/).
+Ya aplicas el patrón oficial de contenedor compartido de Testcontainers, confirmado con evidencia real del `containerId`, para acelerar una suite de tests con múltiples clases. El siguiente tema congela reglas arquitectónicas de un diseño hexagonal con una herramienta que las verifica automáticamente. Fuentes oficiales: [Testcontainers — Manual Container Lifecycle Control](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/).
 
 **Errores comunes:** combinar el patrón singleton container con `@Testcontainers`/`@Container` en la misma clase, causando conflictos de ciclo de vida; olvidar el arranque estático explícito, dejando el contenedor sin iniciar.
 
@@ -382,9 +382,9 @@ ArchRule regla = noClasses().that().resideInAPackage("..domain..")
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una regla ArchUnit que prohíba que el dominio dependa de la infraestructura, y un test que la ejecute. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya congelas una regla arquitectónica hexagonal como un test ejecutable con ArchUnit, atrapando violaciones en el build en vez de en una revisión manual. El siguiente tema protege llamadas entre servicios con Bulkhead y RateLimiter de Resilience4j, complementando el CircuitBreaker ya visto. **Evidencia:** entrega el resultado de `ReglaHexagonalTest` en verde, y el mensaje de violación real de ArchUnit que produce el fallo deliberado. Fuentes oficiales: [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
+Ya congelas una regla arquitectónica hexagonal como un test ejecutable con ArchUnit, atrapando violaciones en el build en vez de en una revisión manual. El siguiente tema protege llamadas entre servicios con Bulkhead y RateLimiter de Resilience4j, complementando el CircuitBreaker ya visto. Fuentes oficiales: [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
 **Errores comunes:** documentar una regla arquitectónica solo en un README sin verificación automatizada; definir reglas demasiado laxas que no detectan violaciones reales.
 
@@ -535,9 +535,9 @@ try {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Bulkhead` con límite de concurrencia y un `RateLimiter` con límite por ventana, cada uno con un test que confirme el rechazo real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya proteges llamadas concurrentes con Bulkhead (aislamiento de recursos) y RateLimiter (límite de tasa), complementando el CircuitBreaker del Módulo 10 con un conjunto completo de primitivas de resiliencia. El siguiente tema orquesta una saga real con pasos compensables. **Evidencia:** entrega el resultado de `BulkheadRateLimiterTest` en verde, y la protección perdida que produce el fallo deliberado al aumentar el límite de concurrencia. Fuentes oficiales: [Resilience4j — Bulkhead](https://resilience4j.readme.io/docs/bulkhead) y [Resilience4j — RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
+Ya proteges llamadas concurrentes con Bulkhead (aislamiento de recursos) y RateLimiter (límite de tasa), complementando el CircuitBreaker del Módulo 10 con un conjunto completo de primitivas de resiliencia. El siguiente tema orquesta una saga real con pasos compensables. Fuentes oficiales: [Resilience4j — Bulkhead](https://resilience4j.readme.io/docs/bulkhead) y [Resilience4j — RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
 
 **Errores comunes:** dimensionar un Bulkhead demasiado holgado, eliminando la protección real que debía ofrecer; combinar retries con RateLimiter sin considerar que los reintentos también consumen permisos de la ventana.
 
@@ -710,9 +710,9 @@ Collections.____(aCompensar);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un orquestador de saga con compensación en orden inverso, y un test que confirme el log de ejecución completo ante un fallo intermedio. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya orquestas una saga real con compensación en orden inverso, confirmada con un log de ejecución concreto, no solo descrita en prosa. El siguiente y último tema de este módulo reconstruye el estado de un agregado reproduciendo su historial completo de eventos. **Evidencia:** entrega el resultado de `SagaCompensacionTest` en verde, y la corrección de orden que exige el fallo deliberado. Fuentes oficiales: [microservices.io — Saga Pattern](https://microservices.io/patterns/data/saga.html).
+Ya orquestas una saga real con compensación en orden inverso, confirmada con un log de ejecución concreto, no solo descrita en prosa. El siguiente y último tema de este módulo reconstruye el estado de un agregado reproduciendo su historial completo de eventos. Fuentes oficiales: [microservices.io — Saga Pattern](https://microservices.io/patterns/data/saga.html).
 
 **Errores comunes:** compensar en el mismo orden de ejecución en vez del orden inverso; no manejar el caso donde una compensación misma falla.
 
@@ -870,9 +870,9 @@ EstadoPedido estadoFinal = EstadoPedido.____(eventos);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `sealed interface` de eventos de dominio y una función de replay que los reduzca a un estado final. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya reconstruyes el estado de un agregado reproduciendo su historial completo de eventos, confirmando que el orden y el contenido de esos eventos determinan exactamente el resultado. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. **Evidencia:** entrega el resultado de `ReplayTest` en verde, y el estado final distinto que produce el fallo deliberado al invertir el orden de los eventos. Fuentes oficiales: [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html).
+Ya reconstruyes el estado de un agregado reproduciendo su historial completo de eventos, confirmando que el orden y el contenido de esos eventos determinan exactamente el resultado. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html).
 
 **Errores comunes:** confundir Event Sourcing con simplemente "usar eventos" (como el outbox), cuando la diferencia real es si el estado se DERIVA del historial o se almacena convencionalmente; olvidar que el orden de aplicación de eventos es semánticamente significativo.
 
@@ -981,8 +981,8 @@ if __name__=='__main__':unittest.main()
 #### Paso 6 · Práctica independiente
 Añade contador de intentos, próximo instante permitido y estado de revisión manual tras un límite. Después diseña outbox/inbox para notificar la compensación confirmada sin perder el evento ni duplicar su efecto. No uses un sleep ilimitado dentro de una transacción.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** fallo, estado persistido antes del reinicio, recuperación y cantidad final. El siguiente paso es probar dos participantes y reentrega real de mensajes. **Errores comunes:** confundir compensación con rollback global, marcar HECHA antes del efecto y reintentar sin observabilidad ni límite. **Límites y decisión de uso:** esta muestra serial no prueba concurrencia entre múltiples consumidores; una variante concurrente necesita bloqueo o transición condicional y pruebas de carreras.
+#### Paso 7 · Cierre
+El siguiente paso es probar dos participantes y reentrega real de mensajes. **Errores comunes:** confundir compensación con rollback global, marcar HECHA antes del efecto y reintentar sin observabilidad ni límite. **Límites y decisión de uso:** esta muestra serial no prueba concurrencia entre múltiples consumidores; una variante concurrente necesita bloqueo o transición condicional y pruebas de carreras.
 
 **Fuente oficial:** [patrón Saga](https://microservices.io/patterns/data/saga.html).
 
@@ -1028,6 +1028,20 @@ estable; los adaptadores son los cables concretos; Spring es la cocina. Cambiar
 la cocina no debe cambiar la receta. El límite es que una arquitectura limpia no
 garantiza buen modelado: una entidad anémica o un caso de uso que solo reenvía
 llamadas sigue siendo diseño débil aunque tenga muchos paquetes.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    H["HTTP"] --> C["Adaptador: controlador"]
+    C --> U["Caso de uso: CreateShipment"]
+    U --> D["Dominio: Shipment y ShipmentId"]
+    U -->|"usa"| P["Puerto: ShipmentRepository"]
+    A["Adaptador: JPA o en memoria"] -->|"implementa"| P
+    A --> DB["H2 o PostgreSQL"]
+    SB["Spring Boot"] -.->|"inyecta"| C
+    SB -.->|"inyecta"| A
+```
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -1127,12 +1141,13 @@ está demasiado adentro.
 3. Diseña un `CreateShipmentController` que traduzca una petición HTTP a la
    orden del caso de uso, sin devolver la entidad de persistencia directamente.
 4. Enumera qué parte cambiaría al pasar de H2 a PostgreSQL y qué parte debería
-   permanecer intacta.
+   permanecer intacta. En el proyecto integrador, documenta esa frontera en
+   `docs/arquitectura.md` e indica qué paquetes pueden importar Spring.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-**Evidencia de aprendizaje:** entrega la compilación con `bash test.sh`, el diagrama de la
-dirección de dependencias, test de la transición inválida y una tabla que
+Registra la dirección de dependencias, el test de la transición inválida y una
+tabla que
 separe dominio, aplicación, adaptadores y drivers. El siguiente paso es revisar
 la regla con ArchUnit en el Tema 3 y conectar el caso de uso a una API REST sin
 exponer entidades JPA.

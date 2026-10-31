@@ -106,9 +106,9 @@ Ejecuta `find app/src/main/res -type d` y para cada carpeta que veas (`values/`,
 
 Agrega un nuevo recurso de color en `app/src/main/res/values/colors.xml` (créalo si no existe) y úsalo desde el `MainActivity.kt` generado por la plantilla, confirmando con `grep` que el color se referencia por nombre de recurso (`R.color.tu_color`), no como un valor hexadecimal hardcodeado en Kotlin.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya ubicas con confianza dónde vive el código, los recursos y la configuración de build de cualquier proyecto Android. El siguiente tema profundiza específicamente en cómo y por qué externalizar recursos de texto. **Evidencia:** entrega el resultado del `grep` confirmando que `app_name` vive en `strings.xml` y no como literal en ningún archivo `.kt`, y explica por qué esa ausencia es la señal de una externalización correcta. Fuente oficial: [Android Developers — App resources overview](https://developer.android.com/guide/topics/resources/providing-resources).
+Ya ubicas con confianza dónde vive el código, los recursos y la configuración de build de cualquier proyecto Android. El siguiente tema profundiza específicamente en cómo y por qué externalizar recursos de texto. Fuente oficial: [Android Developers — App resources overview](https://developer.android.com/guide/topics/resources/providing-resources).
 
 **Errores comunes:** escribir código Kotlin directamente dentro de `res/` por error de ubicación; modificar `AndroidManifest.xml` sin sincronizar Gradle después, dejando cambios sin aplicar realmente al build.
 
@@ -233,9 +233,9 @@ Agrega `res/values-night/colors.xml` con un color de fondo oscuro para la misma 
 
 Agrega un tercer idioma (`values-pt/strings.xml`, portugués) con la traducción de `titulo_bienvenida`, y confirma con el script de comparación que las tres versiones (español, inglés, portugués) comparten exactamente la misma clave.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya externalizas textos y confirmas programáticamente que las traducciones mantienen las mismas claves de recurso. El siguiente tema cubre el manifiesto que declara los componentes de la app ante el sistema operativo. **Evidencia:** entrega el resultado de la comparación de claves mostrando `titulo_bienvenida` compartida entre español e inglés, y explica qué pasaría si una clave faltara en un idioma. Fuente oficial: [Android Developers — Localization](https://developer.android.com/guide/topics/resources/localization).
+Ya externalizas textos y confirmas programáticamente que las traducciones mantienen las mismas claves de recurso. El siguiente tema cubre el manifiesto que declara los componentes de la app ante el sistema operativo. Fuente oficial: [Android Developers — Localization](https://developer.android.com/guide/topics/resources/localization).
 
 **Errores comunes:** agregar una traducción nueva sin mantener la misma clave exacta que la versión por defecto, rompiendo la resolución automática; hardcodear un string directamente en un composable "solo por ahora" y olvidar externalizarlo después.
 
@@ -347,9 +347,9 @@ Agrega el permiso `INTERNET` al `AndroidManifest.xml` (`<uses-permission android
 
 Agrega una segunda función a `core/src/main/kotlin/com/academia/core/Formateador.kt` y úsala desde `MainActivity.kt` en `:app`, confirmando visualmente que el import (`import com.academia.core.NombreDeLaFuncion`) referencia correctamente el paquete del módulo `:core`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras componentes y permisos en el manifiesto, y divides un proyecto en módulos Gradle con dependencias explícitas y unidireccionales. El siguiente módulo del track construye sobre esta base con Jetpack Compose y estado. **Evidencia:** entrega el resultado confirmando la línea `project(":core")` en `app/build.gradle.kts`, y explica por qué `:core` nunca debe depender de `:app` en sentido inverso. Fuente oficial: [Android Developers — App manifest overview](https://developer.android.com/guide/topics/manifest/manifest-intro).
+Ya declaras componentes y permisos en el manifiesto, y divides un proyecto en módulos Gradle con dependencias explícitas y unidireccionales. El siguiente módulo del track construye sobre esta base con Jetpack Compose y estado. Fuente oficial: [Android Developers — App manifest overview](https://developer.android.com/guide/topics/manifest/manifest-intro).
 
 **Errores comunes:** declarar un componente `exported="true"` sin necesidad real, exponiendo innecesariamente esa Activity a otras apps; crear una dependencia circular entre módulos de distinto nivel de abstracción.
 
@@ -441,7 +441,7 @@ Añade a `Tarea` un campo `prioridad: Int = 0` y usa `copy` para subir la priori
 #### Paso 6 · Práctica independiente
 Escribe una función que reciba `List<Tarea>` y devuelva, usando `filter` y `map`, los títulos de las tareas no completadas. Entrega la salida con una lista de ejemplo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega el modelo `Tarea`, el `when`, el manejo de null y el filtrado funcional. **¿Por qué es importante?** Kotlin es el lenguaje de Android moderno: cada ViewModel, cada estado de Compose y cada repositorio del resto del track se escribe con estos elementos. Dominar `data class`, null safety y lambdas aquí hace que todo lo demás se entienda en vez de copiarse a ciegas. Fuentes: [Kotlin docs — Basics](https://kotlinlang.org/docs/basic-syntax.html) y [Null safety](https://kotlinlang.org/docs/null-safety.html).
 **Conceptos clave:** `val`/`var`, null safety, `data class`, `copy`, `when`, lambdas y funciones de orden superior.
 **Cuándo no usarlo:** no fuerces una `data class` para objetos con identidad y ciclo de vida (como una Activity); las data class son para contenedores de datos inmutables, no para entidades con comportamiento mutable.
@@ -498,7 +498,7 @@ Lanza DOS cargas en paralelo con `async`/`await` y mide que juntas tardan ~1 seg
 #### Paso 6 · Práctica independiente
 Simula un error en `cargarEnvios` (lanza una excepción) y manéjalo con `try/catch` dentro de la corrutina, devolviendo una lista vacía. Explica por qué el `try/catch` funciona aunque el código sea asíncrono.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la carga asíncrona, las dos cargas en paralelo y el manejo de error. **¿Por qué es importante?** Toda operación de red, base de datos o archivo en Android se hace con corrutinas: `viewModelScope`, `Dispatchers.IO`, `suspend` aparecen en cada módulo del track a partir del 4. Entenderlas aquí convierte el resto del curso en comprensible. Fuentes: [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) y [Android — Coroutines](https://developer.android.com/kotlin/coroutines).
 **Conceptos clave:** `suspend`, `launch`, `async`/`await`, `viewModelScope`, `Dispatchers`, suspender vs bloquear.
 **Cuándo no usarlo:** para trabajo puramente síncrono y rápido (una suma, formatear un texto) no necesitas corrutinas; añaden complejidad sin beneficio. Son para operaciones que esperan (E/S) o que tardan.
@@ -509,12 +509,11 @@ Entrega la carga asíncrona, las dos cargas en paralelo y el manejo de error. **
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** llamar código bloqueante (`Thread.sleep`, una lectura de archivo síncrona) dentro de una corrutina creyendo que "suspender" la protege, o copiar `runBlocking` a un ViewModel real en vez de `viewModelScope.launch`, lo que bloquea el hilo principal igual que si no hubiera corrutinas.
 **Fuente oficial:** [documentación de Android](https://developer.android.com/docs).
-**Evidencia de aprendizaje:** entrega el log con "Cargando…" y "Recibidos: [RF-4471, RF-5002]", el tiempo medido de las dos cargas en paralelo (~1 segundo, no 2) y la explicación de por qué `delay` libera el hilo mientras `Thread.sleep` lo bloquea.
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con crea una carpeta vacía `academia-android`, abre Android Studio y genera allí un proyecto **Empty Activity**; luego ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | Compose, estado y navegación. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | red, Room y trabajo en background. | Casos normales, límite y error automatizados. |

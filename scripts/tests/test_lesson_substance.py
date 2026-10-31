@@ -36,9 +36,9 @@ node ejemplo.mjs
 
 Repite el ejercicio con otro valor.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Siguiente paso: el siguiente tema. **Evidencia de aprendizaje:** entrega la salida.
+Siguiente paso: el siguiente tema.
 
 **Errores comunes:** olvidar guardar.
 

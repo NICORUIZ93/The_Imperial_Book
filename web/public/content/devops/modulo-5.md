@@ -89,9 +89,9 @@ Automatiza el corte con un pequeño script `cambiar-a.sh green` que reciba el no
 
 Mide con `time` cuánto tarda el corte completo (cambio de configuración + reload) frente a cuánto tardaría reconstruir y volver a desplegar un contenedor desde cero, y documenta la diferencia como justificación cuantitativa del beneficio de blue-green.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya cortas tráfico de golpe entre dos entornos idénticos, con rollback casi instantáneo. El siguiente tema expone la nueva versión gradualmente en vez de de golpe. **Evidencia:** entrega como resultado las tres respuestas de `curl` (blue, green, rollback a blue) y explica el corte y la reversión observados. Fuente oficial: [Martin Fowler — BlueGreenDeployment](https://martinfowler.com/bliki/BlueGreenDeployment.html).
+Ya cortas tráfico de golpe entre dos entornos idénticos, con rollback casi instantáneo. El siguiente tema expone la nueva versión gradualmente en vez de de golpe. Fuente oficial: [Martin Fowler — BlueGreenDeployment](https://martinfowler.com/bliki/BlueGreenDeployment.html).
 
 **Errores comunes:** olvidar recargar NGINX (`nginx -s reload`) después de cambiar la configuración, dejando el corte sin efecto; destruir el entorno "blue" inmediatamente después del corte, perdiendo la posibilidad de rollback instantáneo.
 
@@ -184,9 +184,9 @@ Cambia el porcentaje a `25%` y repite las 100 peticiones, confirmando que la pro
 
 Agrega una tercera versión `v3` con 1% de tráfico simultáneamente con el 5% de `v2`, ajustando `split_clients` para tres categorías, y confirma que las tres proporciones son observables en una muestra de 1000 peticiones.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya limitas el radio de impacto exponiendo gradualmente una nueva versión. El siguiente tema reemplaza instancias de forma incremental sin enrutamiento explícito por porcentaje. **Evidencia:** entrega el conteo de las 100 peticiones mostrando la proporción real observada, y el resultado del fallo con 50% en vez de 5%. Fuente oficial: [NGINX — split_clients](https://nginx.org/en/docs/http/ngx_http_split_clients_module.html).
+Ya limitas el radio de impacto exponiendo gradualmente una nueva versión. El siguiente tema reemplaza instancias de forma incremental sin enrutamiento explícito por porcentaje. Fuente oficial: [NGINX — split_clients](https://nginx.org/en/docs/http/ngx_http_split_clients_module.html).
 
 **Errores comunes:** confundir un cambio de configuración de enrutamiento con un problema de la aplicación misma; asumir que una muestra pequeña reproduce exactamente el porcentaje configurado.
 
@@ -266,9 +266,9 @@ Repite el reemplazo completo de las 3 instancias, contando en cada paso cuántas
 
 Simula `maxSurge: 1` levantando una cuarta instancia nueva ANTES de detener ninguna de las tres antiguas, y luego retirando las antiguas de a una; compara este enfoque con el anterior en términos de capacidad disponible durante la transición.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya reemplazas instancias sin interrupción de servicio, controlando el margen de disponibilidad. El siguiente tema desacopla activar una funcionalidad de desplegar su código. **Evidencia:** entrega como resultado el conteo de instancias disponibles en cada paso del reemplazo, y explica por qué nunca bajó del mínimo esperado. Fuente oficial: [Kubernetes — Rolling Update Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment).
+Ya reemplazas instancias sin interrupción de servicio, controlando el margen de disponibilidad. El siguiente tema desacopla activar una funcionalidad de desplegar su código. Fuente oficial: [Kubernetes — Rolling Update Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment).
 
 **Errores comunes:** detener todas las instancias antiguas antes de tener listas las nuevas, causando una ventana sin disponibilidad; no monitorear cuántas instancias están realmente disponibles durante el reemplazo.
 
@@ -348,9 +348,9 @@ Agrega un segundo flag `FLAG_DESCUENTO_ESPECIAL` independiente del primero, y co
 
 Implementa una activación parcial simple: usa una tercera variable `PORCENTAJE_ACTIVACION` y una condición pseudoaleatoria (`Math.random() * 100 < porcentaje`) para activar el flag solo para una fracción de las peticiones, acercándote al patrón de canary del Tema 2 pero a nivel de funcionalidad de negocio.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya despliegas código con frecuencia sin exponer funcionalidad incompleta, activándola después sin redeploy. El siguiente tema cierra el ciclo revirtiendo automáticamente ante métricas anómalas. **Evidencia:** entrega ambas respuestas de `curl` (flag desactivado y activado) sin ningún cambio de código entre ambas, y explica el fallo silencioso del valor mal escrito. Fuente oficial: [Martin Fowler — FeatureToggle](https://martinfowler.com/articles/feature-toggles.html).
+Ya despliegas código con frecuencia sin exponer funcionalidad incompleta, activándola después sin redeploy. El siguiente tema cierra el ciclo revirtiendo automáticamente ante métricas anómalas. Fuente oficial: [Martin Fowler — FeatureToggle](https://martinfowler.com/articles/feature-toggles.html).
 
 **Errores comunes:** comparar el valor del flag de forma frágil (sensible a mayúsculas o variantes del texto) sin validar explícitamente el valor esperado; dejar flags obsoletos en el código mucho después de que la funcionalidad ya se generalizó al 100%, acumulando deuda técnica de ramas condicionales innecesarias.
 
@@ -448,9 +448,9 @@ Reduce la ventana de observación a 5 peticiones en vez de 20 y repite el experi
 
 Modifica `app-fallido.js` para que la tasa de error real sea configurable por variable de entorno, y encuentra experimentalmente el umbral de tasa de error real a partir del cual tu `vigilar.sh` con `UMBRAL=20` empieza a disparar el rollback de forma consistente en al menos 8 de 10 ejecuciones.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya diseñas y simulas un rollback que actúa más rápido que cualquier supervisión humana, calibrando el compromiso entre sensibilidad y falsos positivos. Esto cierra el módulo de estrategias de despliegue; el siguiente módulo introduce Kubernetes, donde estos mismos patrones se implementan de forma nativa a mayor escala. **Evidencia:** entrega la salida de `vigilar.sh` con el umbral correcto (revierte) y con el umbral demasiado laxo (no revierte a pesar del problema real), explicando la diferencia. Fuente oficial: [Google SRE Book — Release Engineering](https://sre.google/sre-book/release-engineering/).
+Ya diseñas y simulas un rollback que actúa más rápido que cualquier supervisión humana, calibrando el compromiso entre sensibilidad y falsos positivos. Esto cierra el módulo de estrategias de despliegue; el siguiente módulo introduce Kubernetes, donde estos mismos patrones se implementan de forma nativa a mayor escala. Fuente oficial: [Google SRE Book — Release Engineering](https://sre.google/sre-book/release-engineering/).
 
 **Errores comunes:** definir un umbral basado en intuición sin datos históricos reales del sistema; usar una ventana de observación tan corta que el resultado depende más del azar que de la señal real.
 
@@ -534,8 +534,8 @@ python3 release.py
 #### Paso 6 · Práctica independiente
 Haz una candidata válida que conserve la salida requerida y registre una versión. Comprueba promoción y rechazo en dos ejecuciones. Añade un manejo explícito del timeout que conserve la versión anterior y registre el motivo.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** salida de promoción y rechazo, versión activa y tiempo observado. El siguiente paso es repetir el procedimiento con el orquestador y una migración expand/contract. **Errores comunes:** sobrescribir el artefacto anterior, no comprobar la recuperación y suponer que rollback restaura datos. **Límites y decisión de uso:** `active.txt` no es un mecanismo de producción; sirve para comprender la decisión antes de automatizarla en CI/CD.
+#### Paso 7 · Cierre
+El siguiente paso es repetir el procedimiento con el orquestador y una migración expand/contract. **Errores comunes:** sobrescribir el artefacto anterior, no comprobar la recuperación y suponer que rollback restaura datos. **Límites y decisión de uso:** `active.txt` no es un mecanismo de producción; sirve para comprender la decisión antes de automatizarla en CI/CD.
 
 **Fuente oficial:** [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
 ### Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas
@@ -582,6 +582,19 @@ canary es probar una receta con pocas mesas antes de servirla a todo el salón;
 shadow es dejar que una segunda cocina prepare una copia que nadie come. El
 límite es que un hash local no corrige sesgos de selección, consentimiento,
 privacidad, tamaño de muestra ni métricas mal elegidas.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    R["Tráfico real"] --> A["A/B: variante estable por usuario"]
+    R --> C["Canary: porcentaje a la candidata"]
+    R --> S["Shadow: copia de la petición"]
+    A --> AM["Métrica de producto por grupo"]
+    C --> CM["Decisión de continuar o revertir"]
+    S --> SD["Respuesta espejo descartada"]
+    SD --> SR["Se entrega solo la respuesta estable"]
+```
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -702,12 +715,14 @@ debe poder reintentarse o ejecutarse sin producir un efecto externo.
 3. Añade un timeout shadow de 1 ms y comprueba que una shadow lenta no bloquea
    indefinidamente la respuesta estable.
 4. Escribe una tabla que indique qué operaciones son de solo lectura, cuáles son
-   idempotentes y cuáles no deben duplicarse.
+   idempotentes y cuáles no deben duplicarse. En el proyecto integrador, deja en
+   `docs/despliegue.md` esa tabla junto con la métrica que compararías entre
+   ambas variantes.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-**Evidencia de aprendizaje:** salida de `npm test`, explicación escrita de las
-diferencias A/B–canary–shadow y una tabla de efectos permitidos en la variante
+Registra la tabla de diferencias A/B–canary–shadow y la tabla de efectos
+permitidos en la variante
 shadow. El siguiente paso es comparar estas decisiones con `Recreate` y
 `RollingUpdate` del Módulo 7 y con el split 90/10 de Istio del Módulo 15.
 
@@ -721,7 +736,3 @@ de aislamiento; demuestra la frontera conceptual y un contrato local.
 **Fuente oficial:** [Kubernetes Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
 
 ---
-
-
-## Laboratorio de transferencia
-

@@ -139,9 +139,9 @@ suspend fun cargarDatos() = coroutineScope {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función `suspend` con `coroutineScope` que combine dos llamadas en paralelo usando `async`/`await`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya combinas dos llamadas asíncronas en paralelo dentro de un `coroutineScope`, y confirmas con una medición real que el orden de `async`/`await` determina si realmente corren en paralelo o secuencialmente. El siguiente tema distingue `Flow`, `StateFlow` y `SharedFlow` según si existe o no un valor actual consultable. **Evidencia:** entrega la duración real medida (paralelo ~0.2s frente a secuencial ~0.4s), y explica por qué llamar a `await()` inmediatamente después de cada `async` anula el paralelismo. Fuente oficial: [Kotlin docs — Coroutines basics](https://kotlinlang.org/docs/coroutines-basics.html).
+Ya combinas dos llamadas asíncronas en paralelo dentro de un `coroutineScope`, y confirmas con una medición real que el orden de `async`/`await` determina si realmente corren en paralelo o secuencialmente. El siguiente tema distingue `Flow`, `StateFlow` y `SharedFlow` según si existe o no un valor actual consultable. Fuente oficial: [Kotlin docs — Coroutines basics](https://kotlinlang.org/docs/coroutines-basics.html).
 
 **Errores comunes:** llamar a `await()` inmediatamente después de cada `async` en vez de lanzar ambos primero, serializando lo que debería ser paralelo; olvidar que una función `suspend` solo puede invocarse desde otra `suspend` o un `CoroutineScope`.
 
@@ -269,9 +269,9 @@ val contadorTareas = MutableStateFlow____Int>(0)
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `MutableStateFlow` con un valor inicial y un `MutableSharedFlow` sin valor inicial, explicando en una frase cuándo usarías cada uno. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues `Flow`, `StateFlow` y `SharedFlow` según si existe un valor actual consultable, y confirmas con pruebas reales que un observador tardío de `SharedFlow` nunca recibe eventos pasados, a diferencia de `StateFlow`. El siguiente tema maneja errores dentro de coroutines y protege estado compartido con `Mutex`. **Evidencia:** entrega el resultado de las dos pruebas pasando en verde, y explica por qué usar `SharedFlow` para estado de UI persistente produce pantallas "congeladas" tras rotación. Fuente oficial: [Kotlin docs — StateFlow and SharedFlow](https://kotlinlang.org/docs/flow.html#stateflow-and-sharedflow).
+Ya distingues `Flow`, `StateFlow` y `SharedFlow` según si existe un valor actual consultable, y confirmas con pruebas reales que un observador tardío de `SharedFlow` nunca recibe eventos pasados, a diferencia de `StateFlow`. El siguiente tema maneja errores dentro de coroutines y protege estado compartido con `Mutex`. Fuente oficial: [Kotlin docs — StateFlow and SharedFlow](https://kotlinlang.org/docs/flow.html#stateflow-and-sharedflow).
 
 **Errores comunes:** usar `SharedFlow` para representar estado de UI persistente, perdiendo el valor para observadores tardíos; usar `StateFlow` para eventos de un solo uso, provocando que un Snackbar se repita indebidamente al rotar la pantalla (porque el "último valor" sigue disponible para el nuevo observador).
 
@@ -438,9 +438,9 @@ class Contador {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `try`/`catch` que transforme una excepción en un estado de error, y una clase con `Mutex` protegiendo un contador compartido. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya transformas errores de llamadas `suspend` en estados explícitos, y confirmas con una condición de carrera real (100 incrementos concurrentes perdiéndose hasta `1` sin protección, y preservándose en `100` con `Mutex`) por qué la exclusión mutua compatible con suspensión es necesaria. El siguiente y último tema del módulo distingue en qué hilo corre realmente tu código con Dispatchers. **Evidencia:** entrega los dos resultados del contador (sin Mutex: `1`; con Mutex: `100`), y explica por qué proteger solo la lectura sin la escritura correspondiente no resuelve la condición de carrera. Fuente oficial: [Kotlin docs — Shared mutable state and concurrency](https://kotlinlang.org/docs/shared-mutable-state-and-concurrency.html).
+Ya transformas errores de llamadas `suspend` en estados explícitos, y confirmas con una condición de carrera real (100 incrementos concurrentes perdiéndose hasta `1` sin protección, y preservándose en `100` con `Mutex`) por qué la exclusión mutua compatible con suspensión es necesaria. El siguiente y último tema del módulo distingue en qué hilo corre realmente tu código con Dispatchers. Fuente oficial: [Kotlin docs — Shared mutable state and concurrency](https://kotlinlang.org/docs/shared-mutable-state-and-concurrency.html).
 
 **Errores comunes:** usar `synchronized` dentro de una coroutine, bloqueando el hilo físico completo en vez de usar `Mutex`, compatible con suspensión; proteger solo una parte de la sección crítica (lectura o escritura, no ambas), dejando la condición de carrera sin resolver.
 
@@ -580,9 +580,9 @@ suspend fun obtenerTareasGuardadas(): List<Tarea> = withContext(Dispatchers.____
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función `suspend` que use `withContext(Dispatchers.IO)` para una operación de red, y explica en una frase por qué `suspend` por sí solo no garantiza esa protección. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges el `Dispatcher` apropiado según el tipo de operación (I/O bloqueante frente a cómputo intensivo), y confirmas con un test real que `withContext(Dispatchers.IO)` marca la diferencia entre una función que bloquea el hilo llamador y una que no. Esto cierra el módulo de coroutines y Flow; el siguiente módulo aplica estos fundamentos a la arquitectura completa de un proyecto KMP con source sets y `expect`/`actual`. **Evidencia:** entrega el resultado de las dos pruebas pasando en verde, y explica por qué `suspend fun` no es sinónimo de "no bloqueante" sin un `withContext` explícito. Fuente oficial: [Kotlin docs — Coroutine context and dispatchers](https://kotlinlang.org/docs/coroutine-context-and-dispatchers.html).
+Ya eliges el `Dispatcher` apropiado según el tipo de operación (I/O bloqueante frente a cómputo intensivo), y confirmas con un test real que `withContext(Dispatchers.IO)` marca la diferencia entre una función que bloquea el hilo llamador y una que no. Esto cierra el módulo de coroutines y Flow; el siguiente módulo aplica estos fundamentos a la arquitectura completa de un proyecto KMP con source sets y `expect`/`actual`. Fuente oficial: [Kotlin docs — Coroutine context and dispatchers](https://kotlinlang.org/docs/coroutine-context-and-dispatchers.html).
 
 **Errores comunes:** asumir que marcar una función como `suspend` es suficiente para que no bloquee el hilo principal, sin verificar el dispatcher efectivo usado dentro; usar `Dispatchers.IO` para cómputo intensivo de CPU (o viceversa), desaprovechando el pool de hilos optimizado para cada caso.
 

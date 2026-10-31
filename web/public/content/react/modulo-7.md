@@ -32,7 +32,6 @@ graph TD
     style D fill:#fff3e0
 ```
 
-**Evidencia de aprendizaje:** entrega store compartido, divergencia detectada y tercer consumidor sincronizado.
 **Conceptos clave:** `create`, suscripción selectiva, sin Provider obligatorio.
 
 Zustand crea un store global mediante una única función `create((set, get) => ({...}))`, donde `set` actualiza el estado (de forma similar en espíritu a un setter de `useState` pero operando sobre un store compartido fuera del árbol de componentes) y `get` lee el estado actual dentro de las propias acciones del store (`total: () => get().items.reduce((s, i) => s + i.precio, 0)`), sin requerir ningún `Provider` envolvente en el árbol de componentes (a diferencia de Context, Módulo 4, que exige un Provider explícito para que sus consumidores funcionen).
@@ -93,7 +92,7 @@ Pista: agregá un segundo `useState('todas')` local dentro de `PanelEnvios` "par
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agregá un tercer componente (`ContadorZona`) que también lea `zona` del mismo store, confirmando que los tres siempre muestran el mismo valor sin ninguna sincronización manual entre ellos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explicá por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuentes oficiales: https://zustand.docs.pmnd.rs/getting-started/introduction y https://zustand.docs.pmnd.rs/guides/typescript.
 **¿Por qué es importante?** La suscripción selectiva de Zustand evita re-renders innecesarios, y un store único como fuente de verdad evita la divergencia que ocurre cuando el mismo dato vive duplicado en dos lugares.
 
@@ -172,9 +171,7 @@ Pista: usá `useSelector(state => state.filtro)` en un componente para leer todo
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.zona`), y envolvé la aplicación con `<Provider store={store}>`, confirmando que el componente ya no se re-renderiza ante cambios de otros campos del mismo slice.
 
-**Evidencia de aprendizaje:** entrega implementación con Redux Toolkit, selector de granularidad gruesa detectado y corrección con selector específico.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
 **¿Por qué es importante?** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
 
@@ -240,9 +237,7 @@ Pista: implementá un botón "Refrescar" que llame manualmente a `setEnvios(nuev
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por completo, dejando que `useQuery` (Módulo 6) sea la única fuente de la lista de envíos, y que el store de Zustand contenga solamente `zona` (estado de cliente puro).
 
-**Evidencia de aprendizaje:** entrega mezcla incorrecta identificada, divergencia provocada y store limpio con responsabilidades separadas.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explicá con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/getting-started/introduction.
 **¿Por qué es importante?** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
 
@@ -320,9 +315,7 @@ Pista: implementá el mismo flujo con un `useReducer` simple donde el `case 'EXI
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a la máquina de XState del Paso 4, y agregá un quinto estado (`cancelado`) alcanzable solo desde `confirmando`, confirmando que ningún otro estado puede transicionar directamente a `cancelado` sin pasar por `confirmando` primero.
 
-**Evidencia de aprendizaje:** entrega máquina con transiciones explícitas, transición inválida detectada en el reducer simple y quinto estado agregado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explicá en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cerrá el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.
 **¿Por qué es importante?** XState aporta garantías estructurales sobre qué transiciones de estado son válidas, una protección que un `useReducer` simple no impone por sí solo y que importa en flujos con reglas estrictas.
 

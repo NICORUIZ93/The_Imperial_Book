@@ -100,7 +100,7 @@ Pista: marcá como `public` (en vez de `internal`) la clase `TareaRepositoryImpl
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo únicamente la interfaz `TaskClient` como facade pública, e inspeccionando la API exportada (el dump ABI del Tema 3) para confirmar que ningún tipo de infraestructura aparece en la superficie pública.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
 **¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
 
@@ -187,7 +187,7 @@ Pista: quitá la llamada a `observation?.cancel()` del `deinit` de `TaskScreenMo
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `observation?.cancel()` en el `deinit`, y repetí la navegación 100 veces midiendo el conteo de objetos activos antes y después del cambio (con Instruments o los logs del GC de Kotlin/Native) para confirmar que ya no crece de forma sostenida.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reproducida 100 veces del Paso 5, y la medición de objetos activos del Paso 6; explicá por qué compilar exitosamente para iOS no prueba que el ownership de recursos cruzados entre runtimes sea correcto. Siguiente paso: asegurate de que un artefacto publicado con esta API sea binariamente compatible con versiones futuras. Errores comunes: confiar en que GC/ARC cierran sockets, drivers SQL o handles nativos sin una llamada explícita de cierre, usar `GlobalScope` para suscripciones que deberían vivir y morir con una pantalla, y no medir con una prueba repetida antes de descartar una fuga como "poco probable". Límites y decisión de uso: cerrar el `Job` no libera por sí solo un recurso nativo que el flujo abrió; el dueño de ese recurso debe cerrarlo en el mismo `close()` o quedar documentado como responsabilidad del adaptador. Fuentes oficiales: https://kotlinlang.org/docs/native-memory-manager.html y https://developer.apple.com/documentation/swift/automaticreferencecounting.
 
 ### Tema 3: Un artefacto compatible necesita más que el mismo número de versión
@@ -298,7 +298,7 @@ Resultado esperado: `updateKotlinAbi` genera el dump ABI de `saludo` y `checkKot
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `abiValidation()`, generando el dump inicial aprobado del estado actual de la API con `gradle updateKotlinAbi`, y agregando `gradle checkKotlinAbi` como paso obligatorio del pipeline de CI (Módulo 10) antes de publicar cualquier versión nueva.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la validación binaria activada del Paso 4, el cambio de API no detectado del Paso 5, y el `checkKotlinAbi` integrado a CI del Paso 6; explicá por qué un `check` en verde sin validación de ABI no es evidencia de compatibilidad binaria real. Siguiente paso: preparate para diagnosticar un fallo compartido que se manifiesta distinto en cada plataforma. Errores comunes: confiar en el número de versión semántica sin validar ABI automáticamente, tratar un `check` verde como garantía de compatibilidad conductual (no solo binaria), y no ejecutar consumidores reales de Android e iOS contra el artefacto publicado antes de confirmar un release. Límites y decisión de uso: el dump cubre la superficie binaria, no los datos ya persistidos ni los mensajes en vuelo; las migraciones de esquema y serialización se verifican aparte. Fuentes oficiales: https://kotlinlang.org/docs/jvm-api-guidelines-backward-compatibility.html y https://kotlinlang.org/docs/gradle-binary-compatibility-validation.html.
 
 ### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas
@@ -312,7 +312,6 @@ Un crash reportado desde la app iOS muestra un stack trace de frames de Kotlin/N
 #### Paso 3 · Teoría, modelo mental y analogía
 Un defecto en `commonMain` puede aparecer como un stack Kotlin distinto en Android y frames Kotlin/Native en iOS; sin mapping de Android y dSYM/debug symbols del framework exacto por versión, la ofuscación vuelve los grupos de crashes inútiles. La analogía es una misma pieza defectuosa que viaja en dos vehículos y produce ruidos distintos — el número de lote y el manual de diagnóstico permiten encontrar la causa compartida sin confundir síntomas.
 
-**Evidencia de aprendizaje:** entrega interfaz Diagnostics, crash no simbolizable reproducido y archivo completo de dSYM por build ID verificado.
 **Conceptos clave:** crash, stack trace, symbolication, dSYM, mapping, source map, correlation ID, privacy, breadcrumb, metric, target matrix, canary, staged rollout, compatibility window y rollback.
 
 Un defecto common puede aparecer como stack Kotlin distinto en Android y frames Kotlin/Native en iOS. Conserva mapping de Android y dSYM/debug symbols del framework exacto por versión. Sin símbolos, ofuscación/optimización vuelve grupos inútiles. Incluye versión SDK, app, target, OS y build ID.
@@ -382,7 +381,7 @@ Pista: archivá los símbolos (dSYM) de la app iOS solo para los releases "impor
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 archivando el dSYM de cada build subida a TestFlight (no solo las "importantes"), indexado por su build ID exacto, y verificá que el crash simulado del Paso 4 ahora se simboliza completamente al subir ese dSYM específico a la herramienta de diagnóstico.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la interfaz `Diagnostics` del Paso 4, el crash no simbolizable del Paso 5, y el archivo completo de dSYM por build ID del Paso 6; explicá por qué "ahorrar espacio" archivando símbolos solo de releases importantes elimina la capacidad de diagnosticar exactamente los crashes intermedios que más necesitan contexto. Siguiente paso: cerrá el proyecto del módulo preparando un plan de release con ventana de compatibilidad y rollback. Errores comunes: no archivar dSYM/mapping de cada build distribuida, hacer que `commonMain` dependa directamente de un SDK de analytics específico de plataforma, y usar un ID de usuario como label de métrica en vez de un correlation ID anónimo. Fuentes oficiales: https://developer.apple.com/documentation/xcode/building-your-app-to-include-debugging-information y https://developer.android.com/studio/build/shrink-code.
 **¿Por qué es importante?** La optimización y los bridges entre runtimes cambian los stacks, y los releases asíncronos entre plataformas dejan múltiples combinaciones de versiones en campo al mismo tiempo.
 
@@ -430,7 +429,7 @@ Evoluciona el módulo `shared` del proyecto 11 como si dos equipos distintos lo 
 
 Derivado de la [documentación oficial](https://kotlinlang.org/docs/multiplatform/get-started.html), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 46 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Kotlin | `null safety` · `data classes` · `sealed types` · `genéricos` · `coroutines` · `Flow` · `serialization` · `time e IO` | sync |
 | Estructura | `targets` · `source sets` · `commonMain y commonTest` · `expect/actual` · `Gradle` · `version catalogs` · `convention plugins` | sync |

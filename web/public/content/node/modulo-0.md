@@ -495,7 +495,7 @@ Construiste eventos internos observables, con errores y limpieza explícitos. En
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-node && cd academia-node && git init && npm init -y`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | CLI y HTTP. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | API, datos y autenticación. | Casos normales, límite y error automatizados. |

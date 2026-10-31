@@ -92,9 +92,9 @@ public class SaludController {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un controlador REST mínimo con un endpoint `GET`, y los starters necesarios para que compile y arranque. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges starters con criterio y explicas por qué evitan resolver manualmente versiones compatibles entre dependencias. El siguiente tema compara los dos formatos de configuración externa disponibles. **Evidencia:** entrega la respuesta `200 OK` de `/health` y el fallo real de compilación al usar una anotación sin su starter correspondiente. Fuente oficial: [Spring Initializr](https://docs.spring.io/initializr/docs/current/reference/html/).
+Ya eliges starters con criterio y explicas por qué evitan resolver manualmente versiones compatibles entre dependencias. El siguiente tema compara los dos formatos de configuración externa disponibles. Fuente oficial: [Spring Initializr](https://docs.spring.io/initializr/docs/current/reference/html/).
 
 **Errores comunes:** agregar dependencias sueltas manualmente en vez de usar el starter correspondiente, arriesgando incompatibilidades de versión; incluir starters que el proyecto no necesita, aumentando el tiempo de arranque y la superficie de configuración sin beneficio real.
 
@@ -202,9 +202,9 @@ ____:
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, la misma configuración de base de datos en ambos formatos (YAML y properties), y verifica que representan las mismas claves. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges entre YAML y properties con criterio, confirmando con la aplicación real que ambos formatos representan exactamente la misma información. El siguiente tema usa perfiles para variar esta configuración por entorno. **Evidencia:** entrega el resultado de arrancar la aplicación con `application.yml` y con `application.properties` equivalente, y el error real de indentación del fallo deliberado. Fuente oficial: [Spring Boot — Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config).
+Ya eliges entre YAML y properties con criterio, confirmando con la aplicación real que ambos formatos representan exactamente la misma información. El siguiente tema usa perfiles para variar esta configuración por entorno. Fuente oficial: [Spring Boot — Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config).
 
 **Errores comunes:** mezclar `.properties` y `.yml` en el mismo proyecto sin necesidad, generando confusión sobre cuál tiene prioridad; desalinear la indentación en YAML sin notar el error hasta que la configuración no se aplica como se esperaba.
 
@@ -301,9 +301,9 @@ java -jar app.jar --spring.____=dev
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración base y un perfil que sobreescriba una sola clave, y traza a mano qué configuración final resultaría. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya externalizas configuración por perfil y organizas el código en capas con responsabilidades delimitadas, confirmando con `/actuator/env` que un perfil sobreescribe solo lo que declara explícitamente. Esto cierra la estructura básica de un proyecto Spring Boot; el siguiente módulo profundiza en la capa web y el manejo de peticiones HTTP. **Evidencia:** entrega el resultado de `/actuator/env` con la configuración final fusionada (puerto heredado, URL sobreescrita) y el comportamiento real al arrancar sin activar ningún perfil. Fuente oficial: [Spring Boot — Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles).
+Ya externalizas configuración por perfil y organizas el código en capas con responsabilidades delimitadas, confirmando con `/actuator/env` que un perfil sobreescribe solo lo que declara explícitamente. Esto cierra la estructura básica de un proyecto Spring Boot; el siguiente módulo profundiza en la capa web y el manejo de peticiones HTTP. Fuente oficial: [Spring Boot — Profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.profiles).
 
 **Errores comunes:** olvidar activar el perfil correcto al desplegar, terminando con la configuración base incorrecta para ese entorno; poner lógica de negocio en el controller, mezclando responsabilidades entre capas.
 

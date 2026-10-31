@@ -144,9 +144,9 @@ public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegund
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `record` con `@ConfigurationProperties` y validación, y un test `ApplicationContextRunner` que confirme el enlace correcto de sus valores. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya agrupas configuración relacionada en un tipo fuertemente tipado y validado, confirmando con un test real que los valores de `application.yml` se enlazan correctamente. El siguiente tema confirma qué ocurre cuando un valor obligatorio falta por completo. **Evidencia:** entrega el resultado de `JwtConfigTest` en verde, y el resultado del fallo deliberado mostrando el contexto fallando ante un tipo incompatible. Fuente oficial: [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties).
+Ya agrupas configuración relacionada en un tipo fuertemente tipado y validado, confirmando con un test real que los valores de `application.yml` se enlazan correctamente. El siguiente tema confirma qué ocurre cuando un valor obligatorio falta por completo. Fuente oficial: [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties).
 
 **Errores comunes:** usar `@Value` disperso en vez de `@ConfigurationProperties` agrupado, perdiendo visión centralizada; olvidar `@EnableConfigurationProperties` o el escaneo de componentes, dejando la clase sin registrar aunque esté bien declarada.
 
@@ -260,9 +260,9 @@ contextRunner.withPropertyValues("app.jwt.expiracion-segundos=900")
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos tests `ApplicationContextRunner`: uno que confirme el fallo de arranque ante un valor faltante, y otro que confirme el arranque exitoso con todos los valores presentes. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con un test real que un valor de configuración obligatorio faltante impide el arranque completo de la aplicación, en vez de dejarla arrancar con un valor inválido. El siguiente tema aborda cómo comunicar de forma consistente los errores que sí ocurren durante la operación normal, ya con la aplicación arrancada. **Evidencia:** entrega el resultado de ambos tests de `FalloArranqueTest` en verde, y el resultado del fallo deliberado mostrando el arranque "exitoso" indebido al quitar `@Validated`. Fuente oficial: [Spring Boot — Testing auto-configuration](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration).
+Ya confirmas con un test real que un valor de configuración obligatorio faltante impide el arranque completo de la aplicación, en vez de dejarla arrancar con un valor inválido. El siguiente tema aborda cómo comunicar de forma consistente los errores que sí ocurren durante la operación normal, ya con la aplicación arrancada. Fuente oficial: [Spring Boot — Testing auto-configuration](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration).
 
 **Errores comunes:** omitir `@Validated` en la clase de configuración, dejando que un valor faltante pase desapercibido hasta usarse en producción; definir valores por defecto inseguros para propiedades que deberían ser explícitamente obligatorias, como secretos o credenciales.
 
@@ -432,9 +432,9 @@ public ProblemDetail manejarLimiteExcedido(LimiteParadasExcedidoException ex) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una excepción de negocio mapeada a `ProblemDetail` en un `@RestControllerAdvice`, y un test `MockMvc` que confirme el código de estado y el formato de la respuesta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya extiendes el manejo centralizado de excepciones para una nueva regla de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente sin importar qué endpoint lo originó. Esto cierra el módulo de configuración y manejo de errores; el siguiente módulo aborda cómo probar la aplicación completa de forma automatizada. **Evidencia:** entrega el resultado de ambos tests de `ManejadorGlobalErroresTest` en verde, y el resultado del fallo deliberado mostrando la inconsistencia de un `200` donde se esperaba `422`. Fuente oficial: [Spring — Error Handling for REST with ProblemDetail](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html).
+Ya extiendes el manejo centralizado de excepciones para una nueva regla de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente sin importar qué endpoint lo originó. Esto cierra el módulo de configuración y manejo de errores; el siguiente módulo aborda cómo probar la aplicación completa de forma automatizada. Fuente oficial: [Spring — Error Handling for REST with ProblemDetail](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html).
 
 **Errores comunes:** construir respuestas de error manualmente dentro de un endpoint específico en vez de lanzar una excepción hacia el manejador centralizado; crear un `@ControllerAdvice` nuevo y separado para cada excepción, en vez de extender el mismo existente.
 

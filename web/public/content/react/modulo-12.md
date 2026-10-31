@@ -79,10 +79,9 @@ Pista: agregá temporalmente el estado de "sesión activa" (que viene de `useAut
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el estado de sesión de `uiStore.ts`, dejando que `useAuth` sea la única fuente, y revisá el resto del proyecto buscando otras violaciones similares de la separación por feature.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la estructura organizada por feature del Paso 4, la duplicación de fuente de verdad provocada en el Paso 5, y la revisión del Paso 6; explicá por qué integrar todos los módulos del track en un solo proyecto expone violaciones de organización que un módulo aislado nunca mostraría. Siguiente paso: integra rutas, TanStack Query y Zustand coordinadamente. Errores comunes: mezclar features sin un punto de integración explícito, duplicar en un store de UI un dato que ya tiene una fuente de verdad propia, y organizar carpetas por tipo de archivo en vez de por dominio. Fuentes oficiales: https://react.dev/learn/thinking-in-react y https://tanstack.com/query/latest/docs/framework/react/overview.
 **¿Por qué es importante?** Separar features por dominio, y aislar el estado de UI puro en un store dedicado sin mezclarlo con datos de servidor, mantiene el proyecto comprensible y evita complicaciones de mezclar estados con ciclos de vida distintos.
-**Evidencia de aprendizaje:** entrega estructura por feature, duplicación de fuente de verdad detectada y revisión completa confirmada.
 **Conceptos clave:** organización por feature, separación entre `features/` y `store/`.
 
 Siguiendo el principio de organización por feature (el mismo criterio aplicado en el proyecto integrador de Angular, Módulo 13 del track de Angular), el proyecto se estructura en `features/tareas/` (con `ListaTareas.tsx` para la vista y `useTareas.ts` como hook dedicado que encapsula el acceso a datos con TanStack Query) y `features/auth/` (con `RutaProtegida.tsx` y `useAuth.ts`), manteniendo separadas las responsabilidades de dominio de gestión de tareas y de autenticación, comunicándose entre sí únicamente a través de puntos de integración explícitos, exactamente el mismo criterio de cohesión estudiado en profundidad en el Módulo 8 del track de Angular.
@@ -177,9 +176,7 @@ Pista: movés la llamada a `useEnvios()` a un componente por encima de `RutaProt
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `useEnvios()` dentro de `ListaEnvios` (bajo `RutaProtegida`), y confirmá con la pestaña Network que ningún conductor sin sesión dispara esa petición.
 
-**Evidencia de aprendizaje:** entrega integración ordenada, petición indebida detectada y corrección confirmada en Network.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la integración correctamente ordenada del Paso 4, la petición indebida provocada en el Paso 5, y la corrección confirmada del Paso 6; explicá por qué el orden en el árbol de componentes determina cuándo efectivamente se dispara una consulta de datos. Siguiente paso: estudia useEnvios en profundidad. Errores comunes: disparar consultas de datos sensibles antes de verificar autenticación, mezclar el store de Zustand con lógica de autenticación que ya tiene su propia fuente en `useAuth`, y duplicar el layout de rutas protegidas en cada vista individual. Fuentes oficiales: https://reactrouter.com/start/framework/routing y https://tanstack.com/query/latest/docs/framework/react/overview.
 **¿Por qué es importante?** El orden de envoltura en el árbol de componentes determina si una consulta de datos se dispara antes o después de verificar autenticación, con implicancias reales de seguridad y de tráfico de red innecesario.
 
@@ -221,7 +218,7 @@ Pista: agregá un cuarto componente que, "para un caso puntual", invoque `useQue
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo ese cuarto componente a `useEnvios()`, y agregá un `useCrearEnvio()` complementario que envuelva `useMutation` con su propia invalidación de `['envios']` configurada.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `useEnvios()` compartido por tres componentes del Paso 4, la cache duplicada por typo del Paso 5, y `useCrearEnvio()` del Paso 6; explicá por qué encapsular el acceso a datos detrás de un hook con nombre significativo previene exactamente la clase de error que ocurrió en el Paso 5. Siguiente paso: cerrá el track con el laboratorio integrador completo. Errores comunes: invocar `useQuery` directamente en vez de a través de un hook dedicado, escribir la misma `queryKey` a mano en múltiples lugares, y no extender la misma capa de hooks a las mutaciones relacionadas. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/query-keys y https://react.dev/learn/reusing-logic-with-custom-hooks.
 
 **Diagrama:**
@@ -258,8 +255,6 @@ graph TD
 * Cuándo: encapsular `useQuery` siempre cuando múltiples componentes lo usen; no conviene si es usado una única vez en un componente aislado (entonces usa `useQuery` directamente).
 
 **¿Por qué es importante?** Encapsular `queryKey`/`queryFn` detrás de un hook con nombre significativo centraliza los detalles de acceso a datos, facilitando cambios futuros y evitando inconsistencias entre componentes.
-**Evidencia de aprendizaje:** entrega useEnvios compartido, cache duplicada por typo detectada y useCrearEnvio agregado.
-
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir la SPA integradora completa con rutas protegidas, TanStack Query, Zustand para UI, y tests del flujo crítico.

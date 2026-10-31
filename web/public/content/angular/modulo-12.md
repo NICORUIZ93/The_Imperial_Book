@@ -80,9 +80,9 @@ Ejecuta `npm view @angular/core version` y compara el resultado con `npx ng vers
 
 Abre un proyecto Angular real, registra sus cuatro versiones relevantes y comprueba la combinación en la tabla oficial. Decide si está soportado sin actualizar nada todavía.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes separar “última versión” de “versión instalada y soportada”. El siguiente tema convierte esa observación en un plan seguro. **Evidencia:** entrega `package.json`, la salida de `ng version`, la salida del fallo `ETARGET` y una explicación de la matriz consultada.
+Ya puedes separar “última versión” de “versión instalada y soportada”. El siguiente tema convierte esa observación en un plan seguro.
 
 **Errores comunes:** usar un CLI global distinto del local; asumir que “más nuevo” siempre significa compatible; actualizar `@angular/core` sin el CLI; confundir AngularJS con Angular.
 
@@ -142,9 +142,9 @@ Guarda la salida de `ng update --dry-run` en `docs/migracion-angular-22.txt`. **
 
 Clasifica cada aviso como automático, manual o bloqueado por una dependencia. Escribe qué prueba verificaría cada cambio manual antes de aplicar la actualización.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ahora tienes un plan antes de tocar archivos. El siguiente tema aplica la actualización en saltos controlados. **Evidencia:** entrega el build verde, el commit base, la simulación, el fallo diagnosticado y la clasificación de cambios.
+Ahora tienes un plan antes de tocar archivos. El siguiente tema aplica la actualización en saltos controlados.
 
 Este mismo procedimiento (línea base verde, `ng update --dry-run`, clasificar avisos) es el que aplicarás para mantener actualizado el proyecto integrador de este track (aplicación standalone completa, Módulo 13) mucho después de terminarlo, cuando Angular publique nuevas versiones mayores.
 
@@ -223,9 +223,9 @@ Añade a cada salto los comandos `ng update`, `ng build` y `ng test`. **Pista:**
 
 Diseña un plan 16→22 que incluya commit, migración, pruebas, revisión de deprecaciones y criterio de rollback por cada versión. No ejecutes la siguiente versión hasta cerrar la anterior.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Terminaste el capítulo con una migración observable y reversible. El próximo capítulo aplica esta disciplina al proyecto integrador. **Evidencia:** entrega la salida del plan, el fallo deliberado, los comandos por salto y el criterio que autoriza continuar.
+Terminaste el capítulo con una migración observable y reversible. El próximo capítulo aplica esta disciplina al proyecto integrador.
 
 **Errores comunes:** saltar varias versiones; actualizar dependencias no relacionadas al mismo tiempo; no leer deprecaciones; borrar pruebas que fallan; continuar con un build rojo.
 

@@ -111,9 +111,9 @@ fixture.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente standalone con un input, y un test `TestBed` que confirme el DOM renderizado tras `setInput` + `detectChanges`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya montas componentes reales con `TestBed` y confirmas el DOM renderizado, no una suposición sobre la plantilla. El siguiente tema prueba la reactividad de Signals directamente, sin necesitar un componente completo. **Evidencia:** entrega el resultado del test en verde, y el DOM no actualizado que produce el fallo deliberado sin `detectChanges()`. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
+Ya montas componentes reales con `TestBed` y confirmas el DOM renderizado, no una suposición sobre la plantilla. El siguiente tema prueba la reactividad de Signals directamente, sin necesitar un componente completo. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
 
 **Errores comunes:** olvidar `detectChanges()` después de cambiar un input, asumiendo que la propagación es sincrónica sobre el DOM; usar selectores CSS frágiles en vez de consultar por rol o texto visible.
 
@@ -235,9 +235,9 @@ expect(calculo).____(1);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `computed()` y un spy que confirme memoización real tras varias lecturas sin cambios. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con un spy real que `computed()` memoiza correctamente y solo reejecuta ante cambios reales de dependencia. El siguiente tema prueba el comportamiento de la aplicación completa desde la perspectiva de un usuario real, con Playwright. **Evidencia:** entrega el resultado de los tests en verde, y el conteo de invocaciones incorrecto que produce el fallo deliberado al romper el rastreo de dependencias. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas con un spy real que `computed()` memoiza correctamente y solo reejecuta ante cambios reales de dependencia. El siguiente tema prueba el comportamiento de la aplicación completa desde la perspectiva de un usuario real, con Playwright. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** capturar el valor de una señal en una variable local antes de leerla dentro de un `computed`, rompiendo el rastreo reactivo; asumir memoización sin confirmarla con un spy real.
 
@@ -328,9 +328,9 @@ const boton = page.____('button', { name: 'Confirmar entrega' });
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test Playwright con un locator por rol accesible, y explica por qué es preferible a un selector CSS. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escribes tests E2E reales con locators accesibles y auto-waiting, verificando flujos de usuario completos en un navegador real. El siguiente tema construye animaciones que respetan las preferencias de accesibilidad del usuario. **Evidencia:** entrega el resultado del test Playwright, y la explicación de por qué un selector CSS frágil produciría falsos negativos ante refactors de estilo. Fuentes oficiales: [Playwright — Locators](https://playwright.dev/docs/locators).
+Ya escribes tests E2E reales con locators accesibles y auto-waiting, verificando flujos de usuario completos en un navegador real. El siguiente tema construye animaciones que respetan las preferencias de accesibilidad del usuario. Fuentes oficiales: [Playwright — Locators](https://playwright.dev/docs/locators).
 
 **Errores comunes:** depender de selectores CSS o `data-testid` cuando un locator accesible por rol ya existe y es más estable; no esperar explícitamente (o confiar mal en el auto-waiting) antes de aserciones sobre contenido que cambia asincrónicamente.
 
@@ -455,9 +455,9 @@ window.matchMedia('____').matches
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con una duración de animación condicional según `prefers-reduced-motion`, y un test para ambos casos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con un test real que una animación respeta la preferencia de movimiento reducido del usuario, en vez de asumir que decorar la interfaz es inofensivo para todos. El siguiente tema transfiere datos ya obtenidos en el servidor hacia el cliente sin repetir peticiones HTTP. **Evidencia:** entrega el resultado de ambos tests en verde, y la duración fija incorrecta que produce el fallo deliberado al ignorar la preferencia. Fuentes oficiales: [MDN — prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
+Ya confirmas con un test real que una animación respeta la preferencia de movimiento reducido del usuario, en vez de asumir que decorar la interfaz es inofensivo para todos. El siguiente tema transfiere datos ya obtenidos en el servidor hacia el cliente sin repetir peticiones HTTP. Fuentes oficiales: [MDN — prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
 
 **Errores comunes:** implementar animaciones sin consultar nunca `prefers-reduced-motion`; consultar la preferencia una sola vez en el constructor en vez de reactivamente, perdiendo cambios en tiempo real.
 
@@ -567,9 +567,9 @@ const entregas = state.____(ENTREGAS_KEY, [] as string[]);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una `StateKey` compartida y un test que confirme que un valor transferido por el servidor se lee correctamente en el cliente sin repetir la petición. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con `TransferState` real que un dato obtenido durante el renderizado del servidor se transfiere al cliente sin repetir la petición HTTP original. El siguiente y último tema de este módulo evita que código específico del navegador se ejecute incorrectamente durante el renderizado del servidor. **Evidencia:** entrega el resultado de ambos tests en verde, y el valor por defecto incorrecto que produce el fallo deliberado ante un desajuste de clave. Fuentes oficiales: [Angular — TransferState](https://angular.dev/api/core/TransferState).
+Ya confirmas con `TransferState` real que un dato obtenido durante el renderizado del servidor se transfiere al cliente sin repetir la petición HTTP original. El siguiente y último tema de este módulo evita que código específico del navegador se ejecute incorrectamente durante el renderizado del servidor. Fuentes oficiales: [Angular — TransferState](https://angular.dev/api/core/TransferState).
 
 **Errores comunes:** definir la `StateKey` por separado en el código de servidor y de cliente con el mismo nombre pero como instancias distintas; olvidar el valor por defecto explícito en `get(...)`, tratando el resultado como si siempre existiera.
 
@@ -696,9 +696,9 @@ if (!____(this.platformId)) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio protegido con `isPlatformBrowser`, y dos tests que confirmen el comportamiento correcto en contexto de servidor y de navegador. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya proteges código específico del navegador con `isPlatformBrowser`, confirmando con tests reales que el mismo código se comporta de forma segura tanto en el servidor como en el navegador, evitando discrepancias de hidratación. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. **Evidencia:** entrega el resultado de ambos tests en verde, y el error real que produciría el fallo deliberado sin la protección de plataforma. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration).
+Ya proteges código específico del navegador con `isPlatformBrowser`, confirmando con tests reales que el mismo código se comporta de forma segura tanto en el servidor como en el navegador, evitando discrepancias de hidratación. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration).
 
 **Errores comunes:** acceder a APIs exclusivas del navegador (`window`, `localStorage`, `document`) sin verificar la plataforma primero; asumir que un error de hidratación es un bug de Angular en vez de una discrepancia real de comportamiento entre servidor y cliente en el propio código de la aplicación.
 

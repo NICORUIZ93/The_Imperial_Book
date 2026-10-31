@@ -70,9 +70,9 @@ Usa `find` para localizar `RF-103`. **Pista:** prueba también `RF-999` y valida
 
 Calcula el peso promedio de guías activas en una sola pasada y en un pipeline legible. Compara resultados, caso vacío y trade-off de claridad frente a recorridos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges transformación, selección, acumulación, búsqueda o comprobación según la pregunta. El siguiente tema elige estructuras por unicidad y tipo de clave. **Evidencia:** demuestra el resultado del tablero, el fallo de `reduce` y ambas versiones del promedio. Fuente oficial: [MDN — Array](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array).
+Ya eliges transformación, selección, acumulación, búsqueda o comprobación según la pregunta. El siguiente tema elige estructuras por unicidad y tipo de clave. Fuente oficial: [MDN — Array](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array).
 
 **Errores comunes:** usar `map` sin retornar; omitir valor inicial en `reduce`; usar `filter` para buscar uno; encadenar pasadas costosas sin medir.
 
@@ -155,9 +155,9 @@ Cuenta escaneos por código con `Map`. **Pista:** usa `(conteos.get(codigo) ?? 0
 
 Implementa un índice por objeto conductor como clave de `Map` y demuestra que dos objetos con iguales propiedades son claves distintas. Decide si el dominio necesita identidad u otro ID estable.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges estructuras por semántica y no por costumbre. El siguiente tema actualiza estructuras anidadas sin destruir versiones anteriores. **Evidencia:** demuestra el resultado, la búsqueda ausente, el conteo y la diferencia de identidad. Fuente oficial: [MDN — keyed collections](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Keyed_collections).
+Ya eliges estructuras por semántica y no por costumbre. El siguiente tema actualiza estructuras anidadas sin destruir versiones anteriores. Fuente oficial: [MDN — keyed collections](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Keyed_collections).
 
 **Errores comunes:** creer que `Set` deduplica objetos por contenido; usar objeto plano con claves arbitrarias; leer `Map` con corchetes; tratar unicidad en memoria como restricción persistente.
 
@@ -228,9 +228,9 @@ Actualiza `codigoPostal` sin cambiar ciudad ni país. **Pista:** necesitas sprea
 
 Normaliza tres entregas como `{ byId, allIds }`, actualiza una sola entidad y demuestra que las otras conservan su referencia. Explica cuándo la normalización compensa la complejidad.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conservas historia y copias únicamente niveles modificados. El siguiente tema asocia metadatos sin retener objetos. **Evidencia:** demuestra el resultado, la pérdida de país, su corrección y la actualización normalizada. Fuente oficial: [MDN — spread syntax](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Spread_syntax).
+Ya conservas historia y copias únicamente niveles modificados. El siguiente tema asocia metadatos sin retener objetos. Fuente oficial: [MDN — spread syntax](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Spread_syntax).
 
 **Errores comunes:** creer que spread clona profundamente; reemplazar un objeto parcial perdiendo campos; usar `Object.freeze` esperando congelación profunda; normalizar sin necesidad.
 
@@ -301,9 +301,9 @@ Usa `WeakSet` para marcar objetos ya validados. **Pista:** solo admite objetos; 
 
 Compara una asociación de diagnósticos con `Map` y `WeakMap`. Documenta cuál permite listar, cuál conoce tamaño y cuál conviene para auditoría persistente. No intentes forzar el recolector.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya reservas colecciones débiles para metadatos no enumerables de objetos vivos. El siguiente tema usa operaciones inmutables modernas sobre arrays. **Evidencia:** demuestra el resultado, el fallo de iteración, la clave primitiva rechazada y la tabla comparativa. Fuente oficial: [MDN — WeakMap](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
+Ya reservas colecciones débiles para metadatos no enumerables de objetos vivos. El siguiente tema usa operaciones inmutables modernas sobre arrays. Fuente oficial: [MDN — WeakMap](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
 
 **Errores comunes:** esperar `size`; usar claves primitivas; guardar información que debe listarse; afirmar cuándo ocurrirá la recolección.
 
@@ -379,9 +379,9 @@ Elimina la segunda parada con `toSpliced`. **Pista:** compara longitud, contenid
 
 Construye cuatro versiones usando `toSorted`, `toReversed`, `toSpliced` y `with`. Añade una alternativa compatible para cada operación y prueba que ninguna muta `paradas`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Completaste colecciones funcionales conservando versiones auditables. El siguiente módulo explica cuándo se ejecutan tareas y microtareas. **Evidencia:** demuestra el resultado, la mutación con `sort`, las cuatro copias y la compatibilidad. Fuente oficial: [MDN — copying array methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted).
+Completaste colecciones funcionales conservando versiones auditables. El siguiente módulo explica cuándo se ejecutan tareas y microtareas. Fuente oficial: [MDN — copying array methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted).
 
 **Errores comunes:** usar comparador booleano; asumir soporte sin revisar versión; creer que el array nuevo clona objetos internos; confundir `splice` con `toSpliced`.
 

@@ -63,7 +63,7 @@ Resultado esperado: `sign-up` responde con `UserConfirmed: false` y un `UserSub`
 Pista: confirmá el registro con un código inventado (`aws cognito-idp confirm-sign-up --client-id "$CLIENT_ID" --username conductor-c891@rutaflow.com --confirmation-code "000000"`) — ese es el fallo deliberado: `CodeMismatchException`, porque Cognito rechaza explícitamente cualquier código que no sea el que realmente envió, sin dar pistas sobre cuál sería el correcto.
 #### Paso 6 · Práctica independiente
 Intentá `initiate-auth` con ese mismo conductor antes de confirmar su registro, y después de confirmarlo (usando el código real que Floci expone en local) — comparando el error `UserNotConfirmedException` del primer intento contra el login exitoso del segundo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el registro del conductor, el código inválido del Paso 5 y la diferencia confirmado/no confirmado del Paso 6; explicá qué parte de este flujo habrías tenido que construir a mano sin Cognito. Siguiente paso: JWT. Errores comunes: confiar solo en frontend y mensajes que revelan usuarios. Fuente oficial: https://owasp.org/www-project-authentication-cheat-sheet/.
 
 ### Tema 2: Access Token, ID Token y Refresh Token
@@ -122,7 +122,7 @@ Pista: ese es el error real que advierte este Tema — si `POST /entregas` valid
 **Fallo deliberado:** en el `--query` del comando del Paso 4, cambiá `Access:AccessToken` por `Access:IdToken` y usá ese valor como `Authorization: Bearer <token>` contra un autorizador que solo revisa `scope` — provoca un error de autorización, porque el `IdToken` nunca trae ese claim; diagnosticalo decodificando el token rechazado y confirmando que trae `email` pero ningún `scope`.
 #### Paso 6 · Práctica independiente
 Guardá el `RefreshToken`, esperá a que el `AccessToken` esté cerca de expirar (o simulá la espera), y corré `aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow REFRESH_TOKEN_AUTH --auth-parameters REFRESH_TOKEN=<refresh-token>` para confirmar que el conductor obtiene un `AccessToken` nuevo sin volver a escribir su contraseña.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los tres tokens decodificados del Paso 4, la explicación del error de confundirlos del Paso 5, y la renovación del Paso 6; explicá por qué `POST /entregas` debe validar específicamente el Access Token. Siguiente paso: OAuth. Errores comunes: guardar refresh en local inseguro y no rotar. Fuente oficial: https://datatracker.ietf.org/doc/html/rfc7519.
 
 ### Tema 3: OAuth 2.0 y PKCE
@@ -200,7 +200,7 @@ Resultado esperado: el flujo arranca con un `code_challenge` derivado del `code_
 Pista: en el intercambio final, probá `POST /oauth2/token` con el código de autorización pero SIN el parámetro `code_verifier` — ese es el fallo deliberado: Cognito rechaza el intercambio (`invalid_grant` o un error equivalente de verificación PKCE fallida), porque sin el verificador original no hay forma de confirmar que quien presenta el código es la misma app que inició el flujo.
 #### Paso 6 · Práctica independiente
 Documentá, para `app-conductor`, qué `redirect_uri` debería aceptar Cognito (pista: una URI de esquema personalizado como `rutaflow://callback`, nunca un wildcard abierto que acepte cualquier destino) y qué scope mínimo necesitaría pedir para confirmar entregas, sin pedir de más.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `code_challenge` generado del Paso 4, el intercambio rechazado sin `code_verifier` del Paso 5, y el `redirect_uri`/scope documentados del Paso 6; explicá por qué un cliente público como `app-conductor` necesita PKCE y un backend con secreto propio no lo necesitaría de la misma forma. Siguiente paso: autorización por roles. Errores comunes: redirect abierto y scopes excesivos. Fuente oficial: https://www.rfc-editor.org/rfc/rfc6749.
 
 ## Laboratorio práctico

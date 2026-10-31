@@ -46,7 +46,6 @@ UNIQUE_SECTIONS = (
     "**Conceptos clave:**",
     "**Fuentes oficiales:**",
     "**Errores comunes:**",
-    "**Evidencia de aprendizaje:**",
     "**Límites y decisión de uso:**",
 )
 

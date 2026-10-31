@@ -147,9 +147,9 @@ const peticion = controlador.____('/api/usuarios');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con `HttpClient.get<T>()` y un test con `HttpTestingController` que confirme la URL exacta y procese una respuesta simulada. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `HttpTestingController` real, exactamente qué petición realiza un servicio y cómo procesa la respuesta tipada del servidor, sin ninguna petición real saliendo a la red. El siguiente tema confirma con el mismo mecanismo que un interceptor funcional agrega correctamente un header a toda petición saliente. **Evidencia:** entrega el resultado del test en verde, y el mensaje exacto de error del fallo deliberado. Fuentes oficiales: [Angular — HTTP testing](https://angular.dev/guide/http/testing).
+Ya confirmas, con `HttpTestingController` real, exactamente qué petición realiza un servicio y cómo procesa la respuesta tipada del servidor, sin ninguna petición real saliendo a la red. El siguiente tema confirma con el mismo mecanismo que un interceptor funcional agrega correctamente un header a toda petición saliente. Fuentes oficiales: [Angular — HTTP testing](https://angular.dev/guide/http/testing).
 
 **Errores comunes:** olvidar `controlador.verify()` en `afterEach`, dejando pasar peticiones extra no esperadas sin que ningún test las detecte; olvidar `peticion.flush(...)`, dejando el Observable del servicio sin resolver nunca dentro del test.
 
@@ -301,9 +301,9 @@ return next(req.____({ setHeaders: { Authorization: `Bearer ${token}` } }));
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `HttpInterceptorFn` que agregue un header de autenticación y un test con `HttpTestingController` que lo confirme. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `HttpTestingController` real, que un interceptor funcional transforma efectivamente la petición saliente antes de que llegue a su destino. El siguiente y último tema confirma con dos interceptores instrumentados que `withInterceptors` los ejecuta en el orden exacto en que se declaran. **Evidencia:** entrega el resultado del test en verde, y el resultado incorrecto (`Authorization` como `null`) que produce el fallo deliberado. Fuentes oficiales: [Angular — HTTP interceptors](https://angular.dev/guide/http/interceptors).
+Ya confirmas, con `HttpTestingController` real, que un interceptor funcional transforma efectivamente la petición saliente antes de que llegue a su destino. El siguiente y último tema confirma con dos interceptores instrumentados que `withInterceptors` los ejecuta en el orden exacto en que se declaran. Fuentes oficiales: [Angular — HTTP interceptors](https://angular.dev/guide/http/interceptors).
 
 **Errores comunes:** mutar `req` directamente en vez de `req.clone(...)` (las peticiones HTTP de Angular son inmutables); olvidar `provideHttpClientTesting()` en el test, lo que hace que las peticiones intenten salir a la red real en vez de ser interceptadas por `HttpTestingController`.
 
@@ -436,9 +436,9 @@ provideHttpClient(____([authInterceptor, errorInterceptor]))
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos interceptores instrumentados y un test que confirme el orden exacto de ejecución declarado en `withInterceptors`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con interceptores instrumentados y `HttpTestingController`, que `withInterceptors` ejecuta los interceptores en el orden exacto declarado. Con esto cierras el módulo de HTTP: peticiones tipadas verificadas sin red real (Tema 1), interceptores que transforman la petición (Tema 2), y el orden de registro confirmado en código (Tema 3). El siguiente módulo aplica estos fundamentos a Server-Side Rendering e hidratación. **Evidencia:** entrega el resultado del test en verde, y el resultado incorrecto (`['logging', 'auth']`) que produce el fallo deliberado. Fuentes oficiales: [Angular — HTTP interceptors](https://angular.dev/guide/http/interceptors#interceptor-order).
+Ya confirmas, con interceptores instrumentados y `HttpTestingController`, que `withInterceptors` ejecuta los interceptores en el orden exacto declarado. Con esto cierras el módulo de HTTP: peticiones tipadas verificadas sin red real (Tema 1), interceptores que transforman la petición (Tema 2), y el orden de registro confirmado en código (Tema 3). El siguiente módulo aplica estos fundamentos a Server-Side Rendering e hidratación. Fuentes oficiales: [Angular — HTTP interceptors](https://angular.dev/guide/http/interceptors#interceptor-order).
 
 **Errores comunes:** asumir el orden de ejecución sin verificarlo con una prueba real, arriesgando una regresión silenciosa si alguien reordena el array; olvidar que el orden de las RESPUESTAS entrantes es el INVERSO al de las peticiones salientes.
 

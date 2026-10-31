@@ -139,7 +139,7 @@ El valor correcto es `$128.221,91` (eso es lo que calculó `BigDecimal`), pero l
 
 Implementa `CotizadorEnvio` con al menos dos tarifas de vigencias distintas, un método `cotizar(pesoKg, fechaSolicitud)` que seleccione la tarifa por rango de fechas y calcule con `BigDecimal` y escala fija, y una prueba que demuestre que una cotización de hace un mes sigue dando el mismo resultado aunque la tarifa actual ya cambió. No copies la solución del paso anterior; escribe primero el contrato (qué tarifa debería ganar en cada caso) y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `CotizadorEnvio.java`, la salida reproducible para RF-4471, la comparación `BigDecimal` contra `double` del fallo deliberado y una breve explicación de por qué el redondeo de punto flotante es inaceptable en dinero. El siguiente tema (**Tema 2: Recaudo, liquidación y conciliación**) toma esta cotización reproducible como el monto que debe conciliarse contra lo efectivamente recaudado en efectivo o por pago electrónico. **Fuente oficial:** [BigDecimal — Java SE documentation](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html).
 
@@ -277,7 +277,7 @@ Ejecuta `SELECT * FROM recaudo_movimiento WHERE envio_id = 'RF-4471'` después d
 
 Implementa `ConciliadorRecaudo` completo: agrupa movimientos por `envio_id` y ventana de liquidación, detecta discrepancias con `BigDecimal` (nunca `double`) y genera el `INSERT` de ajuste compensatorio sin mutar ninguna fila existente. Escribe una prueba que, tras aplicar el ajuste, verifique que la fila original de $120.000 sigue intacta y que la suma de `recaudo` + `ajuste_compensatorio` para RF-4471 ahora coincide con los $135.000 facturados. No copies la solución del paso anterior; escribe primero el contrato (qué fila no debe cambiar nunca) y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega el esquema SQL, `ConciliadorRecaudo.java`, la secuencia del fallo deliberado (el `UPDATE` que borra la evidencia) y la corrección con el `INSERT` compensatorio. El siguiente tema (**Tema 3: Fraude responsable**) usa esta misma cola de discrepancias como una de las señales que alimentan la puntuación de revisión: una diferencia de recaudo repetida en el mismo conductor es justamente el tipo de patrón que el modelo de fraude debe marcar para revisión humana, nunca para bloqueo automático. **Fuente oficial:** [PostgreSQL — Numeric Types](https://www.postgresql.org/docs/current/datatype-numeric.html).
 
@@ -412,7 +412,7 @@ Corre este método con el mismo caso de Carlos (RF-7788, 556 m): devuelve `RECHA
 
 Implementa `DetectorSenalFraude` completo con al menos dos señales (distancia GPS y, por ejemplo, reversos repetidos del mismo conductor en 24 horas), que combine ambas en una prioridad de cola sin que ninguna, ni juntas, bloqueen la entrega automáticamente. Escribe un caso de prueba con el escenario de Carlos (falso positivo por GPS) y verifica que el resultado sea "encolado para revisión", nunca un estado terminal. No copies la solución del paso anterior; escribe primero el contrato (qué puede decidir el sistema y qué debe decidir siempre una persona) y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `DetectorSenalFraude.java`, el caso encolado real para RF-7788, la versión de auto-bloqueo del fallo deliberado y una breve explicación de por qué ninguna señal automatizada debe decidir sola. El siguiente módulo (**Módulo 7: Producción — Tema 1: Infraestructura y entrega segura**) retoma esta misma disciplina: ninguna automatización del pipeline o de la operación debe tener poder de decisión final sin evidencia y, cuando aplica, sin revisión humana. **Fuente oficial:** [GDPR — Artículo 22: decisiones individuales automatizadas](https://gdpr-info.eu/art-22-gdpr/).
 
@@ -437,6 +437,21 @@ Una captura afirma que un token robado no sirve para nada. Esa afirmación neces
 La integración de bajo riesgo recoge datos sensibles mediante componentes del proveedor y devuelve referencias opacas. Un método de pago es distinto de un JWT de sesión y distinto del estado confirmado de una operación. El servidor verifica cliente, pedido, importe, moneda, idempotencia y resultado auténtico del proveedor.
 
 **Analogía:** una ficha de guardarropa apunta a un objeto, pero no reemplaza todas las comprobaciones para entregarlo. El límite es que el proveedor define alcance, reutilización y requisitos de cada referencia. Usar tokenización no certifica automáticamente cumplimiento ni elimina obligaciones de seguridad.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    U["App o navegador"] --> A["Captura de datos sensibles"]
+    A --> P["Componente del proveedor"]
+    P --> R["Referencia opaca pm_test_..."]
+    R --> S["Servidor de RutaFlow"]
+    S --> V{"¿Cliente, pedido, importe, moneda e idempotencia válidos?"}
+    V -->|"sí"| C["Solicitar confirmación al proveedor"]
+    V -->|"no"| E["Rechazar sin cobrar"]
+    C --> W["Verificar webhook auténtico"]
+    W --> O["Marcar el pedido como pagado"]
+```
 
 #### Paso 4 · Demostración guiada desde cero
 ```bash
@@ -475,7 +490,7 @@ test('no transforma silenciosamente el importe', () => {
 });
 ```
 
-**Resultado esperado:** dos pruebas correctas. Explica cada bloque: solo admitimos IDs ficticios `pm_test_...`, el importe es entero positivo y la salida no contiene PAN ni CVV. Este patrón es un contrato didáctico; no afirma que el prefijo sea una credencial real o que una expresión regular proteja pagos.
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: solo admitimos IDs ficticios `pm_test_...`, el importe es entero positivo y la salida no contiene PAN ni CVV. Documenta el contrato en `payments/README.md`: formato del identificador, moneda admitida y campos prohibidos. Este patrón es un contrato didáctico; no afirma que el prefijo sea una credencial real o que una expresión regular proteja pagos.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado:** sustituye `Number.isSafeInteger` por una comprobación que acepta cualquier número positivo. El test de 10.5 deja de ser rechazado y falla. **Pista:** las unidades son parte del contrato; convertir sin una regla de redondeo puede cambiar el importe.
@@ -483,7 +498,7 @@ test('no transforma silenciosamente el importe', () => {
 #### Paso 6 · Práctica independiente
 Añade ID de pedido y una clave de idempotencia vinculada a cliente, pedido, importe y moneda. Diseña pruebas de reintento y de acceso a un pedido ajeno. Describe cómo verificarías el webhook del proveedor sin usar el identificador opaco como prueba de pago confirmado.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** contrato validado, fallo/corrección y esquema de autorización. El siguiente paso requiere sandbox del proveedor y verificación de webhooks; no se presenta como ejecutado. **Errores comunes:** registrar datos de tarjeta, tratar token como autorización y confirmar el pedido solo por una respuesta del navegador. **Límites y decisión de uso:** el ejemplo no implementa tokenización criptográfica, vault, cobros reales ni certificación PCI.
+#### Paso 7 · Cierre
+El siguiente paso requiere sandbox del proveedor y verificación de webhooks; no se presenta como ejecutado. **Errores comunes:** registrar datos de tarjeta, tratar token como autorización y confirmar el pedido solo por una respuesta del navegador. **Límites y decisión de uso:** el ejemplo no implementa tokenización criptográfica, vault, cobros reales ni certificación PCI.
 
 **Fuente oficial:** [guía de seguridad de integración de Stripe](https://docs.stripe.com/security/guide).

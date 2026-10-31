@@ -527,20 +527,8 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep .topic-map-title { font-size:12px; line-height:1.6; }
 .lesson-markdown ::ng-deep .topic-map-heading { font-size:12px; }
 
-// Evidencia por tema: la marca de lectura no es una prueba de práctica.
 .topic-focus-banner { display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; justify-content:space-between; margin:0 0 26px; padding:10px 14px; border:1px solid $bd; border-left:3px solid var(--accent); border-radius:0 8px 8px 0; background:$wh; color:$i3; font:500 13px/1.5 var(--font-sans); }
 .topic-focus-banner a { color:var(--accent); font-weight:700; }
 
-.lesson-markdown ::ng-deep .topic-evidence { display:grid; gap:8px; margin-top:18px; padding:14px; border:1px dashed $bd; border-radius:10px; background:$wh; }
-.lesson-markdown ::ng-deep .topic-evidence h4 { margin:0; color:$ink; font:700 11px/1.2 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .topic-evidence p { margin:0; color:$mu; font:400 13px/1.5 var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-evidence label { color:$i3; font:600 11px/1.2 var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-evidence textarea { width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid $bd; border-radius:8px; background:$wh; color:$ink; font:400 13px/1.5 var(--font-mono); resize:vertical; }
-.lesson-markdown ::ng-deep .topic-evidence textarea:disabled { opacity:.7; }
-.lesson-markdown ::ng-deep .topic-evidence button { justify-self:start; padding:7px 14px; border:1px solid var(--accent); border-radius:999px; background:var(--accent); color:#fff; font:600 12px/1 var(--font-sans); cursor:pointer; }
-.lesson-markdown ::ng-deep .topic-evidence button:disabled { border-color:$bd; background:$wh; color:$mu; cursor:default; }
-.lesson-markdown ::ng-deep .topic-evidence .topic-evidence-feedback.verified { color:#1b7f3a; }
-.lesson-markdown ::ng-deep .topic-evidence .topic-evidence-feedback.error { color:#b3261e; }
-.lesson-markdown ::ng-deep .topic-heading.topic-verified::after { content:' · evidencia registrada'; color:var(--accent); font:600 10px/1 var(--font-sans); letter-spacing:.04em; }
 .lesson-markdown ::ng-deep .topic-focus-link { display:inline-block; margin-top:10px; color:var(--accent); font:600 11px/1.2 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
 .lesson-markdown ::ng-deep .topic-focus-link:hover { text-decoration:underline; }

@@ -170,9 +170,9 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una entidad `@Entity` con `@Id @GeneratedValue`, y un repositorio con un método derivado que filtre por un campo booleano. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya mapeas una clase Java a una tabla con `@Entity`, declaras repositorios cuya query se genera a partir del nombre del método, y confirmas con un test real contra H2 que el resultado es correcto. El siguiente tema aborda qué ocurre cuando estas queries derivadas se combinan con relaciones entre entidades. **Evidencia:** entrega el resultado de `TareaRepositoryTest` en verde, y el mensaje de error real que produce un nombre de método con una propiedad inexistente. Fuente oficial: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+Ya mapeas una clase Java a una tabla con `@Entity`, declaras repositorios cuya query se genera a partir del nombre del método, y confirmas con un test real contra H2 que el resultado es correcto. El siguiente tema aborda qué ocurre cuando estas queries derivadas se combinan con relaciones entre entidades. Fuente oficial: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
 
 **Errores comunes:** escribir SQL manual para consultas simples que un método derivado resolvería automáticamente; encadenar demasiadas condiciones en el nombre del método hasta volverlo ilegible, en vez de cambiar a `@Query`.
 
@@ -321,9 +321,9 @@ List<Usuario> buscarConTareas();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que mida con `Statistics.getQueryExecutionCount()` la diferencia entre iterar con carga perezosa y usar `JOIN FETCH`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya reproduces el problema N+1 y lo mides con estadísticas reales de Hibernate, en vez de asumir su presencia o ausencia. El siguiente tema aborda cómo versionar cambios de esquema sin depender de la generación automática de Hibernate. **Evidencia:** entrega el resultado del conteo de queries antes (`4`) y después (`1`) de aplicar `JOIN FETCH`, medido con `Statistics` real. Fuente oficial: [Hibernate — Fetching strategies](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching).
+Ya reproduces el problema N+1 y lo mides con estadísticas reales de Hibernate, en vez de asumir su presencia o ausencia. El siguiente tema aborda cómo versionar cambios de esquema sin depender de la generación automática de Hibernate. Fuente oficial: [Hibernate — Fetching strategies](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching).
 
 **Errores comunes:** no notar el problema N+1 hasta que aparece en producción con datasets grandes, por no haberlo medido durante el desarrollo; usar `EAGER` indiscriminadamente en todas las relaciones como "solución" genérica, lo que puede cargar datos innecesarios incluso cuando no se necesitan.
 
@@ -450,9 +450,9 @@ spring.jpa.hibernate.ddl-auto=____
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una migración `V1` que cree una tabla con al menos dos columnas, y explica en una frase por qué `ddl-auto=validate` es preferible a `update` en producción. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya versionas cambios de esquema con migraciones explícitas y revisables de Flyway, en vez de depender de la inferencia automática de Hibernate. Esto cierra el módulo de persistencia; el siguiente módulo aborda cómo exponer y proteger estos datos a través de una API REST completa. **Evidencia:** entrega el resultado de `MigracionFlywayTest` en verde, y el mensaje de error real que produce un campo de entidad sin su migración correspondiente. Fuente oficial: [Flyway — Migrations](https://documentation.red-gate.com/flyway/flyway-cli-and-api/concepts/migrations).
+Ya versionas cambios de esquema con migraciones explícitas y revisables de Flyway, en vez de depender de la inferencia automática de Hibernate. Esto cierra el módulo de persistencia; el siguiente módulo aborda cómo exponer y proteger estos datos a través de una API REST completa. Fuente oficial: [Flyway — Migrations](https://documentation.red-gate.com/flyway/flyway-cli-and-api/concepts/migrations).
 
 **Errores comunes:** confiar en `ddl-auto=update` en un entorno de producción, arriesgando cambios de esquema no versionados ni revisables; editar tablas manualmente en vez de a través de una migración versionada, perdiendo el historial y la reproducibilidad entre entornos.
 

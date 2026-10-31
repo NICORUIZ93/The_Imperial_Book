@@ -141,7 +141,7 @@ Ejecuta `node src/estado-vista-roto.js`. Imprime `Cargando envio...`: un spinner
 
 Implementa un reductor `reducirEstadoVista(estadoActual, evento)` que reciba eventos `{ tipo: 'CARGAR' }`, `{ tipo: 'EXITO', envio }` o `{ tipo: 'ERROR', mensaje }` y devuelva siempre un `EstadoVista` nuevo y completo, nunca una mezcla del estado anterior con el nuevo. Verifica que, sin importar el estado de partida, un evento `EXITO` deje el resultado en `{ tipo: 'listo', envio }` y nada más — ningún campo de un estado anterior (por ejemplo `mensaje` de un error previo) debe sobrevivir. No copies la solución del Paso 4; escribe primero la firma del reductor y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `src/estado-vista.js` con su salida de tres líneas, `src/estado-vista-roto.js` con el `Cargando envio...` engañoso reproducido, y una explicación de por qué una unión discriminada elimina por construcción un estado imposible que las banderas sueltas permiten. El siguiente tema (**Tema 2: Mapas operativos**) aplica esta misma idea de estado explícito a cientos de pines en un mapa en vez de a una sola vista de seguimiento. **Fuente oficial:** [https://react.dev/learn/choosing-the-state-structure#avoid-contradictions-in-state](https://react.dev/learn/choosing-the-state-structure#avoid-contradictions-in-state).
 
@@ -305,7 +305,7 @@ Grupos visibles CON clustering (clusterRadius 50px): 36
 
 Implementa una función `actualizarClusters(puntosPx, clusterRadius, bbox)` que recalcule los grupos solo para los puntos dentro de un `bbox` (viewport) dado, sin volver a procesar los 500 puntos completos en cada pan o zoom. Verifica que mover el `bbox` sin tocar `clusterRadius` no cambie el resultado de los puntos que quedan fuera de la zona visible. No copies la solución del Paso 4; escribe primero la firma de la función y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `src/clustering.js` con la salida de 36 grupos, la salida de `500 de 500` del fallo deliberado reproducida, y una explicación de por qué agrupar por celda resuelve el problema medido. El siguiente tema (**Tema 3: Accesibilidad, seguridad y rendimiento**) retoma este mismo mapa para agregarle una alternativa tabular y hacerlo utilizable con teclado y lector de pantalla. **Fuente oficial:** [https://maplibre.org/maplibre-gl-js/docs/examples/cluster/](https://maplibre.org/maplibre-gl-js/docs/examples/cluster/).
 
@@ -426,7 +426,7 @@ La aserción pasa, confirmando el bug: el punto verde "funciona" visualmente per
 
 Implementa un componente `EstadoBadge({ estado, texto })` que **rechace** renderizarse (lance un error en desarrollo) si recibe `texto` vacío o `undefined`, de forma que sea imposible crear una instancia de la insignia sin su nombre accesible por accidente. Verificá con `nombreAccesible` que la salida siempre tenga una cadena no vacía para cualquier `estado` válido. No copies la solución del Paso 4; escribí primero la firma del componente y después el código.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entrega `src/nombre-accesible.js` con ambas salidas y la aserción del fallo deliberado reproducida, más el fragmento de HTML corregido del Paso 5. Esto cierra el **Módulo 3**: el Módulo 4 retoma la app del conductor en Flutter, donde la misma disciplina de estado explícito y accesibilidad se traslada a permisos de ubicación, GPS en segundo plano y sincronización offline. **Fuente oficial:** [https://developer.mozilla.org/en-US/docs/Glossary/Accessible_name](https://developer.mozilla.org/en-US/docs/Glossary/Accessible_name).
 

@@ -16,15 +16,15 @@
       "topics": 58,
       "explanation": 58,
       "code": 58,
-      "visual": 54,
+      "visual": 55,
       "filePath": 58,
       "runCommand": 58,
       "expectedResult": 58,
       "practice": 58,
-      "project": 57,
+      "project": 58,
       "modelMental": 58,
       "limitsDecision": 58,
-      "practicable": 57,
+      "practicable": 58,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -64,15 +64,15 @@
       "topics": 113,
       "explanation": 113,
       "code": 113,
-      "visual": 105,
+      "visual": 106,
       "filePath": 113,
       "runCommand": 113,
       "expectedResult": 113,
       "practice": 113,
-      "project": 112,
+      "project": 113,
       "modelMental": 113,
       "limitsDecision": 113,
-      "practicable": 112,
+      "practicable": 113,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -96,15 +96,15 @@
       "topics": 99,
       "explanation": 99,
       "code": 99,
-      "visual": 73,
+      "visual": 74,
       "filePath": 99,
       "runCommand": 99,
       "expectedResult": 99,
       "practice": 99,
-      "project": 98,
+      "project": 99,
       "modelMental": 99,
       "limitsDecision": 99,
-      "practicable": 98,
+      "practicable": 99,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -160,7 +160,7 @@
       "topics": 56,
       "explanation": 56,
       "code": 56,
-      "visual": 46,
+      "visual": 47,
       "filePath": 56,
       "runCommand": 56,
       "expectedResult": 56,
@@ -208,15 +208,15 @@
       "topics": 29,
       "explanation": 29,
       "code": 29,
-      "visual": 24,
-      "filePath": 28,
+      "visual": 26,
+      "filePath": 29,
       "runCommand": 29,
       "expectedResult": 29,
       "practice": 29,
-      "project": 28,
+      "project": 29,
       "modelMental": 29,
       "limitsDecision": 29,
-      "practicable": 27,
+      "practicable": 29,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -224,15 +224,15 @@
       "topics": 91,
       "explanation": 91,
       "code": 91,
-      "visual": 69,
+      "visual": 70,
       "filePath": 91,
       "runCommand": 91,
       "expectedResult": 91,
       "practice": 91,
-      "project": 90,
+      "project": 91,
       "modelMental": 91,
       "limitsDecision": 91,
-      "practicable": 90,
+      "practicable": 91,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -707,18 +707,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -8347,18 +8347,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -10727,18 +10727,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -12241,7 +12241,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 5: Ingeniería social y phishing: detectar señales en enlaces y remitentes",
+        "topic": "Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18721,7 +18721,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -18731,7 +18731,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -22247,18 +22247,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -22357,8 +22357,8 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
-          "filePath": false,
+          "visual": true,
+          "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
@@ -22367,8 +22367,8 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -23283,18 +23283,18 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 12,
-          "practicable": false,
+          "rubricScore": 16,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }

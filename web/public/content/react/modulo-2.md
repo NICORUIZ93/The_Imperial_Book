@@ -32,7 +32,6 @@ graph TD
     style C fill:#4caf50
 ```
 
-**Evidencia de aprendizaje:** entrega efecto con cancelación, respuesta obsoleta provocada y segundo efecto agregado.
 **Conceptos clave:** sincronización con sistemas externos, array de dependencias, función de limpieza.
 
 `useEffect` es el mecanismo de React para sincronizar un componente con un sistema externo al propio modelo de React: suscribirse a un evento del navegador (`window.addEventListener('resize', handler)`), establecer una conexión (un WebSocket, un temporizador), o cualquier operación que necesite ejecutarse como reacción a que el componente se montó o a que cierto valor cambió, en vez de como parte directa del cálculo de qué renderizar (que pertenece al cuerpo de la función componente en sí, no a un efecto).
@@ -86,7 +85,7 @@ Pista: quitá el `return () => controller.abort()` del efecto — ese es el fall
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la cancelación, y agregá un segundo `useEffect` separado que sincronice el título del documento (`document.title`) con la cantidad de envíos pendientes, confirmando que cada efecto tiene su propio array de dependencias independiente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el efecto con cancelación del Paso 4, la respuesta obsoleta provocada en el Paso 5, y el segundo efecto del Paso 6; explicá por qué un efecto que hace fetch sin cancelar puede mostrar datos de una petición vieja, aunque esa petición ya no le interese a nadie. Siguiente paso: estudia `useRef` para valores que no disparen un render. Errores comunes: un array de dependencias incompleto que omite `zona`, usar un efecto para calcular un dato derivado que podría calcularse directamente en el render, y olvidar la función de limpieza en cualquier efecto que se suscribe a algo. Fuentes oficiales: https://react.dev/reference/react/useEffect y https://react.dev/learn/synchronizing-with-effects.
 **¿Por qué es importante?** Porque los efectos son la frontera donde React toca red, DOM y recursos externos; sin limpieza, una respuesta obsoleta puede sobrescribir silenciosamente el estado actual.
 
@@ -147,10 +146,9 @@ Pista: cambiá `useRef(0)` por `useState(0)` y `renderCount.current++` por `setR
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `useRef`, y agregá una segunda referencia que guarde la última `zona` consultada, comparándola contra la `zona` actual dentro de un efecto para loguear solo cuándo realmente cambió, no en cada render.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contador con `useRef` del Paso 4, el loop infinito provocado en el Paso 5, y la comparación de zona anterior del Paso 6; explicá por qué `useState` dentro del cuerpo del componente (sin pasar por un evento o efecto) es peligroso para un contador de renders, mientras que `useRef` no lo es. Siguiente paso: estudia cuándo `useMemo`/`useCallback` valen la pena. Errores comunes: llamar a un setter de `useState` directamente en el cuerpo del componente fuera de un evento o efecto, usar `useRef` para datos que sí deberían reflejarse visualmente, y leer `.current` esperando que esté sincronizado inmediatamente con el render visual actual. Fuentes oficiales: https://react.dev/reference/react/useRef y https://react.dev/learn/referencing-values-with-refs.
 **¿Por qué es importante?** `useRef` permite mantener valores mutables persistentes entre renders sin el costo ni la semántica de disparar un nuevo render cada vez que cambian.
-**Evidencia de aprendizaje:** entrega contador con useRef, loop infinito detectado y comparación de zona anterior.
 **Conceptos clave:** persistencia entre renders sin disparar actualización, acceso a nodos del DOM.
 
 `useRef` crea un objeto mutable (`{ current: valorInicial }`) que persiste con la misma identidad a través de renders sucesivos del componente, con una diferencia crucial respecto a `useState`: modificar `.current` (`renderCount.current++`) no dispara un nuevo render del componente, a diferencia de llamar a un setter de `useState`, que sí lo hace siempre. Esto hace a `useRef` apropiado específicamente para valores que el componente necesita recordar entre renders pero que no deben influir en lo que se renderiza visualmente (un contador interno de cuántas veces se renderizó el componente con fines de depuración, el valor anterior de una prop para compararlo con el actual, o un identificador de un temporizador activo que debe poder cancelarse después).
@@ -205,7 +203,6 @@ graph TD
     style H fill:#e8f5e9
 ```
 
-**Evidencia de aprendizaje:** entrega medición del cálculo trivial, useMemo innecesario descartado y medición del Profiler.
 **Conceptos clave:** memoización de valores frente a memoización de funciones, costo real frente a beneficio real.
 
 `useMemo(() => calculoCostoso(datos), [datos])` memoiza el resultado (el valor) de un cálculo, recalculándolo únicamente cuando alguna de las dependencias listadas cambia, en vez de recalcularlo en cada render del componente sin importar si sus entradas relevantes efectivamente cambiaron; `useCallback(() => hacer(id), [id])` es conceptualmente equivalente pero memoiza específicamente una función (una referencia estable a esa función) en vez de un valor arbitrario, siendo `useCallback(fn, deps)` sintácticamente equivalente a `useMemo(() => fn, deps)`.
@@ -262,7 +259,7 @@ Pista: envolvé ese `sort` trivial en `useMemo` igual, "para estar seguros", y m
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lugar medí con el Profiler de React (Módulo 9) si memoizar el callback `onSeleccionarEnvio` pasado a una lista larga de `EnvioCard` envueltos en `React.memo` sí previene re-renders mensurables — un caso donde memoizar sí puede justificarse.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explicá la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
 **¿Por qué es importante?** `useMemo`/`useCallback` solo aportan beneficio real cuando el cálculo es genuinamente costoso o cuando previenen un re-render mensurable de un hijo memoizado; usarlos sin esa justificación agrega complejidad sin beneficio.
 
@@ -345,9 +342,7 @@ Pista: dentro de un `if (zona === 'norte')`, agregá una llamada a un nuevo `use
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 moviendo ese `useState` al nivel superior del componente (sin ningún `if` alrededor), usando la condición solo para decidir qué hacer con el valor, no para decidir si llamar al hook; agregá además un `useImperativeHandle` en `PanelEnvios` que exponga únicamente un método `refrescar()` hacia un componente padre con `ref`, sin exponer el nodo DOM completo.
 
-**Evidencia de aprendizaje:** entrega reducer consistente, error de hooks detectado y useImperativeHandle agregado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explicá por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
 **¿Por qué es importante?** Respetar las reglas de los hooks garantiza que React asocie correctamente cada hook con su estado interno entre renders; un reducer evita estados mutuamente excluyentes que coexistan por error.
 
@@ -432,7 +427,7 @@ Añade un botón "Reintentar" a la UI de recuperación que reinicie `haFallado` 
 #### Paso 6 · Práctica independiente
 Reemplaza tu boundary de clase por la librería `react-error-boundary` (`npm install react-error-boundary`) usando `<ErrorBoundary FallbackComponent={...} onReset={...}>`. Entrega ambas versiones y explica qué aporta la librería (reset, aislamiento por boundary, integración con hooks).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la app con el mapa contenido, el reintento y la versión con `react-error-boundary`. **¿Por qué es importante?** Sin Error Boundaries, un solo componente con un bug deja al usuario ante una pantalla en blanco sin explicación — la peor experiencia posible. En producción, los boundaries son los que convierten "la app se cayó" en "esta sección no cargó, el resto funciona", y suelen conectarse a un servicio de reporte de errores (Sentry) en `componentDidCatch`. Fuentes: [React — Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
 **Conceptos clave:** error de render vs error async, `getDerivedStateFromError`, UI de recuperación, aislamiento de fallos.
 **Cuándo no usarlo:** no sirven para errores de manejadores de eventos (un `onClick`) ni de código async (un `fetch`): esos se atrapan con `try/catch` normal. El boundary es solo para errores que ocurren durante el renderizado.
@@ -534,7 +529,7 @@ Abre la URL que imprime Vite, normalmente `http://localhost:5173`. **Resultado e
 #### Paso 6 · Práctica independiente
 Añade una zona que rechace con un error distinto de `AbortError`. Comprueba que el fallo real se muestra y que la cancelación normal no se presenta como error. Anota por qué no debes esconder indiscriminadamente todas las excepciones.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** reproducción de la carrera, corrección y caso fallido. El siguiente paso es aplicar la señal a `fetch` y luego comparar con una librería de estado remoto. **Errores comunes:** ignorar dependencias, tratar toda cancelación como fallo y asumir que detener una UI revierte una escritura. **Límites y decisión de uso:** el ejemplo no implementa caché ni deduplicación; esas responsabilidades se estudian en el módulo de datos remotos.
+#### Paso 7 · Cierre
+El siguiente paso es aplicar la señal a `fetch` y luego comparar con una librería de estado remoto. **Errores comunes:** ignorar dependencias, tratar toda cancelación como fallo y asumir que detener una UI revierte una escritura. **Límites y decisión de uso:** el ejemplo no implementa caché ni deduplicación; esas responsabilidades se estudian en el módulo de datos remotos.
 
 **Fuentes oficiales:** [React useEffect](https://react.dev/reference/react/useEffect) y [MDN AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).

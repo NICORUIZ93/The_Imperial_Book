@@ -53,7 +53,7 @@ Resultado esperado: `diff` no muestra ninguna diferencia — Floci devuelve exac
 Pista: escribí el código que lee la respuesta asumiendo un campo `completion` (en vez del campo real que Floci devuelve en su stub) — ese es el fallo deliberado: tu parseo falla con un valor `undefined`, no porque Bedrock haya cambiado nada, sino porque asumiste la forma del contrato sin confirmarla primero contra la respuesta real del stub.
 #### Paso 6 · Práctica independiente
 Probá qué pasa si el prompt pide explícitamente algo fuera del `max_tokens` configurado (un mensaje mucho más largo que 50 tokens), y documentá cómo tu código debería manejar una respuesta truncada sin que el SMS le llegue cortado a la mitad al cliente.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el stub determinista del Paso 4, el error de contrato mal asumido del Paso 5, y el manejo de truncamiento del Paso 6; explicá qué de todo esto seguiría siendo cierto contra el Bedrock real, y qué no. Siguiente paso: extracción. Errores comunes: probar solo texto feliz y filtrar datos sensibles. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html.
 
 ### Tema 2: Textract y Transcribe
@@ -112,7 +112,7 @@ Resultado esperado: `analyze-document` devuelve pares clave-valor (`Cliente: ...
 Pista: subí una foto borrosa o con el monto tapado y repetí `analyze-document` — ese es el fallo deliberado: Textract puede devolver el campo `Monto` con un `Confidence` bajo (o directamente no detectarlo), y aceptar ese valor sin revisar la confianza significaría cargar un monto incorrecto a la tabla `facturas` sin que nadie lo note.
 #### Paso 6 · Práctica independiente
 Escribí la regla de negocio que faltaría en el código: si `Confidence` de cualquier campo extraído es menor a un umbral (por ejemplo 80%), la factura se marca para revisión humana en vez de insertarse directamente en `facturas`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la extracción exitosa del Paso 4, el campo de baja confianza del Paso 5, y la regla de revisión humana del Paso 6; explicá por qué "Textract respondió algo" no es lo mismo que "Textract respondió algo confiable". Siguiente paso: límites. Errores comunes: aceptar extracción sin confianza y no conservar original. Fuente oficial: https://docs.aws.amazon.com/textract/latest/dg/what-is.html.
 
 ### Tema 3: Stub vs mock, y qué probar localmente
@@ -158,7 +158,7 @@ Resultado esperado: confirmás que tu código recibe y parsea correctamente la f
 Pista: afirmá en tu documentación interna que "ya validamos localmente que el SMS generado suena natural y profesional" basándote solo en la respuesta del stub de Floci — ese es el fallo deliberado: el stub nunca varía su texto, así que no probaste nada sobre la calidad real del lenguaje generado, solo sobre si tu código sabe leer la respuesta.
 #### Paso 6 · Práctica independiente
 Armá una tabla de dos columnas ("se prueba localmente con el stub" / "necesita el servicio real") y clasificá: parseo de la respuesta de Bedrock, calidad del texto del SMS, forma del JSON de Textract, precisión del OCR sobre una foto real borrosa, manejo de errores HTTP de la API, tiempo de respuesta real bajo carga.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la validación de contrato del Paso 4, la afirmación incorrecta corregida del Paso 5, y la tabla de límites del Paso 6; explicá por qué pasar todas las pruebas contra el stub nunca es suficiente para decir "esto ya está probado" sin matices. Siguiente paso: seguridad. Errores comunes: confundir mock con modelo y no medir coste. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation.html.
 
 ## Laboratorio práctico

@@ -8,20 +8,20 @@ Este documento reemplaza la estrategia de crecer por lotes y marcadores.
 La percepción de que los temas son básicos y superficiales tiene fundamento. El
 inventario actual contiene 1.100 temas, pero volumen, rutas y marcadores no
 demuestran profundidad ni preparación profesional. La auditoría disponible
-detecta señales de sustancia en 283 temas, bloques editoriales repetidos en 182,
-andamiaje genérico en 109 y secciones heredadas en 184 de 245 módulos. Son
-señales estáticas que requieren revisión; no equivalen a 283 errores confirmados.
+detecta señales de sustancia en 273 temas, bloques editoriales repetidos en 172,
+andamiaje genérico en 99 y secciones heredadas en 184 de 245 módulos. Son
+señales estáticas que requieren revisión; no equivalen a 273 errores confirmados.
 Consulta [la revisión integral](./full-review.md) para cobertura y límites.
 
 Los datos siguientes describen la deuda medida:
 
 | Síntoma | Dato |
 |---|---|
-| Estructura editorial repetida | 182 temas con bloques repetidos |
+| Estructura editorial repetida | 172 temas con bloques repetidos |
 | Cola editorial | 1 tema con señal de cola tras el cierre |
 | Apéndices heredados | 184/245 módulos con «Errores comunes y soluciones», ruta de proyecto o laboratorio pegados al final |
 | Sin proyecto acumulativo | 12/245 módulos con ruta de proyecto progresivo |
-| Andamiaje genérico | 109 temas con frases plantilla que prometen independencia sin demostrarla |
+| Andamiaje genérico | 99 temas con frases plantilla que prometen independencia sin demostrarla |
 | Dos fuentes de verdad | `cloud` vive en `course-data.ts`; los otros 13 tracks en `tracks/*.ts` |
 
 ## Objetivo de salida — todavía no acreditado
@@ -69,7 +69,7 @@ revisión técnica y validación humana; esas capas siguen incompletas.
 ### Fase 2 — Núcleo profesional (en curso)
 
 - Nuevos módulos escritos con el estándar nuevo (sin apéndices, sin repetición,
-  con fallo deliberado y evidencia):
+  con fallo deliberado y práctica verificable):
   - `devops/modulo-17`: diseño de sistemas distribuidos (borde, datos, CAP,
     capacidad).
   - `devops/modulo-18`: servidor propio (VPS, TLS, systemd, restic).
@@ -91,8 +91,9 @@ revisión técnica y validación humana; esas capas siguen incompletas.
 - [x] Ruta por tema: `/curso/:trackId/:moduleId/tema/:n` enfoca un solo tema y
   enlaza de vuelta al capítulo. Sustituye a `/tema/:slug` conservando los
   fragmentos históricos.
-- [x] Progreso por evidencia: textarea por tema, huella guardada y copia de
-  seguridad. «Leído» ya no es la única señal.
+- [x] Ruta por tema y copia de seguridad del progreso. El textarea de
+  evidencia por tema se retiró el 2026-10-30: pedía un artefacto sin comprobar
+  que el tema lo explicara.
 - [ ] Checkpoints que el alumno ejecuta y cuya salida se registra.
 - [x] «Marcar capítulo como leído» reemplaza a «completado».
 
@@ -216,17 +217,103 @@ lo que `lsof` es el comando principal y `ss` queda como alternativa Linux. Las
 tres sustituiciones de diagramas ASCII por Mermaid redujeron los visuales ASCII
 pendientes de 216 a 213 (Mermaid pasó de 581 a 583 temas).
 
-## Verificación de esta entrega (2026-10-30)
+## Tercer lote piloto (2026-10-30)
+
+Se reescribieron diez temas en cuatro módulos: `foundations` 6/1–4, `devops`
+13/1–3, `flutter` 11/1–2 y `kotlin-multiplatform` 8/1. La selección agrupó los
+temas que combinaban andamiaje genérico y bloques repetidos, para corregir la
+repetición dentro de su propio módulo. El resultado medido es 283 → 273 temas
+con señales (172 con bloques repetidos y 99 con andamiaje genérico); siete pasos
+sigue en 1100/1100 y criterios editoriales en 1094/1100 con la misma deuda de 6.
+La deuda aceptada en `lesson-substance-baseline.json` bajó de 283 a 273 entradas
+sin añadir ninguna.
+
+| Tema | Artefacto y salida observada |
+|---|---|
+| foundations 6/1 | `amenazas.json` + `riesgos.py`: `amenazas: 3`, `mayor riesgo: T-01 (15)`; una amenaza sin dueño produce `fallo: amenazas sin propietario: R-01` y código 1 |
+| foundations 6/2 | `acceso.py` con PBKDF2, salt por usuario y revocación de sesión: `salts distintos: True`, `c-891 confirmó RF-4471`, `denegado: c-999 no está asignado a RF-4471` |
+| foundations 6/3 | `comando.json` + `firma.py` con HMAC-SHA256 sobre JSON canónico: `íntegro: True`, `manipulado: False`; la variante con hash simple imprime `manipulado con hash simple: True` |
+| foundations 6/4 | `nota.txt` + `validar.py` con `html.escape` y SQL parametrizado frente a concatenación: `html escapado: dejado con el portero`, `filas parametrizadas: 0`, `filas concatenadas: 2` |
+| devops 13/1 | `.github/workflows/pipeline.yml` + `verificar_pipeline.py`: `jobs: test -> build -> scan -> deploy`, `gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)`; con `exit-code: "0"` falla con «el escaneo no bloquea ante una vulnerabilidad CRITICAL» |
+| devops 13/2 | `eventos.jsonl` + `trazabilidad.py`: `etapas: commit -> build -> scan -> deploy`, `cadena completa: True`; etiquetar con `:latest` produce «la imagen no es trazable por digest» |
+| devops 13/3 | `checklist.md` + `evaluar_checklist.py`: `preguntas respondidas: 3`, `respuestas ancladas a una decisión: True`; una respuesta genérica devuelve tres motivos y código 1 |
+| flutter 11/1 | `flutter create flujo_release` y `flutter build appbundle --release` reales; `verificar_release.py`: `aab: ... (44248888 bytes)`, `version: 1.0.0+1`, estructura y `Release.xcconfig` presentes. El build terminó con código 1 en el paso de strip porque `flutter doctor` reporta `cmdline-tools` ausente: el `.aab` se generó y verificó, pero no se declara build limpio |
+| flutter 11/2 | `generar_png.py` + `flutter_launcher_icons.yaml` + `verificar_iconos.py`: `fuente: assets/icon_1024.png (1024x1024)`; la fuente de 48×48 produce «la fuente debe ser al menos 1024x1024». `flutter_launcher_icons` no se ejecutó |
+| kotlin-multiplatform 8/1 | Fixture `Shared.framework` + `verificar_framework.py`: `paquete: FMWK`, `modulemap: umbrella header "Shared.h"`, `clase pública: SharedTarea`; una cabecera fuera del modulemap produce «cabeceras no exportadas: Interna.h» |
+
+Límites explícitos: Gradle no está instalado, así que el tema de KMP valida la
+estructura que un build real debe producir, no un framework compilado. No se
+generó ningún `.ipa`: la firma y el provisioning de iOS no se configuraron. La
+generación de íconos se validó por su precondición (fuente y configuración), no
+ejecutando el generador. El `.aab` de Flutter existe y se abrió con `zipfile`,
+pero el toolchain Android quedó incompleto (`cmdline-tools`), por lo que el
+build no terminó limpio. El lote sustituyó dos diagramas ASCII por Mermaid en
+`devops` y añadió uno en `kotlin-multiplatform`: los visuales ASCII pendientes
+pasan de 213 a 211 y Mermaid de 583 a 586 temas.
+
+## Módulo de profundidad de muestra (2026-10-30)
+
+Los lotes anteriores redujeron señales sin cambiar la unidad de trabajo: un tema
+por página. Para probar el estándar que el plan persigue se reescribió completo
+`foundations/modulo-6.md` (Seguridad, privacidad y modelado de amenazas) con una
+unidad mayor: 5 temas, 15.300 palabras frente a 4.768, entre 2.704 y 3.654
+palabras por tema, 3–4 demostraciones ejecutadas por tema y un proyecto
+acumulativo, «auditoría de seguridad de RutaFlow», cuyos entregables se suman de
+un tema al siguiente. No se añadieron temas: se profundizó el mismo inventario.
+
+| Tema | Palabras | Artefactos y salida observada |
+|---|---:|---|
+| 1. Activos, amenazas y límites | 3.092 | `riesgos.py` + `amenazas.json`: 8 amenazas STRIDE, `prioridad: S-02 (residual 12)`; el control de dominio rechaza `probabilidad 7` y una amenaza sin propietario |
+| 2. Identidad y autorización | 2.704 | `acceso.py` (PBKDF2, bloqueo, caducidad) imprime `otro conductor: c-999 confirmó RF-4471`; `eventos.py` detecta `corte en 2` y `corte en 3` y muestra que un atacante con la clave puede recalcular la cadena |
+| 3. Criptografía, TLS y secretos | 2.971 | `firma.py`: acepta el comando válido y rechaza PIN alterado, replay por nonce, timestamp fuera de ventana y `kid` desconocido; `tls_demo.py` contra una CA local: `localhost` pasa, `127.0.0.1` falla por nombre y sin la CA falla por emisor; `escanear.py` encuentra 2 secretos en el historial tras borrarlos del árbol |
+| 4. Validación, web y privacidad | 2.817 | `validar.py`, `inyeccion.py` (0 filas parametrizadas frente a 2 concatenadas y una fila fabricada por `UNION`), `salida.py` (HTML, atributo, JavaScript y URL) y `privacidad.py` (`tel [TEL] email [EMAIL] direccion [DIRECCION]`, 3→2 eventos retenidos) |
+| 5. Ingeniería social y phishing | 3.654 | `analizar.py` detecta userinfo, punycode, texto distinto del destino y urgencia; `urls.py` clasifica por dominio registrable; `autenticacion.py` distingue `dmarc=pass` de `spf=pass` con `dmarc=fail`; `campana.py` calcula tasas sobre enviados (`clic=29.2%`, `reporte=29.2%`, `credencial=12.5%`) |
+
+Límites declarados: los ejemplos se ejecutaron con el Python 3 del sistema y
+SQLite en memoria; TLS se probó contra una CA local creada con OpenSSL. Los
+scripts se extrajeron del Markdown final y se volvieron a ejecutar, incluidos
+`tls_demo.py` y `escanear.py` con los pasos de OpenSSL y Git que el propio tema
+indica. **No** se envió correo real ni se consultó DNS: las cabeceras
+`Authentication-Results` son sintéticas y sirven para interpretar la lógica, no
+para certificar un remitente.
+No se ejecutó revisión de navegador ni revisión pedagógica humana sobre el
+módulo. Las auditorías estructurales miden marcadores, no profundidad: el
+módulo pasa siete pasos y criterios editoriales, y sus cinco temas no tienen
+señales de sustancia, pero eso no demuestra que enseñe mejor.
+
+El baseline de sustancia permanece en 273 temas porque los cinco temas del
+módulo ya estaban limpios; no se añadió deuda nueva. La muestra sirve como
+referencia de estándar para la Fase 3, no como resultado del repositorio
+completo: los otros 1.095 temas conservan su profundidad actual.
+
+Verificación ejecutada para este cambio:
+
+| Comprobación | Resultado |
+|---|---|
+| `./scripts/validate.sh` | Código 0: 21 pruebas Python y todos los validadores de contenido, fuentes, fences, índices y grafos |
+| Metodología de siete pasos | 1100/1100 completos; los 5 temas de la muestra pasan los 16 marcadores |
+| Criterios editoriales | 1094/1100 practicables sin cambios; los 5 temas de la muestra pasan los 9 criterios |
+| Sustancia | 273/1100 sin cambios; `--strict` en 0 y ningún tema del módulo con señales |
+| Visuales | 586 temas con Mermaid, 18 enlaces Archify y 211 con ASCII pendiente |
+| Build Angular | Correcto; aviso de bundle inicial 625,49 kB frente al presupuesto de 600 kB (no se amplió) |
+| Pruebas unitarias Angular | 19 correctas |
+| E2E Chrome | 48 correctas (24 escenarios en escritorio y móvil) |
+
+Los temas se contrastaron con los auditores, no con una revisión pedagógica
+humana: el módulo sigue pendiente de lectura completa y de revisión de
+navegador tema por tema.
+
+## Verificación de la entrega (2026-10-30)
 
 | Comprobación | Resultado |
 |---|---|
 | `./scripts/validate.sh` | Código 0: 21 pruebas Python, pedagogía, currículo, fuentes, fences, índices y grafos |
 | Build Angular | Correcto; aviso de bundle inicial 625,49 kB frente al presupuesto de 600 kB (no se amplió) |
-| Pruebas unitarias Angular | 19 correctas (incluye evidencia por tema) |
+| Pruebas unitarias Angular | 16 correctas |
 | E2E Chrome | 48 correctas (24 escenarios en escritorio y móvil) |
 | Metodología de siete pasos | 1100/1100 completos |
 | Criterios editoriales | 1094/1100 practicables; deuda de 6 |
-| Sustancia | 283 temas con señales (20 menos que antes del primer piloto); `--strict` no registra defectos nuevos |
+| Sustancia | 273 temas con señales (30 menos que antes del primer piloto); `--strict` no registra defectos nuevos |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
 Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,
@@ -237,8 +324,41 @@ validadores Node de C4 y ADR se probaron con el resultado documentado.
 ### Lo que sigue pendiente
 
 1. Los temas con repetición o cola heredada: se reducen por tandas y el
-   baseline solo puede bajar.
-2. La ruta piloto completa (Fundamentos + Java) con checkpoints por módulo.
-3. `cloud` fuera de `course-data.ts` y una sola fuente de verdad por track.
-4. Ruta por tema y progreso por evidencia en la aplicación.
-5. Validación con personas reales.
+   baseline solo puede bajar; la muestra de `foundations/modulo-6.md` fija el
+   estándar de profundidad que la Fase 3 debe replicar.
+2. Reescribir el siguiente módulo con el estándar de la muestra y medir el
+   costo real en horas antes de comprometer un track completo.
+3. La ruta piloto completa (Fundamentos + Java) con checkpoints por módulo.
+4. `cloud` fuera de `course-data.ts` y una sola fuente de verdad por track.
+5. Ruta por tema y progreso por módulo en la aplicación.
+6. Validación con personas reales: revisión pedagógica humana y de navegador
+   sobre la muestra antes de generalizarla.
+
+## Retiro de la evidencia por tema (2026-10-30)
+
+Se eliminó el mecanismo «Evidencia del tema» en todo el repositorio por decisión
+del mantenedor: pedía un artefacto al final de cada tema sin que el contenido
+garantizara que ese artefacto fuera verificable, y el estado «verificado» no
+demostraba aprendizaje.
+
+| Superficie | Cambio |
+|---|---|
+| Lector Angular | Se retiraron el bloque de textarea, el botón de registro, el estado `topic-verified` y su estilo. |
+| Progreso | Se retiraron `verifiedTopics`, `topicEvidence` y `verifyTopic`; la copia de seguridad v1 ya no acepta ni produce esos campos. |
+| Contenido | 385 párrafos «Evidencia de aprendizaje», 389 coletillas «**Evidencia:**», 54 frases repetidas, 1.041 encabezados de Paso 7 y 23 celdas de tabla. Se conservaron las transiciones y los usos técnicos de «evidencia» (respuesta a incidentes, informes, ADR). |
+| Auditoría | `learningEvidence` salió de `audit_seven_step_methodology.py`; el reporte mide 16 marcadores. |
+| Temas vacíos | Se quitaron 4 encabezados `### Fallo Deliberado:` sin cuerpo en `cloud` y se corrigió la jerarquía del proyecto final de `cloud/modulo-9.md`. |
+
+Verificación ejecutada:
+
+| Comprobación | Resultado |
+|---|---|
+| `./scripts/validate.sh` | Código 0: 21 pruebas Python y todos los validadores |
+| Metodología de siete pasos | 1100/1100 completos con 16 marcadores |
+| Criterios editoriales | 1094/1100 practicables; deuda de 6, igual que antes del retiro |
+| Sustancia | 273 temas con señales, sin defectos nuevos; `--strict` en 0 |
+| Build Angular | Correcto; se mantiene el aviso de presupuesto del bundle inicial |
+| Pruebas unitarias Angular | 16 correctas; cobertura global por encima de los umbrales de CI |
+
+El retiro no convierte los temas en completos ni sustituye la revisión
+pedagógica humana: solo elimina una exigencia que el contenido no respaldaba.

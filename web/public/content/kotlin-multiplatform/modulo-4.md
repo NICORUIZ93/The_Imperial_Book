@@ -131,9 +131,9 @@ class GuardarTareaUseCase(private val repositorio: ____) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una `data class` y un caso de uso que dependa de una interfaz relacionada, sin ninguna referencia a una implementación concreta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras modelos de dominio sin dependencias de plataforma y casos de uso que dependen de interfaces, no de implementaciones concretas, confirmando con una medición real que el mismo caso de uso funciona idénticamente con un repositorio rápido (fake) o uno lento (real). El siguiente tema define esa interfaz de repositorio con sus dos implementaciones. **Evidencia:** entrega los dos resultados del Paso 4 (idénticos entre real y fake) y sus duraciones, y explica por qué depender de una implementación concreta en vez de la interfaz rompería la posibilidad de sustituir el repositorio en pruebas. Fuente oficial: [Kotlin docs — Introduce shared logic](https://kotlinlang.org/docs/multiplatform-share-on-platforms.html).
+Ya declaras modelos de dominio sin dependencias de plataforma y casos de uso que dependen de interfaces, no de implementaciones concretas, confirmando con una medición real que el mismo caso de uso funciona idénticamente con un repositorio rápido (fake) o uno lento (real). El siguiente tema define esa interfaz de repositorio con sus dos implementaciones. Fuente oficial: [Kotlin docs — Introduce shared logic](https://kotlinlang.org/docs/multiplatform-share-on-platforms.html).
 
 **Errores comunes:** hacer que el caso de uso dependa de la implementación concreta del repositorio en vez de la interfaz; filtrar código específico de plataforma dentro de un modelo de dominio, rompiendo su portabilidad entre `commonMain` y cada plataforma.
 
@@ -264,9 +264,9 @@ class FakeTareaRepository : ____ {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una interfaz de repositorio con dos métodos y una implementación fake en memoria que la satisfaga completamente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya defines una interfaz de repositorio con al menos dos implementaciones que comparten exactamente el mismo contrato, confirmando que ambas producen resultados idénticos ante la misma secuencia de llamadas. El siguiente tema conecta ambas implementaciones a través de inyección de dependencias con Koin. **Evidencia:** entrega el resultado idéntico de ambas implementaciones ante la secuencia `guardar`+`obtenerTodas`, y explica por qué cambiar la firma de un método en una sola implementación rompe el contrato compartido. Fuente oficial: [Kotlin docs — Interfaces](https://kotlinlang.org/docs/interfaces.html).
+Ya defines una interfaz de repositorio con al menos dos implementaciones que comparten exactamente el mismo contrato, confirmando que ambas producen resultados idénticos ante la misma secuencia de llamadas. El siguiente tema conecta ambas implementaciones a través de inyección de dependencias con Koin. Fuente oficial: [Kotlin docs — Interfaces](https://kotlinlang.org/docs/interfaces.html).
 
 **Errores comunes:** dejar que una implementación fake divergiera silenciosamente de la firma de la interfaz real; mezclar lógica de negocio dentro de la implementación del repositorio, en vez de mantenerla exclusivamente como acceso a datos.
 
@@ -401,9 +401,9 @@ val sharedModule = module {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un módulo de Koin con un `single` y un `factory`, explicando en una frase cuándo usarías cada uno. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues `single` de `factory` según si el estado debe compartirse o recrearse, y confirmas con un contenedor de DI real la diferencia de identidad entre ambos. El siguiente y último tema modela errores de dominio de forma explícita, sin depender de excepciones no tipadas. **Evidencia:** entrega los resultados de identidad (`single` misma instancia, `factory` instancias distintas), y explica por qué usar `factory` para algo que debería ser `single` desperdicia recursos. Fuente oficial: [Koin docs — Multiplatform](https://insert-koin.io/docs/reference/koin-mp/kmp).
+Ya distingues `single` de `factory` según si el estado debe compartirse o recrearse, y confirmas con un contenedor de DI real la diferencia de identidad entre ambos. El siguiente y último tema modela errores de dominio de forma explícita, sin depender de excepciones no tipadas. Fuente oficial: [Koin docs — Multiplatform](https://insert-koin.io/docs/reference/koin-mp/kmp).
 
 **Errores comunes:** usar `factory` para una dependencia costosa que debería compartirse (como una conexión de base de datos), recreándola innecesariamente en cada solicitud; duplicar la configuración de inyección de dependencias por plataforma en vez de declararla una única vez en `commonMain`.
 
@@ -548,9 +548,9 @@ fun eliminarTarea(id: String): ____<Unit> {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un tipo `Resultado` explícito con `Exito`/`Error`, una función que lo devuelva, y un manejo exhaustivo del resultado sin rama `else`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya modelas el resultado de una operación que puede fallar con un tipo explícito visible en la firma, y confirmas con un contraste real por qué esto obliga al llamador a manejar el error sin depender de excepciones no documentadas. Esto cierra el módulo de lógica de negocio compartida; el siguiente módulo aplica estos modelos y casos de uso al networking compartido con Ktor Client. **Evidencia:** entrega el resultado de ambos casos manejados con `Exito`/`Error`, y explica por qué el llamador de una función con excepciones necesita conocimiento previo que la firma de tipo no comunica. Fuente oficial: [Kotlin docs — Functional error handling](https://kotlinlang.org/docs/exception-handling.html).
+Ya modelas el resultado de una operación que puede fallar con un tipo explícito visible en la firma, y confirmas con un contraste real por qué esto obliga al llamador a manejar el error sin depender de excepciones no documentadas. Esto cierra el módulo de lógica de negocio compartida; el siguiente módulo aplica estos modelos y casos de uso al networking compartido con Ktor Client. Fuente oficial: [Kotlin docs — Functional error handling](https://kotlinlang.org/docs/exception-handling.html).
 
 **Errores comunes:** seguir lanzando excepciones no documentadas para errores esperables del dominio (como "usuario no encontrado"), en vez de modelarlos como parte del tipo de retorno; olvidar manejar el caso `Error` porque no hay ningún `try`/`catch` que "obligue" visualmente a recordarlo (aunque el `when` exhaustivo si lo hace cumplir en compilación).
 
@@ -637,7 +637,7 @@ java -jar vencimiento.jar
 #### Paso 6 · Práctica independiente
 Añade una función `restanteMs` que nunca devuelva valores negativos y comprueba antes, justo en y después del vencimiento. Conserva los casos en commonTest cuando lo lleves al proyecto KMP, sin introducir APIs de JVM en commonMain.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** casos frontera, error deliberado y corrección. El siguiente paso es adaptar el origen de tiempo en cada plataforma y mantener la política común. **Errores comunes:** mezclar segundos y milisegundos, consultar el reloj global dentro de cada regla y usar sleep para pruebas de lógica. **Límites y decisión de uso:** el servidor debe decidir vencimientos con autoridad cuando haya dinero o asignación compartida; el reloj del cliente es una ayuda de UI.
+#### Paso 7 · Cierre
+El siguiente paso es adaptar el origen de tiempo en cada plataforma y mantener la política común. **Errores comunes:** mezclar segundos y milisegundos, consultar el reloj global dentro de cada regla y usar sleep para pruebas de lógica. **Límites y decisión de uso:** el servidor debe decidir vencimientos con autoridad cuando haya dinero o asignación compartida; el reloj del cliente es una ayuda de UI.
 
 **Fuentes oficiales:** [Kotlin interfaces](https://kotlinlang.org/docs/interfaces.html) y [recomendación de inyectar Clock](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-clock/).

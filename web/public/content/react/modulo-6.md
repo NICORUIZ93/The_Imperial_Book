@@ -96,10 +96,9 @@ Pista: usá `queryKey: ['envios']` (sin incluir `zona`) en ambos componentes, pe
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `zona` a la `queryKey`, y agregá una tercera consulta (`['envios', zona, 'urgentes']`) para los envíos marcados como urgentes de esa misma zona, confirmando que cada combinación distinta de `queryKey` cachea de forma independiente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la deduplicación del Paso 4, la cache desincronizada por `queryKey` incompleta del Paso 5, y la tercera consulta del Paso 6; explicá por qué la `queryKey` debe incluir cualquier variable que afecte qué datos trae `queryFn`, no solo las que "parecen importantes". Siguiente paso: estudia mutations e invalidación. Errores comunes: una `queryKey` que no incluye todas las variables relevantes del `queryFn`, seguir usando `useState`+`useEffect` para datos que ya tiene una query equivalente, y no aprovechar React Query Devtools para inspeccionar el estado real de la cache. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/queries y https://tanstack.com/query/latest/docs/framework/react/guides/query-keys.
 **¿Por qué es importante?** `useQuery` elimina el "loading hell" de gestionar manualmente estado de carga/error/cache en cada componente, agregando deduplicación y cache compartida automáticamente.
-**Evidencia de aprendizaje:** entrega deduplicación confirmada, cache desincronizada detectada y tercera consulta independiente.
 **Conceptos clave:** `queryKey`, deduplicación, refetch automático.
 
 Manejar fetching manualmente con `useState` + `useEffect` (guardar el resultado, un booleano de carga, y un posible error, todo como estados separados sincronizados manualmente en cada componente que necesita datos de una API) es un patrón que se repite virtualmente idéntico en cada componente que consume datos remotos, y que además omite fácilmente casos importantes (deduplicación de peticiones idénticas simultáneas desde distintos componentes, revalidación automática cuando el usuario vuelve a la pestaña tras un tiempo ausente, cancelación de peticiones obsoletas) a menos que se implemente esa lógica adicional manualmente y de forma repetida en cada lugar.
@@ -162,7 +161,6 @@ graph TD
     style H fill:#e8f5e9
 ```
 
-**Evidencia de aprendizaje:** entrega invalidación tras crear, lista desactualizada detectada y doble invalidación confirmada.
 **Conceptos clave:** `useMutation`, `invalidateQueries`, sincronización tras un cambio.
 
 `useMutation` gestiona operaciones que modifican datos en el servidor (crear, actualizar, eliminar), a diferencia de `useQuery`, orientado a leer datos: `const crear = useMutation({ mutationFn: (tarea) => fetch('/api/tareas', { method: 'POST', body: JSON.stringify(tarea) }), onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tareas'] }) })` ejecuta la petición de creación, y al completarse exitosamente, invalida la query de la lista de tareas (marcándola como obsoleta y disparando automáticamente un refetch de esa query), garantizando que la lista mostrada en pantalla refleje el nuevo elemento recién creado sin que el componente que muestra la lista necesite saber explícitamente que ocurrió una creación en otro lugar de la aplicación.
@@ -220,7 +218,7 @@ Remové el `await queryClient.cancelQueries(...)` del `onMutate` en un optimisti
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explicá por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
 **¿Por qué es importante?** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real del servidor, sin sincronizar manualmente la cache con el resultado exacto de cada mutación.
 
@@ -235,7 +233,6 @@ Esperar la invalidación + refetch completo del Tema 2 para ver un envío marcad
 #### Paso 3 · Teoría, modelo mental y analogía
 Un optimistic update actualiza la cache inmediatamente con el resultado esperado, antes de la confirmación del servidor; si la mutación falla, se revierte al estado anterior guardado — marcar una tarea como completada en papel, confiando en que el sistema central lo registrará, y tachar de nuevo si falla.
 
-**Evidencia de aprendizaje:** entrega optimistic update funcionando, sobrescritura por refetch detectada y notificación de reversión agregada.
 **Conceptos clave:** actualizar la UI antes de la confirmación del servidor, revertir ante error.
 
 Un optimistic update actualiza la interfaz inmediatamente con el resultado esperado de una mutación, antes incluso de que el servidor confirme que esa operación efectivamente se completó exitosamente, mejorando la percepción de velocidad de la aplicación para el usuario (que ve el cambio reflejado instantáneamente, sin esperar el viaje de ida y vuelta completo de la petición de red); si la petición finalmente falla, la actualización optimista se revierte, devolviendo la interfaz al estado anterior consistente con lo que el servidor realmente tiene.
@@ -325,7 +322,7 @@ Pista: quitá `await queryClient.cancelQueries({ queryKey: ['envios'] })` del `o
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `cancelQueries`, y agregá una notificación visual explícita ("no se pudo confirmar, se revirtió el cambio") dentro de `onError`, para que el operador entienda por qué el envío volvió a su estado anterior.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explicá por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cerrá el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
 **¿Por qué es importante?** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
 

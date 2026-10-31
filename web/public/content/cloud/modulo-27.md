@@ -63,7 +63,7 @@ Resultado esperado: Node disponible.
 Pista: consulta un campo inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Añade tipo, query y autenticación.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega esquema, salida, fallo y corrección; explica el resultado. Siguiente paso: resolvers. Errores comunes: esquema sin límites y consultas costosas. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html.
 
 ### Tema 2: Fuentes de datos y resolvers
@@ -121,7 +121,7 @@ Resultado esperado: la fuente `origen-local` y el resolver quedan creados sin ba
 Pista: configurá el resolver local para devolver una forma de dato que no coincide con el tipo declarado en el esquema (por ejemplo, un número donde el esquema espera un `String`) — ese es el fallo deliberado: AppSync rechaza la respuesta del resolver con un error de tipo, aunque el resolver en sí "corrió" sin excepciones.
 #### Paso 6 · Práctica independiente
 Corregí la forma de la respuesta para que coincida con el esquema, y documentá qué validación agregarías antes de reemplazar este resolver `NONE` por la tabla DynamoDB real de entregas, para no romper a los clientes que ya empezaron a consumir `estadoEntrega`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el resolver local funcionando del Paso 4, el error de tipo del Paso 5, y la validación propuesta del Paso 6; explicá por qué "maqueta funcional primero" le permitió al frontend avanzar sin esperar al backend. Siguiente paso: correo. Errores comunes: lógica sin autorización y respuestas inconsistentes. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference.html.
 
 ### Tema 3: SES — identidades, envío y plantillas
@@ -179,7 +179,7 @@ Resultado esperado: `send-templated-email` devuelve un `MessageId`, y el correo 
 Pista: probá enviar el mismo correo con `--source no-verificado@demo.example.com` (una dirección que nunca pasó por `verify-email-identity`) — ese es el fallo deliberado: SES rechaza el envío porque la identidad remitente no está verificada, el mismo control que en producción evitaría que cualquiera envíe en nombre de un dominio que no le pertenece.
 #### Paso 6 · Práctica independiente
 Reenviá la plantilla con datos distintos (`{"guia":"RF-002","nombre":"Luis"}`) y confirmá en el buzón de inspección que cada mensaje muestra su propio contenido resuelto; documentá qué pasaría con el manejo de un rebote si la dirección de Luis estuviera mal escrita (vas a provocarlo de verdad en el Tema 4).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la plantilla creada y el envío exitoso del Paso 4, el rechazo por identidad no verificada del Paso 5, y los dos correos distintos del Paso 6; explicá por qué una plantilla evita inconsistencias frente a concatenar HTML a mano en cada envío. Siguiente paso: simulador. Errores comunes: destinatarios sin consentimiento y logs con PII. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/Welcome.html.
 
 ### Tema 4: El simulador de buzones y el punto de inspección local
@@ -242,7 +242,7 @@ Resultado esperado: el envío genera un evento `Bounce` determinista (no un erro
 Pista: ese envío a `bounce@simulator.amazonses.com` ES el fallo deliberado que buscás provocar a propósito — ahora escribí (o simulá con otra consulta a `/_aws/ses`) el código que debería reaccionar a ese evento `Bounce` desactivando las notificaciones futuras a esa dirección, y confirmá que un segundo envío a la misma dirección simulada se sigue registrando igual (el simulador no bloquea nada solo, es tu aplicación la que debe reaccionar al evento).
 #### Paso 6 · Práctica independiente
 Repetí el mismo envío hacia `complaint@simulator.amazonses.com` y hacia `success@simulator.amazonses.com`, e inspeccioná `/_aws/ses` para confirmar que los tres eventos (`Bounce`, `Complaint`, `Delivery`) quedaron registrados por separado, cada uno con su propio contenido.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el evento `Bounce` provocado del Paso 4, el manejador de rebotes propuesto del Paso 5, y los tres eventos distintos del Paso 6; explicá por qué un sistema de notificaciones nunca probado contra un rebote real fallará silenciosamente la primera vez que ocurra uno en producción. Siguiente paso: almacenamiento. Errores comunes: confundir simulador con proveedor real y no revisar eventos. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/mailbox-simulator.html.
 
 ## Laboratorio práctico

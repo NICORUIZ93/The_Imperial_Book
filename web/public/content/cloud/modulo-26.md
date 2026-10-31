@@ -60,7 +60,7 @@ Resultado esperado: tras el quinto `put-record`, Floci vacía el búfer automát
 Pista: enviá un registro con `--record "{\"Data\": \"texto-sin-forma-de-json\"}"` mezclado con los demás — ese es el fallo deliberado: Firehose acepta y entrega igual ese registro (no valida que `Data` sea JSON válido), así que el archivo NDJSON resultante termina con una línea que tu análisis posterior en Athena no va a poder parsear como las demás.
 #### Paso 6 · Práctica independiente
 Repetí el envío usando `put-record-batch` con los 5 registros en una sola llamada en vez de 5 llamadas a `put-record`, y confirmá que el resultado final en S3 es equivalente — documentá por qué el batch sería más eficiente a mayor volumen.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el archivo NDJSON con los 5 eventos del Paso 4, el registro mal formado del Paso 5, y la comparación con `put-record-batch` del Paso 6; explicá por qué Firehose no valida el contenido de `Data`, solo lo transporta. Siguiente paso: consumidores. Errores comunes: buffers sin límite y no comprobar entrega. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
 
 ### Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos
@@ -113,7 +113,7 @@ Resultado esperado: Firehose responde con un estado simple (`ACTIVE`) y ningún 
 Pista: intentá tratar a `demo-eventos` como si tuviera shards (`aws firehose describe-delivery-stream --delivery-stream-name demo-eventos --query 'DeliveryStreamDescription.Shards'`) — ese es el fallo deliberado: la consulta no devuelve nada útil, porque Firehose simplemente no expone ese concepto; confundir los dos modelos lleva a buscar una API que no existe del lado equivocado.
 #### Paso 6 · Práctica independiente
 Construí una tabla de dos columnas (Kinesis Data Streams / Firehose) con tres filas (coste operativo, control sobre cada registro, facilidad de agregar transformación en tránsito) y completala usando lo que ya sabés de ambos de los Módulos 17 y de este Tema.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la comparación de estado/shards del Paso 4, el error de concepto equivocado del Paso 5, y la tabla del Paso 6; explicá por qué RutaFlow necesita los dos servicios en paralelo, no uno sustituyendo al otro. Siguiente paso: Pipes. Errores comunes: olvidar latencia de buffer y responsabilidad operativa. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
 
 ### Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento
@@ -179,7 +179,7 @@ Resultado esperado: segundos después de enviar el mensaje, los logs de `demo-no
 Pista: creá un segundo pipe con `--target` apuntando a un ARN de S3 (`arn:aws:s3:::demo-artefactos`), un tipo de destino que Pipes no soporta directamente — ese es el fallo deliberado: `create-pipe` rechaza la llamada, porque el destino tiene que ser uno de los tipos soportados (Lambda, otra cola, un topic SNS, un stream Kinesis o una máquina de estados), no cualquier ARN de un servicio de AWS.
 #### Paso 6 · Práctica independiente
 Agregale a `demo-pipe` un filtro (`--source-parameters` con una condición sobre el contenido del mensaje) para que solo los mensajes con `"tarea":"notificar-entrega"` lleguen a la Lambda, y probá enviar un mensaje con una tarea distinta para confirmar que ese no dispara la función.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el pipe funcionando sin polling del Paso 4, el destino incompatible rechazado del Paso 5, y el filtro agregado del Paso 6; explicá por qué cada línea de código de pegamento que Pipes evita escribir es una línea menos que puede tener bugs. Siguiente paso: patrones. Errores comunes: permisos incompletos y eventos sin esquema. Fuente oficial: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html.
 
 ### Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions
@@ -238,7 +238,7 @@ Resultado esperado: los tres comandos muestran, lado a lado, un origen fijo para
 Pista: intentá resolver "cuando llega un pedido nuevo, verificar inventario, cobrar, y si algo falla reintentar 3 veces" con un pipe simple en vez de una Step Function — ese es el fallo deliberado: un pipe no tiene lógica condicional ni reintentos configurables paso a paso, así que forzarlo ahí te deja sin manejo de errores real para una secuencia de varios pasos dependientes entre sí.
 #### Paso 6 · Práctica independiente
 Construí una tabla de tres filas (Pipes / regla EventBridge / Step Functions) con columnas de latencia típica, si mantienen estado entre pasos, y esfuerzo de mantenimiento — completala con los tres ejemplos reales de RutaFlow del Paso 4.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la consulta de las tres piezas del Paso 4, el error de forzar un pipe para un caso que necesita Step Functions del Paso 5, y la tabla del Paso 6; explicá por qué sobre-diseñar con Step Functions "por si acaso" sería tan equivocado como forzar un pipe donde no alcanza. Siguiente paso: gobierno. Errores comunes: usar workflow para todo y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/decision-guides/latest/event-driven-architecture-on-aws/.
 
 ## Laboratorio práctico

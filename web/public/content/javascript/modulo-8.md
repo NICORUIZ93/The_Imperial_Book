@@ -102,9 +102,9 @@ Añade peso y ciudad usando elementos `span` con clases específicas. **Pista:**
 
 Implementa estado vacío (“No hay entregas para mostrar”), actualiza la misma lista dos veces y verifica que no se duplican filas. Escribe una prueba DOM que confirme cantidad de `li` y contenido literal de un número malicioso.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes convertir datos en una vista segura y predecible. El siguiente tema añadirá interacción a filas actuales y futuras mediante un único listener delegado. **Evidencia:** entrega la estructura, demuestra tres filas, el texto potencialmente malicioso sin ejecutar y el fallo por selector; explica por qué `textContent` reduce riesgo.
+Ya puedes convertir datos en una vista segura y predecible. El siguiente tema añadirá interacción a filas actuales y futuras mediante un único listener delegado.
 
 `renderGuias` es la primera pieza real del proyecto integrador (SPA sin framework, Módulo 12): esta misma función, extendida con más campos y estados, es la que renderizará la lista de entregas contra datos reales de la API a lo largo del resto del track.
 
@@ -212,9 +212,9 @@ Añade acciones `ver` y `entregar` en la misma fila y enrútalas con un `switch`
 
 Renderiza cien filas, registra un solo listener y crea una prueba que haga clic en un elemento interno del botón. Verifica payload, guard clause y cleanup sin depender del texto visual.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes mantener interacción estable aunque cambie la colección. El siguiente tema capturará nuevas entregas con validación accesible antes de enviarlas a la API. **Evidencia:** demuestra clic sobre una fila dinámica, clic ignorado, cleanup y fallo de `event.target`; explica bubbling y el papel de `closest`.
+Ya puedes mantener interacción estable aunque cambie la colección. El siguiente tema capturará nuevas entregas con validación accesible antes de enviarlas a la API.
 
 **Errores comunes:** comparar solo `tagName`; olvidar comprobar que el nodo pertenece al contenedor; usar listeners por fila; mezclar interacción con reglas del dominio; no retirar el listener al destruir una vista persistente.
 
@@ -316,9 +316,9 @@ Añade ciudad de origen y destino y rechaza que sean iguales mediante `setCustom
 
 Diseña una función pura de validación equivalente para la API y prueba vacío, patrón incorrecto, peso límite y número válido. Explica qué validación pertenece a UX y cuál protege la integridad del sistema.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes ofrecer feedback inmediato sin confundirlo con seguridad del servidor. El siguiente tema conservará una preferencia no sensible y cargará más entregas al acercarse al final. **Evidencia:** demuestra caso inválido, corrección, salida tipada y fallo del mensaje persistente; explica por qué `Number()` es necesario al leer `FormData`.
+Ya puedes ofrecer feedback inmediato sin confundirlo con seguridad del servidor. El siguiente tema conservará una preferencia no sensible y cargará más entregas al acercarse al final.
 
 **Errores comunes:** confiar solo en el cliente; olvidar limpiar `setCustomValidity`; eliminar labels visibles; leer números como strings; mostrar un mensaje genérico que no explica cómo corregir el valor.
 
@@ -420,9 +420,9 @@ Añade versión al objeto persistido `{ version: 1, estado }` y migra o descarta
 
 Prueba almacenamiento vacío, corrupto y válido; simula dos intersecciones simultáneas y verifica una sola carga; demuestra que el observer se desconecta al agotarse páginas. Documenta por qué un token no pertenece en este almacenamiento.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes conservar una preferencia y reaccionar eficientemente a visibilidad. El siguiente tema observará cambios de tamaño y mutaciones externas, con limpieza explícita. **Evidencia:** demuestra recarga persistente, tres páginas, fallo JSON recuperado y explica la función de `rootMargin` y del bloqueo `cargando`.
+Ya puedes conservar una preferencia y reaccionar eficientemente a visibilidad. El siguiente tema observará cambios de tamaño y mutaciones externas, con limpieza explícita.
 
 **Errores comunes:** guardar secretos; olvidar que todo se almacena como string; no validar el resultado de `JSON.parse`; cargar varias páginas por una misma intersección; dejar el observador conectado al terminar.
 
@@ -513,9 +513,9 @@ Compara `{ childList: true }` con `{ childList: true, subtree: true, attributes:
 
 Escribe pruebas con observers simulados que verifiquen umbral, conteo y cleanup. Documenta un caso donde una llamada directa es preferible porque tu propio código ya conoce el cambio.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes observar señales que no controlas sin recurrir a polling y liberar recursos al desmontar. El siguiente tema sincronizará movimiento visible con el repintado y trabajo secundario con tiempo ocioso. **Evidencia:** demuestra ambos logs, ausencia después del cleanup, fallo de realimentación y explica por qué se limitó `MutationObserver` a `childList`.
+Ya puedes observar señales que no controlas sin recurrir a polling y liberar recursos al desmontar. El siguiente tema sincronizará movimiento visible con el repintado y trabajo secundario con tiempo ocioso.
 
 **Errores comunes:** observar todo el documento; sustituir flujo de datos explícito con mutaciones; modificar el tamaño observado desde el callback; olvidar `disconnect`; hacer trabajo pesado por cada registro sin agruparlo.
 
@@ -608,9 +608,9 @@ Interpola entre dos coordenadas `{ x, y }` y cancela la animación anterior al r
 
 Prueba duración, destino, cancelación y preferencia de movimiento reducido con reloj simulado. Divide una cola de estadísticas en porciones usando `deadline.timeRemaining()`, pero garantiza que ninguna confirmación crítica dependa de esa cola.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes cooperar con el ciclo visual y asignar prioridad según impacto para el usuario. El próximo módulo introducirá pruebas automatizadas para verificar estas decisiones sin depender siempre de inspección manual. **Evidencia:** demuestra destino, duración, cancelación, modo reducido y fallo basado en frames; explica por qué `requestIdleCallback` no garantiza un momento exacto.
+Ya puedes cooperar con el ciclo visual y asignar prioridad según impacto para el usuario. El próximo módulo introducirá pruebas automatizadas para verificar estas decisiones sin depender siempre de inspección manual.
 
 **Errores comunes:** medir progreso contando frames; olvidar cancelar una animación reemplazada; ignorar `prefers-reduced-motion`; usar trabajo ocioso para acciones críticas; asumir disponibilidad universal de `requestIdleCallback`.
 
@@ -729,7 +729,7 @@ Abre `http://localhost:8000`. **Resultado esperado:** `ENV-42` confirma el forma
 #### Paso 6 · Práctica independiente
 Distingue código vacío de código con formato incorrecto usando mensajes distintos. Comprueba vacío, espacios, `ENV-42`, `ENV-` y texto con etiquetas HTML: todo se muestra como texto y nunca como contenido ejecutable.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** tabla de entradas, mensajes, foco y atributo `aria-invalid`. Conserva los dos archivos. El siguiente tema puede conectar esta intención con Fetch y un servidor real. **Errores comunes:** validar solo con click, borrar el campo tras un error y utilizar `innerHTML` para mensajes de usuario. **Límites y decisión de uso:** el patrón define el formato de este ejemplo, no una regla universal ni un control de acceso.
+#### Paso 7 · Cierre
+El siguiente tema puede conectar esta intención con Fetch y un servidor real. **Errores comunes:** validar solo con click, borrar el campo tras un error y utilizar `innerHTML` para mensajes de usuario. **Límites y decisión de uso:** el patrón define el formato de este ejemplo, no una regla universal ni un control de acceso.
 
 **Fuentes oficiales:** [MDN submit](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) y [status](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role).

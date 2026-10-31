@@ -17,13 +17,12 @@ Cada `### Tema` debe responder, en orden, estas preguntas:
 9. **Qué modificarás:** cambio que exige predecir y razonar, no volver a copiar.
 10. **Cómo crece RutaFlow:** incremento pequeño conectado al proyecto del track.
 11. **Cuándo no usarlo:** límites, alternativas y diferencias con producción.
-12. **Qué evidencia entregarás:** archivo, prueba, salida o captura técnica necesaria para avanzar.
 
 ## Progresión de libro
 
 Los capítulos avanzan por cuatro niveles y no deben saltarse dependencias:
 
-| Nivel | Pregunta dominante | Evidencia |
+| Nivel | Pregunta dominante | Comprobación |
 |---|---|---|
 | Fundamentos | ¿Qué es y cómo funciona? | Ejemplo mínimo explicado |
 | Aplicación | ¿Cómo lo uso correctamente? | Funcionalidad ejecutable |
@@ -37,7 +36,7 @@ Los capítulos avanzan por cuatro niveles y no deben saltarse dependencias:
 - Mermaid se reserva para arquitectura, secuencia, estados, datos o dependencias.
 - Un diagrama Archify puede enlazarse como HTML interactivo desde `web/public/visuals/`; su tema debe conservar la explicación en Markdown y el enlace local debe apuntar a un artefacto existente.
 - Las tablas se usan para comparar dimensiones repetidas.
-- Una imagen decorativa no cuenta como evidencia pedagógica.
+- Una imagen decorativa no cuenta como comprobación de aprendizaje.
 
 ## Regla de aceptación
 

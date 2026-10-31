@@ -168,7 +168,7 @@ No elimines ni renombres campos del contrato sin probar antes ambos lados. Este 
 tipo de destino para enseñar una configuración simple; no es una política general para aceptar
 clases arbitrarias desde mensajes externos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Debes poder mostrar la respuesta `202`, la proyección `RECIBIDO`, el test de key y un log con
 partición/offset. Explica por qué dos grupos reciben el flujo por separado y por qué no existe
@@ -184,7 +184,6 @@ comparar su número con las particiones.
 **Fuentes oficiales:** [Spring Boot: Kafka](https://docs.spring.io/spring-boot/reference/messaging/kafka.html),
 [Spring Kafka: serialización JSON](https://docs.spring.io/spring-kafka/reference/kafka/serdes.html)
 y [Apache Kafka: conceptos](https://kafka.apache.org/documentation/#intro_concepts_and_terms).
-**Evidencia de aprendizaje:** entrega la respuesta HTTP, la proyección `RECIBIDO`, el test de key y
 un log con key/partición/offset; explica qué cambia al usar `eventId` como key.
 **Siguiente:** conserva este contrato y usa el mismo `eventId` al estudiar reintentos e inbox en
 el Tema 2.
@@ -361,7 +360,7 @@ tablas quedan sin cambios. Después reentrega el mismo evento y demuestra que se
 Entrega también un runbook breve: cómo localizar un evento en DLT, qué datos registrar antes de
 reproducirlo y cómo detener un replay con errores. No reinyectes mensajes inválidos en un bucle.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 La evidencia mínima son las dos pruebas automatizadas, los conteos de inbox/proyección y el
 payload de DLT. Distingue claramente entre reintentar un problema temporal y recuperar un
@@ -377,7 +376,6 @@ indefinidamente un mensaje inválido.
 
 **Fuentes oficiales:** [Spring Kafka: manejo de errores](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html)
 y [Spring Boot: configuración Kafka](https://docs.spring.io/spring-boot/reference/messaging/kafka.html).
-**Evidencia de aprendizaje:** entrega las pruebas de fallo transitorio y DLT, y demuestra que
 `event_inbox` conserva una sola fila por `eventId`.
 **Siguiente:** conserva el inbox y conecta la persistencia del envío con la publicación mediante el
 outbox del Tema 3.
@@ -505,7 +503,7 @@ Para una segunda instancia del dispatcher, mide edad del evento pendiente, tasa 
 consumer lag y mensajes DLT. Diseña retención, limpieza y un replay que preserve `eventId`.
 Estas piezas operativas no están implementadas ni certificadas por el laboratorio base.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
 Entrega el test de rollback, evidencia de recuperación tras caída, filas outbox/inbox y logs con
 key/partición/offset. Especifica qué se ejecutó con Kafka embebido/H2 y qué requiere repetir con
@@ -522,7 +520,6 @@ de un nodo como configuración de producción.
 [Spring Kafka: JSON](https://docs.spring.io/spring-kafka/reference/kafka/serdes.html),
 [Spring Kafka: manejo de errores](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html)
 y [Apache Kafka: conceptos](https://kafka.apache.org/documentation/#intro_concepts_and_terms).
-**Evidencia de aprendizaje:** entrega el test de rollback, evidencia de recuperación tras caída,
 filas outbox/inbox y logs con key/partición/offset; indica el motor y broker usados en cada prueba.
 **Siguiente:** conserva el contrato y el inbox al añadir un segundo consumer group; define métricas,
 retención y política de replay antes de ampliar el flujo.

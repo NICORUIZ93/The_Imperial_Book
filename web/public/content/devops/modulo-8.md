@@ -81,9 +81,9 @@ Agrega un segundo `resource "local_file"` para un archivo de log inicial vacío,
 
 Cambia el `content` del `local_file.config` y ejecuta `terraform plan`; confirma que el resultado es `~ update in-place` (modificación), no `-/+ destroy and re-create`, y explica por qué el contenido de un archivo local se puede actualizar sin recrearlo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues cuándo declarar un `resource` gestionado y cuándo solo consultar con un `data` source. El siguiente tema protege el registro de qué gestiona realmente tu configuración. **Evidencia:** entrega la salida de `terraform apply` confirmando la creación, y el resultado del `plan` tras el borrado manual detectando la discrepancia. Fuente oficial: [Terraform — Resources](https://developer.hashicorp.com/terraform/language/resources).
+Ya distingues cuándo declarar un `resource` gestionado y cuándo solo consultar con un `data` source. El siguiente tema protege el registro de qué gestiona realmente tu configuración. Fuente oficial: [Terraform — Resources](https://developer.hashicorp.com/terraform/language/resources).
 
 **Errores comunes:** declarar como `resource` algo que en realidad ya existe y es gestionado por otro medio, arriesgando que Terraform intente eliminarlo; confundir el nombre local del recurso (el segundo identificador) con el nombre real en la plataforma de destino.
 
@@ -167,9 +167,9 @@ Ejecuta `terraform state list` para ver qué recursos registra el estado actual,
 
 Investiga y documenta (sin necesariamente configurarlo) qué recurso adicional de AWS (por ejemplo, una tabla DynamoDB) se usa tradicionalmente junto a un backend S3 específicamente para implementar el locking, y qué pasaría si ese mecanismo de locking no estuviera disponible durante un `apply` concurrente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya entiendes por qué el estado compartido con locking es indispensable para trabajo en equipo real. El siguiente tema evita repetir la misma infraestructura entre proyectos con módulos reutilizables. **Evidencia:** entrega el `diff` mostrando la divergencia entre estados, y explica el riesgo de aplicar sobre un estado desactualizado. Fuente oficial: [Terraform — Backends](https://developer.hashicorp.com/terraform/language/backend).
+Ya entiendes por qué el estado compartido con locking es indispensable para trabajo en equipo real. El siguiente tema evita repetir la misma infraestructura entre proyectos con módulos reutilizables. Fuente oficial: [Terraform — Backends](https://developer.hashicorp.com/terraform/language/backend).
 
 **Errores comunes:** editar manualmente el archivo `.tfstate` en vez de usar comandos `terraform state` dedicados; trabajar en equipo sin backend remoto, confiando en coordinación manual para evitar aplicar sobre estados desactualizados.
 
@@ -268,9 +268,9 @@ Agrega un output raíz en `main.tf` (`output "ruta_dev" { value = module.config_
 
 Agrega una tercera variable opcional al módulo (`variable "prefijo" { type = string; default = "" }`) con un valor por defecto, y confirma que las invocaciones existentes siguen funcionando sin especificarla, mientras una nueva invocación puede sobrescribirla explícitamente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya reutilizas la misma infraestructura parametrizada sin duplicar definiciones entre entornos o proyectos. El siguiente tema revisa el impacto de un cambio antes de aplicarlo. **Evidencia:** entrega el contenido de ambos archivos generados por el mismo módulo con parámetros distintos, y explica el riesgo de colisión de nombres del fallo deliberado. Fuente oficial: [Terraform — Modules](https://developer.hashicorp.com/terraform/language/modules).
+Ya reutilizas la misma infraestructura parametrizada sin duplicar definiciones entre entornos o proyectos. El siguiente tema revisa el impacto de un cambio antes de aplicarlo. Fuente oficial: [Terraform — Modules](https://developer.hashicorp.com/terraform/language/modules).
 
 **Errores comunes:** diseñar un módulo con una interfaz demasiado rígida que limita la reutilización a un único caso; permitir que dos invocaciones del mismo módulo generen nombres de recursos físicos colisionantes sin ninguna validación.
 
@@ -351,9 +351,9 @@ Ejecuta `terraform plan -out=cambios.tfplan` para guardar el plan calculado en u
 
 Modifica `b.txt` sea recreado en vez de recreado sea cambiando la definición de `local_file.a` de forma que fuerce una recreación completa en vez de una modificación in situ (cambia `filename` en vez de `content`), y confirma que el plan ahora muestra `-/+ destroy and re-create` en vez de `~ update in-place`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya revisas el impacto exacto de cualquier cambio antes de comprometerte a aplicarlo. El siguiente tema reutiliza la misma configuración para múltiples entornos con estados separados. **Evidencia:** entrega la salida completa del `plan` mostrando las tres categorías de cambio simultáneas, y explica el resultado de la eliminación tras un `apply` sin revisión cuidadosa. Fuente oficial: [Terraform — Plan](https://developer.hashicorp.com/terraform/cli/commands/plan).
+Ya revisas el impacto exacto de cualquier cambio antes de comprometerte a aplicarlo. El siguiente tema reutiliza la misma configuración para múltiples entornos con estados separados. Fuente oficial: [Terraform — Plan](https://developer.hashicorp.com/terraform/cli/commands/plan).
 
 **Errores comunes:** aplicar automáticamente sin revisar la sección `- destroy` del plan; asumir que cambiar cualquier atributo siempre resulta en una modificación in situ, cuando algunos atributos fuerzan recreación completa.
 
@@ -438,9 +438,9 @@ Agrega una variable `replicas` con un valor distinto por workspace usando una ex
 
 Ejecuta `terraform workspace delete staging` después de destruir su infraestructura (`terraform destroy -auto-approve` estando en ese workspace) y confirma que el workspace `default` permanece completamente intacto durante todo el proceso.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya mantienes entornos paralelos con el mismo código sin arriesgar mezclar sus estados. Esto cierra la parte de Terraform de este módulo; el siguiente tema introduce una herramienta complementaria para configurar software dentro de máquinas ya existentes. **Evidencia:** entrega el contenido de ambos archivos de entorno confirmando estados separados, y el resultado de `terraform state list` en cada workspace mostrando aislamiento completo. Fuente oficial: [Terraform — Workspaces](https://developer.hashicorp.com/terraform/language/state/workspaces).
+Ya mantienes entornos paralelos con el mismo código sin arriesgar mezclar sus estados. Esto cierra la parte de Terraform de este módulo; el siguiente tema introduce una herramienta complementaria para configurar software dentro de máquinas ya existentes. Fuente oficial: [Terraform — Workspaces](https://developer.hashicorp.com/terraform/language/state/workspaces).
 
 **Errores comunes:** ejecutar un `destroy` sin confirmar antes en qué workspace estás parado; usar workspaces para entornos con arquitecturas fundamentalmente distintas, cuando directorios de configuración separados serían más apropiados.
 
@@ -524,9 +524,9 @@ Agrupa las dos tareas del playbook en un role (`roles/base/tasks/main.yml`) e in
 
 Agrega una segunda máquina al inventory (`docker run -d --name maquina-objetivo-2 alpine sleep 3600`, agregada al grupo `web`) y confirma que el mismo playbook se aplica a ambas máquinas del grupo en una sola ejecución.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya configuras software dentro de máquinas ya existentes de forma idempotente, complementando lo que Terraform aprovisionó. El siguiente tema explora una alternativa a HCL usando lenguajes de programación reales. **Evidencia:** entrega la salida de las dos ejecuciones del playbook (primera con `changed`, segunda con `ok`), y el resultado de la reconciliación tras la modificación manual. Fuente oficial: [Ansible — Playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/index.html).
+Ya configuras software dentro de máquinas ya existentes de forma idempotente, complementando lo que Terraform aprovisionó. El siguiente tema explora una alternativa a HCL usando lenguajes de programación reales. Fuente oficial: [Ansible — Playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/index.html).
 
 **Errores comunes:** escribir tareas que ejecutan comandos shell arbitrarios (`ansible.builtin.shell`) en vez de módulos idempotentes específicos, perdiendo la garantía de idempotencia; confundir el rol de Ansible (configurar) con el de Terraform (aprovisionar), intentando crear máquinas virtuales completas con un playbook.
 
@@ -608,9 +608,9 @@ Cuenta cuántas líneas de código tomó cada enfoque (`wc -l hcl/main.tf pulumi
 
 Investiga (documentando, sin necesariamente instalarlo) los comandos reales de `pulumi new`, `pulumi up` y `pulumi destroy`, y compáralos explícitamente contra `terraform init`, `terraform apply` y `terraform destroy`, confirmando que el ciclo de vida conceptual es equivalente entre ambas herramientas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conoces el compromiso explícito entre HCL declarativo y un lenguaje de programación real para infraestructura como código. Esto cierra el módulo de infraestructura como código; el siguiente módulo cubre observabilidad con Prometheus y Grafana. **Evidencia:** entrega el conteo de líneas de ambos enfoques y confirma que generan el mismo resultado final, explicando el error detectado solo en tiempo de ejecución en el enfoque sin tipado estático. Fuente oficial: [Pulumi — How Pulumi Works](https://www.pulumi.com/docs/iac/concepts/how-pulumi-works/).
+Ya conoces el compromiso explícito entre HCL declarativo y un lenguaje de programación real para infraestructura como código. Esto cierra el módulo de infraestructura como código; el siguiente módulo cubre observabilidad con Prometheus y Grafana. Fuente oficial: [Pulumi — How Pulumi Works](https://www.pulumi.com/docs/iac/concepts/how-pulumi-works/).
 
 **Errores comunes:** elegir Pulumi únicamente por preferencia de lenguaje sin considerar el ecosistema más maduro y los módulos públicos más abundantes de Terraform; construir abstracciones de infraestructura excesivamente elaboradas en Pulumi solo porque el lenguaje lo permite, sacrificando legibilidad.
 
@@ -704,5 +704,5 @@ tofu output sensor
 #### Paso 6 · Práctica independiente
 Añade una validación de variable para exigir periodo positivo y documenta el equivalente contra el runtime local de Floci con endpoints explícitos. **Límites:** este recurso no comprueba APIs cloud, locking remoto ni drift de un servicio externo; ese ensayo sigue pendiente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega configuración, salida, plan inicial y plan modificado. **Errores comunes:** usar el estado equivocado, versionar estado con secretos, aplicar un plan no revisado. Antes del siguiente tema responde: ¿qué administra este recurso?, ¿qué comprueba validate?, ¿qué falta antes de migrar un backend? **Fuente oficial:** [OpenTofu terraform_data](https://opentofu.org/docs/language/resources/tf-data/).

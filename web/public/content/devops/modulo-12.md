@@ -93,9 +93,9 @@ Renombra los recursos en `produccion.tf.ejemplo` para que no colisionen con `flo
 
 Toma un módulo Terraform propio (del Módulo 8 de este track) y documenta línea por línea qué cambiaría exactamente al migrarlo de Floci a un proveedor real, siguiendo el mismo formato de comparación de este Tema.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya identificas con precisión las dos únicas configuraciones que cambian entre Floci y un proveedor real, confirmando que el conocimiento práctico del track Cloud se transfiere directamente. El siguiente tema aborda cómo cambia específicamente la gestión de secretos en ese mismo salto a producción. **Evidencia:** entrega el contenido de `bucket-config-floci.txt`, y el resultado del conflicto de recursos duplicados al no distinguir nombres entre ambos entornos. Fuente oficial: [LocalStack — AWS API Parity](https://docs.localstack.cloud/).
+Ya identificas con precisión las dos únicas configuraciones que cambian entre Floci y un proveedor real, confirmando que el conocimiento práctico del track Cloud se transfiere directamente. El siguiente tema aborda cómo cambia específicamente la gestión de secretos en ese mismo salto a producción. Fuente oficial: [LocalStack — AWS API Parity](https://docs.localstack.cloud/).
 
 **Errores comunes:** dejar credenciales de marcador de posición (`test/test`) olvidadas en archivos que se copian sin revisión hacia una configuración de producción real; asumir que "funciona en Floci" garantiza automáticamente comportamiento idéntico a escala real en producción.
 
@@ -173,9 +173,9 @@ Actualiza el secreto ya creado con `secretsmanager update-secret --secret-id mi-
 
 Detén el contenedor `localstack-secretos` e intenta consultar el secreto nuevamente; documenta qué comportamiento debería tener un pipeline real si el servicio de gestión de secretos estuviera temporalmente inaccesible durante un despliegue (¿debería reintentar? ¿debería abortar el despliegue?).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya describes el flujo completo de un secreto gestionado de forma nativa por el proveedor cloud, desde su creación hasta su inyección segura en el pipeline. El siguiente tema aborda si vale la pena abstraer esta y otras decisiones entre múltiples proveedores de nube. **Evidencia:** entrega el resultado exitoso de la inyección de `API_KEY` en el contenedor Node.js, y el error `ResourceNotFoundException` al consultar un secreto inexistente. Fuente oficial: [AWS Secrets Manager — Documentation](https://docs.aws.amazon.com/secretsmanager/).
+Ya describes el flujo completo de un secreto gestionado de forma nativa por el proveedor cloud, desde su creación hasta su inyección segura en el pipeline. El siguiente tema aborda si vale la pena abstraer esta y otras decisiones entre múltiples proveedores de nube. Fuente oficial: [AWS Secrets Manager — Documentation](https://docs.aws.amazon.com/secretsmanager/).
 
 **Errores comunes:** seguir usando `.env` en producción real "porque ya funcionaba en desarrollo", sin migrar a un gestor de secretos apropiado; no manejar explícitamente el caso de un secreto inexistente o inaccesible durante el despliegue.
 
@@ -280,9 +280,9 @@ Agrega un tercer módulo `almacenamiento-proveedor-c` con la misma interfaz, e i
 
 Documenta en una tabla de dos columnas, para un servicio real que ya conozcas de dos proveedores distintos (por ejemplo, almacenamiento de objetos en AWS vs. Azure), qué atributos de configuración no tienen un mapeo uno a uno directo entre ambos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues el coste real de diseñar infraestructura verdaderamente portable frente a simplemente usar Terraform con múltiples providers. El siguiente tema construye la checklist que formaliza todas las prácticas de este track antes de salir a producción. **Evidencia:** entrega el resultado con el contenido de ambos archivos generados por los módulos A y B, y explica el error de variable no declarada que aparece al romper deliberadamente la interfaz común. Fuente oficial: [Terraform — Module Composition](https://developer.hashicorp.com/terraform/language/modules/develop/composition).
+Ya distingues el coste real de diseñar infraestructura verdaderamente portable frente a simplemente usar Terraform con múltiples providers. El siguiente tema construye la checklist que formaliza todas las prácticas de este track antes de salir a producción. Fuente oficial: [Terraform — Module Composition](https://developer.hashicorp.com/terraform/language/modules/develop/composition).
 
 **Errores comunes:** asumir que agregar un segundo `provider` a un proyecto Terraform ya garantiza portabilidad real; no coordinar cambios de interfaz entre módulos de distintos proveedores, rompiendo la abstracción silenciosamente.
 
@@ -372,9 +372,9 @@ Agrega un quinto ítem verificable programáticamente a `verificar-checklist.py`
 
 Escribe contenido real (no vacío) en `runbook.md` documentando al menos: cómo diagnosticar el problema más común de tu proyecto, a quién escalar, y cómo ejecutar un rollback manual — y luego escribe una verificación adicional en el script que confirme que el archivo tiene más de una línea de contenido, no solo que existe.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya construyes y ejecutas una checklist de producción verificable programáticamente, no solo una lista teórica. El siguiente tema presenta GitOps como una forma específica de aplicar consistentemente parte de estas prácticas de despliegue. **Evidencia:** entrega el resumen del script mostrando ítems incompletos inicialmente, y el resultado tras completarlos, explicando por qué la existencia de un archivo no garantiza por sí sola la calidad de su contenido. Fuente oficial: [Google SRE Book — Production Readiness Reviews](https://sre.google/sre-book/table-of-contents/).
+Ya construyes y ejecutas una checklist de producción verificable programáticamente, no solo una lista teórica. El siguiente tema presenta GitOps como una forma específica de aplicar consistentemente parte de estas prácticas de despliegue. Fuente oficial: [Google SRE Book — Production Readiness Reviews](https://sre.google/sre-book/table-of-contents/).
 
 **Errores comunes:** dejar la checklist como un documento teórico nunca verificado programáticamente contra el proyecto real; marcar un ítem como cumplido solo por la existencia de un archivo sin revisar si su contenido es realmente útil.
 
@@ -466,9 +466,9 @@ Modifica `deployment-mi-api.yaml`, haz commit del cambio dentro del contenedor `
 
 Extiende `reconciliar.sh` para que registre en un archivo `historial-reconciliacion.log` cada vez que detecta y corrige una deriva, con una marca de tiempo, simulando el registro de auditoría que un agente GitOps real mantendría de cada reconciliación efectuada.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya demuestras el modelo de reconciliación pull-based de GitOps y su capacidad de auto-corrección ante cambios manuales no autorizados. El siguiente y último tema del módulo aborda cómo estas prácticas se consolidan a escala organizacional mediante Platform Engineering. **Evidencia:** entrega el resultado de la detección y corrección automática de la deriva (`replicas: 99` revertido a `replicas: 3`), y explica por qué un cambio sin commitear en Git no sería reconciliado por un agente GitOps real. Fuente oficial: [OpenGitOps — Principles](https://opengitops.dev/).
+Ya demuestras el modelo de reconciliación pull-based de GitOps y su capacidad de auto-corrección ante cambios manuales no autorizados. El siguiente y último tema del módulo aborda cómo estas prácticas se consolidan a escala organizacional mediante Platform Engineering. Fuente oficial: [OpenGitOps — Principles](https://opengitops.dev/).
 
 **Errores comunes:** modificar recursos manualmente en el clúster esperando que el cambio persista, sin entender que un agente GitOps lo revertirá en su siguiente ciclo; olvidar hacer commit (y push) de un cambio, asumiendo incorrectamente que el agente ya lo detectó.
 
@@ -586,9 +586,9 @@ Agrega al script `crear-servicio.sh` la generación adicional de un archivo `REA
 
 Documenta en una frase qué otra práctica de este track (por ejemplo, un dashboard de Grafana preconfigurado del Módulo 9, o una política de RBAC acotada del Módulo 11) incluirías por defecto en una IDP real para tu propio contexto de proyecto, y por qué.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas el problema que resuelve una IDP y demuestras, con un ejemplo mínimo, cómo garantiza consistencia entre equipos sin que cada uno redescubra las mismas buenas prácticas de forma independiente. Esto cierra el track de DevOps completo: desde el shell scripting básico del Módulo 0 hasta la consolidación organizacional de estas prácticas en una plataforma interna; el siguiente módulo aplica todo este recorrido en conjunto sobre un proyecto propio. **Evidencia:** entrega el resultado de la comparación sin diferencias entre los dos servicios generados por la IDP, y explica el contraste con el tercer servicio creado manualmente que carece de CI y healthcheck. Fuente oficial: [Platform Engineering — What is an Internal Developer Platform](https://platformengineering.org/blog/what-is-an-internal-developer-platform).
+Ya explicas el problema que resuelve una IDP y demuestras, con un ejemplo mínimo, cómo garantiza consistencia entre equipos sin que cada uno redescubra las mismas buenas prácticas de forma independiente. Esto cierra el track de DevOps completo: desde el shell scripting básico del Módulo 0 hasta la consolidación organizacional de estas prácticas en una plataforma interna; el siguiente módulo aplica todo este recorrido en conjunto sobre un proyecto propio. Fuente oficial: [Platform Engineering — What is an Internal Developer Platform](https://platformengineering.org/blog/what-is-an-internal-developer-platform).
 
 **Errores comunes:** construir una IDP demasiado rígida que no permite ninguna personalización legítima que un equipo específico realmente necesite; confundir una IDP con simplemente documentación de buenas prácticas sin ninguna automatización real que las aplique por defecto.
 

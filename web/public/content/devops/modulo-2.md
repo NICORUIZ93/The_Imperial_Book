@@ -92,9 +92,9 @@ Agrega una tercera etapa `AS test` que ejecute una verificación (`RUN node -e "
 
 Mide con `docker history api-demo:multistage` cuántas capas tiene la imagen final y cuál es la más pesada; explica si esa capa podría reducirse más.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya separas compilación de ejecución para producir imágenes mínimas. El siguiente tema profundiza en cómo el orden de las instrucciones afecta el caché de build. **Evidencia:** entrega la comparación de tamaños entre `sin-optimizar` y `multistage`, y el resultado del fallo con el nombre de etapa incorrecto. Fuente oficial: [Docker — Multi-stage builds](https://docs.docker.com/build/building/multi-stage/).
+Ya separas compilación de ejecución para producir imágenes mínimas. El siguiente tema profundiza en cómo el orden de las instrucciones afecta el caché de build. Fuente oficial: [Docker — Multi-stage builds](https://docs.docker.com/build/building/multi-stage/).
 
 **Errores comunes:** referenciar un nombre de etapa que no coincide con `AS <nombre>`; olvidar copiar un artefacto necesario desde la etapa de build, dejando la imagen final incompleta.
 
@@ -179,9 +179,9 @@ Agrega un `.dockerignore` con `node_modules` y `*.log`, y explica por qué reduc
 
 Mide con `time docker build ...` la diferencia real de tiempo entre un build con caché completo (sin cambios) y uno que reinstala dependencias desde cero (`docker build --no-cache`).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya ordenas un Dockerfile para maximizar el caché reutilizable. El siguiente tema reduce aún más el tamaño eligiendo la imagen base correcta. **Evidencia:** entrega la salida de build mostrando `CACHED` en el orden correcto y su ausencia en el orden invertido. Fuente oficial: [Docker — Build cache](https://docs.docker.com/build/cache/).
+Ya ordenas un Dockerfile para maximizar el caché reutilizable. El siguiente tema reduce aún más el tamaño eligiendo la imagen base correcta. Fuente oficial: [Docker — Build cache](https://docs.docker.com/build/cache/).
 
 **Errores comunes:** copiar todo el código fuente antes de instalar dependencias; olvidar un `.dockerignore`, dejando que archivos irrelevantes (como `node_modules` local) invaliden capas innecesariamente.
 
@@ -247,9 +247,9 @@ Verifica con `docker run --rm node:22-alpine cat /etc/os-release` qué distribuc
 
 Investiga (sin necesariamente ejecutarlo) qué herramienta usarías para escanear vulnerabilidades conocidas en cada una de las tres imágenes (por ejemplo, `docker scout` o Trivy) y explica qué reducción de hallazgos esperarías entre `node:22` y la versión distroless.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges la imagen base según el balance correcto entre depuración y seguridad. El siguiente tema decide dónde persisten los datos de un contenedor. **Evidencia:** entrega la comparación de tamaños de las tres imágenes y el fallo al intentar un shell en distroless. Fuente oficial: [Google — distroless](https://github.com/GoogleContainerTools/distroless).
+Ya eliges la imagen base según el balance correcto entre depuración y seguridad. El siguiente tema decide dónde persisten los datos de un contenedor. Fuente oficial: [Google — distroless](https://github.com/GoogleContainerTools/distroless).
 
 **Errores comunes:** usar una imagen completa en producción "por comodidad" sin evaluar el impacto de seguridad; asumir que Alpine es un reemplazo directo sin considerar la diferencia musl/glibc en dependencias nativas.
 
@@ -326,9 +326,9 @@ Verifica dónde vive físicamente el volumen con `docker volume inspect datos-pr
 
 Crea dos contenedores distintos que compartan el mismo volumen simultáneamente (uno escribe, otro lee poco después) y confirma que ambos ven el mismo contenido, demostrando que un volumen puede compartirse entre contenedores.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges bind mount para iterar rápido en desarrollo y volumen gestionado para persistir datos de forma portable. El siguiente tema conecta contenedores entre sí por nombre usando redes definidas por el usuario. **Evidencia:** entrega el resultado mostrando el bind mount reflejando el cambio local, y explica por qué el volumen sobrevivió a la eliminación del contenedor. Fuente oficial: [Docker — Volumes](https://docs.docker.com/storage/volumes/).
+Ya eliges bind mount para iterar rápido en desarrollo y volumen gestionado para persistir datos de forma portable. El siguiente tema conecta contenedores entre sí por nombre usando redes definidas por el usuario. Fuente oficial: [Docker — Volumes](https://docs.docker.com/storage/volumes/).
 
 **Errores comunes:** usar bind mounts en producción acoplando el contenedor a una ruta frágil del servidor; olvidar que eliminar un volumen (`docker volume rm`) es destructivo y no se puede deshacer.
 
@@ -395,9 +395,9 @@ Limpia con `docker rm -f servicio-a && docker network rm demo-red`, y repite el 
 
 Crea una segunda red aislada (`red-aislada`) y confirma que un contenedor en `demo-red` no puede hacer `ping` a uno en `red-aislada`, demostrando el aislamiento entre redes distintas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conectas contenedores por nombre usando redes definidas por el usuario, y sabes cuándo Docker aísla tráfico entre redes distintas. El siguiente tema elige dónde publicar las imágenes que resultan de estos contenedores. **Evidencia:** entrega el `ping` exitoso dentro de la red y el fallo fuera de ella, con su explicación. Fuente oficial: [Docker — Networking](https://docs.docker.com/network/).
+Ya conectas contenedores por nombre usando redes definidas por el usuario, y sabes cuándo Docker aísla tráfico entre redes distintas. El siguiente tema elige dónde publicar las imágenes que resultan de estos contenedores. Fuente oficial: [Docker — Networking](https://docs.docker.com/network/).
 
 **Errores comunes:** asumir que cualquier contenedor puede resolver el nombre de otro sin estar en la misma red definida por el usuario; olvidar limpiar redes de prueba (`docker network rm`), acumulando redes huérfanas.
 
@@ -470,9 +470,9 @@ Publica una segunda versión (`v2`) con un cambio mínimo en `app.js`, y confirm
 
 Detén y elimina el registry local (`docker rm -f registro-local`) y explica, en un comentario, qué diferencia práctica habría si en vez de un registry local desechable usaras AWS ECR: qué credenciales adicionales necesitarías y qué comando de autenticación ejecutarías antes del `push`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya publicas y recuperas imágenes desde un registry propio, y entiendes qué cambia al usar un registry gestionado por un proveedor cloud. Esto cierra el módulo de Docker; el siguiente módulo automatiza estos mismos pasos dentro de un pipeline de CI. **Evidencia:** entrega la salida de `curl` confirmando la imagen publicada y explica el fallo al hacer `push` sin el prefijo de registry correcto. Fuente oficial: [Docker — Deploy a registry server](https://docs.docker.com/registry/deploying/).
+Ya publicas y recuperas imágenes desde un registry propio, y entiendes qué cambia al usar un registry gestionado por un proveedor cloud. Esto cierra el módulo de Docker; el siguiente módulo automatiza estos mismos pasos dentro de un pipeline de CI. Fuente oficial: [Docker — Deploy a registry server](https://docs.docker.com/registry/deploying/).
 
 **Errores comunes:** olvidar el prefijo de registry al etiquetar una imagen antes de `push`; reutilizar la etiqueta `latest` en producción, perdiendo trazabilidad de qué versión exacta está desplegada.
 
@@ -579,8 +579,8 @@ Agrega al script una verificación de que el archivo `.tgz` no está vacío ante
 #### Paso 6 · Práctica independiente
 Reemplaza el respaldo en frío por un `pg_dump` en caliente (`docker exec bd-rutaflow pg_dump -U postgres > respaldo.sql`) y compara tiempos, tamaño y en qué casos usarías cada uno.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque un respaldo que nunca se restauró no es un respaldo, y saber inspeccionar y auditar contenedores acorta cualquier incidente.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque un respaldo que nunca se restauró no es un respaldo, y saber inspeccionar y auditar contenedores acorta cualquier incidente.
 **Fuente oficial:** [Docker Docs: Back up, restore, or migrate data volumes](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes), [docker events](https://docs.docker.com/reference/cli/docker/system/events/).
 **Conceptos clave:** `docker inspect --format`, `docker stats`, `docker events`, contenedor auxiliar, respaldo en frío, restauración verificada, `set -euo pipefail`.
 **Cuándo no usarlo:** en la nube, usa los respaldos administrados del proveedor (snapshots de volúmenes, RDS) en lugar de scripts propios; el script sirve para entornos locales y de pruebas.

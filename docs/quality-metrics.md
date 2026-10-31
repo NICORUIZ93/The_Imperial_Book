@@ -8,10 +8,21 @@ capas separadas.
 | Métrica | Mide | NO mide | Fuente | Estado |
 |---|---|---|---|---|
 | Temas practicables | Presencia heurística de explicación, código, ruta, comando, resultado, práctica, proyecto, modelo mental y límites. En este corte: 1094/1100. | Corrección, profundidad, legibilidad real ni ejecución del ejemplo. | [topic-learning-quality.md](./topic-learning-quality.md) y [audit_topic_learning_quality.py](../scripts/audit_topic_learning_quality.py) | 6 temas con algún criterio ausente; deuda detectable por criterio. |
-| Siete pasos | 17 marcadores textuales para objetivo, prerrequisitos, contexto, teoría, demo, explicación, ejecución, fallo, práctica, evidencia y apoyos. En este corte: 1100/1100 según marcadores. | Que cada paso sea correcto, útil, coherente o comprendido. | [seven-step-methodology.md](./seven-step-methodology.md) y [audit_seven_step_methodology.py](../scripts/audit_seven_step_methodology.py) | Sin ausencias detectadas por los marcadores actuales; requiere revisión humana. |
-| Calidad Markdown | Señales de andamiaje genérico, bloques y párrafos repetidos, cola tras el cierre y temas breves. En este corte: 283/1100 temas con al menos una señal. | Plagio, similitud semántica completa ni calidad de estilo; cada señal puede ser falso positivo. | [lesson-substance.md](./lesson-substance.md) y [audit_lesson_substance.py](../scripts/audit_lesson_substance.py) | 283 temas señalados; 184/245 módulos con apéndices heredados. |
-| Calidad de visuales | Presencia de Mermaid, enlaces Archify locales, visuales ASCII, código, comentarios, rutas y fuentes. En este corte: 583 temas con Mermaid, 18 enlaces Archify y 213 con ASCII pendiente. | Que una figura renderice, sea accesible o represente correctamente el concepto. | [code-visual-quality.md](./code-visual-quality.md) y [audit_code_visual_quality.py](../scripts/audit_code_visual_quality.py) | 213 visuales ASCII siguen pendientes de redibujo y revisión; no se sustituyen con gráficos decorativos. |
+| Siete pasos | 16 marcadores textuales para objetivo, prerrequisitos, contexto, teoría, demo, explicación, ejecución, fallo, práctica y apoyos. En este corte: 1100/1100 según marcadores. | Que cada paso sea correcto, útil, coherente o comprendido. | [seven-step-methodology.md](./seven-step-methodology.md) y [audit_seven_step_methodology.py](../scripts/audit_seven_step_methodology.py) | Sin ausencias detectadas por los marcadores actuales; requiere revisión humana. |
+| Calidad Markdown | Señales de andamiaje genérico, bloques y párrafos repetidos, cola tras el cierre y temas breves. En este corte: 273/1100 temas con al menos una señal. | Plagio, similitud semántica completa ni calidad de estilo; cada señal puede ser falso positivo. | [lesson-substance.md](./lesson-substance.md) y [audit_lesson_substance.py](../scripts/audit_lesson_substance.py) | 273 temas señalados; 183/245 módulos con apéndices heredados. |
+| Calidad de visuales | Presencia de Mermaid, enlaces Archify locales, visuales ASCII, código, comentarios, rutas y fuentes. En este corte: 586 temas con Mermaid, 18 enlaces Archify y 211 con ASCII pendiente. | Que una figura renderice, sea accesible o represente correctamente el concepto. | [code-visual-quality.md](./code-visual-quality.md) y [audit_code_visual_quality.py](../scripts/audit_code_visual_quality.py) | 211 visuales ASCII siguen pendientes de redibujo y revisión; no se sustituyen con gráficos decorativos. |
 | Deuda editorial | Criterios de presencia ausentes por tema y módulo. En este corte: 6 temas incompletos en el perfil de 9 criterios; 5 sin conexión detectada a proyecto y 1 sin ruta detectada. | La deuda pedagógica completa; una coincidencia positiva no demuestra que el contenido enseñe. | [editorial-backlog.md](./editorial-backlog.md) | 6 temas requieren revisión específica según el detector; hay defectos de sustancia adicionales en su auditoría independiente. |
+
+## Muestra de profundidad
+
+Las métricas anteriores detectan presencia y señales; no miden profundidad. Para
+probar un estándar distinto se reescribió completo `foundations/modulo-6.md`
+(seguridad): 5 temas, 15.300 palabras frente a 4.768 antes, entre 2.704 y 3.654
+palabras por tema, con 3–4 demostraciones ejecutadas por tema y un proyecto
+acumulativo de auditoría de RutaFlow. El detalle y las salidas observadas están
+en [PLAN-TOTAL-DE-CAMBIO.md](./PLAN-TOTAL-DE-CAMBIO.md). Este corte **no**
+demuestra que los otros 1.095 temas tengan esa profundidad ni que el módulo
+enseñe mejor: la revisión pedagógica humana y la de navegador siguen pendientes.
 
 ## Cobertura de pruebas de la aplicación
 

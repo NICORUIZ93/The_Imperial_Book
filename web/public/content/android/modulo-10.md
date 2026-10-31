@@ -145,9 +145,9 @@ Agrega una tercera variante `BotonConLambdaMemorizada` que use `remember(viewMod
 
 Documenta en una frase por qué una clase de datos anotada con `@Immutable` permite optimizaciones de recomposición más agresivas que una sin anotar, relacionándolo con qué garantía específica le comunica esa anotación al compilador de Compose sobre las propiedades de esa clase.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya identificas por qué una lambda recreada rompe la skippability de un composable, la corriges con una referencia de método estable, y aplicas un `MaterialTheme` 3 completo (colores, tipografía, formas) como única fuente de verdad en vez de valores hardcodeados por composable. El siguiente tema cubre cómo acelerar el arranque de la app y sincronizar Compose con sistemas externos mediante efectos. **Evidencia:** entrega el resultado confirmando que dos lambdas nuevas nunca son la misma referencia, mientras dos referencias al mismo método sí son iguales, y explica por qué la estabilidad debe mantenerse en toda la cadena de composables. Fuente oficial: [Android Developers — Recomposition performance](https://developer.android.com/develop/ui/compose/performance/stability) y [Android Developers — Material Design 3 theming](https://developer.android.com/develop/ui/compose/designsystems/material3).
+Ya identificas por qué una lambda recreada rompe la skippability de un composable, la corriges con una referencia de método estable, y aplicas un `MaterialTheme` 3 completo (colores, tipografía, formas) como única fuente de verdad en vez de valores hardcodeados por composable. El siguiente tema cubre cómo acelerar el arranque de la app y sincronizar Compose con sistemas externos mediante efectos. Fuente oficial: [Android Developers — Recomposition performance](https://developer.android.com/develop/ui/compose/performance/stability) y [Android Developers — Material Design 3 theming](https://developer.android.com/develop/ui/compose/designsystems/material3).
 
 **Errores comunes:** pasar lambdas nuevas en cada recomposición sin necesidad, especialmente dentro de listas largas donde el impacto es más perceptible; asumir que una única corrección local basta sin revisar toda la cadena de composables que propagan el mismo callback; hardcodear colores o tamaños de fuente directamente en un composable en vez de leerlos de `MaterialTheme.colorScheme`/`MaterialTheme.typography`.
 
@@ -266,9 +266,9 @@ Agrega un `rememberUpdatedState` a `PantallaConSensor` para capturar la referenc
 
 Documenta en una frase la diferencia entre usar `SideEffect` y `LaunchedEffect` para sincronizar un valor de Compose hacia un sistema externo, considerando que `SideEffect` se ejecuta en cada recomposición exitosa mientras que `LaunchedEffect` solo se relanza cuando cambian sus claves explícitas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas cómo un Baseline Profile acelera el arranque, y eliges el efecto correcto según la necesidad de sincronización, evitando fugas de recursos. El siguiente tema cubre accesibilidad y la interoperabilidad entre Compose y el sistema de Views clásico. **Evidencia:** entrega el resultado mostrando la diferencia de tiempo entre la versión interpretada y la precompilada, y explica la fuga de recursos que ocurriría al omitir `onDispose`. Fuente oficial: [Android Developers — Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/overview).
+Ya explicas cómo un Baseline Profile acelera el arranque, y eliges el efecto correcto según la necesidad de sincronización, evitando fugas de recursos. El siguiente tema cubre accesibilidad y la interoperabilidad entre Compose y el sistema de Views clásico. Fuente oficial: [Android Developers — Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/overview).
 
 **Errores comunes:** registrar un listener en `DisposableEffect` sin su correspondiente `onDispose`, causando una fuga de recursos acumulativa; usar `LaunchedEffect` con una clave que cambia constantemente, reiniciando el efecto con más frecuencia de la necesaria.
 
@@ -370,9 +370,9 @@ Extiende el script de auditoría para que también reporte íconos con `content_
 
 Documenta en una frase un caso real de tu propio proyecto donde usarías `AndroidView` (para embeber una View clásica sin equivalente Compose) y otro donde usarías `ComposeView` (para introducir Compose incrementalmente en una app basada en Views existente).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya agregas `contentDescription` apropiado a elementos interactivos, distinguiendo íconos decorativos de funcionales, y decides cuándo usar `AndroidView`/`ComposeView` para interoperabilidad. Esto cierra el módulo de performance, Material 3 y accesibilidad; el siguiente módulo del track aborda características avanzadas de la plataforma. **Evidencia:** entrega el resultado de la auditoría identificando específicamente el ícono `Edit` como el único problema real, y explica por qué `MoreVert` decorativo no debería reportarse como un problema. Fuente oficial: [Android Developers — Accessibility in Compose](https://developer.android.com/develop/ui/compose/accessibility).
+Ya agregas `contentDescription` apropiado a elementos interactivos, distinguiendo íconos decorativos de funcionales, y decides cuándo usar `AndroidView`/`ComposeView` para interoperabilidad. Esto cierra el módulo de performance, Material 3 y accesibilidad; el siguiente módulo del track aborda características avanzadas de la plataforma. Fuente oficial: [Android Developers — Accessibility in Compose](https://developer.android.com/develop/ui/compose/accessibility).
 
 **Errores comunes:** omitir `contentDescription` en íconos interactivos, dejando a usuarios de TalkBack sin forma de saber qué hace ese elemento; forzar una descripción en íconos puramente decorativos, generando ruido innecesario para el lector de pantalla.
 

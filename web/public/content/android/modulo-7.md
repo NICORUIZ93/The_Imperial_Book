@@ -107,9 +107,9 @@ Agrega una segunda dependencia a `TareasViewModel` (una clase `ServicioDeNotific
 
 Documenta en una frase qué cambiaría en tu código si `TareaRepository` pasara de tener un constructor sin parámetros a necesitar una URL de API, comparando cuántos lugares tendrías que modificar con inyección de dependencias frente a sin ella.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya anotas una `Application` y un `ViewModel` con Hilt, y explicas por qué centralizar la construcción de dependencias reduce el acoplamiento. El siguiente tema cubre cómo declarar explícitamente cómo construir dependencias externas o mapear interfaces a implementaciones. **Evidencia:** entrega el resultado del `ViewModel` recibiendo su dependencia ya construida vía el contenedor, y explica por qué construirla directamente dentro del `ViewModel` reintroduce el acoplamiento que la inyección de dependencias evita. Fuente oficial: [Android Developers — Dependency injection with Hilt](https://developer.android.com/training/dependency-injection/hilt-android).
+Ya anotas una `Application` y un `ViewModel` con Hilt, y explicas por qué centralizar la construcción de dependencias reduce el acoplamiento. El siguiente tema cubre cómo declarar explícitamente cómo construir dependencias externas o mapear interfaces a implementaciones. Fuente oficial: [Android Developers — Dependency injection with Hilt](https://developer.android.com/training/dependency-injection/hilt-android).
 
 **Errores comunes:** instanciar manualmente una dependencia dentro de una clase en vez de recibirla inyectada, reintroduciendo el acoplamiento que Hilt evita; olvidar anotar la clase `Application` con `@HiltAndroidApp`, lo cual hace que Hilt no pueda inicializar el contenedor raíz.
 
@@ -235,9 +235,9 @@ Agrega un segundo `@Provides` a `NetworkModule` para un `OkHttpClient` con los i
 
 Documenta en una frase por qué `@Binds` requiere que el método sea `abstract` dentro de una clase también `abstract` (a diferencia de `@Provides`, que es un método concreto dentro de un `object`), relacionándolo con que `@Binds` nunca ejecuta código propio, solo declara una asociación de tipos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya decides entre `@Provides` y `@Binds` según si una dependencia es externa o una interfaz propia, evitando código de construcción redundante. El siguiente tema cubre los scopes que controlan cuánto tiempo vive cada dependencia, y cómo reemplazarlas en tests. **Evidencia:** entrega el resultado mostrando `@Provides` ejecutando lógica de construcción real frente a `@Binds` simplemente retornando la instancia ya construida, y explica por qué usar `@Provides` donde `@Binds` bastaría es redundante. Fuente oficial: [Android Developers — Hilt modules](https://developer.android.com/training/dependency-injection/hilt-android#hilt-modules).
+Ya decides entre `@Provides` y `@Binds` según si una dependencia es externa o una interfaz propia, evitando código de construcción redundante. El siguiente tema cubre los scopes que controlan cuánto tiempo vive cada dependencia, y cómo reemplazarlas en tests. Fuente oficial: [Android Developers — Hilt modules](https://developer.android.com/training/dependency-injection/hilt-android#hilt-modules).
 
 **Errores comunes:** usar `@Provides` para una clase que ya se puede anotar con `@Inject` directamente, generando código redundante; olvidar `@InstallIn(SingletonComponent::class)`, dejando el módulo sin instalar en ningún componente del grafo.
 
@@ -350,9 +350,9 @@ Extiende el script de conteo de instancias para simular tres `ViewModel` distint
 
 Documenta en una frase por qué reemplazar `NetworkModule` con `@UninstallModules` en un test es preferible a modificar temporalmente el código de producción para que apunte a un servidor de pruebas y luego revertir ese cambio manualmente antes de cada commit.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazas módulos completos por versiones de test sin tocar el código de producción. Esto cierra el módulo de inyección de dependencias; el siguiente módulo del track aborda Material Design y theming. **Evidencia:** entrega el resultado del conteo mostrando 1 construcción con `@Singleton` frente a 5 sin él para las mismas solicitudes, y explica por qué un scope corto para `AppDatabase` sería incorrecto. Fuente oficial: [Android Developers — Hilt testing guide](https://developer.android.com/training/dependency-injection/hilt-testing).
+Ya eliges el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazas módulos completos por versiones de test sin tocar el código de producción. Esto cierra el módulo de inyección de dependencias; el siguiente módulo del track aborda Material Design y theming. Fuente oficial: [Android Developers — Hilt testing guide](https://developer.android.com/training/dependency-injection/hilt-testing).
 
 **Errores comunes:** elegir `@Singleton` para una dependencia que debería vivir solo mientras un `ViewModel` específico vive, reteniéndola más tiempo del necesario; modificar código de producción temporalmente para apuntar a un entorno de test en vez de usar `@UninstallModules`.
 

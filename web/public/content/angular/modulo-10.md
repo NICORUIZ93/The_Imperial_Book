@@ -134,9 +134,9 @@ fixture.componentRef.____('titulo', 'Hola mundo');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `input.required()` y un test que confirme tanto el uso correcto de `setInput` como el error real de intentar `.set()` directamente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `TestBed` real, que `setInput` es la única forma soportada de asignar un `input()` signal desde una prueba, y reproduces el error real de intentar el atajo incorrecto. El siguiente tema confirma con Angular Testing Library que consultar el DOM por rol/texto (en vez de por selector CSS interno) hace que una prueba sobreviva a un refactor puramente cosmético. **Evidencia:** entrega el resultado de ambos tests en verde, y el mensaje del error real que produce `.set()` sobre un `InputSignal`. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
+Ya confirmas, con `TestBed` real, que `setInput` es la única forma soportada de asignar un `input()` signal desde una prueba, y reproduces el error real de intentar el atajo incorrecto. El siguiente tema confirma con Angular Testing Library que consultar el DOM por rol/texto (en vez de por selector CSS interno) hace que una prueba sobreviva a un refactor puramente cosmético. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
 
 **Errores comunes:** asignar un input signal como propiedad directa en vez de usar `setInput`; olvidar `await fixture.whenStable()` tras `setInput`, produciendo aserciones que se ejecutan antes de que la vista termine de actualizarse.
 
@@ -278,9 +278,9 @@ const boton = screen.____('button', { name: /confirmar entrega/i });
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos pruebas equivalentes del mismo componente (una por selector CSS interno, otra con `screen.getByRole`) y documenta cuál sobrevive a un refactor cosmético. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un refactor cosmético real aplicado a un componente, que una prueba por selector CSS interno se rompe mientras una prueba orientada al usuario (por rol/texto) sigue pasando. El siguiente y último tema confirma con `HttpTestingController` cómo aislar completamente una prueba de un backend real, incluyendo el caso de error. **Evidencia:** entrega el resultado de ambas pruebas antes y después del refactor cosmético. Fuentes oficiales: [Testing Library — Angular](https://testing-library.com/docs/angular-testing-library/intro/).
+Ya confirmas, con un refactor cosmético real aplicado a un componente, que una prueba por selector CSS interno se rompe mientras una prueba orientada al usuario (por rol/texto) sigue pasando. El siguiente y último tema confirma con `HttpTestingController` cómo aislar completamente una prueba de un backend real, incluyendo el caso de error. Fuentes oficiales: [Testing Library — Angular](https://testing-library.com/docs/angular-testing-library/intro/).
 
 **Errores comunes:** consultar por selector CSS interno cuando una consulta por rol/texto cubriría el mismo caso con mayor robustez; usar `getByTestId` como primera opción en vez de como último recurso (la documentación oficial de Testing Library recomienda preferir siempre consultas por rol, texto o label antes que un atributo `data-testid` artificial).
 
@@ -440,9 +440,9 @@ this.http.get<Usuario[]>('/api/usuarios').pipe(
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con manejo de error vía `catchError` y dos tests con `HttpTestingController` que confirmen ambos casos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `HttpTestingController` real, tanto una respuesta exitosa como un error 500 simulado, sin ninguna dependencia de un backend real. Con esto cierras el módulo de testing y el track completo de Angular: pruebas con `TestBed` respetando el mecanismo real de inputs (Tema 1), pruebas orientadas al usuario que sobreviven a refactors cosméticos (Tema 2), y aislamiento completo del backend con casos de éxito y error cubiertos (Tema 3); el siguiente paso natural es aplicar esta misma disciplina de pruebas a un proyecto propio de principio a fin. **Evidencia:** entrega el resultado de ambos tests en verde, y el resultado del fallo deliberado (Observable rechazado sin manejar). Fuentes oficiales: [Angular — HTTP testing](https://angular.dev/guide/http/testing).
+Ya confirmas, con `HttpTestingController` real, tanto una respuesta exitosa como un error 500 simulado, sin ninguna dependencia de un backend real. Con esto cierras el módulo de testing y el track completo de Angular: pruebas con `TestBed` respetando el mecanismo real de inputs (Tema 1), pruebas orientadas al usuario que sobreviven a refactors cosméticos (Tema 2), y aislamiento completo del backend con casos de éxito y error cubiertos (Tema 3); el siguiente paso natural es aplicar esta misma disciplina de pruebas a un proyecto propio de principio a fin. Fuentes oficiales: [Angular — HTTP testing](https://angular.dev/guide/http/testing).
 
 **Errores comunes:** probar solo el camino feliz (respuesta exitosa) sin simular nunca un error real del servidor; olvidar `controlador.verify()` en `afterEach`, dejando pasar peticiones no esperadas sin que ningún test las detecte.
 
@@ -606,8 +606,8 @@ Agrega ordenamiento por barrio con `MatSortModule` y una prueba con `MatSortHarn
 #### Paso 6 · Práctica independiente
 Activa un lector de pantalla (VoiceOver o NVDA), pulsa el botón y verifica que se lee el anuncio. Documenta qué pasaría sin `LiveAnnouncer`.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque usar bien una librería de componentes ahorra semanas de trabajo, mejora la accesibilidad y hace que las pruebas sobrevivan a los cambios visuales.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque usar bien una librería de componentes ahorra semanas de trabajo, mejora la accesibilidad y hace que las pruebas sobrevivan a los cambios visuales.
 **Fuente oficial:** [Angular Material: Table](https://material.angular.dev/components/table/overview), [Angular CDK: Component Harnesses](https://material.angular.dev/cdk/test-harnesses/overview).
 **Conceptos clave:** Angular Material, CDK, `LiveAnnouncer`, `mat-table`, component harness, `TestbedHarnessEnvironment`, accesibilidad.
 **Cuándo no usarlo:** si el producto tiene un sistema de diseño propio muy distinto de Material, usa solo el CDK y tus estilos, en lugar de pelear con los estilos de Material.

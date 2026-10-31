@@ -38,7 +38,6 @@ graph TD
     style E fill:#2196f3
 ```
 
-**Evidencia de aprendizaje:** entrega árbol, frontera client/server, fallo, acción y medición.
 **Conceptos clave:** ejecución exclusiva en servidor, acceso directo a recursos del backend, sin JavaScript enviado al cliente.
 
 Esta frontera Server/Client Component es la decisión de arquitectura que tomarás para cada pantalla del proyecto integrador (SPA con datos reales, Módulo 12) si lo migras a Next.js: qué partes solo muestran datos (Server) y cuáles necesitan interactividad real del usuario (Client).
@@ -89,7 +88,7 @@ Pista: importa deliberadamente un hook en un componente servidor para provocar u
 #### Paso 6 · Práctica independiente
 Añade Suspense, una Server Action con validación, estado pending y una medición del JavaScript enviado al cliente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda build, capturas y métricas; como siguiente paso estudia despliegue. Errores comunes: enviar secretos al cliente, usar hooks en servidor, mutar sin autorización y asumir que streaming arregla consultas lentas. Fuentes oficiales: https://nextjs.org/docs/app y https://react.dev/reference/rsc/server-components.
 **¿Por qué es importante?** Porque separar servidor y cliente mejora rendimiento, seguridad y claridad de responsabilidades.
 
@@ -153,9 +152,7 @@ Pista: agregá `"use client"` directamente en `PaginaEnvio` "para que todo funci
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa.
 
-**Evidencia de aprendizaje:** entrega frontera correctamente ubicada, error por marcar la página completa y medición comparativa del JavaScript enviado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
 **¿Por qué es importante?** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
 
@@ -195,10 +192,9 @@ Pista: quitá el `<Suspense>` que envuelve a `HistorialUbicaciones` — ese es e
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `Suspense`, y agregá un segundo `Suspense` independiente alrededor de una sección de "envíos relacionados" (otra consulta lenta distinta), confirmando que ambas secciones lentas se completan y aparecen de forma independiente entre sí.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el streaming con una sección lenta del Paso 4, el bloqueo total provocado en el Paso 5, y las dos secciones independientes del Paso 6; explicá por qué envolver cada sección lenta en su propio `Suspense` (en vez de uno solo envolviendo toda la página) permite que cada una aparezca en cuanto esté lista, independientemente de las demás. Siguiente paso: estudia Server Actions para procesar formularios sin un endpoint API separado. Errores comunes: no envolver ninguna sección lenta en Suspense, envolver toda la página en un único Suspense perdiendo el beneficio de mostrar lo que ya está listo, y asumir que Suspense acelera la consulta lenta en sí (solo cambia cuándo se muestra, no cuánto tarda). Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
 **¿Por qué es importante?** El streaming con Suspense evita que una sección particularmente lenta retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
-**Evidencia de aprendizaje:** entrega streaming funcional, bloqueo total detectado y dos secciones independientes confirmadas.
 **Conceptos clave:** enviar el HTML disponible primero, no bloquear toda la página por una sección lenta.
 
 El streaming del lado del servidor permite que Next.js envíe al navegador el HTML de las partes de una página que ya están listas, sin esperar a que absolutamente todas las secciones de esa página (incluyendo alguna sección particularmente lenta, como una consulta a una base de datos que tarda varios segundos) completen su renderizado: `<Suspense fallback={<Spinner />}><SeccionLenta /></Suspense>` permite que el resto de la página se envíe y se muestre inmediatamente, mientras `SeccionLenta` continúa renderizándose en el servidor, enviándose y reemplazando el `fallback` correspondiente en cuanto efectivamente completa, sin bloquear el resto de la página mientras tanto.
@@ -263,7 +259,7 @@ Pista: dentro de `confirmarEntregaAction`, actualizá el envío usando directame
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando la verificación del PIN dentro de la Server Action antes de actualizar (`if (envioReal.pin !== pin) throw new Error('PIN incorrecto')`), confirmando que un PIN incorrecto ahora rechaza la confirmación en el servidor.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la Server Action funcionando del Paso 4, la confirmación sin validar PIN provocada en el Paso 5, y la verificación agregada del Paso 6; explicá por qué una Server Action, al eliminar el endpoint API explícito, puede hacer más fácil olvidar que esa función sigue necesitando las mismas validaciones de autorización que cualquier otro código de servidor. Siguiente paso: cerrá el módulo integrando Server Components, Suspense y Server Actions en una página completa de seguimiento. Errores comunes: omitir validación de autorización dentro de una Server Action asumiendo que "ya no hay API expuesta", no manejar el estado pending del formulario mientras la acción procesa, y ejecutar lógica sensible a secretos sin confirmar que la Server Action nunca se ejecuta en el cliente. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
 
 **Diagrama:**
@@ -287,8 +283,6 @@ graph LR
 * Cuándo: usar Server Actions para formularios simples donde la lógica es directa; no conviene si la validación es muy compleja (mantén un endpoint API explícito) o si necesitas más control sobre headers y serialización.
 
 **¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado, pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
-**Evidencia de aprendizaje:** entrega Server Action funcional, confirmación sin validar PIN detectada y verificación de autorización agregada.
-
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una aplicación Next.js con App Router, Server Components y una Server Action.

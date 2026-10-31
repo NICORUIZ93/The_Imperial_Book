@@ -7,69 +7,69 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1100 |
-| Temas con algún defecto | 283 |
-| Módulos con apéndices heredados | 184/245 |
+| Temas con algún defecto | 273 |
+| Módulos con apéndices heredados | 183/245 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `andamiaje-generico` | 109 |
-| `bloque-repetido` | 182 |
+| `andamiaje-generico` | 99 |
+| `bloque-repetido` | 172 |
 | `tema-breve` | 2 |
 
 ## Apéndices heredados más frecuentes
 
 | Sección | Módulos |
 |---|---:|
-| ## Construcción guiada del capítulo | 42 |
+| ## Construcción guiada del capítulo | 41 |
 | ## Ruta de proyecto progresivo desde carpeta vacía | 12 |
-| **Errores comunes y soluciones** | 182 |
+| **Errores comunes y soluciones** | 181 |
 
 ## Temas con más defectos
 
 | Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |
 |---|---|---:|---:|---|
-| kotlin-multiplatform / 8 | Tema 1: El framework generado para iOS | 937 | 145 | andamiaje-generico, bloque-repetido |
-| flutter / 11 | Tema 2: Iconos y splash screens | 828 | 141 | andamiaje-generico, bloque-repetido |
-| devops / 13 | Tema 3: Cierre del track — checklist final y reflexión | 1213 | 138 | andamiaje-generico, bloque-repetido |
-| flutter / 11 | Tema 1: Builds de release para cada plataforma | 956 | 138 | andamiaje-generico, bloque-repetido |
-| devops / 13 | Tema 2: Uniendo cada módulo del track en un solo flujo | 1149 | 137 | andamiaje-generico, bloque-repetido |
-| devops / 13 | Tema 1: El pipeline completo — de commit a producción verificada | 1095 | 131 | andamiaje-generico, bloque-repetido |
-| foundations / 6 | Tema 4: Validación, vulnerabilidades web, privacidad y respuesta | 1029 | 123 | andamiaje-generico, bloque-repetido |
-| foundations / 6 | Tema 1: Activos, amenazas, riesgos y límites de confianza | 938 | 119 | andamiaje-generico, bloque-repetido |
-| foundations / 6 | Tema 2: Identidad, contraseñas, sesiones y autorización | 970 | 118 | andamiaje-generico, bloque-repetido |
-| foundations / 6 | Tema 3: Criptografía aplicada, TLS, claves y secretos | 1014 | 118 | andamiaje-generico, bloque-repetido |
-| ios / 9 | Tema 1: XCTest clásico y Swift Testing | 875 | 498 | bloque-repetido |
-| react / 8 | Tema 1: Queries por rol, no por clase CSS | 930 | 498 | bloque-repetido |
-| cloud / 23 | Tema 3: Creación de clústeres y conexión con clientes estándar | 839 | 497 | andamiaje-generico |
-| java / 7 | Tema 4: Unnamed variables y patterns (_, Java 22) | 1079 | 496 | bloque-repetido |
-| ios / 7 | Tema 3: Combine vs async/await | 865 | 494 | bloque-repetido |
-| flutter / 13 | Tema 1: Una API Dart puede terminar en una frontera nativa | 863 | 492 | bloque-repetido |
-| ios / 11 | Tema 1: Certificados y provisioning profiles | 856 | 492 | bloque-repetido |
-| ios / 11 | Tema 2: Archivar, subir y TestFlight | 844 | 488 | bloque-repetido |
-| react / 10 | Tema 3: Streaming con Suspense en el servidor | 835 | 485 | bloque-repetido |
-| java / 11 | Tema 4: Foreign Function & Memory API (Java 22) | 906 | 484 | bloque-repetido |
-| react / 2 | Tema 2: useRef — valores mutables sin re-render | 890 | 484 | bloque-repetido |
-| java / 0 | Tema 6: Operadores, precedencia y control de flujo | 953 | 478 | bloque-repetido |
-| cloud / 33 | Tema 2: Kubernetes administrado, ECS y Service Mesh | 838 | 473 | andamiaje-generico |
-| java / 8 | Tema 2: Ciclo de vida de build y scopes | 909 | 473 | bloque-repetido |
-| java / 9 | Tema 1: JUnit 5 — anotaciones y ciclo de vida | 824 | 472 | bloque-repetido |
-| cloud / 13 | Tema 3: Migrations | 862 | 467 | andamiaje-generico |
-| flutter / 14 | Tema 2: Google Maps y localización en tiempo real | 778 | 466 | andamiaje-generico |
-| ios / 10 | Tema 1: Instruments | 820 | 464 | bloque-repetido |
-| ios / 9 | Tema 2: Testing de código async | 801 | 464 | bloque-repetido |
-| java / 8 | Tema 1: pom.xml vs build.gradle.kts | 824 | 464 | bloque-repetido |
-| cloud / 32 | Tema 2: Una landing zone convierte gobierno en una base repetible | 807 | 453 | andamiaje-generico |
-| ios / 7 | Tema 1: Publishers y Subscribers | 751 | 443 | bloque-repetido |
-| ios / 5 | Tema 2: Errores tipados | 845 | 440 | bloque-repetido |
-| cloud / 16 | Tema 2: Choice state, Retry y Catch | 897 | 438 | andamiaje-generico |
-| ios / 8 | Tema 3: Cuándo MVVM no alcanza | 828 | 429 | bloque-repetido |
-| java / 4 | Tema 4: Stream Gatherers (Java 24) | 841 | 428 | bloque-repetido |
-| ios / 6 | Tema 1: @Model y ModelContainer | 770 | 423 | bloque-repetido |
-| ios / 8 | Tema 2: Capas del proyecto e inyección por inicializador | 765 | 415 | bloque-repetido |
-| cloud / 32 | Tema 3: Disponibilidad y recuperación responden preguntas distintas | 805 | 414 | andamiaje-generico |
-| foundations / 11 | Tema 3: Bases de datos, almacenes analíticos y minería de datos | 695 | 412 | andamiaje-generico |
+| cloud / 23 | Tema 3: Creación de clústeres y conexión con clientes estándar | 837 | 497 | andamiaje-generico |
+| ios / 9 | Tema 1: XCTest clásico y Swift Testing | 859 | 484 | bloque-repetido |
+| ios / 11 | Tema 1: Certificados y provisioning profiles | 841 | 479 | bloque-repetido |
+| react / 8 | Tema 1: Queries por rol, no por clase CSS | 909 | 479 | bloque-repetido |
+| flutter / 13 | Tema 1: Una API Dart puede terminar en una frontera nativa | 846 | 477 | bloque-repetido |
+| cloud / 33 | Tema 2: Kubernetes administrado, ECS y Service Mesh | 836 | 473 | andamiaje-generico |
+| ios / 11 | Tema 2: Archivar, subir y TestFlight | 826 | 472 | bloque-repetido |
+| react / 10 | Tema 3: Streaming con Suspense en el servidor | 819 | 471 | bloque-repetido |
+| react / 2 | Tema 2: useRef — valores mutables sin re-render | 873 | 469 | bloque-repetido |
+| java / 7 | Tema 4: Unnamed variables y patterns (_, Java 22) | 1049 | 468 | bloque-repetido |
+| cloud / 13 | Tema 3: Migrations | 860 | 467 | andamiaje-generico |
+| flutter / 14 | Tema 2: Google Maps y localización en tiempo real | 776 | 466 | andamiaje-generico |
+| ios / 7 | Tema 3: Combine vs async/await | 835 | 466 | bloque-repetido |
+| java / 11 | Tema 4: Foreign Function & Memory API (Java 22) | 882 | 462 | bloque-repetido |
+| java / 8 | Tema 2: Ciclo de vida de build y scopes | 891 | 457 | bloque-repetido |
+| java / 0 | Tema 6: Operadores, precedencia y control de flujo | 927 | 454 | bloque-repetido |
+| cloud / 32 | Tema 2: Una landing zone convierte gobierno en una base repetible | 805 | 453 | andamiaje-generico |
+| java / 9 | Tema 1: JUnit 5 — anotaciones y ciclo de vida | 802 | 452 | bloque-repetido |
+| java / 8 | Tema 1: pom.xml vs build.gradle.kts | 809 | 451 | bloque-repetido |
+| ios / 10 | Tema 1: Instruments | 803 | 449 | bloque-repetido |
+| ios / 9 | Tema 2: Testing de código async | 780 | 445 | bloque-repetido |
+| cloud / 16 | Tema 2: Choice state, Retry y Catch | 895 | 438 | andamiaje-generico |
+| ios / 7 | Tema 1: Publishers y Subscribers | 726 | 420 | bloque-repetido |
+| ios / 5 | Tema 2: Errores tipados | 822 | 419 | bloque-repetido |
+| ios / 8 | Tema 3: Cuándo MVVM no alcanza | 812 | 415 | bloque-repetido |
+| cloud / 32 | Tema 3: Disponibilidad y recuperación responden preguntas distintas | 803 | 414 | andamiaje-generico |
+| foundations / 11 | Tema 3: Bases de datos, almacenes analíticos y minería de datos | 693 | 412 | andamiaje-generico |
+| java / 4 | Tema 4: Stream Gatherers (Java 24) | 819 | 408 | bloque-repetido |
+| ios / 6 | Tema 1: @Model y ModelContainer | 748 | 403 | bloque-repetido |
+| cloud / 32 | Tema 4: Un backup solo existe operativamente después de restaurarlo | 761 | 401 | andamiaje-generico |
+| ios / 8 | Tema 2: Capas del proyecto e inyección por inicializador | 748 | 400 | bloque-repetido |
+| flutter / 14 | Tema 1: Diseño de pantallas y Riverpod | 687 | 385 | andamiaje-generico |
+| cloud / 34 | Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK | 758 | 382 | andamiaje-generico |
+| devops / 15 | Tema 6: DevSecOps y métricas DORA | 762 | 336 | andamiaje-generico |
+| flutter / 14 | Tema 6: Dio y notificaciones push | 642 | 328 | andamiaje-generico |
+| devops / 15 | Tema 3: Service Mesh con Istio o Linkerd | 765 | 311 | andamiaje-generico |
+| flutter / 14 | Tema 5: Almacenamiento local, imágenes y offline | 619 | 309 | andamiaje-generico |
+| flutter / 14 | Tema 4: Animaciones de localización | 574 | 274 | andamiaje-generico |
+| rutaflow / 7 | Tema 4: Continuidad, costes y proyecto final | 1280 | 274 | andamiaje-generico |
+| devops / 15 | Tema 5: Ansible, inventarios, roles y Vault | 685 | 273 | andamiaje-generico |
 
 ## Cómo se corrige
 
@@ -79,4 +79,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `f97e284a3d45b632dfd08ce30ee80d01ae204856424719d05cf8a160fab23b74`
+Huella del contenido: `69ec0cbe511f8b5787c85082c46b3fc7957f76534dd61c3d3b6e3733ef989704`

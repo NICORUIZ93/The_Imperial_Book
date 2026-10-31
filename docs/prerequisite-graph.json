@@ -434,7 +434,7 @@
       "track": "foundations",
       "module": 6,
       "position": 5,
-      "title": "Ingeniería social y phishing: detectar señales en enlaces y remitentes",
+      "title": "Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
       "file": "web/public/content/foundations/modulo-6.md",
       "requires": [
         "foundations:6:4"

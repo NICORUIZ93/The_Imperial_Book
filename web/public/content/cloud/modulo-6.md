@@ -65,7 +65,7 @@ Resultado esperado: `API_ID` y `ROOT_ID` quedan guardados en variables de shell 
 Pista: probá `curl http://localhost:4566/restapis/$API_ID/dev/_user_request_/entregas` ahora mismo, antes de crear nada más — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, porque ni el recurso `/entregas` ni el stage `dev` existen todavía.
 #### Paso 6 · Práctica independiente
 Corré `aws apigateway get-rest-apis` y confirmá que "API RutaFlow" aparece en la lista con el mismo `id` que guardaste en `API_ID` — es el mismo objeto, solo lo estás consultando por otro camino.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la creación de la API, el error de ruta inexistente del Paso 5 y la confirmación del Paso 6; explicá qué falta todavía para que `/entregas` responda algo. Siguiente paso: recursos. Errores comunes: exponer rutas internas y no limitar tráfico. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html.
 
 ### Tema 2: Recursos, métodos y stages
@@ -168,9 +168,8 @@ Resultado esperado: `put-method` devuelve un JSON confirmando `httpMethod: POST`
 Pista: intentá `aws apigateway put-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method GET --authorization-type NONE` y después invocá con `curl -X GET` sobre el endpoint desplegado (una vez llegues al Tema 5) — ese GET nunca debería existir para este recurso: `/entregas` solo tiene sentido como `POST`, un `GET` ahí es un contrato mal diseñado, no solo un método de más.
 #### Paso 6 · Práctica independiente
 Confirmá con `aws apigateway get-resource --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID"` que el recurso ahora lista ambos métodos (`POST` del Paso 4, `GET` del Paso 5) bajo `resourceMethods`, y borrá el `GET` con `aws apigateway delete-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method GET` para dejar el contrato limpio otra vez.
-#### Paso 7 · Cierre y evidencia
-Entregá la creación de `/entregas` con `POST`, el `GET` agregado por error y su borrado; explicá por qué `POST` es el verbo correcto acá y no `GET`. Siguiente paso: integraciones. Errores comunes: mezclar stages y verbos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-definition.html.
-### Fallo Deliberado: User: arn:aws:apigateway is not authorized to invoke
+#### Paso 7 · Cierre
+Entregá la creación de `/entregas` con `POST`, el `GET` agregado por error y su borrado; explicá por qué `POST` es el verbo correcto acá y no `GET`. Siguiente paso: integraciones. Errores comunes: mezclar stages y verbos; no diagnosticar el `GET` agregado como fallo deliberado antes de borrarlo. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-definition.html.
 
 ### Tema 3: Integración con Lambda (proxy)
 
@@ -231,8 +230,6 @@ En el proyecto integrador RutaFlow, esta misma integración proxy y el `AWS::Lam
 implícito que SAM genera a partir del evento `Api:` de `ConfirmarEntregaFn` en
 `examples/rutaflow/cloud/template.yaml` reemplazan en producción los dos comandos manuales
 (`put-integration` y `add-permission`) que ejecutaste arriba.
-**Evidencia de aprendizaje:** entrega el `put-integration` confirmado del Paso 4, el error 500 reproducido sin permiso del Paso 5, y la política con `Sid: apigw-entregas` verificada en el Paso 6.
-
 #### Paso 4 · Demostración guiada
 ```bash
 aws apigateway put-integration --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST \
@@ -248,7 +245,7 @@ Pista: comentá mentalmente (o probá de verdad) qué pasaría si NO hubieras co
 **Fallo deliberado:** quitá (o nunca corras) el `add-permission` del Paso 4, dejando solo el `put-integration` — provoca que el `curl` contra el endpoint responda con un error 500 genérico de API Gateway, mientras que invocar `confirmar-entrega` directamente con `aws lambda invoke` sigue funcionando sin problema; diagnosticalo corriendo `aws lambda get-policy --function-name confirmar-entrega` y confirmando que el `Sid: apigw-entregas` nunca se creó.
 #### Paso 6 · Práctica independiente
 Confirmá el permiso ya otorgado con `aws lambda get-policy --function-name confirmar-entrega`, y ubicá dentro del JSON el `Sid: apigw-entregas` con el `Resource` apuntando a tu `API_ID` — esa es la diferencia concreta entre "configurado" y "autorizado".
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la integración creada, el permiso otorgado y el diagnóstico del error 500 que ocurriría sin ese permiso; explicá por qué ese error no apunta directamente a "falta un permiso". Siguiente paso: modelos. Errores comunes: permisos implícitos y payload incompatible. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html.
 ### Tema 4: Mapeo de entrada/salida y validación con modelos
 
@@ -304,7 +301,7 @@ Resultado esperado: `create-model` y `create-request-validator` devuelven sus re
 Pista: una vez desplegado (Tema 5), un `curl -X POST .../entregas -d '{"shipmentId":"env-4471"}'` (sin `recipientPin`) es el fallo deliberado — API Gateway responde `400 {"message":"Invalid request body"}` directamente, sin que `confirmar-entrega` se invoque ni una sola vez; compará esto con el 500 del Tema 3, que sí pasaba por la Lambda.
 #### Paso 6 · Práctica independiente
 Confirmá con `aws apigateway get-model --rest-api-id "$API_ID" --model-name EntregaModel` que el esquema sigue intacto, y agregá un patrón de formato al campo `recipientPin` (`"pattern": "^\\d{6}$"`) para que el modelo rechace también un PIN con letras, no solo un PIN ausente.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el modelo y el validador creados, el 400 del Paso 5 sin invocar la Lambda, y el patrón agregado en el Paso 6; explicá la diferencia entre el 400 de este Tema y el 400 que ya devolvía el propio handler en el Módulo 5. Siguiente paso: despliegue. Errores comunes: validar solo en frontend y aceptar tipos ambiguos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-request-validation.html.
 
 ### Tema 5: Despliegue y variables de stage
@@ -366,7 +363,7 @@ Resultado esperado: el `curl` devuelve `{"shipmentId":"env-4471","status":"deliv
 Pista: repetí el mismo `curl` pero contra `/qa/_user_request_/entregas` (un stage que nunca desplegaste) — ese es el fallo deliberado: `{"message":"Missing Authentication Token"}`, el mismo error del Tema 1, confirmando que ese mensaje significa "esta combinación de ruta y stage no existe todavía", no un problema de autenticación real.
 #### Paso 6 · Práctica independiente
 Cambiá el `requestValidatorId` del método (por ejemplo, quitá la validación del Tema 4 con `update-method`), confirmá con un `curl` que el comportamiento en `dev` NO cambió todavía, y recién después de un nuevo `create-deployment --stage-name dev` confirmá que sí cambió — evidencia directa de que configurar y desplegar son pasos separados.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `curl` exitoso del Paso 4, el error de stage inexistente del Paso 5, y la comparación antes/después de re-desplegar del Paso 6; explicá por qué un cambio de configuración no se nota hasta el siguiente despliegue. Siguiente paso: observabilidad. Errores comunes: cambiar producción sin versionar y olvidar cache. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-deployments.html.
 
 ## Laboratorio práctico

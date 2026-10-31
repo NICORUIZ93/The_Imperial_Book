@@ -96,9 +96,9 @@ Agrega un tercer parámetro `prioridad: String` a `TarjetaTarea` y muestra su va
 
 Escribe, en una frase, qué pasaría con la recomposición si `TarjetaTarea` recibiera un cuarto parámetro de tipo lambda (`onClick: () -> Unit`) que cambiara de instancia en cada recomposición del padre, y por qué eso podría causar recomposiciones más frecuentes de lo necesario (pista relacionado con el Módulo 10 de este track).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas qué activa `@Composable` y predices cuándo Compose recompone una función. El siguiente tema aborda dónde debe vivir el estado que un composable refleja, en vez de gestionarlo internamente. **Evidencia:** entrega el resultado del script de recomposiciones contando solo cambios reales de valor, y explica por qué ignorar un parámetro de entrada rompe la reactividad declarativa. Fuente oficial: [Android Developers — Thinking in Compose](https://developer.android.com/develop/ui/compose/mental-model).
+Ya explicas qué activa `@Composable` y predices cuándo Compose recompone una función. El siguiente tema aborda dónde debe vivir el estado que un composable refleja, en vez de gestionarlo internamente. Fuente oficial: [Android Developers — Thinking in Compose](https://developer.android.com/develop/ui/compose/mental-model).
 
 **Errores comunes:** invocar una función `@Composable` fuera de un contexto composable (fuera de otra función composable o de `setContent`); realizar efectos secundarios (peticiones de red, escritura en base de datos) directamente en el cuerpo de un composable en vez de usar `LaunchedEffect`/`DisposableEffect`.
 
@@ -207,9 +207,9 @@ Agrega un segundo campo elevado (`CampoDescripcion`, siguiendo el mismo patrón 
 
 Documenta en una frase por qué testear `CampoTitulo` de forma aislada (Módulo 9 de este track) es más simple gracias a state hoisting, comparando con cuánto más difícil sería testear un composable que mantuviera su propio estado interno.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya elevas el estado de un composable hijo hacia su padre, dejándolo como una función pura y reutilizable. El siguiente tema cubre cómo decidir si ese estado en el padre debe sobrevivir a una rotación, y los contenedores básicos de layout. **Evidencia:** entrega el resultado de la simulación mostrando `CampoTitulo` reutilizado correctamente en dos contextos independientes, y explica por qué un `remember` interno en el hijo rompería esa reutilización. Fuente oficial: [Android Developers — State hoisting](https://developer.android.com/develop/ui/compose/state-hoisting).
+Ya elevas el estado de un composable hijo hacia su padre, dejándolo como una función pura y reutilizable. El siguiente tema cubre cómo decidir si ese estado en el padre debe sobrevivir a una rotación, y los contenedores básicos de layout. Fuente oficial: [Android Developers — State hoisting](https://developer.android.com/develop/ui/compose/state-hoisting).
 
 **Errores comunes:** mantener un `remember` interno en un composable que se pretende reutilizable, acoplándolo a una única instancia; olvidar propagar el callback de cambio hacia el padre, dejando la UI visualmente desactualizada.
 
@@ -328,9 +328,9 @@ Agrega un tercer valor `pestanaSeleccionada` con `rememberSaveable`, y extiende 
 
 Construye un layout propio combinando `Row` (dentro de la cual haya un `Column`) para representar una tarjeta con avatar a la izquierda y dos líneas de texto apiladas a la derecha, documentando qué `Modifier` (`padding`, `weight`, `fillMaxWidth`) usarías en cada contenedor.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges correctamente entre `remember` y `rememberSaveable` según la necesidad de supervivencia a rotación, y combinas los tres contenedores básicos de layout. Esto cierra el módulo de Jetpack Compose; el siguiente módulo del track aborda navegación entre pantallas. **Evidencia:** entrega el resultado de la simulación mostrando el valor volátil perdido y el persistente conservado tras la rotación, y explica por qué `rememberSaveable` exige tipos serializables mientras `remember` no. Fuente oficial: [Android Developers — Save UI state](https://developer.android.com/develop/ui/compose/state-saving).
+Ya eliges correctamente entre `remember` y `rememberSaveable` según la necesidad de supervivencia a rotación, y combinas los tres contenedores básicos de layout. Esto cierra el módulo de Jetpack Compose; el siguiente módulo del track aborda navegación entre pantallas. Fuente oficial: [Android Developers — Save UI state](https://developer.android.com/develop/ui/compose/state-saving).
 
 **Errores comunes:** usar `remember` simple para un valor que sí importa preservar tras rotar (como el texto de un formulario en progreso), perdiéndolo inesperadamente; anidar `Column`/`Row` innecesariamente en vez de usar `weight` y `Modifier` con más precisión.
 

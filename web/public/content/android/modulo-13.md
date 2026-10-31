@@ -122,9 +122,9 @@ Agrega un quinto caso de prueba con path traversal lógico (`https://tasks.examp
 
 Documenta en una frase por qué un `PendingIntent` mutable con un intent implícito es más riesgoso que uno inmutable con un intent explícito, relacionándolo con qué podría hacer una app maliciosa si lograra modificar ese `PendingIntent` antes de que se dispare.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya validas la forma y la autorización de un deep link como dos pasos distintos y obligatorios, y explicas por qué un intent recibido nunca es entrada confiable. El siguiente tema aborda cómo proteger datos sensibles a través de todo su ciclo de vida, no solo en la base de datos. **Evidencia:** entrega el resultado de los 4 casos de prueba (aceptado, host falso, scheme inseguro, ID ajeno), y explica por qué el ID ajeno requiere una segunda capa de validación distinta a la de forma. Fuente oficial: [Android Developers — Deep links validation](https://developer.android.com/training/app-links/deep-linking).
+Ya validas la forma y la autorización de un deep link como dos pasos distintos y obligatorios, y explicas por qué un intent recibido nunca es entrada confiable. El siguiente tema aborda cómo proteger datos sensibles a través de todo su ciclo de vida, no solo en la base de datos. Fuente oficial: [Android Developers — Deep links validation](https://developer.android.com/training/app-links/deep-linking).
 
 **Errores comunes:** validar solo la forma de un deep link y asumir que eso implica autorización; exportar un componente "para que funcione" sin declarar intencionalmente por qué necesita estar expuesto.
 
@@ -236,9 +236,9 @@ Extiende el script de Python para cifrar y descifrar un segundo dato con un nonc
 
 Documenta en una tabla de dos columnas, para tres datos reales de tu propio proyecto (por ejemplo: token de sesión, nombre de usuario, preferencia de tema visual), su clasificación (público/interno/sensible/credencial) y qué copias adicionales (logs, backup, notificación) necesitarías auditar para cada uno.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya cifras un dato sensible con una construcción autenticada real, confirmando que detecta manipulación, y enumeras las copias adicionales que ese cifrado por sí solo no protege. El siguiente tema aborda cómo sincronizar cambios offline sin perder ni duplicar mutaciones. **Evidencia:** entrega el resultado del cifrado/descifrado exitoso, el rechazo del ciphertext manipulado, y explica por qué reutilizar un nonce compromete las garantías de GCM aunque no genere ningún error visible. Fuente oficial: [Android Developers — Android Keystore system](https://developer.android.com/privacy-and-security/keystore).
+Ya cifras un dato sensible con una construcción autenticada real, confirmando que detecta manipulación, y enumeras las copias adicionales que ese cifrado por sí solo no protege. El siguiente tema aborda cómo sincronizar cambios offline sin perder ni duplicar mutaciones. Fuente oficial: [Android Developers — Android Keystore system](https://developer.android.com/privacy-and-security/keystore).
 
 **Errores comunes:** cifrar la base de datos pero seguir logueando el dato sensible en texto plano en Logcat o crash reports; reutilizar un nonce con la misma clave, comprometiendo las garantías de GCM sin ningún error visible.
 
@@ -373,9 +373,9 @@ Simula un conflicto real: antes de drenar el outbox, actualiza manualmente `serv
 
 Documenta en una frase por qué una eliminación (`DELETE`) necesita un tombstone (marcar como eliminada, no borrar la fila inmediatamente) en vez de un borrado directo, relacionándolo con qué pasaría si otro dispositivo, todavía offline con una copia antigua, sincronizara después de que la fila ya fue borrada por completo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya implementas un protocolo de sincronización offline con outbox, operation ID idempotente y detección explícita de conflictos por versión, en vez de asumir que "Room + WorkManager" resuelve esto automáticamente. El siguiente tema aborda cómo operar la calidad de la app por dispositivo y versión en producción real. **Evidencia:** entrega el resultado del ciclo completo (mutación aceptada, outbox limpiado, versión incrementada), y el resultado del conflicto detectado cuando `base_version` queda desactualizada respecto al servidor. Fuente oficial: [Android Developers — Sync data with a server](https://developer.android.com/topic/architecture/data-layer#sync-data).
+Ya implementas un protocolo de sincronización offline con outbox, operation ID idempotente y detección explícita de conflictos por versión, en vez de asumir que "Room + WorkManager" resuelve esto automáticamente. El siguiente tema aborda cómo operar la calidad de la app por dispositivo y versión en producción real. Fuente oficial: [Android Developers — Sync data with a server](https://developer.android.com/topic/architecture/data-layer#sync-data).
 
 **Errores comunes:** asumir que WorkManager garantiza "exactamente una vez", sin operation ID ni idempotencia explícita, arriesgando efectos duplicados; aplicar last-write-wins universal sin considerar la semántica de cada campo (un contador necesita una operación conmutativa, no simplemente "el último valor gana").
 
@@ -494,9 +494,9 @@ Extiende la simulación de threading para medir cuántas operaciones de I/O de 2
 
 Documenta en una frase por qué "detener el rollout" no es equivalente a un rollback real, relacionándolo con qué pasa específicamente con los usuarios que ya recibieron la versión defectuosa en el porcentaje ya distribuido antes de detenerlo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya identificas una operación bloqueante en el hilo principal y la corriges con un dispatcher apropiado, y diseñas un rollout gradual con gates de calidad reales. Esto cierra el recorrido de seguridad, sincronización y calidad de este módulo; el siguiente módulo del track aplica estos mismos criterios de producción al proyecto final de cierre del track. **Evidencia:** entrega el resultado de la medición mostrando el hilo principal bloqueado ~200ms frente a la versión main-safe con el hilo libre casi instantáneamente, y explica por qué `suspend` sin `withContext` explícito no garantiza esa diferencia. Fuente oficial: [Android Developers — App not responding (ANR)](https://developer.android.com/topic/performance/vitals/anr).
+Ya identificas una operación bloqueante en el hilo principal y la corriges con un dispatcher apropiado, y diseñas un rollout gradual con gates de calidad reales. Esto cierra el recorrido de seguridad, sincronización y calidad de este módulo; el siguiente módulo del track aplica estos mismos criterios de producción al proyecto final de cierre del track. Fuente oficial: [Android Developers — App not responding (ANR)](https://developer.android.com/topic/performance/vitals/anr).
 
 **Errores comunes:** asumir que marcar una función como `suspend` es suficiente para garantizar que no bloquea el hilo principal, sin verificar el dispatcher efectivo usado; tratar "detener el rollout" como si fuera un rollback real para los usuarios ya afectados.
 
@@ -551,7 +551,7 @@ Trabaja sobre el proyecto 12 con backend de prueba que soporte operation ID y ve
 
 Derivado de la [documentación oficial](https://developer.android.com/develop), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 52 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Plataforma | `componentes` · `lifecycle` · `configuration changes` · `intents` · `deep links` · `permisos` · `storage` · `procesos y memoria` | app conductor |
 | Compose | `estado y recomposición` · `layout` · `Material 3` · `navegación` · `listas` · `animación` · `adaptive UI` · `semantics` | app conductor |
@@ -581,6 +581,20 @@ Un SoC integra varias unidades de cómputo; CPU y GPU no son recursos ilimitados
 
 **Analogía:** una cocina comparte energía, espacio y ventilación. Añadir más encargos no aumenta la capacidad física. El límite es que ese modelo no identifica un cuello de botella: hay que medir y correlacionar, sin forzar temperaturas peligrosas ni desactivar protecciones.
 
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    D["Dispositivo de laboratorio"] --> M1["dumpsys meminfo"]
+    D --> M2["dumpsys thermalservice"]
+    D --> M3["getprop ro.boot.verifiedbootstate"]
+    M1 --> F["Tres archivos y README con hora y acción"]
+    M2 --> F
+    M3 --> F
+    F --> C["Comparar dos muestras"]
+    C --> N["Correlación observada, no causalidad demostrada"]
+```
+
 #### Paso 4 · Demostración guiada desde cero
 Crea una carpeta vacía para conservar evidencia y confirma el dispositivo autorizado:
 ```bash
@@ -603,9 +617,9 @@ Explica cada bloque: ADB identifica el destino, dumpsys consulta servicios dispo
 **Fallo deliberado:** sustituye el paquete por `com.example.noexiste`. Observa que no hay proceso correspondiente y compáralo con `adb shell pidof com.example.restauracion`. **Pista:** comprueba identidad y estado de ejecución antes de inferir que la app consume cero memoria. Corrige el paquete y abre la app.
 
 #### Paso 6 · Práctica independiente
-Toma dos muestras durante un flujo normal de prueba, sin calentamiento artificial ni estrés peligroso. Relaciona los tiempos y las acciones con lo observado; no concluyas causalidad solo porque dos valores cambiaron. Define qué información complementaria recogerías con profiler, trazas y pruebas en dispositivo físico.
+Toma dos muestras durante un flujo normal de prueba, sin calentamiento artificial ni estrés peligroso. Relaciona los tiempos y las acciones con lo observado; no concluyas causalidad solo porque dos valores cambiaron. Define qué información complementaria recogerías con profiler, trazas y pruebas en dispositivo físico. En el proyecto integrador, anexa a `diagnostico-android/README.md` una tabla con las dos muestras y la acción que provocó cada cambio.
 
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** tres archivos, condiciones, fallo de paquete y limitaciones de visibilidad. El siguiente paso es vincular la adaptación de carga a APIs de estado térmico y un presupuesto de rendimiento medido. **Errores comunes:** comparar emulador y teléfono como equivalentes, interpretar una propiedad vacía como garantía y desactivar medidas de protección. **Límites y decisión de uso:** no se ensaya root, desbloqueo de bootloader ni atestación; esas acciones no son necesarias para este diagnóstico.
+#### Paso 7 · Cierre
+El siguiente paso es vincular la adaptación de carga a APIs de estado térmico y un presupuesto de rendimiento medido. **Errores comunes:** comparar emulador y teléfono como equivalentes, interpretar una propiedad vacía como garantía y desactivar medidas de protección. **Límites y decisión de uso:** no se ensaya root, desbloqueo de bootloader ni atestación; esas acciones no son necesarias para este diagnóstico.
 
 **Fuentes oficiales:** [dumpsys](https://developer.android.com/tools/dumpsys), [mitigación térmica](https://source.android.com/docs/core/power/thermal-mitigation) y [Verified Boot](https://source.android.com/docs/security/features/verifiedboot).

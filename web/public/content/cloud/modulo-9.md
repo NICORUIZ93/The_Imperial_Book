@@ -56,7 +56,7 @@ Resultado esperado: los tres comandos terminan sin error — tenés tres recurso
 Pista: ese es el fallo deliberado — intentá meter un archivo de prueba completo codificado en base64 como atributo de un item (`aws dynamodb put-item --table-name Tareas --item "{\"id\":{\"S\":\"t-001\"},\"adjunto\":{\"S\":\"$(base64 -i entrega-001.jpg)\"}}"`) y mirá qué tan cerca (o por encima) queda del límite de 400 KB por item de DynamoDB con un archivo de tamaño real, aunque técnicamente "funcione" con uno chico de prueba.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5: subí el mismo archivo a `adjuntos-tareas` con `aws s3 cp`, y guardá en el item de `Tareas` solo la referencia (la clave S3), no el contenido — confirmá con `get-item` que el item ahora pesa una fracción de lo que pesaba con el archivo embebido.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la creación de los tres recursos, el item con el archivo embebido del Paso 5 y su corrección por referencia del Paso 6; explicá por qué esta separación no es un formalismo sino un límite real de DynamoDB. Siguiente paso: modelo de datos. Errores comunes: lógica en gateway y acoplamiento a proveedor. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html.
 
 ### Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda
@@ -123,7 +123,7 @@ Resultado esperado: el `get-item` final muestra `estado: en_progreso` — el cic
 Pista: intentá `update-item` poniendo `estado` en un valor fuera del conjunto válido (por ejemplo `"archivada"`) — ese es el fallo deliberado: DynamoDB lo acepta sin quejarse, porque la base de datos no conoce tu regla de negocio; la validación de `estado` tiene que vivir en el código de la Lambda, no en DynamoDB.
 #### Paso 6 · Práctica independiente
 Escribí la validación que falta: antes de cualquier `update-item` de `estado`, comprobá en código que el nuevo valor está en `['pendiente','en_progreso','completada']`, y probá de nuevo el intento del Paso 5 para confirmar que ahora se rechaza antes de tocar la tabla.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el ciclo CRUD exitoso, el estado inválido aceptado sin validación del Paso 5 y la validación agregada en el Paso 6; explicá por qué DynamoDB nunca va a hacer esa validación por vos. Siguiente paso: archivos. Errores comunes: claves inestables y operaciones no idempotentes. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html.
 
 ### Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS
@@ -183,7 +183,7 @@ Resultado esperado: los cuatro comandos terminan sin error; el item `t-001` ahor
 Pista: ese es el fallo deliberado — cambiá manualmente `adjunto_key` a `t-001/factura-vieja.jpg` (un objeto que nunca subiste) con otro `update-item`, y probá `aws s3api head-object --bucket adjuntos-tareas --key t-001/factura-vieja.jpg`: `NoSuchKey`. La referencia cruzada entre DynamoDB y S3 no se valida sola; si una de las dos partes cambia sin la otra, queda rota en silencio hasta que alguien intenta leerla.
 #### Paso 6 · Práctica independiente
 Corregí la referencia rota del Paso 5 volviendo a apuntar `adjunto_key` al objeto real, y confirmá recibiendo el mensaje de la cola (`aws sqs receive-message --queue-url "$QUEUE_URL"`) que la Lambda de procesamiento tendría toda la información que necesita (`tarea_id`) para ir a buscar el adjunto correcto.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el flujo completo de subida + referencia + encolado, la referencia rota del Paso 5 y su corrección; explicá por qué nada en DynamoDB o S3 detecta automáticamente esa inconsistencia. Siguiente paso: seguridad. Errores comunes: guardar binarios en la tabla y no expirar URLs. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html.
 
 ### Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto
@@ -251,7 +251,7 @@ Resultado esperado: `EvalDecision: "implicitDeny"` — `lambda-crud-tareas` pued
 Pista: ese `implicitDeny` del Paso 4 revela el fallo deliberado si lo leés al revés — si por error le hubieras dado `sqs:ReceiveMessage` también a `lambda-crud-tareas` (agregalo a `policy-crud.json` y repetí la simulación: ahora da `"allowed"`), esa función podría leer y potencialmente descartar mensajes que la función de procesamiento todavía no alcanzó a procesar. Quitá ese permiso de `policy-crud.json` para volver a la versión correcta.
 #### Paso 6 · Práctica independiente
 Escribí `policy-procesar.json` con exactamente los permisos de `lambda-procesar-adjunto` del diagrama de este Tema (`s3:GetObject`, `dynamodb:UpdateItem`, `sqs:ReceiveMessage`/`DeleteMessage`), y simulá que esa política NO permite `dynamodb:PutItem` — documentá esa denegación esperada: esta función nunca crea tareas nuevas, solo actualiza las existentes.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos políticas, la denegación cruzada correcta del Paso 4, el permiso de más corregido en el Paso 5, y la denegación documentada del Paso 6; explicá por qué ninguna de las dos funciones debería poder hacer lo que solo le corresponde a la otra. Siguiente paso: documentación. Errores comunes: roles compartidos y permisos wildcard. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html.
 
 ### Tema 5: Documentación de la API y guía de despliegue
@@ -310,12 +310,12 @@ Resultado esperado: Node disponible.
 Pista: elimina un parámetro para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Añade ejemplo de petición, respuesta y rollback.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega README, salida, fallo y corrección; explica el resultado. Siguiente paso: observabilidad. Errores comunes: enlaces rotos y comandos no reproducibles. Fuente oficial: https://spec.openapis.org/oas/latest.html.
 
 ## Laboratorio práctico
 
-### Proyecto final: Sistema de Gestión de Tareas
+**Proyecto final: Sistema de Gestión de Tareas.** Construye la API completa del módulo con los recursos creados en los temas anteriores.
 
 ### Requisitos funcionales
 

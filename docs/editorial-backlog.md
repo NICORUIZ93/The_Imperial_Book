@@ -2,7 +2,7 @@
 
 Este inventario se genera desde el Markdown real mediante detectores heurísticos de presencia. Las ayudas visuales, el glosario y los mensajes generados por la interfaz no cuentan como explicación editorial. Un criterio detectado no demuestra que la explicación sea correcta o suficiente ni que el código se haya ejecutado.
 
-El estado «completo» de este reporte solo significa que aparecen los criterios de esta auditoría; no equivale a completar los siete pasos editoriales. La auditoría independiente de siete pasos evalúa otros 17 marcadores y registra su propio resultado en `seven-step-methodology.md`.
+El estado «completo» de este reporte solo significa que aparecen los criterios de esta auditoría; no equivale a completar los siete pasos editoriales. La auditoría independiente de siete pasos evalúa otros 16 marcadores y registra su propio resultado en `seven-step-methodology.md`.
 
 ## Estado global
 
@@ -10,42 +10,37 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 |---|---:|---:|
 | Explicación | 1100 | 0 |
 | Código | 1100 | 0 |
-| Ruta | 1099 | 1 |
+| Ruta | 1100 | 0 |
 | Ejecución | 1100 | 0 |
 | Resultado | 1100 | 0 |
 | Modificación | 1100 | 0 |
-| Conexión con un proyecto | 1095 | 5 |
+| Conexión con un proyecto | 1100 | 0 |
 | Modelo mental | 1100 | 0 |
 | Límites | 1100 | 0 |
-| **Perfil de criterios detectado** | **1094** | **6** |
+| **Perfil de criterios detectado** | **1100** | **0** |
 
 ## Prioridad por track
 
 | Track | Temas | Sin código | Sin ruta | Sin ejecución | Sin resultado | Sin modificación | Sin proyecto | Sin límites |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 58 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| android | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| devops | 113 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| devops | 113 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | flutter | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| foundations | 99 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | java | 85 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| rutaflow | 29 | 0 | 1 | 0 | 0 | 0 | 1 | 0 |
-| spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 
-- [android · módulo 13](../web/public/content/android/modulo-13.md) · Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado: conexión con un proyecto.
-- [devops · módulo 5](../web/public/content/devops/modulo-5.md) · Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas: conexión con un proyecto.
-- [foundations · módulo 10](../web/public/content/foundations/modulo-10.md) · Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada: conexión con un proyecto.
-- [rutaflow · módulo 5](../web/public/content/rutaflow/modulo-5.md) · Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil: conexión con un proyecto.
-- [rutaflow · módulo 6](../web/public/content/rutaflow/modulo-6.md) · Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación: ruta.
-- [spring-boot · módulo 15](../web/public/content/spring-boot/modulo-15.md) · Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework: conexión con un proyecto.
+No hay criterios pendientes en esta auditoría de presencia editorial.
 
 ## Regla de cierre
 

@@ -162,7 +162,7 @@ Al correr `dart run verificar.dart` de nuevo, el programa sigue imprimiendo `OK 
 
 Agregá un método `obtenerPorGuia(String guia)` a `EnvioRepository` y a ambas implementaciones, y hacé que `ListaEnvios` lo use para resaltar un envío específico — sin que la pantalla conozca en ningún momento si la respuesta vino de HTTP o de SQLite. Escribí primero la firma en la interfaz del dominio y después implementala en cada capa de datos.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entregá la estructura de carpetas por capacidades, la salida `OK pendientes=2` del Paso 4, el acoplamiento reproducido al saltar la interfaz y la segunda implementación del Paso 5. El **Tema 2: GPS, permisos y batería** retoma exactamente este `EnvioRepository` para agregar una fuente de datos de ubicación que respete permisos y batería sin tocar la pantalla. **Fuente oficial:** [Flutter — Guía de arquitectura de apps](https://docs.flutter.dev/app-architecture/guide).
 
@@ -288,7 +288,7 @@ En un emulador donde el conductor ya rechazó el permiso dos veces (estado real 
 
 Implementá una clase `MuestreoAdaptativo` que escuche el `Stream` de `Geolocator.getPositionStream()` junto con `Battery().onBatteryStateChanged`, y reconfigure el intervalo de muestreo cada vez que la batería cruce el umbral de 20%, sin reiniciar la jornada del conductor ni perder la posición ya capturada.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entregá `politica_ubicacion.dart` con el manejo explícito de `deniedForever`, la excepción reproducida al usar la versión ingenua y el muestreo adaptativo de tres niveles del Paso 5. El **Tema 3: Offline-first y prueba de entrega** usa esta misma posición capturada para adjuntarla, junto con la foto, a la confirmación de entrega que se guarda en SQLite cuando no hay señal. **Fuente oficial:** [geolocator — pub.dev](https://pub.dev/packages/geolocator).
 
@@ -450,7 +450,7 @@ Ejecutá `dart run verificar.dart` de nuevo: ahora imprime `POST confirmar RF-44
 
 Implementá un método `confirmacionesVencidas(Duration umbral)` que devuelva las filas con `sincronizado = 0` cuyo `creado_en` sea más viejo que el umbral dado, para poder alertar a soporte cuando una confirmación lleva demasiado tiempo sin sincronizar (por ejemplo, el conductor estuvo offline varios días). No reutilices `sincronizar` para esto: es una consulta de solo lectura, no un intento de reenvío.
 
-#### Paso 7 · Cierre, evidencia y proyecto
+#### Paso 7 · Cierre y proyecto
 
 Entregá `outbox_entregas.dart`, la salida `OK llamadas=1` del Paso 4, la duplicación reproducida al quitar el filtro de idempotencia y el manejo de fallos parciales del Paso 5. Con los tres Temas completos, el **Módulo 5: Rutas, mapas y seguimiento en tiempo real** retoma esta misma posición GPS y estas confirmaciones de entrega para calcular ETAs y tracking en vivo sobre datos que ya llegan sin duplicados. **Fuente oficial:** [sqflite — pub.dev](https://pub.dev/packages/sqflite).
 

@@ -89,9 +89,9 @@ Después de navegar, mueve foco al `h1` de la vista con `tabindex="-1"`. **Pista
 
 Añade query de filtro, 404, trailing slash y caracteres codificados. Prueba resolución pura, clic modificado, cleanup y fallback del servidor de preview.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes sincronizar URL, historial y contenido. El siguiente tema centralizará estado compartido sin convertir el DOM en base de datos. **Evidencia:** demuestra tres rutas, atrás/adelante, nueva pestaña y fallo sin popstate; explica qué resuelve el servidor.
+Ya puedes sincronizar URL, historial y contenido. El siguiente tema centralizará estado compartido sin convertir el DOM en base de datos.
 
 Este router manual es la última pieza estructural del proyecto integrador de este track (SPA sin framework): junto con el estado del próximo tema y el consumo de API del Tema 3, completa la aplicación de una sola página construida sin ningún framework.
 
@@ -192,9 +192,9 @@ Evita notificar si una actualización no cambia valores relevantes. **Pista:** p
 
 Prueba suscripción duplicada, desuscripción idempotente, actualización durante notificación y estado congelado. Documenta límites: efectos, concurrencia, selectores y DevTools no están incluidos.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes coordinar estado sin variables globales dispersas. El siguiente tema modelará carga, éxito y error como transiciones explícitas. **Evidencia:** demuestra dos suscriptores, cleanup, referencia nueva y fallo por mutación; explica por qué set funcional evita estado obsoleto.
+Ya puedes coordinar estado sin variables globales dispersas. El siguiente tema modelará carga, éxito y error como transiciones explícitas.
 
 **Errores comunes:** mutar; permitir fetch dentro del store genérico; olvidar cleanup; notificar antes de actualizar; suponer que este ejemplo reemplaza herramientas ante requisitos complejos.
 
@@ -282,9 +282,9 @@ Crea un `AbortController` por vista y cancela en `destroy`. **Pista:** una cance
 
 Prueba carga, lista vacía, éxito, HTTP, red, JSON inválido y abort. Añade reintento sin listeners duplicados y separa diagnóstico técnico de texto visible.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes integrar red sin estados contradictorios. El siguiente tema ensamblará router, store, cliente y vistas en un único composition root. **Evidencia:** demuestra secuencias de estado, error visible, parser y abort silencioso; explica por qué `fetchImpl` se inyecta.
+Ya puedes integrar red sin estados contradictorios. El siguiente tema ensamblará router, store, cliente y vistas en un único composition root.
 
 **Errores comunes:** modelar varios booleanos incompatibles; omitir `ok`; confiar en JSON; mostrar detalles internos; actualizar después de desmontar; confundir vacío con error.
 
@@ -384,9 +384,9 @@ Carga auditoría con `import()` solo al entrar a su ruta y muestra estado de chu
 
 Añade detalle real, 404, foco, error boundary de vista y pruebas de navegación con cleanup. Documenta tamaño del bundle, limitaciones del router/store y qué justificaría adoptar un framework.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes explicar el ciclo completo que automatizan Angular y React. El siguiente módulo preparará seguridad, accesibilidad, observabilidad y despliegue del producto. **Evidencia:** entrega SPA y build, demuestra rutas, estados y teardown, y explica el resultado del fallo con listeners duplicados; dibuja el flujo URL → vista → acción → API → store → render.
+Ya puedes explicar el ciclo completo que automatizan Angular y React. El siguiente módulo preparará seguridad, accesibilidad, observabilidad y despliegue del producto.
 
 **Errores comunes:** hacer service locator global; llamar fetch desde DOM; olvidar destruir; mezclar resolución con render; considerar el build suficiente sin probar recarga profunda.
 

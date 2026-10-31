@@ -109,9 +109,9 @@ Agrega una tercera ruta `"crear"` al `NavHost` y al script de simulación (un te
 
 Documenta en una frase por qué el back stack de Navigation Compose es conceptualmente el mismo tipo de estructura de datos (una pila) que ya usaste en otro contexto de este curso, y qué operación (`navigate`/`atrás`) corresponde a cada operación clásica de pila (`push`/`pop`).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras un grafo de navegación con `NavHost` y explicas cómo `NavController` gestiona automáticamente el back stack como una pila. El siguiente tema cubre cómo tipar los argumentos que viajan entre rutas y cómo mapear entradas externas hacia ellas. **Evidencia:** entrega el resultado de la simulación de pila mostrando el push al navegar y el pop al presionar atrás, y explica por qué el destino inicial nunca debe poder sacarse de la pila. Fuente oficial: [Android Developers — Navigate to a composable](https://developer.android.com/develop/ui/compose/navigation).
+Ya declaras un grafo de navegación con `NavHost` y explicas cómo `NavController` gestiona automáticamente el back stack como una pila. El siguiente tema cubre cómo tipar los argumentos que viajan entre rutas y cómo mapear entradas externas hacia ellas. Fuente oficial: [Android Developers — Navigate to a composable](https://developer.android.com/develop/ui/compose/navigation).
 
 **Errores comunes:** gestionar la navegación imperativamente con banderas booleanas dispersas en vez de declarar un grafo centralizado con `NavHost`; olvidar que `backStackEntry.arguments` puede ser `null` y no manejar ese caso.
 
@@ -210,9 +210,9 @@ Agrega un segundo argumento tipado `NavType.BoolType` (por ejemplo, `soloLectura
 
 Documenta en una frase qué pasaría si declararas el argumento `id` como `NavType.IntType` pero un deep link real entregara un valor no numérico (por ejemplo, `miapp://tarea/abc`), y por qué la validación de tipo automática es preferible a descubrir ese error solo en tiempo de ejecución sin ningún aviso temprano.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras argumentos tipados y configuras deep links que mapean URIs externas hacia rutas internas ya declaradas. El siguiente tema aborda cómo estructurar la navegación cuando la app tiene varias secciones principales con bottom navigation. **Evidencia:** entrega el resultado de la resolución exitosa del deep link `miapp://tarea/42` hacia `detalle/42`, y el resultado `None` al intentar resolver una URI que no coincide con el patrón. Fuente oficial: [Android Developers — Create deep links](https://developer.android.com/develop/ui/compose/navigation#deeplinks).
+Ya declaras argumentos tipados y configuras deep links que mapean URIs externas hacia rutas internas ya declaradas. El siguiente tema aborda cómo estructurar la navegación cuando la app tiene varias secciones principales con bottom navigation. Fuente oficial: [Android Developers — Create deep links](https://developer.android.com/develop/ui/compose/navigation#deeplinks).
 
 **Errores comunes:** declarar un deep link en el grafo de navegación sin también registrar el `intent-filter` correspondiente en el `AndroidManifest.xml`, dejando que el sistema operativo nunca enrute la URI hacia la app; asumir el tipo de un argumento sin declararlo explícitamente con `navArgument`.
 
@@ -339,9 +339,9 @@ Extiende el script `NavegacionMultiSeccion` para registrar en qué orden se visi
 
 Documenta en una frase qué comportamiento esperarías si el usuario toca dos veces seguidas el mismo ítem de la bottom navigation ya activo (un patrón de UX común es volver a la raíz de esa sección en ese caso específico, a diferencia de simplemente cambiar de sección), y cómo lo implementarías en el modelo de este Tema.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya estructuras una app con bottom navigation donde cada sección mantiene su propio historial independiente, evitando el bug de perder contexto de navegación al cambiar de sección. Esto cierra el módulo de navegación; el siguiente módulo del track aborda networking con Retrofit. **Evidencia:** entrega el resultado mostrando el stack de "Tareas" preservado tras visitar "Perfil" y volver, y el resultado del fallo al reiniciar el stack en cada cambio de sección. Fuente oficial: [Android Developers — Navigate with bottom navigation](https://developer.android.com/develop/ui/compose/navigation#bottom-nav).
+Ya estructuras una app con bottom navigation donde cada sección mantiene su propio historial independiente, evitando el bug de perder contexto de navegación al cambiar de sección. Esto cierra el módulo de navegación; el siguiente módulo del track aborda networking con Retrofit. Fuente oficial: [Android Developers — Navigate with bottom navigation](https://developer.android.com/develop/ui/compose/navigation#bottom-nav).
 
 **Errores comunes:** usar un único `NavHost` plano compartido entre todas las secciones de una bottom navigation, perdiendo el historial profundo de cada una al cambiar de sección; olvidar manejar el caso de tocar dos veces el mismo ítem ya activo de la bottom bar.
 
@@ -421,9 +421,9 @@ Verificá en `app/src/main/AndroidManifest.xml` que la etiqueta `<application>` 
 
 Agregá el manejo explícito de `CancellationException` en el `catch` del Paso 4 (si todavía no lo tenías) y documentá en una frase qué le pasaría a `hayCambiosSinGuardar` si el usuario desliza el gesto hasta la mitad y luego vuelve a soltar sin completarlo: ¿se ejecuta algo del bloque posterior a `progress.collect`?
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usás `PredictiveBackHandler` para que la previsualización del gesto coincida con el resultado real, confirmado al reproducir la discrepancia con un `BackHandler` simple y corregirla. Esto cierra el módulo de navegación; el siguiente módulo del track aborda networking con Retrofit. **Evidencia:** entrega el `PredictiveBackHandler` funcionando, la discrepancia de previsualización reproducida con `BackHandler` simple, y la verificación del flag del manifest. Fuentes oficiales: [Android Developers — Predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) y [Android Developers — Support predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#support-predictive).
+Ya usás `PredictiveBackHandler` para que la previsualización del gesto coincida con el resultado real, confirmado al reproducir la discrepancia con un `BackHandler` simple y corregirla. Esto cierra el módulo de navegación; el siguiente módulo del track aborda networking con Retrofit. Fuentes oficiales: [Android Developers — Predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) y [Android Developers — Support predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#support-predictive).
 
 **Errores comunes:** usar `BackHandler` simple para interacciones donde el resultado del gesto no es simplemente "navegar atrás" (confirmaciones, diálogos); olvidar `android:enableOnBackInvokedCallback="true"` en el manifest, dejando la app sin gesto predictivo en absoluto; no manejar `CancellationException` para el caso de un gesto cancelado a mitad de camino.
 

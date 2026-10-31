@@ -145,9 +145,9 @@ fun saludo(nombre: String?): String {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función que reciba un `Int?`, devuelva su valor duplicado si existe o `0` si es `null`, usando safe call y Elvis en una sola línea. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues un tipo nullable de uno no-nullable en cualquier firma, y eliges entre `?.`, `!!` y `?:` según haya o no certeza real de no-nulidad. El siguiente tema aplica esta misma disciplina de tipos a `data class` y funciones de extensión. **Evidencia:** entrega el resultado de las cinco repeticions del Paso 5 con sus valores calculados, y explica por qué el fallo deliberado con `!!` traslada un problema de compilación a uno de ejecución. Fuente oficial: [Kotlin docs — Null safety](https://kotlinlang.org/docs/null-safety.html).
+Ya distingues un tipo nullable de uno no-nullable en cualquier firma, y eliges entre `?.`, `!!` y `?:` según haya o no certeza real de no-nulidad. El siguiente tema aplica esta misma disciplina de tipos a `data class` y funciones de extensión. Fuente oficial: [Kotlin docs — Null safety](https://kotlinlang.org/docs/null-safety.html).
 
 **Errores comunes:** usar `!!` para evitar pensar en el caso `null`, en vez de resolverlo con `?.`/`?:`; olvidar que el operador Elvis solo se activa cuando el lado izquierdo es exactamente `null`, no cuando es un valor "vacío" como `""` o `0`.
 
@@ -271,9 +271,9 @@ val emailValido: Boolean = correo.____()
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una `data class Libro(titulo, autor, paginas)` y una función de extensión `Int.esNumeroPar()`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya generas igualdad estructural y copia inmutable con `data class`, y agregas comportamiento a un tipo existente con funciones de extensión, distinguiendo igualdad de identidad. El siguiente tema usa `when` como expresión, frecuentemente combinado con los modelos de `data class` que acabas de practicar. **Evidencia:** entrega el resultado de las cuatro repeticiones del Paso 5, y explica por qué `is` y `==` dieron resultados distintos en el fallo deliberado. Fuente oficial: [Kotlin docs — Data classes](https://kotlinlang.org/docs/data-classes.html).
+Ya generas igualdad estructural y copia inmutable con `data class`, y agregas comportamiento a un tipo existente con funciones de extensión, distinguiendo igualdad de identidad. El siguiente tema usa `when` como expresión, frecuentemente combinado con los modelos de `data class` que acabas de practicar. Fuente oficial: [Kotlin docs — Data classes](https://kotlinlang.org/docs/data-classes.html).
 
 **Errores comunes:** comparar instancias de `data class` con `===` (identidad) esperando el comportamiento de `==` (valor); intentar agregar estado (una nueva propiedad) mediante una función de extensión — las extensiones solo agregan comportamiento, no estado real al tipo original.
 
@@ -419,9 +419,9 @@ val accion = when (semaforo) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una sealed class con dos subtipos y un `when` exhaustivo que devuelva un `String` distinto para cada uno, sin rama `else`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usas `when` como expresión que devuelve un valor directamente, y aprovechas la exhaustividad verificada por el compilador sobre sealed classes, confirmando con el compilador real que agregar un subtipo no manejado produce un error de compilación, no uno de ejecución. El siguiente tema extiende el modelado de datos con destructuring y rangos, dos patrones que aparecen junto a `data class` y `when` en código idiomático cotidiano. **Evidencia:** entrega el resultado de las tres pruebas pasando en verde, y el error real de compilación al agregar un subtipo sin manejar. Fuente oficial: [Kotlin docs — When expression](https://kotlinlang.org/docs/control-flow.html#when-expression).
+Ya usas `when` como expresión que devuelve un valor directamente, y aprovechas la exhaustividad verificada por el compilador sobre sealed classes, confirmando con el compilador real que agregar un subtipo no manejado produce un error de compilación, no uno de ejecución. El siguiente tema extiende el modelado de datos con destructuring y rangos, dos patrones que aparecen junto a `data class` y `when` en código idiomático cotidiano. Fuente oficial: [Kotlin docs — When expression](https://kotlinlang.org/docs/control-flow.html#when-expression).
 
 **Errores comunes:** agregar `else` "por si acaso" a un `when` ya exhaustivo sobre sealed class, perdiendo la verificación de exhaustividad; usar `when` como sentencia (sin devolver valor) cuando el propósito real era producir un resultado, dejando una variable mutable asignada manualmente en cada rama.
 
@@ -549,9 +549,9 @@ for (i in 5 ____ 1) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una `data class` de dos campos, su destructuring en una función, y un `for` que itere un rango con `step` distinto de 1. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya desestructuras una `data class` en variables individuales por posición, e iteras rangos con dirección y paso explícitos, confirmando con pruebas reales el riesgo silencioso de invertir el orden del destructuring. Esto cierra los fundamentos de Kotlin; el siguiente módulo aplica estos mismos patrones —incluida la desestructuración de `data class` sobre colecciones— a funciones de orden superior y programación funcional. **Evidencia:** entrega el resultado de las dos pruebas pasando en verde (`distanciaAlOrigen` = `5.0`, `pasosImpares(10)` = `[1, 3, 5, 7, 9]`), y explica por qué invertir el orden en `val (y, x) = punto` no produce ningún error de compilación. Fuente oficial: [Kotlin docs — Destructuring declarations](https://kotlinlang.org/docs/destructuring-declarations.html).
+Ya desestructuras una `data class` en variables individuales por posición, e iteras rangos con dirección y paso explícitos, confirmando con pruebas reales el riesgo silencioso de invertir el orden del destructuring. Esto cierra los fundamentos de Kotlin; el siguiente módulo aplica estos mismos patrones —incluida la desestructuración de `data class` sobre colecciones— a funciones de orden superior y programación funcional. Fuente oficial: [Kotlin docs — Destructuring declarations](https://kotlinlang.org/docs/destructuring-declarations.html).
 
 **Errores comunes:** asumir que destructuring asigna por nombre de campo en vez de por posición, produciendo asignaciones invertidas silenciosas si el orden de las variables destino no coincide con el de la `data class`; usar `until` cuando en realidad se necesita el límite superior inclusive (`..`), excluyendo por error el último valor esperado.
 
@@ -565,7 +565,7 @@ Ya desestructuras una `data class` en variables individuales por posición, e it
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con crea `academia-kmp` con el asistente oficial Kotlin Multiplatform en una carpeta vacía y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | dominio común y targets. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | red, datos e integración nativa. | Casos normales, límite y error automatizados. |

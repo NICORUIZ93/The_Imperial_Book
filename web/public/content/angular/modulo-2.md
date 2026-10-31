@@ -133,9 +133,9 @@ const costoEnvio = ____(() => paquetes() * 5);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `signal` y un `computed()` con un espía `vi.fn()` que confirme memoización real con conteo exacto de invocaciones. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un conteo real y exacto de invocaciones, que `computed()` memoiza genuinamente: nunca recalcula sin que su dependencia real haya cambiado. El siguiente tema confirma con el mismo tipo de espía por qué mutar un array in-place no notifica ningún cambio, mientras una nueva referencia sí lo hace. **Evidencia:** entrega el resultado de ambos tests en verde, y el conteo incorrecto (3 invocaciones) que produce el fallo deliberado al reemplazar `computed()` por una función ordinaria. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con un conteo real y exacto de invocaciones, que `computed()` memoiza genuinamente: nunca recalcula sin que su dependencia real haya cambiado. El siguiente tema confirma con el mismo tipo de espía por qué mutar un array in-place no notifica ningún cambio, mientras una nueva referencia sí lo hace. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** usar `effect()` para derivar un valor que en realidad debería ser un `computed()`, perdiendo la memoización real que `computed()` ofrece; asumir que cualquier función que lee un signal memoiza automáticamente, cuando esa garantía es específica de `computed()`.
 
@@ -272,9 +272,9 @@ paquetes.update((lista) => [___lista, nuevoPaquete]);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un signal de array y dos tests con espía que contrasten mutación in-place (sin notificación) contra `update()` con nueva referencia (con notificación). Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un conteo real de invocaciones, que los signals detectan cambios exclusivamente por referencia, nunca por contenido profundo — mutar in-place es invisible para Angular, sin importar cuán real sea el cambio de contenido. El siguiente tema confirma con los puentes oficiales `toSignal`/`toObservable` cómo integrar signals con flujos asíncronos de RxJS. **Evidencia:** entrega el resultado de ambos tests en verde, y el valor obsoleto (`0` en vez de `1`) que produce el fallo deliberado al mutar in-place donde se esperaba una nueva referencia. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con un conteo real de invocaciones, que los signals detectan cambios exclusivamente por referencia, nunca por contenido profundo — mutar in-place es invisible para Angular, sin importar cuán real sea el cambio de contenido. El siguiente tema confirma con los puentes oficiales `toSignal`/`toObservable` cómo integrar signals con flujos asíncronos de RxJS. Fuentes oficiales: [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** mutar un array o objeto dentro de un signal con métodos in-place (`push`, `splice`, asignación directa de propiedad); asumir que "el dato cambió" es suficiente, sin verificar que la REFERENCIA también cambió.
 
@@ -409,9 +409,9 @@ const estadoSignal = ____(this.estado$, { initialValue: 'desconectado' });
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un `BehaviorSubject` real y un test que use `toSignal()` para confirmar la lectura síncrona y actualizada de su valor. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con los puentes oficiales reales `toSignal()`/`toObservable()`, que signals y Observables se integran sin reescribir la lógica existente de ningún lado. El siguiente y último tema de este módulo confirma con espías reales por qué la precisión del grafo de dependencias de signals hace viable eliminar Zone.js. **Evidencia:** entrega el resultado del test en verde, y el valor congelado que produce el fallo deliberado al leer `.value` directamente en vez de usar `toSignal()`. Fuentes oficiales: [Angular — RxJS interop](https://angular.dev/ecosystem/rxjs-interop).
+Ya confirmas, con los puentes oficiales reales `toSignal()`/`toObservable()`, que signals y Observables se integran sin reescribir la lógica existente de ningún lado. El siguiente y último tema de este módulo confirma con espías reales por qué la precisión del grafo de dependencias de signals hace viable eliminar Zone.js. Fuentes oficiales: [Angular — RxJS interop](https://angular.dev/ecosystem/rxjs-interop).
 
 **Errores comunes:** forzar RxJS para estado simple síncrono que un signal expresaría más simplemente; llamar `toSignal()` fuera de un contexto de inyección válido, produciendo un error real de Angular.
 
@@ -539,9 +539,9 @@ TestBed.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos signals independientes con un `effect()` cada uno, y un test con espías que confirme la precisión real del grafo de dependencias. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un conteo real de invocaciones sobre dos signals independientes, que el grafo de dependencias de signals es preciso: solo notifica a quien realmente depende de cada cambio. Esto cierra el módulo de signals como el nuevo modelo de reactividad de Angular; como siguiente paso, continúa con el módulo 3 de este track (inyección de dependencias). **Evidencia:** entrega el resultado del test en verde, y la notificación cruzada indebida que produce el fallo deliberado al agregar una lectura adicional dentro de un `effect()`. Fuentes oficiales: [Angular — Zoneless](https://angular.dev/guide/experimental/zoneless), [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas, con un conteo real de invocaciones sobre dos signals independientes, que el grafo de dependencias de signals es preciso: solo notifica a quien realmente depende de cada cambio. Esto cierra el módulo de signals como el nuevo modelo de reactividad de Angular; como siguiente paso, continúa con el módulo 3 de este track (inyección de dependencias). Fuentes oficiales: [Angular — Zoneless](https://angular.dev/guide/experimental/zoneless), [Angular — Signals](https://angular.dev/guide/signals).
 
 **Errores comunes:** asumir que el modo zoneless funciona automáticamente sin migrar el estado relevante a signals; agregar lecturas de signals adicionales dentro de un `effect()` sin darse cuenta de que eso amplía su conjunto real de dependencias rastreadas.
 
@@ -625,9 +625,9 @@ cantidad = linkedSignal(____);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `linkedSignal` derivado de un signal de stock, con un test que confirme el reseteo automático. Verifica con `npx ng test --watch=false`. Compara después contra el Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usás `linkedSignal` para estado derivado pero sobrescribible, confirmado con un test de reseteo automático; este mismo patrón es el que usará el carrito del proyecto propio del track para cantidades editables ligadas al stock real. El siguiente tema usa `resource()` para traer datos asíncronos reactivos ligados a un signal. **Evidencia:** entrega el `linkedSignal` funcionando, la sincronización manual de dos signals del fallo deliberado, y el test de reseteo automático. Fuentes oficiales: [Angular — linkedSignal](https://angular.dev/guide/signals/linked-signal).
+Ya usás `linkedSignal` para estado derivado pero sobrescribible, confirmado con un test de reseteo automático; este mismo patrón es el que usará el carrito del proyecto propio del track para cantidades editables ligadas al stock real. El siguiente tema usa `resource()` para traer datos asíncronos reactivos ligados a un signal. Fuentes oficiales: [Angular — linkedSignal](https://angular.dev/guide/signals/linked-signal).
 
 **Errores comunes:** usar `computed()` cuando el valor necesita ser sobrescribible por el usuario; sincronizar manualmente un signal derivado con un signal de "override" en vez de usar `linkedSignal`.
 
@@ -718,9 +718,9 @@ conductor = resource({ ____: this.conductorId, loader: /* ... */ });
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `resource()` ligado a un signal con su manejo de `isLoading()`. Verifica con `npx ng test --watch=false`. Compara después contra el Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usás `resource()` para datos asíncronos ligados reactivamente a un signal, confirmado con un test que reproduce y corrige la condición de carrera de respuestas obsoletas; esta misma garantía es la que necesitará el proyecto propio del track al cargar datos de un conductor o pedido seleccionado dinámicamente. Esto cierra el módulo de signals; como siguiente paso, aplica `httpResource()` específicamente sobre `HttpClient` en el módulo de interceptores. **Evidencia:** entrega el `resource()` funcionando, la condición de carrera reproducida con `effect()`+`fetch()` manual, y el test de carrera corregida. Fuentes oficiales: [Angular — resource](https://angular.dev/guide/signals/resource) y [Angular — httpResource](https://angular.dev/guide/signals/rxjs-interop).
+Ya usás `resource()` para datos asíncronos ligados reactivamente a un signal, confirmado con un test que reproduce y corrige la condición de carrera de respuestas obsoletas; esta misma garantía es la que necesitará el proyecto propio del track al cargar datos de un conductor o pedido seleccionado dinámicamente. Esto cierra el módulo de signals; como siguiente paso, aplica `httpResource()` específicamente sobre `HttpClient` en el módulo de interceptores. Fuentes oficiales: [Angular — resource](https://angular.dev/guide/signals/resource) y [Angular — httpResource](https://angular.dev/guide/signals/rxjs-interop).
 
 **Errores comunes:** usar `effect()`+`fetch()` manual para datos reactivos sin ningún mecanismo de cancelación de respuestas obsoletas; no distinguir `isLoading()` de un `value()` todavía en su estado inicial.
 

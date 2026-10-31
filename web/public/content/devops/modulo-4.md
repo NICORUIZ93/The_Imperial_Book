@@ -85,9 +85,9 @@ Agrega una segunda dimensión a la matriz (`os: [ubuntu-latest]`, luego amplía 
 
 Agrega un segundo job `lint` sin matriz, y declara que `test` no depende de `lint` (corren en paralelo); documenta en un comentario qué cambiarías si quisieras que `test` solo corriera después de que `lint` pasara.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya diseñas jobs paralelos y matrices sin duplicar definiciones. El siguiente tema evita reinstalar dependencias en cada ejecución con caché. **Evidencia:** entrega la salida de las dos instancias simuladas de la matriz mostrando cada versión de Node, y explica el resultado del YAML mal indentado. Fuente oficial: [GitHub Actions — matrix](https://docs.github.com/actions/using-jobs/using-a-matrix-for-your-jobs).
+Ya diseñas jobs paralelos y matrices sin duplicar definiciones. El siguiente tema evita reinstalar dependencias en cada ejecución con caché. Fuente oficial: [GitHub Actions — matrix](https://docs.github.com/actions/using-jobs/using-a-matrix-for-your-jobs).
 
 **Errores comunes:** indentar `strategy.matrix` fuera del job al que pertenece; asumir que todos los jobs de un workflow corren secuencialmente por defecto, cuando en realidad corren en paralelo salvo dependencia explícita.
 
@@ -158,9 +158,9 @@ Calcula el hash de `package.json` antes y después de un cambio cosmético que n
 
 Simula una "invalidación de caché en cascada" eliminando el volumen (`docker volume rm npm-cache-demo`) y mide de nuevo el tiempo de instalación; compara los tres tiempos (sin caché, con caché válido, con caché eliminado) y documenta la diferencia.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya evitas reinstalaciones innecesarias basando el caché en el contenido real del lockfile. El siguiente tema conserva reportes generados durante una ejecución más allá de sus logs. **Evidencia:** entrega los tres tiempos medidos (sin caché, con caché, tras invalidación) y explica la diferencia observada. Fuente oficial: [GitHub Actions — setup-node caching](https://github.com/actions/setup-node#caching-global-packages-data).
+Ya evitas reinstalaciones innecesarias basando el caché en el contenido real del lockfile. El siguiente tema conserva reportes generados durante una ejecución más allá de sus logs. Fuente oficial: [GitHub Actions — setup-node caching](https://github.com/actions/setup-node#caching-global-packages-data).
 
 **Errores comunes:** cachear directamente `node_modules` sin lockfile como clave, arriesgando reutilizar dependencias desactualizadas; no versionar el lockfile, dejando sin base estable la clave de caché.
 
@@ -224,9 +224,9 @@ Agrega un segundo artifact simulado (un "binario" ficticio: `echo 'contenido bin
 
 Simula la expiración de retención eliminando el volumen (`docker volume rm artifacts-demo`) después de "descargar" (copiar a tu carpeta local con `docker cp` si tuvieras un contenedor persistente, o simplemente documentando el resultado) y explica por qué un artifact expirado no debe ser la única copia de algo importante como una release oficial.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya conservas y pasas resultados entre pasos aislados de un pipeline con artifacts. El siguiente tema versiona el pipeline mismo como código junto al proyecto. **Evidencia:** entrega la salida del segundo contenedor leyendo el artifact exitosamente, y el fallo al intentar leerlo sin el volumen montado. Fuente oficial: [GitHub Actions — artifacts](https://docs.github.com/actions/how-tos/write-workflows/choose-what-workflows-do/store-and-share-data).
+Ya conservas y pasas resultados entre pasos aislados de un pipeline con artifacts. El siguiente tema versiona el pipeline mismo como código junto al proyecto. Fuente oficial: [GitHub Actions — artifacts](https://docs.github.com/actions/how-tos/write-workflows/choose-what-workflows-do/store-and-share-data).
 
 **Errores comunes:** asumir que todos los jobs de un pipeline comparten sistema de archivos automáticamente; tratar un artifact con retención temporal como si fuera almacenamiento permanente para releases oficiales.
 
@@ -310,9 +310,9 @@ Agrega una tercera versión del pipeline con un disparador `schedule` (cron diar
 
 Usa `git diff HEAD~1 HEAD -- .github/workflows/ci.yml` para ver exactamente qué cambió entre las dos últimas versiones del pipeline, y explica en un comentario por qué esta visibilidad no existiría si el pipeline se configurara manualmente en una interfaz web no versionada.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya versionas el pipeline con la misma disciplina que el código de la aplicación, con historial auditable y reversible. Esto cierra el módulo de CI; el siguiente módulo extiende este pipeline hacia el despliegue continuo. **Evidencia:** entrega como resultado el contenido recuperado de la versión anterior del pipeline vía `git show`, y explica el fallo al intentar acceder a un commit inexistente. Fuente oficial: [GitHub Actions — Understanding GitHub Actions](https://docs.github.com/actions/learn-github-actions/understanding-github-actions).
+Ya versionas el pipeline con la misma disciplina que el código de la aplicación, con historial auditable y reversible. Esto cierra el módulo de CI; el siguiente módulo extiende este pipeline hacia el despliegue continuo. Fuente oficial: [GitHub Actions — Understanding GitHub Actions](https://docs.github.com/actions/learn-github-actions/understanding-github-actions).
 
 **Errores comunes:** configurar el pipeline manualmente en una interfaz web sin versionarlo, perdiendo trazabilidad; olvidar que cambios al pipeline mismo también deberían pasar por revisión de pull request, no aplicarse directamente a la rama principal.
 

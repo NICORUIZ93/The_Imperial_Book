@@ -72,7 +72,7 @@ Resultado esperado: las dos preguntas quedan lado a lado — la primera es exact
 Pista: intentá resolver la pregunta multi-salto con `ShipmentEvents` usando `Query` por `shipmentId` — ese es el fallo deliberado: no hay ningún `shipmentId` en la pregunta "repartidores que cubrieron la misma zona que Ana", porque la pregunta nunca fue sobre una clave conocida, es sobre seguir una cadena de relaciones que DynamoDB no modela como ciudadano de primera clase.
 #### Paso 6 · Práctica independiente
 Escribí una tercera pregunta puramente de clave (por ejemplo, "el nombre del repartidor con id c-891") y clasificala junto a las otras dos, confirmando que esa sí encaja perfecto en DynamoDB.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las dos preguntas comparadas del Paso 4, el intento fallido de forzarla en DynamoDB del Paso 5, y la pregunta de clave del Paso 6; explicá por qué forzar una consulta multi-salto dentro de una base relacional o NoSQL simple sería deuda técnica, no una solución. Siguiente paso: motor. Errores comunes: ciclos no controlados y recorridos sin límite. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/intro.html.
 
 ### Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación
@@ -128,7 +128,7 @@ Resultado esperado: `docker ps` muestra un contenedor real de Apache TinkerPop G
 Pista: conectate con `gremlin-python` al puerto devuelto y probá una consulta mal formada, como `g.V().has('nombre','Ana').outt('cubrio_zona')` (con el verbo `out` mal escrito) — ese es el fallo deliberado: el servidor Gremlin real rechaza la consulta con un error de sintaxis, exactamente igual que lo haría un Neptune real, porque es el mismo motor de ejecución.
 #### Paso 6 · Práctica independiente
 Corregí la consulta y ejecutá `g.V().count()` contra el clúster recién creado — confirmá que devuelve `0` (grafo vacío, listo para poblar con los vértices de repartidores y zonas del Tema 1).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contenedor Gremlin real confirmado del Paso 4, el error de sintaxis del Paso 5, y el grafo vacío confirmado del Paso 6; explicá por qué que el motor sea real te deja aprender el lenguaje de consulta sin riesgo de que se comporte distinto contra un Neptune real. Siguiente paso: emulación. Errores comunes: conexiones abiertas y traversals costosos. Fuente oficial: https://tinkerpop.apache.org/gremlin.html.
 
 ### Tema 3: OpenSearch — modo simulado y modo real
@@ -190,7 +190,7 @@ Resultado esperado: la búsqueda por `fragil` devuelve el documento indexado —
 Pista: exportá `FLOCI_SERVICES_OPENSEARCH_MOCK=true` y repetí la creación del dominio y la búsqueda — ese es el fallo deliberado si lo hacés sin darte cuenta: `_search` no responde en absoluto, porque en modo simulado solo el plano de gestión (crear/describir/eliminar dominios) está disponible, no el plano de datos.
 #### Paso 6 · Práctica independiente
 Consultá `/_cluster/health` contra el dominio en modo real y registrá el estado (`green`/`yellow`) junto con la versión del motor reportada; documentá por qué un pipeline de CI que solo valida que Terraform crea el dominio correctamente debería usar el modo simulado, no el real.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la búsqueda real exitosa del Paso 4, el `_search` sin respuesta en modo mock del Paso 5, y el health/versión registrados del Paso 6; explicá cuándo cada modo es la herramienta con el costo justo para la pregunta que estás respondiendo. Siguiente paso: patrones. Errores comunes: asumir que mock cubre latencia real y no verificar salud. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/health-status.html.
 
 ### Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB
@@ -256,7 +256,7 @@ Resultado esperado: cada consulta responde rápido y de forma natural en su prop
 Pista: intentá responder "paquetes cuya descripción menciona frágil" haciendo un `Scan` completo de una tabla DynamoDB filtrando con `contains()` sobre el atributo `descripcion` — ese es el fallo deliberado de rendimiento: funciona en una tabla de prueba con pocos items, pero escala pésimo (Módulo 4, Tema 6) comparado con la búsqueda de texto completo real que OpenSearch resuelve de forma nativa.
 #### Paso 6 · Práctica independiente
 Construí una tabla de tres filas (clave exacta / relación multi-salto / texto completo) con la columna "almacén correcto" y "por qué forzarlo en otro almacén sería más lento", usando los tres ejemplos reales de RutaFlow de este módulo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las tres consultas nativas del Paso 4, el Scan forzado y lento del Paso 5, y la tabla de decisión del Paso 6; explicá por qué en sistemas reales es común usar los tres almacenes a la vez para distintas partes del mismo dominio, en vez de elegir uno solo "para todo". Siguiente paso: búsqueda. Errores comunes: modelar sin medir y olvidar cardinalidad. Fuente oficial: https://docs.aws.amazon.com/architecture-well-architected/latest/framework/welcome.html.
 
 ## Laboratorio práctico

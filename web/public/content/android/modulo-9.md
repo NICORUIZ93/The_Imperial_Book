@@ -126,9 +126,9 @@ Agrega un segundo test a `test_viewmodel_fake.py` que confirme el caso de error 
 
 Documenta en una frase por qué un test de ViewModel con un fake que siempre devuelve los mismos datos predefinidos es determinista, mientras que un test contra la API real podría fallar de forma intermitente (flaky) sin ningún cambio en el código bajo prueba.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya testeas un `ViewModel` con un repositorio fake, y explicas por qué es más rápido y confiable que probar contra la API real. El siguiente tema cubre cómo verificar que el estado correcto efectivamente se traduce en la UI renderizada. **Evidencia:** entrega el resultado de `pytest`/`unittest` mostrando el test pasando en menos de 50ms con el fake, y el resultado del fallo de la aserción de duración al usar el repositorio con latencia simulada. Fuente oficial: [Android Developers — Test ViewModel with coroutines](https://developer.android.com/kotlin/coroutines/test).
+Ya testeas un `ViewModel` con un repositorio fake, y explicas por qué es más rápido y confiable que probar contra la API real. El siguiente tema cubre cómo verificar que el estado correcto efectivamente se traduce en la UI renderizada. Fuente oficial: [Android Developers — Test ViewModel with coroutines](https://developer.android.com/kotlin/coroutines/test).
 
 **Errores comunes:** depender de la API real en un test de ViewModel, haciéndolo lento y frágil ante fallas externas; olvidar `runTest`, dejando que cualquier `delay()` real ralentice el test innecesariamente.
 
@@ -242,9 +242,9 @@ Agrega un segundo test que renderice `TarjetaTarea(titulo = "Pagar alquiler", co
 
 Documenta en una frase un ejemplo real (no el de este Tema) de un bug que un test de ViewModel no detectaría pero un test de Compose UI sí, basándote en composables de tu propio proyecto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya escribes un test de Compose UI que verifica lo efectivamente renderizado, cerrando la brecha que un test de ViewModel aislado no cubre. El siguiente tema cubre cómo validar flujos completos de usuario a través de múltiples pantallas, y cuándo preferir un fake sobre un mock. **Evidencia:** entrega el resultado de la simulación mostrando que el render con bug no coincide con el estado real aunque el ViewModel sea correcto, y explica por qué un test de ViewModel no detectaría ese bug específico. Fuente oficial: [Android Developers — Compose testing](https://developer.android.com/develop/ui/compose/testing).
+Ya escribes un test de Compose UI que verifica lo efectivamente renderizado, cerrando la brecha que un test de ViewModel aislado no cubre. El siguiente tema cubre cómo validar flujos completos de usuario a través de múltiples pantallas, y cuándo preferir un fake sobre un mock. Fuente oficial: [Android Developers — Compose testing](https://developer.android.com/develop/ui/compose/testing).
 
 **Errores comunes:** confiar únicamente en tests de ViewModel sin ningún test de Compose UI, dejando bugs de renderizado sin cobertura; buscar nodos por un identificador frágil (texto que cambia frecuentemente) en vez de un `testTag` estable cuando el texto no es relevante para la aserción.
 
@@ -365,9 +365,9 @@ Agrega un segundo flujo a `FlujoCrearTareaTest.kt` (con los mismos finders de `C
 
 Documenta en una tabla de tres filas (Test de ViewModel, Test de Compose UI aislado, Test E2E con Activity real) qué porcentaje aproximado de tu propia suite de tests debería corresponder a cada categoría, y justifica esa proporción según la velocidad relativa y el alcance de cobertura de cada una.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas qué cubre específicamente cada uno de los tres niveles de testing de este módulo, y decides con criterio entre un fake y un mock según la necesidad del test. Esto cierra el módulo de testing en Android; el siguiente módulo del track aborda performance y profiling. **Evidencia:** entrega el resultado del flujo completo con `createAndroidComposeRule` verificando la tarea creada y visible, y la comparación entre el fake reutilizable y el mock de verificación puntual, explicando cuándo cada uno es apropiado. Fuente oficial: [Android Developers — Compose testing cheatsheet](https://developer.android.com/develop/ui/compose/testing/testing-cheatsheet).
+Ya explicas qué cubre específicamente cada uno de los tres niveles de testing de este módulo, y decides con criterio entre un fake y un mock según la necesidad del test. Esto cierra el módulo de testing en Android; el siguiente módulo del track aborda performance y profiling. Fuente oficial: [Android Developers — Compose testing cheatsheet](https://developer.android.com/develop/ui/compose/testing/testing-cheatsheet).
 
 **Errores comunes:** usar un test end-to-end con Activity real para verificar lógica unitaria aislada, siendo más lento y menos apropiado que un test de ViewModel para ese propósito; forzar un mock a servir como fake reutilizable con estado complejo, complicando innecesariamente cada test individual.
 

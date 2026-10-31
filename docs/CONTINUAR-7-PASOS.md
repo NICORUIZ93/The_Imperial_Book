@@ -1,6 +1,8 @@
 # Continuación de la metodología de siete pasos
 
-Estado al 2026-10-30: **1100/1100 temas completos**. El punto de partida
+Estado al 2026-10-30: **1100/1100 temas completos**. El criterio
+`learningEvidence` se retiró el 2026-10-30 junto con la sección de evidencia por
+tema; el auditor mide 16 marcadores. El punto de partida
 histórico de esta deuda fue 496; los números «752/1007» de versiones anteriores
 de este documento quedaron obsoletos al fusionar la reescritura de Java.
 
@@ -20,8 +22,6 @@ midiendo presencia de marcadores sino sustancia— vive en
    - `execution`: acepta las CLI reales de operación (`ssh`, `systemctl`,
      `nginx`, `certbot`, `ufw`, `restic`, `redis-cli`, `openssl`, `k6`, …).
    - `deliberateFailure`: acepta «provocar deliberadamente» y el orden inverso.
-   - `learningEvidence`: acepta «entregá … del Paso N» y «Evidencia de
-     aprendizaje: entrega …».
 2. **Reescritura real de contenido** en temas que fallaban de verdad:
    `java/modulo-9.md` T3, `java/modulo-8.md` T2 y `java/modulo-15.md` T6.
 
@@ -39,8 +39,8 @@ aceptar una mención como si fuera una demostración, no.
 | `android/modulo-13` T5 | La demo ahora produce `README.md` con memoria, térmica y arranque; el auditor reconoce el artefacto |
 | `devops/modulo-5` T7 | El laboratorio arranca de carpeta vacía creando `deployment.mjs`, `package.json` y el test; se citó la fuente oficial |
 | `foundations/modulo-7` T5 | Se reconoce `dotnet` como ejecución y `.cs`/`.csproj` como artefactos; el ejemplo crea el proyecto desde cero |
-| `rutaflow/modulo-5` T5 | La evidencia pide la salida de las pruebas y el rechazo de `NoRoute` |
-| `spring-boot/modulo-15` T8 | La demo crea `Main.java` y `test.sh`, se citó la fuente y la evidencia pide la compilación |
+| `rutaflow/modulo-5` T5 | El cierre pide la salida de las pruebas y el rechazo de `NoRoute` |
+| `spring-boot/modulo-15` T8 | La demo crea `Main.java` y `test.sh`, se citó la fuente y el cierre pide la compilación |
 
 ## Cómo encontrar los temas exactos
 

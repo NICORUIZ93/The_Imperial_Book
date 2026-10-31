@@ -114,9 +114,9 @@ val resultado = transformar(5) { it * 3 }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función de orden superior que reciba una lista de `String` y una función `(String) -> Boolean`, devolviendo cuántos elementos cumplen esa condición. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras funciones que reciben comportamiento como parámetro, usas la sintaxis de lambda final, y confirmas que el compilador verifica la firma de tipo antes de ejecutar nada. El siguiente tema usa scope functions, frecuentemente combinadas con lambdas pasadas como parámetro. **Evidencia:** entrega el resultado de las dos pruebas pasando en verde, y el error real de compilación al pasar una firma de tipo incompatible. Fuente oficial: [Kotlin docs — Higher-order functions and lambdas](https://kotlinlang.org/docs/lambdas.html).
+Ya declaras funciones que reciben comportamiento como parámetro, usas la sintaxis de lambda final, y confirmas que el compilador verifica la firma de tipo antes de ejecutar nada. El siguiente tema usa scope functions, frecuentemente combinadas con lambdas pasadas como parámetro. Fuente oficial: [Kotlin docs — Higher-order functions and lambdas](https://kotlinlang.org/docs/lambdas.html).
 
 **Errores comunes:** olvidar que si la lambda es el único parámetro, los paréntesis vacíos son opcionales (`repetir(3) { ... }`, no `repetir(3) () { ... }`); declarar la firma de tipo con el orden de parámetros invertido respecto a como realmente se invoca la función.
 
@@ -243,9 +243,9 @@ val texto: String? = direccion ____ { d -> "Envía a: $d" }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un ejemplo de `apply` y un ejemplo de `let` sobre el mismo tipo de objeto, explicando en una frase qué diferencia sus resultados. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues las cuatro scope functions según qué devuelven y cómo referencian el receptor, confirmando con el compilador real qué ocurre al confundir `apply` con `run`. El siguiente tema modela estados exhaustivos con sealed classes, frecuentemente construidos dentro de un `apply`. **Evidencia:** entrega el resultado de las tres pruebas pasando en verde, y explica por qué cambiar `apply` por `run` en `construirConfig` rompe la compilación. Fuente oficial: [Kotlin docs — Scope functions](https://kotlinlang.org/docs/scope-functions.html).
+Ya distingues las cuatro scope functions según qué devuelven y cómo referencian el receptor, confirmando con el compilador real qué ocurre al confundir `apply` con `run`. El siguiente tema modela estados exhaustivos con sealed classes, frecuentemente construidos dentro de un `apply`. Fuente oficial: [Kotlin docs — Scope functions](https://kotlinlang.org/docs/scope-functions.html).
 
 **Errores comunes:** usar `apply` cuando en realidad se necesita el resultado de una transformación (debería ser `run` o `let`); anidar múltiples scope functions sin necesidad, dificultando saber a qué objeto se refiere `it`/`this` en cada nivel.
 
@@ -386,9 +386,9 @@ val sumaPrioridades = completadas.____(0) { acumulado, t -> acumulado + t.priori
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una sealed class de tres estados y un `when` exhaustivo que la maneje, seguido de un `filter`+`map` sobre una lista relacionada. Compara después contra los patrones de este módulo y del Módulo 0.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya modelas estados exhaustivos con sealed classes y encadenas `filter`/`map`/`fold` respetando el orden en que cada operación consume o descarta datos. El siguiente tema extiende las lambdas hacia funciones con receptor, la base de los DSL que verás en Gradle y Compose. **Evidencia:** entrega los resultados de `adultos`, `nombres_adultos` y `total` del Paso 4, y explica por qué invertir `map` antes de `filter` habría roto la compilación en Kotlin real. Fuente oficial: [Kotlin docs — Collection operations](https://kotlinlang.org/docs/collection-operations.html).
+Ya modelas estados exhaustivos con sealed classes y encadenas `filter`/`map`/`fold` respetando el orden en que cada operación consume o descarta datos. El siguiente tema extiende las lambdas hacia funciones con receptor, la base de los DSL que verás en Gradle y Compose. Fuente oficial: [Kotlin docs — Collection operations](https://kotlinlang.org/docs/collection-operations.html).
 
 **Errores comunes:** encadenar `map` antes de `filter` cuando el `map` descarta información que el `filter` necesita; usar `fold` sin un valor inicial explícito compatible con el tipo acumulado, produciendo un error de tipos.
 
@@ -516,9 +516,9 @@ fun configurar(bloque: Ajustes.____ Unit): Ajustes {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un builder simple (una clase con dos propiedades configurables) y una función que reciba una lambda con receptor sobre ese builder. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues una lambda con receptor de una lambda normal, y construyes una función tipo DSL donde el bloque interno omite el prefijo del receptor. Esto cierra el módulo de programación funcional; el siguiente módulo usa coroutines y Flow, donde varias funciones (`launch { }`, `flow { }`) también reciben lambdas con receptor sobre su scope correspondiente. **Evidencia:** entrega el resultado de la prueba con `miRuta` construida, y explica qué cambia exactamente al pasar de `T.() -> Unit` a `(T) -> Unit` en la firma de `ruta`. Fuente oficial: [Kotlin docs — Function literals with receiver](https://kotlinlang.org/docs/lambdas.html#function-literals-with-receiver).
+Ya distingues una lambda con receptor de una lambda normal, y construyes una función tipo DSL donde el bloque interno omite el prefijo del receptor. Esto cierra el módulo de programación funcional; el siguiente módulo usa coroutines y Flow, donde varias funciones (`launch { }`, `flow { }`) también reciben lambdas con receptor sobre su scope correspondiente. Fuente oficial: [Kotlin docs — Function literals with receiver](https://kotlinlang.org/docs/lambdas.html#function-literals-with-receiver).
 
 **Errores comunes:** confundir cuándo se necesita `T.()` (receptor implícito, sin prefijo) frente a `(T)` (parámetro explícito, con prefijo); anidar builders con receptores del mismo nombre de método, generando ambigüedad sobre a qué nivel de `this` se refiere una llamada.
 

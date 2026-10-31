@@ -101,9 +101,9 @@ Añade `cancel()` a throttle y ejecuta ambos cleanup al destruir la vista. **Pis
 
 Implementa opciones leading/trailing explícitas y escribe una tabla temporal de llamadas esperadas. Prueba cancelación, contexto y últimos argumentos; decide con evidencia un intervalo para búsqueda y mapa.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes limitar frecuencia según intención, no por moda. El siguiente tema evitará cálculos repetidos únicamente cuando pureza, repetición y medición justifiquen memoria adicional. **Evidencia:** entrega implementación y tests, demuestra líneas temporales de ambos patrones y explica la degradación al intercambiarlos.
+Ya puedes limitar frecuencia según intención, no por moda. El siguiente tema evitará cálculos repetidos únicamente cuando pureza, repetición y medición justifiquen memoria adicional.
 
 **Errores comunes:** confundir pausa con frecuencia; perder últimos argumentos; omitir cleanup; probar con espera real; aplicar throttle a una búsqueda sin aceptar resultados parciales.
 
@@ -189,9 +189,9 @@ Implementa recencia real: al leer una clave, elimínala y vuelve a insertarla. *
 
 Compara tiempo y memoria con 1, 100 y 10 000 combinaciones únicas. Decide cuándo no memoizar y documenta restricciones de claves, invalidación y tamaño.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes intercambiar cómputo por memoria de forma explícita y limitada. El siguiente tema moverá cómputo bloqueante a otro hilo cuando la primera ejecución siga siendo costosa. **Evidencia:** demuestra acierto, expulsión, medición y resultado obsoleto; explica la clave elegida.
+Ya puedes intercambiar cómputo por memoria de forma explícita y limitada. El siguiente tema moverá cómputo bloqueante a otro hilo cuando la primera ejecución siga siendo costosa.
 
 **Errores comunes:** memoizar funciones impuras; usar JSON con argumentos no serializables; permitir caché infinita; medir una llamada trivial; cachear red sin caducidad.
 
@@ -283,9 +283,9 @@ Cancela la solicitud anterior al iniciar una nueva y descarta mensajes con id ob
 
 Compara duración y responsividad con cálculo principal y worker, incluyendo coste de copiar datos. Prueba mensaje válido, error, cancelación y payload no clonable; decide el tamaño mínimo que justifica el worker.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo. El siguiente tema usará Performance para confirmar si este trabajo era realmente el cuello. **Evidencia:** demuestra contador fluido, resultado, cancelación y `document` ausente; explica el contrato de mensajes.
+Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo. El siguiente tema usará Performance para confirmar si este trabajo era realmente el cuello.
 
 **Errores comunes:** acceder al DOM; crear un worker por elemento pequeño; no terminarlo; enviar funciones o nodos no clonables; ignorar respuestas obsoletas y errores.
 
@@ -386,9 +386,9 @@ Aplica una sola optimización sugerida por el perfil y repite tres grabaciones. 
 
 Analiza scripting, rendering y paint por separado, identifica una tarea mayor de 50 ms y propone una hipótesis falsable. Valida en un perfil de CPU lenta y aclara límites de la medición local.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes tratar rendimiento como experimento reproducible. El siguiente tema conecta mediciones de laboratorio con LCP, CLS e INP observados en usuarios. **Evidencia:** entrega escenario, perfil y tabla antes/después, demuestra comparación inválida y explica por qué la mediana es más útil que una ejecución aislada.
+Ya puedes tratar rendimiento como experimento reproducible. El siguiente tema conecta mediciones de laboratorio con LCP, CLS e INP observados en usuarios.
 
 **Errores comunes:** grabar acciones distintas; cambiar varias cosas a la vez; confundir ancho del flame chart con frecuencia; optimizar una función pequeña ignorando render; generalizar un equipo rápido a todos los usuarios.
 
@@ -485,9 +485,9 @@ Relaciona cada métrica con un elemento o interacción concreta usando Performan
 
 Diseña un endpoint de telemetría con consentimiento, muestreo, versión de despliegue y sin información personal. Compara laboratorio, datos de campo y percentiles; define una acción concreta por métrica degradada.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes traducir rendimiento técnico a experiencia observable y priorizar con datos. El próximo módulo añadirá tipos para reducir estados inválidos antes de ejecutar. **Evidencia:** entrega instrumentación, tres métricas, CLS provocado/corregido y explica por qué una sesión local no representa a toda la población.
+Ya puedes traducir rendimiento técnico a experiencia observable y priorizar con datos. El próximo módulo añadirá tipos para reducir estados inválidos antes de ejecutar.
 
 **Errores comunes:** medir solo desarrollo; esperar INP sin interactuar; enviar datos sensibles; optimizar una media ignorando percentiles; tratar una métrica como causa en vez de señal.
 

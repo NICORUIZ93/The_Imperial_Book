@@ -94,9 +94,8 @@ Resultado esperado: CLI disponible.
 Pista: usa un bucket inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Sube, descarga y verifica un archivo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: claves y metadatos. Errores comunes: confundir key y ruta local. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html.
-### Fallo Deliberado: NoSuchBucket — Bucket no existe
 
 ### Tema 2: Claves y metadatos
 
@@ -163,7 +162,7 @@ Pista: compará los dos `head-object` (con y sin `--content-type`) campo por cam
 #### Paso 6 · Práctica independiente
 Corregí el objeto sin volver a subir el archivo: usá `aws s3 cp` del objeto a sí mismo con
 `--metadata-directive REPLACE` y el `--content-type image/jpeg` correcto.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `head-object` de antes y después del arreglo, mostrando el cambio de `ContentType`.
 Siguiente paso: versionado. Errores comunes: confiar en la extensión del archivo en vez de
 declarar el tipo explícito. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html.
@@ -234,7 +233,7 @@ Pista: diagnosticalo comparando el ID roto contra la salida completa de `list-ob
 #### Paso 6 · Práctica independiente
 Restaurá la versión correcta como versión actual subiéndola de nuevo con `aws s3 cp`, y
 confirmá con `list-object-versions` que ahora hay 3 versiones — ninguna se borró.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá las 2 salidas de `list-object-versions` (antes y después de restaurar) y el contenido
 de `recuperada.jpg`. Siguiente paso: clases de almacenamiento. Errores comunes: creer que sin
 versionado activo la foto equivocada se podría haber recuperado — sin este paso, la
@@ -273,8 +272,6 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Propón una política de ciclo de vida para evidencias antiguas. Registra edad, coste de acceso y retención requerida; diferencia lo que valida el emulador de la transición y facturación que exigirán una prueba real.
-**Evidencia de aprendizaje:** entrega la salida de `get-bucket-lifecycle-configuration` del Paso 4, el fallo de `StorageClass` inválida del Paso 5, y la configuración ya corregida con `GLACIER` del Paso 6.
-
 #### Paso 4 · Demostración guiada
 ```bash
 cat > lifecycle.json << 'EOF'
@@ -299,7 +296,7 @@ provocar el fallo deliberado — a diferencia de un error que aparecería recié
 #### Paso 6 · Práctica independiente
 Corregí la regla con una clase válida (`GLACIER` en vez de `STANDARD_IA`) y confirmá el cambio
 con `get-bucket-lifecycle-configuration`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la regla JSON, el error del valor inválido y la configuración final corregida.
 Siguiente paso: seguridad. Errores comunes: optimizar solo el costo de almacenamiento sin
 considerar el costo y tiempo de recuperación. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html.
@@ -344,8 +341,6 @@ evento escrito en `ShipmentEvents`, para que el cliente vea su prueba de entrega
 
 ---
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
-**Evidencia de aprendizaje:** entrega la salida de la URL firmada funcionando dentro de los 120 segundos del Paso 4, el fallo de firma vencida del Paso 5, y la URL nueva con `--expires-in 900` todavía funcionando después de ese plazo.
-
 #### Paso 4 · Demostración guiada
 **Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
 ```bash
@@ -363,7 +358,7 @@ el fallo deliberado — la firma vencida se rechaza aunque el objeto siga existi
 #### Paso 6 · Práctica independiente
 Generá la URL de nuevo, esta vez con `--expires-in 900` (15 minutos), y confirmá que esta sí
 sigue funcionando pasados los 120 segundos originales.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la respuesta exitosa, la respuesta de la URL vencida (un error de firma, no un 404) y
 la URL nueva funcionando. Siguiente paso: colas. Errores comunes: generar una URL pre-firmada
 sin expiración corta, o hacer público el bucket completo en vez de una URL puntual. Fuente

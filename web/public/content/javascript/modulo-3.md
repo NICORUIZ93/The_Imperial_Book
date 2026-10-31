@@ -79,9 +79,9 @@ Crea dos guías y modifica `guiaProto.describir`. **Pista:** predice cuáles obs
 
 Implementa `imprimirCadena(objeto)` que liste cada nivel hasta `null`, sin usar `__proto__`. Explica en qué nivel vive `toString`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya entiendes herencia como delegación dinámica. El siguiente tema expresa el mismo mecanismo con sintaxis de clases. **Evidencia:** demuestra el resultado inicial, el shadowing, el cambio compartido y la cadena completa. Fuente oficial: [MDN — inheritance and prototype chain](https://developer.mozilla.org/es/docs/Web/JavaScript/Inheritance_and_the_prototype_chain).
+Ya entiendes herencia como delegación dinámica. El siguiente tema expresa el mismo mecanismo con sintaxis de clases. Fuente oficial: [MDN — inheritance and prototype chain](https://developer.mozilla.org/es/docs/Web/JavaScript/Inheritance_and_the_prototype_chain).
 
 **Errores comunes:** confundir delegación con copia; modificar `Object.prototype`; usar `__proto__`; asumir que escribir una propiedad cambia el prototipo.
 
@@ -175,9 +175,9 @@ Agrega `EnvioRefrigerado` con temperatura y extiende la descripción. **Pista:**
 
 Refactoriza prioridad como objeto `politicaEntrega` inyectado en `Envio`. Compara pruebas, extensión y posibilidad de combinar refrigeración con prioridad; justifica herencia o composición.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya sabes que `class` organiza prototipos y que `extends` expresa un contrato fuerte. El siguiente tema presenta valores derivados con getters. **Evidencia:** demuestra el resultado, el fallo antes de `super` y ambas alternativas de diseño. Fuente oficial: [MDN — classes](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Classes).
+Ya sabes que `class` organiza prototipos y que `extends` expresa un contrato fuerte. El siguiente tema presenta valores derivados con getters. Fuente oficial: [MDN — classes](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Classes).
 
 **Errores comunes:** usar `this` antes de `super`; construir jerarquías profundas; confundir “tiene” con “es”; olvidar que los métodos continúan en el prototipo.
 
@@ -266,9 +266,9 @@ Agrega el getter `cantidadPaquetes`. **Pista:** derívalo de `#paquetes.length`;
 
 Agrupa entregas por estado usando `{ [estado]: cantidad }` o `Object.groupBy` si tu runtime lo soporta. Implementa una alternativa compatible y compara el resultado sin mutar entradas.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues propiedades derivadas de operaciones que cambian estado. El siguiente tema impone esa frontera con campos privados. **Evidencia:** demuestra el resultado `3.5`, la contradicción deliberada, su corrección y la agrupación. Fuente oficial: [MDN — getters](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/get).
+Ya distingues propiedades derivadas de operaciones que cambian estado. El siguiente tema impone esa frontera con campos privados. Fuente oficial: [MDN — getters](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/get).
 
 **Errores comunes:** ejecutar red dentro de un getter; almacenar un valor derivado; crear setters genéricos sin invariantes; asumir soporte universal de APIs recientes.
 
@@ -368,9 +368,9 @@ Agrega `cancelar()` permitido solo desde `EN_RUTA`. **Pista:** concentra la tran
 
 Modela `CREADA → ASIGNADA → EN_RUTA → ENTREGADA` con métodos de dominio. Prueba cada transición válida y dos saltos inválidos sin añadir un setter público.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Completaste objetos y clases con invariantes impuestas por el motor. El siguiente módulo transforma colecciones de entregas. **Evidencia:** demuestra el resultado, la segunda confirmación, el `SyntaxError`, la corrupción de `_estado` y la máquina completa. Fuente oficial: [MDN — private elements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements).
+Completaste objetos y clases con invariantes impuestas por el motor. El siguiente módulo transforma colecciones de entregas. Fuente oficial: [MDN — private elements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements).
 
 **Errores comunes:** confundir `_` con privacidad; probar sintaxis privada en el mismo archivo principal; exponer setters que evaden reglas; intentar acceder a privados desde subclases.
 
@@ -490,8 +490,8 @@ Agrega a `Ruta` un generador `*conDistancia(km)` que entregue pares `[parada, km
 #### Paso 6 · Práctica independiente
 Crea un iterable infinito de números de guía (`BO-000001`, `BO-000002`, …) y toma solo los primeros 5 con desestructuración, explicando por qué no se cuelga.
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque el protocolo de iteración es la base de `for...of`, `Array.from`, `Promise.all` con iterables y los iteradores asíncronos de streams.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque el protocolo de iteración es la base de `for...of`, `Array.from`, `Promise.all` con iterables y los iteradores asíncronos de streams.
 **Fuente oficial:** [MDN: Iteration protocols](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Iteration_protocols), [MDN: Symbol](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Symbol).
 **Conceptos clave:** `Symbol`, `Symbol.for`, símbolos bien conocidos, protocolo de iteración, iterador, `next()`, generador, `Symbol.toStringTag`.
 **Cuándo no usarlo:** si tu clase solo envuelve un array, devolver `this.#paradas[Symbol.iterator]()` o exponer una copia es más simple que escribir `next()` a mano.

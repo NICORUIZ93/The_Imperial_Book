@@ -152,9 +152,9 @@ export class TareasService { /* ... */ }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con `providedIn: 'root'` y dos componentes con un test `toBe(...)` que confirme su identidad compartida. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con una comparación real de identidad de objeto, que `providedIn: 'root'` garantiza un singleton real compartido entre cualquier número de componentes. El siguiente tema confirma con el error real `NG0203` por qué `inject()` requiere un contexto de inyección válido, a diferencia de la inyección por constructor. **Evidencia:** entrega el resultado de ambos tests en verde, y la ruptura de identidad que produce el fallo deliberado al registrar un provider local. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — Providers](https://angular.dev/guide/di/dependency-injection-providers).
+Ya confirmas, con una comparación real de identidad de objeto, que `providedIn: 'root'` garantiza un singleton real compartido entre cualquier número de componentes. El siguiente tema confirma con el error real `NG0203` por qué `inject()` requiere un contexto de inyección válido, a diferencia de la inyección por constructor. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — Providers](https://angular.dev/guide/di/dependency-injection-providers).
 
 **Errores comunes:** asumir que cualquier servicio decorado con `@Injectable` es automáticamente un singleton, sin verificar que `providedIn: 'root'` esté realmente presente; registrar accidentalmente el mismo servicio también en `providers` de un componente, creando una instancia local inesperada que rompe la identidad compartida.
 
@@ -264,9 +264,9 @@ ____(injector, () => inject(TareasService));
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función que invoque `inject()` fuera de contexto y un test que confirme el error real `NG0203`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con el error real `NG0203`, que `inject()` requiere un contexto de inyección activo, mientras la inyección por constructor lo obtiene automáticamente de Angular. El siguiente tema confirma con overrides reales de provider por nivel cómo la jerarquía de inyectores resuelve dependencias. **Evidencia:** entrega el resultado del test en verde, y el error real `NG0203` que produce el fallo deliberado al invocar `inject()` sin contexto. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — inject()](https://angular.dev/guide/di/dependency-injection#injecting-services).
+Ya confirmas, con el error real `NG0203`, que `inject()` requiere un contexto de inyección activo, mientras la inyección por constructor lo obtiene automáticamente de Angular. El siguiente tema confirma con overrides reales de provider por nivel cómo la jerarquía de inyectores resuelve dependencias. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — inject()](https://angular.dev/guide/di/dependency-injection#injecting-services).
 
 **Errores comunes:** invocar `inject()` dentro de un callback asíncrono (como un `setTimeout` o un `.then()`) sin capturar la dependencia antes, produciendo `NG0203` porque ese callback ya no ejecuta dentro del contexto de inyección original; confundir `NG0203` (falta contexto) con `NullInjectorError` (falta provider), dos errores reales pero distintos.
 
@@ -396,9 +396,9 @@ npx ng test --watch=false
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con provider local y un test `not.toBe(...)` que confirme su instancia distinta de la raíz. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con comparaciones reales de identidad (`toBe`/`not.toBe`), la regla exacta de resolución jerárquica: el inyector más cercano al punto de solicitud gana. El siguiente y último tema de este módulo confirma con `NullInjectorError` real por qué un `InjectionToken` sin provider produce un fallo explícito. **Evidencia:** entrega el resultado de ambos tests en verde, y la identidad compartida inesperada que produce el fallo deliberado al quitar el provider local. Fuentes oficiales: [Angular — Hierarchical injectors](https://angular.dev/guide/di/hierarchical-dependency-injection).
+Ya confirmas, con comparaciones reales de identidad (`toBe`/`not.toBe`), la regla exacta de resolución jerárquica: el inyector más cercano al punto de solicitud gana. El siguiente y último tema de este módulo confirma con `NullInjectorError` real por qué un `InjectionToken` sin provider produce un fallo explícito. Fuentes oficiales: [Angular — Hierarchical injectors](https://angular.dev/guide/di/hierarchical-dependency-injection).
 
 **Errores comunes:** esperar una única instancia global de un servicio provisto a nivel de ruta o componente, sin considerar que ese registro local crea una instancia independiente; olvidar que un override local "gana" incluso si el mismo servicio también está registrado en `root`.
 
@@ -523,9 +523,9 @@ export const API_URL = new ____<string>('API_URL');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `InjectionToken` sin provider y un test que confirme tanto el `NullInjectorError` real como su resolución con `{ optional: true }`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `NullInjectorError` real y su resolución real mediante `@Optional()`, que un `InjectionToken` sin provider es un fallo explícito y diagnosticable, no un valor silenciosamente ausente. Esto cierra el módulo de servicios e inyección de dependencias; como siguiente paso, continúa con el módulo 4 de este track (routing y guards). **Evidencia:** entrega el resultado de ambos tests en verde, y el mensaje real de `NullInjectorError` que produce el fallo deliberado sin el provider registrado. Fuentes oficiales: [Angular — InjectionToken](https://angular.dev/guide/di/dependency-injection-providers#using-an-injectiontoken-object).
+Ya confirmas, con `NullInjectorError` real y su resolución real mediante `@Optional()`, que un `InjectionToken` sin provider es un fallo explícito y diagnosticable, no un valor silenciosamente ausente. Esto cierra el módulo de servicios e inyección de dependencias; como siguiente paso, continúa con el módulo 4 de este track (routing y guards). Fuentes oficiales: [Angular — InjectionToken](https://angular.dev/guide/di/dependency-injection-providers#using-an-injectiontoken-object).
 
 **Errores comunes:** declarar un `InjectionToken` y olvidar registrar su provider en `app.config.ts`, descubriendo el `NullInjectorError` solo en tiempo de ejecución; usar `@Optional()` para ocultar un error de configuración real que debería ser obligatorio y explícito.
 

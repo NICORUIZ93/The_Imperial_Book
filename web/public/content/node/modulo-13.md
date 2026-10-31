@@ -117,7 +117,7 @@ Pista: reemplazá `CreateEnvioInput.parse(value)` por `value as CreateEnvioInput
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `CreateEnvioInput.parse(value)`, y agregá una unión discriminada (`CrearEnvioResultado`) que modele explícitamente los casos `creado`, `guia-duplicada` y `direccion-invalida`, con un `switch` exhaustivo que el compilador verifique.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el parser con zod del Paso 4, el cast silencioso que oculta datos corruptos del Paso 5, y la unión discriminada exhaustiva del Paso 6; explicá por qué un cast de TypeScript nunca reemplaza la validación en tiempo de ejecución que un parser real sí hace. Siguiente paso: estudia por qué un contrato HTTP es comportamiento, no solo documentación. Errores comunes: usar `any` o un cast amplio para "resolver" un error de tipos sin validar realmente, confiar en que el frontend ya validó el mismo dato, y no distinguir entre un error de formato y una regla de negocio. Fuentes oficiales: https://zod.dev/ y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables.
 
 ### Tema 2: Un contrato HTTP es comportamiento, no solo documentación
@@ -228,7 +228,7 @@ Pista: cambiá la implementación real para que `POST /envios` devuelva `200` en
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando una prueba de contrato en CI que contraste la respuesta real contra el OpenAPI en cada build, confirmando que ahora esa divergencia rompe el build inmediatamente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el contrato OpenAPI del Paso 4, la divergencia silenciosa entre código real y documento del Paso 5, y la prueba de contrato en CI del Paso 6; explicá por qué "escribir el documento" no es suficiente sin un mecanismo que lo verifique continuamente contra el comportamiento real. Siguiente paso: estudia cómo reintentar sin duplicar el efecto. Errores comunes: generar OpenAPI y nunca verificarlo contra tráfico real, cambiar el comportamiento de un endpoint sin actualizar su contrato, y reutilizar un campo existente con un significado nuevo en vez de agregar uno nuevo. Fuentes oficiales: https://swagger.io/specification/ y https://www.rfc-editor.org/rfc/rfc9457.
 
 ### Tema 3: Reintentar sin duplicar el efecto
@@ -338,7 +338,7 @@ Pista: implementá la verificación como "buscar la clave, y si no existe, inser
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo la verificación e inserción a una única transacción con restricción única, y repetí la prueba de dos requests en paralelo, confirmando que ahora solo uno de los dos efectivamente crea el envío.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la transacción atómica del Paso 4, la condición de carrera provocada en el Paso 5, y la corrección verificada en paralelo del Paso 6; explicá por qué "buscar y luego insertar" en dos pasos separados nunca es seguro ante requests concurrentes, sin importar cuán rápido parezca en pruebas secuenciales. Siguiente paso: estudia webhooks verificables y recuperación por reconciliación. Errores comunes: verificar y efectuar el cambio en pasos no atómicos, reintentar con una clave nueva en vez de reutilizar la original, y no definir una expiración razonable para las claves de idempotencia. Fuentes oficiales: https://docs.stripe.com/idempotency y https://node-postgres.com/features/transactions.
 
 ### Tema 4: Webhooks verificables y recuperación por reconciliación
@@ -446,7 +446,7 @@ Pista: reemplazá `timingSafeEqual(recibidaBuf, esperada)` por `recibidaBuf.toSt
 #### Paso 6 · Práctica independiente
 Restaurá `timingSafeEqual` y agregá el rechazo de timestamps fuera de una ventana de 5 minutos respecto de la hora actual. Comprobá que una firma válida con un timestamp viejo se rechaza con un mensaje distinto del de una firma inválida, y documentá por qué ambos casos necesitan códigos de respuesta diferentes.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la salida de la firma válida y los dos casos alterados del Paso 4, la comparación no segura del Paso 5 y su explicación, y el rechazo por ventana de tiempo del Paso 6; explicá por qué `timingSafeEqual` existe específicamente para evitar el canal lateral de temporización. Como cierre del módulo, integrá validación, contratos, idempotencia y webhooks en la API de RutaFlow. Errores comunes: comparar firmas con `===` en vez de una comparación en tiempo constante, no rechazar timestamps fuera de ventana, y reintentar indefinidamente un webhook que responde `400`. Fuentes oficiales: https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b y https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries.
 
 ## Revisión oficial de plataforma — julio de 2026
@@ -603,14 +603,14 @@ Pista: elimina un campo requerido para provocar un fallo deliberado, lee el diag
 #### Paso 6 · Práctica independiente
 Añade POST, respuesta Problem Details y un ejemplo de consumidor; comprueba compatibilidad al agregar un campo opcional.
 
-#### Paso 7 · Cierre y evidencia
-Conserva el contrato, el log y una captura; como siguiente paso conecta el lint al CI. **Evidencia:** entrega la salida correcta, el fallo provocado y una explicación de qué regla de OpenAPI corregiste. Errores comunes: documentación desactualizada, tipos incompatibles, omitir errores y cambiar campos sin deprecación. Fuentes oficiales: https://spec.openapis.org/oas/latest.html y https://redocly.com/docs/cli/.
+#### Paso 7 · Cierre
+Conserva el contrato, el log y una captura; como siguiente paso conecta el lint al CI. Fuentes oficiales: https://spec.openapis.org/oas/latest.html y https://redocly.com/docs/cli/.
 
 ## Atlas completo de temas oficiales
 
 Derivado de la [documentación oficial](https://nodejs.org/api/), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 46 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Runtime | `event loop` · `timers` · `microtasks` · `EventEmitter` · `buffers` · `streams` · `backpressure` · `ESM y CommonJS` | API |
 | Sistema | `filesystem` · `paths y URLs` · `procesos` · `señales` · `child_process` · `worker_threads` · `cluster` · `permission model` | API |

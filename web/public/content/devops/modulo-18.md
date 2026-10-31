@@ -148,9 +148,9 @@ Añade `PasswordAuthentication yes` al final de `/etc/ssh/sshd_config` y comprue
 
 Mueve SSH al 2222 sin quedarte fuera: crea `/etc/systemd/system/ssh.socket.d/10-puerto.conf` con `[Socket]`, `ListenStream=` (vacío, borra el 22) y `ListenStream=2222`; ejecuta `systemctl daemon-reload`, `systemctl restart ssh.socket`, `sudo ufw allow 2222/tcp`, verifica con `ss -H -tulpn 'sport = :2222'` y una sesión nueva, y solo entonces retira la regla del 22. Documenta por qué `Port 2222` en `sshd_config` no mueve el puerto: el que escucha es `ssh.socket`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya tienes un servidor donde el acceso depende de una clave, el firewall niega por defecto y los parches se aplican solos, demostrado con la configuración efectiva. **Siguiente paso:** publicarlo con dominio y TLS, en el Tema 2. **Evidencia de aprendizaje:** entrega `sshd -T` con `passwordauthentication no` y `permitrootlogin no`, `ufw status verbose` con su política, el `Connection timed out` del bloqueo y la última línea del registro de `unattended-upgrades`.
+Ya tienes un servidor donde el acceso depende de una clave, el firewall niega por defecto y los parches se aplican solos, demostrado con la configuración efectiva. **Siguiente paso:** publicarlo con dominio y TLS, en el Tema 2.
 
 **Errores comunes:** editar `sshd_config` sin comprobar el valor efectivo; habilitar ufw antes de permitir el 22; suponer que `systemctl restart ssh` aplica un cambio de puerto bajo socket activation; dejar `KbdInteractiveAuthentication yes`; instalar fail2ban sin `backend = systemd` y no ver ningún intento.
 
@@ -283,9 +283,9 @@ curl -sI --resolve app.tudominio.com:443:203.0.113.10 https://app.tudominio.com 
 
 Pasa el registro a naranja, pon el modo en `Full (strict)` y confirma que el sitio sigue en 200 y que el origen conserva su certificado. Luego cambia a `Flexible` a propósito: el navegador muestra `ERR_TOO_MANY_REDIRECTS` y `curl -sIL https://app.tudominio.com` termina en `curl: (47) Maximum (50) redirects followed`. Explica el bucle (Cloudflare habla HTTP con el origen, nginx responde 301 a HTTPS, Cloudflare vuelve a pedir por HTTP) y vuelve a `Full (strict)`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya emites, sirves y renuevas TLS con un dominio real, y distingues "el temporizador existe" de "la renovación funciona". **Siguiente paso:** desplegar la aplicación detrás de ese nginx, en el Tema 3. **Evidencia de aprendizaje:** entrega `openssl x509 -noout -dates`, la cabecera HSTS, el `Timeout during connect (likely firewall problem)` de la renovación rota y el `(47) Maximum (50) redirects followed` del bucle.
+Ya emites, sirves y renuevas TLS con un dominio real, y distingues "el temporizador existe" de "la renovación funciona". **Siguiente paso:** desplegar la aplicación detrás de ese nginx, en el Tema 3.
 
 **Errores comunes:** cerrar el 80 tras emitir el certificado; confundir el certificado del borde con el del origen; dejar `Flexible` y culpar a nginx del bucle; usar `--force-renewal` en cada prueba y agotar el límite semanal; añadir `includeSubDomains` sin controlar todos los subdominios.
 
@@ -502,9 +502,9 @@ curl -s http://127.0.0.1:3000/health
 
 Añade al script un paso que rechace el despliegue si `/root/app/VERSION` está vacío, y un `ExecStartPre=/usr/bin/test -r /srv/rutaflow/current/VERSION` en la unidad. Verifica con `systemd-analyze verify` provocando el caso vacío. Documenta por qué `Restart=on-failure` no evita este fallo: reinicia, el permiso sigue mal y termina en `start request repeated too quickly`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya despliegas artefactos versionados, sirves por proxy y vuelves atrás cambiando un symlink, con el journal como fuente de verdad. **Siguiente paso:** que ese servidor sobreviva a la pérdida de datos, en el Tema 4. **Evidencia de aprendizaje:** entrega el despliegue con `{"status":"ok","version":"v2"}`, el rollback con `v2` tras el intento `v3`, y el journal con `status=200/CHDIR` junto al comando que lo corrigió.
+Ya despliegas artefactos versionados, sirves por proxy y vuelves atrás cambiando un symlink, con el journal como fuente de verdad. **Siguiente paso:** que ese servidor sobreviva a la pérdida de datos, en el Tema 4.
 
 **Errores comunes:** copiar sobre la carpeta en uso; desplegar como root y arrancar como `rutaflow`; usar `ln -sfn` sin `mv -Tf`; exponer Node en `0.0.0.0:3000`; confiar en `Restart=on-failure` como sustituto de un healthcheck.
 
@@ -629,9 +629,9 @@ Comprueba que una corrupción se detecta: guarda aparte un archivo de `/srv/back
 
 Copia el repositorio a otro medio con `restic copy --from-repo /srv/backups/restic-repo --repo /mnt/offsite/restic-repo` y ejecuta allí `restic check --read-data`. Escribe el runbook con los pasos exactos, el RTO medido y quién tiene la contraseña; ensaya el simulacro sin mirar este Tema.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya tienes respaldos cifrados, verificados, con retención y un simulacro que arranca el servicio y mide el tiempo. **Siguiente paso:** el laboratorio integra los cuatro Temas sobre un único servidor. **Evidencia de aprendizaje:** entrega `restic snapshots`, el `no errors were found` del `check`, el `ls: cannot access` del enlace roto, el `Fatal: repository contains errors` de la corrupción y el tiempo medido junto a tu RPO/RTO.
+Ya tienes respaldos cifrados, verificados, con retención y un simulacro que arranca el servicio y mide el tiempo. **Siguiente paso:** el laboratorio integra los cuatro Temas sobre un único servidor.
 
 **Errores comunes:** respaldar el symlink y no el contenido; guardar la contraseña solo en el servidor que puede perderse; no probar nunca la restauración; confundir deduplicación con copias independientes; retener un único snapshot y quedarse sin histórico.
 

@@ -87,9 +87,9 @@ Ejecuta `kubectl rollout history deployment/mi-api` para ver el historial de rev
 
 Cambia `replicas: 3` a `replicas: 5` y aplica de nuevo; confirma con `kubectl get pods` que Kubernetes agrega 2 Pods nuevos sin tocar los 3 existentes, demostrando que un reescalado no dispara un rollout completo como un cambio de imagen sí lo hace.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya distingues qué nivel de la jerarquía consultar para cada pregunta de diagnóstico, y cómo un Deployment gestiona rollout y rollback. El siguiente tema da una dirección estable de red a estos Pods efímeros. **Evidencia:** entrega la salida de `kubectl get replicasets` antes y después del cambio de imagen, y el resultado del rollback tras el fallo con una imagen inexistente. Fuente oficial: [Kubernetes — Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/).
+Ya distingues qué nivel de la jerarquía consultar para cada pregunta de diagnóstico, y cómo un Deployment gestiona rollout y rollback. El siguiente tema da una dirección estable de red a estos Pods efímeros. Fuente oficial: [Kubernetes — Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/).
 
 **Errores comunes:** editar un ReplicaSet directamente en vez de gestionar todo a través del Deployment; esperar que un reescalado (`replicas`) dispare el mismo proceso de rolling update que un cambio de imagen.
 
@@ -175,9 +175,9 @@ Cambia el `type` del Service a `NodePort` y localiza el puerto asignado con `kub
 
 Crea un segundo Deployment con una etiqueta `app` distinta y un segundo Service apuntando a él; confirma con `kubectl get endpoints` que cada Service enruta exclusivamente a los Pods de su propio selector, sin mezclarse entre sí.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya expones aplicaciones de forma estable sin depender de IPs de Pods efímeros. El siguiente tema externaliza configuración y secretos hacia los Pods. **Evidencia:** entrega ambas respuestas de `curl` (antes y después de eliminar un Pod) y el resultado de `Endpoints: <none>` con un selector incorrecto. Fuente oficial: [Kubernetes — Service](https://kubernetes.io/docs/concepts/services-networking/service/).
+Ya expones aplicaciones de forma estable sin depender de IPs de Pods efímeros. El siguiente tema externaliza configuración y secretos hacia los Pods. Fuente oficial: [Kubernetes — Service](https://kubernetes.io/docs/concepts/services-networking/service/).
 
 **Errores comunes:** que el `selector` del Service no coincida exactamente con las etiquetas de los Pods; asumir que `LoadBalancer` funciona igual en un clúster local (`kind`) que en un proveedor de nube real, donde sí aprovisiona un balanceador externo real.
 
@@ -255,9 +255,9 @@ Crea un Secret desde un archivo en vez de un literal (`kubectl create secret gen
 
 Investiga (documentando sin necesariamente configurarlo en este laboratorio) qué es el cifrado en reposo (`encryption at rest`) de `etcd` en Kubernetes, y explica en 3-4 líneas por qué es el complemento necesario para que un Secret nativo ofrezca protección real más allá de la separación semántica.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya externalizas configuración y entiendes la limitación real de los Secrets nativos sin cifrado adicional. El siguiente tema cubre los comandos esenciales para diagnosticar cualquier objeto de un clúster. **Evidencia:** entrega como resultado el valor del Secret codificado y decodificado, y explica la reversibilidad trivial del base64. Fuente oficial: [Kubernetes — Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
+Ya externalizas configuración y entiendes la limitación real de los Secrets nativos sin cifrado adicional. El siguiente tema cubre los comandos esenciales para diagnosticar cualquier objeto de un clúster. Fuente oficial: [Kubernetes — Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
 
 **Errores comunes:** compartir un YAML de Secret asumiendo que está protegido por estar en base64; almacenar datos verdaderamente críticos solo en Secrets nativos sin cifrado en reposo ni gestor externo.
 
@@ -333,9 +333,9 @@ Ejecuta `kubectl get pods -o wide` y compara la información adicional (IP, nodo
 
 Investiga y documenta la diferencia entre `kubectl logs <pod>` y `kubectl logs <pod> --previous`, y en qué situación de diagnóstico real usarías la segunda variante.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya diagnosticas cualquier objeto del clúster con las herramientas correctas para cada pregunta. El siguiente tema aísla lógicamente los objetos de un clúster compartido. **Evidencia:** entrega la salida de `describe` mostrando el evento de recursos insuficientes de `imposible`, y el error explícito al pedir logs de un Pod inexistente. Fuente oficial: [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/).
+Ya diagnosticas cualquier objeto del clúster con las herramientas correctas para cada pregunta. El siguiente tema aísla lógicamente los objetos de un clúster compartido. Fuente oficial: [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/).
 
 **Errores comunes:** ejecutar comandos destructivos sin verificar antes `kubectl config current-context`, arriesgando operar sobre el clúster equivocado; recurrir a `logs` antes de revisar `describe`, perdiendo la sección de eventos que suele explicar el problema más directamente.
 
@@ -411,9 +411,9 @@ Ejecuta `kubectl get pods --all-namespaces` (o `-A`) y confirma que ves ambos Po
 
 Aplica una `ResourceQuota` simple al namespace `staging` limitando el número máximo de Pods a 2, e intenta crear un tercer Pod ahí; documenta el mensaje de error que Kubernetes devuelve al exceder la cuota.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aíslas lógicamente entornos dentro del mismo clúster físico, y verificas siempre el namespace antes de operaciones destructivas. El siguiente tema cubre objetos especializados más allá de Deployment. **Evidencia:** entrega la salida de `kubectl get pods --all-namespaces` mostrando ambos `mi-api` sin conflicto, y explica el fallo de haber borrado el Pod del namespace equivocado. Fuente oficial: [Kubernetes — Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
+Ya aíslas lógicamente entornos dentro del mismo clúster físico, y verificas siempre el namespace antes de operaciones destructivas. El siguiente tema cubre objetos especializados más allá de Deployment. Fuente oficial: [Kubernetes — Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
 
 **Errores comunes:** asumir que el namespace por defecto del contexto actual es siempre `default`, después de haberlo cambiado en una sesión anterior; ejecutar comandos destructivos sin `-n` explícito, confiando en el namespace implícito del contexto.
 
@@ -514,9 +514,9 @@ Ejecuta `kubectl create job --from=cronjob/respaldo-nocturno respaldo-manual` pa
 
 Diseña (en un manifiesto YAML, sin necesariamente desplegarlo en este laboratorio) un StatefulSet de 3 réplicas para una base de datos ficticia, y explica en un comentario qué nombres ordinales recibiría cada réplica y por qué eso es distinto de un Deployment equivalente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya eliges el objeto correcto según el patrón real de tu carga de trabajo, no solo Deployment para todo. El siguiente tema añade almacenamiento persistente real para los casos que lo necesitan. **Evidencia:** entrega la salida de `kubectl get jobs` mostrando `COMPLETIONS: 1/1`, y el resultado de los reintentos automáticos del Job que falla deliberadamente. Fuente oficial: [Kubernetes — Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/).
+Ya eliges el objeto correcto según el patrón real de tu carga de trabajo, no solo Deployment para todo. El siguiente tema añade almacenamiento persistente real para los casos que lo necesitan. Fuente oficial: [Kubernetes — Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/).
 
 **Errores comunes:** usar un Deployment para una tarea que debe terminar, dejando el Pod corriendo indefinidamente sin propósito; olvidar `restartPolicy: Never` u `OnFailure` en un Job, que por defecto en otros contextos podría no ser el esperado.
 
@@ -619,9 +619,9 @@ Ejecuta `kubectl get pv` y localiza el Persistent Volume que fue creado automát
 
 Investiga con `kubectl get storageclass` qué StorageClass es la predeterminada en tu clúster local (`kind` normalmente incluye una llamada `standard`), y documenta qué cambiaría si tu clúster tuviera múltiples StorageClasses disponibles (por ejemplo, una para SSD rápido y otra para almacenamiento económico).
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya separas la solicitud de almacenamiento de una aplicación de los detalles físicos de dónde vive ese almacenamiento. Esto cierra el módulo de fundamentos de Kubernetes; el siguiente módulo profundiza en configuración avanzada del clúster. **Evidencia:** entrega el contenido del archivo persistente antes y después de eliminar y recrear el Pod, y el resultado del Pod en `Pending` tras eliminar el PVC. Fuente oficial: [Kubernetes — Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/).
+Ya separas la solicitud de almacenamiento de una aplicación de los detalles físicos de dónde vive ese almacenamiento. Esto cierra el módulo de fundamentos de Kubernetes; el siguiente módulo profundiza en configuración avanzada del clúster. Fuente oficial: [Kubernetes — Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/).
 
 **Errores comunes:** eliminar un PVC pensando que solo afecta al Pod actual, sin considerar que cualquier Pod futuro que lo referencie quedará sin poder programarse; asumir que todos los `accessModes` permiten múltiples Pods escribiendo simultáneamente (`ReadWriteOnce` no lo permite).
 

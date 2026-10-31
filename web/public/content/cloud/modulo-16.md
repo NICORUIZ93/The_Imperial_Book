@@ -73,7 +73,7 @@ Resultado esperado: `describe-execution` sobre esa ejecución muestra claramente
 Pista: quitá el estado `Notificar` del JSON (dejá `GuardarEvento` con `"End": true`) y volvé a crear la state machine con otro nombre — ese es el fallo deliberado: el flujo "funciona" (guarda el evento), pero la notificación al cliente desaparece silenciosamente porque el estado que la ejecutaba nunca llegó a declararse.
 #### Paso 6 · Práctica independiente
 Agregale un `TimeoutSeconds: 10` al estado `GuardarEvento`, y documentá qué pasaría si DynamoDB tardara más de eso en responder (pista: Step Functions marcaría la ejecución como fallida por `States.Timeout`, no se quedaría esperando indefinidamente).
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la state machine completa ejecutándose, el estado faltante del Paso 5 y el timeout del Paso 6; explicá qué visibilidad ganaste frente a la misma lógica escrita como código imperativo en `confirmar-entrega`. Siguiente paso: errores. Errores comunes: estados sin timeout y efectos duplicados. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html.
 
 ### Tema 2: Choice state, Retry y Catch
@@ -118,7 +118,7 @@ Resultado esperado: la definición se actualiza sin error — ahora un fallo tra
 Pista: corré una ejecución con un `shipmentId` que provoque un error no cubierto por `Retry` (por ejemplo, un `Item` mal formado que DynamoDB rechaza de inmediato con `DynamoDB.AmazonDynamoDBException`) — ese es el fallo deliberado: sin un `Catch` que cubra ese error específico (o `States.ALL`), la ejecución completa queda en estado `FAILED` sin ninguna rama de recuperación, perdiendo visibilidad de qué pasó exactamente.
 #### Paso 6 · Práctica independiente
 Agregá una rama de compensación real: que `RegistrarFalloEntrega` publique también en una cola SQS de reintentos manuales (`sqs:sendMessage` como integración directa) en vez de solo devolver un `Pass` con un motivo fijo, para que alguien pueda reprocesar esa entrega más tarde.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `Retry`/`Catch` agregados, el fallo sin cobertura del Paso 5, y la compensación real del Paso 6; explicá por qué `Catch: States.ALL` sin pensar qué hacer después solo oculta el error, no lo resuelve. Siguiente paso: elección de servicio. Errores comunes: Catch demasiado amplio y reintentos infinitos. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html.
 **Conceptos clave:** lógica condicional y manejo de errores declarados, no anidados en código imperativo.
 
@@ -162,7 +162,7 @@ Resultado esperado: se crea sin error — `ConfirmarEntregaFlow` encaja perfecto
 Pista: ese es justo el fallo deliberado de coste que advierte este Tema — si hubieras creado `ConfirmarEntregaFlow` como `--type STANDARD` (el tipo por defecto si no especificás `--type`), pagarías por transición de estado en un flujo de altísima frecuencia y corta duración, el peor caso de uso para Standard. Corregilo siempre especificando `--type EXPRESS` para este flujo específico.
 #### Paso 6 · Práctica independiente
 Para el planificador de rutas del Módulo 14 (larga duración, baja frecuencia, necesita auditoría completa si falla a mitad de camino), razoná por qué Standard es la elección correcta ahí, exactamente al revés que para `ConfirmarEntregaFlow` — y por qué, si el planificador fuera solo "leer de una cola y mandar a una Lambda sin ninguna condición", ni siquiera necesitaría Step Functions: EventBridge Pipes alcanzaría.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `ConfirmarEntregaFlow` creado como Express, el riesgo de coste de usar Standard por defecto del Paso 5, y la justificación opuesta para el planificador del Paso 6; explicá qué pregunta (duración y frecuencia) decide entre los tres. Siguiente paso: eventos. Errores comunes: orquestar todo y no medir latencia. Fuente oficial: https://aws.amazon.com/step-functions/.
 **Conceptos clave:** elegir según duración y frecuencia de ejecución, o simplificar si no se necesita orquestación compleja.
 

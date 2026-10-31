@@ -84,9 +84,7 @@ Pista: en un tercer test, simulá tocar el botón "Marcar revisado" con `tester.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando `await tester.pump()` inmediatamente después del `tap`, y confirmá que ahora la aserción sobre el ícono "revisado" pasa correctamente.
 
-**Evidencia de aprendizaje:** entrega unit test y widget test, fallo por pump faltante detectado y corrección confirmada.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el unit test y el widget test del Paso 4, el fallo por `pump()` faltante del Paso 5, y la corrección del Paso 6; explicá por qué un widget test necesita simular explícitamente el ciclo de reconstrucción que un dispositivo real haría automáticamente. Siguiente paso: estudia cómo mockear dependencias con mocktail. Errores comunes: olvidar `tester.pump()` tras simular una interacción, escribir un widget test para lógica que en realidad es pura, y buscar widgets por texto visible cuando ese texto puede cambiar por copywriting. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/overview.
 **¿Por qué es importante?** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real.
 
@@ -162,9 +160,7 @@ Pista: en un segundo test, llamá a `vm.cargar()` sin haber configurado ningún 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando el `when(...)` correspondiente antes de llamar a `cargar()`, y agregá un tercer test que configure el mock para lanzar una excepción (`thenThrow`), confirmando que `EnviosViewModel` maneja ese error sin crashear.
 
-**Evidencia de aprendizaje:** entrega mock configurado, error por mock sin configurar detectado y test del camino de error.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el mock configurado del Paso 4, el error por mock sin configurar del Paso 5, y el test del camino de error del Paso 6; explicá por qué que `mocktail` falle explícitamente ante un método sin configurar ayuda a detectar tests incompletos. Siguiente paso: estudia integration tests para el flujo completo end-to-end. Errores comunes: depender de una API real en un test que debería estar aislado, no configurar el comportamiento de un método del mock antes de invocarlo, y mockear solo el camino feliz sin probar el camino de error. Fuentes oficiales: https://pub.dev/packages/mocktail y https://docs.flutter.dev/cookbook/testing/unit/mocking.
 **¿Por qué es importante?** Aislar dependencias externas con `mocktail` hace los tests más rápidos y confiables, sin depender de la disponibilidad de servicios externos reales.
 
@@ -253,9 +249,7 @@ Pista: reemplazá `await tester.pumpAndSettle()` después de tocar "Confirmar" p
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `pumpAndSettle()`, y agregá un segundo integration test que confirme el camino de error (PIN incorrecto), verificando que el mensaje de error aparece en el dispositivo real.
 
-**Evidencia de aprendizaje:** entrega integration test del flujo feliz, falla intermitente detectada y test del camino de error.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el integration test del flujo feliz del Paso 4, la falla intermitente provocada en el Paso 5, y el test del camino de error del Paso 6; explicá por qué `pumpAndSettle()` es necesario específicamente en integration tests donde las animaciones reales ocurren, a diferencia de un widget test simulado donde `pump()` simple suele bastar. Siguiente paso: cerrá el módulo integrando unit tests, widget tests e integration tests en la suite completa de RutaFlow. Errores comunes: usar `pump()` simple en vez de `pumpAndSettle()` cuando hay animaciones reales en curso, escribir únicamente integration tests sin ninguna base de widget tests más rápidos, y no cubrir el camino de error en los flujos críticos. Fuentes oficiales: https://docs.flutter.dev/testing/integration-tests y https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html.
 **¿Por qué es importante?** Un integration test valida la integración completa contra un dispositivo real, necesario para verificar flujos críticos de principio a fin que los widget tests aislados no cubren.
 

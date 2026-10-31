@@ -98,9 +98,9 @@ Exige el patrón `RF-` y añade casos válido e inválido. **Pista:** nombra las
 
 Construye una tabla de casos con números vacíos, espacios, prefijo incorrecto y valor válido. Verifica el mensaje de error cuando sea parte útil del contrato y demuestra que cada prueba funciona aisladamente con un filtro de Vitest.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes convertir una regla de dominio en feedback rápido y determinista. El siguiente tema aislará colaboraciones y tiempo sin reemplazar la lógica que sí puede probarse directamente. **Evidencia:** entrega producción y prueba, demuestra salida verde y diff rojo, y explica las tres fases de la primera prueba.
+Ya puedes convertir una regla de dominio en feedback rápido y determinista. El siguiente tema aislará colaboraciones y tiempo sin reemplazar la lógica que sí puede probarse directamente.
 
 **Errores comunes:** ejecutar la función antes de `toThrow`; compartir estado mutable; probar detalles privados; corregir la expectativa sin investigar la regresión; escribir casos que dependen de orden o red.
 
@@ -194,9 +194,9 @@ Inyecta un fake repositorio en memoria que filtre tres entregas y usa un spy ún
 
 Prueba cancelación de debounce y dos instancias independientes. Para cada sustitución, escribe por qué la dependencia real sería lenta, no determinista o difícil de provocar; elimina mocks que no aporten ese aislamiento.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes controlar colaboraciones y tiempo sin convertir el test en teatro de mocks. El siguiente tema aplicará el mismo límite a HTTP, simulando el contrato de `fetch`. **Evidencia:** demuestra la llamada única, el argumento final y el fallo por reloj contaminado, y clasifica `buscar`, el repositorio en memoria y un método real como mock, fake o spy.
+Ya puedes controlar colaboraciones y tiempo sin convertir el test en teatro de mocks. El siguiente tema aplicará el mismo límite a HTTP, simulando el contrato de `fetch`.
 
 **Errores comunes:** olvidar restaurar timers; mockear la unidad bajo prueba; verificar llamadas internas sin valor de negocio; no avanzar el reloj; construir mocks que no respetan la interfaz real.
 
@@ -301,9 +301,9 @@ Añade un caso `mockRejectedValue(new TypeError("Failed to fetch"))` y conserva 
 
 Prueba un cliente con dos fallos transitorios y éxito usando `mockRejectedValueOnce` y `mockResolvedValueOnce`. Verifica número de intentos y añade una prueba de integración separada contra un servidor controlado para no depender exclusivamente de la imitación.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes simular la frontera HTTP conservando su contrato esencial. El siguiente tema automatizará análisis, formato y cobertura sin confundir métricas con corrección. **Evidencia:** demuestra éxito, 404, fallo de red y mock mal formado; explica por qué restaurar `fetch` es obligatorio.
+Ya puedes simular la frontera HTTP conservando su contrato esencial. El siguiente tema automatizará análisis, formato y cobertura sin confundir métricas con corrección.
 
 **Errores comunes:** hacer red real en unit tests; omitir `ok`; simular `json` como dato; dejar mocks activos; probar solo éxito; crear una respuesta tan incompleta que ya no representa la API.
 
@@ -405,9 +405,9 @@ Abre el reporte HTML, localiza una rama roja de `crearGuia` y escribe un caso si
 
 Define un umbral razonado para `src/dominio/**`, crea un archivo deliberadamente ejecutado sin aserciones y explica por qué su cobertura no prueba corrección. Documenta qué comandos ejecutará CI y cuánto tardan.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya puedes interpretar tres controles complementarios y mantenerlos reproducibles. El próximo módulo medirá rendimiento con la misma disciplina: hipótesis, métrica y comparación. **Evidencia:** entrega configuraciones, salida de los tres comandos, diagnóstico `no-unused-vars` y una rama cubierta con una aserción significativa.
+Ya puedes interpretar tres controles complementarios y mantenerlos reproducibles. El próximo módulo medirá rendimiento con la misma disciplina: hipótesis, métrica y comparación.
 
 **Errores comunes:** hacer competir ESLint y Prettier por formato; ejecutar herramientas globales con versiones distintas; perseguir 100% sin aserciones; ignorar ramas; corregir warnings desactivando reglas sin justificar.
 

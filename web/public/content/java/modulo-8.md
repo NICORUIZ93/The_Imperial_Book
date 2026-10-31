@@ -38,10 +38,9 @@ Pista: fija deliberadamente una versión inexistente de `jackson-databind` (por 
 #### Paso 6 · Práctica independiente
 Crea el mismo proyecto pero con Gradle (`gradle init`) y declara la misma dependencia en `build.gradle.kts`; compara ambas sintaxis lado a lado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambos proyectos (Maven y Gradle), la dependencia fijada y el fallo de resolución provocado; como siguiente paso estudia el ciclo de vida de build. Errores comunes: versiones flotantes, scopes incorrectos, plugin sin fijar y módulos acoplados circularmente. Fuentes oficiales: https://maven.apache.org/guides/ y https://docs.gradle.org/current/userguide/.
 **¿Por qué es importante?** Porque un build reproducible es parte del producto y de la cadena de suministro.
-**Evidencia de aprendizaje:** entrega build verde, fallo corregido, árbol multi-módulo y explicación.
 **Conceptos clave:** declaración de dependencias, XML declarativo frente a DSL de Kotlin.
 
 Fijar versiones exactas de cada dependencia es un requisito del proyecto integrador de este track: un build que resuelve a una versión distinta en cada máquina no es reproducible ni auditable.
@@ -105,10 +104,9 @@ Pista: cambia deliberadamente el scope de JUnit de `test` a la ausencia de scope
 #### Paso 6 · Práctica independiente
 Agrega una segunda dependencia real (por ejemplo `jackson-databind`) sin scope, verifica que sí queda en el jar por ser necesaria en runtime, y documenta la diferencia frente a una dependencia de test.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda ambos listados de `jar tf` (con y sin scope test) y el pom.xml modificado; como siguiente paso divide el proyecto en módulos. Errores comunes: declarar dependencias de test sin scope, asumir que `package` no ejecuta `test` antes, y omitir `clean` entre builds con cambios de dependencias. Fuentes oficiales: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
 **¿Por qué es importante?** Porque un artefacto de producción con dependencias de testing embebidas aumenta su superficie de ataque sin necesidad.
-**Evidencia de aprendizaje:** entrega dos listados de `jar tf` comparados y la explicación de la diferencia.
 **Conceptos clave:** fases secuenciales, `mvn clean compile test package`, dependencias por scope.
 
 Maven define un ciclo de vida de build compuesto por fases secuenciales estándar y predefinidas: `mvn clean compile test package` ejecuta, en orden, la limpieza de artefactos de builds anteriores, la compilación del código fuente, la ejecución de las pruebas, y el empaquetado del resultado final (típicamente un `.jar`), donde cada fase posterior implica automáticamente la ejecución de todas las fases anteriores necesarias (invocar `package` directamente ejecuta también `compile` y `test` primero, sin necesidad de invocarlas explícitamente por separado).
@@ -140,7 +138,6 @@ Un proyecto de un solo módulo crece hasta que cualquier cambio en la lógica de
 #### Paso 3 · Teoría, modelo mental y analogía
 Un proyecto multi-módulo agrupa subproyectos bajo un POM padre; cada módulo declara explícitamente sus propias dependencias, incluidas las dependencias hacia otros módulos del mismo proyecto. La analogía: departamentos con presupuesto propio que deben solicitar formalmente los recursos de otro departamento, en vez de compartirlo todo automáticamente.
 
-**Evidencia de aprendizaje:** entrega los tres módulos, el fallo de compilación provocado y su corrección.
 **Conceptos clave:** separación de responsabilidades entre módulos, dependencias explícitas entre ellos.
 
 Un proyecto multi-módulo divide una aplicación grande en subproyectos independientes que se compilan como parte de un mismo build coordinado, pero con límites explícitos entre ellos: un módulo `core` conteniendo la lógica de dominio central, y un módulo `api` que depende de `core` para exponer esa lógica a través de HTTP, con la configuración raíz compartida (`build.gradle.kts` en la raíz del proyecto) coordinando cómo se construyen ambos módulos juntos, mientras cada módulo mantiene su propio conjunto de dependencias específicas, declaradas explícitamente según lo que ese módulo particular efectivamente necesita, sin heredar automáticamente dependencias de otros módulos que no declaró explícitamente requerir.
@@ -181,7 +178,7 @@ Pista: elimina deliberadamente la dependencia de `api` hacia `core` en su pom.xm
 #### Paso 6 · Práctica independiente
 Agrega un tercer módulo `infra` que dependa de `api`, y documenta por qué `core` no debería depender nunca de `infra` ni de `api`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda la estructura de los tres módulos, el pom.xml raíz y el fallo de compilación provocado al romper la dependencia; como siguiente paso conecta el multi-módulo a un pipeline de CI. Errores comunes: dependencias circulares entre módulos, olvidar `-am` al compilar un módulo específico, y permitir que `core` dependa de módulos que deberían depender de él. Fuentes oficiales: https://maven.apache.org/guides/mini/guide-multiple-modules.html.
 **¿Por qué es importante?** Porque separar módulos de build impone, a nivel de herramienta, los mismos límites arquitectónicos que el equipo diseñó a nivel de capas.
 
@@ -242,10 +239,9 @@ Pista: declara la misma dependencia (`jackson-databind`) en ambos proyectos —e
 #### Paso 6 · Práctica independiente
 Toma cualquier comando `mvn` de los temas anteriores de este módulo y tradúcelo a su equivalente Gradle usando la tabla del Paso 3; ejecútalo en tu proyecto Gradle y confirma que produce el mismo efecto. Entrega al menos tres pares de comandos equivalentes con su salida.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guarda los dos proyectos (Maven y Gradle), los dos `.jar` generados y tu tabla de al menos tres comandos equivalentes verificados; como siguiente paso, cualquier tema del track que muestre un comando `mvn` ya sabes traducirlo a Gradle. Errores comunes: usar `gradle`/`mvn` global en vez del wrapper; buscar `target/` en un proyecto Gradle (está en `build/`); asumir que un comando de un sistema funciona en el otro. Fuentes oficiales: [Maven — Guides](https://maven.apache.org/guides/), [Gradle — User Manual](https://docs.gradle.org/current/userguide/userguide.html) y [Gradle — Migrating from Maven](https://docs.gradle.org/current/userguide/migrating_from_maven.html).
 **¿Por qué es importante?** Porque en un trabajo real no eliges la herramienta de build: la heredas del proyecto. Operar ambas con fluidez es lo que te hace productivo en cualquier repositorio Java desde el primer día.
-**Evidencia de aprendizaje:** entrega los dos proyectos construidos, ambos `.jar`, y tres comandos equivalentes Maven↔Gradle verificados.
 **Conceptos clave:** equivalencia de comandos, wrapper (`./gradlew`, `./mvnw`), convención (Maven) frente a configuración programable (Gradle).
 
 Este tema comparativo es la base para el proyecto integrador de este track: el build debe ser reproducible con la herramienta que el proyecto adopte, y la evidencia se entrega con el wrapper, no con una instalación global.

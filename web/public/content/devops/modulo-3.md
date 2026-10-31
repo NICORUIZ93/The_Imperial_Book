@@ -86,9 +86,9 @@ Agrega un segundo servicio `cache` (imagen `redis:7-alpine`) con su propio healt
 
 Reduce `retries` a `1` en el healthcheck de `db` y observa qué pasa si la base de datos tarda más de lo esperado en arrancar; explica por qué Compose marcaría el servicio como `unhealthy` en vez de seguir esperando indefinidamente.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya coordinas el arranque real de servicios dependientes, no solo su orden. El siguiente tema externaliza configuración sensible fuera del archivo Compose versionado. **Evidencia:** entrega los logs de `app` mostrando que arrancó después de `db healthy`, y el resultado del fallo deliberado sin `condition`. Fuente oficial: [Docker Compose — healthcheck](https://docs.docker.com/reference/compose-file/services/#healthcheck).
+Ya coordinas el arranque real de servicios dependientes, no solo su orden. El siguiente tema externaliza configuración sensible fuera del archivo Compose versionado. Fuente oficial: [Docker Compose — healthcheck](https://docs.docker.com/reference/compose-file/services/#healthcheck).
 
 **Errores comunes:** confundir `depends_on` simple con una garantía de disponibilidad real; configurar un healthcheck que solo verifica que el proceso existe, no que el servicio funciona.
 
@@ -165,9 +165,9 @@ Agrega una segunda variable `APP_PORT` con valor por defecto `3000` en el `compo
 
 Intenta (deliberadamente, para comprobarlo) hacer `git add .env` en este proyecto de prueba y confirma que `.gitignore` lo bloquea; explica en un comentario qué comando usarías si necesitaras forzar su versionado por error, y por qué nunca deberías hacerlo con secretos reales.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya separas configuración versionable de secretos reales, con valores por defecto explícitos. El siguiente tema explica cómo los servicios de un mismo proyecto Compose se descubren entre sí por nombre. **Evidencia:** entrega la salida de `docker compose config` con y sin `.env` presente, mostrando el valor real y el valor por defecto respectivamente. Fuente oficial: [Docker Compose — variables de entorno](https://docs.docker.com/compose/environment-variables/set-environment-variables/).
+Ya separas configuración versionable de secretos reales, con valores por defecto explícitos. El siguiente tema explica cómo los servicios de un mismo proyecto Compose se descubren entre sí por nombre. Fuente oficial: [Docker Compose — variables de entorno](https://docs.docker.com/compose/environment-variables/set-environment-variables/).
 
 **Errores comunes:** versionar accidentalmente el `.env` real en vez de `.env.example`; asumir que Compose siempre falla si una variable no está definida, cuando en realidad puede quedar vacía silenciosamente sin un valor por defecto o una declaración obligatoria.
 
@@ -254,9 +254,9 @@ Detén ambos proyectos (`docker compose down` en cada carpeta) y verifica con `d
 
 Investiga (y documenta sin necesariamente ejecutarlo) cómo conectarías explícitamente ambos proyectos si necesitaras que se comunicaran, usando una red externa compartida declarada con `networks: external: true` en ambos `compose.yaml`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya explicas por qué el descubrimiento por nombre funciona dentro de un proyecto y no entre proyectos distintos. El siguiente tema activa servicios opcionales solo cuando se necesitan. **Evidencia:** entrega el `ping` exitoso dentro del mismo proyecto y el fallo de resolución entre proyectos distintos, con su explicación. Fuente oficial: [Docker Compose — Networking](https://docs.docker.com/compose/how-tos/networking/).
+Ya explicas por qué el descubrimiento por nombre funciona dentro de un proyecto y no entre proyectos distintos. El siguiente tema activa servicios opcionales solo cuando se necesitan. Fuente oficial: [Docker Compose — Networking](https://docs.docker.com/compose/how-tos/networking/).
 
 **Errores comunes:** asumir que dos proyectos Compose corriendo a la vez comparten red automáticamente; nombrar servicios de forma ambigua asumiendo que el aislamiento por proyecto los protege de cualquier confusión humana también.
 
@@ -338,9 +338,9 @@ Agrega un tercer servicio `generador` con `profiles: ["seed"]`, y confirma que `
 
 Cambia `admin-db` para que pertenezca a dos perfiles simultáneamente (`profiles: ["debug", "seed"]`) y confirma que se levanta al activar cualquiera de los dos perfiles por separado.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya activas selectivamente servicios opcionales desde un único archivo compartido por todo el equipo. Esto cierra el módulo de Docker Compose; el siguiente módulo construye el pipeline de integración continua que usará estos mismos servicios. **Evidencia:** entrega la salida de `docker compose ps --services` sin perfil y con `--profile debug` activado, y explica la diferencia observada. Fuente oficial: [Docker Compose — profiles](https://docs.docker.com/compose/how-tos/profiles/).
+Ya activas selectivamente servicios opcionales desde un único archivo compartido por todo el equipo. Esto cierra el módulo de Docker Compose; el siguiente módulo construye el pipeline de integración continua que usará estos mismos servicios. Fuente oficial: [Docker Compose — profiles](https://docs.docker.com/compose/how-tos/profiles/).
 
 **Errores comunes:** indentar `profiles` incorrectamente, aplicándolo sin querer al archivo completo en vez de a un servicio específico; olvidar documentar qué perfiles existen, dejando que el equipo no sepa que una herramienta opcional está disponible.
 

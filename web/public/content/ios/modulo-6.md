@@ -42,10 +42,9 @@ Resultado esperado: `EnvioLocal` queda declarado como entidad persistente comple
 Pista: guardá un `EnvioLocal` sin pasar por el `ModelContext` (por ejemplo, creándolo con `let envio = EnvioLocal(...)` e intentando leer sus cambios desde otra parte de la app sin haberlo insertado) — ese es el fallo deliberado: sin `context.insert(envio)`, ese objeto nunca se persiste ni es observable por `@Query` (Tema 2), aunque Swift no se queje en tiempo de compilación.
 #### Paso 6 · Práctica independiente
 Agregá una relación `Conductor` → `[EnvioLocal]` (un conductor con varias confirmaciones pendientes de sincronizar), y documentá qué pasaría si dos conductores compartieran el mismo dispositivo sin que el modelo distinga a cuál pertenece cada `EnvioLocal`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `EnvioLocal` declarado y configurado en el `ModelContainer` del Paso 4, el objeto nunca insertado del Paso 5, y la relación Conductor-EnvioLocal del Paso 6; explicá qué código de infraestructura te ahorró la macro `@Model` frente a Core Data manual. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 **¿Por qué es importante?** Porque `@Model` genera toda la infraestructura de persistencia a partir de una declaración simple, pero un objeto creado sin pasar por `context.insert()` nunca se persiste ni es observable, aunque el compilador no lo señale.
-**Evidencia de aprendizaje:** entrega `EnvioLocal` configurado en el `ModelContainer`, el objeto nunca insertado reproducido, y la relación Conductor-EnvioLocal agregada.
 **Conceptos clave:** declaración de esquema mediante macros, sin configuración manual de `NSManagedObject`.
 
 ```swift
@@ -123,10 +122,9 @@ Resultado esperado: llamar `confirmarOffline(guia: "RF-7001", pin: "111222")` ha
 Pista: modificá `envio.sincronizado = true` directamente sobre un objeto `EnvioLocal` obtenido de `pendientes`, pero sin llamar `try? context.save()` después — ese es el fallo deliberado: el cambio puede no persistir de inmediato al almacenamiento subyacente aunque la vista ya lo refleje en memoria; si la app se cierra antes del guardado automático, ese cambio podría perderse.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 agregando `try? context.save()` después de marcar `sincronizado = true`, y agregá un botón "sincronizar todo" que recorra `pendientes`, llame a `confirmarEntrega` (Módulo 5) por cada uno, y marque `sincronizado = true` solo si la llamada real tuvo éxito.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la lista reactiva del Paso 4, el guardado no persistido del Paso 5, y la sincronización real agregada del Paso 6; explicá por qué `@Query` resuelve el mismo problema que un `Flow` reactivo de Room en Android. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 **¿Por qué es importante?** Porque `@Query` mantiene la vista sincronizada automáticamente con los datos persistidos, pero modificar un objeto sin confirmar con `context.save()` puede perderse si la app se cierra antes del guardado automático.
-**Evidencia de aprendizaje:** entrega la lista reactiva funcionando, el guardado no persistido reproducido, y la sincronización real agregada con verificación de éxito.
 **Conceptos clave:** observación automática de la fuente de verdad persistida.
 
 ```swift
@@ -228,9 +226,7 @@ Pista: cambiá `fotoPath` de opcional a requerido (`var fotoPath: String` sin `?
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `fotoPath` opcional, y documentá en qué escenario este mismo proyecto preferiría Core Data directo en vez de SwiftData (pista: si necesitaras una migración con lógica de transformación de datos muy específica que SwiftData todavía no expone).
 
-**Evidencia de aprendizaje:** entrega la migración liviana del Paso 4, el campo requerido que rompe datos existentes reproducido, y el escenario documentado donde preferirías Core Data directo.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la migración liviana del Paso 4, el campo requerido que rompe datos existentes del Paso 5, y el escenario de Core Data del Paso 6; explicá por qué un campo opcional es casi siempre más seguro que uno requerido al evolucionar un modelo con datos reales ya guardados. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 **¿Por qué es importante?** Porque un campo opcional permite una migración liviana que preserva los datos ya guardados en el dispositivo, mientras que un campo requerido sin valor por defecto rompe la lectura de los registros existentes.
 

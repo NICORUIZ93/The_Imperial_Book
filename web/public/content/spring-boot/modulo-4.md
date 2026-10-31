@@ -164,9 +164,9 @@ mvn test -Dtest=SecurityFilterChainTest           # Maven
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `SecurityFilterChain` con una ruta pública y el resto protegido, y un test `MockMvc` que confirme `200` y `401` respectivamente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya declaras una frontera de seguridad explícita entre rutas públicas y protegidas, confirmada con `MockMvc` real contra el contexto de seguridad completo. El siguiente tema reemplaza la autenticación básica por un filtro JWT real. **Evidencia:** entrega el resultado de los 3 tests en verde, y el resultado del fallo deliberado mostrando `401` esperado vs `200` obtenido. Fuente oficial: [Spring Security — Authorize HTTP requests](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html).
+Ya declaras una frontera de seguridad explícita entre rutas públicas y protegidas, confirmada con `MockMvc` real contra el contexto de seguridad completo. El siguiente tema reemplaza la autenticación básica por un filtro JWT real. Fuente oficial: [Spring Security — Authorize HTTP requests](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html).
 
 **Errores comunes:** usar `anyRequest().permitAll()` por error durante desarrollo y olvidar revertirlo; no probar explícitamente el caso sin autenticación, asumiendo que la configuración es correcta sin confirmarlo.
 
@@ -381,9 +381,9 @@ public void eliminar(@PathVariable Long id) { }
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme `401` sin token, `403` con rol insuficiente, y `200` con el rol correcto, usando un `JwtService` real. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya validas identidad mediante un JWT real firmado criptográficamente, y proteges endpoints por rol con `@PreAuthorize`, confirmando los tres códigos de estado relevantes con tokens genuinamente generados. El siguiente tema aborda dos protecciones adicionales específicas del navegador: CORS y CSRF. **Evidencia:** entrega el resultado de los 3 tests de `JwtFilterTest` en verde, y el resultado del fallo deliberado mostrando el rechazo por firma inválida. Fuente oficial: [Spring Security — JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
+Ya validas identidad mediante un JWT real firmado criptográficamente, y proteges endpoints por rol con `@PreAuthorize`, confirmando los tres códigos de estado relevantes con tokens genuinamente generados. El siguiente tema aborda dos protecciones adicionales específicas del navegador: CORS y CSRF. Fuente oficial: [Spring Security — JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
 
 **Errores comunes:** guardar el JWT completo en logs de la aplicación, exponiendo el token de sesión de un usuario si esos logs se filtran; confundir `401` (no autenticado) con `403` (autenticado pero sin permiso) al diagnosticar un fallo de acceso.
 
@@ -531,9 +531,9 @@ config.setAllowedOrigins(List.of("____"));
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración de `CorsConfigurationSource` con un origen permitido, y explica en una frase por qué una API JWT stateless generalmente deshabilita CSRF. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya configuras CORS para restringir qué orígenes de navegador consumen la API, y explicas por qué CSRF es una protección específica de sesiones basadas en cookies que una API JWT stateless generalmente no necesita. Esto cierra el módulo de Spring Security; el siguiente módulo aborda cómo documentar y versionar esta misma API. **Evidencia:** entrega el resultado de ambos tests de `CorsConfigTest` en verde, y el resultado del fallo deliberado mostrando el rechazo esperado convertido en aceptación indebida. Fuente oficial: [Spring — CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html).
+Ya configuras CORS para restringir qué orígenes de navegador consumen la API, y explicas por qué CSRF es una protección específica de sesiones basadas en cookies que una API JWT stateless generalmente no necesita. Esto cierra el módulo de Spring Security; el siguiente módulo aborda cómo documentar y versionar esta misma API. Fuente oficial: [Spring — CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html).
 
 **Errores comunes:** desactivar CSRF sin entender el tipo de transporte de sesión que la aplicación realmente usa; configurar CORS con `allowedOrigins("*")` en producción, permitiendo que cualquier sitio consuma la API desde un navegador.
 
@@ -629,9 +629,9 @@ Pista: provoca el fallo deliberado reemplazando temporalmente `externalAddresses
 #### Paso 6 · Práctica independiente
 Agrega casos para IPv6 privado y redirects, manteniendo el servidor de prueba local. Configura el cliente de tu proyecto integrador a través de una clase equivalente y confirma qué clientes pasan por él. Escribe de memoria una prueba con control positivo y negativo: ambos son necesarios para distinguir bloqueo de un servidor que nunca estuvo disponible.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechazar destinos internos y de metadatos de nube, confirmado con un test local que comprueba el rechazo y un control positivo. Esto cierra el módulo de Spring Security; el siguiente módulo aborda cómo centralizar y validar la configuración del resto de la aplicación. **Evidencia:** entrega el test `SafeClientTest` en verde bloqueando loopback, y el control positivo contra el servidor local. Fuente oficial: [Spring Boot 4.1 Release Notes — InetAddressFilter](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes).
+Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechazar destinos internos y de metadatos de nube, confirmado con un test local que comprueba el rechazo y un control positivo. Esto cierra el módulo de Spring Security; el siguiente módulo aborda cómo centralizar y validar la configuración del resto de la aplicación. Fuente oficial: [Spring Boot 4.1 Release Notes — InetAddressFilter](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes).
 
 **Errores comunes:** confiar únicamente en una validación de string de la URL contra una allowlist, vulnerable a DNS rebinding; no probar explícitamente el rango de metadatos de nube (`169.254.169.254`), uno de los destinos más valiosos para un atacante en un entorno cloud real.
 
@@ -640,7 +640,6 @@ Ya cerrás una vulnerabilidad SSRF real configurando el cliente HTTP para rechaz
 ---
 
 La configuración de CORS, CSRF e InetAddressFilter de este tema es la que necesitará el frontend y los webhooks que consuma el proyecto integrador de este track (microservicio productivo, Módulo 12).
-**Evidencia de aprendizaje:** entrega la salida de `mvn test` con `SafeClientTest` en verde (bloqueo por `FilteredHostException` y el control positivo recibiendo 200), y la explicación de por qué cambiar `externalAddresses()` por `all()` en el Paso 5 hace que la petición al servidor local deje de bloquearse.
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
 
 #### Paso 1 · Objetivo y preparación
@@ -832,9 +831,9 @@ if (!email.equals(emailValido) || !encoder.____(password, hashGuardado)) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `AuthController` con `POST /api/auth/login` que verifique credenciales y emita un JWT, más un test `MockMvc` que confirme el flujo login → `401` sin token → `200` con token. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya tienes el flujo de autenticación completo de punta a punta en Spring: `/api/auth/login` verifica credenciales y emite el JWT, y `/api/usuarios` lo exige vía `Authorization: Bearer`, confirmado con `MockMvc` real encadenando los tres pasos. Es el mismo recorrido que protege el proyecto integrador (microservicio productivo, Módulo 12). **Evidencia:** entrega los 2 tests de `LoginFlowTest` en verde y el resultado del fallo deliberado mostrando el login rechazado. Fuente oficial: [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
+Ya tienes el flujo de autenticación completo de punta a punta en Spring: `/api/auth/login` verifica credenciales y emite el JWT, y `/api/usuarios` lo exige vía `Authorization: Bearer`, confirmado con `MockMvc` real encadenando los tres pasos. Es el mismo recorrido que protege el proyecto integrador (microservicio productivo, Módulo 12). Fuente oficial: [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
 
 **Errores comunes:** devolver el hash de la contraseña en la respuesta de `/api/usuarios`; responder distinto ante email inexistente vs contraseña incorrecta (filtra qué correos existen); olvidar permitir `/api/auth/**` en el `SecurityFilterChain` (el propio login quedaría bloqueado con `401`).
 

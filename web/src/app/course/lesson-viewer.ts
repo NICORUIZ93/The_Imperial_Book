@@ -816,7 +816,6 @@ export class LessonViewerComponent implements OnDestroy {
       card.classList.toggle('expanded', index === 0);
       card.appendChild(body);
       this.addTopicLearningSupport(body, heading);
-      this.addTopicEvidence(card, heading, index);
       this.addTopicFocusLink(card, index);
     });
   }
@@ -847,38 +846,6 @@ export class LessonViewerComponent implements OnDestroy {
       if (label) label.textContent = expanded ? 'Ocultar tema' : 'Abrir tema';
     });
     requestAnimationFrame(() => card.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' }));
-  }
-
-  /**
-   * Registro de evidencia por tema. Una marca de lectura no demuestra práctica;
-   * este campo pide un artefacto observable y lo guarda con el progreso.
-   */
-  private addTopicEvidence(card: HTMLElement, heading: HTMLElement, index: number): void {
-    const topicId = heading.id || `tema-${index + 1}`;
-    const verified = this.progressService.isTopicVerified(this.trackId(), this.moduleId(), topicId);
-    const stored = this.progressService.topicEvidence(this.trackId(), this.moduleId(), topicId);
-    const fieldId = `evidence-${this.trackId()}-${this.moduleId()}-${index}`;
-    const section = document.createElement('section');
-    section.className = 'topic-evidence';
-    section.dataset['topicEvidence'] = topicId;
-    section.innerHTML = `
-      <h4>Evidencia del tema</h4>
-      <p>Pega la salida, la URL o el fragmento que demuestra que hiciste la práctica. Se guarda en este navegador y viaja en tu copia de seguridad.</p>
-      <label for="${escapeHtml(fieldId)}">Tu evidencia</label>
-      <textarea id="${escapeHtml(fieldId)}" rows="3" spellcheck="false"></textarea>
-      <button type="button" data-verify-topic>${verified ? 'Verificado' : 'Registrar evidencia'}</button>
-      <p class="topic-evidence-feedback" role="status" aria-live="polite">${verified ? 'Evidencia registrada: cuenta como práctica, no como dominio.' : 'Sin evidencia registrada.'}</p>`;
-    const textarea = section.querySelector<HTMLTextAreaElement>('textarea');
-    if (textarea) {
-      textarea.value = stored;
-      textarea.disabled = verified;
-    }
-    const button = section.querySelector<HTMLButtonElement>('button');
-    if (button) button.disabled = verified;
-    const feedback = section.querySelector<HTMLElement>('.topic-evidence-feedback');
-    if (feedback) feedback.classList.toggle('verified', verified);
-    if (verified) heading.classList.add('topic-verified');
-    card.appendChild(section);
   }
 
   private addTopicNavigation(headings: HTMLHeadingElement[]): void {
@@ -1032,32 +999,6 @@ export class LessonViewerComponent implements OnDestroy {
         input.disabled = true;
         verifyButton.disabled = true;
         verifyButton.textContent = 'Completado';
-      }
-      return;
-    }
-    const verifyTopic = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-verify-topic]');
-    if (verifyTopic) {
-      const section = verifyTopic.closest<HTMLElement>('[data-topic-evidence]');
-      const textarea = section?.querySelector<HTMLTextAreaElement>('textarea');
-      const feedback = section?.querySelector<HTMLElement>('.topic-evidence-feedback');
-      const topicId = section?.dataset['topicEvidence'] ?? '';
-      try {
-        this.progressService.verifyTopic(this.trackId(), this.moduleId(), topicId, textarea?.value ?? '');
-        if (textarea) textarea.disabled = true;
-        verifyTopic.disabled = true;
-        verifyTopic.textContent = 'Verificado';
-        if (feedback) {
-          feedback.textContent = 'Evidencia registrada: cuenta como práctica, no como dominio.';
-          feedback.classList.add('verified');
-          feedback.classList.remove('error');
-        }
-        section?.closest('.topic-card')?.querySelector('.topic-heading')?.classList.add('topic-verified');
-      } catch (error) {
-        if (feedback) {
-          feedback.textContent = error instanceof Error ? error.message : 'No se pudo registrar la evidencia.';
-          feedback.classList.add('error');
-          feedback.classList.remove('verified');
-        }
       }
       return;
     }

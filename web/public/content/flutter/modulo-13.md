@@ -48,10 +48,9 @@ Pista: quitá la línea `if (!session.canRead(id)) throw const ForbiddenExceptio
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la verificación de `session.canRead(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `ForbiddenException`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar la asociación de dominio de un App Link/Universal Link no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia por qué los secretos no pertenecen al binario. Errores comunes: confundir verificación de dominio con autorización de recurso, auditar solo `pubspec.yaml` sin revisar el manifest/entitlements resultantes del build, y mantener plugins sin uso real que amplían la superficie de permisos. Fuente oficial: https://docs.flutter.dev/ui/navigation/deep-linking.
 **¿Por qué es importante?** El código multiplataforma hereda la superficie de ambas plataformas y de cada plugin; una entrada válida técnicamente puede intentar acceder a un recurso ajeno.
-**Evidencia de aprendizaje:** entrega función con validación completa, acceso indebido provocado y test de autorización.
 **Conceptos clave:** sandbox, permission, entitlement, manifest, plugin, platform channel, deep link, Universal Link, App Link, validation, authentication, authorization y threat model.
 
 Un plugin ejecuta código Android/iOS con capacidades reales. Audita mantenedor, actividad, dependencias, permisos y código nativo; elimina plugins no usados. Revisa `AndroidManifest.xml`, entitlements y descripciones de privacidad resultantes del build, no solo `pubspec.yaml`. Pide permisos en contexto y conserva una ruta útil al rechazo.
@@ -201,7 +200,7 @@ Resultado esperado: `token=null cache=false session=false sync=false`. Explica c
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `db.deleteCurrentAccountData()` y comprobá que la salida vuelve a `cache=false`. Agregá un test en `test/logout_test.dart` que simule logout seguido de login con otro conductor y confirme que `hasCurrentAccountData` es falso y la sesión anterior quedó invalidada. Después llevá el contrato al **proyecto integrador** RutaFlow: `SessionVault` vive en `lib/core/session_vault.dart`; no conviene delegar a Keychain/Keystore un dato que no es sensible (un contador de sesiones), porque el almacenamiento seguro tiene costo asíncrono y complejidad adicional; reservalo para tokens y credenciales y usá `shared_preferences` (Módulo 6) para el resto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá `SessionVault` y `logout()` completos del Paso 4, la salida `cache=true` del fallo del Paso 5, y el test de cambio de cuenta del Paso 6; explicá por qué borrar el token sin borrar la caché local puede exponer la sesión anterior en un dispositivo compartido. Siguiente paso: estudia cómo medir y optimizar fluidez contra el presupuesto de cada frame. Errores comunes: guardar tokens en `.env` empacado o en storage sin cifrado dedicado, borrar el token sin borrar la caché local relacionada, y no redactar valores sensibles en logs/crash reports. Límites y decisión de uso: el almacenamiento seguro no vuelve confidencial un dato que la aplicación sigue enviando a logs o telemetría; la redacción y la retención se revisan aparte. Fuente oficial: https://docs.flutter.dev/cookbook/security.
 
 ### Tema 3: Fluidez se mide contra el presupuesto de cada frame
@@ -283,9 +282,7 @@ Pista: envolvé también la decodificación de un JSON pequeño (la respuesta de
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo la decodificación del JSON pequeño al isolate de UI directamente, dejando `compute` únicamente para el historial grande donde sí se justifica, y documentá el criterio de tamaño/costo que usaste.
 
-**Evidencia de aprendizaje:** entrega decodificación off-UI del historial grande, costo medido de mover trabajo pequeño y criterio de decisión documentado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la decodificación off-UI del Paso 4, el costo medido de mover trabajo pequeño a un isolate del Paso 5, y el criterio documentado del Paso 6; explicá por qué crear isolates para operaciones diminutas cuesta más de lo que ahorra. Siguiente paso: estudia qué exige producción en términos de protocolo y telemetría. Errores comunes: asumir que `async`/`await` paraleliza cálculo CPU-bound, mover operaciones triviales a un isolate sin medir el costo de coordinación, y no perfilar en modo profile sobre un dispositivo representativo. Fuente oficial: https://docs.flutter.dev/perf/isolates.
 **¿Por qué es importante?** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
 
@@ -374,9 +371,7 @@ Pista: en la lógica de reintento, generá un `PendingMutation` nuevo con un `id
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reutilizando siempre el mismo `PendingMutation` (y su `id` original) en cada reintento, solo incrementando `attempts`, y agregá un test que confirme que tres reintentos consecutivos llegan al servidor con exactamente la misma clave de idempotencia.
 
-**Evidencia de aprendizaje:** entrega outbox con clave estable, duplicación detectada y test de clave estable confirmado.
-
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la outbox con clave de idempotencia estable del Paso 4, la duplicación provocada al generar un nuevo `id` en cada reintento del Paso 5, y el test de clave estable del Paso 6; explicá por qué la conectividad solo dispara intentos, pero no prueba disponibilidad real del servidor, y por qué eso hace indispensable la idempotencia en cada reintento. Siguiente paso: cerrá el módulo integrando seguridad, isolates y outbox en un release real auditado. Errores comunes: generar una nueva clave de idempotencia en cada reintento, publicar sin símbolos de depuración, y desplegar a todos los usuarios de una vez en vez de por cohortes observables. Fuente oficial: https://docs.flutter.dev/app-architecture/design-patterns/offline-first.
 **¿Por qué es importante?** La capacidad de detectar y contener un fallo determina su impacto real; una clave de idempotencia estable evita que la conectividad intermitente duplique efectos reales en el servidor.
 
@@ -403,7 +398,7 @@ Entrega código, tests, captura de DevTools, tabla antes/después, threat model 
 
 Derivado de la [documentación oficial](https://docs.flutter.dev/), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 53 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Dart | `null safety` · `types` · `classes y mixins` · `collections` · `futures` · `streams` · `isolates` · `records` · `patterns` · `extensions` | app conductor |
 | UI | `widget-element-render object` · `constraints` · `state` · `navigation` · `forms` · `Material y Cupertino` · `animation` · `gestures` | app conductor |

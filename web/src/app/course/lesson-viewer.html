@@ -23,7 +23,7 @@
           <summary>Antes de empezar esta ruta <span>Requisitos y resultado</span></summary>
           <p>{{ guide.entry }}</p>
           <ul><li *ngFor="let skill of guide.skills">{{ skill }}</li></ul>
-          <p><strong>Tu evidencia de trabajo:</strong> {{ guide.evidence }}</p>
+          <p><strong>Resultado del curso:</strong> {{ guide.outcome }}</p>
         </details>
         <div class="scale" *ngIf="levelIndex() >= 0" aria-label="Etapa de este capítulo en el recorrido">
           <div class="scale-label"><span>Etapa del recorrido</span><strong>{{ levelLabel(m.level) }}</strong></div>
@@ -99,7 +99,7 @@
         <ol class="floci-study-loop" aria-label="Metodología de estudio del track Cloud">
           <li><span>1</span><strong>Comprende</strong><small>Qué problema resuelve.</small></li>
           <li><span>2</span><strong>Predice</strong><small>Qué esperas observar.</small></li>
-          <li><span>3</span><strong>Construye</strong><small>Ejecuta y guarda evidencia.</small></li>
+          <li><span>3</span><strong>Construye</strong><small>Ejecuta y verifica.</small></li>
           <li><span>4</span><strong>Rompe</strong><small>Provoca y diagnostica un error.</small></li>
           <li><span>5</span><strong>Transfiere</strong><small>Define qué validarás en cloud real.</small></li>
         </ol>

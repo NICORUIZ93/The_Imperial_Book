@@ -25,7 +25,7 @@ no prueba que la aplicación ni una lección hayan sido verificadas.
 
 La revisión recorre entrada al sitio → primera sesión → entorno → ejemplo básico
 → explicación → práctica guiada → ejercicio independiente → fallo diagnosticado
-→ evidencia → siguiente tema → proyecto → conservación del progreso.
+→ siguiente tema → proyecto → conservación del progreso.
 
 Aplica los prompts adaptados de `docs/PROMPTS-FORMACION.md`. Cada tema debe
 indicar qué archivo crear, dónde, con qué contenido, cómo ejecutar y qué observar.

@@ -72,7 +72,7 @@ Resultado esperado: carpeta creada y versión visible.
 Pista: escribe deliberadamente una ruta inexistente para provocar un fallo deliberado, lee el mensaje y corrígelo.
 #### Paso 6 · Práctica independiente
 Repite el flujo en tu sistema operativo, añade un archivo y documenta la salida.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega árbol, comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: redes. Errores comunes: no comprobar el directorio actual, mezclar shells y copiar comandos sin entenderlos. Fuente oficial: https://docs.docker.com/get-started/.
 
 ### Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs
@@ -150,7 +150,7 @@ curl -i http://127.0.0.1:3000/no-existe
 Pista: usa un puerto incorrecto para provocar un fallo deliberado, identifica el diagnóstico y corrígelo.
 #### Paso 6 · Práctica independiente
 Levanta un servidor local, prueba respuesta válida y documenta un 404.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega comandos, respuesta, fallo y corrección; explica el resultado. Siguiente paso: servicios emulados. Errores comunes: confundir host y puerto, ignorar códigos HTTP y probar solo con navegador. Fuente oficial: https://developer.mozilla.org/es/docs/Web/HTTP.
 
 ### Tema 3: Qué vas a aprender y cómo está estructurado el curso
@@ -208,7 +208,7 @@ Resultado esperado: versión visible.
 Pista: salta un prerrequisito para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Ordena tres tareas y justifica la secuencia.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: conocer Floci. Errores comunes: estudiar sin práctica y no guardar evidencia. Fuente oficial: https://docs.aws.amazon.com/.
 
 ### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack
@@ -258,7 +258,7 @@ Resultado esperado: Docker disponible.
 Pista: detén el contenedor para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Levanta un servicio y documenta una limitación.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: catálogo. Errores comunes: asumir paridad total y usar credenciales reales. Fuente oficial: https://docs.docker.com/.
 
 ### Tema 5: Servicios que emula Floci — AWS, Azure y GCP
@@ -334,7 +334,7 @@ Resultado esperado: Compose disponible.
 Pista: usa un endpoint equivocado para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Lista un servicio por proveedor y prueba su respuesta.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega tabla, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: mezclar regiones y endpoints. Fuente oficial: https://docs.aws.amazon.com/.
 
 ### Tema 6: Ventajas y limitaciones de practicar con un emulador local
@@ -391,7 +391,7 @@ Resultado esperado: herramienta disponible.
 Pista: usa una operación no emulada para provocar un fallo deliberado y corrígelo documentando el límite.
 #### Paso 6 · Práctica independiente
 Compara local y documentación oficial.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: metodología. Errores comunes: extrapolar resultados locales a producción. Fuente oficial: https://docs.aws.amazon.com/.
 
 ### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo
@@ -450,14 +450,14 @@ Resultado esperado: Git disponible.
 Pista: omite una evidencia para provocar un fallo deliberado y complétala.
 #### Paso 6 · Práctica independiente
 Registra una sesión completa con criterios de éxito.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: iniciar el módulo 1. Errores comunes: marcar sin probar y no documentar decisiones. Fuente oficial: https://git-scm.com/doc.
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-cloud && cd academia-cloud && git init`; crea allí `compose.yaml`, `infra/`, `src/` y `tests/`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | almacenamiento, eventos y serverless. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | datos, IaC y servicios integrados. | Casos normales, límite y error automatizados. |

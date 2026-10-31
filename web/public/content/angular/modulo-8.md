@@ -130,9 +130,9 @@ providers: [provideRouter(routes), ____()],
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `ApplicationConfig` con dos providers y un test que confirme el `NullInjectorError` real al quitar uno de ellos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un `NullInjectorError` real y reproducible, que `bootstrapApplication` y `ApplicationConfig` reemplazan por completo al `AppModule`, sin proveer nada de forma implícita. El siguiente tema aplica un script Node real para auditar que la organización por feature mantiene junto lo que cambia junto. **Evidencia:** entrega el resultado de ambos tests en verde, y el mensaje exacto de `NullInjectorError` que produce el fallo deliberado. Fuentes oficiales: [Angular — Standalone components](https://angular.dev/guide/standalone-components), [Angular — Application configuration](https://angular.dev/reference/configs/application-structure).
+Ya confirmas, con un `NullInjectorError` real y reproducible, que `bootstrapApplication` y `ApplicationConfig` reemplazan por completo al `AppModule`, sin proveer nada de forma implícita. El siguiente tema aplica un script Node real para auditar que la organización por feature mantiene junto lo que cambia junto. Fuentes oficiales: [Angular — Standalone components](https://angular.dev/guide/standalone-components), [Angular — Application configuration](https://angular.dev/reference/configs/application-structure).
 
 **Errores comunes:** asumir que un provider usado en desarrollo seguirá funcionando en producción sin declararlo explícitamente; confundir un `NullInjectorError` (falta un provider) con un error de plantilla (falta un import en el componente).
 
@@ -259,9 +259,9 @@ const archivos = ____(rutaFeature);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un script Node con `fs.readdirSync` que audite cohesión de una carpeta de feature, y un test que confirme la detección de una carpeta incompleta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un script Node real basado en `fs`, que una carpeta de feature mantiene junto todo lo que cambia junto, y que su ausencia es detectable de forma automatizada y verificable. El siguiente tema aplica el esquema oficial de migración de Angular y un error real de plantilla para confirmar una migración incompleta. **Evidencia:** entrega el resultado del test en verde, y el resultado `tieneRutas: false` que produce el fallo deliberado. Fuentes oficiales: [Angular — Application project structure](https://angular.dev/reference/configs/application-structure).
+Ya confirmas, con un script Node real basado en `fs`, que una carpeta de feature mantiene junto todo lo que cambia junto, y que su ausencia es detectable de forma automatizada y verificable. El siguiente tema aplica el esquema oficial de migración de Angular y un error real de plantilla para confirmar una migración incompleta. Fuentes oficiales: [Angular — Application project structure](https://angular.dev/reference/configs/application-structure).
 
 **Errores comunes:** organizar por tipo de archivo en carpetas globales (`components/`, `services/`) para proyectos que crecen más allá de un tamaño trivial; crear features nuevas sin agrupar sus archivos relacionados desde el inicio, dejando la reorganización para "después".
 
@@ -376,9 +376,9 @@ npx ng generate @angular/core:____
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente migrado incompletamente a standalone (con un `imports` vacío que debería tener contenido) y un test que confirme el error real `NG0304`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya aplicas el esquema oficial de migración y confirmas, con un error real y específico de Angular (`NG0304`), exactamente qué falla cuando una migración a standalone queda incompleta. Esto cierra el módulo de standalone components y arquitectura sin NgModules; como siguiente paso, continúa con el módulo 13 de este track. **Evidencia:** entrega el resultado del test en verde tras completar el `imports`, y el error real `NG0304` que produce el fallo deliberado con una migración incompleta. Fuentes oficiales: [Angular — Migrating to standalone](https://angular.dev/reference/migrations/standalone).
+Ya aplicas el esquema oficial de migración y confirmas, con un error real y específico de Angular (`NG0304`), exactamente qué falla cuando una migración a standalone queda incompleta. Esto cierra el módulo de standalone components y arquitectura sin NgModules; como siguiente paso, continúa con el módulo 13 de este track. Fuentes oficiales: [Angular — Migrating to standalone](https://angular.dev/reference/migrations/standalone).
 
 **Errores comunes:** ejecutar el esquema automático y asumir que la migración quedó completa sin correr los tests; migrar toda la aplicación de una sola vez en vez de componente por componente.
 

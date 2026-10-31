@@ -23,8 +23,6 @@ Ya probaste una API realista sin red externa. El siguiente tema aislará una bas
 
 **Fuentes oficiales:** [Vitest](https://vitest.dev/guide/), [Supertest](https://github.com/ladjs/supertest) y [Express testing](https://expressjs.com/en/starter/hello-world.html).
 
-**Evidencia de aprendizaje:** entrega la salida de `npm test` con casos 200 y 404.
-
 **Conceptos clave:** petición HTTP real sin puerto abierto, verificación de código de estado y body.
 
 Una prueba unitaria (estudiada en profundidad en el Módulo 9 del track de JavaScript) verifica una función aislada; una prueba de integración HTTP verifica el comportamiento real de un endpoint completo, incluyendo el routing, los middleware, y la lógica de negocio, todos operando juntos exactamente como lo harían en producción. Supertest permite realizar peticiones HTTP reales directamente contra la instancia de la aplicación Express (`request(app).get("/tareas")`) sin necesidad de que la aplicación esté escuchando activamente en un puerto de red real, interceptando la petición a nivel de la propia aplicación Node en memoria, lo que hace estas pruebas considerablemente más rápidas que levantar un servidor de red real y hacer peticiones HTTP genuinas contra él.
@@ -98,6 +96,8 @@ Prueba un `POST` con body inválido y entrega salida verde y roja, explicando qu
 
 #### Paso 7 · Cierre y conexión
 
+Ya probás un endpoint real sin abrir un puerto y leés la diferencia exacta entre el cuerpo esperado y el recibido. El siguiente tema sustituye la base simulada por un contenedor efímero con la misma tecnología de producción.
+
 ### Tema 2: Testcontainers — bases de datos de prueba reales y efímeras
 
 #### Paso 1 · Objetivo y preparación
@@ -121,8 +121,6 @@ Esta misma técnica es la que usará el pipeline de CI del proyecto integrador (
 **Errores comunes:** dejar contenedores vivos; usar tags `latest`; depender del orden de pruebas; compartir volúmenes; ocultar credenciales en el repositorio.
 
 **Fuentes oficiales:** [Testcontainers Node](https://node.testcontainers.org/), [PostgreSQL image](https://hub.docker.com/_/postgres) y [Vitest setup](https://vitest.dev/api/).
-
-**Evidencia de aprendizaje:** entrega la salida de `npx vitest run`, el puerto temporal y la limpieza confirmada.
 
 **Conceptos clave:** contenedor efímero por corrida, aislamiento completo entre ejecuciones.
 
@@ -187,6 +185,8 @@ Fuerza una violación de unicidad y entrega la aserción del error junto con evi
 
 #### Paso 7 · Cierre y conexión
 
+Ya iniciás una base real, ejecutás la prueba y verificás que el contenedor se detiene. El siguiente tema aísla la dependencia externa que no conviene levantar en cada corrida y la ejecuta también en CI.
+
 ### Tema 3: Mocks de servicios externos y CI
 
 #### Paso 1 · Objetivo y preparación
@@ -206,8 +206,6 @@ Ya puedes aislar dependencias externas sin falsificar su contrato. El siguiente 
 **Errores comunes:** mockear la función propia; devolver datos imposibles; no verificar argumentos; llamar red real en unit tests; hacer CI dependiente de secretos.
 
 **Fuentes oficiales:** [Vitest mocks](https://vitest.dev/guide/mocking), [GitHub Actions Node](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs) y [principio de contratos](https://martinfowler.com/articles/mocksArentStubs.html).
-
-**Evidencia de aprendizaje:** entrega la salida de la prueba de éxito, el fallo rechazado y el workflow ejecutable.
 
 **Conceptos clave:** aislar dependencias externas no controladas, pipeline de CI reproducible.
 
@@ -273,6 +271,8 @@ Escribe un workflow de CI que ejecute `npm ci` y `npm test`, y entrega qué secr
 
 #### Paso 7 · Cierre y conexión
 
+Ya ejecutás una prueba sin red y un workflow que corre `npm ci` y `npm test`. El siguiente tema compara unitarias, integración y E2E para decidir qué capa justifica cada riesgo.
+
 ### Tema 4: Alternativas de testing y debugging
 
 #### Paso 1 · Objetivo y preparación
@@ -292,8 +292,6 @@ Ya puedes elegir una estrategia proporcional y depurar sin reemplazar pruebas. E
 **Errores comunes:** usar solo E2E; dejar `debugger` en producción; hacer asserts frágiles; medir cobertura como calidad; depurar sin reproducir.
 
 **Fuentes oficiales:** [Node inspector](https://nodejs.org/en/learn/getting-started/debugging), [Vitest](https://vitest.dev/guide/) y [testing pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
-
-**Evidencia de aprendizaje:** entrega una prueba verde, una salida de fallo y la clasificación razonada de tres casos.
 
 **Conceptos clave:** panorama de frameworks de testing, `--inspect`, Chrome DevTools para Node.
 
@@ -351,6 +349,8 @@ Clasifica tres casos de tu aplicación como unitarios, integración o E2E y just
 
 #### Paso 7 · Cierre y conexión
 
+Ya clasificás cada caso por capa de prueba y sabés cuándo el inspector aporta más que un `console.log`. El siguiente tema reemplaza la dependencia de terceros por el runner nativo de Node.
+
 ### Tema 5: node:test — test runner nativo sin dependencias
 
 #### Paso 1 · Objetivo y preparación
@@ -407,8 +407,6 @@ Ya puedes elegir entre el test runner nativo (cero dependencias, suficiente para
 **Errores comunes:** confiar en el código de salida de `node --test` sin verificar que `# tests` sea mayor a 0; nombrar archivos de prueba sin seguir la convención (`*.test.js`, `test-*.js`, o dentro de una carpeta `test/`), haciendo que el runner no los descubra silenciosamente.
 
 **Fuentes oficiales:** [Node.js test runner](https://nodejs.org/api/test.html) y [node:assert](https://nodejs.org/api/assert.html).
-
-**Evidencia de aprendizaje:** entrega la prueba verde con `node:test`, el resumen "0 tests" del fallo deliberado, y la prueba convertida desde Vitest con la comparación documentada.
 
 **Conceptos clave:** `node:test`, `node:assert/strict`, descubrimiento automático por convención de nombre, cero dependencias.
 
@@ -549,8 +547,8 @@ Siguiendo TDD, agrega la regla "los envíos de más de 20 kg pagan un recargo fi
 #### Paso 6 · Práctica independiente
 Escribe con TDD una función `franjaEntrega(hora)` que devuelva `mañana`, `tarde` o `fuera de horario`, empezando por los casos límite (7:00, 12:00, 19:00).
 
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores de límite y de reglas de negocio son de los más caros, y TDD obliga a pensar los casos antes de programar.
+#### Paso 7 · Cierre
+**¿Por qué es importante?** porque los errores de límite y de reglas de negocio son de los más caros, y TDD obliga a pensar los casos antes de programar.
 **Fuente oficial:** [Node.js: Test runner](https://nodejs.org/api/test.html), [Martin Fowler: Test Driven Development](https://martinfowler.com/bliki/TestDrivenDevelopment.html).
 **Conceptos clave:** ciclo rojo-verde-refactor, caso límite, `node:test`, `assert/strict`, prueba que falla primero, refactor seguro.
 **Cuándo no usarlo:** en exploraciones o prototipos que vas a tirar, o cuando aún no sabes qué debe hacer el código: primero explora y luego fija el comportamiento con pruebas.

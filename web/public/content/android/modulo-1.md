@@ -88,9 +88,9 @@ Agrega `Log.d(ETIQUETA, "onCreate: savedInstanceState es ${if (savedInstanceStat
 
 Identifica en tu propia app un recurso que debería iniciarse en `onResume` y liberarse en `onPause` (por ejemplo, un sensor o una suscripción a ubicación), y documenta en una línea por qué iniciarlo en `onCreate` sería incorrecto.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya predices en qué callback específico es seguro iniciar o liberar un recurso, y confirmaste que el estado simple se pierde al rotar. El siguiente tema resuelve exactamente ese problema con `ViewModel`. **Evidencia:** entrega el resultado del log mostrando la secuencia completa de destrucción y recreación al rotar, y explica por qué el contador de la Activity vuelve a cero tras ese proceso. Fuente oficial: [Android Developers — Activity lifecycle](https://developer.android.com/guide/components/activities/activity-lifecycle).
+Ya predices en qué callback específico es seguro iniciar o liberar un recurso, y confirmaste que el estado simple se pierde al rotar. El siguiente tema resuelve exactamente ese problema con `ViewModel`. Fuente oficial: [Android Developers — Activity lifecycle](https://developer.android.com/guide/components/activities/activity-lifecycle).
 
 **Errores comunes:** olvidar llamar a `super.onX()` dentro de un callback sobrescrito, lo que provoca una excepción en tiempo de ejecución; iniciar un recurso costoso en `onCreate` en vez de `onResume`, dejándolo activo innecesariamente en background.
 
@@ -198,9 +198,9 @@ Agrega una función `decrementar()` a `TareasViewModel` que nunca permita que `_
 
 Agrega un segundo `StateFlow` a `TareasViewModel` (por ejemplo, `mensaje: StateFlow<String?>`) y documenta en una línea por qué ambos valores (`contador` y `mensaje`) sobreviven juntos a una rotación, siendo parte de la misma instancia preservada del `ViewModel`.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya mueves estado a un `ViewModel` y confirmas por qué sobrevive a rotación gracias al `ViewModelStore` preservado. El siguiente tema cubre el escenario más agresivo en que ni siquiera el `ViewModel` sobrevive: la muerte del proceso. **Evidencia:** entrega el resultado de la simulación mostrando el contador preservado entre instancias del `ViewModelStore`, y el resultado del fallo al deshabilitar esa reutilización de instancia. Fuente oficial: [Android Developers — ViewModel overview](https://developer.android.com/topic/libraries/architecture/viewmodel).
+Ya mueves estado a un `ViewModel` y confirmas por qué sobrevive a rotación gracias al `ViewModelStore` preservado. El siguiente tema cubre el escenario más agresivo en que ni siquiera el `ViewModel` sobrevive: la muerte del proceso. Fuente oficial: [Android Developers — ViewModel overview](https://developer.android.com/topic/libraries/architecture/viewmodel).
 
 **Errores comunes:** exponer el `MutableStateFlow` directamente en vez de su versión de solo lectura (`asStateFlow()`), permitiendo que cualquier consumidor externo modifique el estado sin pasar por la lógica del `ViewModel`; asumir incorrectamente que un `ViewModel` sobrevive a la muerte del proceso igual que a la rotación.
 
@@ -305,9 +305,9 @@ Agrega un segundo valor a `TareasConFiltroViewModel` (por ejemplo, `ordenAscende
 
 Documenta en una tabla de dos columnas, para tres datos reales de tu propio proyecto (por ejemplo, lista de resultados, término de búsqueda, ítem seleccionado), si cada uno debería vivir en un `ViewModel` normal o en `SavedStateHandle`, justificando la decisión según el costo de recalcularlo frente a su impacto en la continuidad percibida por el usuario.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usas `SavedStateHandle` para persistir valores que sobreviven incluso a la muerte del proceso, y distingues cuándo esa capa adicional se justifica frente a un `ViewModel` normal. Esto cierra el módulo de ciclo de vida; el siguiente módulo del track aborda Jetpack Compose y el manejo de estado en la UI. **Evidencia:** entrega el resultado de la simulación mostrando el contador perdido y el filtro preservado tras la muerte de proceso, y explica por qué `SavedStateHandle` requiere tipos serializables mientras un `ViewModel` normal no. Fuente oficial: [Android Developers — Saved state module for ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate).
+Ya usas `SavedStateHandle` para persistir valores que sobreviven incluso a la muerte del proceso, y distingues cuándo esa capa adicional se justifica frente a un `ViewModel` normal. Esto cierra el módulo de ciclo de vida; el siguiente módulo del track aborda Jetpack Compose y el manejo de estado en la UI. Fuente oficial: [Android Developers — Saved state module for ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate).
 
 **Errores comunes:** guardar en `SavedStateHandle` datos grandes o costosos de serializar "por si acaso", generando overhead innecesario; asumir que cualquier tipo de dato puede guardarse ahí sin verificar que sea serializable.
 

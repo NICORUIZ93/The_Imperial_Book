@@ -58,7 +58,7 @@ Resultado esperado: las tres tablas se crean sin error, con `facturas.cliente_id
 Pista: intentá `INSERT INTO pagos (factura_id, monto) VALUES (9999, 100);` (una `factura_id` que no existe) — ese es el fallo deliberado: `ERROR: insert or update on table "pagos" violates foreign key constraint`, la base de datos rechaza la fila antes de guardarla, sin que tu aplicación tuviera que validar manualmente que la factura existe.
 #### Paso 6 · Práctica independiente
 Insertá un cliente, una factura ligada a ese cliente y a un `shipment_id` real (por ejemplo `env-4471`, el mismo de `ShipmentEvents`), y un pago ligado a esa factura — y confirmá con un `JOIN` de las tres tablas que podés reconstruir "qué cliente pagó cuánto por qué envío" en una sola consulta.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el esquema creado, el error de integridad del Paso 5 y el join exitoso del Paso 6; explicá por qué este caso concreto justifica RDS sobre DynamoDB aunque el resto de RutaFlow use DynamoDB. Siguiente paso: copias. Errores comunes: relaciones implícitas y transacciones incompletas. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html.
 
 ### Tema 2: Snapshots y restore
@@ -124,7 +124,7 @@ Resultado esperado: la instancia restaurada (`rutaflow-facturacion-restaurada`) 
 Pista: probá `aws rds restore-db-instance-from-db-snapshot --db-instance-identifier otra-instancia --db-snapshot-identifier snap-que-no-existe` — ese es el fallo deliberado: `DBSnapshotNotFoundFault`, confirmando que un plan de recuperación que nunca se probó con un identificador real es indistinguible, en el momento de necesitarlo, de no tener backup en absoluto.
 #### Paso 6 · Práctica independiente
 Documentá, para `rutaflow-facturacion`, un RPO (cuántos datos podés permitirte perder: la ventana entre snapshots) y un RTO (cuánto tiempo real tomó este `restore` desde el Paso 4 hasta que la instancia quedó disponible) — con el tiempo real medido, no una estimación.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el snapshot y restore exitosos del Paso 4, el error de snapshot inexistente del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué un backup nunca probado no cuenta como plan de recuperación. Siguiente paso: migraciones. Errores comunes: backup sin restore probado y retención insuficiente. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html.
 
 ### Tema 3: Migrations
@@ -169,7 +169,7 @@ Resultado esperado: `facturas` ahora tiene la columna `estado_pago`, y `migracio
 Pista: corré el mismo bloque `DO $$ ... END $$;` del Paso 4 una segunda vez SIN el `IF NOT EXISTS` de `migraciones_aplicadas` (quitalo mentalmente o probalo con un `ALTER TABLE facturas ADD COLUMN estado_pago TEXT` suelto) — ese es el fallo deliberado: `ERROR: column "estado_pago" of relation "facturas" already exists`. Una migración que no es idempotente rompe apenas alguien la corre dos veces por error.
 #### Paso 6 · Práctica independiente
 Escribí la migración de rollback correspondiente (`ALTER TABLE facturas DROP COLUMN estado_pago; DELETE FROM migraciones_aplicadas WHERE version = 1;`), y confirmá que después de aplicarla la tabla vuelve exactamente a su forma anterior al Tema 3.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la migración idempotente del Paso 4, el error de columna duplicada del Paso 5, y el rollback del Paso 6; explicá por qué `migraciones_aplicadas` es lo que hace que la migración sea segura de reintentar. Siguiente paso: almacenamiento distribuido. Errores comunes: editar producción manualmente y no respaldar. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html.
 **Conceptos clave:** evolución versionada y reproducible del esquema, no cambios manuales ad hoc.
 

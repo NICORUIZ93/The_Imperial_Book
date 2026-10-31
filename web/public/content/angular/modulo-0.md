@@ -164,9 +164,9 @@ npx ng test --watch=false
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente no-standalone y un intento de agregarlo a `imports` de un componente standalone, con un test que confirme el error real de Angular. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con un error real y específico de Angular, exactamente qué significa que el CLI ya no genere `NgModule`: los componentes standalone y no-standalone no se mezclan libremente. El siguiente tema confirma con una comprobación real del DOM la diferencia entre interpolación y property binding. **Evidencia:** entrega el resultado del test en verde, y el error real que produce el fallo deliberado con un componente no-standalone en `imports`. Fuentes oficiales: [Angular — Standalone components](https://angular.dev/guide/standalone-components), [Angular CLI](https://angular.dev/cli).
+Ya confirmas, con un error real y específico de Angular, exactamente qué significa que el CLI ya no genere `NgModule`: los componentes standalone y no-standalone no se mezclan libremente. El siguiente tema confirma con una comprobación real del DOM la diferencia entre interpolación y property binding. Fuentes oficiales: [Angular — Standalone components](https://angular.dev/guide/standalone-components), [Angular CLI](https://angular.dev/cli).
 
 **Errores comunes:** esperar encontrar un `AppModule` en un proyecto generado hoy; intentar mezclar componentes standalone y no-standalone sin entender el error real que Angular produce al hacerlo incorrectamente.
 
@@ -316,9 +316,9 @@ npx ng test --watch=false
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `[value]` y `[disabled]` reales, y un test que confirme sobre `fixture.nativeElement` que ambas propiedades del DOM cambian dinámicamente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con una comprobación real sobre el objeto DOM, que el property binding controla propiedades reales y dinámicas, y que la interpolación también actualiza dinámicamente el texto visible. El siguiente tema confirma con el compilador real de TypeScript (`tsc`) por qué `unknown` exige narrowing donde `any` no exige nada. **Evidencia:** entrega el resultado de los tres tests en verde, y el comportamiento incorrecto que produce el atributo booleano estático. Fuentes oficiales: [Angular — Property binding](https://angular.dev/guide/templates/property-binding), [Angular — Interpolation](https://angular.dev/guide/templates/interpolation).
+Ya confirmas, con una comprobación real sobre el objeto DOM, que el property binding controla propiedades reales y dinámicas, y que la interpolación también actualiza dinámicamente el texto visible. El siguiente tema confirma con el compilador real de TypeScript (`tsc`) por qué `unknown` exige narrowing donde `any` no exige nada. Fuentes oficiales: [Angular — Property binding](https://angular.dev/guide/templates/property-binding), [Angular — Interpolation](https://angular.dev/guide/templates/interpolation).
 
 **Errores comunes:** confundir interpolación con property binding para atributos booleanos como `disabled`; asumir que el atributo HTML inicial y la propiedad del DOM siempre coinciden, cuando divergen tras cualquier interacción real del usuario.
 
@@ -463,9 +463,9 @@ function procesar(valor: ____) {
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos funciones equivalentes (una con `any`, otra con `unknown`) y un script que capture la salida real de `tsc --noEmit` confirmando la diferencia. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con el compilador real de TypeScript, que `unknown` exige narrowing explícito donde `any` no exige nada — una garantía de seguridad de tipos verificada en tiempo de compilación, no solo explicada en teoría. El siguiente tema confirma con `ng build` real por qué AOT detecta errores de plantilla antes de desplegar a producción. **Evidencia:** entrega el resultado del test en verde, y el mensaje de error real que produce el fallo deliberado al agregar narrowing y ejecutar de nuevo sin el error esperado. Fuentes oficiales: [TypeScript — unknown](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type), [TypeScript — Utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html).
+Ya confirmas, con el compilador real de TypeScript, que `unknown` exige narrowing explícito donde `any` no exige nada — una garantía de seguridad de tipos verificada en tiempo de compilación, no solo explicada en teoría. El siguiente tema confirma con `ng build` real por qué AOT detecta errores de plantilla antes de desplegar a producción. Fuentes oficiales: [TypeScript — unknown](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type), [TypeScript — Utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html).
 
 **Errores comunes:** usar `any` como salida fácil para silenciar un error de tipos, en vez de invertir el esfuerzo mínimo de narrowing que `unknown` exige; olvidar que `never` como tipo de retorno es una herramienta real de verificación exhaustiva, no solo una curiosidad teórica del sistema de tipos.
 
@@ -594,9 +594,9 @@ npx ng ____
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un error de plantilla deliberado y un script que capture la salida real de `ng build` confirmando que el error se detecta con archivo y línea exactos. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas, con `ng build` real y su salida genuina capturada, que AOT detecta errores de plantilla en tiempo de compilación, antes de que lleguen a producción. Esto cierra el módulo de fundamentos y Angular CLI; como siguiente paso, continúa con el módulo 1 de este track (eventos y bindings). **Evidencia:** entrega el resultado del test en verde, y el mensaje de error real con archivo y línea que produce el fallo deliberado con la propiedad inexistente. Fuentes oficiales: [Angular — AOT compiler](https://angular.dev/tools/cli/aot-compiler), [Angular CLI — ng build](https://angular.dev/cli/build).
+Ya confirmas, con `ng build` real y su salida genuina capturada, que AOT detecta errores de plantilla en tiempo de compilación, antes de que lleguen a producción. Esto cierra el módulo de fundamentos y Angular CLI; como siguiente paso, continúa con el módulo 1 de este track (eventos y bindings). Fuentes oficiales: [Angular — AOT compiler](https://angular.dev/tools/cli/aot-compiler), [Angular CLI — ng build](https://angular.dev/cli/build).
 
 **Errores comunes:** asumir que un error de plantilla se detectará automáticamente sin ejecutar `ng build` completo (por ejemplo, confiando solo en el editor); ignorar la salida completa del build asumiendo que un código de salida distinto de cero es suficiente información sin leer el mensaje específico.
 
@@ -610,7 +610,7 @@ Ya confirmas, con `ng build` real y su salida genuina capturada, que AOT detecta
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `npx @angular/cli new academia-angular --standalone --routing --style=scss`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
 
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
+| Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|
 | Base | componentes y formularios. | Arranque reproducible, commit limpio y prueba mínima. |
 | Aplicación | estado, rutas y APIs. | Casos normales, límite y error automatizados. |

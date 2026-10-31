@@ -14,7 +14,6 @@ El gestor de tareas CLI (proyecto integrador Fundamentos) necesita, desde el pri
 #### Paso 3 · Teoría, modelo mental y analogía
 Una `list` en Python es una secuencia: accedés rápido por posición (`lista[0]`), pero buscar por valor exige recorrerla elemento por elemento en el peor caso — es O(n). Un `dict` guarda pares clave-valor en una tabla hash: calcula dónde vive cada clave y accede casi siempre en O(1), sin importar cuántos elementos tenga. La diferencia de fondo es qué identifica a una tarea: en el diccionario, la clave (el id) es la identidad lógica de la tarea y no cambia; en la lista, la posición es solo un lugar físico que se corre cada vez que insertás o eliminás algo antes. La analogía es un archivador con carpetas rotuladas —vas directo a la etiqueta que buscás— contra una fila de cajas sin rotular, donde tenés que revisar caja por caja.
 
-**Evidencia de aprendizaje:** entregá la búsqueda por lista y por diccionario, el código que reproduce el índice desactualizado después de `del tareas[0]`, y la corrección usando `por_id`.
 **Conceptos clave:** lista, tupla, conjunto, diccionario, orden, duplicados, clave, acceso, inserción y mutabilidad.
 
 Una estructura de datos organiza valores para facilitar ciertas operaciones. No existe una estructura universalmente mejor. Una lista conserva orden y permite duplicados; un conjunto representa pertenencia sin duplicados; un diccionario relaciona claves únicas con valores; una tupla expresa una agrupación fija que no se modifica.
@@ -122,7 +121,7 @@ Pista: después de cualquier `del tareas[i]`, cualquier índice que guardaste an
 #### Paso 6 · Práctica independiente
 Agregá 50 tareas más a la lista y al diccionario (ids del 4 al 53), medí con `time.perf_counter()` cuánto tarda `buscar_por_id_lista` comparado con `por_id[53]` para el peor caso (el último id), y repetí con 5000 tareas. Anotá cómo crece el tiempo de la lista mientras el del diccionario se mantiene estable.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guardá el código con `buscar_por_id_lista`, el diccionario `por_id` y la demostración del índice desactualizado tras `del tareas[0]`; como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista y asumir que sigue apuntando a la misma tarea después de cualquier eliminación; elegir diccionario sin medir si en tu caso realmente hay más búsquedas que inserciones. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
 **¿Por qué es importante?** Porque un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
 
@@ -137,7 +136,6 @@ El mismo gestor de tareas necesita dos comportamientos nuevos: un "deshacer" que
 #### Paso 3 · Teoría, modelo mental y analogía
 Una pila es LIFO: lo último que entra es lo primero que sale; una cola es FIFO: lo primero que entra es lo primero que sale. Esto es un contrato de comportamiento, no una implementación — podés construir ambas con una `list`. Lo que cambia es el costo: `list.append()` y `list.pop()` (sin índice) operan sobre el final de la lista y son O(1), porque Python solo ajusta un puntero; pero `list.pop(0)` o `list.insert(0, x)` operan sobre el principio y son O(n), porque hay que desplazar todos los elementos restantes una posición. `collections.deque` está pensada para operar en O(1) en AMBOS extremos. La analogía: una pila es una torre de platos (sacás el de arriba); una cola bien implementada es una fila donde atender al primero no mueve a nadie más; `list.pop(0)` es esa misma fila pero donde, cada vez que atienden a alguien, el resto tiene que dar un paso al frente.
 
-**Evidencia de aprendizaje:** entregá la pila de deshacer, la cola de pendientes y los dos tiempos medidos (`list.pop(0)` vs `deque.popleft()`) con al menos dos tamaños distintos.
 **Conceptos clave:** tipo abstracto de datos, pila, cola, LIFO, FIFO, push, pop, enqueue y dequeue.
 
 Una estructura también puede definirse por las operaciones permitidas, no por su implementación concreta. Una **pila** sigue LIFO: el último elemento agregado sale primero. Una **cola** sigue FIFO: el primero en entrar sale primero. Python puede representarlas con listas o `deque`, pero el comportamiento conceptual es independiente del lenguaje.
@@ -267,7 +265,7 @@ Pista: implementá `deshacer_todo` vaciando la pila con `pop()` hasta que esté 
 #### Paso 6 · Práctica independiente
 Repetí la medición del Paso 4 con `pendientes_lista` y `pendientes_deque` de 100 000 elementos. La brecha entre `list.pop(0)` y `deque.popleft()` debería crecer, porque el costo de desplazar el resto escala con el tamaño de la lista, no es un costo fijo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guardá el código de la pila de deshacer, la cola de pendientes y la medición de `list.pop(0)` contra `deque.popleft()`; como siguiente paso, en el Tema 3 vas a necesitar que esas mismas tareas estén ordenadas para poder buscarlas con búsqueda binaria. Errores comunes: usar `list.pop(0)` para una cola y no notar el costo porque con pocos elementos no se nota; desapilar o desencolar sin comprobar antes si la estructura está vacía. Fuentes oficiales: https://docs.python.org/es/3/library/collections.html#collections.deque y https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks.
 **¿Por qué es importante?** Porque elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
 
@@ -282,7 +280,6 @@ El gestor de tareas va a necesitar listar tareas por fecha límite y, más adela
 #### Paso 3 · Teoría, modelo mental y analogía
 La búsqueda binaria exige una precondición explícita: la lista tiene que estar ordenada según el mismo criterio que usás para comparar. A cambio, cada paso descarta la mitad del espacio de búsqueda restante — por eso es O(log n) en vez de O(n). Esa garantía depende enteramente de que la precondición se cumpla; si no se cumple, el algoritmo no "se rompe" con una excepción, simplemente deja de ser correcto, y nada en su código te avisa. Un algoritmo se demuestra correcto respecto a un contrato explícito (precondición + poscondición), no porque "funcionó" en un caso de prueba. La analogía: buscar una palabra en un diccionario abriéndolo por la mitad funciona porque está ordenado alfabéticamente; hacer lo mismo con hojas sueltas sin ordenar no te dice nada sobre dónde está la palabra.
 
-**Evidencia de aprendizaje:** entregá la búsqueda binaria correcta, el caso que falla en silencio sobre la lista desordenada, y la corrección aplicada.
 **Conceptos clave:** búsqueda lineal, búsqueda binaria, precondición, invariante, corrección y caso ausente.
 
 La búsqueda lineal revisa elementos hasta encontrar el objetivo o terminar. Funciona aunque los datos no estén ordenados.
@@ -416,7 +413,7 @@ Pista: probá con la lista desordenada del Paso 4 buscando una fecha que quedó 
 #### Paso 6 · Práctica independiente
 Generá 1000 tareas con fechas aleatorias, ordenalas con `.sort(key=...)` antes de buscar, y medí con `time.perf_counter()` si `buscar_binaria_por_fecha` sigue siendo más rápida que una búsqueda lineal equivalente a ese tamaño.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guardá `buscar_binaria_por_fecha`, la versión que falla sobre la lista desordenada y la corrección (ordenar antes o usar búsqueda lineal); como siguiente paso, en el Tema 4 vas a medir cuánto cuesta ese orden previo —y el resto de las operaciones— a medida que crece el número de tareas. Errores comunes: aplicar búsqueda binaria sin verificar que la lista esté ordenada por la misma clave que usás para comparar; confundir "no la encontró" con "no existe" cuando en realidad la precondición estaba rota. Fuentes oficiales: https://docs.python.org/es/3/library/bisect.html y https://opendsa-server.cs.vt.edu/.
 **¿Por qué es importante?** Porque un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
 
@@ -431,7 +428,6 @@ A medida que el gestor de tareas acumula historial, vas a necesitar ordenarlo (p
 #### Paso 3 · Teoría, modelo mental y analogía
 Big O describe cómo CRECE el trabajo cuando crece la entrada, no cuánto tarda en segundos —eso depende de la máquina—. `sorted()` en Python usa Timsort, un algoritmo híbrido que aprovecha el orden que ya pueda tener la entrada y logra O(n log n). Una implementación ingenua como bubble sort compara cada par de elementos adyacentes en pasadas repetidas sobre toda la lista —dos bucles anidados que dan O(n²)—. La teoría predice que la brecha entre ambas crece sin límite a medida que n crece; medir con `time.perf_counter()` en unos pocos tamaños es la única forma de confirmar esa predicción con números reales, en tu propia máquina.
 
-**Evidencia de aprendizaje:** entregá la tabla de tiempos con al menos tres tamaños, y la explicación de qué pasó al multiplicar por cuarenta el tamaño en `bubble_sort`.
 **Conceptos clave:** tamaño de entrada, Big O, tiempo, espacio, O(1), O(log n), O(n), O(n²), ordenamiento y recursión.
 
 Big O describe cómo crece el trabajo cuando crece la entrada; no es un cronómetro. Una búsqueda lineal es O(n): duplicar elementos puede duplicar comparaciones. La binaria es O(log n): duplicar el tamaño añade aproximadamente un paso. Dos bucles anidados sobre la entrada suelen sugerir O(n²).
@@ -570,7 +566,7 @@ Pista: anotá el cociente `tiempo_bubble / tiempo_sorted` en cada tamaño del Pa
 #### Paso 6 · Práctica independiente
 Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de ordenamiento intermedia (por ejemplo insertion sort) para ver dónde queda ubicada respecto a `sorted()` y `bubble_sort()`. Anotá si el orden relativo de las tres (quién es más rápida) se mantiene igual en los tres tamaños.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
 **¿Por qué es importante?** Porque la teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
 
@@ -663,7 +659,7 @@ Añade un recorrido en orden (`inorder`) que imprima los valores de menor a mayo
 #### Paso 6 · Práctica independiente
 Implementa `eliminar(valor)` para el caso de un nodo hoja y un nodo con un solo hijo. Entrega el árbol antes y después de eliminar, y explica por qué eliminar un nodo con dos hijos es el caso difícil.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en Java, `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
 **Conceptos clave:** jerarquía, invariante de orden, búsqueda logarítmica, degeneración y equilibrio.
 **Cuándo no usarlo:** si solo necesitas buscar por igualdad exacta sin orden, una tabla hash (Tema 6) da O(1) promedio y es más simple; el BST brilla cuando necesitas orden (rangos, mínimo, máximo, recorrido ordenado).
@@ -738,7 +734,7 @@ Añade un método `eliminar(clave)`. Pista: encuentra la cubeta correcta y quita
 #### Paso 6 · Práctica independiente
 Mide cuántas claves caen en cada cubeta al insertar 1000 claves con `capacidad=16` vs `capacidad=256`, y explica la relación entre el "factor de carga" (claves/capacidad) y el rendimiento.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado con capacidad 1. **¿Por qué es importante?** las tablas hash son probablemente la estructura más usada en programación real — todo `dict`, `Map`, `HashMap`, caché o índice en memoria es una. Entender colisiones y factor de carga explica por qué a veces un `dict` "se pone lento" y cómo evitarlo. Fuentes: [Hash table (Wikipedia)](https://en.wikipedia.org/wiki/Hash_table).
 **Conceptos clave:** función hash, colisión, encadenamiento, factor de carga, O(1) amortizado.
 **Cuándo no usarlo:** si necesitas recorrer los datos en orden o buscar rangos, usa un árbol (Tema 5); una tabla hash no tiene orden.
@@ -829,7 +825,7 @@ Modifica `bfs` para que devuelva el camino más corto (lista de nodos) entre dos
 #### Paso 6 · Práctica independiente
 Añade una ciudad aislada (sin aristas) y confirma que no aparece en el recorrido desde el depósito. Luego cuenta cuántos "componentes conectados" tiene el grafo.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del fallo deliberado. **¿Por qué es importante?** los grafos y sus recorridos están detrás de los mapas (rutas), las redes sociales (amigos de amigos), los planificadores de tareas (orden de dependencias) y los rastreadores web. BFS para "el más cercano", DFS para "explorar todo" es una decisión que tomarás muchas veces. Fuentes: [Graph traversal (Wikipedia)](https://en.wikipedia.org/wiki/Graph_traversal).
 **Conceptos clave:** vértices y aristas, lista de adyacencia, BFS con cola, DFS con pila/recursión, marcar visitados.
 **Cuándo no usarlo:** para datos jerárquicos de un solo padre (un sistema de archivos, un organigrama) un árbol (Tema 5) es más simple; el grafo general se justifica cuando hay múltiples conexiones o ciclos.
@@ -899,7 +895,7 @@ Añade un contador que cuente cuántas veces se ejecuta el cuerpo de cada versi�
 #### Paso 6 · Práctica independiente
 Resuelve con DP el problema de "cuántas formas hay de subir una escalera de n escalones dando pasos de 1 o 2". Entrega la versión memoizada y explica cuáles son los subproblemas que se solapan.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y el problema de la escalera. **¿Por qué es importante?** la DP aparece en entrevistas técnicas constantemente y en problemas reales: rutas óptimas, diffs de texto, asignación de recursos, subsecuencias. Reconocer "esto tiene subproblemas repetidos" y aplicar memoización es una de las habilidades que más distingue a un programador que resuelve de uno que solo codifica. Fuentes: [Dynamic programming (Wikipedia)](https://en.wikipedia.org/wiki/Dynamic_programming).
 **Conceptos clave:** subproblemas solapados, memoización, tabla de resultados, exponencial vs lineal.
 **Cuándo no usarlo:** si los subproblemas no se repiten (cada uno es único), la DP no aporta y añade complejidad; úsala solo cuando detectes recálculo del mismo subproblema.

@@ -90,9 +90,8 @@ Resultado esperado: ambos `put-item` terminan sin error, aunque el segundo item 
 Pista: intentá un `put-item` sin `sequence` (solo `shipmentId`) — ese es el fallo deliberado: `ValidationException: One or more parameter values were invalid: Missing the key sequence in the item`. A diferencia de los atributos normales, los de la clave primaria no son opcionales.
 #### Paso 6 · Práctica independiente
 Agregá un tercer evento (`sequence: 3`, `tipo: en_ruta`) con un atributo que ningún evento anterior tenga (por ejemplo `conductorId`), y confirmá con `get-item` que los tres eventos conviven en la misma tabla sin que ninguno necesite los atributos de los otros dos.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los tres `put-item`, el error de clave incompleta del Paso 5, y una frase explicando por qué ninguno de los tres eventos tiene la misma forma. Siguiente paso: tablas, items y atributos en detalle. Errores comunes: modelar como SQL sin patrón de acceso. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html.
-### Fallo Deliberado: Missing Key Attribute en DynamoDB
 
 ### Tema 2: Tablas, items y atributos
 
@@ -186,7 +185,7 @@ Resultado esperado: `describe-table` muestra solo dos entradas en `KeySchema` (`
 Pista: pedí un `get-item` con una clave que no existe (`sequence: 99`) para provocar el fallo deliberado — no es una excepción, es la respuesta correcta de DynamoDB: un JSON sin la clave `Item`. Confundir "no hay error" con "sí hay dato" es el error real acá.
 #### Paso 6 · Práctica independiente
 Insertá un evento nuevo con un atributo que no usaste antes (por ejemplo `intentosEntrega: {"N":"2"}`) y recuperalo con `get-item`, confirmando que la tabla no tuvo que cambiar para aceptarlo.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `describe-table`, el `get-item` vacío del Paso 5 y el `get-item` con el atributo nuevo del Paso 6; explicá por qué ninguno de los tres pasos requirió tocar la definición de la tabla. Siguiente paso: tipos de dato. Errores comunes: atributos innecesarios y capacidad sin medir. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
 
 ### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M
@@ -385,7 +384,7 @@ Resultado esperado: el `get-item` devuelve `ubicacion` como un `M` con `lat`/`lo
 Pista: guardá `lat` como texto (`{"S":"4.6097"}`) en vez de número para provocar el fallo deliberado: el `put-item` no rechaza el string, pero una comparación o un rango numérico posterior sobre ese campo (por ejemplo "entregas dentro de este radio") dejaría de funcionar correctamente, sin que DynamoDB avise nada en el momento de guardar.
 #### Paso 6 · Práctica independiente
 Agregá un evento con una lista de incidencias (`L` de strings, por ejemplo `["direccion_incorrecta","reintentar"]`) y confirmá que podés leerla completa con `get-item`.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `get-item` del evento con `ubicacion`/`fotos`, el intento con `lat` como string y una frase explicando por qué DynamoDB lo acepta sin error aunque sea un problema real. Siguiente paso: claves. Errores comunes: mezclar tipos y no validar nulos. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingFormat.html.
 
 ### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE)
@@ -469,7 +468,7 @@ Resultado esperado: devuelve los 4 eventos que ya insertaste de `env-4471` (sequ
 Pista: insertá un evento con `shipmentId: env-4471` y `sequence: 2` (un valor que ya existe) pero con `tipo` distinto — ese es el fallo deliberado: no hay ninguna `Exception`, `put-item` sobrescribe en silencio el evento original. La clave compuesta exige unicidad en la combinación, pero no te avisa si repetís una por error.
 #### Paso 6 · Práctica independiente
 Creá un segundo envío completo (`shipmentId: env-5002`, con sus propios `sequence` 1 y 2) y confirmá con `query` que pedir los eventos de `env-4471` nunca devuelve nada de `env-5002`, aunque estén en la misma tabla.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá el `query` de `env-4471`, la sobrescritura silenciosa del Paso 5 y el `query` que separa ambos envíos; explicá qué patrón de acceso justifica la clave compuesta acá. Siguiente paso: índices. Errores comunes: clave caliente y consultas no previstas. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
 
 ### Tema 5: Índices secundarios globales (GSI) y locales (LSI)
@@ -556,7 +555,7 @@ Resultado esperado: la `query` sobre `EstadoIndex` devuelve el evento de `env-44
 Pista: repetí la misma `query` pero con `--index-name EstadoIndex2` (un nombre que no existe) para provocar el fallo deliberado: `ValidationException: The table does not have the specified index`. El nombre del índice no es cosmético, es parte de la consulta.
 #### Paso 6 · Práctica independiente
 Agregá un evento `entregado` para `env-5002` y confirmá con la misma `query` sobre `EstadoIndex` que ahora devuelve los eventos `entregado` de ambos envíos, ordenados por `sequence` dentro de ese estado.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá la creación del índice, la `query` exitosa, el error de índice inexistente del Paso 5 y la `query` con dos envíos del Paso 6; explicá qué pregunta resuelve `EstadoIndex` que la clave primaria no resuelve. Siguiente paso: consultas. Errores comunes: indexar todo y olvidar capacidad. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html.
 
 ### Tema 6: Query vs Scan
@@ -656,7 +655,7 @@ Resultado esperado: el `scan` reporta `ScannedCount` igual al total de eventos d
 Pista: agregá `--filter-expression "tipo = :t" --expression-attribute-values '{":t":{"S":"entregado"}}'` al `scan` del Paso 4 para provocar el fallo deliberado de rendimiento: `Count` baja (solo los eventos `entregado`), pero `ScannedCount` se queda igual de alto — el filtro se aplicó después de leer la tabla completa, no antes.
 #### Paso 6 · Práctica independiente
 Repetí la comparación `scan` vs `query` después de insertar 5 eventos más de `env-5002`, y confirmá que el `ScannedCount` de la `query` sobre `env-4471` no cambió, mientras que el del `scan` sí.
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 Entregá los dos `ScannedCount` del Paso 4, el `scan` con filtro del Paso 5 y la comparación del Paso 6; explicá en una frase por qué RutaFlow no podría usar Scan para su API de tracking en producción. Siguiente paso: seguridad. Errores comunes: filtrar después de leer y no paginar. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html.
 
 ## Laboratorio práctico

@@ -133,9 +133,9 @@ expect(resultados).toHaveNoViolations();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un campo de error accesible, y un test `vitest-axe` que confirme cero violaciones. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con una auditoría automatizada real que un componente no tiene violaciones de accesibilidad, y ves en código exactamente qué desconexión semántica dispara una violación real. El siguiente tema confirma que la sanitización automática de Angular efectivamente bloquea contenido no confiable. **Evidencia:** entrega el resultado de ambos tests en verde, y la violación real de axe que produce el fallo deliberado al desasociar el label. Fuentes oficiales: [Angular — Accessibility](https://angular.dev/best-practices/a11y).
+Ya confirmas con una auditoría automatizada real que un componente no tiene violaciones de accesibilidad, y ves en código exactamente qué desconexión semántica dispara una violación real. El siguiente tema confirma que la sanitización automática de Angular efectivamente bloquea contenido no confiable. Fuentes oficiales: [Angular — Accessibility](https://angular.dev/best-practices/a11y).
 
 **Errores comunes:** usar `role="button"` sin reconstruir el comportamiento de teclado completo; confiar solo en una puntuación de Lighthouse sin ejecutar auditorías automatizadas en cada test de componente.
 
@@ -265,9 +265,9 @@ const contenidoConBypass = sanitizer.____('<img src=x onerror="alert(1)">');
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `[innerHTML]` normal, y un test que confirme que Angular elimina una etiqueta `<script>` automáticamente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas con un test real las fronteras exactas de la sanitización automática de Angular: protege bindings de plantilla, no manipulación directa del DOM ni bypasses explícitos. El siguiente tema confirma que la pluralización de mensajes traducidos usa reglas gramaticales reales, no concatenación. **Evidencia:** entrega el resultado de ambos tests en verde, y la confirmación de que la manipulación directa del DOM queda fuera de la sanitización automática. Fuentes oficiales: [Angular — Security](https://angular.dev/best-practices/security).
+Ya confirmas con un test real las fronteras exactas de la sanitización automática de Angular: protege bindings de plantilla, no manipulación directa del DOM ni bypasses explícitos. El siguiente tema confirma que la pluralización de mensajes traducidos usa reglas gramaticales reales, no concatenación. Fuentes oficiales: [Angular — Security](https://angular.dev/best-practices/security).
 
 **Errores comunes:** creer que la sanitización automática cubre cualquier acceso al DOM, incluyendo manipulación directa vía `nativeElement`; usar `bypassSecurityTrustHtml` para silenciar una advertencia sobre contenido de usuario sin revisión real.
 
@@ -379,9 +379,9 @@ const categoria = reglasEspanol.____(cantidad);
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función de pluralización basada en `Intl.PluralRules`, y un test que confirme la categoría correcta para al menos dos cantidades. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya usas `Intl.PluralRules` real para seleccionar la forma gramatical correcta de un mensaje según la cantidad, en vez de concatenación manual que solo funciona por coincidencia en algunos idiomas. El siguiente y último tema de este módulo confirma que el contenido diferido con `@defer` efectivamente no bloquea la carga inicial. **Evidencia:** entrega el resultado de los tres tests en verde, y la explicación de por qué la implementación manual se rompería en árabe aunque pase en español. Fuentes oficiales: [MDN — Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) y [Angular — i18n](https://angular.dev/guide/i18n).
+Ya usas `Intl.PluralRules` real para seleccionar la forma gramatical correcta de un mensaje según la cantidad, en vez de concatenación manual que solo funciona por coincidencia en algunos idiomas. El siguiente y último tema de este módulo confirma que el contenido diferido con `@defer` efectivamente no bloquea la carga inicial. Fuentes oficiales: [MDN — Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) y [Angular — i18n](https://angular.dev/guide/i18n).
 
 **Errores comunes:** concatenar manualmente cantidad y texto asumiendo la regla "singular si es 1, plural en cualquier otro caso", que solo es correcta para algunos idiomas; deducir la moneda del locale del usuario en vez de tratarla como un dato explícito del dominio.
 
@@ -513,9 +513,9 @@ await bloqueDeferido.____();
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un bloque `@defer` y `@placeholder`, y un test que confirme que el contenido pesado no está presente inicialmente. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre y evidencia
+#### Paso 7 · Cierre
 
-Ya confirmas en código, con la API oficial de test de bloques diferidos, que `@defer` efectivamente reduce el contenido renderizado en la carga inicial, el beneficio de rendimiento real que promete. Este era el último tema del módulo; el siguiente paso natural es aplicar estas cuatro garantías combinadas sobre un proyecto propio de tamaño real. **Evidencia:** entrega el resultado de ambos tests en verde, y la presencia inmediata del contenido pesado que produce el fallo deliberado al quitar `@defer`. Fuentes oficiales: [Angular — Deferrable Views](https://angular.dev/guide/defer) y [Angular — Testing `@defer`](https://angular.dev/guide/defer#testing-defer).
+Ya confirmas en código, con la API oficial de test de bloques diferidos, que `@defer` efectivamente reduce el contenido renderizado en la carga inicial, el beneficio de rendimiento real que promete. Este era el último tema del módulo; el siguiente paso natural es aplicar estas cuatro garantías combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Angular — Deferrable Views](https://angular.dev/guide/defer) y [Angular — Testing `@defer`](https://angular.dev/guide/defer#testing-defer).
 
 **Errores comunes:** agregar `@defer` sin verificar en un test que el contenido efectivamente se pospone; establecer presupuestos de bundle como advertencia (`maximumWarning`) sin un límite de error (`maximumError`) que realmente bloquee un build en CI.
 
@@ -569,7 +569,7 @@ Trabaja sobre el proyecto del módulo 13 y conserva una versión desplegable ant
 
 Derivado de la [documentación oficial](https://angular.dev/overview), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 46 temas.**
 
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
+| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
 |---|---|---|
 | Fundamentos | `standalone components` · `templates` · `bindings` · `directivas` · `pipes` · `servicios` · `inyección de dependencias` | consola |
 | Reactividad | `signals` · `computed` · `effect` · `linkedSignal` · `resource` · `RxJS` · `interop signal-observable` · `estado derivado` | consola |
