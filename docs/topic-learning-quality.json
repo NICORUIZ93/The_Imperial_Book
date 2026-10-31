@@ -125,18 +125,18 @@
       "repeatedDemo": 0
     },
     "java": {
-      "topics": 83,
-      "explanation": 83,
-      "code": 83,
-      "visual": 27,
-      "filePath": 83,
-      "runCommand": 83,
-      "expectedResult": 83,
-      "practice": 83,
-      "project": 83,
-      "modelMental": 83,
-      "limitsDecision": 83,
-      "practicable": 83,
+      "topics": 85,
+      "explanation": 85,
+      "code": 85,
+      "visual": 28,
+      "filePath": 85,
+      "runCommand": 85,
+      "expectedResult": 85,
+      "practice": 85,
+      "project": 85,
+      "modelMental": 85,
+      "limitsDecision": 85,
+      "practicable": 85,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -14306,6 +14306,50 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 6: Patrones estructurales — elegir por intención",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

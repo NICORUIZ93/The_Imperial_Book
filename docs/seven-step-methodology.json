@@ -141,24 +141,24 @@
       "complete": 56
     },
     "java": {
-      "topics": 83,
-      "objective": 83,
-      "prerequisites": 83,
-      "context": 83,
-      "theoryAnalogy": 83,
-      "guidedDemo": 83,
-      "codeExplanation": 83,
-      "execution": 83,
-      "expectedResult": 83,
-      "deliberateFailure": 83,
-      "guidedPractice": 83,
-      "independentPractice": 83,
-      "closure": 83,
-      "commonErrors": 83,
-      "resources": 83,
-      "standaloneExample": 83,
-      "learningEvidence": 83,
-      "complete": 83
+      "topics": 85,
+      "objective": 85,
+      "prerequisites": 85,
+      "context": 85,
+      "theoryAnalogy": 85,
+      "guidedDemo": 85,
+      "codeExplanation": 85,
+      "execution": 85,
+      "expectedResult": 85,
+      "deliberateFailure": 85,
+      "guidedPractice": 85,
+      "independentPractice": 85,
+      "closure": 85,
+      "commonErrors": 85,
+      "resources": 85,
+      "standaloneExample": 85,
+      "learningEvidence": 85,
+      "complete": 85
     },
     "javascript": {
       "topics": 88,
@@ -16888,6 +16888,58 @@
       {
         "module": 12,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 6: Patrones estructurales — elegir por intención",
         "criteria": {
           "objective": true,
           "prerequisites": true,

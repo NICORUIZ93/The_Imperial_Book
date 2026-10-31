@@ -416,7 +416,7 @@
     },
     {
       "path": "docs/biblioteca/shvets-patrones.md",
-      "lines": 37,
+      "lines": 41,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -609,7 +609,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1904,
+      "lines": 1911,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -641,7 +641,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12458,
+      "lines": 12480,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -649,7 +649,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1128,
+      "lines": 1130,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -754,7 +754,7 @@
     },
     {
       "path": "docs/integracion-biblioteca-externa-progreso.md",
-      "lines": 186,
+      "lines": 200,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -804,7 +804,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10023,
+      "lines": 10037,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -893,7 +893,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12086,
+      "lines": 12108,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1001,7 +1001,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28863,
+      "lines": 28915,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1036,7 +1036,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24427,
+      "lines": 24471,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2228,7 +2228,7 @@
     },
     {
       "path": "examples/java/patrones-rutaflow/README.md",
-      "lines": 84,
+      "lines": 90,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -5111,8 +5111,195 @@
       "headings": []
     },
     {
+      "path": "examples/spring-kafka-rutaflow/README.md",
+      "lines": 102,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Laboratorio: Spring Boot + Kafka + RutaFlow",
+        "## Requisitos",
+        "## Ejecutar las pruebas",
+        "## Ejecutar el flujo manual",
+        "## Fallos que deben poder explicarse",
+        "## Fuera del alcance",
+        "## Fuentes primarias"
+      ]
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/VERIFICATION.md",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Verificaci\u00f3n del laboratorio \u2014 2026-10-30",
+        "## L\u00edmites de esta evidencia"
+      ]
+    },
+    {
       "path": "examples/spring-kafka-rutaflow/compose.yaml",
       "lines": 40,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/RutaflowKafkaApplication.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/config/EventOrBytesSerializer.java",
+      "lines": 33,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/config/KafkaConfiguration.java",
+      "lines": 42,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/consumer/InvalidEventException.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/consumer/RutaProjection.java",
+      "lines": 12,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/consumer/RuteoListener.java",
+      "lines": 45,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/consumer/RuteoService.java",
+      "lines": 100,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/envio/ApiExceptionHandler.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/envio/CrearEnvioService.java",
+      "lines": 55,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/envio/EnvioController.java",
+      "lines": 50,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/envio/EnvioRepository.java",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/envio/InvalidEnvioException.java",
+      "lines": 8,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/event/EnvioCreado.java",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/event/EnvioEventPublisher.java",
+      "lines": 26,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/outbox/OutboxDispatcher.java",
+      "lines": 81,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/outbox/OutboxEvent.java",
+      "lines": 13,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/java/com/academia/rutaflow/outbox/OutboxRepository.java",
+      "lines": 111,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/main/resources/application.yml",
+      "lines": 42,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/test/java/com/academia/rutaflow/KafkaFlowIntegrationTest.java",
+      "lines": 254,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/spring-kafka-rutaflow/src/test/resources/application-test.yml",
+      "lines": 15,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -9274,7 +9461,7 @@
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 435,
+      "lines": 566,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11521,7 +11708,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4913,
+      "lines": 4921,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

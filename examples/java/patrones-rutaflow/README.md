@@ -7,6 +7,7 @@ java examples/java/patrones-rutaflow/StrategyDemo.java
 java examples/java/patrones-rutaflow/SingletonDemo.java
 java examples/java/patrones-rutaflow/ObserverDemo.java
 java examples/java/patrones-rutaflow/CreationalPatternsDemo.java
+java examples/java/patrones-rutaflow/PrototypeDemo.java
 java examples/java/patrones-rutaflow/StructuralPatternsDemo.java
 java examples/java/patrones-rutaflow/BehavioralPatternsDemo.java
 ```
@@ -80,4 +81,9 @@ Estos ejemplos de patrones GoF son educativos y en memoria: no implementan
 persistencia, concurrencia de producción, Saga, Outbox ni entrega de eventos
 entre procesos. La lección `web/public/content/java/modulo-12.md` desarrolla
 diagnóstico, corrección y ejercicios para Builder, Factory Method, Abstract Factory,
-Strategy y SOLID.
+Strategy, Prototype, patrones estructurales y SOLID.
+
+`PrototypeDemo` hace visible la diferencia entre copiar el contenedor y compartir
+accidentalmente una colección mutable. La ejecución normal modifica la copia sin
+alterar el original. Añade `fallo` al comando para reproducir
+`copia superficial compartio etiquetas` y diagnosticar la referencia compartida.

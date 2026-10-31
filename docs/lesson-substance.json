@@ -1647,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ba5fe73ac6aedadd0ceb34dd3bba8630f8192072955fa98cae7c32228e88fd23",
+    "fingerprint": "ade80b20576ba5270a10d8041fbc43f6100e30f61754a26d75c47a3145c3318d",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 202,
@@ -1662,7 +1662,7 @@
     },
     "modules": 245,
     "modulesWithLegacySections": 184,
-    "topics": 1098,
+    "topics": 1100,
     "topicsWithIssues": 303
   },
   "topics": {
@@ -6601,6 +6601,20 @@
         "tailWords": 90,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
         "words": 1139
+      },
+      {
+        "issues": [],
+        "module": 12,
+        "tailWords": 55,
+        "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
+        "words": 731
+      },
+      {
+        "issues": [],
+        "module": 12,
+        "tailWords": 78,
+        "topic": "Tema 6: Patrones estructurales — elegir por intención",
+        "words": 743
       },
       {
         "issues": [

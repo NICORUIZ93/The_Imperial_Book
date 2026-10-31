@@ -8,7 +8,7 @@ La columna de extracción solo comprueba las primeras ocho páginas. “Revisar 
 |---|---:|---|---|
 | `Programacion/Arquitectura_Patrones_CleanCode/Introduccion al analisis y diseno de algoritmos - Baase Van Gelder 3ed.pdf` | 706 | Texto disponible | Pendiente |
 | `Programacion/Arquitectura_Patrones_CleanCode/Programacion_Clean_Code_Manual_Avanzado.pdf` | 453 | Revisar visual/OCR | Solo portada e índice: [ficha](clean-code.md) |
-| `Programacion/Arquitectura_Patrones_CleanCode/Sumergete en los patrones de diseno - Alexander Shvets.pdf` | 437 | Texto disponible | Parcial: [3 capítulos](shvets-patrones.md) |
+| `Programacion/Arquitectura_Patrones_CleanCode/Sumergete en los patrones de diseno - Alexander Shvets.pdf` | 437 | Texto disponible | Parcial: capítulos indicados en la [ficha](shvets-patrones.md); Prototype y estructurales solo contrastados en la web oficial |
 | `Programacion/CPP_C_Ensamblador/CUARTA EDICIÓN CÓMO PROGRAMAR EN C++.pdf` | 1379 | Texto disponible | Pendiente |
 | `Programacion/CPP_C_Ensamblador/Cómo programar en C++.pdf` | 1088 | Revisar visual/OCR | Pendiente |
 | `Programacion/CPP_C_Ensamblador/Introducción a la Programación, USERS - Juan Carlos Casale.PDF` | 388 | Revisar visual/OCR | Pendiente |

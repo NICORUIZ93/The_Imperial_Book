@@ -2846,6 +2846,14 @@
       {
         "title": "SOLID y cuándo NO aplicar un patrón",
         "fragment": "tema-4-solid-y-cuando-no-aplicar-un-patron"
+      },
+      {
+        "title": "Prototype — copiar configuración sin compartir estado mutable",
+        "fragment": "tema-5-prototype-copiar-configuracion-sin-compartir-estado-mutable"
+      },
+      {
+        "title": "Patrones estructurales — elegir por intención",
+        "fragment": "tema-6-patrones-estructurales-elegir-por-intencion"
       }
     ],
     "13": [

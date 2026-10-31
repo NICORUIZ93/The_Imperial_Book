@@ -85,15 +85,15 @@
       "officialSource": 39
     },
     "java": {
-      "topics": 83,
-      "code": 83,
-      "commentedCode": 57,
-      "mermaid": 24,
+      "topics": 85,
+      "code": 85,
+      "commentedCode": 58,
+      "mermaid": 25,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 83,
-      "runCommand": 83,
+      "filePath": 85,
+      "runCommand": 85,
       "officialSource": 41
     },
     "spring-boot": {
@@ -1252,6 +1252,13 @@
       "track": "java",
       "module": 1,
       "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 6: Patrones estructurales — elegir por intención",
       "missingCode": false,
       "missingComments": true
     },

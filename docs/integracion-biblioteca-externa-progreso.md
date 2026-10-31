@@ -183,3 +183,17 @@ La evidencia de ejecución y sus límites se conserva en
 Este incremento usa código local y documentación primaria de Spring; no añade lectura
 verificada de libros. El disco externo no está montado en esta sesión. La lectura integral
 de la biblioteca y la integración de todos los temas de las imágenes siguen pendientes.
+
+## Investigación web e integración Java — 2026-10-30
+
+Se consultaron el índice de prueba oficial de *Sumérgete en los patrones de diseño*, la página
+oficial de Prototype y el catálogo oficial de patrones estructurales. El índice confirma
+Prototype en las páginas impresas 132–147 y los patrones estructurales en 158–265. Esta consulta
+no se presenta como lectura de los capítulos completos del PDF del disco externo.
+
+Se integraron dos temas practicables en `web/public/content/java/modulo-12.md`: copia profunda
+con Prototype y selección de patrones estructurales por intención. El nuevo
+`examples/java/patrones-rutaflow/PrototypeDemo.java` demuestra una copia independiente y reproduce
+el fallo de una lista compartida. La demo estructural existente ejecuta Adapter, Decorator,
+Facade, Composite, Proxy y Bridge. Flyweight queda pendiente hasta diseñar una medición de memoria
+representativa; no se añadió una caché sin evidencia.

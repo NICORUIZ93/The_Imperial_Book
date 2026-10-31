@@ -2659,6 +2659,28 @@
       ]
     },
     {
+      "id": "java:12:5",
+      "track": "java",
+      "module": 12,
+      "position": 5,
+      "title": "Prototype — copiar configuración sin compartir estado mutable",
+      "file": "web/public/content/java/modulo-12.md",
+      "requires": [
+        "java:12:4"
+      ]
+    },
+    {
+      "id": "java:12:6",
+      "track": "java",
+      "module": 12,
+      "position": 6,
+      "title": "Patrones estructurales — elegir por intención",
+      "file": "web/public/content/java/modulo-12.md",
+      "requires": [
+        "java:12:5"
+      ]
+    },
+    {
       "id": "java:13:1",
       "track": "java",
       "module": 13,
@@ -2666,7 +2688,7 @@
       "title": "Arquitectura por capas del proyecto integrador",
       "file": "web/public/content/java/modulo-13.md",
       "requires": [
-        "java:12:4"
+        "java:12:6"
       ]
     },
     {

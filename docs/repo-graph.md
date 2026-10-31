@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 00:49 UTC
+Generated: 2026-10-31 00:53 UTC
 Root: `Academia_Floci`
-Indexed files: 935
+Indexed files: 957
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,17 +19,17 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 39 files
 - `course-content`: 251 files
 - `documentation`: 57 files
-- `example`: 467 files
+- `example`: 489 files
 - `local-infra`: 1 files
 - `project-file`: 60 files
 
 ## File Types
 
-- `.md`: 315
+- `.md`: 317
 - `.py`: 165
 - `.json`: 72
+- `.java`: 72
 - `.ts`: 67
-- `.java`: 54
 - `.js`: 54
 - `.html`: 38
 - `.rs`: 25
@@ -39,9 +39,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.mjs`: 17
 - `.kt`: 13
 - `.yaml`: 9
+- `.yml`: 8
 - `.scss`: 8
 - `.sh`: 7
-- `.yml`: 6
 - `.jsx`: 6
 - `.tf`: 4
 - `.example`: 3
@@ -261,7 +261,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
 - `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 449 more files
+- ... 471 more files
 
 ### local-infra
 
@@ -281,10 +281,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (1904 lines)
-- `docs/course-depth-review.json` (12458 lines)
+- `docs/code-visual-quality.json` (1911 lines)
+- `docs/course-depth-review.json` (12480 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10023 lines)
+- `docs/lesson-substance.json` (10037 lines)
 - ... 42 more files

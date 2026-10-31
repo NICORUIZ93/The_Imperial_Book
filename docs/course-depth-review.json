@@ -3,7 +3,7 @@
   "totals": {
     "tracks": 14,
     "modules": 245,
-    "topics": 1098,
+    "topics": 1100,
     "topicsWithSignals": 147,
     "newLaboratories": 25
   },
@@ -7162,6 +7162,28 @@
       "signals": [
         "clase-java-no-visible"
       ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "title": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
+      "file": "web/public/content/java/modulo-12.md",
+      "line": 309,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "title": "Tema 6: Patrones estructurales — elegir por intención",
+      "file": "web/public/content/java/modulo-12.md",
+      "line": 382,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

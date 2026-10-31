@@ -306,6 +306,135 @@ Completa la extracción y divide la interfaz de persistencia en `ConsultaEntrega
 Guarda la versión mezclada y la refactorizada, identifica dónde aplicarían OCP, LSP, ISP y DIP y justifica qué abstracción aporta valor. Errores comunes: interpretar OCP como “nunca editar código”, fortalecer precondiciones en una subclase, crear interfaces gigantes o separar clases sin razones de cambio distintas. Lectura contrastada: Alexander Shvets, *Sumérgete en los patrones de diseño*, edición v2021-1.7, páginas PDF 35–75; referencia técnica: https://dev.java/learn/classes-objects/.
 **¿Por qué es importante?** Una solución debe admitir los cambios probables y conservar contratos, no acumular patrones por nombre.
 
+### Tema 5: Prototype — copiar configuración sin compartir estado mutable
+
+**¿Por qué es importante?** Una copia superficial puede parecer correcta hasta que cambiar la copia modifica también el original. Prototype permite crear objetos desde una configuración existente, pero exige decidir qué referencias se comparten y cuáles se copian.
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar implementarás una interfaz de copia, distinguirás copia superficial de profunda y demostrarás con una colección mutable que original y copia son independientes. **Prerrequisitos:** JDK 25, listas mutables y constructores; comprueba `java --version`. El archivo de referencia es `examples/java/patrones-rutaflow/PrototypeDemo.java`.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow conserva una plantilla de paquete EXPRESS con etiquetas predeterminadas. Cada envío parte de esa plantilla y añade etiquetas propias. Reconstruir todos los campos repite configuración; compartir la misma lista permite que una etiqueta de un envío contamine los siguientes.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+Prototype delega la copia al objeto mediante un contrato común. El cliente conoce `Prototype<T>`, no necesita inspeccionar campos privados ni decidir la clase concreta. En Java, copiar valores primitivos o referencias inmutables suele ser suficiente; una lista mutable necesita una colección nueva. Una copia profunda no significa duplicar indiscriminadamente recursos externos: conexiones, archivos o clientes de red requieren una política explícita.
+
+En este laboratorio se usa un constructor de copia y `new ArrayList<>(source.labels)`. Se evita `Object.clone()` porque su copia de campos es superficial y su contrato añade complejidad innecesaria para este caso. La analogía es una plantilla impresa: cada operador recibe una hoja nueva; escribir “urgente” en una hoja no modifica la plantilla ni otras hojas.
+
+```mermaid
+flowchart LR
+    O[Original] --> LA[Lista A: fragil]
+    CP[Copia profunda] --> LB[Lista B: fragil + urgente]
+    OS[Original superficial] --> LC[Lista compartida]
+    CS[Copia superficial] --> LC
+```
+
+En la rama superior hay dos listas: cambiar la copia no alcanza al original. En la rama inferior,
+las dos instancias apuntan a la misma lista y cualquier mutación resulta visible desde ambas.
+**Límite:** el diagrama solo representa una colección; un grafo con ciclos requiere una política
+de copia y seguimiento de identidades más cuidadosos.
+
+Fuentes oficiales del autor: [Prototype de Alexander Shvets](https://refactoring.guru/design-patterns/prototype) y [versión de prueba de la edición v2021-1.7](https://refactoring.guru/files/design-patterns-es-demo.pdf). Su índice ubica el capítulo en las páginas impresas 132–147; la consulta web no equivale a leer el capítulo completo del disco externo.
+
+#### Paso 4 · Demostración guiada
+
+Desde la raíz crea una copia independiente y ejecuta el archivo concreto:
+
+```bash
+mkdir -p ejemplo-prototype
+cp -R examples/java/patrones-rutaflow/PrototypeDemo.java ejemplo-prototype/PrototypeDemo.java
+java ejemplo-prototype/PrototypeDemo.java
+```
+
+**Salida esperada:**
+
+```text
+original=EXPRESS[fragil]
+copia=EXPRESS[fragil, urgente]
+independiente=true
+```
+
+Abre el archivo y sigue el flujo: el constructor público copia la lista recibida; el constructor privado recibe otro prototipo; `copy()` devuelve una instancia terminada; después solo la copia recibe `urgente`.
+
+Ejecuta ahora el **fallo deliberado** y diagnostica el error:
+
+```bash
+java ejemplo-prototype/PrototypeDemo.java fallo
+```
+
+La clase deliberadamente defectuosa reutiliza la misma lista. Debes obtener `java.lang.IllegalStateException: copia superficial compartio etiquetas`. El problema no está en `addLabel`: ambas instancias apuntan a la misma colección.
+
+#### Paso 5 · Práctica guiada
+
+**Pista:** crea el archivo `PackageTemplate.java` en `ejemplo-prototype/` y añade un campo mutable `Map<String, String> metadata`. Primero asígnalo directamente en el constructor de copia y demuestra que cambiar `metadata` en la copia afecta al original. Corrige el constructor con un mapa nuevo y repite hasta que original y copia diverjan. Conserva las dos salidas como evidencia.
+
+#### Paso 6 · Práctica independiente
+
+Añade un subtipo `ColdPackageTemplate` con temperatura máxima. Haz que su `copy()` conserve el subtipo sin que el cliente haga `instanceof`. Documenta qué campos copias, cuáles compartes por ser inmutables y qué harías con un cliente HTTP. Compara Prototype con Builder: Prototype parte de un ejemplar configurado; Builder reúne pasos para crear un producto nuevo. En el proyecto integrador, úsalo solo si existen configuraciones repetidas que una prueba pueda demostrar.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega `PackageTemplate.java`, el fallo por referencia compartida, la corrección y una tabla de política de copia por campo. Errores comunes: llamar “copia profunda” a una nueva instancia que comparte listas, copiar una conexión externa o depender de la clase concreta en el cliente. Como siguiente tema, usa composición para elegir qué relación estructural necesitas.
+
+### Tema 6: Patrones estructurales — elegir por intención
+
+**¿Por qué es importante?** Adapter, Bridge, Decorator, Facade y Proxy pueden verse como objetos que delegan, pero resuelven problemas distintos. Elegir por la forma del diagrama produce clases parecidas con responsabilidades equivocadas; elegir por intención permite diagnosticar el cambio que cada patrón debe aislar.
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar ejecutarás seis patrones estructurales, identificarás el problema que resuelve cada uno y justificarás cuándo una clase envolvente es Adapter, Decorator, Facade o Proxy. **Prerrequisitos:** JDK 25, interfaces y composición; comprueba `java --version`. Usa `examples/java/patrones-rutaflow/StructuralPatternsDemo.java`.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow debe integrar un etiquetador legado, añadir registro a notificaciones, simplificar la creación de un envío, representar paquetes anidados, controlar una cotización y combinar alertas con canales. Una sola clase “Helper” escondería las diferencias y acumularía razones de cambio.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Patrón | Intención en RutaFlow | Pregunta diagnóstica |
+|---|---|---|
+| Adapter | Traducir `RF-42` a la interfaz numérica legada | ¿Las interfaces son incompatibles? |
+| Bridge | Variar alerta y canal en dimensiones separadas | ¿Dos jerarquías cambiarán independientemente? |
+| Composite | Tratar paquete simple y grupo con el mismo contrato | ¿Existe una estructura parte-todo recursiva? |
+| Decorator | Añadir registro conservando `Notificacion` | ¿Quiero apilar comportamiento sin cambiar el contrato? |
+| Facade | Ofrecer una operación simple sobre varios pasos | ¿El cliente necesita una entrada reducida al subsistema? |
+| Proxy | Controlar acceso a una cotización con el mismo contrato | ¿Necesito interceptar acceso al objeto real? |
+| Flyweight | Compartir estado intrínseco entre muchísimos objetos | ¿Medí un problema de memoria por estado repetido? |
+
+La forma común es composición y delegación; la intención cambia. Adapter cambia la interfaz, Decorator conserva y amplía comportamiento, Proxy conserva y controla acceso, y Facade presenta una interfaz de más alto nivel para un subsistema. Flyweight no está implementado: sin una medición de memoria y un volumen representativo, añadir caché compartida sería una demostración engañosa.
+
+Fuentes oficiales del autor: [catálogo estructural](https://refactoring.guru/design-patterns/structural-patterns) y [Adapter](https://refactoring.guru/design-patterns/adapter).
+
+#### Paso 4 · Demostración guiada
+
+Parte de una copia independiente, actualiza el nombre del archivo si experimentas y ejecuta:
+
+```bash
+mkdir -p ejemplo-patrones-estructurales
+cp -R examples/java/patrones-rutaflow/StructuralPatternsDemo.java ejemplo-patrones-estructurales/StructuralPatternsDemo.java
+java ejemplo-patrones-estructurales/StructuralPatternsDemo.java
+```
+
+**Salida esperada:** seis líneas: `adapter=LEGACY-42`, `decorator=log[email(RF-1)]`, el flujo de Facade, el árbol de Composite, `proxy=1500` y `bridge=sms:estado=EN_CAMINO`. Abre `ejemplo-patrones-estructurales/StructuralPatternsDemo.java` y señala el contrato que conserva o transforma cada clase. La clase `LabelAdapter` explica la conversión en `crear`; cada wrapper delega mediante su campo privado.
+
+**Fallo deliberado:** en una copia del archivo, cambia `new LabelAdapter(...).crear("RF-42")` por `.crear("LEGACY-42")`. Ejecuta el archivo: `LabelAdapter` debe lanzar `IllegalArgumentException: codigo invalido`. La reparación consiste en entregar el contrato público `RF-<número>` al adapter; no en relajar silenciosamente la validación del servicio legado.
+
+Después cambia `new AuthorizedQuoteProxy(new RealQuote(), true)` a `false`. Debes obtener `SecurityException: cotizacion no autorizada`. La clase sigue siendo Proxy porque conserva `Quote` y controla el acceso; no es Adapter ni Decorator por tener un campo delegado.
+
+#### Paso 5 · Práctica guiada
+
+**Pista:** crea `CachedQuoteProxy` en `ejemplo-patrones-estructurales/StructuralPatternsDemo.java`; conserva el contrato `Quote`, invoca al objeto real una sola vez y cuenta accesos. Ejecuta dos llamadas y demuestra mismo valor, dos accesos al proxy y una llamada al objeto real. Explica por qué es Proxy. Luego envuelve `Email` con dos decoradores y registra el orden visible de ejecución.
+
+#### Paso 6 · Práctica independiente
+
+Añade `PushChannel` sin modificar `TrackingAlert` y una segunda abstracción `DeliveryDelayAlert` que use los mismos canales. Dibuja la matriz de dos alertas por tres canales y explica cómo Bridge evita seis subclases combinadas. Modela después un `PackageGroup` con tres niveles y prueba una hoja vacía. En el proyecto integrador, registra qué cambio real justifica cada patrón. No implementes Flyweight hasta definir qué estado es intrínseco, qué estado llega desde el contexto y cómo medirías memoria antes y después.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega las salidas normales, los dos fallos diagnosticados, el proxy con conteos y la matriz de Bridge. Para cada patrón escribe una frase con el cambio que aísla. Errores comunes: llamar Adapter a todo wrapper, convertir Facade en objeto omnisciente, usar Proxy para añadir responsabilidades de presentación y aplicar Flyweight sin evidencia de presión de memoria. El siguiente paso es leer los capítulos completos cuando el disco externo esté disponible y contrastar los diagramas con estas adaptaciones Java.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** refactorizar un módulo propio aplicando al menos dos patrones de diseño justificados por una necesidad real.
@@ -320,6 +449,8 @@ Guarda la versión mezclada y la refactorizada, identifica dónde aplicarían OC
 | 4 | Crear una familia local e internacional con Abstract Factory | Ver Tema 3 | Mantiene compatibles etiqueta y guía |
 | 5 | Refactorizar una clase que viola SRP | Ver Tema 4 | Separa sus responsabilidades distintas |
 | 6 | Identificar un caso de sobre-ingeniería en tu propio código | Ver Tema 4 | Documenta por qué el patrón no aportaría valor ahí |
+| 7 | Copiar una plantilla con una colección mutable | Ver Tema 5 | Demuestra independencia entre original y copia |
+| 8 | Clasificar seis patrones estructurales por intención | Ver Tema 6 | Evita decidir solo por la forma del wrapper |
 
 **Verificación:** el laboratorio se considera exitoso si cada patrón responde a una variación concreta, el consumidor no conoce clases de productos de cada familia y el ejemplo de sobre-ingeniería está justificado con una razón específica.
 
