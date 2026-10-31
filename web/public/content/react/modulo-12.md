@@ -174,7 +174,7 @@ Corregí el Paso 5 devolviendo `useEnvios()` dentro de `ListaEnvios` (bajo `Ruta
 
 #### Paso 7 · Cierre
 Entregá la integración correctamente ordenada del Paso 4, la petición indebida provocada en el Paso 5, y la corrección confirmada del Paso 6; explicá por qué el orden en el árbol de componentes determina cuándo efectivamente se dispara una consulta de datos. Siguiente paso: estudia useEnvios en profundidad. Errores comunes: disparar consultas de datos sensibles antes de verificar autenticación, mezclar el store de Zustand con lógica de autenticación que ya tiene su propia fuente en `useAuth`, y duplicar el layout de rutas protegidas en cada vista individual. Fuentes oficiales: https://reactrouter.com/start/framework/routing y https://tanstack.com/query/latest/docs/framework/react/overview.
-**¿Por qué es importante?** El orden de envoltura en el árbol de componentes determina si una consulta de datos se dispara antes o después de verificar autenticación, con implicancias reales de seguridad y de tráfico de red innecesario.
+**Implicación práctica:** El orden de envoltura en el árbol de componentes determina si una consulta de datos se dispara antes o después de verificar autenticación, con implicancias reales de seguridad y de tráfico de red innecesario.
 
 ### Tema 3: useTareas — hook dedicado con TanStack Query
 

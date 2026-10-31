@@ -396,7 +396,7 @@ Corregí el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirmá 
 
 #### Paso 7 · Cierre
 Entregá el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explicá por qué `suppressHydrationWarning` no habría sido la corrección correcta acá: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cerrá el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
-**¿Por qué es importante?** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
+**Implicación práctica:** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
 
 ## Revisión oficial de plataforma — julio de 2026
 

@@ -50,7 +50,7 @@ Xcode, con la opción "Automatically manage signing" habilitada, gestiona autom�
 
 **Analogía:** un certificado de desarrollo es como un pase de acceso temporal válido únicamente para un grupo específico de personas ya identificadas de antemano; un certificado de distribución es como una autorización de circulación pública más amplia, válida para cualquier destinatario que la reciba a través de un canal oficial de distribución (TestFlight, App Store), sin necesidad de registrar de antemano a cada destinatario individual.
 
-**¿Por qué es importante?** Distinguir certificado de desarrollo de certificado de distribución determina qué builds pueden correr únicamente en dispositivos registrados manualmente frente a builds distribuibles más ampliamente a través de TestFlight o la App Store.
+**Implicación práctica:** Distinguir certificado de desarrollo de certificado de distribución determina qué builds pueden correr únicamente en dispositivos registrados manualmente frente a builds distribuibles más ampliamente a través de TestFlight o la App Store.
 
 **Diagrama:**
 
@@ -113,7 +113,7 @@ Tras subir el build, este se procesa automáticamente en App Store Connect y que
 
 **Analogía:** TestFlight es como una función de preestreno limitada antes del estreno oficial en cines: permite recoger reacciones y corregir problemas con una audiencia reducida y controlada, antes de exponer la obra completa al público general en el estreno definitivo (la App Store).
 
-**¿Por qué es importante?** Probar con TestFlight antes de enviar a revisión de la App Store detecta problemas con un grupo controlado de impacto limitado, evitando que esos mismos problemas se descubran directamente en producción frente a la totalidad de usuarios potenciales.
+**Implicación práctica:** Probar con TestFlight antes de enviar a revisión de la App Store detecta problemas con un grupo controlado de impacto limitado, evitando que esos mismos problemas se descubran directamente en producción frente a la totalidad de usuarios potenciales.
 
 **Diagrama:**
 
@@ -200,7 +200,7 @@ Corregí el Paso 5 incrementando también `CFBundleShortVersionString` a "1.3.1"
 
 #### Paso 7 · Cierre
 Entregá la metadata completa del Paso 4, la confusión de versión detectada en el Paso 5, y el changelog del Paso 6; explicá la diferencia entre incrementar solo `CFBundleVersion` (necesario en cada subida, invisible para el usuario) e incrementar también `CFBundleShortVersionString` (cuando el cambio es visible y merece comunicarse). Siguiente paso: estudia cómo automatizar este proceso con CI. Errores comunes: olvidar incrementar `CFBundleVersion` antes de subir, cambiar la versión visible sin que el cambio lo justifique, y omitir la política de privacidad o el cuestionario de privacidad. Fuentes oficiales: https://developer.apple.com/help/app-store-connect/ y https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion.
-**¿Por qué es importante?** Porque la metadata obligatoria (especialmente la política de privacidad) es un requisito no negociable antes de la revisión, y confundir versión de build con versión visible comunica mal los cambios al usuario.
+**Implicación práctica:** La metadata obligatoria (especialmente la política de privacidad) es un requisito no negociable antes de la revisión, y confundir versión de build con versión visible comunica mal los cambios al usuario.
 
 ## Laboratorio práctico
 

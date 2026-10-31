@@ -65,7 +65,7 @@ Este modelo de "flujo continuo de valores observables" es conceptualmente el mis
 
 **Analogía:** un Publisher es como una emisora de radio que transmite continuamente mientras está encendida, y un Subscriber es un receptor sintonizado que reacciona a cada nueva transmisión, en contraste con una llamada telefónica puntual (una función `async`) que produce una única respuesta y luego termina.
 
-**¿Por qué es importante?** Combine modela flujos continuos de valores en el tiempo, un caso de uso distinto al de `async`/`await` (una única operación con resultado final), compartiendo el mismo principio fundamental que `Flow` en Kotlin o RxJS en JavaScript.
+**Implicación práctica:** Combine modela flujos continuos de valores en el tiempo, un caso de uso distinto al de `async`/`await` (una única operación con resultado final), compartiendo el mismo principio fundamental que `Flow` en Kotlin o RxJS en JavaScript.
 
 **Código del ejemplo:**
 
@@ -181,7 +181,7 @@ Muchas APIs nativas de Apple (Core Location para actualizaciones de ubicación, 
 
 **Analogía:** elegir entre Combine y `async`/`await` es como elegir entre suscribirse a un boletín periódico (Combine, para actualizaciones recurrentes) o hacer un pedido puntual con una fecha de entrega esperada (`async`/`await`, para una operación única con un resultado final): ambos son mecanismos de comunicación asíncrona válidos, apropiados para necesidades distintas.
 
-**¿Por qué es importante?** Muchos equipos prefieren `async`/`await` para código nuevo que representa operaciones puntuales, reservando Combine específicamente para flujos continuos de eventos, y manteniendo el conocimiento de Combine necesario para integrarse con APIs de Apple que todavía exponen Publishers nativamente.
+**Implicación práctica:** Muchos equipos prefieren `async`/`await` para código nuevo que representa operaciones puntuales, reservando Combine específicamente para flujos continuos de eventos, y manteniendo el conocimiento de Combine necesario para integrarse con APIs de Apple que todavía exponen Publishers nativamente.
 
 **Diagrama:**
 

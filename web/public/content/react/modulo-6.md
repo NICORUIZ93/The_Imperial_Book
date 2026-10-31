@@ -216,7 +216,7 @@ Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess
 
 #### Paso 7 · Cierre
 Entregá la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explicá por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
-**¿Por qué es importante?** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real del servidor, sin sincronizar manualmente la cache con el resultado exacto de cada mutación.
+**Implicación práctica:** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real del servidor, sin sincronizar manualmente la cache con el resultado exacto de cada mutación.
 
 ### Tema 3: Optimistic updates
 
@@ -321,7 +321,7 @@ Corregí el Paso 5 restaurando `cancelQueries`, y agregá una notificación visu
 
 #### Paso 7 · Cierre
 Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explicá por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cerrá el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
-**¿Por qué es importante?** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
+**Implicación práctica:** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
 
 ## Laboratorio práctico
 

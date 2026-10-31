@@ -92,7 +92,7 @@ Corregí el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agregá 
 
 #### Paso 7 · Cierre
 Entregá el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explicá por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuentes oficiales: https://zustand.docs.pmnd.rs/getting-started/introduction y https://zustand.docs.pmnd.rs/guides/typescript.
-**¿Por qué es importante?** La suscripción selectiva de Zustand evita re-renders innecesarios, y un store único como fuente de verdad evita la divergencia que ocurre cuando el mismo dato vive duplicado en dos lugares.
+**Implicación práctica:** La suscripción selectiva de Zustand evita re-renders innecesarios, y un store único como fuente de verdad evita la divergencia que ocurre cuando el mismo dato vive duplicado en dos lugares.
 
 ### Tema 2: Redux Toolkit — slices y ceremonia
 
@@ -167,7 +167,7 @@ Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.z
 
 #### Paso 7 · Cierre
 Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
-**¿Por qué es importante?** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
+**Implicación práctica:** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
 
 ### Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto
 
@@ -228,7 +228,7 @@ Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por comp
 
 #### Paso 7 · Cierre
 Entregá la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explicá con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/getting-started/introduction.
-**¿Por qué es importante?** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
+**Implicación práctica:** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
 
 ### Tema 4: Jotai, Recoil y XState como alternativas
 
@@ -307,7 +307,7 @@ Corregí el Paso 5 volviendo a la máquina de XState del Paso 4, y agregá un qu
 
 #### Paso 7 · Cierre
 Entregá la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explicá en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cerrá el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.
-**¿Por qué es importante?** XState aporta garantías estructurales sobre qué transiciones de estado son válidas, una protección que un `useReducer` simple no impone por sí solo y que importa en flujos con reglas estrictas.
+**Implicación práctica:** XState aporta garantías estructurales sobre qué transiciones de estado son válidas, una protección que un `useReducer` simple no impone por sí solo y que importa en flujos con reglas estrictas.
 
 ## Laboratorio práctico
 

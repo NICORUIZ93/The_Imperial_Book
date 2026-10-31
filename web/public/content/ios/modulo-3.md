@@ -209,7 +209,7 @@ Corregí el Paso 5 restaurando la validación, y agregá un `Form` con un `Picke
 
 #### Paso 7 · Cierre
 Entregá el deep link validado del Paso 4, el formato no validado y su riesgo del Paso 5, y el formulario con swipe actions del Paso 6; explicá por qué una URL entrante nunca debería tratarse como un dato de confianza sin antes validar su forma. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
-**¿Por qué es importante?** Porque una URL entrante (deep link) nunca debería tratarse como un dato de confianza; validar su formato antes de navegar evita que contenido arbitrario termine tratado como una guía real.
+**Implicación práctica:** Una URL entrante (deep link) nunca debería tratarse como un dato de confianza; validar su formato antes de navegar evita que contenido arbitrario termine tratado como una guía real.
 
 ## Laboratorio práctico
 

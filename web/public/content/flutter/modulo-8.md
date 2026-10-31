@@ -85,7 +85,7 @@ Corregí el Paso 5 reemplazando esa animación por un `AnimationController` con 
 
 #### Paso 7 · Cierre
 Entregá la animación implícita del Paso 4, la limitación de `AnimatedContainer` del Paso 5, y el `TweenSequence` explícito del Paso 6; explicá cuándo una animación implícita deja de ser suficiente y se necesita el control explícito de un `AnimationController`. Siguiente paso: estudia Flutter DevTools para medir si estas animaciones son realmente fluidas. Errores comunes: usar `AnimationController` para una interpolación simple que `AnimatedContainer` ya resuelve con menos código, olvidar hacer `dispose()` de un `AnimationController`, y no considerar `TweenSequence` cuando se necesita una secuencia de múltiples etapas. Fuentes oficiales: https://docs.flutter.dev/ui/animations/implicit-animations y https://docs.flutter.dev/ui/animations/tutorial.
-**¿Por qué es importante?** Una animación implícita es suficiente para interpolar automáticamente entre dos valores; se necesita el control de una explícita para secuencias coreografiadas o composición de múltiples animaciones coordinadas.
+**Implicación práctica:** Una animación implícita es suficiente para interpolar automáticamente entre dos valores; se necesita el control de una explícita para secuencias coreografiadas o composición de múltiples animaciones coordinadas.
 
 ### Tema 2: Flutter DevTools y detección de jank
 
@@ -155,7 +155,7 @@ Corregí el Paso 5 volviendo a medir en modo `--profile`, e identificá el cálc
 
 #### Paso 7 · Cierre
 Entregá la grabación en modo profile del Paso 4, la medición distorsionada en modo debug del Paso 5, y el cálculo costoso identificado en el Paso 6; explicá por qué medir rendimiento en modo debug produce conclusiones sistemáticamente equivocadas. Siguiente paso: estudia const widgets y RepaintBoundary para optimizar lo que encontraste. Errores comunes: medir rendimiento en modo debug en vez de profile/release, confiar en la percepción subjetiva de fluidez en el emulador de desarrollo, y no grabar una interacción específica real sino solo observar la app en reposo. Fuentes oficiales: https://docs.flutter.dev/tools/devtools/performance y https://docs.flutter.dev/perf/ui-performance.
-**¿Por qué es importante?** DevTools mide objetivamente el tiempo real de cada frame y señala exactamente qué fase del renderizado causó un frame perdido, en vez de depender de percepción visual subjetiva.
+**Implicación práctica:** DevTools mide objetivamente el tiempo real de cada frame y señala exactamente qué fase del renderizado causó un frame perdido, en vez de depender de percepción visual subjetiva.
 
 ### Tema 3: const widgets, RepaintBoundary y shouldRepaint
 
@@ -229,7 +229,7 @@ Corregí el Paso 5 restaurando `RepaintBoundary`, y medí con DevTools (la opci�
 
 #### Paso 7 · Cierre
 Entregá los widgets `const` y el `RepaintBoundary` del Paso 4, el repintado excesivo detectado en el Paso 5, y la medición comparativa del Paso 6; explicá por qué un elemento animado dentro de un árbol más grande necesita aislarse explícitamente con `RepaintBoundary`. Siguiente paso: cerrá el módulo integrando estas optimizaciones medibles en el proyecto completo. Errores comunes: omitir `const` en widgets estáticos dentro de listas largas, no aislar con `RepaintBoundary` elementos que se animan frecuentemente dentro de contenido mayormente estático, y aplicar estas optimizaciones sin medir primero con DevTools si realmente hacían falta. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html y https://docs.flutter.dev/perf/best-practices.
-**¿Por qué es importante?** Marcar un widget como `const` permite a Flutter omitirlo por completo durante reconstrucciones futuras; `RepaintBoundary` aísla repinturas frecuentes evitando que afecten innecesariamente al resto del árbol circundante.
+**Implicación práctica:** Marcar un widget como `const` permite a Flutter omitirlo por completo durante reconstrucciones futuras; `RepaintBoundary` aísla repinturas frecuentes evitando que afecten innecesariamente al resto del árbol circundante.
 
 ### Tema 4: Isolates — trabajo pesado sin congelar la interfaz
 

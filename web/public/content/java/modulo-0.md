@@ -98,7 +98,7 @@ Crea una segunda clase `Version.java` que imprima `System.getProperty("java.vers
 
 #### Paso 7 · Cierre
 Guarda `Saludo.java`, `out/Saludo.class`, la salida de `javap` y el `ClassNotFoundException` provocado junto a su corrección; como siguiente paso, en el Tema 2 identificarás exactamente qué significa cada palabra de la firma de `main` que la JVM buscó aquí. Errores comunes: ejecutar `java` apuntando con `-cp` a la carpeta del código fuente en vez de a la carpeta de salida compilada, olvidar recompilar después de modificar el `.java`, y asumir que `javac` ejecuta el programa en vez de solo compilarlo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html y https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html.
-**¿Por qué es importante?** Porque diagnosticar un `ClassNotFoundException` o un `NoClassDefFoundError` en producción exige saber, sin adivinar, que la JVM busca bytecode compilado en un classpath explícito, no código fuente.
+**Implicación práctica:** Diagnosticar un `ClassNotFoundException` o un `NoClassDefFoundError` en producción exige saber, sin adivinar, que la JVM busca bytecode compilado en un classpath explícito, no código fuente.
 
 ### Tema 2: public static void main — qué significa cada palabra
 
@@ -153,7 +153,7 @@ Modifica `PuntoEntrada` para que espere dos argumentos (origen y destino de una 
 
 #### Paso 7 · Cierre
 Guarda `PuntoEntrada.java`, la ejecución con un argumento real, y el intento sin `static` junto a su corrección; como siguiente paso, en el Tema 3 distinguirás qué herramienta exacta instalaste junto con esa JVM que acabas de invocar. Errores comunes: agregar modificadores de acceso distintos a `public`, omitir `static` asumiendo que Java creará una instancia automáticamente, y declarar `args` con un tipo distinto a `String[]`. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html y https://dev.java/learn/getting-started/.
-**¿Por qué es importante?** Porque un error de firma en `main` no se reporta como un error de compilación, sino como un fallo al arrancar la JVM — un tipo de diagnóstico distinto que hay que saber reconocer.
+**Implicación práctica:** Un error de firma en `main` no se reporta como un error de compilación, sino como un fallo al arrancar la JVM — un tipo de diagnóstico distinto que hay que saber reconocer.
 
 ### Tema 3: JDK, JRE y JVM
 
@@ -211,7 +211,7 @@ Ejecuta `java -XshowSettings:properties -version` y localiza en la salida la pro
 
 #### Paso 7 · Cierre
 Guarda la salida de `Entorno`, el error provocado por el nombre de herramienta incorrecto y la explicación de JDK/JRE/JVM; como siguiente paso, en el Tema 4 empezarás a distinguir qué guarda cada variable según su tipo. Errores comunes: instalar solo un JRE cuando se necesita compilar, escribir mal el nombre de una herramienta y asumir que es un error de Java, y mezclar instalaciones de distintos proveedores sin que `JAVA_HOME` apunte a la correcta. Fuentes oficiales: https://dev.java/learn/jvm/ y https://docs.oracle.com/en/java/javase/25/.
-**¿Por qué es importante?** Porque un pipeline de CI/CD que falla por falta de `javac` en el servidor de build, o que instala de más un JDK completo en un servidor que solo ejecuta, es un error de configuración que se diagnostica en segundos si se distingue JDK de JRE.
+**Implicación práctica:** Un pipeline de CI/CD que falla por falta de `javac` en el servidor de build, o que instala de más un JDK completo en un servidor que solo ejecuta, es un error de configuración que se diagnostica en segundos si se distingue JDK de JRE.
 
 ### Tema 4: Tipos primitivos vs referencias
 
@@ -284,7 +284,7 @@ Declara `Long totalGuias = null;` dentro de un método que calcule `totalGuias +
 
 #### Paso 7 · Cierre
 Guarda `ValoresYReferencias.java`, la salida `5 9 | 99 99`, y el `NullPointerException` del wrapper `null` junto a su corrección; como siguiente paso, en el Tema 5 aplicarás esta misma distinción a conversiones entre tipos y a `String`. Errores comunes: asumir que copiar un arreglo copia sus elementos, usar un wrapper (`Integer`) con `null` como si fuera un primitivo sin validar antes, y confundir reasignar una referencia con mutar el objeto al que apunta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html y https://dev.java/learn/language-basics/.
-**¿Por qué es importante?** Porque un `NullPointerException` durante *unboxing* automático, o una mutación compartida de un arreglo que "nadie modificó", son errores de producción que solo se explican entendiendo esta distinción, nunca adivinando.
+**Implicación práctica:** Un `NullPointerException` durante *unboxing* automático, o una mutación compartida de un arreglo que "nadie modificó", son errores de producción que solo se explican entendiendo esta distinción, nunca adivinando.
 
 ### Tema 5: Variables, conversiones y `String`
 
@@ -421,7 +421,7 @@ static boolean pesoValido(Paquete paquete) {
 
 **Analogía:** el cortocircuito es un control de acceso por etapas: si la primera condición ya rechaza la entrada, no se ejecutan controles que requieren que esa entrada exista.
 
-**¿Por qué es importante?** Una condición correcta no solo produce `true` o `false`; también controla qué operaciones llegan a ejecutarse y qué fallos quedan imposibilitados.
+**Implicación práctica:** Una condición correcta no solo produce `true` o `false`; también controla qué operaciones llegan a ejecutarse y qué fallos quedan imposibilitados.
 
 **Transferencia al proyecto integrador «Motor de asignación de entregas»:** Implementa capacidad y prioridad con expresiones sin ambigüedad. Construye casos límite de capacidad exacta y exceso de una unidad y verifica que ninguna entrega queda asignada por precedencia accidental.
 
@@ -504,7 +504,7 @@ Crea un segundo arreglo `int[] pesos` con una posición menos que `paradas`, e i
 
 #### Paso 7 · Cierre
 Guarda `Argumentos.java`, la salida `[99, 2, 3]` y el `ArrayIndexOutOfBoundsException` provocado por `<=` junto a su corrección; como siguiente paso, en el Tema 8 aplicarás esta misma frontera de validación a entradas externas como fechas y texto. Errores comunes: decir que Java pasa objetos por referencia, usar `<=` en el límite de un ciclo sobre `length`, y asumir que reasignar un parámetro arreglo cambia el arreglo del llamador. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Arrays.html y https://dev.java/learn/arrays/.
-**¿Por qué es importante?** Porque confundir "pasar por referencia" con cómo Java realmente pasa argumentos lleva a predecir mutaciones que no ocurren, o a no anticipar las que sí ocurren, en cualquier método que reciba un arreglo u objeto mutable.
+**Implicación práctica:** Confundir "pasar por referencia" con cómo Java realmente pasa argumentos lleva a predecir mutaciones que no ocurren, o a no anticipar las que sí ocurren, en cualquier método que reciba un arreglo u objeto mutable.
 
 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
 

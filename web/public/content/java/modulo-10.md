@@ -71,7 +71,7 @@ Agrega un tercer paquete a `core`, decide si debe exportarse o no, y documenta l
 
 #### Paso 7 · Cierre
 Guarda el árbol de ambos módulos, el `module-info.java` y el fallo de compilación provocado por el paquete no exportado; como siguiente paso evalúa si tu proyecto realmente necesita migrar a JPMS. Errores comunes: exportar todos los paquetes de un módulo sin necesidad, mezclar classpath y modulepath en el mismo build, y asumir que marcar una clase `public` basta sin declarar también `exports` sobre su paquete. Fuentes oficiales: https://dev.java/learn/modules/.
-**¿Por qué es importante?** Porque JPMS agrega encapsulación fuerte a nivel de módulo: un paquete completo con clases `public` puede permanecer inaccesible desde fuera simplemente por no estar en `exports`, algo que los modificadores de acceso tradicionales no podían lograr por sí solos.
+**Implicación práctica:** JPMS agrega encapsulación fuerte a nivel de módulo: un paquete completo con clases `public` puede permanecer inaccesible desde fuera simplemente por no estar en `exports`, algo que los modificadores de acceso tradicionales no podían lograr por sí solos.
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor
 
@@ -135,7 +135,7 @@ Agrega un tercer módulo `adapters` que dependa de `application`, y documenta el
 
 #### Paso 7 · Cierre
 Guarda los tres `module-info.java`, el orden de migración documentado y el fallo de resolución provocado; como siguiente paso decide qué paquetes necesitan `opens` para reflexión. Errores comunes: intentar migrar todo el proyecto a JPMS de una sola vez en vez de empezar por los módulos hoja, aplicar JPMS a un proyecto pequeño sin consumidores externos que lo justifiquen, y olvidar `requires transitive` cuando la API pública de un módulo expone tipos que en realidad vienen de otro. Fuentes oficiales: https://openjdk.org/jeps/261.
-**¿Por qué es importante?** Porque migrar incrementalmente desde los módulos sin dependencias internas acota el riesgo de cada paso, permitiendo verificar que la migración parcial funciona antes de seguir subiendo en el árbol de dependencias.
+**Implicación práctica:** Migrar incrementalmente desde los módulos sin dependencias internas acota el riesgo de cada paso, permitiendo verificar que la migración parcial funciona antes de seguir subiendo en el árbol de dependencias.
 
 ### Tema 3: `opens` para acceso reflexivo controlado de frameworks
 
@@ -200,7 +200,7 @@ Compara declarar `opens academia.dominio;` (abierto a cualquiera) frente a `open
 
 #### Paso 7 · Cierre
 Guarda el `InaccessibleObjectException` provocado, el `module-info.java` corregido con `opens ... to ...` y la comparación entre abrir a todos o acotarlo; como siguiente paso construye el laboratorio completo del capítulo. Errores comunes: confundir `exports` (acceso de compilación) con `opens` (acceso reflexivo), declarar `opens` sin acotar con `to` cuando bastaría abrirlo solo al framework específico, y olvidar que un módulo que compila bien puede de todas formas fallar en runtime por reflexión sin `opens`. Fuentes oficiales: https://dev.java/learn/modules/.
-**¿Por qué es importante?** Porque la mayoría de los frameworks del ecosistema Java (serialización JSON, ORMs, inyección de dependencias) dependen de reflexión profunda sobre tus propias clases; olvidar `opens` es la causa más común de que una aplicación que compila perfectamente falle recién en tiempo de ejecución al integrarla con JPMS.
+**Implicación práctica:** La mayoría de los frameworks del ecosistema Java (serialización JSON, ORMs, inyección de dependencias) dependen de reflexión profunda sobre tus propias clases; olvidar `opens` es la causa más común de que una aplicación que compila perfectamente falle recién en tiempo de ejecución al integrarla con JPMS.
 
 ## Construcción guiada del capítulo
 

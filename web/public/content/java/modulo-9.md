@@ -43,7 +43,7 @@ Este ciclo de vida (`@BeforeEach` antes de cada prueba, con `@AfterEach` como su
 
 **Analogía:** `@BeforeEach` es como reiniciar completamente un escenario de laboratorio a su estado inicial conocido antes de cada experimento individual, garantizando que los resultados de un experimento no contaminen accidentalmente el siguiente experimento realizado en el mismo espacio.
 
-**¿Por qué es importante?** El ciclo de vida de JUnit 5 garantiza aislamiento entre pruebas sucesivas, ejecutando configuración y limpieza en momentos predecibles relativos a cada prueba individual.
+**Implicación práctica:** El ciclo de vida de JUnit 5 garantiza aislamiento entre pruebas sucesivas, ejecutando configuración y limpieza en momentos predecibles relativos a cada prueba individual.
 
 **Código del ejemplo:**
 
@@ -125,7 +125,7 @@ Agrega una segunda dependencia mockeada (por ejemplo un servicio de notificacion
 
 #### Paso 7 · Cierre
 Guarda el test, el fallo de `NullPointerException` provocado y su corrección; como siguiente paso cubre varios casos con tests parametrizados. Errores comunes: mockear la clase bajo prueba en vez de sus dependencias (deja de probar código real), confundir `when` (configurar comportamiento) con `verify` (comprobar que una interacción ocurrió), y mockear un objeto de valor simple que sería más claro usar real. Fuentes oficiales: https://site.mockito.org/.
-**¿Por qué es importante?** Porque mockear las dependencias externas permite probar la lógica de negocio en aislamiento, rápido y de forma determinista, sin depender de la disponibilidad ni el estado de una base de datos u otro servicio real.
+**Implicación práctica:** Mockear las dependencias externas permite probar la lógica de negocio en aislamiento, rápido y de forma determinista, sin depender de la disponibilidad ni el estado de una base de datos u otro servicio real.
 
 ### Tema 3: Tests parametrizados y cobertura
 
@@ -186,7 +186,7 @@ Convierte el test a `@MethodSource` con un método que genere los mismos casos p
 
 #### Paso 7 · Cierre
 Guarda el test, el reporte HTML de JaCoCo antes y después de quitar el caso, y la explicación de qué rama quedó sin cubrir; como siguiente paso conecta la suite a CI. Errores comunes: duplicar el mismo cuerpo de prueba por cada caso en vez de usar `@ParameterizedTest`, perseguir 100% de cobertura en código trivial (getters/setters) sin evaluar el riesgo real de cada rama, y tratar un alto porcentaje de cobertura como sinónimo de "bien probado" sin revisar la calidad de las aserciones. Fuentes oficiales: https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests y https://www.jacoco.org/jacoco/trunk/doc/.
-**¿Por qué es importante?** Porque un test parametrizado evita duplicar la misma lógica de verificación por cada caso de entrada, y un reporte de cobertura señala exactamente qué rama del código de producción ninguna prueba ejercita todavía, un riesgo invisible sin esa medición.
+**Implicación práctica:** Un test parametrizado evita duplicar la misma lógica de verificación por cada caso de entrada, y un reporte de cobertura señala exactamente qué rama del código de producción ninguna prueba ejercita todavía, un riesgo invisible sin esa medición.
 
 ## Construcción guiada del capítulo
 

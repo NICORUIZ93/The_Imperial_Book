@@ -73,7 +73,7 @@ Corregí el Paso 5 quitando la lista de envíos de `shared_preferences` por comp
 
 #### Paso 7 · Cierre
 Entregá la preferencia simple persistida del Paso 4, el mal uso de shared_preferences para datos estructurados del Paso 5, y la documentación del Paso 6; explicá por qué el modelo clave-valor de `shared_preferences` no está diseñado para consultas eficientes sobre datos en volumen. Siguiente paso: estudia sqflite y Hive para la lista de envíos. Errores comunes: guardar una lista grande de objetos estructurados en `shared_preferences`, no proveer un valor por defecto al leer una preferencia que puede no existir todavía, y usar `shared_preferences` para datos sensibles sin cifrado. Fuentes oficiales: https://pub.dev/packages/shared_preferences y https://docs.flutter.dev/cookbook/persistence/key-value.
-**¿Por qué es importante?** `shared_preferences` no es apropiado para guardar una lista grande de objetos estructurados, dado que su modelo clave-valor simple no está diseñado para consultas eficientes sobre datos en volumen.
+**Implicación práctica:** `shared_preferences` no es apropiado para guardar una lista grande de objetos estructurados, dado que su modelo clave-valor simple no está diseñado para consultas eficientes sobre datos en volumen.
 
 ### Tema 2: sqflite vs Hive
 
@@ -166,7 +166,7 @@ Corregí el Paso 5 volviendo a `sqflite` para este caso específico, y document�
 
 #### Paso 7 · Cierre
 Entregá la agregación SQL del Paso 4, el costo de la alternativa con Hive del Paso 5, y el caso documentado donde Hive sí es apropiado del Paso 6; explicá el criterio concreto que usarías para elegir entre ambos la próxima vez. Siguiente paso: estudia offline-first y Firebase. Errores comunes: elegir Hive para datos que necesitan queries relacionales complejas con joins o agregaciones, elegir `sqflite` para un caso simple de objetos sin relaciones, y no medir el costo real de cargar una colección completa en memoria antes de descartar una opción. Fuentes oficiales: https://pub.dev/packages/sqflite y https://pub.dev/packages/hive.
-**¿Por qué es importante?** Elegir entre Hive y `sqflite` depende de si la app necesita queries relacionales complejas (apropiado para `sqflite`) o simplemente persistir y recuperar objetos directos sin relaciones complejas (más simple con Hive).
+**Implicación práctica:** Elegir entre Hive y `sqflite` depende de si la app necesita queries relacionales complejas (apropiado para `sqflite`) o simplemente persistir y recuperar objetos directos sin relaciones complejas (más simple con Hive).
 
 ### Tema 3: Offline-first y Firebase
 
@@ -255,7 +255,7 @@ Corregí el Paso 5 devolviendo `ListaEnvios` a leer del `Stream` sobre Hive, y c
 
 #### Paso 7 · Cierre
 Entregá el patrón offline-first del Paso 4, la pantalla rota en modo avión provocada en el Paso 5, y la confirmación del Paso 6; explicá por qué hacer que la UI dependa directamente de la API rompe exactamente la garantía que offline-first existe para dar. Siguiente paso: cerrá el módulo evaluando si Firebase encajaría como backend para RutaFlow. Errores comunes: hacer que la UI dependa directamente de la API en vez de la caché local, sincronizar sin ningún indicador de que los datos mostrados podrían estar desactualizados, y no considerar Firebase cuando el proyecto podría evitar construir backend propio desde cero. Fuentes oficiales: https://docs.flutter.dev/app-architecture/design-patterns/offline-first y https://firebase.google.com/docs/flutter/setup.
-**¿Por qué es importante?** Offline-first mantiene la app funcional sin conexión leyendo siempre de la caché local sincronizada en background, en vez de depender directamente de la disponibilidad de la API.
+**Implicación práctica:** Offline-first mantiene la app funcional sin conexión leyendo siempre de la caché local sincronizada en background, en vez de depender directamente de la disponibilidad de la API.
 
 ## Laboratorio práctico
 

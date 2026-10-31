@@ -60,7 +60,7 @@ La exhaustividad hace visible un nuevo estado al compilar. Tipos de marca pueden
 
 **Analogía:** TypeScript revisa el plano dentro de la fábrica. El muelle de recepción aún necesita inspeccionar cada cargamento; una etiqueta escrita por el proveedor no garantiza su contenido.
 
-**¿Por qué es importante?** porque muchas APIs “tipadas” fallan con datos reales al confiar en JSON, configuración o respuestas externas que el compilador nunca observó.
+**Implicación práctica:** Muchas APIs “tipadas” fallan con datos reales al confiar en JSON, configuración o respuestas externas que el compilador nunca observó.
 
 **Casos de uso reales:** body HTTP, claims JWT, configuración, eventos antiguos, respuesta de proveedor, migración de esquema y campos opcionales.
 
@@ -164,7 +164,7 @@ Versiona solo ante cambios incompatibles justificados. Primero intenta evolució
 
 **Analogía:** el contrato de un enchufe especifica forma y voltaje. Un dibujo bonito que no coincide con la pared no ayuda; cambiar voltaje sin cambiar forma es aún peor porque parece compatible.
 
-**¿Por qué es importante?** porque equipos despliegan independientemente. Sin contrato ejecutable, un cambio local “verde” puede romper aplicaciones que no están en el mismo repositorio.
+**Implicación práctica:** Equipos despliegan independientemente. Sin contrato ejecutable, un cambio local “verde” puede romper aplicaciones que no están en el mismo repositorio.
 
 **Casos de uso reales:** SDK generado, app móvil con versiones antiguas, API pública, integración interna, gateway, deprecación de campo y formato uniforme de errores.
 
@@ -270,7 +270,7 @@ Actualizar base y publicar evento en pasos independientes crea doble escritura. 
 
 **Analogía:** una transferencia tiene número de operación. Si la pantalla se congela, consultar o repetir ese número recupera el resultado; crear otro número ordena una segunda transferencia.
 
-**¿Por qué es importante?** porque timeout y reentrega son normales. Sin identidad y atomicidad, las técnicas de recuperación producen corrupción precisamente durante fallos.
+**Implicación práctica:** Timeout y reentrega son normales. Sin identidad y atomicidad, las técnicas de recuperación producen corrupción precisamente durante fallos.
 
 **Casos de uso reales:** pagos, creación de pedidos, imports, consumo de colas, jobs reintentados, comandos móviles y publicación de eventos.
 

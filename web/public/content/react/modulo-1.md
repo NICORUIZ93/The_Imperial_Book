@@ -120,7 +120,7 @@ Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)
 
 #### Paso 7 · Cierre
 Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
-**¿Por qué es importante?** Porque depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
+**Implicación práctica:** Depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
 
 ### Tema 2: Render frente a commit
 
@@ -209,7 +209,7 @@ Corregí tu conclusión del Paso 5 agregando una segunda prueba: actualizá `pin
 
 #### Paso 7 · Cierre
 Entregá la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explicá por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
-**¿Por qué es importante?** Entender que renderizar no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect`, no directamente en el cuerpo del componente.
+**Implicación práctica:** Entender que renderizar no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect`, no directamente en el cuerpo del componente.
 
 ### Tema 3: Batching de actualizaciones
 

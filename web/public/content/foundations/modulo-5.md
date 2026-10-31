@@ -113,7 +113,7 @@ Elegí una función real de tu propio `tareas.py` (no inventada) que sospeches q
 
 #### Paso 7 · Cierre
 Entregá la reproducción del bug de `listar_pendientes`, la hipótesis escrita antes de corregir, la pista falsa que no cambió el síntoma y la corrección real confirmada; como siguiente paso, en el Tema 2 vas a convertir ese mismo caso mínimo en una prueba automatizada para que nadie tenga que reproducirlo a mano otra vez. Errores comunes: cambiar varias cosas a la vez antes de confirmar cuál funcionó; aceptar un cambio como "arreglo" sin volver a ejecutar el caso que fallaba; depurar sin escribir la hipótesis, lo que impide saber después qué se estaba probando. Fuentes oficiales: https://docs.python.org/es/3/library/pdb.html y https://docs.python.org/es/3/howto/logging.html.
-**¿Por qué es importante?** Porque sin un caso mínimo reproducible y una hipótesis escrita, "arreglar" un bug es indistinguible de cambiar cosas hasta que el síntoma visible desaparezca, aunque la causa real siga ahí.
+**Implicación práctica:** Sin un caso mínimo reproducible y una hipótesis escrita, "arreglar" un bug es indistinguible de cambiar cosas hasta que el síntoma visible desaparezca, aunque la causa real siga ahí.
 
 ### Tema 2: Pruebas con propósito y niveles adecuados
 
@@ -254,7 +254,7 @@ Agregá una prueba de integración real (con `sqlite3.connect(":memory:")`) para
 
 #### Paso 7 · Cierre
 Entregá la prueba unitaria de `contar_pendientes`, la prueba con el fake que no detectó la consulta rota, y la prueba de integración que sí la detectó; como siguiente paso, en el Tema 3 vas a usar Git para dejar registrado POR QUÉ agregaste esa prueba de integración, no solo que la agregaste. Errores comunes: confiar en una prueba unitaria para cubrir la base de datos; usar un doble tan simple que ignora el comportamiento real que debería simular; medir éxito solo por cobertura y no por qué detecta cada prueba. Fuentes oficiales: https://docs.pytest.org/en/stable/ y https://docs.python.org/es/3/library/sqlite3.html.
-**¿Por qué es importante?** Porque una suite en verde no garantiza nada por sí sola: garantiza solo lo que sus pruebas realmente ejecutaron, y un doble demasiado simple puede ejecutar menos de lo que parece.
+**Implicación práctica:** Una suite en verde no garantiza nada por sí sola: garantiza solo lo que sus pruebas realmente ejecutaron, y un doble demasiado simple puede ejecutar menos de lo que parece.
 
 ### Tema 3: Git como historial de decisiones y colaboración
 
@@ -379,7 +379,7 @@ Elegí 3 commits reales de tu proyecto (de este módulo o de uno anterior) y ree
 
 #### Paso 7 · Cierre
 Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnosticarlo tres semanas después, y el commit de reemplazo con mensaje que explica el motivo; como siguiente paso, en el Tema 4 vas a automatizar en CI los controles de calidad que hasta ahora corriste a mano. Errores comunes: escribir "fix" o "cambios" confiando en que "ya se entiende"; mezclar en un commit un refactor con una corrección de bug, lo que oscurece cuál de las dos cosas motivó el cambio; reescribir con `git commit --amend` un commit que ya compartiste con otra persona. Fuentes oficiales: https://git-scm.com/book/es/v2 y https://docs.github.com/es/pull-requests.
-**¿Por qué es importante?** Porque el código muestra QUÉ existe hoy, pero solo el historial de commits puede explicar POR QUÉ se llegó hasta ahí — y esa información se pierde para siempre si el mensaje no la registra.
+**Implicación práctica:** El código muestra QUÉ existe hoy, pero solo el historial de commits puede explicar POR QUÉ se llegó hasta ahí — y esa información se pierde para siempre si el mensaje no la registra.
 
 ### Tema 4: Calidad estática, revisión e integración continua
 
@@ -523,7 +523,7 @@ Agregá al pipeline un segundo chequeo estático (por ejemplo `python3 -m py_com
 
 #### Paso 7 · Cierre
 Entregá el `F401` detectado y corregido, la prueba que pasaba en tu máquina y fallaba en una copia limpia, y la corrección con `tmp_path` que ya no depende de archivos manuales; con esto cerrás el Módulo 5. Como siguiente paso, en el Módulo 6 vas a aplicar exactamente esta misma disciplina de evidencia a seguridad: vas a modelar amenazas contra el mismo proyecto Fundamentos y a probar que una acción no autorizada falla, con pruebas, no con suposiciones. Errores comunes: confiar en que una prueba "pasó en mi máquina" sin probarla en un entorno limpio; dejar que una prueba dependa de archivos no versionados; desactivar una regla de lint en vez de corregir lo que señala. Fuentes oficiales: https://docs.github.com/actions y https://docs.astral.sh/ruff/.
-**¿Por qué es importante?** Porque "funciona en mi máquina" no es una garantía: es una hipótesis sin probar sobre el entorno, y CI existe justamente para probarla en un lugar donde los atajos manuales no sobreviven.
+**Implicación práctica:** "funciona en mi máquina" no es una garantía: es una hipótesis sin probar sobre el entorno, y CI existe justamente para probarla en un lugar donde los atajos manuales no sobreviven.
 
 ## Construcción guiada del capítulo
 

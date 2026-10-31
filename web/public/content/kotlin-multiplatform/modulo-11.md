@@ -234,7 +234,7 @@ Corregí el Paso 5 reemplazando la meta de "100% compartido" por una decisión e
 
 #### Paso 7 · Cierre
 Entregá el documento de cierre del Paso 4, la meta de "100% compartido" sin evaluar trade-offs del Paso 5, y la decisión documentada con su justificación del Paso 6; explicá por qué maximizar el porcentaje de código compartido no es, por sí mismo, un objetivo válido de arquitectura. Siguiente paso: si el proyecto crece, estudia cómo mantener la frontera compartida estable frente a múltiples equipos consumidores. Errores comunes: tratar "porcentaje compartido" como una métrica de éxito en sí misma, forzar una UI compartida sin evaluar si los modelos de interacción nativos realmente convergen, y no documentar la decisión para que el próximo proyecto no repita la misma discusión sin contexto. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-samples.html y https://kotlinlang.org/docs/multiplatform.html.
-**¿Por qué es importante?** Entender que KMP comparte específicamente lo que es redundancia pura entre plataformas, dejando la UI como una decisión de arquitectura deliberada, evita expectativas poco realistas sobre qué KMP puede y debe compartir.
+**Implicación práctica:** Entender que KMP comparte específicamente lo que es redundancia pura entre plataformas, dejando la UI como una decisión de arquitectura deliberada, evita expectativas poco realistas sobre qué KMP puede y debe compartir.
 
 ## Laboratorio práctico
 

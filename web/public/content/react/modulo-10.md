@@ -92,7 +92,7 @@ Añade Suspense, una Server Action con validación, estado pending y una medici�
 
 #### Paso 7 · Cierre
 Guarda build, capturas y métricas; como siguiente paso estudia despliegue. Errores comunes: enviar secretos al cliente, usar hooks en servidor, mutar sin autorización y asumir que streaming arregla consultas lentas. Fuentes oficiales: https://nextjs.org/docs/app y https://react.dev/reference/rsc/server-components.
-**¿Por qué es importante?** Porque separar servidor y cliente mejora rendimiento, seguridad y claridad de responsabilidades.
+**Implicación práctica:** Separar servidor y cliente mejora rendimiento, seguridad y claridad de responsabilidades.
 
 ### Tema 2: use client para interactividad
 
@@ -152,7 +152,7 @@ Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntre
 
 #### Paso 7 · Cierre
 Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
-**¿Por qué es importante?** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
+**Implicación práctica:** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
 
 ### Tema 3: Streaming con Suspense en el servidor
 
@@ -200,7 +200,7 @@ Este mismo `Suspense` que en el Módulo 5 se usaba para mostrar un `fallback` mi
 
 **Analogía:** el streaming con Suspense es como servir primero los platos de una comida que ya están listos en la mesa, en vez de hacer esperar a todos los comensales hasta que el plato más lento de preparar esté terminado antes de servir absolutamente nada.
 
-**¿Por qué es importante?** El streaming con Suspense evita que una sección particularmente lenta de una página retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
+**Implicación práctica:** El streaming con Suspense evita que una sección particularmente lenta de una página retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
 
 **Código del ejemplo:**
 

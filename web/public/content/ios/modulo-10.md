@@ -50,7 +50,7 @@ Esta necesidad de medición real sobre percepción subjetiva es un principio uni
 
 **Analogía:** Instruments es como un electrocardiograma que revela irregularidades reales en el funcionamiento de un órgano que un examen visual superficial ("se ve saludable") no puede detectar, requiriendo instrumentación especializada para medir lo que efectivamente ocurre por debajo de la percepción superficial.
 
-**¿Por qué es importante?** Instruments revela cuellos de botella de rendimiento reales y medibles (consumo de CPU, memoria, frames perdidos) que la percepción subjetiva de fluidez en el simulador no puede detectar, dado que el hardware de desarrollo suele ser considerablemente más potente que los dispositivos reales de los usuarios.
+**Implicación práctica:** Instruments revela cuellos de botella de rendimiento reales y medibles (consumo de CPU, memoria, frames perdidos) que la percepción subjetiva de fluidez en el simulador no puede detectar, dado que el hardware de desarrollo suele ser considerablemente más potente que los dispositivos reales de los usuarios.
 
 **Diagrama:**
 
@@ -367,7 +367,7 @@ Corregí el Paso 5 devolviendo la carga a `viewDidLoad()`, y agregá en su lugar
 
 #### Paso 7 · Cierre
 Entregá el controlador con carga única del Paso 4, la petición de red repetida provocada en el Paso 5, y el `refresh()` explícito del Paso 6; explicá la diferencia entre trabajo que debe ocurrir una sola vez (`viewDidLoad`) y trabajo que podría repetirse antes de cada aparición (`viewWillAppear`), y por qué esa segunda categoría necesita caché o control explícito. Siguiente paso: estudia distribución y certificados. Errores comunes: peticiones de red incondicionales en `viewWillAppear`, inicializar sin el ViewModel requerido, y usar el índice de fila como identidad en una fuente diffable. Fuentes oficiales: https://developer.apple.com/documentation/uikit/uiviewcontroller y https://developer.apple.com/documentation/uikit/uitableviewdiffabledatasource.
-**¿Por qué es importante?** Porque confundir trabajo de una sola vez con trabajo repetible en el ciclo de vida de UIKit produce peticiones de red redundantes o datos que nunca se actualizan.
+**Implicación práctica:** Confundir trabajo de una sola vez con trabajo repetible en el ciclo de vida de UIKit produce peticiones de red redundantes o datos que nunca se actualizan.
 
 ## Laboratorio práctico
 

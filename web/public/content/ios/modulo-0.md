@@ -117,7 +117,7 @@ Corregí el Paso 5 restaurando `guard let`, y agregá un tercer caso de prueba c
 
 #### Paso 7 · Cierre
 Entregá la función con `guard let` del Paso 4, el crash por force unwrap del Paso 5, y el caso de nombre vacío del Paso 6; explicá por qué Swift convierte en error de compilación lo que en otros lenguajes sería un crash en producción. Siguiente paso: modelá identidad compartida frente a copia con struct y class. Errores comunes: usar force unwrap (`!`) por comodidad en vez de `guard let`/`if let`; confiar en `isEmpty` sin recortar espacios cuando el dato viene de un formulario de usuario real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/the-basics/#Optionals y https://developer.apple.com/documentation/swift/optional.
-**¿Por qué es importante?** Porque modelar la ausencia de valor en el sistema de tipos convierte en error de compilación lo que en otros lenguajes es un crash en producción cuando un dato esperado no llegó.
+**Implicación práctica:** Modelar la ausencia de valor en el sistema de tipos convierte en error de compilación lo que en otros lenguajes es un crash en producción cuando un dato esperado no llegó.
 
 ### Tema 2: struct vs class
 
@@ -225,7 +225,7 @@ Corregí el Paso 5 decidiendo explícitamente si `original` debe ser mutable (`v
 
 #### Paso 7 · Cierre
 Entregá la copia independiente y la referencia compartida del Paso 4, el error de mutación sobre `let` del Paso 5, y la decisión documentada del Paso 6; explicá por qué Swift elige `struct` como default para la mayoría de los modelos de dominio, reservando `class` para identidad compartida intencional. Siguiente paso: modelá contratos de comportamiento con protocolos y estados con enums. Errores comunes: usar `class` por defecto para modelos de datos simples; cambiar un tipo de `struct` a `class` para evitar un error de mutabilidad en vez de resolver la causa real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/ y https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes.
-**¿Por qué es importante?** Porque elegir struct o class según identidad compartida (y no por costumbre) evita que un cambio en un lugar inesperado del código afecte a datos que debían permanecer independientes.
+**Implicación práctica:** Elegir struct o class según identidad compartida (y no por costumbre) evita que un cambio en un lugar inesperado del código afecte a datos que debían permanecer independientes.
 
 ### Tema 3: Protocolos y enums con valores asociados
 
@@ -322,7 +322,7 @@ Corregí el Paso 5 agregando el caso `entregada` al `switch` de forma consciente
 
 #### Paso 7 · Cierre
 Entregá el enum exhaustivo del Paso 4, el error de exhaustividad al agregar `entregada` del Paso 5, y el segundo `switch` corregido del Paso 6; explicá por qué un `default` genérico en un `switch` sobre un enum propio oculta exactamente la protección que la exhaustividad del compilador existe para dar. Siguiente paso: reutilizá comportamiento con closures y genéricos. Errores comunes: agregar un `default` genérico a un switch sobre un enum propio, ocultando casos nuevos sin manejar; modelar un estado con múltiples banderas booleanas sueltas en vez de un enum con valores asociados. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/ y https://developer.apple.com/documentation/swift/protocol.
-**¿Por qué es importante?** Porque la exhaustividad del `switch` sobre un enum propio obliga a decidir conscientemente qué hacer con cada caso nuevo, en vez de que un `default` genérico lo oculte silenciosamente en producción.
+**Implicación práctica:** La exhaustividad del `switch` sobre un enum propio obliga a decidir conscientemente qué hacer con cada caso nuevo, en vez de que un `default` genérico lo oculte silenciosamente en producción.
 
 ### Tema 4: Closures, colecciones y genéricos con propósito
 
@@ -479,7 +479,7 @@ Corregí el Paso 5 restaurando el rango `(-90...90)` para latitud, y agregá una
 
 #### Paso 7 · Cierre
 Entregá el filtro de coordenadas del Paso 4, la prueba fallida por rango de latitud/longitud confundidos del Paso 5, y la validación de longitud independiente del Paso 6; explicá por qué nombrar explícitamente cada regla de rango (latitud vs longitud) evita que una se confunda silenciosamente con la otra. Siguiente paso: construí una app SwiftUI completa que use estos mismos modelos. Errores comunes: usar `$0` en closures con varias reglas distintas, perdiendo legibilidad; descartar valores inválidos con `compactMap` sin documentar si esconder el dato inválido es realmente la decisión correcta para ese caso. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/ y https://developer.apple.com/documentation/swift/generics.
-**¿Por qué es importante?** Porque nombrar explícitamente cada regla de filtrado (latitud vs longitud) evita que una se confunda silenciosamente con otra al descartar datos con `compactMap`.
+**Implicación práctica:** Nombrar explícitamente cada regla de filtrado (latitud vs longitud) evita que una se confunda silenciosamente con otra al descartar datos con `compactMap`.
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

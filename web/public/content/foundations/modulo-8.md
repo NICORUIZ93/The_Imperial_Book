@@ -375,7 +375,7 @@ Corregí el Paso 5 restaurando `USER rutaflow`, escribí un archivo dentro de `/
 
 #### Paso 7 · Cierre
 Entregá el contenedor corriendo como usuario no root del Paso 4, el root innecesario detectado del Paso 5, y la persistencia confirmada del Paso 6; explicá por qué "funciona en mi máquina" suele ocultar justo estas diferencias de identidad y filesystem. Errores comunes: correr el proceso del contenedor como root por omisión, guardar datos que deben persistir en la capa escribible del contenedor en vez de un volumen, y asumir que `EXPOSE` publica un puerto cuando solo lo documenta. Fuentes oficiales: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/.
-**¿Por qué es importante?** Porque un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
+**Implicación práctica:** Un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
 
 ### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores
 

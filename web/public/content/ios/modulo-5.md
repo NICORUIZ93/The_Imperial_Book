@@ -141,7 +141,7 @@ Esta distinción de categorías de error (`sinConexion` frente a `servidor` fren
 
 **Analogía:** un enum de error propio es como un formulario de reporte de incidencias con categorías predefinidas específicas (falla de conexión, error del servidor, dato corrupto), en vez de una única casilla genérica de "algo salió mal" que no ayuda a decidir la acción de seguimiento apropiada para cada tipo distinto de problema.
 
-**¿Por qué es importante?** Modelar errores con un enum propio frente a propagar `NSError` genérico permite un manejo específico y verificado exhaustivamente por el compilador para cada categoría de fallo, comunicando mensajes más útiles y precisos que un error genérico indiferenciado.
+**Implicación práctica:** Modelar errores con un enum propio frente a propagar `NSError` genérico permite un manejo específico y verificado exhaustivamente por el compilador para cada categoría de fallo, comunicando mensajes más útiles y precisos que un error genérico indiferenciado.
 
 **Código del ejemplo:**
 
@@ -243,7 +243,7 @@ Corregí el Paso 5 restaurando el `catch` específico, y envolvé la llamada com
 
 #### Paso 7 · Cierre
 Entregá el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido del Paso 5, y la cancelación del Paso 6; explicá por qué reintentar un error 4xx (como PIN inválido) es un desperdicio que nunca cambia el resultado, a diferencia de un error transitorio de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
-**¿Por qué es importante?** Porque reintentar indiscriminadamente desperdicia llamadas de red en errores que nunca van a cambiar de resultado (un PIN inválido), mientras que cancelar una tarea obsoleta evita procesar una respuesta que ya no corresponde a la intención actual del usuario.
+**Implicación práctica:** Reintentar indiscriminadamente desperdicia llamadas de red en errores que nunca van a cambiar de resultado (un PIN inválido), mientras que cancelar una tarea obsoleta evita procesar una respuesta que ya no corresponde a la intención actual del usuario.
 
 ## Laboratorio práctico
 

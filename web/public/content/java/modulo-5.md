@@ -125,7 +125,7 @@ Agrega un segundo paso asíncrono con `thenCompose` (que a su vez devuelva otro 
 
 #### Paso 7 · Cierre
 Guarda la cadena completa, la salida exitosa y el error capturado por `exceptionally`; como siguiente paso estudia virtual threads. Errores comunes: anidar callbacks manualmente en vez de encadenar con `thenApply`/`thenCompose`, usar `thenApply` cuando el paso siguiente devuelve otro `CompletableFuture` (produce un `CompletableFuture<CompletableFuture<T>>` anidado en vez de aplanarlo), y omitir `exceptionally` dejando que una excepción en cualquier paso intermedio se propague sin manejar. Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**¿Por qué es importante?** Porque anidar callbacks manualmente para una secuencia de pasos asíncronos dependientes se vuelve ilegible apenas se agrega un paso más, mientras que encadenar con `thenApply`/`thenCompose` y centralizar errores con `exceptionally` mantiene la cadena lineal y legible.
+**Implicación práctica:** Anidar callbacks manualmente para una secuencia de pasos asíncronos dependientes se vuelve ilegible apenas se agrega un paso más, mientras que encadenar con `thenApply`/`thenCompose` y centralizar errores con `exceptionally` mantiene la cadena lineal y legible.
 
 ### Tema 3: Virtual threads
 
@@ -181,7 +181,7 @@ Reemplaza `Thread.sleep(50)` por un cálculo puro de CPU (por ejemplo, contar pr
 
 #### Paso 7 · Cierre
 Guarda ambas mediciones (I/O bloqueante y CPU pura) y la conclusión sobre cuándo virtual threads ayudan; como siguiente paso estudia condiciones de carrera. Errores comunes: asumir que los virtual threads aceleran cualquier carga sin medir, usar virtual threads para cálculo CPU-intensivo puro (no ofrecen ninguna ventaja ahí), y llamar código nativo (JNI o el Foreign Function & Memory API del Módulo 11) desde dentro de un virtual thread sin saber que eso todavía "fija" (pin) el carrier thread en JDK 25 — a diferencia de `synchronized`, cuyo pinning sí se eliminó en JDK 24 (JEP 491). Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**¿Por qué es importante?** Porque los virtual threads permiten decenas de miles de tareas de I/O bloqueante con una fracción de la memoria de los threads de plataforma, pero esa ventaja desaparece por completo para cálculo puro de CPU, donde un pool de plataforma bien dimensionado sigue siendo la elección correcta.
+**Implicación práctica:** Los virtual threads permiten decenas de miles de tareas de I/O bloqueante con una fracción de la memoria de los threads de plataforma, pero esa ventaja desaparece por completo para cálculo puro de CPU, donde un pool de plataforma bien dimensionado sigue siendo la elección correcta.
 
 ### Tema 4: Condiciones de carrera y sincronización
 
@@ -235,7 +235,7 @@ Reemplaza `synchronized` por `AtomicInteger` (usando `incrementAndGet()`) y conf
 
 #### Paso 7 · Cierre
 Guarda ambas versiones (sin sincronizar y con `synchronized`/`AtomicInteger`), los resultados inconsistentes y el resultado corregido; como siguiente paso estudia NIO.2. Errores comunes: asumir que `contador++` es una operación atómica, sincronizar solo la lectura o solo la escritura en vez de la operación completa de leer-sumar-escribir, y usar `synchronized` en cada acceso a un contador de muy alta frecuencia cuando `AtomicInteger` rendiría mejor con la misma corrección. Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**¿Por qué es importante?** Porque una condición de carrera produce resultados incorrectos silenciosos (sin ninguna excepción) que dependen del orden impredecible de ejecución de los hilos, y solo una prueba con múltiples hilos reales la expone — nunca se detecta leyendo el código.
+**Implicación práctica:** Una condición de carrera produce resultados incorrectos silenciosos (sin ninguna excepción) que dependen del orden impredecible de ejecución de los hilos, y solo una prueba con múltiples hilos reales la expone — nunca se detecta leyendo el código.
 
 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
 

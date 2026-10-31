@@ -64,7 +64,7 @@ Agrega una comparación equivalente entre `HashSet` y `TreeSet` insertando guía
 
 #### Paso 7 · Cierre
 Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cuándo cada estructura gana; como siguiente paso estudia genéricos. Errores comunes: usar `ArrayList` cuando en realidad se necesita unicidad garantizada (debería ser un `Set`), usar un objeto mutable como clave de `HashMap`/`HashSet` (si su hash cambia después de insertarlo, deja de encontrarse), y asumir que `HashSet` conserva algún orden solo porque en una prueba particular pareció hacerlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
+**Implicación práctica:** Elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
 
 ### Tema 2: Genéricos, wildcards y type erasure
 
@@ -121,7 +121,7 @@ Escribe un método `mostrarTodos(List<? extends Number> lista)` usando un wildca
 
 #### Paso 7 · Cierre
 Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación provocado; como siguiente paso estudia Comparable y Comparator. Errores comunes: usar raw types (`Caja` sin `<T>`) perdiendo toda verificación de tipos, y asumir que la información genérica está disponible por reflexión en runtime. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque el type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
+**Implicación práctica:** El type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
 
 ### Tema 3: Comparable vs Comparator, e iteración
 
@@ -184,7 +184,7 @@ Agrega un segundo `Comparator` por peso y encadénalos con `thenComparing`; reco
 
 #### Paso 7 · Cierre
 Guarda `Entrega`, ambos órdenes obtenidos y el error de compilación provocado; como siguiente paso estudia excepciones. Errores comunes: implementar `compareTo` con una resta de enteros (`this.valor - otro.valor`) que puede desbordar con valores extremos en vez de usar `Integer.compare`, modificar después de insertar el campo por el que un `TreeSet`/`TreeMap` ya ordenó un objeto (corrompe la estructura interna), y definir un `Comparable` inconsistente con `equals` sin documentarlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**¿Por qué es importante?** Porque mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
+**Implicación práctica:** Mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
 
 ## Construcción guiada del capítulo
 

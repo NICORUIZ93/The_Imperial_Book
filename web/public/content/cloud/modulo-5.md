@@ -136,7 +136,7 @@ flowchart LR
     RuntimeChoice -->|"Cold start aceptable<br/>Eventos asíncrono"| NodeJS["Node.js (sin provisioned)"]
 ```
 
-**Conceptos clave:** serverless, cold start, provisioned concurrency, cost optimization.
+**Regla de decisión:** elige Go con provisioned concurrency solo cuando una persona espera la respuesta (como «api-rastreo»); para funciones disparadas por cola, Node.js sin provisioned mantiene el coste bajo porque el cold start queda fuera de la experiencia de usuario.
 
 ```mermaid
 flowchart LR
@@ -366,7 +366,7 @@ Además de los runtimes gestionados oficialmente, Lambda soporta runtimes person
 > - Si `procesar-fotos` se invoca pocas veces: Lambda separada evita aumentar tamaño a todas las invocaciones
 > - Si se invoca frecuente: Zip compartido (Layers) reducidría duración
 
-**Conceptos clave:** runtime, empaquetado, tamaño de zip, optimización de dependencias.
+**Regla de empaquetado:** si la dependencia pesada (`sharp`) solo la usa una función y esa función se invoca poco, sepárala en su propia Lambda; si la usa casi todo el tráfico, compártela con una Layer para no duplicar el zip.
 
 **Diagrama:**
 

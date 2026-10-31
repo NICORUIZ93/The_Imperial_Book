@@ -116,7 +116,7 @@ Corregí el Paso 5 explicando por qué un `StatelessWidget` no puede acumular es
 
 #### Paso 7 · Cierre
 Entregá `TarjetaEnvio` y `ContadorIntentos` del Paso 4, el contador que nunca acumula del Paso 5, y la conversión a StatefulWidget del Paso 6; explicá por qué una variable local dentro de `build()` nunca puede servir como memoria persistente, sin importar en qué tipo de widget se declare. Siguiente paso: estudia Row, Column, Stack y el ciclo de vida de un StatefulWidget. Errores comunes: intentar mantener estado mutable con una variable local de `build()`, convertir un widget a `StatefulWidget` cuando nunca necesita estado propio, y mutar un campo fuera de `setState()` esperando que la UI se actualice igual. Fuentes oficiales: https://docs.flutter.dev/ui/widgets y https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html.
-**¿Por qué es importante?** La distinción entre StatelessWidget y StatefulWidget determina si un widget puede mantener estado mutable propio persistente entre reconstrucciones; una variable local de `build()` nunca cumple ese rol.
+**Implicación práctica:** La distinción entre StatelessWidget y StatefulWidget determina si un widget puede mantener estado mutable propio persistente entre reconstrucciones; una variable local de `build()` nunca cumple ese rol.
 
 ### Tema 2: Layout con Row, Column y Stack, y ciclo de vida
 
@@ -242,7 +242,7 @@ Corregí el Paso 5 restaurando `_timer?.cancel()` en `dispose()`, y agregá una 
 
 #### Paso 7 · Cierre
 Entregá el layout con Stack del Paso 4, los timers acumulados sin cancelar del Paso 5, y la verificación de `mounted` del Paso 6; explicá por qué todo recurso iniciado en `initState()` debe liberarse explícitamente en `dispose()`, sin excepciones. Siguiente paso: estudia Keys para listas reordenables. Errores comunes: iniciar un recurso en `initState()` sin liberarlo en `dispose()`, llamar `setState()` después de que el widget se desmontó, y anidar `Column` dentro de `Column` sin límites de altura. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/State-class.html y https://docs.flutter.dev/ui/widgets/layout.
-**¿Por qué es importante?** Los hooks del ciclo de vida son el mecanismo correcto para gestionar recursos sin fugas de memoria; omitir `dispose()` acumula recursos que siguen corriendo después de que la pantalla ya no existe.
+**Implicación práctica:** Los hooks del ciclo de vida son el mecanismo correcto para gestionar recursos sin fugas de memoria; omitir `dispose()` acumula recursos que siguen corriendo después de que la pantalla ya no existe.
 
 ### Tema 3: Keys
 
@@ -348,7 +348,7 @@ Corregí el Paso 5 devolviendo `key: ValueKey(e.id)`, y agregá una prueba de wi
 
 #### Paso 7 · Cierre
 Entregá la lista con Key estable del Paso 4, el bug de identidad provocado en el Paso 5, y la prueba de widget del Paso 6; explicá por qué el índice "funciona" en una lista que nunca se reordena, pero falla en cuanto eso deja de ser cierto. Siguiente paso: cerrá el módulo documentando rebuild vs re-render en tus propias palabras. Errores comunes: usar el índice como Key en listas reordenables, usar `UniqueKey()` innecesariamente, y omitir la Key por completo en listas con estado interno por fila. Fuentes oficiales: https://api.flutter.dev/flutter/foundation/Key-class.html y https://docs.flutter.dev/ui/widgets.
-**¿Por qué es importante?** Una Key estable es necesaria cuando se reordena una lista de widgets con estado interno propio, evitando que Flutter confunda qué estado pertenece a qué elemento tras el reordenamiento.
+**Implicación práctica:** Una Key estable es necesaria cuando se reordena una lista de widgets con estado interno propio, evitando que Flutter confunda qué estado pertenece a qué elemento tras el reordenamiento.
 
 ## Demo en DevTools
 

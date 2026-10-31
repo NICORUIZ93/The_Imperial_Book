@@ -123,7 +123,7 @@ Agregá 50 tareas más a la lista y al diccionario (ids del 4 al 53), medí con 
 
 #### Paso 7 · Cierre
 Guardá el código con `buscar_por_id_lista`, el diccionario `por_id` y la demostración del índice desactualizado tras `del tareas[0]`; como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista y asumir que sigue apuntando a la misma tarea después de cualquier eliminación; elegir diccionario sin medir si en tu caso realmente hay más búsquedas que inserciones. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
-**¿Por qué es importante?** Porque un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
+**Implicación práctica:** Un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
 
 ### Tema 2: Pilas, colas y abstracciones de comportamiento
 
@@ -267,7 +267,7 @@ Repetí la medición del Paso 4 con `pendientes_lista` y `pendientes_deque` de 1
 
 #### Paso 7 · Cierre
 Guardá el código de la pila de deshacer, la cola de pendientes y la medición de `list.pop(0)` contra `deque.popleft()`; como siguiente paso, en el Tema 3 vas a necesitar que esas mismas tareas estén ordenadas para poder buscarlas con búsqueda binaria. Errores comunes: usar `list.pop(0)` para una cola y no notar el costo porque con pocos elementos no se nota; desapilar o desencolar sin comprobar antes si la estructura está vacía. Fuentes oficiales: https://docs.python.org/es/3/library/collections.html#collections.deque y https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks.
-**¿Por qué es importante?** Porque elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
+**Implicación práctica:** Elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
 
 ### Tema 3: Búsqueda, precondiciones y demostración de corrección
 
@@ -415,7 +415,7 @@ Generá 1000 tareas con fechas aleatorias, ordenalas con `.sort(key=...)` antes 
 
 #### Paso 7 · Cierre
 Guardá `buscar_binaria_por_fecha`, la versión que falla sobre la lista desordenada y la corrección (ordenar antes o usar búsqueda lineal); como siguiente paso, en el Tema 4 vas a medir cuánto cuesta ese orden previo —y el resto de las operaciones— a medida que crece el número de tareas. Errores comunes: aplicar búsqueda binaria sin verificar que la lista esté ordenada por la misma clave que usás para comparar; confundir "no la encontró" con "no existe" cuando en realidad la precondición estaba rota. Fuentes oficiales: https://docs.python.org/es/3/library/bisect.html y https://opendsa-server.cs.vt.edu/.
-**¿Por qué es importante?** Porque un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
+**Implicación práctica:** Un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
 
 ### Tema 4: Complejidad, medición, ordenamiento y recursión
 
@@ -568,7 +568,7 @@ Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de 
 
 #### Paso 7 · Cierre
 Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
-**¿Por qué es importante?** Porque la teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
+**Implicación práctica:** La teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
 
 ### Tema 5: Árboles y árboles binarios de búsqueda (BST)
 

@@ -210,7 +210,7 @@ Corregí el Paso 5 documentando explícitamente (en un comentario o test) la lis
 
 #### Paso 7 · Cierre
 Entregá el `switch` funcionando del Paso 4, el caso silenciosamente no manejado del Paso 5, y la documentación/corrección del Paso 6; explicá por qué la exhaustividad verificada de Kotlin no cruza la frontera hacia Swift automáticamente. Siguiente paso: exponé funciones suspend hacia Swift y elegí cómo distribuir el framework. Errores comunes: asumir que Swift avisará si falta un caso nuevo de una sealed class actualizada; usar un `default` que oculta silenciosamente casos nuevos en vez de uno que, como mínimo, registre un error visible. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/switch.
-**¿Por qué es importante?** Porque la exhaustividad verificada de una `sealed class` en Kotlin no cruza automáticamente hacia Swift; un caso nuevo puede caer silenciosamente en un `default` sin que nadie se entere hasta producción.
+**Implicación práctica:** La exhaustividad verificada de una `sealed class` en Kotlin no cruza automáticamente hacia Swift; un caso nuevo puede caer silenciosamente en un `default` sin que nadie se entere hasta producción.
 
 ### Tema 3: Coroutines desde Swift, y distribución del framework
 
@@ -325,7 +325,7 @@ Corregí el Paso 5 agregando `continuation.resume(throwing: error)` en la rama d
 
 #### Paso 7 · Cierre
 Entregá el callback consumido del Paso 4, la `Task` colgada por falta de `resume` en la rama de error del Paso 5, y el wrapper corregido con su test del Paso 6; explicá por qué un wrapper `async` sobre un callback debe cubrir EXPLÍCITAMENTE ambas ramas (éxito y error), no solo la feliz. Con esto cerrás la interoperabilidad con iOS de este track. Errores comunes: asumir que Swift maneja las funciones suspend igual que Kotlin sin ninguna adaptación; escribir un wrapper `async`/`withCheckedThrowingContinuation` que no cubre la rama de error, dejando la `Task` colgada indefinidamente ante un fallo. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/withcheckedthrowingcontinuation(function:_:).
-**¿Por qué es importante?** Porque un wrapper `async` sobre un callback Kotlin debe resolver la continuation en AMBAS ramas (éxito y error); omitir la rama de error deja la `Task` de Swift colgada indefinidamente ante un fallo real.
+**Implicación práctica:** Un wrapper `async` sobre un callback Kotlin debe resolver la continuation en AMBAS ramas (éxito y error); omitir la rama de error deja la `Task` de Swift colgada indefinidamente ante un fallo real.
 
 ## Laboratorio práctico
 

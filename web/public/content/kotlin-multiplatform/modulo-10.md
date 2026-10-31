@@ -181,7 +181,7 @@ Corregí el Paso 5 restaurando `increment_build_number` al inicio del lane, y ag
 
 #### Paso 7 · Cierre
 Entregá el lane completo del Paso 4, el error de build number duplicado del Paso 5, y la verificación de dos ejecuciones consecutivas del Paso 6; explicá por qué automatizar "casi todos" los pasos de una checklist manual no elimina el riesgo del paso que queda afuera. Siguiente paso: sincronizá el número de versión entre ambas plataformas para evitar confusión al diagnosticar bugs. Errores comunes: automatizar solo algunos pasos de la checklist manual original, firmar con el certificate/provisioning profile equivocado por tener múltiples configurados, y no verificar el resultado de la subida antes de notificar al equipo que el release está listo. Fuentes oficiales: https://docs.fastlane.tools/ y https://docs.fastlane.tools/actions/upload_to_testflight/.
-**¿Por qué es importante?** Fastlane automatiza pasos de release tediosos y propensos a error humano en un único comando consistente y repetible, pero solo elimina el riesgo de los pasos que efectivamente automatiza.
+**Implicación práctica:** Fastlane automatiza pasos de release tediosos y propensos a error humano en un único comando consistente y repetible, pero solo elimina el riesgo de los pasos que efectivamente automatiza.
 
 ### Tema 3: Versionado compartido
 

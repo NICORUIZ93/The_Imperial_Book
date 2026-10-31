@@ -73,7 +73,7 @@ TaskId parseTaskLink(Uri uri, Session session) {
 
 **Analogía:** Flutter es un intérprete común entre dos edificios; cada puerta nativa conserva su propia cerradura y reglamento.
 
-**¿Por qué es importante?** porque el código multiplataforma hereda la superficie de ambas plataformas y de cada plugin.
+**Implicación práctica:** El código multiplataforma hereda la superficie de ambas plataformas y de cada plugin.
 
 **Casos de uso reales:** plugin abandonado, permiso sobrante, deep link a cuenta ajena, channel que acepta una ruta arbitraria y clave incluida en el bundle.
 
@@ -284,7 +284,7 @@ Corregí el Paso 5 devolviendo la decodificación del JSON pequeño al isolate d
 
 #### Paso 7 · Cierre
 Entregá la decodificación off-UI del Paso 4, el costo medido de mover trabajo pequeño a un isolate del Paso 5, y el criterio documentado del Paso 6; explicá por qué crear isolates para operaciones diminutas cuesta más de lo que ahorra. Siguiente paso: estudia qué exige producción en términos de protocolo y telemetría. Errores comunes: asumir que `async`/`await` paraleliza cálculo CPU-bound, mover operaciones triviales a un isolate sin medir el costo de coordinación, y no perfilar en modo profile sobre un dispositivo representativo. Fuente oficial: https://docs.flutter.dev/perf/isolates.
-**¿Por qué es importante?** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
+**Implicación práctica:** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
 
 ### Tema 4: Producción exige protocolo, telemetría y contención
 
@@ -373,7 +373,7 @@ Corregí el Paso 5 reutilizando siempre el mismo `PendingMutation` (y su `id` or
 
 #### Paso 7 · Cierre
 Entregá la outbox con clave de idempotencia estable del Paso 4, la duplicación provocada al generar un nuevo `id` en cada reintento del Paso 5, y el test de clave estable del Paso 6; explicá por qué la conectividad solo dispara intentos, pero no prueba disponibilidad real del servidor, y por qué eso hace indispensable la idempotencia en cada reintento. Siguiente paso: cerrá el módulo integrando seguridad, isolates y outbox en un release real auditado. Errores comunes: generar una nueva clave de idempotencia en cada reintento, publicar sin símbolos de depuración, y desplegar a todos los usuarios de una vez en vez de por cohortes observables. Fuente oficial: https://docs.flutter.dev/app-architecture/design-patterns/offline-first.
-**¿Por qué es importante?** La capacidad de detectar y contener un fallo determina su impacto real; una clave de idempotencia estable evita que la conectividad intermitente duplique efectos reales en el servidor.
+**Implicación práctica:** La capacidad de detectar y contener un fallo determina su impacto real; una clave de idempotencia estable evita que la conectividad intermitente duplique efectos reales en el servidor.
 
 ## Revisión oficial de plataforma — julio de 2026
 

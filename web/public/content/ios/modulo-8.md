@@ -141,7 +141,7 @@ Organizar el proyecto en carpetas que reflejan estas responsabilidades (en vez d
 
 **Analogía:** organizar el proyecto en carpetas por capa es como un edificio con señalización clara de qué sucede en cada piso, en vez de un espacio abierto sin ninguna distinción de función; inyectar por inicializador es como entregarle a cada empleado sus propias herramientas al contratarlo, en vez de que todos compartan un único almacén común sin control sobre qué toma cada uno.
 
-**¿Por qué es importante?** La organización en capas hace visible la arquitectura en la estructura del proyecto; la inyección por inicializador permite sustituir `ServicioAPI` por una versión falsa en tests sin singletons globales.
+**Implicación práctica:** La organización en capas hace visible la arquitectura en la estructura del proyecto; la inyección por inicializador permite sustituir `ServicioAPI` por una versión falsa en tests sin singletons globales.
 
 **Código del ejemplo:**
 
@@ -206,7 +206,7 @@ Para apps con varios ViewModels que comparten lógica de negocio sustancial, o c
 
 **Analogía:** MVVM simple es la organización adecuada para un restaurante de tamaño mediano con roles claros; a medida que el negocio crece hasta ser una cadena con varias sucursales, se vuelve necesario agregar una oficina central de operaciones — algo que sería puro exceso de burocracia para el restaurante original pequeño.
 
-**¿Por qué es importante?** Un caso de uso evita duplicar reglas de negocio entre ViewModels; adoptar TCA o capas adicionales antes de necesitarlas agrega complejidad sin beneficio real todavía.
+**Implicación práctica:** Un caso de uso evita duplicar reglas de negocio entre ViewModels; adoptar TCA o capas adicionales antes de necesitarlas agrega complejidad sin beneficio real todavía.
 
 **Diagrama:**
 

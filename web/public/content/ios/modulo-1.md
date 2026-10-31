@@ -100,7 +100,7 @@ Cualquier tipo que implemente el protocolo `View` (con una propiedad computada `
 
 **Analogía:** el protocolo `View` es como un certificado universal que cualquier elemento de construcción puede portar (un ladrillo, un panel prefabricado, una estructura completa ya ensamblada), permitiendo que un arquitecto los combine libremente en un plano mayor sin preocuparse por si cada elemento individual es "básico" o "compuesto" — todos se integran según el mismo estándar.
 
-**¿Por qué es importante?** El protocolo `View` unifica vistas nativas de SwiftUI y vistas propias bajo el mismo mecanismo de composición, permitiendo construir UIs complejas a partir de piezas pequeñas y reutilizables sin ninguna distinción especial entre ellas.
+**Implicación práctica:** El protocolo `View` unifica vistas nativas de SwiftUI y vistas propias bajo el mismo mecanismo de composición, permitiendo construir UIs complejas a partir de piezas pequeñas y reutilizables sin ninguna distinción especial entre ellas.
 
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Divide la tarjeta de entrega en vistas que reciben datos y acciones. Usa previews con estados pendiente y entregado y verifica que componer la vista no ejecuta operaciones de red.
 
@@ -312,7 +312,7 @@ Combiná `VStack`, `HStack` y `ZStack` para mostrar `TarjetaEnvio` con un ícono
 
 #### Paso 7 · Cierre
 Entregá las dos versiones con orden distinto del Paso 4, el padding mal entendido del Paso 5, y el layout combinado del Paso 6; explicá por qué "el orden no debería importar" es la intuición equivocada más común al empezar con modificadores de SwiftUI. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
-**¿Por qué es importante?** Porque cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
+**Implicación práctica:** Cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
 
 ### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers
 
@@ -396,7 +396,7 @@ Corregí el Paso 5 volviendo a datos de muestra fijos, y agregá un estado `load
 
 #### Paso 7 · Cierre
 Entregá la grilla con Preview funcionando del Paso 4, el intento de red real roto del Paso 5, y los tres estados (`loading`/`error`/datos) del Paso 6; explicá por qué el sistema de Previews está pensado para datos de muestra, no para red real. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
-**¿Por qué es importante?** Porque el sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.
+**Implicación práctica:** El sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.
 
 ## Laboratorio práctico
 

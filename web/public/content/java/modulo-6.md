@@ -102,7 +102,7 @@ Agrega `Files.copy` para respaldar el comprobante leído a un directorio de arch
 
 #### Paso 7 · Cierre
 Guarda el validador de rutas, la prueba de traversal rechazada y la lectura válida; como siguiente paso estudia serialización con Jackson. Errores comunes: concatenar rutas con `+` en vez de `resolve()`, confiar en la extensión del archivo sin validar la ruta completa resuelta, y normalizar antes de resolver en vez de después (el orden importa: primero `resolve`, después `normalize()`). Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html.
-**¿Por qué es importante?** Porque aceptar un nombre de archivo externo sin validar que la ruta resuelta permanezca dentro del directorio permitido es exactamente el tipo de vulnerabilidad (path traversal) que permite leer archivos arbitrarios del sistema, no solo los comprobantes esperados.
+**Implicación práctica:** Aceptar un nombre de archivo externo sin validar que la ruta resuelta permanezca dentro del directorio permitido es exactamente el tipo de vulnerabilidad (path traversal) que permite leer archivos arbitrarios del sistema, no solo los comprobantes esperados.
 
 ### Tema 2: Serialización con Jackson
 
@@ -160,7 +160,7 @@ Agrega un segundo `record` anidado (por ejemplo `Entrega` con un campo `Destinat
 
 #### Paso 7 · Cierre
 Guarda el `record`, el JSON serializado y la confirmación de igualdad tras el ciclo completo; como siguiente paso estudia archivos grandes y recursos del classpath. Errores comunes: olvidar un constructor sin argumentos o getters/setters esperando que Jackson los necesite para un `record` (no los necesita), asumir que un campo faltante en el JSON se completa con un valor por defecto silencioso en vez de fallar, y no fijar una versión concreta de Jackson en el proyecto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://github.com/FasterXML/jackson-docs.
-**¿Por qué es importante?** Porque serializar y deserializar manualmente campo por campo es repetitivo y propenso a errores de sincronización entre el modelo Java y el JSON; Jackson automatiza esa conversión inspeccionando la estructura real del `record`, y falla con un mensaje específico cuando algo no coincide.
+**Implicación práctica:** Serializar y deserializar manualmente campo por campo es repetitivo y propenso a errores de sincronización entre el modelo Java y el JSON; Jackson automatiza esa conversión inspeccionando la estructura real del `record`, y falla con un mensaje específico cuando algo no coincide.
 
 ### Tema 3: Archivos grandes y recursos del classpath
 
@@ -221,7 +221,7 @@ Agrega un `config.json` en `src/main/resources` y cárgalo con `getResourceAsStr
 
 #### Paso 7 · Cierre
 Guarda ambas mediciones de memoria y la carga del recurso del classpath; como siguiente paso estudia records y pattern matching. Errores comunes: leer todo el archivo con `readAllBytes`/`readAllLines` sin considerar su tamaño real, olvidar que `getResourceAsStream` devuelve `null` (no lanza excepción) si el recurso no existe en el classpath, y no cerrar el `BufferedReader` con try-with-resources dejando el descriptor de archivo abierto. Fuentes oficiales: https://dev.java/learn/java-io/file-system/ y https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html.
-**¿Por qué es importante?** Porque cargar un archivo de cientos de miles de líneas completo en memoria antes de procesarlo puede agotar la memoria disponible, mientras que procesarlo línea por línea mantiene un uso de memoria acotado sin importar el tamaño real del archivo.
+**Implicación práctica:** Cargar un archivo de cientos de miles de líneas completo en memoria antes de procesarlo puede agotar la memoria disponible, mientras que procesarlo línea por línea mantiene un uso de memoria acotado sin importar el tamaño real del archivo.
 
 ## Construcción guiada del capítulo
 

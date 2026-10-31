@@ -77,7 +77,7 @@ Corregí el Paso 5 eliminando las dos suites duplicadas específicas de platafor
 
 #### Paso 7 · Cierre
 Entregá el test en `commonTest` del Paso 4, la triple duplicación detectada en el Paso 5, y la eliminación de las suites redundantes del Paso 6; explicá por qué una prueba de lógica compartida vive naturalmente en `commonTest` y no en cada plataforma. Siguiente paso: reemplazá cualquier mock específico de JVM por un fake compatible con todos los targets. Errores comunes: escribir el mismo test por separado en cada plataforma "por las dudas", no ejecutar `allTests` contra ambos targets antes de confiar en un cambio, y dejar pruebas obsoletas verdes que ya no reflejan el comportamiento real. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/api/latest/kotlin.test/.
-**¿Por qué es importante?** Porque las pruebas compartidas reducen duplicación y detectan regresiones en todas las plataformas.
+**Implicación práctica:** Las pruebas compartidas reducen duplicación y detectan regresiones en todas las plataformas.
 
 ### Tema 2: Fakes en vez de mocks
 
@@ -151,7 +151,7 @@ Corregí el Paso 5 quitando esa dependencia del módulo `shared` y restaurando e
 
 #### Paso 7 · Cierre
 Entregá el fake del Paso 4, el fallo de compilación de iOS del Paso 5, y la corrección del Paso 6; explicá por qué una dependencia de testing "conveniente" en un módulo `shared` puede bloquear la compilación de un target completo. Siguiente paso: usá `runTest` para probar específicamente la parte asíncrona de ese mismo repositorio. Errores comunes: agregar dependencias de testing específicas de JVM al módulo `shared`, escribir fakes con lógica tan compleja que necesitan sus propias pruebas, y no verificar la compilación de todos los targets después de agregar una dependencia nueva. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/docs/multiplatform-set-up-targets.html.
-**¿Por qué es importante?** Porque un fake escrito a mano es código Kotlin ordinario compatible con todos los targets, mientras que un mock generado dinámicamente depende de mecanismos específicos de la JVM que pueden bloquear la compilación completa de un target como iOS.
+**Implicación práctica:** Un fake escrito a mano es código Kotlin ordinario compatible con todos los targets, mientras que un mock generado dinámicamente depende de mecanismos específicos de la JVM que pueden bloquear la compilación completa de un target como iOS.
 
 ### Tema 3: runTest para coroutines
 
@@ -229,7 +229,7 @@ Corregí el Paso 5 restaurando `runTest`, medí el tiempo real de ejecución de 
 
 #### Paso 7 · Cierre
 Entregá el test con `runTest` del Paso 4, la suite lenta con `runBlocking` del Paso 5, y la medición de tiempo del Paso 6; explicá por qué un builder de coroutines "que también compila" no es intercambiable con uno diseñado específicamente para testing. Siguiente paso: automatizá esta suite completa en el pipeline de CI del próximo módulo. Errores comunes: usar un builder de coroutines genérico en vez de `runTest` para funciones con `delay()`, no medir el tiempo real de la suite antes de confiar en que "es rápida", y mezclar tiempo virtual con llamadas de red reales dentro del mismo test. Fuentes oficiales: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-test/ y https://kotlinlang.org/docs/multiplatform-run-tests.html.
-**¿Por qué es importante?** `runTest` permite que los tests de código con delays simulados corran instantáneamente en tiempo real, manteniendo la suite de pruebas rápida y ágil en CI incluso con lógica que internamente simula esperas prolongadas.
+**Implicación práctica:** `runTest` permite que los tests de código con delays simulados corran instantáneamente en tiempo real, manteniendo la suite de pruebas rápida y ágil en CI incluso con lógica que internamente simula esperas prolongadas.
 
 ## Laboratorio práctico
 

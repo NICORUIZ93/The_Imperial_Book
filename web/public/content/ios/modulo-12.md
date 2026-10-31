@@ -86,7 +86,7 @@ Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el re
 
 #### Paso 7 · Cierre
 Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
-**¿Por qué es importante?** Porque integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
+**Implicación práctica:** Integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
 
 ### Tema 2: Sincronización entre red y persistencia local
 
@@ -166,7 +166,7 @@ Corregí el Paso 5 devolviendo `try?`, y agregá un log (no una propagación a l
 
 #### Paso 7 · Cierre
 Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: cerrá el track con una retrospectiva. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
-**¿Por qué es importante?** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
+**Implicación práctica:** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
 
 ### Tema 3: Cierre del track
 
@@ -242,7 +242,7 @@ Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente
 
 #### Paso 7 · Cierre
 Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
-**¿Por qué es importante?** Porque distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
+**Implicación práctica:** Distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
 
 ## Laboratorio práctico
 

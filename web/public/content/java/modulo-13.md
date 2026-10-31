@@ -59,7 +59,7 @@ Agregá una segunda regla de negocio a `DeliveryService` (por ejemplo, exigir un
 
 #### Paso 7 · Cierre
 Guarda el árbol de capas, el `module-info` o estructura de paquetes, y una prueba que confirme que el dominio compila sin ninguna dependencia de infraestructura; como siguiente paso integra concurrencia y testing en esa misma estructura. Errores comunes: filtrar lógica de negocio dentro de un controlador o adaptador, acceder a infraestructura directamente desde el dominio, y mezclar las tres capas en un único paquete plano "por simplicidad". Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
-**¿Por qué es importante?** Porque separar el código en capas con razones de cambio distintas y bien delimitadas facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin rastrear ese impacto a través de código mezclado.
+**Implicación práctica:** Separar el código en capas con razones de cambio distintas y bien delimitadas facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin rastrear ese impacto a través de código mezclado.
 
 ### Tema 2: Integrando concurrencia, modelado y testing
 
@@ -120,7 +120,7 @@ Agregá una prueba con Mockito que mockee el colaborador que decide si una tarea
 
 #### Paso 7 · Cierre
 Guarda el procesamiento con virtual threads, el `ResultadoProcesamiento` sellado con sus casos `Exito`/`Error`, y las pruebas con Mockito aislando la lógica de negocio; como siguiente paso configura el build reproducible que cierra el track. Errores comunes: lanzar virtual threads sin ningún límite de concurrencia real hacia un recurso externo, usar excepciones para un fallo individual esperado en vez de modelarlo como resultado explícito, y mockear la clase bajo prueba en vez de sus dependencias. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
-**¿Por qué es importante?** Porque modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar éxito y error explícitamente, con el compilador garantizando que ningún caso quede sin cubrir, sin recurrir a excepciones para un fallo individual esperado.
+**Implicación práctica:** Modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar éxito y error explícitamente, con el compilador garantizando que ningún caso quede sin cubrir, sin recurrir a excepciones para un fallo individual esperado.
 
 ### Tema 3: Build reproducible y cierre del track
 

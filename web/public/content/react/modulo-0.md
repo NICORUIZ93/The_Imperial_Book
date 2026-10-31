@@ -105,7 +105,7 @@ Añade estados vacío/error, composición con Fragment y estilos accesibles; pru
 
 #### Paso 7 · Cierre
 Guarda estructura, comandos, captura y log; como siguiente paso estudia estado. Errores comunes: key aleatoria, componente gigante, HTML inválido y estilos que dependen solo de color. Fuentes oficiales: https://react.dev/learn y https://vite.dev/guide/.
-**¿Por qué es importante?** Porque entender el modelo de renderizado evita bugs sutiles al crecer la interfaz.
+**Implicación práctica:** Entender el modelo de renderizado evita bugs sutiles al crecer la interfaz.
 
 ### Tema 2: Listas con key estable
 
@@ -319,7 +319,7 @@ Corregí el Paso 5 restaurando el Fragment, y creá una segunda tarjeta (`Conduc
 
 #### Paso 7 · Cierre
 Entregá `Tarjeta` con `children` del Paso 4, el error de compilación del Paso 5, y `ConductorCard` del Paso 6; explicá por qué `Tarjeta` pudo reutilizarse para un contenido completamente distinto sin ninguna modificación, algo que una jerarquía de herencia rígida no ofrece con la misma facilidad. Siguiente paso: estudia renderizado condicional y estilos. Errores comunes: hacer que un componente "contenedor" conozca detalles específicos del contenido que envuelve, olvidar que un componente debe devolver un único elemento raíz, y usar un `<div>` extra en vez de un Fragment cuando no se necesita ningún elemento real. Fuentes oficiales: https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children y https://react.dev/reference/react/Fragment.
-**¿Por qué es importante?** Componer con `children` produce piezas de UI reutilizables e independientes entre sí; los Fragments evitan contenedores DOM innecesarios que la restricción de un único elemento raíz forzaría.
+**Implicación práctica:** Componer con `children` produce piezas de UI reutilizables e independientes entre sí; los Fragments evitan contenedores DOM innecesarios que la restricción de un único elemento raíz forzaría.
 
 ### Tema 4: Renderizado condicional y estilos
 

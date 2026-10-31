@@ -73,7 +73,7 @@ Esta elección deliberada produce pruebas que sobreviven a refactors internos de
 
 **Analogía:** consultar por rol/texto es como identificar a alguien por su función visible en una obra de teatro (el actor que hace de rey) en vez de por el número de camerino que ocupa detrás del escenario: si cambia de camerino (un detalle interno irrelevante), sigue siendo identificable de la misma forma por su rol visible en la obra.
 
-**¿Por qué es importante?** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable del componente.
+**Implicación práctica:** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable del componente.
 
 **Código del ejemplo:**
 

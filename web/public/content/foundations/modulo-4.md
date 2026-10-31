@@ -150,7 +150,7 @@ Agregá una tabla `etiquetas` relacionada con `tareas` mediante una tabla interm
 
 #### Paso 7 · Cierre
 Entregá el esquema `categorias`/`tareas`, los tres comportamientos del Paso 5 (sin `PRAGMA`, con `PRAGMA`, con `CASCADE`) y el diseño de `etiquetas` del Paso 6. Como siguiente paso, en el Tema 2 vas a escribir las consultas SQL (`INSERT`, `SELECT`, `JOIN`) sobre este mismo esquema. Errores comunes: asumir que declarar `REFERENCES` ya protege la integridad sin activar `PRAGMA foreign_keys`; confundir una relación uno-a-muchos con una muchos-a-muchos. Fuentes oficiales: https://www.sqlite.org/foreignkeys.html y https://www.sqlite.org/lang_createtable.html.
-**¿Por qué es importante?** Porque una clave foránea declarada pero no verificada da una falsa sensación de seguridad: el esquema "se ve" correcto, pero la base permite exactamente lo que la relación debería impedir.
+**Implicación práctica:** Una clave foránea declarada pero no verificada da una falsa sensación de seguridad: el esquema "se ve" correcto, pero la base permite exactamente lo que la relación debería impedir.
 
 ### Tema 2: SQL para definir, escribir, consultar y relacionar
 
@@ -293,7 +293,7 @@ Escribí un `UPDATE` parametrizado que cambie el `titulo` de una tarea por `id`,
 
 #### Paso 7 · Cierre
 Entregá las dos versiones (insegura y parametrizada) del Paso 4, la variante con `LIKE` del Paso 5, y el `UPDATE`/`DELETE`/`GROUP BY` del Paso 6. Como siguiente paso, en el Tema 3 vas a crear un índice sobre esta misma tabla `tareas` y vas a medir con `EXPLAIN QUERY PLAN` si realmente acelera las consultas. Errores comunes: concatenar entrada de usuario en SQL aunque la base sea local; asumir que un `JOIN` siempre encuentra una fila coincidente del otro lado. Fuentes oficiales: https://www.sqlite.org/lang.html y https://docs.python.org/es/3/library/sqlite3.html.
-**¿Por qué es importante?** Porque cualquier entrada que llega desde afuera (un argumento de CLI, un formulario) puede contener texto diseñado para alterar tu consulta; parametrizar no es un detalle de estilo, es lo que separa código de dato.
+**Implicación práctica:** Cualquier entrada que llega desde afuera (un argumento de CLI, un formulario) puede contener texto diseñado para alterar tu consulta; parametrizar no es un detalle de estilo, es lo que separa código de dato.
 
 ### Tema 3: Índices, restricciones y planes de consulta
 

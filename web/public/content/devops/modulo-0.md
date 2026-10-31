@@ -667,7 +667,7 @@ Un **proxy directo** representa al cliente: una organización puede obligar a su
 
 **Analogía:** el proxy inverso es la recepción del edificio: conoce qué oficina interna atiende cada solicitud y registra el recorrido. El visitante no necesita ni debería conocer la puerta privada de cada oficina.
 
-**¿Por qué es importante?** Centralizar entrada permite aplicar TLS, límites y observabilidad sin duplicarlos en cada servicio, pero también crea una dependencia crítica: timeouts, logs y pruebas de fallo son necesarios para no convertir el proxy en una caja negra.
+**Implicación práctica:** Centralizar entrada permite aplicar TLS, límites y observabilidad sin duplicarlos en cada servicio, pero también crea una dependencia crítica: timeouts, logs y pruebas de fallo son necesarios para no convertir el proxy en una caja negra.
 
 #### Paso 4 · Demostración guiada desde cero
 

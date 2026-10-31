@@ -172,7 +172,7 @@ Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLoca
 
 #### Paso 7 · Cierre
 Entregá el hook genérico reutilizado para dos tipos distintos del Paso 4, el caso de inferencia ambigua del Paso 5, y la especificación explícita del Paso 6; explicá cuándo conviene especificar el parámetro de tipo explícitamente en vez de depender de que TypeScript lo infiera solo. Siguiente paso: estudia eventos tipados y componentes polimórficos. Errores comunes: depender de la inferencia de tipos en casos ambiguos donde el valor inicial no determina claramente el tipo deseado, duplicar un hook para cada tipo de dato en vez de generalizarlo, y omitir el parámetro de tipo cuando TypeScript realmente no puede inferirlo del contexto. Fuentes oficiales: https://www.typescriptlang.org/docs/handbook/2/generics.html y https://react.dev/learn/reusing-logic-with-custom-hooks.
-**¿Por qué es importante?** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación.
+**Implicación práctica:** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación.
 
 ### Tema 3: Eventos tipados y componentes polimórficos
 
@@ -265,7 +265,7 @@ Corregí el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agregá
 
 #### Paso 7 · Cierre
 Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida de tipo específico del Paso 5, y el segundo caso polimórfico del Paso 6; explicá por qué usar el tipo de elemento más específico posible preserva el acceso tipado a las propiedades reales de ese elemento. Siguiente paso: cerrá el módulo migrando un componente completo a TypeScript estricto sin ningún `any`. Errores comunes: tipar un evento con el tipo base genérico en vez del específico del elemento real, omitir la restricción `T extends React.ElementType` en un componente polimórfico, y aceptar props que no son válidas para el elemento efectivamente renderizado según `as`. Fuentes oficiales: https://react.dev/learn/typescript#typing-the-usestate-hook y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html.
-**¿Por qué es importante?** Tipar eventos sintéticos correctamente detecta accesos inválidos a propiedades en tiempo de compilación; tipar componentes polimórficos preserva la seguridad de tipos incluso cuando el elemento final es configurable dinámicamente.
+**Implicación práctica:** Tipar eventos sintéticos correctamente detecta accesos inválidos a propiedades en tiempo de compilación; tipar componentes polimórficos preserva la seguridad de tipos incluso cuando el elemento final es configurable dinámicamente.
 
 ## Laboratorio práctico
 

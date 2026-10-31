@@ -120,7 +120,7 @@ Iniciá el servidor en un puerto distinto, por ejemplo `python3 -m http.server 8
 
 #### Paso 7 · Cierre
 Entregá la respuesta `200` del Paso 4, el `Connection refused` del puerto equivocado, y la verificación del Paso 6 con el servidor en `8080`; explicá por qué en `localhost` el cuello de botella casi nunca es DNS sino la coincidencia exacta de puerto. Como siguiente paso, en el Tema 2 vas a usar `curl -v` sobre un servidor real para observar el contrato HTTP completo: método, headers, código de estado y cuerpo. Errores comunes: confundir "conexión rechazada" con un error HTTP; asumir que `localhost` necesita resolución DNS; no verificar en qué puerto quedó escuchando el servidor antes de probarlo. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
-**¿Por qué es importante?** Porque diagnosticar "no carga" exige separar tres capas distintas — resolución de nombre, conexión TCP a un puerto y respuesta HTTP — y en desarrollo local casi siempre falla la segunda, no la primera.
+**Implicación práctica:** Diagnosticar "no carga" exige separar tres capas distintas — resolución de nombre, conexión TCP a un puerto y respuesta HTTP — y en desarrollo local casi siempre falla la segunda, no la primera.
 
 ### Tema 2: HTTP como contrato observable
 
@@ -439,7 +439,7 @@ Agregá un segundo campo (`<select id="prioridad" name="prioridad">` con opcione
 
 #### Paso 7 · Cierre
 Entregá la captura de DevTools con el input sin nombre accesible del Paso 4, la corrección con `label` y `name`, y el segundo campo corregido del Paso 6; explicá qué se rompe en términos concretos (nombre accesible ausente, dato sin clave al enviarse) cuando falta un `label`, no solo que "es menos accesible". Como siguiente paso, en el Tema 4 vas a darle estilos responsive a este mismo formulario y vas a verificar que el contraste de color no excluya a quien ya podés identificar por nombre accesible. Errores comunes: usar solo el `placeholder` como si fuera un label; relacionar un `label` con un `id` que no coincide exactamente; omitir `name` en inputs que después se envían a un servidor. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
-**¿Por qué es importante?** Porque un campo sin nombre accesible no es un detalle visual: para quien usa lector de pantalla directamente no existe, y para un backend que lee `name`, su valor directamente no llega.
+**Implicación práctica:** Un campo sin nombre accesible no es un detalle visual: para quien usa lector de pantalla directamente no existe, y para un backend que lee `name`, su valor directamente no llega.
 
 ### Tema 4: CSS, layout responsive y accesibilidad verificable
 

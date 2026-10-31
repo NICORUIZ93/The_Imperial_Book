@@ -281,7 +281,7 @@ Corregí el Paso 5 restaurando la inyección, y agregá una segunda vista interm
 
 #### Paso 7 · Cierre
 Entregá la inyección funcionando a través de varios niveles del Paso 4, el crash por ambiente faltante del Paso 5, y la vista intermedia ignorante de la dependencia del Paso 6; explicá por qué esto resuelve el mismo "prop drilling" que Context API resuelve en React. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
-**¿Por qué es importante?** Porque `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio que no la usa, resolviendo en SwiftUI el mismo problema que Context API resuelve en React.
+**Implicación práctica:** `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio que no la usa, resolviendo en SwiftUI el mismo problema que Context API resuelve en React.
 
 ## Laboratorio práctico
 

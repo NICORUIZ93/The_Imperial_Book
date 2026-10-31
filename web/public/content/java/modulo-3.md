@@ -59,7 +59,7 @@ Clasifica en una tabla tres excepciones más de la biblioteca estándar (`FileNo
 
 #### Paso 7 · Cierre
 Guarda el código, la salida del `throws` obligatorio y la excepción unchecked no declarada; como siguiente paso estudia try-with-resources. Errores comunes: declarar `throws Exception` genérico en vez de la excepción checked específica, envolver cada excepción unchecked en un `try/catch` "por si acaso" sin que exista una recuperación real posible, y tratar una `NullPointerException` como si fuera una condición externa recuperable en vez de un bug a corregir. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
-**¿Por qué es importante?** Porque forzar al compilador a verificar una excepción checked solo tiene sentido para condiciones externas genuinamente recuperables; aplicar esa misma obligación a algo que en realidad es un bug de programación solo ensucia la firma de los métodos sin ganar nada.
+**Implicación práctica:** Forzar al compilador a verificar una excepción checked solo tiene sentido para condiciones externas genuinamente recuperables; aplicar esa misma obligación a algo que en realidad es un bug de programación solo ensucia la firma de los métodos sin ganar nada.
 
 ### Tema 2: try-with-resources
 
@@ -115,7 +115,7 @@ Declara dos recursos en el mismo try-with-resources y confirma, mirando el orden
 
 #### Paso 7 · Cierre
 Guarda la clase `AutoCloseable`, la salida con y sin excepción, y el orden de cierre de dos recursos; como siguiente paso estudia excepciones personalizadas. Errores comunes: cerrar un recurso manualmente en un `finally` que se salta si el `try` lanza una excepción antes de llegar ahí, olvidar que los recursos se cierran en orden inverso al que se abrieron, y envolver un recurso que no implementa `AutoCloseable` esperando que try-with-resources lo cierre igual. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
-**¿Por qué es importante?** Porque un recurso que no se cierra ante una excepción (un archivo, una conexión) se queda abierto indefinidamente, y un `finally` manual escrito a mano es fácil de olvidar o de escribir mal, mientras que try-with-resources garantiza el cierre sin ese riesgo.
+**Implicación práctica:** Un recurso que no se cierra ante una excepción (un archivo, una conexión) se queda abierto indefinidamente, y un `finally` manual escrito a mano es fácil de olvidar o de escribir mal, mientras que try-with-resources garantiza el cierre sin ese riesgo.
 
 ### Tema 3: Excepciones personalizadas y no tragar excepciones
 
@@ -182,7 +182,7 @@ Agrega una segunda excepción de dominio (`CuentaBloqueadaException`) y un bloqu
 
 #### Paso 7 · Cierre
 Guarda ambas excepciones, la salida silenciosa del catch vacío y la salida registrada tras corregirlo; como siguiente paso estudia streams. Errores comunes: usar un catch vacío "para que no se rompa el programa", capturar `Throwable`/`Exception` genérico en vez del tipo de dominio específico cuando sí se necesita reaccionar distinto a cada caso, y devolver el stack trace completo al cliente final en vez de un mensaje de dominio junto con el registro técnico interno. Fuentes oficiales: https://dev.java/learn/exceptions/ y https://docs.oracle.com/javase/tutorial/essential/exceptions/.
-**¿Por qué es importante?** Porque una excepción de dominio específica permite reaccionar distinto según qué regla de negocio se violó, mientras que un catch vacío convierte cualquier error real en un bug invisible que solo se descubre mucho después, por sus consecuencias, no por su causa.
+**Implicación práctica:** Una excepción de dominio específica permite reaccionar distinto según qué regla de negocio se violó, mientras que un catch vacío convierte cualquier error real en un bug invisible que solo se descubre mucho después, por sus consecuencias, no por su causa.
 
 ## Construcción guiada del capítulo
 

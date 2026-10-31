@@ -227,7 +227,7 @@ Corregí el Paso 5 restaurando `@MainActor`, y agregá una tercera consulta en p
 
 #### Paso 7 · Cierre
 Entregá las dos consultas paralelas del Paso 4, el crash potencial sin `@MainActor` del Paso 5, y la tercera consulta agregada del Paso 6; explicá por qué el compilador puede detectar el error de hilo del Paso 5 en tiempo de compilación, no solo en producción. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
-**¿Por qué es importante?** Porque `TaskGroup`/`async let` ejecutan tareas independientes en paralelo reduciendo el tiempo total de espera, y `@MainActor` detecta en tiempo de compilación una actualización de UI insegura desde un hilo en segundo plano, en vez de dejarla como un crash intermitente en producción.
+**Implicación práctica:** `TaskGroup`/`async let` ejecutan tareas independientes en paralelo reduciendo el tiempo total de espera, y `@MainActor` detecta en tiempo de compilación una actualización de UI insegura desde un hilo en segundo plano, en vez de dejarla como un crash intermitente en producción.
 
 ## Laboratorio práctico
 

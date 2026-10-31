@@ -69,7 +69,7 @@ Ejecuta la misma carga con `-Xlog:gc` bajo G1 y bajo ZGC, mide la pausa máxima 
 
 #### Paso 7 · Cierre
 Guarda ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas; como siguiente paso graba un perfil JFR de la misma carga. Errores comunes: tunear el recolector sin un baseline medido previamente, confundir uso de heap con memoria nativa (fuera del control del GC), y comparar recolectores bajo cargas de trabajo distintas en vez de la misma carga exacta. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/gctuning/.
-**¿Por qué es importante?** Porque elegir un recolector sin medir primero es optimizar a ciegas; la decisión entre G1 y ZGC depende de si la aplicación prioriza throughput general o latencia mínima extrema, algo que solo una medición real responde.
+**Implicación práctica:** Elegir un recolector sin medir primero es optimizar a ciegas; la decisión entre G1 y ZGC depende de si la aplicación prioriza throughput general o latencia mínima extrema, algo que solo una medición real responde.
 
 ### Tema 2: Java Flight Recorder y JIT compilation
 
@@ -133,7 +133,7 @@ Abre `perfil.jfr` con `jfr print --events jdk.ExecutionSample perfil.jfr` y docu
 
 #### Paso 7 · Cierre
 Guarda el comportamiento con y sin `-Xint`, y el resumen de `jfr print` mostrando el método caliente; como siguiente paso investiga una retención de memoria con heap dump. Errores comunes: medir rendimiento sin dejar que el warm-up del JIT ocurra primero, asumir que JFR tiene overhead alto en producción sin haberlo medido, y confundir el método que aparece con más muestras con la causa raíz sin revisar su contexto de llamada. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html.
-**¿Por qué es importante?** Porque medir antes del warm-up del JIT mide el intérprete lento de arranque, no el rendimiento real que la aplicación tendrá en producción tras los primeros segundos de ejecución continua.
+**Implicación práctica:** Medir antes del warm-up del JIT mide el intérprete lento de arranque, no el rendimiento real que la aplicación tendrá en producción tras los primeros segundos de ejecución continua.
 
 ### Tema 3: Referencias especiales y heap dumps
 
@@ -197,7 +197,7 @@ Reescribe `FugaCache` usando `List<SoftReference<byte[]>>` en vez de referencias
 
 #### Paso 7 · Cierre
 Guarda el `.hprof` generado, el análisis de qué tipo dominaba la memoria, y la versión corregida con `SoftReference` que ya no falla; como siguiente paso construye el laboratorio completo del capítulo. Errores comunes: usar referencias fuertes para una caché que debería poder liberarse bajo presión de memoria, intentar una corrección a ciegas sin analizar primero el heap dump, y capturar un heap dump de producción con datos sensibles sin sanearlo antes de compartirlo. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jhsdb.html.
-**¿Por qué es importante?** Porque un heap dump muestra exactamente qué objetos consumían la memoria en el instante del fallo, información mucho más específica que los logs normales; una caché con referencias fuertes que nunca se liberan es una causa común y evitable de ese mismo fallo.
+**Implicación práctica:** Un heap dump muestra exactamente qué objetos consumían la memoria en el instante del fallo, información mucho más específica que los logs normales; una caché con referencias fuertes que nunca se liberan es una causa común y evitable de ese mismo fallo.
 
 ### Tema 4: Foreign Function & Memory API (Java 22)
 
@@ -264,7 +264,7 @@ flowchart LR
 
 **Analogía:** el FFM API es como pedir prestada una herramienta de un taller ajeno con un control de devolución explícito y claro; JNI tradicional es como construir un puente completo de concreto entre dos talleres solo para pasar una herramienta una vez.
 
-**¿Por qué es importante?** El FFM API permite invocar código nativo existente de forma segura y con tipos verificados, sin la ceremonia ni los riesgos de memoria de JNI tradicional.
+**Implicación práctica:** El FFM API permite invocar código nativo existente de forma segura y con tipos verificados, sin la ceremonia ni los riesgos de memoria de JNI tradicional.
 
 **Código del ejemplo:**
 

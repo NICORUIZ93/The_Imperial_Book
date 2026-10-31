@@ -83,7 +83,7 @@ Esta evolución de framework de testing (de una API más verbosa basada en heren
 
 **Analogía:** XCTest es como un formulario de evaluación estandarizado con casillas específicas para cada tipo de verificación (una casilla para "es igual a", otra para "es verdadero", otra para "es nulo"); Swift Testing es como una única pregunta abierta de verificación ("¿esto es cierto?") que se adapta a cualquier tipo de comparación sin necesitar una casilla distinta para cada caso.
 
-**¿Por qué es importante?** Swift Testing ofrece una sintaxis considerablemente más concisa que XCTest clásico, además de mejor soporte para tests parametrizados y paralelización por defecto, aunque ambos frameworks cumplen la misma función fundamental de verificación de comportamiento.
+**Implicación práctica:** Swift Testing ofrece una sintaxis considerablemente más concisa que XCTest clásico, además de mejor soporte para tests parametrizados y paralelización por defecto, aunque ambos frameworks cumplen la misma función fundamental de verificación de comportamiento.
 
 **Código del ejemplo:**
 
@@ -150,7 +150,7 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 
 **Analogía:** testear código async con `await` directo en el test es como poder simplemente esperar el resultado de un trámite y continuar cuando llega, en vez de tener que configurar de antemano una alarma de tiempo límite y un mecanismo de notificación manual para saber cuándo el trámite efectivamente concluyó.
 
-**¿Por qué es importante?** Marcar el test mismo como `async` permite usar `await` directamente, sin necesidad de expectativas manuales (`XCTestExpectation`) como en el modelo basado en callbacks previo, simplificando considerablemente el testing de código asíncrono.
+**Implicación práctica:** Marcar el test mismo como `async` permite usar `await` directamente, sin necesidad de expectativas manuales (`XCTestExpectation`) como en el modelo basado en callbacks previo, simplificando considerablemente el testing de código asíncrono.
 
 **Código del ejemplo:**
 
@@ -252,7 +252,7 @@ Corregí el Paso 5 restaurando `waitForExistence`, y agregá un segundo test que
 
 #### Paso 7 · Cierre
 Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y el test del flujo de error del Paso 6; explicá por qué un XCUITest necesita esperar explícitamente (`waitForExistence`) en vez de asumir que la UI ya se actualizó apenas después de un `tap()`. Siguiente paso: estudia cómo correr esta suite en CI. Errores comunes: no esperar explícitamente a que la UI se actualice, depender de texto visible en vez de accessibility identifiers estables, y cubrir solo el camino feliz en los UI Tests. Fuentes oficiales: https://developer.apple.com/documentation/xctest/xcuiapplication y https://developer.apple.com/documentation/testing.
-**¿Por qué es importante?** Porque un XCUITest valida el flujo completo end-to-end tal como lo experimenta un conductor real, pero exige esperar explícitamente a que la UI se actualice en vez de asumir que el `tap()` tiene efecto inmediato.
+**Implicación práctica:** Un XCUITest valida el flujo completo end-to-end tal como lo experimenta un conductor real, pero exige esperar explícitamente a que la UI se actualice en vez de asumir que el `tap()` tiene efecto inmediato.
 
 ## Laboratorio práctico
 

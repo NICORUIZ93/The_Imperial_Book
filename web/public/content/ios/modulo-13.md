@@ -98,7 +98,7 @@ Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y ag
 
 #### Paso 7 · Cierre
 Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
-**¿Por qué es importante?** Porque una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
+**Implicación práctica:** Una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
 
 ### Tema 2: Proteger datos es controlar todas sus copias
 
@@ -191,7 +191,7 @@ Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que r
 
 #### Paso 7 · Cierre
 Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
-**¿Por qué es importante?** Porque las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
+**Implicación práctica:** Las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
 
 ### Tema 3: Offline-first es un protocolo, no una caché
 
@@ -298,7 +298,7 @@ Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendient
 
 #### Paso 7 · Cierre
 Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
-**¿Por qué es importante?** Porque la conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
+**Implicación práctica:** La conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
 
 ### Tema 4: Operar significa detectar, limitar y aprender del fallo
 
@@ -383,7 +383,7 @@ Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éx
 
 #### Paso 7 · Cierre
 Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
-**¿Por qué es importante?** Porque todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
+**Implicación práctica:** Todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
 
 ### Tema 5: Keychain — guardar secretos de forma segura
 

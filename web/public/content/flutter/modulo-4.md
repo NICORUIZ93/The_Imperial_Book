@@ -81,7 +81,7 @@ Corregí el Paso 5 documentando por escrito en qué punto exacto el prop drillin
 
 #### Paso 7 · Cierre
 Entregá el prop drilling funcional del Paso 4, el acoplamiento sin beneficio provocado en el Paso 5, y tu documentación del Paso 6; explicá en qué momento preciso decidirías migrar de `setState` a una solución de estado compartido. Siguiente paso: estudia Riverpod. Errores comunes: usar `setState` para estado que varios widgets distantes necesitan compartir, elevar estado a un ancestro común demasiado alto sin necesidad real todavía, y confundir prop drilling tedioso con un problema de rendimiento. Fuentes oficiales: https://docs.flutter.dev/data-and-backend/state-mgmt/simple y https://docs.flutter.dev/get-started/fwe/state-management.
-**¿Por qué es importante?** `setState` es suficiente para estado puramente local, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución más robusta.
+**Implicación práctica:** `setState` es suficiente para estado puramente local, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución más robusta.
 
 ### Tema 2: Riverpod
 
@@ -204,7 +204,7 @@ Corregí el Paso 5 devolviendo `ref.read(pendientesProvider.notifier).state--` d
 
 #### Paso 7 · Cierre
 Entregá el provider compartido del Paso 4, el uso incorrecto de `watch` en un callback del Paso 5, y el tercer consumidor del Paso 6; explicá la diferencia entre `ref.watch` (suscribe a cambios, usar en `build`) y `ref.read` (lee una vez, usar en callbacks). Siguiente paso: estudia Bloc/Cubit como alternativa con más estructura. Errores comunes: confundir `ref.watch` con `ref.read` dentro de un callback, leer un provider que no fue declarado antes de usarlo, y no aprovechar la verificación en tiempo de compilación que Riverpod ofrece sobre Provider. Fuentes oficiales: https://riverpod.dev/docs/concepts/providers y https://riverpod.dev/docs/concepts/reading.
-**¿Por qué es importante?** Riverpod verifica providers en tiempo de compilación y permite compartir estado entre widgets distantes sin prop drilling manual, resolviendo directamente el problema del Tema 1.
+**Implicación práctica:** Riverpod verifica providers en tiempo de compilación y permite compartir estado entre widgets distantes sin prop drilling manual, resolviendo directamente el problema del Tema 1.
 
 ### Tema 3: Bloc/Cubit y otras alternativas
 
@@ -333,7 +333,7 @@ Corregí el Paso 5 restaurando la guarda, y escribí un test unitario que instan
 
 #### Paso 7 · Cierre
 Entregá el Cubit con la guarda del Paso 4, el estado inválido provocado en el Paso 5, y el test unitario del Paso 6; explicá por qué poder testear esta regla sin renderizar ningún widget es una ventaja concreta de separar "evento" de "cambio de estado" de forma explícita. Siguiente paso: estudia formularios profesionales con Formz y Riverpod. Errores comunes: adoptar Bloc para una feature tan simple que no necesita esa ceremonia, omitir guardas de validez en el método que emite el nuevo estado, y testear un Cubit renderizando widgets en vez de instanciándolo directamente. Fuentes oficiales: https://bloclibrary.dev/bloc-concepts/ y https://bloclibrary.dev/testing/.
-**¿Por qué es importante?** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear de forma aislada para lógica con reglas de transición que deben protegerse explícitamente.
+**Implicación práctica:** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear de forma aislada para lógica con reglas de transición que deben protegerse explícitamente.
 
 ### Tema 4: Formularios profesionales con Formz y Riverpod
 

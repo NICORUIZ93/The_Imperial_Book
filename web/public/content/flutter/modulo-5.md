@@ -89,7 +89,7 @@ Corregí el Paso 5 migrando esa búsqueda a `dio` con `CancelToken`, y confirmá
 
 #### Paso 7 · Cierre
 Entregá la búsqueda cancelable con `dio` del Paso 4, la respuesta obsoleta sobrescribiendo resultados del Paso 5, y la confirmación del Paso 6; explicá por qué `http` básico, al no ofrecer cancelación nativa, exigiría construir manualmente esa infraestructura si se insistiera en usarlo para este caso. Siguiente paso: estudia json_serializable para deserializar la respuesta de forma tipada. Errores comunes: usar `http` para casos que necesitan cancelación o interceptores sin medir el costo de construir eso manualmente, no cancelar peticiones obsoletas antes de disparar una nueva, y olvidar manejar el error específico de cancelación. Fuentes oficiales: https://pub.dev/packages/dio y https://pub.dev/packages/http.
-**¿Por qué es importante?** `dio` ofrece interceptores, cancelación y timeouts configurables como parte de su API central, capacidades que una app de tamaño real necesita y que `http` no ofrece nativamente.
+**Implicación práctica:** `dio` ofrece interceptores, cancelación y timeouts configurables como parte de su API central, capacidades que una app de tamaño real necesita y que `http` no ofrece nativamente.
 
 ### Tema 2: json_serializable
 
@@ -162,7 +162,7 @@ Corregí el Paso 5 devolviendo el campo a `required this.estado` tipado estricta
 
 #### Paso 7 · Cierre
 Entregá el modelo generado del Paso 4, el error silenciado por el valor por defecto del Paso 5, y el test de deserialización del Paso 6; explicá por qué "evitar el error" con un valor por defecto en este caso oculta un problema real de datos en vez de resolverlo. Siguiente paso: estudia interceptores y estados explícitos. Errores comunes: usar valores por defecto para "evitar" errores de deserialización que en realidad señalan datos incompletos reales, parsear JSON manualmente sin ninguna verificación de tipo centralizada, y olvidar correr `build_runner` después de modificar un modelo anotado. Fuentes oficiales: https://pub.dev/packages/json_serializable y https://docs.flutter.dev/data-and-backend/serialization/json.
-**¿Por qué es importante?** Generar modelos con `json_serializable` es más seguro que parsear JSON manualmente porque un campo faltante o mal tipado falla de forma clara y explícita, en vez de propagar un error silencioso.
+**Implicación práctica:** Generar modelos con `json_serializable` es más seguro que parsear JSON manualmente porque un campo faltante o mal tipado falla de forma clara y explícita, en vez de propagar un error silencioso.
 
 ### Tema 3: Interceptores y estados explícitos
 
@@ -269,7 +269,7 @@ Corregí el Paso 5 reemplazando la cadena `if`/`else if` por un `switch` exhaust
 
 #### Paso 7 · Cierre
 Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con `if`/`else if` del Paso 5, y el switch exhaustivo corregido del Paso 6; explicá por qué un `switch` exhaustivo sobre una `sealed class` previene específicamente el tipo de omisión que ocurrió en el Paso 5, mientras que una cadena de `if`/`else if` manual no ofrece esa garantía del compilador. Siguiente paso: cerrá el módulo integrando networking completo en el proyecto. Errores comunes: agregar headers de autenticación manualmente en cada llamada en vez de centralizarlos en un interceptor, usar `if`/`else if` en vez de un `switch` exhaustivo sobre una sealed class, y omitir el manejo explícito del estado de error en la UI. Fuentes oficiales: https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html y https://dart.dev/language/class-modifiers#sealed.
-**¿Por qué es importante?** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
+**Implicación práctica:** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 
 ## Referencia: RutaFlow Flutter
 

@@ -61,7 +61,7 @@ Agrega un segundo record `Destinatario` y anídalo dentro de `Guia`; escribe una
 
 #### Paso 7 · Cierre
 Guarda `Guia`, la validación del constructor compacto y la prueba de igualdad por valor; como siguiente paso estudia sealed interfaces. Errores comunes: usar un `record` para una entidad que genuinamente necesita mutar su estado (un ORM que actualiza campos), intentar agregar un setter a un componente del record, y validar invariantes fuera del constructor compacto en vez de dentro de él. Fuentes oficiales: https://dev.java/learn/classes-objects/records/ y https://openjdk.org/jeps/409.
-**¿Por qué es importante?** Porque `record` elimina el boilerplate de constructor/getters/`equals`/`hashCode`/`toString` mientras impone inmutabilidad estructural, de modo que "cambiar" un dato siempre significa construir una instancia nueva, nunca mutar la existente en un lugar donde otro código ya la referencia.
+**Implicación práctica:** `record` elimina el boilerplate de constructor/getters/`equals`/`hashCode`/`toString` mientras impone inmutabilidad estructural, de modo que "cambiar" un dato siempre significa construir una instancia nueva, nunca mutar la existente en un lugar donde otro código ya la referencia.
 
 ### Tema 2: sealed — jerarquías cerradas y exhaustividad
 
@@ -117,7 +117,7 @@ Intenta declarar una quinta implementación de `EstadoEntrega` en otro archivo s
 
 #### Paso 7 · Cierre
 Guarda la jerarquía sellada, el error de compilación al agregar un estado nuevo sin manejarlo, y la corrección; como siguiente paso estudia pattern matching. Errores comunes: declarar una jerarquía abierta (sin `sealed`) cuando el conjunto de casos es en realidad fijo y conocido, agregar una implementación nueva a `permits` sin revisar qué switches existentes dejaron de ser exhaustivos, y usar `sealed` para un conjunto de tipos que legítimamente terceros deberían poder extender. Fuentes oficiales: https://dev.java/learn/classes-objects/records/ y https://openjdk.org/jeps/409.
-**¿Por qué es importante?** Porque `sealed` convierte el olvido de manejar un estado nuevo en un error de compilación inmediato en cada switch existente, en vez de un bug silencioso que solo se descubre en producción cuando ese estado nuevo efectivamente ocurre.
+**Implicación práctica:** `sealed` convierte el olvido de manejar un estado nuevo en un error de compilación inmediato en cada switch existente, en vez de un bug silencioso que solo se descubre en producción cuando ese estado nuevo efectivamente ocurre.
 
 ### Tema 3: Pattern matching exhaustivo y para instanceof
 
@@ -180,7 +180,7 @@ Reescribe una comprobación equivalente usando el patrón clásico (`instanceof`
 
 #### Paso 7 · Cierre
 Guarda ambas versiones (pattern matching y casteo clásico) y el error de exhaustividad al agregar `Cancelada`; como siguiente paso estudia módulos y JPMS. Errores comunes: agregar una rama `default` "por si acaso" a un switch exhaustivo sobre una sealed interface (anula la verificación de exhaustividad que `sealed` habilita), usar el casteo manual clásico (`instanceof` + cast) donde pattern matching ya elimina esa redundancia, y olvidar que un switch con pattern matching debe cubrir la jerarquía completa para omitir `default`. Fuentes oficiales: https://dev.java/learn/classes-objects/records/ y https://openjdk.org/jeps/409.
-**¿Por qué es importante?** Porque un switch exhaustivo sin `default`, verificado contra una jerarquía `sealed`, convierte un estado nuevo sin manejar en un error de compilación inmediato, mientras que un `default` oculta ese mismo olvido dejándolo pasar en silencio.
+**Implicación práctica:** Un switch exhaustivo sin `default`, verificado contra una jerarquía `sealed`, convierte un estado nuevo sin manejar en un error de compilación inmediato, mientras que un `default` oculta ese mismo olvido dejándolo pasar en silencio.
 
 ### Tema 4: Unnamed variables y patterns (_, Java 22)
 
@@ -258,7 +258,7 @@ Esta sintaxis también aplica a bloques `catch`, lambdas con parámetros no usad
 
 **Analogía:** `_` es como una casilla de formulario marcada explícitamente "N/A"; una variable nombrada sin usar es como una casilla vacía — nadie puede distinguir con certeza si fue dejada vacía a propósito o si simplemente se olvidó completarla.
 
-**¿Por qué es importante?** `_` elimina la ambigüedad entre "deliberadamente ignorado" y "olvidado", reduciendo el ruido de advertencias de variables no utilizadas que puede ocultar advertencias legítimas.
+**Implicación práctica:** `_` elimina la ambigüedad entre "deliberadamente ignorado" y "olvidado", reduciendo el ruido de advertencias de variables no utilizadas que puede ocultar advertencias legítimas.
 
 **Código del ejemplo:**
 

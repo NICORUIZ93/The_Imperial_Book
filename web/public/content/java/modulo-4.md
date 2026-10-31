@@ -63,7 +63,7 @@ Agrega `Collectors.groupingBy` para agrupar las entregas por estado, y `reduce` 
 
 #### Paso 7 · Cierre
 Guarda ambas versiones (bucle y stream), la comparación de resultados y el agrupamiento por estado; como siguiente paso estudia Optional. Errores comunes: mutar una variable externa al stream desde dentro de un `map`/`forEach` (efecto secundario oculto), reutilizar el mismo stream dos veces (lanza `IllegalStateException`, un stream solo se consume una vez), y usar `forEach` con lógica compleja cuando `collect`/`reduce` expresarían mejor la intención. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
-**¿Por qué es importante?** Porque un pipeline declarativo solo es más claro que un bucle manual si de verdad describe la transformación sin ocultar efectos secundarios dentro de un `map` o `filter` que debería ser una función pura.
+**Implicación práctica:** Un pipeline declarativo solo es más claro que un bucle manual si de verdad describe la transformación sin ocultar efectos secundarios dentro de un `map` o `filter` que debería ser una función pura.
 
 ### Tema 2: Optional — evitar null explícitamente
 
@@ -119,7 +119,7 @@ Agrega `orElse(entregaPorDefecto)` y `orElseGet(() -> calcularAlternativa())` co
 
 #### Paso 7 · Cierre
 Guarda el repositorio, las tres formas de manejar ausencia y el `NullPointerException` provocado al usar `null`; como siguiente paso estudia streams paralelos. Errores comunes: llamar `.get()` sobre un `Optional` sin verificar `isPresent()` antes (lanza `NoSuchElementException` igual que un `null` no verificado lanzaría `NullPointerException`), usar `Optional` como tipo de un campo o parámetro en vez de como tipo de retorno, y envolver en `Optional` un valor que en realidad nunca debería estar ausente. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
-**¿Por qué es importante?** Porque `Optional` como tipo de retorno obliga, en el propio sistema de tipos, a que el código que llama considere explícitamente el caso de ausencia antes de compilar, en vez de descubrirlo en producción con un `NullPointerException`.
+**Implicación práctica:** `Optional` como tipo de retorno obliga, en el propio sistema de tipos, a que el código que llama considere explícitamente el caso de ausencia antes de compilar, en vez de descubrirlo en producción con un `NullPointerException`.
 
 ### Tema 3: Streams paralelos y referencias a métodos
 
@@ -178,7 +178,7 @@ Reemplaza las lambdas `n -> esPrimo(n)` por la referencia a método `this::esPri
 
 #### Paso 7 · Cierre
 Guarda ambas mediciones (rango grande y pequeño) y la conclusión sobre cuándo paraleliza realmente; como siguiente paso estudia concurrencia con `ExecutorService`. Errores comunes: asumir que `parallelStream()` siempre es más rápido sin medir, paralelizar un pipeline con efectos secundarios sobre estado compartido mutable (introduce condiciones de carrera reales), y paralelizar una colección pequeña donde el overhead de coordinación supera cualquier beneficio. Fuentes oficiales: https://dev.java/learn/api/streams/ y https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html.
-**¿Por qué es importante?** Porque el beneficio de `parallelStream()` depende del tamaño real del dataset y del costo de la operación, nunca es automático — medir con datos reales es la única forma confiable de saber si realmente ayuda en un caso concreto.
+**Implicación práctica:** El beneficio de `parallelStream()` depende del tamaño real del dataset y del costo de la operación, nunca es automático — medir con datos reales es la única forma confiable de saber si realmente ayuda en un caso concreto.
 
 ### Tema 4: Stream Gatherers (Java 24)
 
@@ -232,7 +232,7 @@ Cada regla de negocio del proyecto integrador de este track que dependa de la re
 
 **Analogía:** procesar un stream con `filter`/`map` es como revisar una fila de personas de una en una sin memoria de quién pasó antes; un gatherer como `windowSliding` es como mirar siempre a las últimas 3 personas juntas, permitiendo detectar un patrón que depende genuinamente de la relación entre elementos vecinos.
 
-**¿Por qué es importante?** `Stream.gather()` permite expresar declarativamente operaciones que dependen de la relación entre elementos consecutivos, algo que `map`/`filter`/`reduce` no pueden expresar por sí solos.
+**Implicación práctica:** `Stream.gather()` permite expresar declarativamente operaciones que dependen de la relación entre elementos consecutivos, algo que `map`/`filter`/`reduce` no pueden expresar por sí solos.
 
 **Código del ejemplo:**
 

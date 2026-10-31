@@ -383,7 +383,7 @@ Corregí el Paso 5 archivando el dSYM de cada build subida a TestFlight (no solo
 
 #### Paso 7 · Cierre
 Entregá la interfaz `Diagnostics` del Paso 4, el crash no simbolizable del Paso 5, y el archivo completo de dSYM por build ID del Paso 6; explicá por qué "ahorrar espacio" archivando símbolos solo de releases importantes elimina la capacidad de diagnosticar exactamente los crashes intermedios que más necesitan contexto. Siguiente paso: cerrá el proyecto del módulo preparando un plan de release con ventana de compatibilidad y rollback. Errores comunes: no archivar dSYM/mapping de cada build distribuida, hacer que `commonMain` dependa directamente de un SDK de analytics específico de plataforma, y usar un ID de usuario como label de métrica en vez de un correlation ID anónimo. Fuentes oficiales: https://developer.apple.com/documentation/xcode/building-your-app-to-include-debugging-information y https://developer.android.com/studio/build/shrink-code.
-**¿Por qué es importante?** La optimización y los bridges entre runtimes cambian los stacks, y los releases asíncronos entre plataformas dejan múltiples combinaciones de versiones en campo al mismo tiempo.
+**Implicación práctica:** La optimización y los bridges entre runtimes cambian los stacks, y los releases asíncronos entre plataformas dejan múltiples combinaciones de versiones en campo al mismo tiempo.
 
 ## Revisión oficial de plataforma — julio de 2026
 
