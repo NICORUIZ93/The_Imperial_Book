@@ -817,9 +817,9 @@
       "imports": [],
       "headings": [
         "# Sustancia de las lecciones",
-        "## Defectos por tipo",
+        "## Se\u00f1ales por tipo",
         "## Ap\u00e9ndices heredados m\u00e1s frecuentes",
-        "## Temas con m\u00e1s defectos",
+        "## Temas con m\u00e1s se\u00f1ales",
         "## C\u00f3mo se corrige"
       ]
     },
@@ -994,6 +994,23 @@
       "headings": []
     },
     {
+      "path": "docs/revision-por-curso.md",
+      "lines": 132,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n por curso",
+        "## Definiciones",
+        "## Resumen por track",
+        "## Progresi\u00f3n por track",
+        "## 20 temas m\u00e1s urgentes",
+        "## Temas sin clasificar",
+        "## L\u00edmites",
+        "## Salida literal de validaci\u00f3n"
+      ]
+    },
+    {
       "path": "docs/rutaflow-source-index.json",
       "lines": 385,
       "kind": "project-file",
@@ -1046,6 +1063,16 @@
       "symbols": [],
       "imports": [],
       "headings": []
+    },
+    {
+      "path": "docs/temas-inventario.md",
+      "lines": 1111,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Inventario de temas"
+      ]
     },
     {
       "path": "docs/topic-learning-quality.json",
@@ -6267,12 +6294,15 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 90,
+      "lines": 131,
       "kind": "automation-script",
       "symbols": [
-        "EditorialValidationTests"
+        "EditorialValidationTests",
+        "DocumentationConsistencyTests"
       ],
       "imports": [
+        "json",
+        "subprocess",
         "sys",
         "tempfile",
         "unittest",
@@ -6310,7 +6340,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 169,
+      "lines": 181,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],

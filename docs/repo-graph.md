@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 06:50 UTC
+Generated: 2026-10-31 07:03 UTC
 Root: `Academia_Floci`
-Indexed files: 960
+Indexed files: 962
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 60 files
 - `automation-script`: 38 files
 - `course-content`: 251 files
-- `documentation`: 59 files
+- `documentation`: 61 files
 - `example`: 490 files
 - `local-infra`: 1 files
 - `project-file`: 61 files
 
 ## File Types
 
-- `.md`: 319
+- `.md`: 321
 - `.py`: 164
 - `.java`: 73
 - `.json`: 72
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (364 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (169 lines, automation-script)
+- `scripts/validate.sh` (181 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -239,7 +239,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (235 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Corrección de estado — 2026-10-30, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 41 more files
+- ... 43 more files
 
 ### example
 

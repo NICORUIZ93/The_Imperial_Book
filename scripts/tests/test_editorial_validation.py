@@ -1,3 +1,5 @@
+import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -83,6 +85,45 @@ El proyecto integrador tiene límites.
             with patch.object(fix_lessons, "iter_text_check_files", return_value=[str(path)]):
                 issues = fix_lessons.find_text_quality_issues()
             self.assertEqual([issue[1] for issue in issues], [3])
+
+
+class DocumentationConsistencyTests(unittest.TestCase):
+    def run_checks(self, readme_coverage="1100/1100", report_coverage="1100/1100", expiry=120):
+        script = (Path(__file__).resolve().parents[1] / "validate.sh").read_text()
+        checks = script.split("const readme =", 1)[1].split("const declaredInventory =", 1)[0]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "README.md").write_text(
+                f"registra {readme_coverage} temas con los nueve criterios detectados.\n"
+                f"La comprobación vence a los {expiry} días.\n"
+            )
+            (root / "docs/full-review.md").write_text(
+                f"| Criterios editoriales | {report_coverage} temas |\n"
+            )
+            (root / "docs/official-sources.json").write_text(json.dumps({"maxAgeDays": 120}))
+            return subprocess.run(
+                ["node", "-e", "const fs = require('fs');\nconst readme =" + checks],
+                cwd=root, capture_output=True, text=True,
+            )
+
+    def test_matching_documentation_passes(self):
+        self.assertEqual(self.run_checks().returncode, 0)
+
+    def test_stale_coverage_is_rejected(self):
+        for coverage in ("1099/1100", "1100/1101"):
+            with self.subTest(coverage=coverage):
+                result = self.run_checks(readme_coverage=coverage)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("README desactualizado vs full-review.md", result.stderr)
+
+    def test_obsolete_coverage_is_rejected_even_if_both_documents_agree(self):
+        self.assertNotEqual(self.run_checks("1094/1100", "1094/1100").returncode, 0)
+
+    def test_expiry_mismatch_is_rejected(self):
+        result = self.run_checks(expiry=100)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("caducidad", result.stderr)
 
 
 if __name__ == "__main__":

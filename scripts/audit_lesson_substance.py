@@ -3,7 +3,7 @@
 
 La auditoría de siete pasos comprueba que los marcadores aparezcan. Esta
 comprueba lo contrario: que el texto no esté inflado para aparentar cobertura.
-No mide aprendizaje ni calidad de la explicación; mide defectos verificables:
+No mide aprendizaje ni calidad de la explicación; detecta señales que requieren inspección:
 
 - ``bloque-repetido``: una sección editorial aparece dos veces en el mismo tema.
 - ``cola-tras-cierre``: más de 500 palabras después del encabezado del Paso 7
@@ -190,17 +190,17 @@ def render_markdown(data: dict) -> str:
     lines = [
         "# Sustancia de las lecciones",
         "",
-        "Detección de defectos verificables: repetición, cola de texto pegada y",
+        "Detección de señales que requieren inspección: repetición, cola de texto y",
         "andamiaje genérico. **No mide aprendizaje ni calidad**; una lección sin",
-        "defectos detectados tampoco acredita haber sido comprendida.",
+        "señales detectadas tampoco acredita corrección ni comprensión.",
         "",
         "| Métrica | Valor |",
         "|---|---:|",
         f"| Temas analizados | {summary['topics']} |",
-        f"| Temas con algún defecto | {summary['topicsWithIssues']} |",
+        f"| Temas con alguna señal (requiere inspección) | {summary['topicsWithIssues']} |",
         f"| Módulos con apéndices heredados | {summary['modulesWithLegacySections']}/{summary['modules']} |",
         "",
-        "## Defectos por tipo",
+        "## Señales por tipo",
         "",
         "| Código | Temas |",
         "|---|---:|",
@@ -218,7 +218,7 @@ def render_markdown(data: dict) -> str:
         lines.append(f"| {section} | {count} |")
     lines += [
         "",
-        "## Temas con más defectos",
+        "## Temas con más señales",
         "",
         "| Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |",
         "|---|---|---:|---:|---|",
@@ -238,11 +238,11 @@ def render_markdown(data: dict) -> str:
         "",
         "## Cómo se corrige",
         "",
-        "1. Se reescribe el bloque dentro del tema; no se añade texto al final.",
-        "2. Se elimina la segunda aparición de una sección, no se renombra.",
-        "3. Se borra el apéndice de módulo o se integra en el tema que lo necesita.",
+        "1. Se inspecciona y reescribe el bloque dentro del tema; no se añade relleno al final.",
+        "2. Se diferencian las secciones repetidas con contenido específico; renombrar no acredita la reescritura.",
+        "3. Se revisa cada apéndice heredado antes de integrarlo donde sea pertinente.",
         "4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún",
-        "   tema nuevo puede nacer con estos defectos.",
+        "   tema nuevo puede nacer con estas señales sin revisión.",
         "",
         f"Huella del contenido: `{summary['fingerprint']}`",
         "",
@@ -336,7 +336,7 @@ def main() -> None:
     summary = data["summary"]
     print(
         f"Sustancia auditada: {summary['topics']} temas, "
-        f"{summary['topicsWithIssues']} con defectos, "
+        f"{summary['topicsWithIssues']} con señal (requiere inspección), "
         f"{summary['modulesWithLegacySections']}/{summary['modules']} módulos con apéndices heredados"
     )
 

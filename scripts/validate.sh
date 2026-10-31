@@ -102,6 +102,18 @@ for (const [trackId, sourceFile] of Object.entries(TRACK_SOURCES)) {
 }
 
 const readme = fs.readFileSync('README.md', 'utf8');
+const fullReview = fs.readFileSync('docs/full-review.md', 'utf8');
+const readmeCoverage = readme.match(/registra (\d+)\/(\d+) temas con los nueve criterios detectados/);
+const reportCoverage = fullReview.match(/\| Criterios editoriales \| (\d+)\/(\d+) temas/);
+if (readme.includes('1094/1100') || !readmeCoverage || !reportCoverage ||
+    readmeCoverage[1] !== reportCoverage[1] || readmeCoverage[2] !== reportCoverage[2]) {
+  throw new Error('README desactualizado vs full-review.md: criterios editoriales');
+}
+const sourceRegistry = JSON.parse(fs.readFileSync('docs/official-sources.json', 'utf8'));
+const readmeExpiry = readme.match(/La comprobación vence a los (\d+) días/);
+if (!readmeExpiry || Number(readmeExpiry[1]) !== sourceRegistry.maxAgeDays) {
+  throw new Error('README desactualizado vs official-sources.json: caducidad');
+}
 const declaredInventory = readme.match(/La academia reúne 14 tracks, (\d+) módulos y (\d+) temas editoriales/);
 if (!declaredInventory) {
   throw new Error('README.md debe declarar el inventario actual de 14 tracks, módulos y temas');

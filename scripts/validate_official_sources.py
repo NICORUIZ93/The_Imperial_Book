@@ -87,4 +87,4 @@ if errors:
         print(f"- {error}")
     raise SystemExit(1)
 
-print(f"Fuentes oficiales OK: {len(entries)} rutas, revisión de {age} días, {sum(len(e['sources']) for e in entries)} fuentes primarias y {sum(e.get('topicCount', 0) for e in atlas_entries)} temas auditados.")
+print(f"Fuentes oficiales OK: {len(entries)} rutas, antigüedad de revisión {age} días (caducidad: {max_age} días), {sum(len(e['sources']) for e in entries)} fuentes primarias y {sum(e.get('topicCount', 0) for e in atlas_entries)} temas auditados.")
