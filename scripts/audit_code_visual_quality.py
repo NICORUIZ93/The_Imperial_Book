@@ -8,6 +8,7 @@ import json
 import re
 from collections import Counter
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from audit_topic_learning_quality import resolve_archify_visual_link, unresolved_archify_visual_links
 
@@ -20,6 +21,18 @@ TRACKS = (
     "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
 )
 EDITORIAL_MARKERS = ("DEFINITIVE-COMPLEMENTS", "SUPPLEMENTAL-COMPLEMENTS", "REQUESTED-PRACTICAL-EXAMPLES")
+OFFICIAL_SOURCE_HOSTS = frozenset({
+    "angular.dev", "react.dev", "nodejs.org", "dev.java", "docs.spring.io",
+    "spring.io", "kotlinlang.org", "developer.android.com", "developer.apple.com",
+    "docs.flutter.dev", "developer.mozilla.org", "docs.docker.com", "kubernetes.io",
+    "developer.hashicorp.com", "docs.aws.amazon.com", "learn.microsoft.com",
+    "cloud.google.com", "floci.io",
+    "docs.python.org", "peps.python.org", "docs.oracle.com", "www.typescriptlang.org",
+    "www.gnu.org", "git-scm.com", "docs.npmjs.com", "tc39.es", "openjdk.org",
+    "dart.dev", "api.flutter.dev", "docs.gradle.org", "maven.apache.org",
+    "www.postgresql.org", "www.sqlite.org", "code.visualstudio.com", "docs.github.com",
+    "aws.amazon.com", "opentelemetry.io",
+})
 
 
 def student_visible_content(text: str) -> str:
@@ -54,6 +67,18 @@ def blocks(text: str):
         yield heading.group(1), block
 
 
+def official_source_urls(block: str) -> list[str]:
+    urls = []
+    for url in re.findall(r"https?://[^\s<>\[\])`\"']+", structural_text(student_visible_content(block)), re.IGNORECASE):
+        try:
+            parsed = urlsplit(url)
+        except ValueError:
+            continue
+        if parsed.hostname in OFFICIAL_SOURCE_HOSTS and parsed.username is None:
+            urls.append(url)
+    return urls
+
+
 def evaluate(block: str) -> dict[str, bool]:
     code_blocks = re.findall(r"^```(?!mermaid)([^\n]*)\n(.*?)^```", block, re.MULTILINE | re.DOTALL)
     commented = any(re.search(r"(^|\n)\s*(//|#|/\*|<!--|--\s)", code) for _, code in code_blocks)
@@ -71,7 +96,7 @@ def evaluate(block: str) -> dict[str, bool]:
         "misleadingDiagramLabel": misleading,
         "filePath": bool(re.search(r"(?:src/|lib/|app/|tests?/|[\w.-]+\.(?:ts|tsx|js|java|kt|swift|dart|py|tf|ya?ml|json|html|css))", block)),
         "runCommand": bool(re.search(r"\b(?:npm|npx|node|python3?|java|gradle|mvnw?|flutter|swift|docker|kubectl|terraform|aws|curl|xcodebuild)\b", block, re.IGNORECASE)),
-        "officialSource": bool(re.search(r"https?://(?:angular\.dev|react\.dev|nodejs\.org|dev\.java|docs\.spring\.io|spring\.io|kotlinlang\.org|developer\.android\.com|developer\.apple\.com|docs\.flutter\.dev|developer\.mozilla\.org|docs\.docker\.com|kubernetes\.io|developer\.hashicorp\.com|docs\.aws\.amazon\.com|learn\.microsoft\.com|cloud\.google\.com|floci\.io)", block)),
+        "officialSource": bool(official_source_urls(block)),
     }
 
 
@@ -98,12 +123,16 @@ def build() -> dict:
 
 
 def render(data: dict) -> str:
+    source_review = json.loads((ROOT / "docs/topic-source-review.json").read_text(encoding="utf-8"))
+    source_summary = source_review["summary"]
     lines = [
         "# Auditoría de código y visuales",
         "",
         "Mide únicamente contenido dentro de cada tema. Las guías transversales no cuentan como código editorial ni como fuente oficial del tema.",
         "",
-        "| Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Fuente oficial |",
+        f"Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del {source_review['reviewedAt']} conserva los {source_summary['baselineUnrecognizedTopics']} temas originalmente sin reconocimiento y los resultados HTTP de {source_summary['urlsChecked']} citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.",
+        "",
+        "| Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for track, row in data["tracks"].items():

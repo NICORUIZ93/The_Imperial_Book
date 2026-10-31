@@ -616,7 +616,7 @@
     },
     {
       "path": "docs/code-visual-quality.md",
-      "lines": 26,
+      "lines": 28,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1092,6 +1092,14 @@
         "# Auditor\u00eda pedag\u00f3gica tema por tema",
         "## Regla editorial"
       ]
+    },
+    {
+      "path": "docs/topic-source-review.json",
+      "lines": 7088,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
     },
     {
       "path": "docs/troubleshooting.md",
@@ -5853,12 +5861,13 @@
     },
     {
       "path": "scripts/audit_code_visual_quality.py",
-      "lines": 138,
+      "lines": 167,
       "kind": "automation-script",
       "symbols": [
         "student_visible_content",
         "structural_text",
         "blocks",
+        "official_source_urls",
         "evaluate",
         "build",
         "render",
@@ -5871,6 +5880,7 @@
         "re",
         "collections",
         "pathlib",
+        "urllib.parse",
         "audit_topic_learning_quality"
       ],
       "headings": []
@@ -5994,7 +6004,7 @@
     },
     {
       "path": "scripts/build_full_review.py",
-      "lines": 172,
+      "lines": 175,
       "kind": "automation-script",
       "symbols": [
         "total_field",
@@ -6294,7 +6304,7 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 131,
+      "lines": 164,
       "kind": "automation-script",
       "symbols": [
         "EditorialValidationTests",

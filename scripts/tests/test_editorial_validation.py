@@ -66,6 +66,39 @@ El proyecto integrador tiene límites.
             with patch.object(audit, "PUBLIC", public), patch.object(audit, "VISUALS", public / "visuals"):
                 self.assertTrue(visual_audit.evaluate(block)["archifyVisual"])
 
+    def test_provider_documentation_is_recognized_by_exact_host(self):
+        for host in ("docs.python.org", "docs.oracle.com", "www.typescriptlang.org",
+                     "tc39.es", "www.gnu.org", "docs.npmjs.com", "docs.github.com"):
+            with self.subTest(host=host):
+                self.assertTrue(visual_audit.evaluate(f"https://{host}/docs")["officialSource"])
+
+    def test_source_host_prefixes_and_userinfo_are_not_accepted(self):
+        for url in ("https://angular.dev.evil.example/", "https://docs.python.org.evil.example/",
+                    "https://angular.dev@evil.example/", "https://someone@docs.python.org/",
+                    "https://github.com/someone/documentation", "https://en.wikipedia.org/wiki/Python"):
+            with self.subTest(url=url):
+                self.assertFalse(visual_audit.evaluate(url)["officialSource"])
+
+    def test_source_inside_code_or_hidden_complements_is_not_counted(self):
+        for block in (
+            '```js\nconst url = "https://angular.dev/";\n```',
+            '<!-- DEFINITIVE-COMPLEMENTS:START -->\nhttps://docs.python.org/\n<!-- DEFINITIVE-COMPLEMENTS:END -->',
+        ):
+            with self.subTest(block=block):
+                self.assertFalse(visual_audit.evaluate(block)["officialSource"])
+
+    def test_source_review_preserves_pending_applicability(self):
+        root = Path(__file__).resolve().parents[2]
+        data = json.loads((root / "docs/topic-source-review.json").read_text())
+        summary = data["summary"]
+        self.assertEqual(summary["baselineUnrecognizedTopics"], len(data["topics"]))
+        self.assertEqual(summary["additionalRecognizedTopics"], sum(bool(row["providerCitations"]) for row in data["topics"]))
+        self.assertEqual(summary["remainingUnrecognizedTopics"], sum(not row["providerCitations"] for row in data["topics"]))
+        self.assertEqual(summary["urlsReachable"], sum(row.get("status") == 200 for row in data["urlChecks"]))
+        self.assertEqual(summary["urlsPending"], sum(row.get("status") != 200 for row in data["urlChecks"]))
+        self.assertTrue(all(row["applicabilityReview"] == "revisión manual pendiente" for row in data["topics"]))
+        self.assertTrue(set(data["providerHostsReviewed"]).issubset(visual_audit.OFFICIAL_SOURCE_HOSTS))
+
     def test_real_file_types_and_commands_are_recognized(self):
         for filename, command in [("index.html", "python3 -m http.server"),
                                   ("styles.css", "curl localhost:8000"),

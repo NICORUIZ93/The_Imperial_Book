@@ -226,7 +226,7 @@ Simula la expiración de retención eliminando el volumen (`docker volume rm art
 
 #### Paso 7 · Cierre
 
-Ya conservas y pasas resultados entre pasos aislados de un pipeline con artifacts. El siguiente tema versiona el pipeline mismo como código junto al proyecto. Fuente oficial: [GitHub Actions — artifacts](https://docs.github.com/actions/how-tos/write-workflows/choose-what-workflows-do/store-and-share-data).
+Ya conservas y pasas resultados entre pasos aislados de un pipeline con artifacts. El siguiente tema versiona el pipeline mismo como código junto al proyecto. Fuente oficial: [GitHub Actions — artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data).
 
 **Errores comunes:** asumir que todos los jobs de un pipeline comparten sistema de archivos automáticamente; tratar un artifact con retención temporal como si fuera almacenamiento permanente para releases oficiales.
 

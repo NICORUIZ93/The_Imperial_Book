@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/full-review.md"
 BROWSER_REPORT = ROOT / "docs/browser-course-review.json"
 EXECUTION_REPORT = ROOT / "examples/professional-bridges/verification.json"
+SOURCE_REVIEW = ROOT / "docs/topic-source-review.json"
 
 
 def total_field(summary: dict, field: str) -> int:
@@ -35,6 +36,8 @@ def build() -> str:
     depth = build_depth()
     browser = json.loads(BROWSER_REPORT.read_text(encoding="utf-8"))
     execution = json.loads(EXECUTION_REPORT.read_text(encoding="utf-8"))
+    source_review = json.loads(SOURCE_REVIEW.read_text(encoding="utf-8"))
+    source_summary = source_review["summary"]
 
     topic_total = depth["totals"]["topics"]
     module_total = depth["totals"]["modules"]
@@ -123,7 +126,7 @@ def build() -> str:
         f"| Marcadores de siete pasos | {step_complete}/{topic_total} cumplen todos los marcadores medidos. | Presencia de marcadores, no utilidad ni calidad de las prácticas. | [Metodología](./seven-step-methodology.md) |",
         f"| Sustancia Markdown | {substance_summary['topicsWithIssues']}/{topic_total} temas presentan al menos una señal; {substance_summary['modulesWithLegacySections']}/{module_total} módulos, secciones heredadas. | Las señales requieren inspección del texto; no son defectos confirmados. | [Sustancia](./lesson-substance.md) |",
         f"| Código y visuales | {visual_totals['topics']} temas revisados; {visual_totals['mermaid']} con Mermaid, {visual_totals['archifyVisual']} con Archify y {visual_totals['asciiVisual']} con visual ASCII pendiente. | La presencia no acredita que el código se compile o que un diagrama se renderice y sea correcto. | [Código y visuales](./code-visual-quality.md) |",
-        f"| Fuentes oficiales | {visual_totals['officialSource']}/{topic_total} temas contienen una URL de dominios oficiales reconocidos por el detector. | El enlace puede estar desactualizado o no sustentar la afirmación concreta; la vigencia es una comprobación distinta. | [Auditoría de visuales y fuentes](./code-visual-quality.md) · [Vigencia](./official-sources.json) |",
+        f"| Fuentes oficiales | {visual_totals['officialSource']}/{topic_total} temas contienen una URL de host oficial exacto en la prosa visible; {topic_total - visual_totals['officialSource']} siguen sin dominio reconocido. La revisión parcial del {source_review['reviewedAt']} verificó acceso a {source_summary['urlsReachable']}/{source_summary['urlsChecked']} citas existentes; {source_summary['urlsPending']} pendiente. | El aumento de reconocimiento corrige omisiones del detector, no añade contenido. Los {source_summary['applicabilityPendingTopics']} temas del registro conservan revisión manual pendiente de pertinencia; el éxito HTTP no prueba vigencia ni respaldo de afirmaciones. | [Auditoría](./code-visual-quality.md) · [Registro por tema](./topic-source-review.json) · [Vigencia](./official-sources.json) |",
         browser_row,
         f"| Ejecución de ejemplos | {execution_states.get('checked-with-limits', 0)}/{execution_total} laboratorios seleccionados figuran como comprobados con límites; {'ninguno pendiente' if execution_states.get('pending', 0) == 0 else str(execution_states.get('pending', 0)) + ' sigue pendiente'}. | Muestra delimitada; no cubre todos los ejemplos históricos ni certifica aprendizaje. | [Registro de ejecución](../examples/professional-bridges/verification.json) |",
         f"| Revisión pedagógica humana | {human_signed}/{topic_total} temas con firma humana; {human_pre_read} con pre-lectura de agente sin firma. | La pre-lectura no acredita ejecución, comprensión ni calidad; la firma humana sigue pendiente según [el registro manual](./manual-review-log.md). | [Registro manual](./manual-review-log.md) · [Revisión por tema](./course-depth-review.json) |",

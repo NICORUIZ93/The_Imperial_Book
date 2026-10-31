@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "a3f9a63a54145339ac6458f281c53656438ff95f92a763d727d0821e62f161b6",
+    "fingerprint": "49ab5630162e2f9af63d10ca13aa512a159845a025e533337e82625a1fb176a8",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -4187,9 +4187,9 @@
       {
         "issues": [],
         "module": 4,
-        "tailWords": 156,
+        "tailWords": 150,
         "topic": "Tema 3: Artifacts y reportes de cobertura",
-        "words": 741
+        "words": 735
       },
       {
         "issues": [],

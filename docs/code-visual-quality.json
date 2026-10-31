@@ -10,7 +10,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 98,
       "runCommand": 99,
-      "officialSource": 14
+      "officialSource": 56
     },
     "cloud": {
       "topics": 156,
@@ -22,7 +22,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 156,
       "runCommand": 156,
-      "officialSource": 140
+      "officialSource": 145
     },
     "devops": {
       "topics": 113,
@@ -34,7 +34,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 113,
       "runCommand": 112,
-      "officialSource": 36
+      "officialSource": 55
     },
     "javascript": {
       "topics": 88,
@@ -46,7 +46,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 88,
       "runCommand": 88,
-      "officialSource": 68
+      "officialSource": 77
     },
     "node": {
       "topics": 77,
@@ -58,7 +58,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 77,
       "runCommand": 77,
-      "officialSource": 46
+      "officialSource": 56
     },
     "angular": {
       "topics": 71,
@@ -70,7 +70,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 71,
       "runCommand": 70,
-      "officialSource": 59
+      "officialSource": 60
     },
     "react": {
       "topics": 58,
@@ -94,7 +94,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 85,
       "runCommand": 85,
-      "officialSource": 41
+      "officialSource": 76
     },
     "spring-boot": {
       "topics": 91,
@@ -118,7 +118,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 56,
       "runCommand": 56,
-      "officialSource": 42
+      "officialSource": 44
     },
     "android": {
       "topics": 58,
@@ -154,7 +154,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 63,
       "runCommand": 63,
-      "officialSource": 52
+      "officialSource": 55
     },
     "rutaflow": {
       "topics": 29,
@@ -166,7 +166,7 @@
       "misleadingDiagramLabel": 0,
       "filePath": 28,
       "runCommand": 27,
-      "officialSource": 7
+      "officialSource": 14
     }
   },
   "priorityDebt": [
