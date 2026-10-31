@@ -100,7 +100,7 @@ Un operador puede marcar como entregado un envío que NO le corresponde, simplem
 Una Server Action marcada `'use server'` queda expuesta como un endpoint invocable: cualquier cliente puede llamarla con CUALQUIER valor, sin importar qué muestre la interfaz. El servidor es el único lugar donde la autorización es confiable; validar la forma de los datos con `zod` no reemplaza verificar que ese usuario puede actuar sobre ese recurso específico. La analogía: una ventanilla alcanzable por cualquiera que sepa el número — el empleado igual debe comprobar que el documento de identidad corresponde a la cuenta, nunca confiar en lo que la persona afirma.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.tsx` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
 ```bash
 npx create-next-app@latest ejemplo
 ```
@@ -173,7 +173,7 @@ Proxy puede filtrar navegación antes del render. **Analogía:** un aviso en la 
 ISR conserva una versión pública y permite regenerarla después del intervalo cuando llega otra petición. No es un temporizador que actualiza puntualmente cada 60 segundos; durante regeneración puede servirse una versión anterior. Fuente oficial: [ISR](https://nextjs.org/docs/app/guides/incremental-static-regeneration).
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `proxy.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `proxy.ts` con el contenido de este tema.
 ```bash
 npx create-next-app@latest ejemplo
 ```
@@ -277,7 +277,7 @@ La foto de evidencia de entrega en la página de detalle de un envío no tenía 
 `next/image` exige `width`/`height` (o `fill`) de antemano para que el navegador reserve exactamente ese espacio antes de que la imagen descargue, eliminando el salto de layout; `next/font` descarga y autohospeda la fuente en tiempo de build, en vez de depender de una petición externa que bloquea el pintado del texto. La analogía: pintar las líneas de un lugar de estacionamiento antes de que el auto llegue, en vez de dejar que la llegada del auto decida el espacio.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.tsx` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
 ```bash
 npx create-next-app@latest ejemplo
 ```
@@ -340,7 +340,7 @@ Un diálogo de confirmación construido como un `<div>` con estilos propios se v
 Un `<div>` no tiene ninguna semántica ARIA implícita: un lector de pantalla no tiene forma de saber que es un diálogo, cuál es su nombre accesible, ni que el foco debería quedar atrapado dentro. Los hooks de React Aria (`useDialog`, `useModal`, `useOverlay`) conectan el `role="dialog"`, el `aria-modal` y el atrapado/restauración de foco correctos, comportamiento que es fácil de implementar mal a mano. La analogía: una puerta sin cartel ni manija — puede funcionar, pero nadie que no la vea sabe que está ahí o cómo usarla.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.tsx` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
 ```bash
 npx create-next-app@latest ejemplo
 ```
@@ -408,7 +408,7 @@ Agregar un locale "ar" para la expansión de RutaFlow a Medio Oriente expuso dos
 Las reglas de pluralización son categorías CLDR específicas de cada idioma (`zero`/`one`/`two`/`few`/`many`/`other`), no una simple singular-o-plural; una librería con ICU MessageFormat elige la categoría correcta en vez de un `count === 1 ? ... : ...` escrito a mano. El atributo `dir` en `<html>` controla la dirección de lectura de toda la página y debe fijarse por locale en la raíz, no quedar fijo en "ltr". La analogía: una carta modelo con un espacio en blanco para una cantidad tiene que usar la forma gramatical correcta para ese número en ese idioma — "1 día" frente a "2 días" frente a, en árabe, hasta seis formas distintas según la cantidad.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `messages/es.json` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `messages/es.json` con el contenido de este tema.
 ```bash
 npx create-next-app@latest ejemplo
 ```

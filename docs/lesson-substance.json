@@ -1644,9 +1644,8 @@
     }
   ],
   "summary": {
-    "fingerprint": "59530cfa255658ef3fd07e53081a5ce7932bf98c91acdd144c5d1598584901ba",
+    "fingerprint": "90eda75e9623ca615e57cbe9f480645e39be453e674d50292b0615ef125d0ec3",
     "issues": {
-      "andamiaje-generico": 99,
       "bloque-repetido": 172,
       "tema-breve": 2
     },
@@ -1658,7 +1657,7 @@
     "modules": 245,
     "modulesWithLegacySections": 183,
     "topics": 1100,
-    "topicsWithIssues": 273
+    "topicsWithIssues": 174
   },
   "topics": {
     "android": [
@@ -1684,22 +1683,18 @@
         "words": 1146
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 226,
         "topic": "Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla",
-        "words": 736
+        "words": 729
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 0,
         "tailWords": 219,
         "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
-        "words": 688
+        "words": 678
       },
       {
         "issues": [],
@@ -2131,22 +2126,18 @@
         "words": 1440
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 211,
         "topic": "Tema 5: Consultas signal y trabajo posterior al render",
-        "words": 1470
+        "words": 1460
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 242,
         "topic": "Tema 6: Directivas y pipes personalizados",
-        "words": 729
+        "words": 719
       },
       {
         "issues": [],
@@ -2331,31 +2322,25 @@
         "words": 1210
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 194,
         "topic": "Tema 2: Signals, estilos nativos compilados y el preset de Tailwind",
-        "words": 1142
+        "words": 1132
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 245,
         "topic": "Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular",
-        "words": 1238
+        "words": 1228
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 258,
         "topic": "Tema 4: Evaluar la madurez de una tecnología alpha con criterio",
-        "words": 1237
+        "words": 1227
       },
       {
         "issues": [],
@@ -2386,22 +2371,18 @@
         "words": 1553
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 164,
         "topic": "Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir",
-        "words": 801
+        "words": 791
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 197,
         "topic": "Tema 6: resource() y httpResource — datos asíncronos reactivos",
-        "words": 885
+        "words": 875
       },
       {
         "issues": [],
@@ -2749,13 +2730,11 @@
         "words": 887
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 467,
         "topic": "Tema 3: Migrations",
-        "words": 860
+        "words": 853
       },
       {
         "issues": [],
@@ -2807,13 +2786,11 @@
         "words": 877
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 438,
         "topic": "Tema 2: Choice state, Retry y Catch",
-        "words": 895
+        "words": 888
       },
       {
         "issues": [],
@@ -2851,22 +2828,18 @@
         "words": 1125
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 18,
         "tailWords": 56,
         "topic": "Tema 2: Access Token, ID Token y Refresh Token",
-        "words": 977
+        "words": 967
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 18,
         "tailWords": 68,
         "topic": "Tema 3: OAuth 2.0 y PKCE",
-        "words": 990
+        "words": 983
       },
       {
         "issues": [],
@@ -2883,13 +2856,11 @@
         "words": 946
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 19,
         "tailWords": 65,
         "topic": "Tema 3: Parquet vs CSV, y partition pruning",
-        "words": 896
+        "words": 889
       },
       {
         "issues": [],
@@ -2920,13 +2891,11 @@
         "words": 787
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 62,
         "topic": "Tema 5: Políticas de bucket, ACL y URLs pre-firmadas",
-        "words": 877
+        "words": 870
       },
       {
         "issues": [],
@@ -2978,13 +2947,11 @@
         "words": 953
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 21,
         "tailWords": 68,
         "topic": "Tema 5: El reconciliador de capacidad y las políticas de escalado",
-        "words": 938
+        "words": 931
       },
       {
         "issues": [],
@@ -3001,13 +2968,11 @@
         "words": 1204
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 22,
         "tailWords": 63,
         "topic": "Tema 2: ACM — certificados TLS con criptografía real",
-        "words": 943
+        "words": 936
       },
       {
         "issues": [],
@@ -3024,22 +2989,18 @@
         "words": 976
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 22,
         "tailWords": 79,
         "topic": "Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real",
-        "words": 1197
+        "words": 1190
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 23,
         "tailWords": 83,
         "topic": "Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda",
-        "words": 1129
+        "words": 1122
       },
       {
         "issues": [],
@@ -3049,13 +3010,11 @@
         "words": 828
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 23,
         "tailWords": 497,
         "topic": "Tema 3: Creación de clústeres y conexión con clientes estándar",
-        "words": 837
+        "words": 830
       },
       {
         "issues": [],
@@ -3114,13 +3073,11 @@
         "words": 919
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 25,
         "tailWords": 77,
         "topic": "Tema 3: AppConfigData — el plano de datos que consume tu aplicación",
-        "words": 1018
+        "words": 1011
       },
       {
         "issues": [],
@@ -3130,13 +3087,11 @@
         "words": 976
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 25,
         "tailWords": 73,
         "topic": "Tema 5: El ciclo de vida de un trabajo de respaldo",
-        "words": 968
+        "words": 961
       },
       {
         "issues": [],
@@ -3167,13 +3122,11 @@
         "words": 1116
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 26,
         "tailWords": 80,
         "topic": "Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions",
-        "words": 1032
+        "words": 1025
       },
       {
         "issues": [],
@@ -3197,22 +3150,18 @@
         "words": 996
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 27,
         "tailWords": 74,
         "topic": "Tema 4: El simulador de buzones y el punto de inspección local",
-        "words": 947
+        "words": 940
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 28,
         "tailWords": 72,
         "topic": "Tema 1: Bases de datos de grafos — cuando las relaciones son el dato",
-        "words": 1011
+        "words": 1004
       },
       {
         "issues": [],
@@ -3229,31 +3178,25 @@
         "words": 1043
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 28,
         "tailWords": 78,
         "topic": "Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB",
-        "words": 1018
+        "words": 1011
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 29,
         "tailWords": 65,
         "topic": "Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real",
-        "words": 968
+        "words": 961
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 29,
         "tailWords": 62,
         "topic": "Tema 2: Pricing — catálogo de tarifas de referencia",
-        "words": 908
+        "words": 901
       },
       {
         "issues": [],
@@ -3263,22 +3206,18 @@
         "words": 897
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 29,
         "tailWords": 64,
         "topic": "Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta",
-        "words": 913
+        "words": 906
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 29,
         "tailWords": 71,
         "topic": "Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta",
-        "words": 929
+        "words": 922
       },
       {
         "issues": [],
@@ -3288,13 +3227,11 @@
         "words": 957
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 3,
         "tailWords": 47,
         "topic": "Tema 2: Ciclo de vida de un mensaje",
-        "words": 1116
+        "words": 1109
       },
       {
         "issues": [],
@@ -3325,31 +3262,25 @@
         "words": 891
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 30,
         "tailWords": 69,
         "topic": "Tema 3: Claves públicas SSH y autenticación de usuarios",
-        "words": 964
+        "words": 957
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 30,
         "tailWords": 75,
         "topic": "Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente",
-        "words": 946
+        "words": 939
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 31,
         "tailWords": 57,
         "topic": "Tema 1: Arquitectura multi-nube y portabilidad de conocimiento",
-        "words": 901
+        "words": 894
       },
       {
         "issues": [],
@@ -3359,13 +3290,11 @@
         "words": 605
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 31,
         "tailWords": 67,
         "topic": "Tema 3: Migración desde otros emuladores, y límites de un emulador",
-        "words": 879
+        "words": 869
       },
       {
         "issues": [],
@@ -3382,31 +3311,25 @@
         "words": 800
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 32,
         "tailWords": 453,
         "topic": "Tema 2: Una landing zone convierte gobierno en una base repetible",
-        "words": 805
+        "words": 798
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 32,
         "tailWords": 414,
         "topic": "Tema 3: Disponibilidad y recuperación responden preguntas distintas",
-        "words": 803
+        "words": 796
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 32,
         "tailWords": 401,
         "topic": "Tema 4: Un backup solo existe operativamente después de restaurarlo",
-        "words": 761
+        "words": 754
       },
       {
         "issues": [],
@@ -3416,13 +3339,11 @@
         "words": 851
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 33,
         "tailWords": 473,
         "topic": "Tema 2: Kubernetes administrado, ECS y Service Mesh",
-        "words": 836
+        "words": 829
       },
       {
         "issues": [],
@@ -3467,13 +3388,11 @@
         "words": 732
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 34,
         "tailWords": 382,
         "topic": "Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK",
-        "words": 758
+        "words": 751
       },
       {
         "issues": [],
@@ -3483,13 +3402,11 @@
         "words": 630
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 34,
         "tailWords": 68,
         "topic": "Tema 5: Automatización, UI y agentes",
-        "words": 1005
+        "words": 998
       },
       {
         "issues": [],
@@ -3499,13 +3416,11 @@
         "words": 957
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 34,
         "tailWords": 59,
         "topic": "Tema 7: Servicios Azure que completan el recorrido",
-        "words": 980
+        "words": 973
       },
       {
         "issues": [],
@@ -3666,13 +3581,11 @@
         "words": 1074
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 58,
         "topic": "Tema 2: Modelo de responsabilidad compartida",
-        "words": 1051
+        "words": 1044
       },
       {
         "issues": [],
@@ -3696,31 +3609,25 @@
         "words": 1056
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 61,
         "topic": "Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions",
-        "words": 1085
+        "words": 1078
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 60,
         "topic": "Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions",
-        "words": 1085
+        "words": 1078
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 56,
         "topic": "Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio",
-        "words": 1445
+        "words": 1438
       },
       {
         "issues": [],
@@ -3744,13 +3651,11 @@
         "words": 1200
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 9,
         "tailWords": 71,
         "topic": "Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto",
-        "words": 1137
+        "words": 1130
       },
       {
         "issues": [],
@@ -4058,58 +3963,46 @@
         "words": 963
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 206,
         "topic": "Tema 1: Docker y Compose avanzados",
-        "words": 776
+        "words": 766
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 209,
         "topic": "Tema 2: Kubernetes extensible y Helm avanzado",
-        "words": 652
+        "words": 642
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 311,
         "topic": "Tema 3: Service Mesh con Istio o Linkerd",
-        "words": 765
+        "words": 758
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 270,
         "topic": "Tema 4: GitOps con Argo CD y Flux",
-        "words": 696
+        "words": 686
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 273,
         "topic": "Tema 5: Ansible, inventarios, roles y Vault",
-        "words": 685
+        "words": 678
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 336,
         "topic": "Tema 6: DevSecOps y métricas DORA",
-        "words": 762
+        "words": 755
       },
       {
         "issues": [],
@@ -4746,67 +4639,53 @@
         "words": 885
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 417,
         "topic": "Tema 1: Diseño de pantallas y Riverpod",
-        "words": 719
+        "words": 709
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 466,
         "topic": "Tema 2: Google Maps y localización en tiempo real",
-        "words": 776
+        "words": 766
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 37,
         "topic": "Tema 3: Socket.IO y actualización de rutas",
-        "words": 888
+        "words": 878
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 293,
         "topic": "Tema 4: Animaciones de localización",
-        "words": 593
+        "words": 583
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 325,
         "topic": "Tema 5: Almacenamiento local, imágenes y offline",
-        "words": 635
+        "words": 625
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 386,
         "topic": "Tema 6: Dio y notificaciones push",
-        "words": 700
+        "words": 690
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 235,
         "topic": "Tema 1: flutter test y WidgetTester",
-        "words": 669
+        "words": 659
       },
       {
         "issues": [],
@@ -4823,31 +4702,25 @@
         "words": 653
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 195,
         "topic": "Tema 4: Clean Architecture",
-        "words": 678
+        "words": 668
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 226,
         "topic": "Tema 5: Internacionalización completa",
-        "words": 715
+        "words": 705
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 15,
         "tailWords": 121,
         "topic": "Tema 6: Builds, firma y despliegue",
-        "words": 763
+        "words": 753
       },
       {
         "issues": [
@@ -5177,49 +5050,39 @@
         "words": 1204
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 1,
         "tailWords": 256,
         "topic": "Tema 5: Cómo la computadora representa los datos — binario, texto y decimales",
-        "words": 846
+        "words": 836
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 69,
         "topic": "Tema 1: La red convierte el resultado en una incertidumbre",
-        "words": 1148
+        "words": 1138
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 68,
         "topic": "Tema 2: Replicación, consistencia y decisiones explícitas",
-        "words": 1137
+        "words": 1127
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 72,
         "topic": "Tema 3: Mensajes que se procesan con efectos exactamente una vez",
-        "words": 1165
+        "words": 1155
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 10,
         "tailWords": 72,
         "topic": "Tema 4: Resiliencia y observabilidad orientadas a objetivos",
-        "words": 1163
+        "words": 1153
       },
       {
         "issues": [],
@@ -5236,58 +5099,46 @@
         "words": 679
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 27,
         "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
-        "words": 1009
+        "words": 999
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 23,
         "topic": "Tema 2: Algoritmos, autómatas, lenguajes y compiladores",
-        "words": 963
+        "words": 953
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 412,
         "topic": "Tema 3: Bases de datos, almacenes analíticos y minería de datos",
-        "words": 693
+        "words": 683
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 30,
         "topic": "Tema 4: Inteligencia artificial, aprendizaje automático y visión",
-        "words": 1036
+        "words": 1026
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 30,
         "topic": "Tema 5: Gráficos y cómputo científico",
-        "words": 997
+        "words": 987
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 11,
         "tailWords": 29,
         "topic": "Tema 6: Redes, seguridad, web e ingeniería profesional",
-        "words": 943
+        "words": 933
       },
       {
         "issues": [],
@@ -5564,40 +5415,32 @@
         "words": 1366
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 249,
         "topic": "Tema 5: Árboles y árboles binarios de búsqueda (BST)",
-        "words": 890
+        "words": 880
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 227,
         "topic": "Tema 6: Tablas hash — búsqueda en tiempo constante",
-        "words": 742
+        "words": 732
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 248,
         "topic": "Tema 7: Grafos y recorridos BFS/DFS",
-        "words": 788
+        "words": 778
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 2,
         "tailWords": 232,
         "topic": "Tema 8: Programación dinámica — resolver una vez, recordar el resultado",
-        "words": 745
+        "words": 735
       },
       {
         "issues": [
@@ -5805,13 +5648,11 @@
         "words": 952
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 8,
         "tailWords": 129,
         "topic": "Tema 2: Memoria y concurrencia sin magia",
-        "words": 1089
+        "words": 1079
       },
       {
         "issues": [],
@@ -5837,13 +5678,11 @@
         "words": 1007
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 9,
         "tailWords": 136,
         "topic": "Tema 1: Lógica para especificar antes de programar",
-        "words": 1141
+        "words": 1131
       },
       {
         "issues": [],
@@ -5860,13 +5699,11 @@
         "words": 922
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 9,
         "tailWords": 133,
         "topic": "Tema 4: Probabilidad y evidencia para decisiones técnicas",
-        "words": 1134
+        "words": 1124
       }
     ],
     "ios": [
@@ -7772,13 +7609,11 @@
         "words": 1008
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 13,
         "tailWords": 217,
         "topic": "Tema 1: Kotlin/Native",
-        "words": 630
+        "words": 623
       },
       {
         "issues": [],
@@ -8782,49 +8617,39 @@
         "words": 843
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 235,
         "topic": "Tema 2: Server Actions y seguridad",
-        "words": 863
+        "words": 853
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 133,
         "topic": "Tema 3: Next.js ISR, Metadata y Middleware",
-        "words": 859
+        "words": 849
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 198,
         "topic": "Tema 4: Optimización de imágenes y fuentes",
-        "words": 707
+        "words": 697
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 224,
         "topic": "Tema 5: Accesibilidad y React Aria",
-        "words": 732
+        "words": 722
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 14,
         "tailWords": 207,
         "topic": "Tema 6: i18n, pluralización y RTL",
-        "words": 835
+        "words": 825
       },
       {
         "issues": [
@@ -9265,13 +9090,11 @@
         "words": 892
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 7,
         "tailWords": 274,
         "topic": "Tema 4: Continuidad, costes y proyecto final",
-        "words": 1269
+        "words": 1259
       }
     ],
     "spring-boot": [
@@ -9542,67 +9365,53 @@
         "words": 1015
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 127,
         "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
-        "words": 778
+        "words": 768
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 16,
         "tailWords": 124,
         "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
-        "words": 813
+        "words": 803
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 17,
         "tailWords": 110,
         "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
-        "words": 772
+        "words": 762
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 17,
         "tailWords": 124,
         "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
-        "words": 748
+        "words": 738
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 18,
         "tailWords": 121,
         "topic": "Tema 1: SecurityFilterChain y autorización",
-        "words": 795
+        "words": 785
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 18,
         "tailWords": 111,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
-        "words": 717
+        "words": 707
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 19,
         "tailWords": 135,
         "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
-        "words": 995
+        "words": 985
       },
       {
         "issues": [],
@@ -9654,40 +9463,32 @@
         "words": 660
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 20,
         "tailWords": 101,
         "topic": "Tema 1: Scheduling y tareas periódicas",
-        "words": 743
+        "words": 733
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 20,
         "tailWords": 115,
         "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
-        "words": 796
+        "words": 786
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 20,
         "tailWords": 98,
         "topic": "Tema 3: Correo con Spring Mail y entrega recuperable",
-        "words": 730
+        "words": 720
       },
       {
-        "issues": [
-          "andamiaje-generico"
-        ],
+        "issues": [],
         "module": 20,
         "tailWords": 161,
         "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
-        "words": 812
+        "words": 802
       },
       {
         "issues": [],

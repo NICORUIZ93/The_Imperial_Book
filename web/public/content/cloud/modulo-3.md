@@ -107,7 +107,7 @@ describe: recibe el comando de `DeliveryCommands`, y solo lo da por terminado cu
 escribir en `ShipmentEvents`, no antes.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

@@ -640,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12478,
+      "lines": 12492,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -803,7 +803,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9940,
+      "lines": 9741,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -811,7 +811,7 @@
     },
     {
       "path": "docs/lesson-substance.md",
-      "lines": 83,
+      "lines": 82,
       "kind": "documentation",
       "symbols": [],
       "imports": [],

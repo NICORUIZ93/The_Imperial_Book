@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 245,
     "topics": 1100,
-    "topicsWithSignals": 146,
+    "topicsWithSignals": 153,
     "newLaboratories": 25
   },
   "priorities": {
@@ -5287,7 +5287,9 @@
       "title": "Tema 1: La red convierte el resultado en una incertidumbre",
       "file": "web/public/content/foundations/modulo-10.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -5298,7 +5300,9 @@
       "title": "Tema 2: Replicación, consistencia y decisiones explícitas",
       "file": "web/public/content/foundations/modulo-10.md",
       "line": 135,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -5309,7 +5313,9 @@
       "title": "Tema 3: Mensajes que se procesan con efectos exactamente una vez",
       "file": "web/public/content/foundations/modulo-10.md",
       "line": 250,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -5320,7 +5326,9 @@
       "title": "Tema 4: Resiliencia y observabilidad orientadas a objetivos",
       "file": "web/public/content/foundations/modulo-10.md",
       "line": 376,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -6186,7 +6194,9 @@
       "title": "Tema 2: Memoria y concurrencia sin magia",
       "file": "web/public/content/foundations/modulo-8.md",
       "line": 102,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -6230,7 +6240,9 @@
       "title": "Tema 1: Lógica para especificar antes de programar",
       "file": "web/public/content/foundations/modulo-9.md",
       "line": 8,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
@@ -6263,7 +6275,9 @@
       "title": "Tema 4: Probabilidad y evidencia para decisiones técnicas",
       "file": "web/public/content/foundations/modulo-9.md",
       "line": 319,
-      "signals": [],
+      "signals": [
+        "archivo-ejemplo-no-presentado"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

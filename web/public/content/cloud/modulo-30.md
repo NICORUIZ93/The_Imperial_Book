@@ -163,7 +163,7 @@ aws transfer describe-user --server-id "$SERVER_ID" --user-name socio-logistico 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Asocia una clave pública al usuario del comercio y conserva la privada fuera del repositorio. Documenta una rotación y prueba qué clave deja de aceptarse en un entorno con plano de datos disponible.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -224,7 +224,7 @@ sftp -i /tmp/clave-socio socio-logistico@localhost 2>&1 | head -3 || true
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Marca la transferencia de un manifiesto como pendiente si solo está implementado el plano de gestión. La evidencia debe distinguir un servidor registrado de una conexión SFTP que realmente entrega bytes.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

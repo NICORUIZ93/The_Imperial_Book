@@ -106,7 +106,7 @@ Authorizer validaría en `POST /entregas` antes de invocar `ConfirmarEntregaFn`
 `initiate-auth`.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.tf` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tf` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -176,7 +176,7 @@ en la app móvil del conductor, autenticando contra el mismo `POST /entregas` de
 ---
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

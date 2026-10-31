@@ -598,7 +598,7 @@ graph TD
 **Diagrama interactivo:** [Árbol binario de búsqueda: invariante de orden y por qué degenera](/visuals/temas/foundations/modulo-2-tema-5-bst.html) — versión explorable con temas claro/oscuro y la regla de orden de cada nodo.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `bst.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `bst.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -682,7 +682,7 @@ Una tabla hash usa una **función hash** que transforma una clave en un índice 
 **Analogía:** es como un guardarropa numerado: en vez de buscar tu abrigo revisando todos, la función hash (tu número de ficha) te lleva directo al casillero. Una colisión es cuando dos personas comparten casillero: hay que mirar los pocos abrigos de ESE casillero, no los de todo el guardarropa.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `tabla_hash.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `tabla_hash.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -768,7 +768,7 @@ graph LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `grafos.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `grafos.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -848,7 +848,7 @@ La **programación dinámica (DP)** aplica a problemas con dos propiedades: subp
 **Analogía:** es como hacer un examen donde varias preguntas comparten el mismo cálculo intermedio: en vez de rehacerlo cada vez, lo escribes una vez en el margen y lo copias. Fibonacci ingenuo recalcula `fib(5)` miles de veces; con memoización, cada valor se calcula exactamente una vez.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `dp.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `dp.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```

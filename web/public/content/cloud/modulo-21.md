@@ -300,7 +300,7 @@ aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Aumenta la demanda simulada de procesamiento y observa las decisiones de capacidad. Documenta umbral, enfriamiento y capacidad máxima; al bajar la carga, comprueba que las tareas en curso no se pierden.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

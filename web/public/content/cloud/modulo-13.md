@@ -136,7 +136,7 @@ RutaFlow necesita agregar `estado_pago` (`pendiente`/`pagada`) a `facturas`, una
 #### Paso 3 · Teoría, modelo mental y analogía
 Una migración es una receta versionada y numerada que se aplica una sola vez y queda registrada, no un comando SQL suelto que alguien corrió manualmente y nadie más puede reproducir.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

@@ -44,7 +44,7 @@ En el comando, `--time-period` es la bandera que acota el rango de fechas a anal
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Genera el reporte local de costes del entorno de entregas y relaciona sus filas con recursos creados. Etiquétalo como estimación sintetizada: no es una factura ni predice el gasto real.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -104,7 +104,7 @@ aws pricing get-products --service-code AmazonEC2 \
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Construye una estimación del almacenamiento de evidencias indicando región, unidad y volumen. Conserva la tarifa consultada y la fecha; cambiar una hipótesis debe modificar el cálculo de manera trazable.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -220,7 +220,7 @@ aws resourcegroupstaggingapi get-resources --tag-filters Key=Proyecto,Values=dem
 **Cómo crece tu proyecto:** esta etiqueta común permite auditar de un vistazo todos los recursos que pertenecen al proyecto integrador, sin importar el servicio.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -281,7 +281,7 @@ AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Asume el rol de prueba del consumidor y registra identidad y expiración sin imprimir el secreto. Comprueba aislamiento entre cuentas del laboratorio y documenta la validación adicional requerida en producción.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

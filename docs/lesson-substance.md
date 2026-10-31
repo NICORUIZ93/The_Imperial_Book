@@ -7,14 +7,13 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1100 |
-| Temas con algún defecto | 273 |
+| Temas con algún defecto | 174 |
 | Módulos con apéndices heredados | 183/245 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `andamiaje-generico` | 99 |
 | `bloque-repetido` | 172 |
 | `tema-breve` | 2 |
 
@@ -30,15 +29,11 @@ defectos detectados tampoco acredita haber sido comprendida.
 
 | Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |
 |---|---|---:|---:|---|
-| cloud / 23 | Tema 3: Creación de clústeres y conexión con clientes estándar | 837 | 497 | andamiaje-generico |
 | ios / 9 | Tema 1: XCTest clásico y Swift Testing | 848 | 493 | bloque-repetido |
 | ios / 11 | Tema 1: Certificados y provisioning profiles | 830 | 488 | bloque-repetido |
 | ios / 11 | Tema 2: Archivar, subir y TestFlight | 815 | 481 | bloque-repetido |
 | flutter / 13 | Tema 1: Una API Dart puede terminar en una frontera nativa | 846 | 477 | bloque-repetido |
-| cloud / 33 | Tema 2: Kubernetes administrado, ECS y Service Mesh | 836 | 473 | andamiaje-generico |
 | java / 7 | Tema 4: Unnamed variables y patterns (_, Java 22) | 1026 | 468 | bloque-repetido |
-| cloud / 13 | Tema 3: Migrations | 860 | 467 | andamiaje-generico |
-| flutter / 14 | Tema 2: Google Maps y localización en tiempo real | 776 | 466 | andamiaje-generico |
 | ios / 7 | Tema 3: Combine vs async/await | 815 | 466 | bloque-repetido |
 | react / 8 | Tema 1: Queries por rol, no por clase CSS | 910 | 464 | bloque-repetido |
 | java / 11 | Tema 4: Foreign Function & Memory API (Java 22) | 859 | 462 | bloque-repetido |
@@ -47,29 +42,33 @@ defectos detectados tampoco acredita haber sido comprendida.
 | ios / 10 | Tema 1: Instruments | 790 | 456 | bloque-repetido |
 | java / 0 | Tema 6: Operadores, precedencia y control de flujo | 904 | 454 | bloque-repetido |
 | react / 2 | Tema 2: useRef — valores mutables sin re-render | 874 | 454 | bloque-repetido |
-| cloud / 32 | Tema 2: Una landing zone convierte gobierno en una base repetible | 805 | 453 | andamiaje-generico |
 | java / 9 | Tema 1: JUnit 5 — anotaciones y ciclo de vida | 802 | 452 | bloque-repetido |
 | ios / 9 | Tema 2: Testing de código async | 766 | 451 | bloque-repetido |
 | java / 8 | Tema 1: pom.xml vs build.gradle.kts | 809 | 451 | bloque-repetido |
-| cloud / 16 | Tema 2: Choice state, Retry y Catch | 895 | 438 | andamiaje-generico |
 | ios / 5 | Tema 2: Errores tipados | 812 | 429 | bloque-repetido |
 | ios / 7 | Tema 1: Publishers y Subscribers | 712 | 426 | bloque-repetido |
-| flutter / 14 | Tema 1: Diseño de pantallas y Riverpod | 719 | 417 | andamiaje-generico |
 | ios / 8 | Tema 3: Cuándo MVVM no alcanza | 792 | 415 | bloque-repetido |
-| cloud / 32 | Tema 3: Disponibilidad y recuperación responden preguntas distintas | 803 | 414 | andamiaje-generico |
-| foundations / 11 | Tema 3: Bases de datos, almacenes analíticos y minería de datos | 693 | 412 | andamiaje-generico |
 | ios / 6 | Tema 1: @Model y ModelContainer | 734 | 409 | bloque-repetido |
 | java / 4 | Tema 4: Stream Gatherers (Java 24) | 796 | 408 | bloque-repetido |
-| cloud / 32 | Tema 4: Un backup solo existe operativamente después de restaurarlo | 761 | 401 | andamiaje-generico |
 | ios / 8 | Tema 2: Capas del proyecto e inyección por inicializador | 728 | 400 | bloque-repetido |
-| flutter / 14 | Tema 6: Dio y notificaciones push | 700 | 386 | andamiaje-generico |
-| cloud / 34 | Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK | 758 | 382 | andamiaje-generico |
-| devops / 15 | Tema 6: DevSecOps y métricas DORA | 762 | 336 | andamiaje-generico |
-| flutter / 14 | Tema 5: Almacenamiento local, imágenes y offline | 635 | 325 | andamiaje-generico |
-| devops / 15 | Tema 3: Service Mesh con Istio o Linkerd | 765 | 311 | andamiaje-generico |
-| flutter / 14 | Tema 4: Animaciones de localización | 593 | 293 | andamiaje-generico |
-| rutaflow / 7 | Tema 4: Continuidad, costes y proyecto final | 1269 | 274 | andamiaje-generico |
-| devops / 15 | Tema 5: Ansible, inventarios, roles y Vault | 685 | 273 | andamiaje-generico |
+| foundations / 1 | Tema 3: Decisiones, repeticiones y trazado de ejecución | 1310 | 177 | bloque-repetido |
+| foundations / 3 | Tema 3: HTML semántico, formularios y el DOM | 1364 | 175 | bloque-repetido |
+| flutter / 5 | Tema 3: Interceptores y estados explícitos | 1102 | 172 | bloque-repetido |
+| react / 7 | Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto | 1008 | 169 | bloque-repetido |
+| java / 5 | Tema 3: Virtual threads | 981 | 168 | bloque-repetido |
+| kotlin-multiplatform / 11 | Tema 3: Cierre del track — la promesa realista de KMP | 1080 | 167 | bloque-repetido |
+| foundations / 1 | Tema 1: Del problema al algoritmo y a los casos de prueba | 1403 | 166 | bloque-repetido |
+| foundations / 5 | Tema 4: Calidad estática, revisión e integración continua | 1437 | 165 | bloque-repetido |
+| flutter / 2 | Tema 2: Cómo Flutter calcula tamaños | 930 | 164 | bloque-repetido |
+| react / 13 | Tema 4: Hidratación determinista, idioma y releases medibles | 973 | 164 | bloque-repetido |
+| react / 11 | Tema 3: Eventos tipados y componentes polimórficos | 1141 | 163 | bloque-repetido |
+| flutter / 9 | Tema 3: Integration tests | 905 | 162 | bloque-repetido |
+| foundations / 1 | Tema 2: Variables, tipos, expresiones y cambios de estado | 1217 | 162 | bloque-repetido |
+| kotlin-multiplatform / 12 | Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas | 1008 | 162 | bloque-repetido |
+| javascript / 0 | Tema 4: Template literals y mensajes seguros | 431 | 160 | tema-breve |
+| kotlin-multiplatform / 9 | Tema 3: runTest para coroutines | 940 | 158 | bloque-repetido |
+| react / 7 | Tema 4: Jotai, Recoil y XState como alternativas | 888 | 158 | bloque-repetido |
+| react / 4 | Tema 1: createContext y useContext | 960 | 157 | bloque-repetido |
 
 ## Cómo se corrige
 
@@ -79,4 +78,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `59530cfa255658ef3fd07e53081a5ce7932bf98c91acdd144c5d1598584901ba`
+Huella del contenido: `90eda75e9623ca615e57cbe9f480645e39be453e674d50292b0615ef125d0ec3`

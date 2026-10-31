@@ -39,7 +39,7 @@ Una app de entregas debe mostrar estados de red y ubicación sin perder acciones
 Riverpod es la central de despacho que distribuye un estado único y observable; un estado cerrado (`sealed class`) obliga a un `switch` exhaustivo en la vista, que nunca puede olvidar visualmente un caso como el offline.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/journey/presentation/journey_controller.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/journey/presentation/journey_controller.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -121,7 +121,7 @@ Una app de entregas debe mostrar estados de red y ubicación sin perder acciones
 El mapa es un tablero y el GPS una fuente de eventos que debe filtrarse antes de confiar en ella; una muestra GPS es una medición con margen de error, como una balanza que informa peso y tolerancia.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/location/location_service.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/location/location_service.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -260,7 +260,7 @@ sequenceDiagram
 **Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Reconecta el canal de rutas y recupera una instantánea autorizada. Simula eventos repetidos y atrasados y comprueba que la entrega conserva la versión más reciente, no el último paquete recibido.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/realtime/route_gateway.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/realtime/route_gateway.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -294,7 +294,7 @@ Un marcador debe moverse sin saltos en el mapa; actualizar la posición directam
 La interpolación es un puente entre dos muestras; no inventa una ruta válida que el vehículo no haya recorrido, solo suaviza visualmente la transición entre dos posiciones ya confirmadas.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/map/presentation/marker_motion.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/map/presentation/marker_motion.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -351,7 +351,7 @@ El conductor debe conservar una entrega aunque pierda conexión; si la confirmac
 La cola local es un cuaderno con orden, estado y reintento seguro: cada comando tiene un UUID idempotente, y una imagen capturada se guarda comprimida y cifrada con solo una referencia local, nunca los bytes completos en una fila.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/features/offline/pending_delivery.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/offline/pending_delivery.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -410,7 +410,7 @@ Una entrega necesita HTTP autenticado y avisos accionables; si varias peticiones
 Dio es la ventanilla con interceptores; push es un telegrama que no sustituye al servidor. FCM/APNs despierta o informa, pero la app siempre debe consultar el backend como fuente de verdad antes de actuar sobre el contenido del mensaje.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/shared/network/dio_client.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/shared/network/dio_client.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```

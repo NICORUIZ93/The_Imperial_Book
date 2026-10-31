@@ -46,7 +46,7 @@ redis-cli -h localhost -p "$PUERTO" get usuario:1
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Cachea una consulta de seguimiento y mide aciertos, fallos y antigüedad. Actualiza la entrega y comprueba cómo se invalida la entrada; una respuesta rápida con estado obsoleto no cuenta como éxito.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -137,7 +137,7 @@ Si el servicio de RutaFlow que lee posiciones GPS tuviera el puerto de `demo-cac
 #### Paso 3 · Teoría, modelo mental y analogía
 Crear el clúster instala la flota; `describe-replication-groups` es preguntarle a recepción "¿en qué habitación me hospedé?" en vez de asumir que siempre es la misma.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

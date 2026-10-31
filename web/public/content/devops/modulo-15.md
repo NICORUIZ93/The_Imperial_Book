@@ -15,7 +15,7 @@ El pipeline local de RutaFlow arranca con `docker compose up`, y la API falla la
 `depends_on` sin condición ordena el arranque de contenedores, pero no garantiza disponibilidad del servicio interno; un `healthcheck` define una prueba repetible de "listo", y `condition: service_healthy` hace que Compose espere ese estado antes de arrancar el dependiente. La analogía es esperar a que el semáforo esté en verde, no solo a que el poste exista.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `compose.yaml` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `compose.yaml` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
@@ -105,7 +105,7 @@ Un `helm upgrade` de RutaFlow despliega la nueva versión de la API al mismo tie
 Los hooks de Helm (`pre-upgrade`, `post-upgrade`) ejecutan recursos en una fase separada del ciclo de release, y `helm.sh/hook-weight` ordena múltiples hooks dentro de la misma fase; sin un hook que bloquee, Helm continúa el upgrade del Deployment sin esperar a que el Job termine. La analogía es repavimentar una calle mientras los autos siguen circulando, en vez de cerrarla hasta terminar.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.yaml` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
@@ -175,7 +175,7 @@ El equipo de RutaFlow quiere probar una nueva versión de la API con solo el 10%
 Un service mesh inyecta un sidecar que intercepta todo el tráfico del pod; un `DestinationRule` define subconjuntos (subsets) de un servicio por etiqueta, y un `VirtualService` distribuye pesos de tráfico entre esos subsets, en la capa de red, sin tocar el código de la aplicación. La analogía es dirigir un porcentaje de camiones a un carril de prueba en una ruta, sin que el conductor note la diferencia.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
@@ -262,7 +262,7 @@ Durante un pico de tráfico, una persona de guardia de RutaFlow escala manualmen
 GitOps trata el repositorio como la única fuente de verdad; un operador en modo "pull" reconcilia continuamente el clúster contra ese estado declarado, y con `selfHeal: true` revierte automáticamente cualquier cambio manual que no coincida. La analogía es un termostato que vuelve a la temperatura programada apenas alguien toca la perilla a mano.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.yaml` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
@@ -329,7 +329,7 @@ El playbook de aprovisionamiento de RutaFlow se corre cada vez que se agrega un 
 La idempotencia garantiza que aplicar un playbook N veces produce el mismo estado que aplicarlo una vez; módulos como `lineinfile` verifican el estado actual antes de modificar, mientras que comandos de shell genéricos (`echo >>`) solo ejecutan una acción sin verificar nada. La analogía es la diferencia entre "asegurate de que la puerta esté cerrada" y "cerrá la puerta" repetido sin mirar si ya estaba cerrada.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```
@@ -389,7 +389,7 @@ El equipo de RutaFlow quiere saber si su proceso de DevSecOps realmente mejoró 
 Las métricas DORA miden el desempeño real de entrega de software con cuatro números: con qué frecuencia se despliega a producción, cuánto tarda un commit en llegar a producción, qué porcentaje de despliegues causa un incidente, y cuánto se tarda en recuperarse. La analogía es un chequeo médico: no mide cómo te sentís, mide signos vitales concretos y comparables en el tiempo.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && terraform init
 ```

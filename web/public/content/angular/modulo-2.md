@@ -579,7 +579,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/carrito/cantidad.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/carrito/cantidad.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```
@@ -670,7 +670,7 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```

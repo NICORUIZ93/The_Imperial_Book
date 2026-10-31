@@ -150,7 +150,7 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/lista-entregas.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/lista-entregas.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```
@@ -261,7 +261,7 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/app.routes.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/app.routes.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```
@@ -394,7 +394,7 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/app/detalle-entrega.test.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/detalle-entrega.test.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```

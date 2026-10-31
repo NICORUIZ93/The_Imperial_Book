@@ -157,7 +157,7 @@ RutaFlow usa las tres nubes a la vez (Módulo 8) — antes de automatizar nada, 
 #### Paso 3 · Teoría, modelo mental y analogía
 La CLI es una conversación interactiva con el proveedor; el SDK es esa misma conversación integrada en tu código — ambos hablan contra el mismo endpoint, real o local, según qué variables de entorno estén activas.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -340,7 +340,7 @@ sequenceDiagram
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Automatiza la creación de una cola y comprueba su estado en la interfaz visual. Conserva CLI y respuesta del servicio como evidencia para detectar discrepancias entre la automatización y la vista.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -479,7 +479,7 @@ cmp evidencia.json recuperada.json
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Implementa una alternativa Azure para una operación de almacenamiento del proyecto. Verifica alta, lectura y limpieza con datos de prueba y documenta las diferencias del cliente y de autorización.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

@@ -14,7 +14,7 @@ Un cambio de UI en la pantalla de lista de envíos rompió silenciosamente el es
 `WidgetTester` simula un usuario interactuando con el árbol de widgets en memoria, sin necesitar un dispositivo o emulador real; `pump()` avanza un frame, permitiendo verificar el estado exacto del árbol en cualquier punto. La analogía: un maniquí de pruebas que reacciona exactamente como un usuario real, pero en un entorno de laboratorio controlado y repetible.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `test/lista_envios_test.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `test/lista_envios_test.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -190,7 +190,7 @@ El equipo necesita cambiar el cliente HTTP (`Dio` por otro) sin tocar ninguna re
 Clean Architecture organiza el código en capas concéntricas donde las dependencias solo pueden apuntar hacia el centro (`domain`): la capa de dominio no conoce ningún detalle de infraestructura (HTTP, base de datos, UI), mientras que las capas externas sí pueden depender del dominio. La analogía: cada capa es un puesto de aduana con un contrato — el centro nunca necesita saber cómo llegó la mercadería desde afuera.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `lib/domain/envio.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/domain/envio.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -242,7 +242,7 @@ RutaFlow planea operar en una región con usuarios que hablan español e inglés
 Flutter genera clases de localización tipadas a partir de archivos `.arb` (uno por idioma), reemplazando strings hardcodeados por llamadas a `AppLocalizations.of(context)`; el formato de fechas, números y plurales también depende de la configuración regional (`Locale`), no solo de traducir palabra por palabra. La analogía: traducir un contrato no es reemplazar palabras una por una, sino adaptar el formato completo (fechas, moneda, pluralización) a las convenciones de cada idioma.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `l10n.yaml` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `l10n.yaml` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```
@@ -300,7 +300,7 @@ Al finalizar generarás y verificarás un APK de laboratorio firmado explícitam
 La firma identifica al emisor del artefacto. **Analogía:** fabricar un sello no implica haberlo usado sobre el paquete. Distingue clave de subida y clave de firma de la aplicación cuando utilices Play App Signing: no son necesariamente la misma. Las claves debug no son adecuadas para publicación. La recuperación de una clave de subida y la pérdida de una clave de firma autogestionada tienen consecuencias distintas; no afirmes que cualquier pérdida es irreversible. Fuente oficial: [firma de aplicaciones Android](https://developer.android.com/studio/publish/app-signing).
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.dart` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.dart` con el contenido de este tema.
 ```bash
 flutter create ejemplo
 ```

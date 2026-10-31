@@ -30,7 +30,7 @@ La API de entregas necesita consultar los pedidos de un cliente, pero el pedido 
 JPA define el contrato y Hibernate lo implementa. `@Transactional` delimita el trabajo y permite que el contexto de persistencia gestione cambios; no hace que cada método de Java sea automáticamente atómico.
 **Analogía:** el lado propietario es como el titular de un contrato de alquiler: su firma es la que vale ante el registro (la clave foránea). El lado inverso es el inquilino que tiene una copia para consultar. Las cascadas son la cláusula que decide si, al cancelar el contrato del titular, se cancelan también los servicios asociados.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/Cliente.java` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/Cliente.java` con el contenido de este tema.
 ```bash
 curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
@@ -106,7 +106,7 @@ Una pantalla lista veinte clientes y cuenta sus pedidos. Una consulta inicial m�
 Hibernate puede representar asociaciones LAZY mediante proxies; acceder después de cerrar el contexto puede producir `LazyInitializationException`. No lo soluciones activando `Open Session in View` o haciendo todo EAGER: devuelve DTOs construidos dentro de una transacción con la consulta necesaria.
 **Analogía:** `LAZY` es traer cada dato solo al pedirlo; `EAGER`, traerlo todo por adelantado. El N+1 es llamar al almacén una vez por la lista de pedidos y después una llamada extra por cada pedido para saber su cliente: veinte pedidos, veintiuna llamadas. La consulta por caso de uso es pedir exactamente lo que la pantalla muestra, en un solo viaje.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/test/java/academia/envios/ConsultaClienteTest.java` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/test/java/academia/envios/ConsultaClienteTest.java` con el contenido de este tema.
 ```bash
 curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```

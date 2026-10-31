@@ -30,7 +30,7 @@ Un `Job` coordina la ejecución; sus `Step`s separan fases. Un `Tasklet` sirve p
 `ItemReader` obtiene registros; `ItemProcessor` transforma o filtra; `ItemWriter` escribe un chunk. `JobRepository` mantiene metadatos de instancias y ejecuciones. `JobParameters` identifican una ejecución lógica y deben incluir parámetros estables como fecha de archivo, no una hora aleatoria que impida reanudar.
 **Analogía:** un `Job` es la receta completa de un menú; cada `Step` es un plato de esa receta. Un `Tasklet` es un paso que se hace de una sola vez (encender el horno); el *chunk processing* es una cadena de montaje que toma ingredientes de a lotes, los cocina y los emplata en grupos, en vez de uno por uno.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/batch/ImportJobConfig.java` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/batch/ImportJobConfig.java` con el contenido de este tema.
 ```bash
 curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```

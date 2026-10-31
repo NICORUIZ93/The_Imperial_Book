@@ -6,7 +6,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
-| foundations | 99 | 9 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
+| foundations | 99 | 16 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
@@ -498,10 +498,10 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | foundations / 1 | [Tema 3: Decisiones, repeticiones y trazado de ejecución](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 1 | [Tema 4: Funciones y descomposición de problemas](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 1 | [Tema 5: Cómo la computadora representa los datos — binario, texto y decimales](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 10 | [Tema 1: La red convierte el resultado en una incertidumbre](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 10 | [Tema 2: Replicación, consistencia y decisiones explícitas](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 10 | [Tema 3: Mensajes que se procesan con efectos exactamente una vez](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 10 | [Tema 4: Resiliencia y observabilidad orientadas a objetivos](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 10 | [Tema 1: La red convierte el resultado en una incertidumbre](../web/public/content/foundations/modulo-10.md) | archivo-ejemplo-no-presentado |
+| foundations / 10 | [Tema 2: Replicación, consistencia y decisiones explícitas](../web/public/content/foundations/modulo-10.md) | archivo-ejemplo-no-presentado |
+| foundations / 10 | [Tema 3: Mensajes que se procesan con efectos exactamente una vez](../web/public/content/foundations/modulo-10.md) | archivo-ejemplo-no-presentado |
+| foundations / 10 | [Tema 4: Resiliencia y observabilidad orientadas a objetivos](../web/public/content/foundations/modulo-10.md) | archivo-ejemplo-no-presentado |
 | foundations / 10 | [Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 10 | [Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 1: Sistemas, arquitectura y sistemas operativos](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
@@ -579,14 +579,14 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | foundations / 7 | [Tema 4: Decisiones, documentación, deuda y evolución](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 1: El sistema operativo como administrador y frontera](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 8 | [Tema 2: Memoria y concurrencia sin magia](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 8 | [Tema 2: Memoria y concurrencia sin magia](../web/public/content/foundations/modulo-8.md) | archivo-ejemplo-no-presentado |
 | foundations / 8 | [Tema 3: Linux como entorno observable](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 4: Contenedores: aislamiento reproducible](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 9 | [Tema 1: Lógica para especificar antes de programar](../web/public/content/foundations/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 9 | [Tema 1: Lógica para especificar antes de programar](../web/public/content/foundations/modulo-9.md) | archivo-ejemplo-no-presentado |
 | foundations / 9 | [Tema 2: Conjuntos, relaciones, funciones e inducción](../web/public/content/foundations/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 9 | [Tema 3: Conteo, grafos y estructuras conectadas](../web/public/content/foundations/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 9 | [Tema 4: Probabilidad y evidencia para decisiones técnicas](../web/public/content/foundations/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 9 | [Tema 4: Probabilidad y evidencia para decisiones técnicas](../web/public/content/foundations/modulo-9.md) | archivo-ejemplo-no-presentado |
 | ios / 0 | [Tema 1: Optionals y unwrapping seguro](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 0 | [Tema 2: struct vs class](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 0 | [Tema 3: Protocolos y enums con valores asociados](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

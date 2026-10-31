@@ -398,7 +398,7 @@ Kotlin es explícito sobre lo que puede ser nulo: un `String` NUNCA es null; un 
 **Analogía:** el `?` de Kotlin es como una etiqueta en una caja que avisa "puede estar vacía": no puedes sacar el contenido sin comprobar primero, y eso evita el error nulo más común de la programación (el `NullPointerException`).
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 gradle init --type kotlin-application
 ```
@@ -463,7 +463,7 @@ Una función `suspend` puede pausarse y reanudarse sin bloquear el hilo. `launch
 **Analogía:** una corrutina es como pedir comida y recibir un buzón vibrador: no te quedas parado en la caja bloqueando la fila (el hilo), te vas a tu mesa y el buzón te avisa cuando está lista. `suspend` es ese "te aviso cuando esté".
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.kt` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.kt` con el contenido de este tema.
 ```bash
 gradle init --type kotlin-application
 ```

@@ -41,7 +41,7 @@ flowchart LR
 **Límites y decisión de uso:** Portabilidad de conceptos no significa equivalencia de identidades, errores o consistencia entre proveedores. Introduce adaptadores solo en fronteras útiles y prueba cada contrato; una abstracción que oculta diferencias puede impedir diagnosticar fallos reales.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -152,7 +152,7 @@ Pero: cloud local es para desarrollo/pruebas y SIEMPRE requiere validación fina
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Migra una prueba de bucket y cola desde el emulador anterior. Registra endpoints, diferencias observadas y recursos incompatibles; conservar el nombre de un servicio no demuestra equivalencia de comportamiento.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `docker-compose.yml` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `docker-compose.yml` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

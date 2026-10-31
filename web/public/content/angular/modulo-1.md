@@ -635,7 +635,7 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```
@@ -761,7 +761,7 @@ Un **pipe** (`|`) transforma un valor solo para mostrarlo, sin cambiar el dato (
 **Analogía:** un pipe es un filtro de Instagram sobre una foto (cambia cómo se ve, no la foto original); una directiva es un accesorio que le pones a un mueble (una rueda, una luz) que cambia cómo se comporta sin rehacer el mueble.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.ts` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
 ```

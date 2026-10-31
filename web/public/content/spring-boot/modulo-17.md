@@ -30,7 +30,7 @@ Spring Boot configura un `DataSource` desde la dependencia y propiedades. `JdbcT
 `?` parametriza valores, no identificadores SQL. Para filtros opcionales, construye solo fragmentos elegidos de una allowlist y sigue usando parámetros para valores.
 **Analogía:** el `DataSource` es la tubería de agua ya conectada a la red (el pool de conexiones); `JdbcTemplate` es el grifo que abres y cierras sin preocuparte de la instalación; y el DAO es el fontanero que sabe exactamente qué grifo abrir para cada tarea, aislando al resto de la casa de los detalles.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/resources/schema.sql` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/resources/schema.sql` con el contenido de este tema.
 ```bash
 curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
@@ -118,7 +118,7 @@ El cobro se registra, pero falla la actualización del envío. Sin una transacci
 La transacción es un límite local de base de datos, no una transacción distribuida entre PostgreSQL, Kafka y un servicio HTTP.
 **Analogía:** `@Transactional` es como el carrito de la compra: vas añadiendo acciones y solo al pasar por caja (commit) se confirman todas juntas; si algo falla, el `rollback` vacía el carrito entero y no se cobra nada a medias. El límite de la transacción es hasta dónde llega ese carrito: no abarca una llamada HTTP a otra tienda.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/envios/LiquidacionService.java` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/envios/LiquidacionService.java` con el contenido de este tema.
 ```bash
 curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```

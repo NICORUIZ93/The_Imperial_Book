@@ -47,7 +47,7 @@ print("grafo:", pregunta_multi_salto)
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Modela almacenes, rutas y conexiones como un grafo pequeño. Consulta una relación de varios saltos y compara el resultado con una lista esperada de nodos, no solo con un conteo total.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -241,7 +241,7 @@ En el comando de DynamoDB, `--table-name` es la bandera que indica en qué tabla
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Clasifica seguimiento por clave, búsqueda textual y relaciones entre almacenes. Asigna un motor a cada consulta con un ejemplo verificable y evita replicar todos los datos sin un caso de uso.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

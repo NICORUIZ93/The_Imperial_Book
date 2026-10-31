@@ -164,7 +164,7 @@ aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Haz que el consumidor consulte configuración usando el protocolo del plano de datos. Registra versión y renovación de la sesión sin interpretar una respuesta sin cambios como una configuración vacía.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -289,7 +289,7 @@ aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'Number
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Sigue un trabajo de respaldo desde solicitud hasta estado terminal. Simula o registra un fallo y comprueba que la automatización no anuncia éxito mientras el trabajo continúe pendiente.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

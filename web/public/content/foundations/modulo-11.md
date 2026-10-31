@@ -96,7 +96,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `round_robin.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `round_robin.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -213,7 +213,7 @@ stateDiagram-v2
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Define los comandos válidos de la CLI del gestor como una gramática pequeña. Prueba secuencias aceptadas y rechazadas, distinguiendo un error de sintaxis de una tarea que no existe.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `tracking_parser.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `tracking_parser.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -235,7 +235,7 @@ RutaFlow necesita saber el tiempo promedio de entrega por zona para decidir dón
 #### Paso 3 · Teoría, modelo mental y analogía
 Una base de datos es un archivo con reglas de acceso y consistencia; la base operacional es la libreta de trabajo del día, el almacén analítico es el archivo histórico que se consulta para comparar periodos.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `delivery_data.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `delivery_data.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -401,7 +401,7 @@ test_error (eje Y)
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Crea una clasificación experimental de prioridad con tareas sintéticas y etiquetas conocidas. Mide falsos positivos y negativos y conserva la decisión humana para cambios importantes del estado.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `delay_baseline.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `delay_baseline.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -501,7 +501,7 @@ Distancia Parada 1→Entrega: 1.0 (antes) = 1.0 (después) ✓
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Grafica tareas completadas por día a partir de un conjunto pequeño verificable. Compara cada barra con el conteo original y evita que una escala o zona horaria distorsione la interpretación.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `transform.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `transform.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -583,7 +583,7 @@ Ejecuta `python3 src/evidence.py` y guarda la salida en `evidence/professional-p
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Expón una consulta de tareas en una interfaz web local y registra su contrato. Prueba entrada inválida y acceso no permitido, documentando el límite entre validación del navegador y del servidor.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `evidence.py` dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `evidence.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```

@@ -79,7 +79,7 @@ Si RutaFlow separa sus cuentas en producción, no-producción y seguridad (Módu
 #### Paso 3 · Teoría, modelo mental y analogía
 La jerarquía de cuentas es un edificio de oficinas con políticas centrales y responsables; una landing zone instala esas reglas antes de que lleguen las cargas de trabajo, no después.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -154,7 +154,7 @@ Una caída regional no debería borrar `ShipmentEvents` ni detener la confirmaci
 #### Paso 3 · Teoría, modelo mental y analogía
 RTO es cuánto tiempo tolerás estar caído; RPO es cuántos datos tolerás perder — el cinturón de seguridad evita el accidente, el plan de rescate actúa cuando ya ocurrió, y ambos responden preguntas distintas.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -224,7 +224,7 @@ El plan del Tema 3 promete un RTO de 4 horas para `rutaflow-facturacion` — per
 #### Paso 3 · Teoría, modelo mental y analogía
 Un backup solo existe operativamente después de restaurarlo: guardar un paracaídas no demuestra que abre, hay que inspeccionarlo y ensayarlo.
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```

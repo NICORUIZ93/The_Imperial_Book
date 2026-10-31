@@ -223,7 +223,7 @@ aws stepfunctions list-state-machines --query 'stateMachines[].name' 2>&1 | head
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Decide cómo conectar una confirmación con notificaciones y recuperación. Distingue conexión, distribución y orquestación, y documenta con un caso de fallo por qué la solución seleccionada necesita esa capacidad.
 
 #### Paso 4 · Demostración guiada
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
