@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 16:22 UTC
+Generated: 2026-10-31 17:45 UTC
 Root: `Academia_Floci`
-Indexed files: 965
-Import edges: 57
+Indexed files: 964
+Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,9 +15,9 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 60 files
+- `angular-app`: 58 files
 - `automation-script`: 39 files
-- `course-content`: 251 files
+- `course-content`: 252 files
 - `documentation`: 62 files
 - `example`: 490 files
 - `local-infra`: 1 files
@@ -25,11 +25,11 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## File Types
 
-- `.md`: 322
+- `.md`: 323
 - `.py`: 165
 - `.json`: 73
 - `.java`: 73
-- `.ts`: 67
+- `.ts`: 65
 - `.js`: 54
 - `.html`: 38
 - `.rs`: 25
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1230 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1165 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -119,7 +119,6 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-module.model.spec.ts` -> `web/src/app/course-module.model.ts`
 - `web/src/app/course/course-shell.ts` -> `web/src/app/course/lesson-index.ts`
 - `web/src/app/learning-activities.spec.ts` -> `web/src/app/learning-activities.ts`
-- `web/src/app/learning-prompts.spec.ts` -> `web/src/app/learning-prompts.ts`
 - `web/src/app/progress.service.spec.ts` -> `web/src/app/progress.service.ts`
 - `web/src/app/progress.service.ts` -> `web/src/app/course-data.ts`
 - `web/src/app/project-bootstrap.spec.ts` -> `web/src/app/course-data.ts`
@@ -158,7 +157,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (29 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (182 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (181 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (133 lines)
@@ -173,7 +172,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-module.model.ts` (37 lines) - symbols: CourseModule, Track
 - `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
 - `web/src/app/course/course-shell.scss` (79 lines)
-- ... 42 more files
+- ... 40 more files
 
 ### automation-script
 
@@ -210,14 +209,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-13.md` (626 lines) - headings: # Módulo 13: Android en producción — seguridad, sincronización y calidad, ## Aprende construyendo, ### Tema 1: El sistema operativo conecta tu app con entradas externas, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-14.md` (813 lines) - headings: # Módulo 14: Compose Master — pruebas, accesibilidad y animación, ## Aprende construyendo, ### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-15.md` (556 lines) - headings: # Módulo 15: Android como plataforma — Intents, broadcasts, servicios y content providers, ## Aprende construyendo, ### Tema 1: Intents implícitos y Activity Result API, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-16.md` (537 lines) - headings: # Módulo 16: Android profesional — privacidad, datos, escala e identidad, ## Aprende construyendo, ### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-2.md` (366 lines) - headings: # Módulo 2: Jetpack Compose: UI declarativa, ## Aprende construyendo, ### Tema 1: Composables y recomposición, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-6.md` (406 lines) - headings: # Módulo 6: Persistencia local con Room, ## Aprende construyendo, ### Tema 1: Entities, DAOs y Database, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-7.md` (388 lines) - headings: # Módulo 7: Inyección de dependencias con Hilt, ## Aprende construyendo, ### Tema 1: Configuración básica de Hilt, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-8.md` (376 lines) - headings: # Módulo 8: Trabajo en segundo plano, ## Aprende construyendo, ### Tema 1: CoroutineWorker y garantía de ejecución, #### Paso 1 · Objetivo y preparación
-- ... 233 more files
+- ... 234 more files
 
 ### documentation
 
@@ -277,14 +276,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/app-flow-inspection-evidence.json` (8798 lines)
 - `docs/app-flow-inspection-order.json` (1617 lines)
 - `docs/app-flow-inspection-relocate.json` (11319 lines)
-- `docs/app-flow-inspection.json` (13830 lines)
+- `docs/app-flow-inspection.json` (16517 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2712 lines)
 - `docs/code-visual-quality.json` (1876 lines)
-- `docs/course-depth-review.json` (13672 lines)
+- `docs/course-depth-review.json` (13780 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (819 lines)
-- `docs/lesson-substance.json` (9437 lines)
+- `docs/lesson-substance.json` (9510 lines)
 - ... 44 more files

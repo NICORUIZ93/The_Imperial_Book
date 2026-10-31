@@ -29,11 +29,11 @@ flowchart LR
 | angular | 71 |
 | react | 58 |
 | kotlin-multiplatform | 56 |
-| android | 64 |
+| android | 73 |
 | ios | 56 |
 | flutter | 63 |
 | devops | 113 |
 | cloud | 156 |
 | rutaflow | 29 |
 
-**Total:** 1106 temas.
+**Total:** 1115 temas.

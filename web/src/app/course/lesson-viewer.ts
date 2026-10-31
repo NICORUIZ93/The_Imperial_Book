@@ -14,7 +14,6 @@ import { ThemeService } from '../theme.service';
 import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { glossaryFor } from '../technical-glossary';
-import { learningPrompt, LearningPromptMode } from '../learning-prompts';
 import { TopicIndexService } from '../topic-index.service';
 
 let mermaidInitialized = false;
@@ -939,7 +938,7 @@ export class LessonViewerComponent implements OnDestroy {
       }
       card.classList.toggle('expanded', index === 0);
       card.appendChild(body);
-      this.addTopicLearningSupport(body, heading);
+      this.addTopicTroubleshooting(body);
       this.addTopicFocusLink(card, index);
     });
   }
@@ -1015,87 +1014,23 @@ export class LessonViewerComponent implements OnDestroy {
     });
   }
 
-  private addTopicLearningSupport(body: HTMLElement, heading: HTMLElement): void {
-    const context = body.innerText || body.textContent || '';
-    const prompts = document.createElement('details');
-    prompts.className = 'topic-learning-prompts generated-learning-support';
-    const summary = document.createElement('summary');
-    summary.textContent = 'Prompts para estudiar y practicar este tema';
-    const description = document.createElement('p');
-    description.textContent = 'Adaptados del PDF: explicación paso a paso, ruta de aprendizaje y revisión profesional. Incluyen el contenido de este tema como referencia. Puedes editarlos y copiarlos para usarlos con tu asistente; no acreditan que hayas terminado la práctica.';
-    prompts.append(summary, description);
-    const modes: [LearningPromptMode, string][] = [['tutor', 'Tutor paso a paso'], ['roadmap', 'Ruta de 30 pasos'], ['review', 'Revisión profesional'], ['research', 'Informe con evidencia']];
-    modes.forEach(([mode, label]) => {
-      const section = document.createElement('details');
-      const title = document.createElement('summary');
-      title.textContent = label;
-      const input = document.createElement('textarea');
-      input.rows = 9;
-      input.style.width = '100%';
-      input.setAttribute('aria-label', `${label}: ${this.topicTitle(heading)}`);
-      input.value = learningPrompt(this.topicTitle(heading), this.track()?.name ?? this.trackId(), context, mode);
-      const copy = document.createElement('button');
-      copy.type = 'button';
-      copy.dataset['copyLearningPrompt'] = '';
-      copy.textContent = 'Copiar prompt';
-      const feedback = document.createElement('p');
-      feedback.setAttribute('role', 'status');
-      section.append(title, input, copy, feedback);
-      prompts.append(section);
-    });
-    body.appendChild(prompts);
+  private addTopicTroubleshooting(body: HTMLElement): void {
     // No inventamos explicaciones para rellenar huecos: si el autor no escribió
     // la sección, la lección debe mostrar esa deuda editorial en la auditoría,
     // no presentar una frase genérica como si fuera contenido pedagógico.
 
     const editorialErrors = Array.from(body.querySelectorAll<HTMLParagraphElement>('p')).find(paragraph => /^(?:Errores comunes|Errores frecuentes|Fallos comunes|Fallos frecuentes):/i.test(paragraph.textContent?.trim() ?? ''));
-    if (editorialErrors) {
-      const parent = editorialErrors.parentNode;
-      const details = document.createElement('details');
-      details.className = 'topic-troubleshooting editorial-troubleshooting generated-learning-support';
-      const summary = document.createElement('summary');
-      summary.textContent = 'Errores comunes y cómo diagnosticarlos';
-      parent?.insertBefore(details, editorialErrors);
-      details.append(summary, editorialErrors);
-      return;
-    }
-    // Cuando el autor aún no documentó fallos concretos, mostramos una lista
-    // explícitamente marcada como checklist general (no como contenido del tema).
-    const language = body.querySelector<HTMLElement>('.code-example')?.dataset['language'] ?? 'concept';
-    const profiles: Record<string, string[]> = {
-      terminal: ['Ejecutar el comando desde una carpeta diferente a la indicada.', 'Continuar después del primer error y perder su causa original.', 'Usar credenciales, puertos o variables de otro entorno sin comprobarlos.'],
-      web: ['Crear el archivo en una ruta que no coincide con la importación.', 'Confiar en datos externos sin validar estados de carga, vacío y error.', 'Cambiar estado o efectos sin comprobar cuándo vuelve a renderizar la interfaz.'],
-      jvm: ['Compilar con una versión de JDK distinta a la declarada por el proyecto.', 'Usar una anotación o dependencia sin comprender qué registra en el contenedor.', 'Bloquear un flujo concurrente o reactivo con una llamada síncrona.'],
-      mobile: ['Probar solo el caso con permiso concedido y conexión disponible.', 'Ignorar ciclo de vida, restauración de estado o cancelación de tareas.', 'Validar en un único dispositivo sin revisar batería, accesibilidad y tamaños.'],
-      concept: ['Memorizar el concepto sin relacionarlo con una entrada y una salida.', 'Aceptar una ejecución exitosa como evidencia suficiente sin provocar un fallo.', 'Aplicar una abstracción antes de identificar qué responsabilidad resuelve.'],
-    };
-    const profile = /bash|sh|shell|console|powershell|zsh/.test(language) ? 'terminal'
-      : /js|javascript|ts|typescript|jsx|tsx|html|css|scss/.test(language) ? 'web'
-      : /java|kotlin|xml/.test(language) ? 'jvm'
-      : /swift|dart/.test(language) ? 'mobile'
-      : 'concept';
+    if (!editorialErrors) return;
+    const parent = editorialErrors.parentNode;
     const details = document.createElement('details');
-    details.className = 'topic-troubleshooting generated-learning-support';
-    details.innerHTML = `<summary>Errores comunes y cómo diagnosticarlos <small>(checklist general)</small></summary><p>Esta lista es una ayuda transversal; los fallos específicos del ejemplo deben documentarse en la lección.</p><ol>${profiles[profile].map(error => `<li>${escapeHtml(error)}</li>`).join('')}</ol><p>Corrige un elemento a la vez, repite el comando y conserva la salida antes y después.</p>`;
-    body.appendChild(details);
+    details.className = 'topic-troubleshooting editorial-troubleshooting';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Errores comunes y cómo diagnosticarlos';
+    parent?.insertBefore(details, editorialErrors);
+    details.append(summary, editorialErrors);
   }
 
   async copyCode(event: Event): Promise<void> {
-    const promptButton = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-copy-learning-prompt]');
-    if (promptButton) {
-      const input = promptButton.parentElement?.querySelector('textarea');
-      const feedback = promptButton.nextElementSibling;
-      if (!input) return;
-      try {
-        await navigator.clipboard.writeText(input.value);
-        if (feedback) feedback.textContent = 'Prompt copiado';
-      } catch {
-        input.focus();
-        input.select();
-        if (feedback) feedback.textContent = 'Seleccionado: usa el comando de copiar de tu dispositivo.';
-      }
-      return;
-    }
     const revealButton = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-reveal-answer]');
     if (revealButton) {
       const answer = revealButton.nextElementSibling as HTMLElement | null;

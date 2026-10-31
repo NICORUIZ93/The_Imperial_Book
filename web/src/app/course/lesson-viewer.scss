@@ -216,10 +216,6 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep .topic-toggle:hover { color:var(--accent); }
 .lesson-markdown ::ng-deep .topic-toggle span:last-child { font-size:14px; transition:transform .18s ease; }
 .lesson-markdown ::ng-deep .topic-toggle[aria-expanded='true'] span:last-child { transform:rotate(180deg); }
-.lesson-markdown ::ng-deep .topic-learning-prompts { margin:24px 0 4px; padding:14px; border:1px solid $bd; border-radius:12px; background:$bg2; font-family:var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-learning-prompts summary { min-height:44px; cursor:pointer; color:$ink; font-weight:650; }
-.lesson-markdown ::ng-deep .topic-learning-prompts textarea { box-sizing:border-box; resize:vertical; padding:12px; background:$bg; color:$ink; border:1px solid $bd; border-radius:8px; font:13px/1.5 var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-learning-prompts button { margin-top:8px; padding:10px 16px; min-height:44px; cursor:pointer; }
 .lesson-markdown ::ng-deep .topic-troubleshooting { margin:24px 0 4px; overflow:hidden; border:1px solid $bd; border-radius:12px; background:$bg2; font-family:var(--font-sans); }
 .lesson-markdown ::ng-deep .topic-troubleshooting summary { min-height:44px; display:flex; align-items:center; padding:11px 14px; color:$ink; font:750 12px var(--font-sans); cursor:pointer; }
 .lesson-markdown ::ng-deep .topic-troubleshooting ol { margin:0; padding:2px 34px 10px; color:$i3; font:500 11.5px/1.55 var(--font-sans); }
@@ -528,7 +524,6 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep pre { font:400 12.5px/1.9 var(--font-mono); background:var(--bg-instrument); color:var(--code-text); }
 .lesson-markdown ::ng-deep :not(pre)>code { background:$bg2; color:$ink; padding:2px 5px; border-radius:4px; font-size:.85em; }
 .lesson-markdown ::ng-deep table { font-size:13px; border-radius:8px; }
-.lesson-markdown ::ng-deep .topic-learning-prompts { margin-top:24px; border-radius:10px; }
 .lesson-nav button { border-radius:10px; }
 .focus-mode { grid-template-columns:minmax(0,780px); max-width:780px; }
 @media(max-width:1250px) { .lesson-layout { grid-template-columns:minmax(0,1fr); max-width:800px; } }

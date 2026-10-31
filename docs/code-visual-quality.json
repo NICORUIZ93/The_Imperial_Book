@@ -121,16 +121,16 @@
       "officialSource": 56
     },
     "android": {
-      "topics": 64,
-      "code": 64,
-      "commentedCode": 56,
-      "mermaid": 18,
+      "topics": 73,
+      "code": 73,
+      "commentedCode": 65,
+      "mermaid": 27,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 62,
-      "runCommand": 62,
-      "officialSource": 63
+      "filePath": 71,
+      "runCommand": 70,
+      "officialSource": 72
     },
     "ios": {
       "topics": 56,

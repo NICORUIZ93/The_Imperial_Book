@@ -9,7 +9,7 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 tracks, 246 módulos y 1106 temas editoriales en formato de
+La academia reúne 14 tracks, 248 módulos y 1115 temas editoriales en formato de
 libro. Esos 14 tracks son Fundamentos + RutaFlow + 12 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
@@ -196,8 +196,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 245
-módulos y 1106 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 248
+módulos y 1115 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -206,8 +206,8 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1106/1106 temas con los nueve criterios detectados. La
-auditoría independiente de metodología registra 1106/1106 con sus marcadores de
+versionado registra 1115/1115 temas con los nueve criterios detectados. La
+auditoría independiente de metodología registra 1115/1115 con sus marcadores de
 siete pasos. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en
@@ -260,7 +260,7 @@ como certificaciones.
 | Java | 21 | POO, colecciones, concurrencia, JVM moderna, JDBC, JPA, HTTP y Java funcional |
 | Spring Boot | 23 | REST, JPA, seguridad, Batch, Kafka, microservicios y arquitectura (hexagonal, C4, ADR) |
 | Kotlin Multiplatform | 14 | Lógica compartida entre Android e iOS |
-| Android | 17 | Jetpack Compose, ciclo de vida, Room, Hilt, privacidad, escala e identidad |
+| Android | 19 | Kotlin, Compose, arquitectura, datos, plataforma, privacidad, build y entrega profesional |
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |
 | Flutter | 16 | Widgets, gestión de estado, plataformas nativas |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |

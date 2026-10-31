@@ -7587,6 +7587,105 @@
       ]
     },
     {
+      "id": "android:17:1",
+      "track": "android",
+      "module": 17,
+      "position": 1,
+      "title": "Constraints, Modifier y componentes con slots",
+      "file": "web/public/content/android/modulo-17.md",
+      "requires": [
+        "android:16:6"
+      ]
+    },
+    {
+      "id": "android:17:2",
+      "track": "android",
+      "module": 17,
+      "position": 2,
+      "title": "LazyColumn, grids, claves estables y estado de scroll",
+      "file": "web/public/content/android/modulo-17.md",
+      "requires": [
+        "android:17:1"
+      ]
+    },
+    {
+      "id": "android:17:3",
+      "track": "android",
+      "module": 17,
+      "position": 3,
+      "title": "Formularios, IME, foco y validación accesible",
+      "file": "web/public/content/android/modulo-17.md",
+      "requires": [
+        "android:17:2"
+      ]
+    },
+    {
+      "id": "android:17:4",
+      "track": "android",
+      "module": 17,
+      "position": 4,
+      "title": "Side effects, lifecycle y APIs imperativas",
+      "file": "web/public/content/android/modulo-17.md",
+      "requires": [
+        "android:17:3"
+      ]
+    },
+    {
+      "id": "android:17:5",
+      "track": "android",
+      "module": 17,
+      "position": 5,
+      "title": "Gestos, Canvas y componentes personalizados accesibles",
+      "file": "web/public/content/android/modulo-17.md",
+      "requires": [
+        "android:17:4"
+      ]
+    },
+    {
+      "id": "android:18:1",
+      "track": "android",
+      "module": 18,
+      "position": 1,
+      "title": "Gradle, version catalogs y resolución de dependencias",
+      "file": "web/public/content/android/modulo-18.md",
+      "requires": [
+        "android:17:5"
+      ]
+    },
+    {
+      "id": "android:18:2",
+      "track": "android",
+      "module": 18,
+      "position": 2,
+      "title": "Build types, product flavors y configuración segura",
+      "file": "web/public/content/android/modulo-18.md",
+      "requires": [
+        "android:18:1"
+      ]
+    },
+    {
+      "id": "android:18:3",
+      "track": "android",
+      "module": 18,
+      "position": 3,
+      "title": "Modularización, convenciones y fronteras de arquitectura",
+      "file": "web/public/content/android/modulo-18.md",
+      "requires": [
+        "android:18:2"
+      ]
+    },
+    {
+      "id": "android:18:4",
+      "track": "android",
+      "module": 18,
+      "position": 4,
+      "title": "R8, recursos, Baseline Profiles y pipeline reproducible",
+      "file": "web/public/content/android/modulo-18.md",
+      "requires": [
+        "android:18:3"
+      ]
+    },
+    {
       "id": "ios:0:1",
       "track": "ios",
       "module": 0,

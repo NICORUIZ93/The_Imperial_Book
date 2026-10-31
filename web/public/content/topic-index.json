@@ -170,6 +170,46 @@
         "fragment": "tema-6-credential-manager-passkeys-y-verificacion-en-servidor"
       }
     ],
+    "17": [
+      {
+        "title": "Constraints, Modifier y componentes con slots",
+        "fragment": "tema-1-constraints-modifier-y-componentes-con-slots"
+      },
+      {
+        "title": "LazyColumn, grids, claves estables y estado de scroll",
+        "fragment": "tema-2-lazycolumn-grids-claves-estables-y-estado-de-scroll"
+      },
+      {
+        "title": "Formularios, IME, foco y validación accesible",
+        "fragment": "tema-3-formularios-ime-foco-y-validacion-accesible"
+      },
+      {
+        "title": "Side effects, lifecycle y APIs imperativas",
+        "fragment": "tema-4-side-effects-lifecycle-y-apis-imperativas"
+      },
+      {
+        "title": "Gestos, Canvas y componentes personalizados accesibles",
+        "fragment": "tema-5-gestos-canvas-y-componentes-personalizados-accesibles"
+      }
+    ],
+    "18": [
+      {
+        "title": "Gradle, version catalogs y resolución de dependencias",
+        "fragment": "tema-1-gradle-version-catalogs-y-resolucion-de-dependencias"
+      },
+      {
+        "title": "Build types, product flavors y configuración segura",
+        "fragment": "tema-2-build-types-product-flavors-y-configuracion-segura"
+      },
+      {
+        "title": "Modularización, convenciones y fronteras de arquitectura",
+        "fragment": "tema-3-modularizacion-convenciones-y-fronteras-de-arquitectura"
+      },
+      {
+        "title": "R8, recursos, Baseline Profiles y pipeline reproducible",
+        "fragment": "tema-4-r8-recursos-baseline-profiles-y-pipeline-reproducible"
+      }
+    ],
     "2": [
       {
         "title": "Composables y recomposición",

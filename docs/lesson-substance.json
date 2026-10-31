@@ -62,6 +62,16 @@
       "track": "android"
     },
     {
+      "legacySections": [],
+      "module": 17,
+      "track": "android"
+    },
+    {
+      "legacySections": [],
+      "module": 18,
+      "track": "android"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1649,16 +1659,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "52e68c27ec09ea12febf127d31cf2d59ae214afa0ebc80415285731beac7e786",
+    "fingerprint": "a544e605758a88ce5bf749c5e789f914e7a01e8b6cb5b40df0ffc9a47acfae96",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 181
     },
-    "modules": 246,
+    "modules": 248,
     "modulesWithLegacySections": 183,
-    "topics": 1106,
+    "topics": 1115,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -1928,6 +1938,69 @@
         "tailWords": 100,
         "topic": "Tema 6: Credential Manager, passkeys y verificación en servidor",
         "words": 544
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 78,
+        "topic": "Tema 1: Constraints, Modifier y componentes con slots",
+        "words": 569
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 69,
+        "topic": "Tema 2: LazyColumn, grids, claves estables y estado de scroll",
+        "words": 548
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 85,
+        "topic": "Tema 3: Formularios, IME, foco y validación accesible",
+        "words": 560
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 68,
+        "topic": "Tema 4: Side effects, lifecycle y APIs imperativas",
+        "words": 530
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 77,
+        "topic": "Tema 5: Gestos, Canvas y componentes personalizados accesibles",
+        "words": 555
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 73,
+        "topic": "Tema 1: Gradle, version catalogs y resolución de dependencias",
+        "words": 521
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 63,
+        "topic": "Tema 2: Build types, product flavors y configuración segura",
+        "words": 499
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 63,
+        "topic": "Tema 3: Modularización, convenciones y fronteras de arquitectura",
+        "words": 498
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 70,
+        "topic": "Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible",
+        "words": 520
       },
       {
         "issues": [],

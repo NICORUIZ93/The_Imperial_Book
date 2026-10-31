@@ -335,7 +335,7 @@
     },
     {
       "path": "docs/app-flow-inspection.json",
-      "lines": 13830,
+      "lines": 16517,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -640,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13672,
+      "lines": 13780,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -648,7 +648,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1137,
+      "lines": 1146,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9437,
+      "lines": 9510,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -922,7 +922,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12174,
+      "lines": 12273,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1048,7 +1048,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 27951,
+      "lines": 28176,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1075,7 +1075,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1295,
+      "lines": 1297,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1093,7 +1093,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24603,
+      "lines": 24801,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6586,7 +6586,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 371,
+      "lines": 366,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -6808,6 +6808,27 @@
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre"
+      ]
+    },
+    {
+      "path": "web/public/content/android/modulo-16.md",
+      "lines": 537,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 16: Android profesional \u2014 privacidad, datos, escala e identidad",
+        "## Aprende construyendo",
+        "### Tema 1: Permisos en tiempo de ejecuci\u00f3n y alternativas sin permiso",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: DataStore para preferencias consistentes y migrables",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
@@ -11809,7 +11830,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4947,
+      "lines": 4987,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12607,7 +12628,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 182,
+      "lines": 181,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12864,7 +12885,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 558,
+      "lines": 553,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12872,7 +12893,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1230,
+      "lines": 1165,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12916,7 +12937,6 @@
         "../track-guides",
         "../learning-activities",
         "../technical-glossary",
-        "../learning-prompts",
         "../topic-index.service",
         "mermaid"
       ],
@@ -13050,27 +13070,6 @@
       "headings": []
     },
     {
-      "path": "web/src/app/learning-prompts.spec.ts",
-      "lines": 20,
-      "kind": "angular-app",
-      "symbols": [],
-      "imports": [
-        "./learning-prompts"
-      ],
-      "headings": []
-    },
-    {
-      "path": "web/src/app/learning-prompts.ts",
-      "lines": 14,
-      "kind": "angular-app",
-      "symbols": [
-        "LearningPromptMode",
-        "learningPrompt"
-      ],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "web/src/app/official-learning-paths.ts",
       "lines": 31,
       "kind": "angular-app",
@@ -13191,7 +13190,7 @@
     },
     {
       "path": "web/src/app/tracks/android.track.ts",
-      "lines": 214,
+      "lines": 228,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -13582,10 +13581,6 @@
     {
       "source": "web/src/app/learning-activities.spec.ts",
       "target": "web/src/app/learning-activities.ts"
-    },
-    {
-      "source": "web/src/app/learning-prompts.spec.ts",
-      "target": "web/src/app/learning-prompts.ts"
     },
     {
       "source": "web/src/app/progress.service.spec.ts",

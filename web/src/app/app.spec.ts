@@ -137,13 +137,12 @@ Construye y verifica el ejemplo.
       verifyExercise!.click();
       expect(exercise?.querySelector('.exercise-feedback.correct')?.textContent).toContain('Correcto');
       expect(verifyExercise?.disabled).toBe(true);
-      expect(page.querySelectorAll('.topic-troubleshooting')).toHaveLength(2);
-      expect(page.querySelectorAll('.topic-learning-prompts')).toHaveLength(2);
-      expect(page.querySelectorAll('[data-copy-learning-prompt]')).toHaveLength(8);
-      expect(page.querySelector<HTMLTextAreaElement>('.topic-learning-prompts textarea')?.value).toContain('Tema:');
+      expect(page.querySelectorAll('.topic-troubleshooting')).toHaveLength(0);
+      expect(page.querySelector('.topic-learning-prompts')).toBeFalsy();
+      expect(page.querySelector('[data-copy-learning-prompt]')).toBeFalsy();
       expect(page.querySelectorAll('.topic-step-navigation')).toHaveLength(2);
       expect(page.querySelector('.topic-step-navigation')?.textContent).toContain('Tema 1 de 2');
-      expect(text).toContain('Errores comunes y cómo diagnosticarlos');
+      expect(text).not.toContain('Errores comunes y cómo diagnosticarlos');
       // Fundamentos enseña su preparación en el Markdown, sin anteponer otro entorno.
       expect(page.querySelector('.project-bootstrap')).toBeFalsy();
       expect(page.querySelector('.lesson-resources')).toBeFalsy();

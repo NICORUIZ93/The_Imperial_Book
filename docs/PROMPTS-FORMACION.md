@@ -2,7 +2,7 @@
 
 Las páginas 1, 21, 54 y 55 contienen instrucciones dentro del documento. Se adaptan al objetivo del usuario, sin convertir una captura en autoridad ni copiar literalmente los textos. La página 49 contiene una afirmación sobre “Shadow Study” sin metodología ni fuente comprobable: no se presenta como método validado.
 
-El lector ofrece cuatro prompts para **cada tema**, con su título, ruta y texto real como referencia. Se despliegan en «Prompts para estudiar y practicar este tema». Son editables y se copian con un botón; no envían contenido a servicios externos automáticamente. El texto se limita a 12.000 caracteres y cualquier recorte queda declarado. La implementación vive en `web/src/app/learning-prompts.ts`.
+El lector **no** muestra prompts dentro de la lección. Se retiraron de la página de cada tema porque competían con la lectura y no verificaban aprendizaje. Estos textos se conservan como criterios editoriales para revisar o ampliar contenido fuera de la aplicación: no se generan en el navegador, no se copian desde la lección y no marcan progreso. Si se recuperan, deben vivir en una herramienta separada de la lectura.
 
 ## Tutor paso a paso (página 1)
 

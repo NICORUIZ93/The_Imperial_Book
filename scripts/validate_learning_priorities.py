@@ -57,7 +57,7 @@ viewer = (ROOT / "web/src/app/course/lesson-viewer.ts").read_text(encoding="utf-
 activities = (ROOT / "web/src/app/learning-activities.ts").read_text(encoding="utf-8")
 if activities.count("trackId: '") != 12:
     errors.append("learning-activities.ts: deben existir exactamente 12 proyectos integradores")
-for requirement in ("addTopicLearningSupport", "Errores comunes y cómo diagnosticarlos"):
+for requirement in ("addTopicTroubleshooting", "Errores comunes y cómo diagnosticarlos"):
     if requirement not in viewer:
         errors.append(f"lesson-viewer.ts: falta soporte global {requirement}")
 

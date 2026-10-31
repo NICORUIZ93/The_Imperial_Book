@@ -65,6 +65,8 @@ test('diagramas: el módulo final de Angular no genera geometría SVG inválida'
 
 test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async ({ page }) => {
   const chapters = [
+    { track: 'android', module: 17, diagrams: 5 },
+    { track: 'android', module: 18, diagrams: 4 },
     { track: 'cloud', module: 1, diagrams: 5 },
     { track: 'cloud', module: 2, diagrams: 6 },
     { track: 'cloud', module: 4, diagrams: 7 },
@@ -253,23 +255,16 @@ test('estructura: cada Tema se muestra como una tarjeta separada, no anidado en 
   await expect(page.locator('.lesson-error')).toHaveCount(0);
 });
 
-test('formación: electrónica incorpora ejemplos y prompts editables por tema', async ({ page }) => {
+test('formación: electrónica incorpora ejemplos sin prompts generados en la lectura', async ({ page }) => {
   await page.goto('/curso/foundations/12');
   await expect(page.locator('.topic-card')).toHaveCount(17);
   await expect(page.locator('.lesson-meta')).toContainText('MIT: circuitos y electrónica');
   const topic = page.locator('.topic-card').first();
-  const prompts = topic.locator('.topic-learning-prompts');
-  await prompts.locator(':scope > summary').click();
-  await prompts.getByText('Tutor paso a paso', { exact: true }).click();
-  const input = prompts.locator('textarea').first();
-  await expect(input).toHaveValue(/Tema: Matemáticas aplicadas/);
-  await expect(input).toHaveValue(/Carga: 9.0 C/);
-  await input.fill('Explica la integración de corriente usando el ejemplo del sensor.');
-  await prompts.getByRole('button', { name: 'Copiar prompt' }).first().click();
-  await expect(prompts.getByRole('status').first()).toHaveText(/Prompt copiado|Seleccionado/);
-  await expect(input).toHaveValue('Explica la integración de corriente usando el ejemplo del sensor.');
+  await expect(topic.locator('.topic-learning-prompts')).toHaveCount(0);
+  await expect(topic.locator('[data-copy-learning-prompt]')).toHaveCount(0);
+  await expect(topic).toContainText('Carga: 9.0 C');
   await expect(page.locator('.lesson-error')).toHaveCount(0);
-  await input.scrollIntoViewIfNeeded();
+  await topic.scrollIntoViewIfNeeded();
   await page.screenshot({ path: `/tmp/academia-electronica-${test.info().project.name}.png` });
 });
 
