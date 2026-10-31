@@ -18,9 +18,9 @@ const stages = (groups: Array<[string, string, number[]]>): LearningStage[] =>
 export const OFFICIAL_LEARNING_PATHS: OfficialLearningPath[] = [
   { trackId: 'foundations', source: 'MDN Curriculum y SWEBOK', sourceUrl: 'https://developer.mozilla.org/en-US/curriculum/', stages: stages([
     ['Preparar', 'Computador, sistema operativo, terminal y primer programa.', [0]],
-    ['Comprender', 'Lógica, datos, algoritmos, web, redes y bases de datos.', [1, 2, 3, 4]],
-    ['Construir', 'Calidad, colaboración, seguridad, ingeniería de software y modelos de sensores e IoT.', [5, 6, 7, 12]],
-    ['Asegurar calidad', 'Ejecución reproducible, razonamiento y diagnóstico.', [8, 9]],
+    ['Comprender', 'Lógica, datos, algoritmos clásicos, web, redes y bases de datos.', [1, 2, 13, 3, 4]],
+    ['Construir', 'Calidad, colaboración, seguridad, ingeniería de software y modelos de sensores e IoT.', [5, 6, 7, 12, 14]],
+    ['Asegurar calidad', 'Ejecución reproducible, razonamiento y diagnóstico.', [8, 9, 15]],
     ['Llevar a producción', 'Sistemas distribuidos y elección fundamentada de especialidad.', [10, 11]],
   ]) },
   { trackId: 'rutaflow', source: 'Proyecto integrador basado en las guías oficiales de los 12 stacks', sourceUrl: 'https://developer.mozilla.org/en-US/curriculum/', stages: stages([
@@ -61,7 +61,7 @@ export const OFFICIAL_LEARNING_PATHS: OfficialLearningPath[] = [
   { trackId: 'java', source: 'Dev.java Learn', sourceUrl: 'https://dev.java/learn/', stages: stages([
     ['Preparar', 'JDK, IDE, compilación y ejecución multiplataforma.', [0, 1]],
     ['Comprender', 'Sintaxis, orientación a objetos, tipos y colecciones.', [2, 3, 4, 5]],
-    ['Construir', 'I/O, HTTP, persistencia JDBC/JPA, concurrencia y diseño.', [6, 7, 8, 9, 16, 17]],
+    ['Construir', 'I/O, HTTP, persistencia JDBC/JPA, concurrencia y diseño.', [6, 7, 8, 9, 16, 17, 19]],
     ['Asegurar calidad', 'Pruebas, build, diagnóstico, seguridad HTTP y JVM.', [10, 11, 12, 18]],
     ['Llevar a producción', 'Rendimiento, arquitectura y servicio propio.', [13, 14, 15]],
   ]) },
@@ -82,7 +82,7 @@ export const OFFICIAL_LEARNING_PATHS: OfficialLearningPath[] = [
   { trackId: 'android', source: 'Android Basics with Compose', sourceUrl: 'https://developer.android.com/courses/android-basics-compose/course', stages: stages([
     ['Preparar', 'Android Studio, emulador, Kotlin y primera app.', [0, 1]],
     ['Comprender', 'Compose, estado, ciclo de vida y arquitectura.', [2, 3, 4]],
-    ['Construir', 'Navegación, datos, red, mapas, ubicación y batería.', [5, 6, 7, 8, 9]],
+    ['Construir', 'Navegación, datos, red, mapas, ubicación y batería.', [5, 6, 7, 8, 9, 15]],
     ['Asegurar calidad', 'Pruebas, accesibilidad, UI adaptable y rendimiento.', [10, 11, 12]],
     ['Llevar a producción', 'Seguridad, publicación y app de reparto propia.', [13, 14]],
   ]) },

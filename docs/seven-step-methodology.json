@@ -1,44 +1,44 @@
 {
   "summary": {
     "android": {
-      "topics": 52,
-      "objective": 52,
-      "prerequisites": 52,
-      "context": 52,
-      "theoryAnalogy": 52,
-      "guidedDemo": 52,
-      "codeExplanation": 52,
-      "execution": 52,
-      "expectedResult": 52,
-      "deliberateFailure": 52,
-      "guidedPractice": 52,
-      "independentPractice": 52,
-      "closure": 52,
-      "commonErrors": 52,
-      "resources": 52,
-      "standaloneExample": 52,
-      "learningEvidence": 52,
-      "complete": 52
+      "topics": 56,
+      "objective": 56,
+      "prerequisites": 56,
+      "context": 56,
+      "theoryAnalogy": 56,
+      "guidedDemo": 56,
+      "codeExplanation": 56,
+      "execution": 56,
+      "expectedResult": 56,
+      "deliberateFailure": 56,
+      "guidedPractice": 56,
+      "independentPractice": 56,
+      "closure": 56,
+      "commonErrors": 56,
+      "resources": 56,
+      "standaloneExample": 56,
+      "learningEvidence": 56,
+      "complete": 56
     },
     "angular": {
-      "topics": 68,
-      "objective": 68,
-      "prerequisites": 68,
-      "context": 68,
-      "theoryAnalogy": 68,
-      "guidedDemo": 68,
-      "codeExplanation": 68,
-      "execution": 68,
-      "expectedResult": 68,
-      "deliberateFailure": 68,
-      "guidedPractice": 68,
-      "independentPractice": 68,
-      "closure": 68,
-      "commonErrors": 68,
-      "resources": 68,
-      "standaloneExample": 68,
-      "learningEvidence": 68,
-      "complete": 68
+      "topics": 70,
+      "objective": 70,
+      "prerequisites": 70,
+      "context": 70,
+      "theoryAnalogy": 70,
+      "guidedDemo": 70,
+      "codeExplanation": 70,
+      "execution": 70,
+      "expectedResult": 70,
+      "deliberateFailure": 70,
+      "guidedPractice": 70,
+      "independentPractice": 70,
+      "closure": 70,
+      "commonErrors": 70,
+      "resources": 70,
+      "standaloneExample": 70,
+      "learningEvidence": 70,
+      "complete": 70
     },
     "cloud": {
       "topics": 155,
@@ -61,64 +61,64 @@
       "complete": 155
     },
     "devops": {
-      "topics": 99,
-      "objective": 99,
-      "prerequisites": 99,
-      "context": 99,
-      "theoryAnalogy": 99,
-      "guidedDemo": 99,
-      "codeExplanation": 99,
-      "execution": 99,
-      "expectedResult": 99,
-      "deliberateFailure": 99,
-      "guidedPractice": 99,
-      "independentPractice": 99,
-      "closure": 99,
-      "commonErrors": 99,
-      "resources": 99,
-      "standaloneExample": 99,
-      "learningEvidence": 99,
-      "complete": 99
+      "topics": 103,
+      "objective": 103,
+      "prerequisites": 103,
+      "context": 103,
+      "theoryAnalogy": 103,
+      "guidedDemo": 103,
+      "codeExplanation": 103,
+      "execution": 103,
+      "expectedResult": 103,
+      "deliberateFailure": 103,
+      "guidedPractice": 103,
+      "independentPractice": 103,
+      "closure": 103,
+      "commonErrors": 103,
+      "resources": 103,
+      "standaloneExample": 103,
+      "learningEvidence": 103,
+      "complete": 103
     },
     "flutter": {
-      "topics": 58,
-      "objective": 58,
-      "prerequisites": 58,
-      "context": 58,
-      "theoryAnalogy": 58,
-      "guidedDemo": 58,
-      "codeExplanation": 58,
-      "execution": 58,
-      "expectedResult": 58,
-      "deliberateFailure": 58,
-      "guidedPractice": 58,
-      "independentPractice": 58,
-      "closure": 58,
-      "commonErrors": 58,
-      "resources": 58,
-      "standaloneExample": 58,
-      "learningEvidence": 58,
-      "complete": 58
+      "topics": 62,
+      "objective": 62,
+      "prerequisites": 62,
+      "context": 62,
+      "theoryAnalogy": 62,
+      "guidedDemo": 62,
+      "codeExplanation": 62,
+      "execution": 62,
+      "expectedResult": 62,
+      "deliberateFailure": 62,
+      "guidedPractice": 62,
+      "independentPractice": 62,
+      "closure": 62,
+      "commonErrors": 62,
+      "resources": 62,
+      "standaloneExample": 62,
+      "learningEvidence": 62,
+      "complete": 62
     },
     "foundations": {
-      "topics": 73,
-      "objective": 73,
-      "prerequisites": 73,
-      "context": 73,
-      "theoryAnalogy": 73,
-      "guidedDemo": 73,
-      "codeExplanation": 73,
-      "execution": 73,
-      "expectedResult": 73,
-      "deliberateFailure": 73,
-      "guidedPractice": 73,
-      "independentPractice": 73,
-      "closure": 73,
-      "commonErrors": 73,
-      "resources": 73,
-      "standaloneExample": 73,
-      "learningEvidence": 73,
-      "complete": 73
+      "topics": 96,
+      "objective": 96,
+      "prerequisites": 96,
+      "context": 96,
+      "theoryAnalogy": 96,
+      "guidedDemo": 96,
+      "codeExplanation": 96,
+      "execution": 96,
+      "expectedResult": 96,
+      "deliberateFailure": 96,
+      "guidedPractice": 96,
+      "independentPractice": 96,
+      "closure": 96,
+      "commonErrors": 96,
+      "resources": 96,
+      "standaloneExample": 96,
+      "learningEvidence": 96,
+      "complete": 96
     },
     "ios": {
       "topics": 55,
@@ -141,44 +141,44 @@
       "complete": 55
     },
     "java": {
-      "topics": 72,
-      "objective": 72,
-      "prerequisites": 72,
-      "context": 72,
-      "theoryAnalogy": 72,
-      "guidedDemo": 72,
-      "codeExplanation": 72,
-      "execution": 72,
-      "expectedResult": 72,
-      "deliberateFailure": 72,
-      "guidedPractice": 72,
-      "independentPractice": 72,
-      "closure": 72,
-      "commonErrors": 72,
-      "resources": 72,
-      "standaloneExample": 72,
-      "learningEvidence": 72,
-      "complete": 72
+      "topics": 79,
+      "objective": 79,
+      "prerequisites": 79,
+      "context": 79,
+      "theoryAnalogy": 79,
+      "guidedDemo": 79,
+      "codeExplanation": 79,
+      "execution": 79,
+      "expectedResult": 79,
+      "deliberateFailure": 79,
+      "guidedPractice": 79,
+      "independentPractice": 79,
+      "closure": 79,
+      "commonErrors": 79,
+      "resources": 79,
+      "standaloneExample": 79,
+      "learningEvidence": 79,
+      "complete": 79
     },
     "javascript": {
-      "topics": 83,
-      "objective": 83,
-      "prerequisites": 83,
-      "context": 83,
-      "theoryAnalogy": 83,
-      "guidedDemo": 83,
-      "codeExplanation": 83,
-      "execution": 83,
-      "expectedResult": 83,
-      "deliberateFailure": 83,
-      "guidedPractice": 83,
-      "independentPractice": 83,
-      "closure": 83,
-      "commonErrors": 83,
-      "resources": 83,
-      "standaloneExample": 83,
-      "learningEvidence": 83,
-      "complete": 83
+      "topics": 87,
+      "objective": 87,
+      "prerequisites": 87,
+      "context": 87,
+      "theoryAnalogy": 87,
+      "guidedDemo": 87,
+      "codeExplanation": 87,
+      "execution": 87,
+      "expectedResult": 87,
+      "deliberateFailure": 87,
+      "guidedPractice": 87,
+      "independentPractice": 87,
+      "closure": 87,
+      "commonErrors": 87,
+      "resources": 87,
+      "standaloneExample": 87,
+      "learningEvidence": 87,
+      "complete": 87
     },
     "kotlin-multiplatform": {
       "topics": 55,
@@ -201,24 +201,24 @@
       "complete": 55
     },
     "node": {
-      "topics": 75,
-      "objective": 75,
-      "prerequisites": 75,
-      "context": 75,
-      "theoryAnalogy": 75,
-      "guidedDemo": 75,
-      "codeExplanation": 75,
-      "execution": 75,
-      "expectedResult": 75,
-      "deliberateFailure": 75,
-      "guidedPractice": 75,
-      "independentPractice": 75,
-      "closure": 75,
-      "commonErrors": 75,
-      "resources": 75,
-      "standaloneExample": 75,
-      "learningEvidence": 75,
-      "complete": 75
+      "topics": 79,
+      "objective": 79,
+      "prerequisites": 79,
+      "context": 79,
+      "theoryAnalogy": 79,
+      "guidedDemo": 79,
+      "codeExplanation": 79,
+      "execution": 79,
+      "expectedResult": 79,
+      "deliberateFailure": 79,
+      "guidedPractice": 79,
+      "independentPractice": 79,
+      "closure": 79,
+      "commonErrors": 79,
+      "resources": 79,
+      "standaloneExample": 79,
+      "learningEvidence": 79,
+      "complete": 79
     },
     "react": {
       "topics": 57,
@@ -261,24 +261,24 @@
       "complete": 25
     },
     "spring-boot": {
-      "topics": 80,
-      "objective": 80,
-      "prerequisites": 80,
-      "context": 80,
-      "theoryAnalogy": 80,
-      "guidedDemo": 80,
-      "codeExplanation": 80,
-      "execution": 80,
-      "expectedResult": 80,
-      "deliberateFailure": 80,
-      "guidedPractice": 80,
-      "independentPractice": 80,
-      "closure": 80,
-      "commonErrors": 80,
-      "resources": 80,
-      "standaloneExample": 80,
-      "learningEvidence": 80,
-      "complete": 80
+      "topics": 83,
+      "objective": 83,
+      "prerequisites": 83,
+      "context": 83,
+      "theoryAnalogy": 83,
+      "guidedDemo": 83,
+      "codeExplanation": 83,
+      "execution": 83,
+      "expectedResult": 83,
+      "deliberateFailure": 83,
+      "guidedPractice": 83,
+      "independentPractice": 83,
+      "closure": 83,
+      "commonErrors": 83,
+      "resources": 83,
+      "standaloneExample": 83,
+      "learningEvidence": 83,
+      "complete": 83
     }
   },
   "topics": {
@@ -962,6 +962,110 @@
       {
         "module": 14,
         "topic": "Tema 6: AnimatedContent y AnimationSpec especifican transiciones completas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 1: Intents implícitos y Activity Result API",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 2: BroadcastReceiver: reaccionar a eventos del sistema",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 3: Foreground Service de ubicación con FusedLocationProvider",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 4: Compartir archivos con FileProvider y content://",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -1898,6 +2002,32 @@
         }
       },
       {
+        "module": 1,
+        "topic": "Tema 7: Pipes puros e impuros, AsyncPipe y signals",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 10,
         "topic": "Tema 1: TestBed y componentes standalone",
         "criteria": {
@@ -1952,6 +2082,32 @@
       {
         "module": 10,
         "topic": "Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -7674,6 +7830,58 @@
         }
       },
       {
+        "module": 0,
+        "topic": "Tema 10: Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 11: systemd: servicios, timers y logs con journalctl",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 1,
         "topic": "Tema 1: Trunk-based development vs GitFlow",
         "criteria": {
@@ -8092,6 +8300,32 @@
       {
         "module": 11,
         "topic": "Tema 6: SAST, DAST y SCA — diferencias y herramientas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 7: Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -8898,6 +9132,32 @@
       {
         "module": 2,
         "topic": "Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -10094,6 +10354,32 @@
         }
       },
       {
+        "module": 0,
+        "topic": "Tema 4: Lints y estilo con analysis_options.yaml",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 1,
         "topic": "Tema 1: StatelessWidget vs StatefulWidget",
         "criteria": {
@@ -10304,6 +10590,32 @@
       {
         "module": 11,
         "topic": "Tema 3: CI/CD con Codemagic o Fastlane",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 4: Entornos y flavors con --dart-define-from-file",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -11082,6 +11394,32 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: http vs dio",
         "criteria": {
@@ -11422,6 +11760,32 @@
       {
         "module": 8,
         "topic": "Tema 4: Isolates — trabajo pesado sin congelar la interfaz",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 5: CustomPainter: dibujar con Canvas sin repintar de más",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -11866,6 +12230,32 @@
       {
         "module": 10,
         "topic": "Tema 4: Resiliencia y observabilidad orientadas a objetivos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -12488,6 +12878,448 @@
         }
       },
       {
+        "module": 13,
+        "topic": "Tema 1: Ordenamientos: insertion, merge y quick sort",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 2: Algoritmos codiciosos y árbol de expansión mínima",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 3: Caminos más cortos con Dijkstra",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 5: Problemas intratables: P, NP y heurísticas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 1: Decorator: agregar comportamiento sin heredar",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 2: State: un objeto que cambia de comportamiento según su estado",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 3: Template Method: un algoritmo fijo con pasos variables",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 4: Chain of Responsibility: una cadena de validadores",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 5: Mediator: coordinar objetos sin que se conozcan",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 6: Memento: guardar y restaurar estado para deshacer",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 7: Visitor: operaciones nuevas sin tocar las clases",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 8: Flyweight: compartir estado para ahorrar memoria",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 1: Nombres que revelan intención y funciones pequeñas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 2: Comentarios honestos y excepciones en lugar de códigos de error",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 3: Objetos frente a estructuras de datos y la ley de Demeter",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: Elegir estructuras según las operaciones",
         "criteria": {
@@ -12904,6 +13736,84 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: Depurar con evidencia, no con cambios aleatorios",
         "criteria": {
@@ -13112,6 +14022,32 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 5: Ingeniería social y phishing: detectar señales en enlaces y remitentes",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: Requisitos, stakeholders y criterios verificables",
         "criteria": {
@@ -13296,6 +14232,32 @@
       {
         "module": 8,
         "topic": "Tema 4: Contenedores: aislamiento reproducible",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -15950,6 +16912,188 @@
         }
       },
       {
+        "module": 19,
+        "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 2: Expresiones regulares con Pattern y Matcher",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 3: Dinero exacto con BigDecimal",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 4: Assertions y diseño por contrato",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: List, Set, Map y sus implementaciones",
         "criteria": {
@@ -16992,6 +18136,32 @@
         }
       },
       {
+        "module": 1,
+        "topic": "Tema 6: Desestructuración, valores por defecto y rest",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 10,
         "topic": "Tema 1: Debounce y throttle",
         "criteria": {
@@ -17202,6 +18372,58 @@
       {
         "module": 11,
         "topic": "Tema 4: tsconfig esencial y modo strict",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 6: Decoradores estándar de TypeScript 5",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -18034,6 +19256,32 @@
       {
         "module": 3,
         "topic": "Tema 4: Encapsulación con campos privados (#campo)",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 5: Symbol y objetos iterables propios",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -20532,6 +21780,58 @@
         }
       },
       {
+        "module": 1,
+        "topic": "Tema 5: Publicar y versionar un paquete npm (público o privado)",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 6: ESM y CommonJS en el mismo proyecto",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 10,
         "topic": "Tema 1: Cabeceras seguras con helmet",
         "criteria": {
@@ -20612,6 +21912,32 @@
       {
         "module": 10,
         "topic": "Tema 4: OWASP API Security Top 10 y auditoría de dependencias",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 5: CVE, CWE y npm audit en el pipeline",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -21990,6 +23316,32 @@
       {
         "module": 7,
         "topic": "Tema 5: node:test — test runner nativo sin dependencias",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 6: TDD práctico: rojo, verde y refactor con node:test",
         "criteria": {
           "objective": true,
           "prerequisites": true,
@@ -25634,6 +26986,58 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 4: Lombok y MapStruct sin exponer datos internos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 5: OpenAPI con springdoc: el contrato como prueba",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
         "module": 20,
         "topic": "Tema 1: Scheduling y tareas periódicas",
         "criteria": {
@@ -25714,6 +27118,32 @@
       {
         "module": 20,
         "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true,
+          "learningEvidence": true
+        },
+        "classification": {
+          "stepsPassed": 16,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
         "criteria": {
           "objective": true,
           "prerequisites": true,

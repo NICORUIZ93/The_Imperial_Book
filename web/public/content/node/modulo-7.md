@@ -451,6 +451,114 @@ node --test --test-reporter=spec
 ---
 
 
+### Tema 6: TDD práctico: rojo, verde y refactor con node:test
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás aplicar el ciclo de TDD (escribir una prueba que falla, hacerla pasar con el mínimo código y refactorizar) usando el runner nativo `node:test`, y explicar qué aporta frente a escribir pruebas al final. Prerrequisitos: Temas 1 y 5 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+La regla de descuento de RutaFlow ("10 % desde 10 envíos en el mes") generó un bug real: alguien escribió `> 10` en lugar de `>= 10` y los clientes con exactamente 10 envíos no recibieron descuento. Con TDD, el caso límite se escribe como prueba **antes** del código.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**TDD** (Test-Driven Development) repite un ciclo corto: **rojo** (escribes una prueba para el siguiente comportamiento y la ves fallar), **verde** (escribes el código mínimo que la hace pasar) y **refactor** (mejoras nombres y estructura con las pruebas como red). Ver la prueba fallar primero demuestra que prueba algo. `node:test` y `node:assert/strict` vienen con Node, sin dependencias.
+
+**Analogía:** es como marcar en el suelo dónde va cada mueble antes de traerlo: si algo no encaja, lo ves antes de cargarlo.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    R[Rojo: prueba que falla] --> V[Verde: código mínimo]
+    V --> F[Refactor con pruebas en verde]
+    F --> R
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir tdd-tarifas && cd tdd-tarifas && echo '{ "name": "tdd-tarifas", "version": "1.0.0", "type": "module" }' > package.json
+```
+
+Crea `tarifa.test.js`:
+
+```javascript
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { tarifa } from './tarifa.js';
+
+// Cada prueba nació ANTES que el código que la hace pasar (rojo -> verde -> refactor)
+test('cobra la base de la ciudad más 1200 por kilo iniciado', () => {
+  assert.equal(tarifa({ ciudad: 'Bogotá', kilos: 2.5 }), 5000 + 3 * 1200);
+});
+
+test('aplica 10 % de descuento desde 10 envíos en el mes', () => {
+  assert.equal(tarifa({ ciudad: 'Bogotá', kilos: 1, enviosMes: 10 }), 5580);
+});
+
+test('rechaza kilos no positivos', () => {
+  assert.throws(() => tarifa({ ciudad: 'Bogotá', kilos: 0 }), RangeError);
+});
+
+test('rechaza ciudades sin cobertura', () => {
+  assert.throws(() => tarifa({ ciudad: 'Leticia', kilos: 1 }), /Sin cobertura/);
+});
+```
+
+Crea `tarifa.js`:
+
+```javascript
+const BASE = { Bogotá: 5000, Medellín: 7000 };
+const PRECIO_KILO = 1200;
+const DESCUENTO_FRECUENTE = 0.1;
+
+export function tarifa({ ciudad, kilos, enviosMes = 0 }) {
+  if (!(ciudad in BASE)) throw new Error(`Sin cobertura en ${ciudad}`);
+  if (kilos <= 0) throw new RangeError('kilos debe ser positivo');
+  const bruto = BASE[ciudad] + Math.ceil(kilos) * PRECIO_KILO;
+  const descuento = enviosMes >= 10 ? DESCUENTO_FRECUENTE : 0;
+  return Math.round(bruto * (1 - descuento));
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+node --test --test-reporter=spec
+```
+
+**Resultado esperado:**
+
+```text
+✔ cobra la base de la ciudad más 1200 por kilo iniciado
+✔ aplica 10 % de descuento desde 10 envíos en el mes
+✔ rechaza kilos no positivos
+✔ rechaza ciudades sin cobertura
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0
+```
+
+El archivo `tarifa.js` que ves es el resultado final de cuatro ciclos, uno por prueba. Para practicar el ciclo de verdad, borra su contenido y vuelve a construirlo prueba por prueba. Los tiempos que muestra el reporte varían en cada ejecución.
+
+**Fallo deliberado:** En `tarifa.js` cambia `enviosMes >= 10` por `enviosMes > 10`. La salida muestra `✖ aplica 10 % de descuento desde 10 envíos en el mes` con `actual: 6200` y `expected: 5580`: la prueba escrita primero atrapa el error de límite que llegó a producción.
+
+#### Paso 5 · Práctica guiada
+Siguiendo TDD, agrega la regla "los envíos de más de 20 kg pagan un recargo fijo de 8 000". **Pista:** escribe primero la prueba con 21 kg y mírala fallar; luego agrega la condición mínima; por último, saca el 8 000 a una constante con nombre.
+
+#### Paso 6 · Práctica independiente
+Escribe con TDD una función `franjaEntrega(hora)` que devuelva `mañana`, `tarde` o `fuera de horario`, empezando por los casos límite (7:00, 12:00, 19:00).
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores de límite y de reglas de negocio son de los más caros, y TDD obliga a pensar los casos antes de programar.
+**Fuente oficial:** [Node.js: Test runner](https://nodejs.org/api/test.html), [Martin Fowler: Test Driven Development](https://martinfowler.com/bliki/TestDrivenDevelopment.html).
+**Conceptos clave:** ciclo rojo-verde-refactor, caso límite, `node:test`, `assert/strict`, prueba que falla primero, refactor seguro.
+**Cuándo no usarlo:** en exploraciones o prototipos que vas a tirar, o cuando aún no sabes qué debe hacer el código: primero explora y luego fija el comportamiento con pruebas.
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** desarrolla con TDD la regla de reasignación de entregas fallidas de la API.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una suite de pruebas de integración completa con Supertest y Testcontainers, integrada en un pipeline de CI con GitHub Actions.

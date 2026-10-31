@@ -449,6 +449,114 @@ Completaste funciones y control de flujo distinguiendo patrones vigentes de lega
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Encapsula un widget de prueba para que no exponga variables globales al sitio anfitrión. Monta dos instancias y verifica que sus guías y manejadores no se sobrescriben entre sí.
 
+### Tema 6: Desestructuración, valores por defecto y rest
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás extraer valores de objetos y arrays con desestructuración, renombrar, dar valores por defecto, usar rest para copiar sin ciertos campos y diseñar funciones con parámetros de opciones. Prerrequisito: Tema 2 de este módulo (parámetros por defecto y rest/spread).
+
+#### Paso 2 · Contexto y caso real
+El seguimiento público de RutaFlow recibe objetos JSON con la entrega, el destino y los paquetes. Escribir `entrega.destino.ciudad` diez veces es ruido, y devolver la entrega completa expondría campos internos. La desestructuración es la sintaxis que verás en cada componente de React, cada handler de Express y cada respuesta de `fetch`: un caso real diario.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La **desestructuración** asigna variables a partir de la forma de un objeto (`const { guia } = entrega`) o de la posición en un array (`const [primero] = lista`). Puedes **renombrar** (`estado: estadoActual`), dar **valor por defecto** (solo se aplica si el valor es `undefined`), entrar en objetos **anidados** y recoger lo que sobra con **rest** (`...resto`). En parámetros permite funciones con opciones con nombre; el `= {}` final evita fallar si se llama sin argumentos.
+
+**Analogía:** es desempacar una caja con etiquetas: tomas solo lo que necesitas por su nombre y el resto queda junto en otra caja.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    E[objeto entrega] --> G[guia]
+    E --> S[estado como estadoActual]
+    E --> D[destino]
+    D --> C[ciudad]
+    E --> R["...publica sin guia"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir desestructuracion && cd desestructuracion
+```
+
+Crea `desestructuracion.js`:
+
+```javascript
+const entrega = {
+  guia: 'BO-004512',
+  destino: { ciudad: 'Bogotá', barrio: 'Chapinero' },
+  paquetes: [{ kilos: 2 }, { kilos: 5 }, { kilos: 1 }],
+  estado: 'en ruta',
+};
+
+// Objetos: extraer, renombrar, valor por defecto y anidado
+const { guia, estado: estadoActual, prioridad = 'normal', destino: { ciudad } } = entrega;
+console.log(guia, estadoActual, prioridad, ciudad);
+
+// Arrays: por posición, saltar elementos y rest
+const [primero, , tercero, ...resto] = entrega.paquetes;
+console.log(primero.kilos, tercero.kilos, resto.length);
+
+// Rest en objetos: copiar sin un campo (por ejemplo, para no exponerlo)
+const { guia: _oculta, ...publica } = entrega;
+console.log(Object.keys(publica));
+
+// Parámetros desestructurados con valores por defecto: una API de opciones legible
+function cotizar({ kilos, ciudad = 'Bogotá', express = false } = {}) {
+  return (ciudad === 'Bogotá' ? 5000 : 9000) + kilos * 1200 + (express ? 3000 : 0);
+}
+console.log(cotizar({ kilos: 2 }), cotizar({ kilos: 2, express: true, ciudad: 'Cali' }));
+
+// Intercambio de variables sin temporal
+let a = 'Ana', b = 'Beto';
+[a, b] = [b, a];
+console.log(a, b);
+
+// Recorrer pares clave-valor
+for (const [zona, total] of Object.entries({ Norte: 12, Sur: 7 })) {
+  console.log(`${zona}: ${total}`);
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+node desestructuracion.js
+```
+
+**Resultado esperado:**
+
+```text
+BO-004512 en ruta normal Bogotá
+2 1 0
+[ 'destino', 'paquetes', 'estado' ]
+7400 14400
+Beto Ana
+Norte: 12
+Sur: 7
+```
+
+`prioridad` no existe en el objeto, así que tomó el valor por defecto `'normal'`. El nombre `_oculta` con guion bajo indica una variable que se extrae solo para dejarla fuera.
+
+**Fallo deliberado:** En `cotizar` quita el `= {}` final del parámetro y llama `cotizar()` sin argumentos. Obtienes `TypeError: Cannot destructure property 'kilos' of 'undefined' as it is undefined.`: no se puede desestructurar `undefined`. El valor por defecto del parámetro completo lo evita.
+
+#### Paso 5 · Práctica guiada
+Escribe `resumen({ guia, destino: { barrio }, paquetes })` que devuelva un texto con la guía, el barrio y el total de kilos. **Pista:** desestructura en la firma y calcula los kilos con `paquetes.reduce((t, { kilos }) => t + kilos, 0)`, desestructurando también dentro del callback.
+
+#### Paso 6 · Práctica independiente
+Toma una respuesta de una API pública de tu elección y extrae con una sola desestructuración anidada tres campos de distintos niveles, con valores por defecto para los opcionales.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque es sintaxis de uso diario y la causa de muchos `TypeError` cuando llegan datos incompletos.
+**Fuente oficial:** [MDN: Destructuring assignment](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
+**Conceptos clave:** desestructuración de objetos y arrays, renombrado, valor por defecto, anidamiento, rest en objetos, parámetros de opciones.
+**Cuándo no usarlo:** no desestructures estructuras muy profundas en una sola línea: si un nivel puede faltar, combina con encadenamiento opcional (`?.`) o valida antes.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** desestructura la respuesta del API de seguimiento y muestra solo los campos públicos, dejando fuera los internos con rest.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir una pequeña biblioteca de funciones utilitarias de orden superior, aplicando las tres formas de función, parámetros modernos y composición.

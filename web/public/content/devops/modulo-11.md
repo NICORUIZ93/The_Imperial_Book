@@ -572,6 +572,117 @@ Ya distingues qué detecta específicamente cada una de SAST, DAST y SCA, y por 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Asigna controles distintos a código, dependencias y aplicación en ejecución. Reproduce un hallazgo de prueba por categoría y documenta qué riesgo queda fuera del alcance de cada herramienta.
 
+### Tema 7: Reconocimiento de tu propio laboratorio: escaneo de puertos y banners
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás explicar cómo un escáner descubre puertos abiertos, cerrados y filtrados, implementar uno mínimo con sockets, leer los banners de los servicios y comparar el resultado con `nmap`, siempre sobre equipos propios y con autorización. Prerrequisitos: Tema 7 del Módulo 0 (redes) y los temas anteriores de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Una auditoría a RutaFlow encontró una base de datos de pruebas expuesta en un puerto que nadie recordaba haber abierto, y su banner revelaba la versión exacta. Los libros *Kali Linux* y *El libro blanco del hacker* de la biblioteca empiezan igual: el reconocimiento es la primera fase de un ataque, y por eso también es la primera revisión defensiva de un caso real.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un escaneo **TCP connect** intenta abrir una conexión completa en cada puerto: si el sistema acepta, el puerto está **abierto**; si responde con rechazo (RST), está **cerrado**; si no responde dentro del tiempo límite, está **filtrado** (un firewall descarta los paquetes). Muchos servicios envían un **banner** al conectar, que revela producto y versión. `nmap` hace lo mismo y mucho más (escaneo SYN, detección de versiones con `-sV`, scripts). **Escanear sistemas ajenos sin permiso es ilegal** en muchos países; en una empresa, solo con un alcance escrito.
+
+**Analogía:** es recorrer el edificio propio probando cada puerta: abierta, cerrada con llave o con un guardia que no responde.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    E[escaneo.py] --> P{connect al puerto}
+    P -- acepta --> A[abierto + banner]
+    P -- rechazo RST --> C[cerrado]
+    P -- sin respuesta --> F[filtrado]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir escaneo-laboratorio && cd escaneo-laboratorio
+```
+
+Crea `escaneo.py`:
+
+```python
+# Escaneo de puertos SOLO contra tu propio equipo o laboratorio, con autorización escrita.
+import socket
+import threading
+import concurrent.futures as cf
+
+# Laboratorio: levantamos dos servicios locales para tener algo que descubrir
+def servicio(puerto, banner):
+    s = socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind(("127.0.0.1", puerto)); s.listen()
+    def atender():
+        while True:
+            conexion, _ = s.accept()
+            conexion.sendall(banner); conexion.close()
+    threading.Thread(target=atender, daemon=True).start()
+
+servicio(18022, b"SSH-2.0-OpenSSH_9.6 laboratorio\r\n")
+servicio(18080, b"HTTP/1.1 200 OK\r\nServer: rutaflow-dev\r\n\r\n")
+
+def probar(host, puerto, espera=0.3):
+    try:
+        with socket.create_connection((host, puerto), timeout=espera) as c:   # conexión TCP completa
+            c.settimeout(espera)
+            try:
+                banner = c.recv(64).decode(errors="replace").splitlines()[0]
+            except socket.timeout:
+                banner = ""
+            return puerto, "abierto", banner
+    except ConnectionRefusedError:
+        return puerto, "cerrado", ""
+    except socket.timeout:
+        return puerto, "filtrado", ""
+
+objetivo = "127.0.0.1"
+puertos = range(18000, 18100)
+with cf.ThreadPoolExecutor(max_workers=50) as ejecutor:
+    resultados = list(ejecutor.map(lambda p: probar(objetivo, p), puertos))
+
+abiertos = [r for r in resultados if r[1] == "abierto"]
+print(f"Escaneados {len(resultados)} puertos de {objetivo}: {len(abiertos)} abiertos")
+for puerto, estado, banner in abiertos:
+    print(f"  {puerto}/tcp {estado:<8} {banner}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 escaneo.py
+nmap -sV -p 18000-18100 127.0.0.1   # opcional, con nmap instalado y el script aún corriendo
+```
+
+**Resultado esperado:**
+
+```text
+Escaneados 100 puertos de 127.0.0.1: 2 abiertos
+  18022/tcp abierto  SSH-2.0-OpenSSH_9.6 laboratorio
+  18080/tcp abierto  HTTP/1.1 200 OK
+```
+
+Los dos puertos abiertos son los servicios de laboratorio que el propio script levantó; sus banners muestran exactamente qué información regala un servidor mal configurado.
+
+**Fallo deliberado:** Borra el bloque `except ConnectionRefusedError:` de `probar`. El escaneo termina con `ConnectionRefusedError: [Errno 111] Connection refused` (en macOS el número es 61): el primer puerto cerrado lanza una excepción que nadie maneja. En un escáner, "cerrado" es un resultado esperado, no un error.
+
+#### Paso 5 · Práctica guiada
+Agrega una columna con el tiempo de respuesta de cada puerto abierto y ordena los resultados por puerto. **Pista:** mide con `time.perf_counter()` alrededor de `create_connection` y devuelve el valor como cuarto elemento de la tupla.
+
+#### Paso 6 · Práctica independiente
+Escanea con `nmap -sV` un contenedor tuyo de Docker Compose (Módulo 3) y redacta un informe: puertos expuestos, cuáles no deberían estarlo, qué banners revelan versiones y cómo cerrarlos.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque conocer tu superficie de ataque antes que un atacante es la base de DevSecOps.
+**Fuente oficial:** [Nmap Reference Guide](https://nmap.org/book/man.html), [socket (docs.python.org)](https://docs.python.org/3/library/socket.html), [OWASP Web Security Testing Guide: Information Gathering](https://owasp.org/www-project-web-security-testing-guide/).
+**Conceptos clave:** reconocimiento, escaneo TCP connect, abierto, cerrado y filtrado, banner, `nmap -sV`, alcance y autorización.
+**Cuándo no usarlo:** nunca contra redes, IPs o dominios que no te pertenecen o sin autorización escrita. En la nube, revisa también las políticas del proveedor sobre pruebas de penetración.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un escaneo de los puertos que expone el entorno de pruebas y falla si aparece uno no declarado.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** escanear una imagen propia con Trivy, integrar ese escaneo como gate obligatorio en el pipeline de CI, configurar secretos correctamente usando los mecanismos nativos de la plataforma, y generar un SBOM.

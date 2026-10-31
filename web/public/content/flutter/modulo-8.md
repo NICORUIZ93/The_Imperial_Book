@@ -321,6 +321,158 @@ Entrega el cálculo con `compute`, el congelamiento del fallo deliberado y el sp
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** dar por hecho que el código funcionó sin leer la salida real, y copiar el ejemplo sin entender qué hace cada línea.
 **Fuente oficial:** [documentación de Flutter](https://docs.flutter.dev/).
+
+### Tema 5: CustomPainter: dibujar con Canvas sin repintar de más
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás dibujar un componente propio con `CustomPainter` y `Canvas`, controlar cuándo se repinta con `shouldRepaint`, aislarlo con `RepaintBoundary` y hacerlo accesible con `Semantics`. Prerrequisitos: Temas 2 y 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+La app del repartidor necesita una barra de avance de ruta con un círculo por parada. Ningún widget estándar la dibuja así. Gráficos, firmas, mapas simplificados e indicadores de progreso son casos reales que se resuelven con un `CustomPainter`.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un `CustomPaint` delega el dibujo a un `CustomPainter`: su método `paint(canvas, size)` recibe un **Canvas** sobre el que dibujas líneas, círculos o rutas con objetos `Paint` (color, grosor, estilo). `shouldRepaint` decide si un nuevo painter debe volver a dibujar: compararlo con el anterior evita repintar en cada reconstrucción. `RepaintBoundary` aísla el dibujo en su propia capa, y como el Canvas no es accesible por sí solo, `Semantics` describe el resultado a los lectores de pantalla. Para efectos por píxel existen los *fragment shaders* (`FragmentProgram`), un paso más avanzado.
+
+**Analogía:** el `Canvas` es una hoja en blanco y el `Paint` es el lápiz que eliges; `shouldRepaint` es preguntarte si el dibujo cambió antes de borrar y volver a pintar.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    W[ProgresoRuta] --> S[Semantics]
+    S --> B[RepaintBoundary]
+    B --> C[CustomPaint]
+    C --> P[ProgresoRutaPainter.paint]
+    P --> K[Canvas: líneas y círculos]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir custom-painter && cd custom-painter
+flutter create repartidor_painter
+cd repartidor_painter
+```
+
+Crea `test/progreso_ruta_test.dart`:
+
+```dart
+// test/progreso_ruta_test.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:repartidor_painter/progreso_ruta.dart';
+
+void main() {
+  test('solo repinta cuando cambia el avance', () {
+    final antes = ProgresoRutaPainter(paradas: 5, completadas: 2, color: Colors.teal);
+    final igual = ProgresoRutaPainter(paradas: 5, completadas: 2, color: Colors.teal);
+    final despues = ProgresoRutaPainter(paradas: 5, completadas: 3, color: Colors.teal);
+    expect(igual.shouldRepaint(antes), isFalse);
+    expect(despues.shouldRepaint(antes), isTrue);
+  });
+
+  testWidgets('dibuja y anuncia el avance a lectores de pantalla', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: ProgresoRuta(paradas: 5, completadas: 3))));
+    expect(find.byType(CustomPaint), findsWidgets);
+    expect(find.bySemanticsLabel('3 de 5 paradas completadas'), findsOneWidget);
+  });
+}
+```
+
+Crea `lib/progreso_ruta.dart`:
+
+```dart
+// lib/progreso_ruta.dart — dibuja el avance de una ruta con un CustomPainter
+import 'package:flutter/material.dart';
+
+class ProgresoRutaPainter extends CustomPainter {
+  ProgresoRutaPainter({required this.paradas, required this.completadas, required this.color});
+
+  final int paradas;
+  final int completadas;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final y = size.height / 2;
+    final paso = size.width / (paradas - 1);
+    final linea = Paint()
+      ..color = Colors.grey.shade300
+      ..strokeWidth = 4;
+    final avance = Paint()
+      ..color = color
+      ..strokeWidth = 4;
+
+    canvas.drawLine(Offset(0, y), Offset(size.width, y), linea);
+    canvas.drawLine(Offset(0, y), Offset(paso * (completadas - 1).clamp(0, paradas - 1), y), avance);
+    for (var i = 0; i < paradas; i++) {
+      final hecho = i < completadas;
+      canvas.drawCircle(Offset(paso * i, y), hecho ? 9 : 7, hecho ? avance : linea);
+    }
+  }
+
+  // Solo vuelve a pintar si cambió algo que afecta el dibujo
+  @override
+  bool shouldRepaint(ProgresoRutaPainter anterior) =>
+      anterior.completadas != completadas || anterior.paradas != paradas || anterior.color != color;
+}
+
+class ProgresoRuta extends StatelessWidget {
+  const ProgresoRuta({super.key, required this.paradas, required this.completadas});
+  final int paradas;
+  final int completadas;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        label: '$completadas de $paradas paradas completadas',
+        child: RepaintBoundary(
+          child: CustomPaint(
+            size: const Size(double.infinity, 32),
+            painter: ProgresoRutaPainter(
+              paradas: paradas,
+              completadas: completadas,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ),
+      );
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+rm test/widget_test.dart
+flutter test
+```
+
+**Resultado esperado:**
+
+```text
+00:03 +2: All tests passed!
+```
+
+El resultado visual lo ves con `flutter run` usando `ProgresoRuta(paradas: 5, completadas: 3)` en tu pantalla: tres círculos y el tramo recorrido en el color principal del tema.
+
+**Fallo deliberado:** Cambia `shouldRepaint` para que devuelva siempre `false`. La primera prueba falla con `Expected: true` y `Actual: <false>`, y en la app la barra deja de avanzar aunque cambie `completadas`: Flutter reutiliza el dibujo viejo porque le dijiste que nada cambió.
+
+#### Paso 5 · Práctica guiada
+Agrega un parámetro `fallidas` y dibuja en rojo las paradas fallidas. Actualiza `shouldRepaint` y la etiqueta semántica. **Pista:** pinta primero las completadas y luego, con otro `Paint` rojo, las que estén en el conjunto de fallidas; sin el campo en `shouldRepaint` el cambio no se verá.
+
+#### Paso 6 · Práctica independiente
+Anima el avance con un `AnimationController` pasando `repaint: animacion` al `CustomPainter`, y mide con Flutter DevTools que solo se repinta la capa del `RepaintBoundary`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque te permite construir componentes que no existen en la librería estándar sin sacrificar rendimiento ni accesibilidad.
+**Fuente oficial:** [Flutter: CustomPaint](https://api.flutter.dev/flutter/widgets/CustomPaint-class.html), [Flutter: CustomPainter](https://api.flutter.dev/flutter/rendering/CustomPainter-class.html).
+**Conceptos clave:** `CustomPaint`, `CustomPainter`, `Canvas`, `Paint`, `shouldRepaint`, `RepaintBoundary`, `Semantics`, fragment shaders.
+**Cuándo no usarlo:** si se puede componer con widgets existentes (`Row`, `Container`, `LinearProgressIndicator`), hazlo: son accesibles por defecto y más fáciles de mantener.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** muestra el avance de la ruta del día en la pantalla principal con este componente y su etiqueta accesible.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una animación fluida propia auditada con DevTools sin frames perdidos.

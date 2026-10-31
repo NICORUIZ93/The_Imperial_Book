@@ -1,16 +1,16 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 73,
-      "code": 73,
-      "commentedCode": 43,
-      "mermaid": 50,
+      "topics": 96,
+      "code": 96,
+      "commentedCode": 66,
+      "mermaid": 73,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 73,
-      "runCommand": 73,
-      "officialSource": 6
+      "filePath": 96,
+      "runCommand": 96,
+      "officialSource": 11
     },
     "cloud": {
       "topics": 155,
@@ -25,52 +25,52 @@
       "officialSource": 139
     },
     "devops": {
-      "topics": 99,
-      "code": 99,
-      "commentedCode": 46,
-      "mermaid": 50,
+      "topics": 103,
+      "code": 103,
+      "commentedCode": 50,
+      "mermaid": 54,
       "archifyVisual": 1,
       "asciiVisual": 43,
       "misleadingDiagramLabel": 0,
-      "filePath": 99,
-      "runCommand": 98,
-      "officialSource": 33
+      "filePath": 103,
+      "runCommand": 102,
+      "officialSource": 34
     },
     "javascript": {
-      "topics": 83,
-      "code": 83,
-      "commentedCode": 72,
-      "mermaid": 54,
+      "topics": 87,
+      "code": 87,
+      "commentedCode": 76,
+      "mermaid": 58,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 83,
-      "runCommand": 83,
-      "officialSource": 65
+      "filePath": 87,
+      "runCommand": 87,
+      "officialSource": 67
     },
     "node": {
-      "topics": 75,
-      "code": 75,
-      "commentedCode": 34,
-      "mermaid": 19,
+      "topics": 79,
+      "code": 79,
+      "commentedCode": 38,
+      "mermaid": 23,
       "archifyVisual": 0,
       "asciiVisual": 13,
       "misleadingDiagramLabel": 0,
-      "filePath": 75,
-      "runCommand": 75,
-      "officialSource": 43
+      "filePath": 79,
+      "runCommand": 79,
+      "officialSource": 48
     },
     "angular": {
-      "topics": 68,
-      "code": 68,
-      "commentedCode": 67,
-      "mermaid": 28,
+      "topics": 70,
+      "code": 70,
+      "commentedCode": 69,
+      "mermaid": 30,
       "archifyVisual": 0,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 68,
-      "runCommand": 67,
-      "officialSource": 57
+      "filePath": 70,
+      "runCommand": 69,
+      "officialSource": 58
     },
     "react": {
       "topics": 57,
@@ -85,28 +85,28 @@
       "officialSource": 38
     },
     "java": {
-      "topics": 72,
-      "code": 72,
-      "commentedCode": 49,
-      "mermaid": 15,
+      "topics": 79,
+      "code": 79,
+      "commentedCode": 56,
+      "mermaid": 22,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 72,
-      "runCommand": 72,
-      "officialSource": 36
+      "filePath": 79,
+      "runCommand": 79,
+      "officialSource": 42
     },
     "spring-boot": {
-      "topics": 80,
-      "code": 80,
-      "commentedCode": 64,
-      "mermaid": 41,
+      "topics": 83,
+      "code": 83,
+      "commentedCode": 67,
+      "mermaid": 44,
       "archifyVisual": 4,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 80,
-      "runCommand": 80,
-      "officialSource": 49
+      "filePath": 83,
+      "runCommand": 83,
+      "officialSource": 61
     },
     "kotlin-multiplatform": {
       "topics": 55,
@@ -118,19 +118,19 @@
       "misleadingDiagramLabel": 0,
       "filePath": 55,
       "runCommand": 55,
-      "officialSource": 40
+      "officialSource": 41
     },
     "android": {
-      "topics": 52,
-      "code": 52,
-      "commentedCode": 48,
-      "mermaid": 10,
+      "topics": 56,
+      "code": 56,
+      "commentedCode": 52,
+      "mermaid": 14,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 52,
-      "runCommand": 50,
-      "officialSource": 49
+      "filePath": 56,
+      "runCommand": 56,
+      "officialSource": 53
     },
     "ios": {
       "topics": 55,
@@ -145,16 +145,16 @@
       "officialSource": 55
     },
     "flutter": {
-      "topics": 58,
-      "code": 58,
-      "commentedCode": 19,
-      "mermaid": 47,
+      "topics": 62,
+      "code": 62,
+      "commentedCode": 23,
+      "mermaid": 51,
       "archifyVisual": 0,
       "asciiVisual": 15,
       "misleadingDiagramLabel": 0,
-      "filePath": 58,
-      "runCommand": 58,
-      "officialSource": 49
+      "filePath": 62,
+      "runCommand": 62,
+      "officialSource": 51
     },
     "rutaflow": {
       "topics": 25,

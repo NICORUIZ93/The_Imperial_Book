@@ -361,6 +361,108 @@ final nombres = personas.where((p) => p.edad >= 18).map((p) => p.nombre).toList(
 
 ---
 
+### Tema 4: Lints y estilo con analysis_options.yaml
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás configurar el analizador estático de Dart con `flutter_lints`, endurecerlo con modos estrictos, subir la severidad de una regla y usar `dart fix` para corregir automáticamente. Prerrequisitos: Temas 1 a 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En el equipo de la app del repartidor cada persona escribía con su propio estilo, y un `print` con datos del destinatario llegó a los logs de producción. Un analizador configurado en el repositorio y ejecutado en CI es el caso real que unifica estilo y detecta errores antes de la revisión de código.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+`dart analyze` revisa el código sin ejecutarlo usando `analysis_options.yaml`. `flutter create` ya incluye `flutter_lints`, un conjunto recomendado de reglas. Sobre él puedes activar **modos estrictos** del lenguaje (`strict-casts` prohíbe usar un `dynamic` como si fuera otro tipo sin conversión explícita), agregar reglas y cambiar su **severidad** (`info`, `warning`, `error`). `dart fix --dry-run` lista las correcciones automáticas y `dart fix --apply` las aplica.
+
+**Analogía:** es el corrector ortográfico del equipo, configurado una sola vez con las reglas de la casa.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    A[analysis_options.yaml] --> Z[dart analyze]
+    L[lib/] --> Z
+    Z --> R{hallazgos}
+    R -- error --> CI[el pipeline falla]
+    R -- info --> F[dart fix --apply]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir lints && cd lints
+flutter create repartidor_lints
+cd repartidor_lints
+```
+
+Crea `lib/tarifa.dart`:
+
+```dart
+// lib/tarifa.dart
+import 'dart:developer' as developer;
+
+int tarifa({required String ciudad, required double kilos}) {
+  final base = ciudad == 'Bogotá' ? 5000 : 9000;
+  final total = base + (kilos.ceil() * 1200);
+  developer.log('tarifa $ciudad $kilos kg = $total', name: 'tarifas');
+  return total;
+}
+```
+
+Crea `analysis_options.yaml`:
+
+```yaml
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true        # prohíbe conversiones implícitas desde dynamic
+    strict-raw-types: true
+  errors:
+    avoid_print: error        # en este proyecto un print es un error, no un aviso
+
+linter:
+  rules:
+    - prefer_final_locals
+    - always_declare_return_types
+    - prefer_single_quotes
+    - require_trailing_commas
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+dart analyze
+dart fix --dry-run
+```
+
+**Resultado esperado:**
+
+```text
+Analyzing repartidor_lints...
+No issues found!
+Nothing to fix!
+```
+
+`tarifa.dart` usa `dart:developer` en lugar de `print`, por eso pasa. El archivo generado por `flutter create` puede mostrar algunos avisos de estilo con las reglas nuevas (por ejemplo, comas finales); corrígelos con `dart fix --apply`.
+
+**Fallo deliberado:** Agrega `print('tarifa calculada: $total');` antes del `return`. `dart analyze` reporta `error - lib/tarifa.dart:... - Don't invoke 'print' in production code. ... - avoid_print` y termina con código de salida distinto de cero. Como la severidad se subió a `error`, el pipeline se detiene en vez de dejar pasar un aviso.
+
+#### Paso 5 · Práctica guiada
+Activa la regla `unawaited_futures` y escribe una función que llame a un `Future` sin `await` para verla en acción. **Pista:** agrega la regla bajo `linter: rules:`; el aviso desaparece con `await` o, si es intencional, con `unawaited(...)` de `dart:async`.
+
+#### Paso 6 · Práctica independiente
+Agrega un paso `dart analyze --fatal-infos` al pipeline de CI del Módulo 11 y documenta qué reglas decidió el equipo y por qué.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque un analizador compartido evita discusiones de estilo, encuentra errores reales (futures sin esperar, casts inseguros) y protege datos en los logs.
+**Fuente oficial:** [Dart: Customizing static analysis](https://dart.dev/tools/analysis), [Dart: Linter rules](https://dart.dev/tools/linter-rules).
+**Conceptos clave:** `dart analyze`, `analysis_options.yaml`, `flutter_lints`, `strict-casts`, severidad de reglas, `dart fix`, `--fatal-infos`.
+**Cuándo no usarlo:** no actives todas las reglas existentes de golpe en un proyecto grande: empieza con el conjunto recomendado y agrega reglas acordadas por el equipo, una a una.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** agrega el análisis estático estricto al repositorio de la app del repartidor y hazlo obligatorio en CI.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `flutter create academia_flutter && cd academia_flutter && git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

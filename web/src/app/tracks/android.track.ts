@@ -194,4 +194,11 @@ export const ANDROID_MODULES: CourseModule[] = [
     ['ComposeTestRule', 'finders, assertions y actions', 'semantics y clearAndSetSemantics', 'AccessibilityService y TalkBack', 'animateXxxAsState y AnimatedVisibility', 'AnimatedContent, transitions y AnimationSpec'],
     ['Prueba texto y click', 'Crea matcher semántico', 'Audita TalkBack', 'Anima estado', 'Prueba reloj', 'Respeta escala de animación'],
     ['¿Qué prueba encuentra un nodo fusionado?', '¿Cuándo una animación perjudica accesibilidad?'], ['ComposeTestRule','Semantics','TalkBack','AnimationSpec'], 'Feature Compose probada con árbol semántico y animaciones accesibles.'),
+  m(15, 'Android como plataforma: Intents, broadcasts, servicios y content providers', 'Android como plataforma', 'Integración', '10 h', '#6d5dfc',
+    'Integra la app con el sistema operativo: delega acciones en otras apps con Intents implícitos, reacciona a eventos con BroadcastReceivers, sigue la ubicación con un foreground service y comparte archivos de forma segura con FileProvider.',
+    ['Intents implícitos y Activity Result API', 'BroadcastReceiver dinámico y RECEIVER_NOT_EXPORTED', 'Foreground service de ubicación', 'FileProvider y URI content://'],
+    ['Comparte, navega y elige un contacto sin cierres inesperados', 'Simula eventos de batería con adb y observa el receptor', 'Sigue la ubicación con notificación visible y la detiene al terminar', 'Comparte un comprobante sin exponer rutas file://'],
+    ['¿Qué diferencia hay entre un Intent explícito y uno implícito?', '¿Por qué Android 14 exige declarar el tipo de un foreground service?', '¿Por qué está prohibido compartir URI file:// entre apps?'],
+    ['Android Studio', 'Jetpack Compose', 'Play Services Location', 'adb'],
+    'Detalle de entrega integrado con mapas, mensajería, eventos de batería, seguimiento en primer plano y envío de comprobantes, con README de permisos.'),
 ];

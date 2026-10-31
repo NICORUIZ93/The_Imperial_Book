@@ -322,6 +322,348 @@ Ya centralizas el manejo de excepciones de toda una API en un único lugar, con 
 
 El manejo centralizado de errores de este tema es el que unifica las respuestas de error del proyecto integrador de este track (microservicio productivo, Módulo 12).
 
+### Tema 4: Lombok y MapStruct sin exponer datos internos
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás reducir código repetitivo con Lombok, generar el mapeo entre modelo y DTO con MapStruct en tiempo de compilación, y hacer que el compilador falle si un campo del DTO queda sin mapear. Prerrequisito: Tema 1 de este módulo (DTOs).
+
+#### Paso 2 · Contexto y caso real
+El backend de entregas tenía clases de 200 líneas de getters y setters, y mapeos manuales donde un campo nuevo se olvidaba con frecuencia. Además, un `toString()` generado imprimía el costo interno en los logs. Lombok y MapStruct son estándar de facto en proyectos Spring empresariales: un caso real que encontrarás en casi cualquier código existente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Lombok** es un procesador de anotaciones: `@Getter`, `@Setter`, `@Builder` o `@ToString` generan código en el bytecode al compilar. **MapStruct** genera la implementación de una interfaz `@Mapper` con código Java normal (sin reflexión); `componentModel = "spring"` la registra como bean y `unmappedTargetPolicy = ERROR` convierte un campo sin mapear en error de compilación. Como ambos son procesadores de anotaciones, Lombok debe correr primero: de eso se encarga `lombok-mapstruct-binding`.
+
+**Analogía:** Lombok es el molde que fabrica las piezas repetidas; MapStruct es la plantilla de traspaso que dice qué dato del formulario interno va en qué casilla del formulario público.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    E[Envio con Lombok] --> M[EnvioMapper generado]
+    M --> D[EnvioRespuesta pública]
+    E -. costoInterno .-x D
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir lombok-mapstruct && cd lombok-mapstruct
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,lombok -d javaVersion=25 -o app.zip
+unzip -q app.zip
+```
+
+Crea `pom.xml (agrega estos fragmentos)`:
+
+```xml
+<!-- 1) Dentro de <dependencies>: -->
+<dependency>
+  <groupId>org.mapstruct</groupId>
+  <artifactId>mapstruct</artifactId>
+  <version>1.6.3</version>
+</dependency>
+
+<!-- 2) En maven-compiler-plugin, dentro de <annotationProcessorPaths>,
+     junto al path de lombok que ya generó Spring Initializr: -->
+<path>
+  <groupId>org.mapstruct</groupId>
+  <artifactId>mapstruct-processor</artifactId>
+  <version>1.6.3</version>
+</path>
+<path>
+  <groupId>org.projectlombok</groupId>
+  <artifactId>lombok-mapstruct-binding</artifactId>
+  <version>0.2.0</version>
+</path>
+```
+
+Crea `src/main/java/com/example/demo/Envio.java`:
+
+```java
+package com.example.demo;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.math.BigDecimal;
+
+// Modelo interno. Lombok genera getters, setters, constructores y builder al compilar.
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = "costoInterno")       // no imprimir datos sensibles en logs
+public class Envio {
+    private Long id;
+    private String guia;
+    private String ciudadDestino;
+    private int kilos;
+    private BigDecimal costoInterno;      // dato interno: NO debe salir en la API
+}
+```
+
+Crea `src/main/java/com/example/demo/EnvioRespuesta.java`:
+
+```java
+package com.example.demo;
+
+// DTO público: lo que ve el cliente de la API
+public record EnvioRespuesta(String guia, String destino, int kilos) {}
+```
+
+Crea `src/main/java/com/example/demo/EnvioMapper.java`:
+
+```java
+package com.example.demo;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+
+// MapStruct genera la implementación al compilar: código Java normal, sin reflexión
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface EnvioMapper {
+    @Mapping(source = "ciudadDestino", target = "destino")
+    EnvioRespuesta aRespuesta(Envio envio);
+}
+```
+
+Crea `src/test/java/com/example/demo/EnvioMapperTest.java`:
+
+```java
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+class EnvioMapperTest {
+
+    @Autowired
+    EnvioMapper mapper;
+
+    @Test
+    void mapeaCamposPublicosYNoExponeElCostoInterno() {
+        Envio envio = Envio.builder()
+                .id(7L).guia("BO-004512").ciudadDestino("Bogotá").kilos(3)
+                .costoInterno(new BigDecimal("4100.50"))
+                .build();
+
+        EnvioRespuesta respuesta = mapper.aRespuesta(envio);
+
+        assertThat(respuesta).isEqualTo(new EnvioRespuesta("BO-004512", "Bogotá", 3));
+        assertThat(envio.toString()).doesNotContain("4100.50");
+        System.out.println("Respuesta: " + respuesta);
+        System.out.println("Log seguro: " + envio);
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+./mvnw test
+```
+
+**Resultado esperado:**
+
+```text
+Respuesta: EnvioRespuesta[guia=BO-004512, destino=Bogotá, kilos=3]
+Log seguro: Envio(id=7, guia=BO-004512, ciudadDestino=Bogotá, kilos=3)
+...
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+Las líneas de Maven se resumen: también verás el log de arranque de Spring y la prueba `DemoApplicationTests` que genera Initializr. `costoInterno` no aparece ni en la respuesta ni en el log. Las versiones de MapStruct y del binding son las vigentes al escribir este tema; consulta la documentación si hay una más nueva.
+
+**Fallo deliberado:** Borra la línea `@Mapping(source = "ciudadDestino", target = "destino")`. La compilación falla con `Unmapped target property: "destino".` porque el DTO tiene un campo que MapStruct no sabe llenar. Con la política por defecto (WARN) solo verías una advertencia y la API devolvería `destino: null` en producción.
+
+#### Paso 5 · Práctica guiada
+Agrega al DTO el campo `estado` y al modelo `estadoActual`, y mapéalos. **Pista:** agrega el campo a ambos lados, ejecuta `./mvnw test` para ver el error de campo sin mapear y luego agrega el `@Mapping` correspondiente.
+
+#### Paso 6 · Práctica independiente
+Abre `target/generated-sources/annotations/.../EnvioMapperImpl.java` y explica el código que generó MapStruct. Luego investiga por qué `@Data` en entidades JPA con relaciones bidireccionales puede causar `StackOverflowError` en `toString` y `hashCode`.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque son herramientas presentes en la mayoría del código Spring que vas a mantener, y usarlas mal expone datos o produce errores difíciles de rastrear.
+**Fuente oficial:** [MapStruct Reference Guide](https://mapstruct.org/documentation/stable/reference/html/), [Project Lombok: features](https://projectlombok.org/features/).
+**Conceptos clave:** procesador de anotaciones, Lombok, `@Builder`, `@ToString(exclude)`, MapStruct, `@Mapper`, `unmappedTargetPolicy`, `lombok-mapstruct-binding`.
+**Cuándo no usarlo:** no uses `@Data` en entidades JPA (genera `equals`/`hashCode` sobre todos los campos). Para DTOs simples, un `record` de Java ya no necesita Lombok.
+
+**Transferencia al proyecto integrador «Backend profesional de entregas»:** mapea las entidades de entregas a DTOs con MapStruct y política de error, y excluye de `toString` los datos personales.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
+### Tema 5: OpenAPI con springdoc: el contrato como prueba
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás generar la especificación OpenAPI de tu API con springdoc, documentar operaciones, parámetros, respuestas y esquemas con anotaciones, y escribir una prueba que falle si el contrato publicado cambia. Prerrequisitos: Temas 1 a 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+El equipo móvil de RutaFlow descubría los cambios de la API cuando la app fallaba. Un contrato OpenAPI publicado y probado es el caso real que permite a otros equipos generar clientes, probar contra mocks y detectar cambios antes de desplegar.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**OpenAPI** es un formato estándar (JSON o YAML) que describe rutas, parámetros, respuestas y esquemas de una API HTTP. **springdoc** inspecciona tus controladores en tiempo de ejecución y publica el documento en `/v3/api-docs` y una interfaz en `/swagger-ui.html`. Las anotaciones `@Operation`, `@ApiResponse`, `@Parameter` y `@Schema` agregan la información que el código no expresa (resúmenes, ejemplos, códigos de error). Probar el documento convierte la documentación en un contrato verificable.
+
+**Analogía:** el contrato OpenAPI es el plano eléctrico de la casa: quien llega a instalar algo no necesita romper paredes para saber dónde están los cables.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    C[EnvioController con anotaciones] --> S[springdoc]
+    S --> A[/v3/api-docs JSON/]
+    S --> U[swagger-ui.html]
+    A --> T[prueba del contrato]
+    A --> G[clientes generados]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir springdoc && cd springdoc
+curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip
+unzip -q app.zip
+```
+
+Crea `pom.xml (agrega este fragmento)`:
+
+```xml
+<!-- Dentro de <dependencies>. Usa la línea 3.x de springdoc, compatible con Spring Boot 4 -->
+<dependency>
+  <groupId>org.springdoc</groupId>
+  <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+  <version>3.0.0</version>
+</dependency>
+```
+
+Crea `src/main/java/com/example/demo/EnvioController.java`:
+
+```java
+package com.example.demo;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/envios")
+@Tag(name = "Envíos", description = "Consulta pública del estado de un envío")
+public class EnvioController {
+
+    @Schema(description = "Estado público de un envío")
+    public record EstadoEnvio(
+            @Schema(example = "BO-004512") String guia,
+            @Schema(example = "en ruta", allowableValues = {"registrado", "en ruta", "entregado"}) String estado) {}
+
+    private final Map<String, String> estados = Map.of("BO-004512", "en ruta");
+
+    @Operation(summary = "Consultar el estado de un envío por guía")
+    @ApiResponse(responseCode = "200", description = "Envío encontrado")
+    @ApiResponse(responseCode = "404", description = "La guía no existe")
+    @GetMapping("/{guia}")
+    public ResponseEntity<EstadoEnvio> estado(
+            @Parameter(description = "Guía con formato XX-000000", example = "BO-004512") @PathVariable String guia) {
+        String estado = estados.get(guia);
+        return estado == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(new EstadoEnvio(guia, estado));
+    }
+}
+```
+
+Crea `src/test/java/com/example/demo/ContratoOpenApiTest.java`:
+
+```java
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class ContratoOpenApiTest {
+
+    @Value("${local.server.port}")
+    int puerto;
+
+    @Test
+    void elContratoPublicadoDescribeLaOperacionYSusRespuestas() throws Exception {
+        HttpResponse<String> respuesta = HttpClient.newHttpClient().send(
+                HttpRequest.newBuilder(URI.create("http://localhost:" + puerto + "/v3/api-docs")).build(),
+                HttpResponse.BodyHandlers.ofString());
+
+        String contrato = respuesta.body();
+        System.out.println("OpenAPI: " + contrato.length() + " caracteres");
+        assertThat(respuesta.statusCode()).isEqualTo(200);
+        assertThat(contrato)
+                .contains("\"/api/envios/{guia}\"")
+                .contains("Consultar el estado de un envío por guía")
+                .contains("La guía no existe")
+                .contains("\"EstadoEnvio\"");
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+./mvnw test
+./mvnw spring-boot:run   # luego abre http://localhost:8080/swagger-ui.html
+```
+
+**Resultado esperado:**
+
+```text
+OpenAPI: 1234 caracteres
+...
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+La prueba levanta la aplicación en un puerto aleatorio y lee el contrato real. El número de caracteres varía. En `swagger-ui.html` puedes ejecutar `GET /api/envios/BO-004512` desde el navegador. La versión de springdoc indicada es la de la línea 3.x vigente al escribir el tema; revisa la tabla de compatibilidad si usas otra versión de Spring Boot.
+
+**Fallo deliberado:** Borra la línea `@ApiResponse(responseCode = "404", description = "La guía no existe")`. La prueba falla porque el contrato ya no contiene `La guía no existe`: el endpoint sigue devolviendo 404, pero el contrato ya no lo documenta. Ese desfase entre comportamiento y documentación es exactamente lo que la prueba debe atrapar.
+
+#### Paso 5 · Práctica guiada
+Documenta un `POST /api/envios` que reciba un `record` validado con `@NotBlank` y verifica en la prueba que el esquema marca el campo como requerido. **Pista:** springdoc traduce `@NotBlank` a la lista `required` del esquema; busca en el contrato el nombre del campo dentro de esa lista.
+
+#### Paso 6 · Práctica independiente
+Guarda el contrato en `openapi.json` dentro del repositorio y escribe una prueba que compare el contrato actual con el guardado, para que todo cambio de API sea explícito en la revisión de código.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque las APIs se consumen por otros equipos y otras empresas, y un contrato verificable evita roturas silenciosas.
+**Fuente oficial:** [springdoc-openapi](https://springdoc.org/), [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
+**Conceptos clave:** OpenAPI, springdoc, `/v3/api-docs`, Swagger UI, `@Operation`, `@ApiResponse`, `@Schema`, prueba de contrato.
+**Cuándo no usarlo:** para APIs internas de un solo consumidor que cambian a diario, un contrato formal puede ser burocracia; aun así, documenta los errores que devuelves.
+
+**Transferencia al proyecto integrador «Backend profesional de entregas»:** publica el contrato del backend de entregas y agrega la prueba de contrato al pipeline.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una API REST con validación de entrada y manejo centralizado de errores.

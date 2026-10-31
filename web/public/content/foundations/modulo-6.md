@@ -380,6 +380,135 @@ flowchart LR
 
 El proyecto integrador Fundamentos aplica esta misma validación de entrada en `tareas.py`: antes de guardar una descripción de tarea ejecutando el CLI con Python 3 (`python3 cli.py add "<descripción>"`), el código debe rechazar descripciones vacías o con longitud excesiva en el servidor/lógica (no solo en la interfaz), exactamente la misma regla de "validar según el dominio real del campo" que aplica a la nota de entrega de RutaFlow de este Tema.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
+### Tema 5: Ingeniería social y phishing: detectar señales en enlaces y remitentes
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás explicar cómo funciona un ataque de ingeniería social, detectar con código dominios parecidos (typosquatting), caracteres homógrafos y enlaces cuyo texto no coincide con su destino, y reconocer la presión de urgencia. Prerrequisito: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Un mensajero de RutaFlow recibió un correo de "soporte" pidiendo verificar su cuenta en 24 horas y entregó su contraseña. Los libros de hacking ético de la biblioteca (*El libro blanco del hacker*, *Kali Linux*) coinciden: la mayoría de las intrusiones reales empiezan por una persona engañada, no por una falla técnica.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La **ingeniería social** manipula a personas para que entreguen información o ejecuten acciones. El **phishing** la aplica por correo o mensajes: suplanta a una organización conocida, crea **urgencia** y lleva a un sitio falso. Señales técnicas: dominios a una o dos letras del legítimo (`rutaf1ow.co`), **homógrafos** con letras de otros alfabetos que se ven iguales (la `о` cirílica), y enlaces cuyo texto visible no coincide con el destino real. La **distancia de Levenshtein** mide cuántas ediciones separan dos textos. Las defensas reales combinan SPF, DKIM y DMARC en el correo, autenticación multifactor resistente a phishing (llaves FIDO2) y formación.
+
+**Analogía:** es el estafador que llama haciéndose pasar por el banco: la voz es convincente, pero el número no es el del banco y te apura para que no lo verifiques.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    C[correo] --> R[remitente externo]
+    C --> E[enlaces]
+    E --> D[dominio parecido]
+    E --> H[homógrafo no ASCII]
+    E --> V[texto distinto del destino]
+    C --> U[urgencia]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir phishing && cd phishing
+```
+
+Crea `phishing.py`:
+
+```python
+import re
+from urllib.parse import urlparse
+
+DOMINIOS_LEGITIMOS = {"rutaflow.co", "pagos.rutaflow.co"}
+PALABRAS_URGENCIA = ["urgente", "suspendida", "24 horas", "verifique", "inmediato"]
+
+def distancia(a, b):                                   # Levenshtein: ediciones para ir de a a b
+    previa = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        actual = [i]
+        for j, cb in enumerate(b, 1):
+            actual.append(min(previa[j] + 1, actual[j - 1] + 1, previa[j - 1] + (ca != cb)))
+        previa = actual
+    return previa[-1]
+
+def senales(correo):
+    alertas = []
+    for href, texto in re.findall(r'<a href="([^"]+)">([^<]+)</a>', correo["html"]):
+        dominio = (urlparse(href).hostname or "").lower()
+        visible = urlparse(texto if "://" in texto else "https://" + texto).hostname or ""
+        if dominio not in DOMINIOS_LEGITIMOS:
+            cercano = min(DOMINIOS_LEGITIMOS, key=lambda d: distancia(dominio, d))
+            if distancia(dominio, cercano) <= 2:
+                alertas.append(f"dominio parecido a {cercano}: {dominio}")
+            raros = [f"{c} (U+{ord(c):04X})" for c in dominio if ord(c) > 127]
+            if raros or dominio.startswith("xn--"):
+                alertas.append(f"homógrafo: caracteres no ASCII {raros} en {dominio}")
+        if visible and visible != dominio:
+            alertas.append(f"el texto muestra {visible} pero el enlace va a {dominio}")
+    remitente = correo["de"].split("@")[-1].lower()
+    if remitente not in DOMINIOS_LEGITIMOS:
+        alertas.append(f"remitente externo: {remitente}")
+    urgencia = [p for p in PALABRAS_URGENCIA if p in correo["asunto"].lower() + correo["html"].lower()]
+    if urgencia:
+        alertas.append(f"presión de urgencia: {', '.join(urgencia)}")
+    return alertas
+
+correos = [
+    {"de": "facturas@rutaflow.co", "asunto": "Factura de octubre",
+     "html": '<a href="https://pagos.rutaflow.co/f/10">pagos.rutaflow.co</a>'},
+    {"de": "soporte@rutaf1ow.co", "asunto": "URGENTE: cuenta suspendida",
+     "html": 'Verifique en 24 horas: <a href="https://rutaf1ow.co/login">pagos.rutaflow.co</a>'},
+    {"de": "seguridad@rutaflow.co", "asunto": "Actualice sus datos",
+     "html": '<a href="https://rutaflоw.co/datos">rutaflow.co</a>'},
+]
+for correo in correos:
+    alertas = senales(correo)
+    print(f"{correo['asunto']!r}: {'SOSPECHOSO' if alertas else 'sin señales'}")
+    for a in alertas:
+        print("   -", a)
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 phishing.py
+```
+
+**Resultado esperado:**
+
+```text
+'Factura de octubre': sin señales
+'URGENTE: cuenta suspendida': SOSPECHOSO
+   - dominio parecido a rutaflow.co: rutaf1ow.co
+   - el texto muestra pagos.rutaflow.co pero el enlace va a rutaf1ow.co
+   - remitente externo: rutaf1ow.co
+   - presión de urgencia: urgente, suspendida, 24 horas, verifique
+'Actualice sus datos': SOSPECHOSO
+   - dominio parecido a rutaflow.co: rutaflоw.co
+   - homógrafo: caracteres no ASCII ['о (U+043E)'] en rutaflоw.co
+   - el texto muestra rutaflow.co pero el enlace va a rutaflоw.co
+```
+
+El tercer correo usa una `о` cirílica (U+043E) que en pantalla es idéntica a la latina; el remitente sí es legítimo porque los atacantes también pueden falsificar el nombre visible.
+
+**Fallo deliberado:** Cambia `if distancia(dominio, cercano) <= 2:` por `== 0`. El segundo correo deja de mostrar `dominio parecido a rutaflow.co: rutaf1ow.co`: una regla que solo acepta coincidencias exactas no detecta el typosquatting. Las heurísticas necesitan tolerancia, y por eso también producen falsos positivos que hay que medir.
+
+#### Paso 5 · Práctica guiada
+Agrega una señal para enlaces que usan una dirección IP en lugar de un dominio (`http://45.12.3.9/login`). **Pista:** usa `ipaddress.ip_address(dominio)` dentro de un `try`; si no lanza `ValueError`, el destino es una IP.
+
+#### Paso 6 · Práctica independiente
+Prepara con tu equipo, y con autorización escrita, un simulacro de phishing interno con una herramienta como GoPhish. Define qué métricas medirás (clics, reportes) y cómo darás retroalimentación sin culpar a nadie.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque la mayoría de los incidentes empieza por un engaño a una persona, y la tecnología solo ayuda si también se forma a la gente.
+**Fuente oficial:** [OWASP: Phishing](https://owasp.org/www-community/attacks/Phishing), [CISA: Avoiding Social Engineering and Phishing Attacks](https://www.cisa.gov/news-events/news/avoiding-social-engineering-and-phishing-attacks).
+**Conceptos clave:** ingeniería social, phishing, typosquatting, homógrafo, distancia de Levenshtein, SPF, DKIM, DMARC, MFA resistente a phishing.
+**Cuándo no usarlo:** no uses estas heurísticas como único filtro: complementan, no reemplazan, la autenticación del correo (SPF/DKIM/DMARC) ni la MFA. Y nunca hagas pruebas de phishing a personas sin autorización.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** marca como sospechosos los enlaces externos en los comentarios de las tareas antes de mostrarlos.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar el ejemplo sin leer la salida real y dar por hecho que funciona con un solo caso.
+
 ## Construcción guiada del capítulo
 
 ### Proyecto 6: endurecimiento del inventario
