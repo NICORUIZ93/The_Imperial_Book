@@ -91,13 +91,14 @@
     },
     {
       "path": "README.md",
-      "lines": 328,
+      "lines": 363,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# The_Imperial_Book",
         "## C\u00f3mo empezar",
+        "## Requisitos del sistema",
         "## Levantar Floci",
         "# 1. Levantar todos los servicios",
         "# 2. Verificar Floci AWS",
@@ -106,8 +107,7 @@
         "# 5. Validar todo el entorno",
         "# docker compose --profile multicloud up   # AWS + Azure + GCP",
         "## Metodolog\u00eda",
-        "## Tracks de la academia",
-        "## Licencias"
+        "## Tracks de la academia"
       ]
     },
     {
@@ -12442,6 +12442,19 @@
         "1"
       ],
       "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/scripts/capture-browser-review.mjs",
+      "lines": 137,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [
+        "node:fs",
+        "node:path",
+        "node:url",
+        "playwright"
+      ],
       "headings": []
     },
     {

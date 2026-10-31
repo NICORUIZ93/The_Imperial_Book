@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 06:00 UTC
+Generated: 2026-10-31 06:14 UTC
 Root: `Academia_Floci`
-Indexed files: 957
+Indexed files: 958
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -21,7 +21,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `documentation`: 57 files
 - `example`: 490 files
 - `local-infra`: 1 files
-- `project-file`: 60 files
+- `project-file`: 61 files
 
 ## File Types
 
@@ -36,7 +36,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.go`: 24
 - `.dart`: 22
 - `.swift`: 20
-- `.mjs`: 17
+- `.mjs`: 18
 - `.kt`: 13
 - `.yaml`: 9
 - `.yml`: 8
@@ -51,8 +51,8 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (328 lines, documentation)
-  - headings: # The_Imperial_Book, ## Cómo empezar, ## Levantar Floci, # 1. Levantar todos los servicios, # 2. Verificar Floci AWS
+- `README.md` (363 lines, documentation)
+  - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
 - `scripts/validate.sh` (169 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
@@ -226,7 +226,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
-- `README.md` (328 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Levantar Floci, # 1. Levantar todos los servicios
+- `README.md` (363 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -287,4 +287,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (825 lines)
 - `docs/lesson-substance.json` (9940 lines)
-- ... 42 more files
+- ... 43 more files

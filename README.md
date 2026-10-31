@@ -1,5 +1,11 @@
 # The_Imperial_Book
 
+[![CI](https://github.com/NICORUIZ93/The_Imperial_Book/actions/workflows/ci.yml/badge.svg)](https://github.com/NICORUIZ93/The_Imperial_Book/actions/workflows/ci.yml)
+[![Código: MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-blue)](LICENSE)
+[![Contenido: CC BY 4.0](https://img.shields.io/badge/contenido-CC%20BY%204.0-lightgrey)](web/public/content/LICENCIA-CONTENIDO.md)
+[![Angular 21.2](https://img.shields.io/badge/Angular-21.2-dd0031)](web/package.json)
+[![Node.js 24 LTS](https://img.shields.io/badge/Node.js-24%20LTS-339933)](.github/workflows/ci.yml)
+
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
@@ -49,6 +55,19 @@ npm start
 
 Luego abre `http://localhost:4200`.
 
+Si algo falla, consulta la [guía de solución de problemas](docs/troubleshooting.md).
+
+## Requisitos del sistema
+
+- **Node.js 24 LTS y npm.** Es la versión con la que se ejecutan CI, build y pruebas; comprueba con `node -v`.
+- **Angular 21.2.** La aplicación usa `@angular/core` `^21.2.0` y se instala con `npm ci`; no requiere instalación global.
+- **Docker Engine con Compose v2.** Necesario para el stack `docker-compose.yml` y para Floci por contenedores.
+- **Python 3.11 o superior.** Lo usan los auditores, la validación y varios ejemplos (`python3 --version`).
+- **JDK 17 o superior.** Los ejemplos Java y Spring Boot se verificaron con JDK 25; el JDK solo es necesario para esos tracks.
+- **Floci.** El Compose fija el emulador `2.2.0`; la CLI `0.4.0` es la release observada y su versión mínima compatible sigue sin verificarse ([detalle](docs/floci.md)).
+- **Go y Rust (opcional).** Solo para los ejemplos de `examples/go` y `examples/rust`; el repositorio no fija versión en `go.mod` ni `Cargo.toml`, así que anota la toolchain que uses al ejecutarlos.
+- **Toolchains móviles (opcional).** Android, iOS, Flutter y Kotlin Multiplatform requieren su SDK y emulador o simulador propios; no son necesarios para la aplicación web.
+
 ## Levantar Floci
 
 Opción recomendada — `floci-cli` (la herramienta oficial del proyecto, que usa el track Cloud del curso a partir del Módulo 1). Descarga el instalador, inspecciónalo y ejecútalo en un paso separado; no canalices código remoto directamente a un shell:
@@ -69,6 +88,11 @@ el proyecto publica binarios firmados en sus releases oficiales, prefiere esa v�
 y verifica la firma antes de instalarlos.
 El hash de arriba identifica la copia del instalador oficial revisada el
 2026-10-30; si no coincide, no la ejecutes y consulta [la guía de Floci](docs/floci.md).
+
+El [`install.sh`](install.sh) de la raíz es una copia vendorizada del instalador
+oficial de Floci CLI conservada como referencia; no es la copia verificada con el
+hash anterior y queda fuera del flujo recomendado. Si lo ejecutas, hazlo solo tras
+leerlo y comprobar su procedencia.
 
 Opción alternativa — Docker Compose (útil para correr AWS, Azure y GCP local a la vez):
 
@@ -181,7 +205,7 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1094/1100 temas con los nueve criterios detectados. La
+versionado registra 1100/1100 temas con los nueve criterios detectados. La
 auditoría independiente de metodología registra 1100/1100 con sus marcadores de
 siete pasos. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
@@ -204,7 +228,7 @@ disponible en el índice y el proyecto integrador en el capítulo final. Estas
 características de navegación no acreditan una revisión pedagógica tema por
 tema: el estado manual queda explícito en el informe integral.
 
-`docs/code-visual-quality.md` mide además, sin contar las guías generadas, qué
+[`docs/code-visual-quality.md`](docs/code-visual-quality.md) mide además, sin contar las guías generadas, qué
 temas tienen código, comentarios didácticos, ubicación, comando, Mermaid y
 fuente oficial. Los bloques ejecutables ya no se presentan falsamente como
 “Diagrama”: código, terminal y configuración tienen etiquetas propias; los
@@ -212,7 +236,7 @@ diagramas Mermaid se renderizan como figuras accesibles con contexto y guía de
 lectura. Los visuales ASCII restantes se conservan como deuda explícita hasta
 que puedan redibujarse sin alterar su significado.
 
-`docs/editorial-backlog.md` convierte esas mediciones en una lista accionable
+[`docs/editorial-backlog.md`](docs/editorial-backlog.md) convierte esas mediciones en una lista accionable
 por track y módulo. El lector ofrece navegación anterior/siguiente entre temas
 y un glosario contextual accesible para términos técnicos; estas ayudas no se
 contabilizan como sustituto del contenido editorial específico.
@@ -240,6 +264,17 @@ como certificaciones.
 | Flutter | 16 | Widgets, gestión de estado, plataformas nativas |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |
 
+### Ruta recomendada para principiantes
+
+1. [Fundamentos](web/public/content/foundations/modulo-0.md): enseña terminal, programación, HTML, CSS, redes y SQL partiendo de cero.
+2. [JavaScript](web/public/content/javascript/modulo-0.md): requiere lo anterior para el DOM y el navegador; añade asincronía y pruebas.
+3. [Node.js](web/public/content/node/modulo-0.md): reutiliza JavaScript y elimina el DOM; introduce HTTP, persistencia y operación.
+4. [Cloud Local](web/public/content/cloud/modulo-0.md): asume terminal, HTTP, JSON y Docker, y añade AWS, Azure y GCP contra Floci.
+5. [RutaFlow](web/public/content/rutaflow/modulo-0.md): integra frontend o móvil, backend, HTTP, SQL y Git en un proyecto de entregas.
+
+Cada guía de track declara su entrada real en [track-guides.ts](web/src/app/track-guides.ts);
+las rutas de especialización no presuponen los tracks que no necesitan.
+
 `scripts/validate.sh` valida automáticamente que el número de archivos
 Markdown de cada track coincida con los módulos declarados en su fuente
 TypeScript, que el índice web corresponda a esos 14 tracks y que los reportes de
@@ -249,7 +284,7 @@ calidad permanezcan sincronizados con el Markdown real.
 
 Cada ruta se contrasta con especificaciones, documentación, notas de versión,
 seguridad y migración publicadas por los proyectos oficiales. El registro
-`docs/official-sources.json` indica la línea estable o LTS utilizada, la fecha
+[`docs/official-sources.json`](docs/official-sources.json) indica la línea estable o LTS utilizada, la fecha
 de revisión y qué términos deben estar incorporados en el contenido.
 
 ```bash
@@ -311,8 +346,8 @@ npm run e2e
 
 Para reducir exploración repetida del repositorio, este proyecto incluye:
 
-- `docs/repo-graph.md`: snapshot legible para asistentes.
-- `docs/repo-graph.json`: índice estructurado para herramientas.
+- [`docs/repo-graph.md`](docs/repo-graph.md): snapshot legible para asistentes.
+- [`docs/repo-graph.json`](docs/repo-graph.json): índice estructurado para herramientas.
 
 Actualízalo cuando cambie la estructura:
 
