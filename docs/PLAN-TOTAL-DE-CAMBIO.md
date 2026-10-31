@@ -8,9 +8,9 @@ Este documento reemplaza la estrategia de crecer por lotes y marcadores.
 La percepción de que los temas son básicos y superficiales tiene fundamento. El
 inventario actual contiene 1.100 temas, pero volumen, rutas y marcadores no
 demuestran profundidad ni preparación profesional. La auditoría disponible
-detecta señales de sustancia en 303 temas, bloques editoriales repetidos en 202,
-andamiaje genérico en 125 y secciones heredadas en 184 de 245 módulos. Son
-señales estáticas que requieren revisión; no equivalen a 303 errores confirmados.
+detecta señales de sustancia en 293 temas, bloques editoriales repetidos en 192,
+andamiaje genérico en 118 y secciones heredadas en 184 de 245 módulos. Son
+señales estáticas que requieren revisión; no equivalen a 293 errores confirmados.
 Consulta [la revisión integral](./full-review.md) para cobertura y límites.
 
 Los datos siguientes describen la deuda medida:
@@ -154,6 +154,35 @@ la convierte en una deuda **medida y decreciente** en lugar de una promesa
 implícita de calidad. Reescribir 1.100 temas a mano requiere 2.000–4.000 horas:
 por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 
+## Piloto de reducción de sustancia (2026-10-30)
+
+Se reescribieron los 10 temas con más señales del corte anterior. El resultado
+medido es 303 → 293 temas con señales, sin cambios en 1094/1100 practicables ni
+en 1100/1100 de siete pasos. La deuda aceptada en
+`lesson-substance-baseline.json` bajó de 476 a 293 entradas y no se añadió
+ninguna.
+
+Estándar aplicado a cada tema:
+
+1. Cada sección editorial aparece una sola vez. Si había dos «¿Por qué es
+   importante?», se conserva la que aporta evidencia y se borra la otra.
+2. El contenido posterior al Paso 7 se elimina o se integra en los pasos que lo
+   necesitan; el cierre no se alarga para compensar.
+3. El ejemplo arranca en una carpeta vacía con archivos completos. Se
+   reemplazaron `bash ejemplo.sh`, `python3 ejemplo.py` y otras llamadas a
+   artefactos inexistentes por comandos reproducibles.
+4. El fallo deliberado se observa en la salida del ejemplo y se corrige.
+5. Cuando fue posible, el ejemplo se ejecutó: SQLite (`SCAN` → `SEARCH`), Python
+   (rollback y `historial` vacío), Dart (`token=null cache=false session=false
+   sync=false`) y Java 26 con `--enable-preview` (cancelación de la subtarea
+   hermana). Las tareas de ABI se contrastaron con la documentación oficial
+   (`updateKotlinAbi` y `checkKotlinAbi`, no `apiCheck`).
+
+Temas corregidos: `foundations` 4/3, 4/4 y 7/4; `devops` 14/1 y 14/4; `flutter`
+13/2; `java` 5/5; `kotlin-multiplatform` 12/1, 12/2 y 12/3. El ejemplo de KMP
+quedó verificado por lectura y documentación primaria, no ejecutado en este
+entorno (Gradle no está instalado); no se declara como probado.
+
 ## Verificación de esta entrega (2026-10-30)
 
 | Comprobación | Resultado |
@@ -164,7 +193,7 @@ por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 | E2E Chrome | 48 correctas (24 escenarios en escritorio y móvil) |
 | Metodología de siete pasos | 1100/1100 completos |
 | Criterios editoriales | 1094/1100 practicables; deuda de 6 |
-| Sustancia | 303 temas con señales en el corte actual; `--strict` no registra defectos nuevos |
+| Sustancia | 293 temas con señales (10 menos que antes del piloto); `--strict` no registra defectos nuevos |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
 Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,

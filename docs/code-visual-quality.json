@@ -27,7 +27,7 @@
     "devops": {
       "topics": 113,
       "code": 113,
-      "commentedCode": 63,
+      "commentedCode": 64,
       "mermaid": 62,
       "archifyVisual": 1,
       "asciiVisual": 43,
@@ -147,10 +147,10 @@
     "flutter": {
       "topics": 63,
       "code": 63,
-      "commentedCode": 47,
+      "commentedCode": 48,
       "mermaid": 51,
       "archifyVisual": 0,
-      "asciiVisual": 15,
+      "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
       "filePath": 63,
       "runCommand": 63,
@@ -559,13 +559,6 @@
       "track": "devops",
       "module": 13,
       "topic": "Tema 2: Uniendo cada módulo del track en un solo flujo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 14,
-      "topic": "Tema 1: Confiabilidad es una expectativa cuantificada",
       "missingCode": false,
       "missingComments": true
     },
@@ -1805,13 +1798,6 @@
       "track": "flutter",
       "module": 13,
       "topic": "Tema 1: Una API Dart puede terminar en una frontera nativa",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 13,
-      "topic": "Tema 2: Los secretos no pertenecen al binario",
       "missingCode": false,
       "missingComments": true
     },

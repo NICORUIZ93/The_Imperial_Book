@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 01:32 UTC
+Generated: 2026-10-31 01:47 UTC
 Root: `Academia_Floci`
 Indexed files: 958
 Import edges: 57
@@ -231,7 +231,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
-- `docs/PLAN-TOTAL-DE-CAMBIO.md` (183 lines) - headings: # Plan total de mejora de profundidad, ## Diagnóstico, ## Objetivo de salida — todavía no acreditado, ## Fases
+- `docs/PLAN-TOTAL-DE-CAMBIO.md` (212 lines) - headings: # Plan total de mejora de profundidad, ## Diagnóstico, ## Objetivo de salida — todavía no acreditado, ## Fases
 - `docs/PLANTILLA-LECCION.md` (109 lines) - headings: # Plantilla de Lección — Prompt Maestro para Claude / Codex, ## PROMPT MAESTRO (copiar desde aquí), ## DATOS DE LA LECCIÓN, ## REGLAS DE ESTILO
 - `docs/PROMPTS-FORMACION.md` (30 lines) - headings: # Prompts de formación profesional a partir de merged.pdf, ## Tutor paso a paso (página 1), ## Ruta de 30 pasos (página 21), ## Revisión profesional (página 55)
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
@@ -281,10 +281,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2660 lines)
-- `docs/code-visual-quality.json` (1911 lines)
-- `docs/course-depth-review.json` (12480 lines)
+- `docs/code-visual-quality.json` (1897 lines)
+- `docs/course-depth-review.json` (12478 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
-- `docs/lesson-substance-baseline.json` (1693 lines)
-- `docs/lesson-substance.json` (10037 lines)
+- `docs/lesson-substance-baseline.json` (905 lines)
+- `docs/lesson-substance.json` (10004 lines)
 - ... 42 more files

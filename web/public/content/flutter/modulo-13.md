@@ -109,81 +109,11 @@ Al finalizar vas a implementar `SessionVault` para guardar el refresh token del 
 Guardar el refresh token del conductor en un `.env` empacado dentro del binario, o en `shared_preferences` sin cifrado dedicado, lo deja extraíble por cualquiera con acceso al APK/IPA o al almacenamiento del dispositivo.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una clave compilada puede extraerse; para tokens de usuario hay que delegar a Keychain/Keystore mediante un plugin mantenido, configurando accesibilidad y backup según la amenaza real.
+Una clave compilada puede extraerse; ningún `.env` empacado es bóveda. El cliente puede contener identificadores públicos, pero una credencial con autoridad debe vivir en servidor. Para tokens de usuario usa un plugin mantenido que delegue a Keychain/Keystore y configura accesibilidad, backup y autenticación según la amenaza real. Conserva datos grandes en almacenamiento privado con cifrado mantenido y política de retención. **Conceptos clave:** data classification, minimization, Keychain, Android Keystore, secure storage, backup, log redaction, screenshot, clipboard, token rotation, logout y privacy manifest.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-abstract interface class SessionVault {
-  Future<void> writeRefreshToken(String token);
-  Future<String?> readRefreshToken();
-  Future<void> clear();
-}
-
-Future<void> logout(SessionVault vault, LocalDatabase db) async {
-  await syncEngine.cancel();
-  await vault.clear();
-  await db.deleteCurrentAccountData();
-  state.invalidateSession();
-}
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: `logout()` cancela cualquier sincronización en curso, borra el token del vault seguro, elimina los datos de envíos cacheados de la cuenta actual, e invalida la sesión en memoria — ningún rastro de la cuenta anterior sobrevive al cierre de sesión.
-
-#### Paso 5 · Práctica guiada
-Pista: implementá `logout()` llamando solo a `vault.clear()`, sin `db.deleteCurrentAccountData()` — ese es el fallo deliberado: un segundo conductor que inicia sesión en el mismo dispositivo (un teléfono compartido en el depósito) todavía puede ver, en la caché local, los envíos del conductor anterior, aunque el token ya se haya borrado.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `db.deleteCurrentAccountData()`, y agregá un test que simule logout seguido de un nuevo login con otro conductor, confirmando que ningún dato del conductor anterior sigue siendo visible.
-
-#### Paso 7 · Cierre y evidencia
-Entregá `SessionVault` y `logout()` completos del Paso 4, los datos residuales detectados en el Paso 5, y el test de cambio de cuenta del Paso 6; explicá por qué borrar el token sin borrar la caché local puede exponer la sesión anterior en un dispositivo compartido. Siguiente paso: estudia cómo medir y optimizar fluidez contra el presupuesto de cada frame. Errores comunes: guardar tokens en `.env` empacado o en storage sin cifrado dedicado, borrar el token sin borrar la caché local relacionada, y no redactar valores sensibles en logs/crash reports. Fuente oficial: https://docs.flutter.dev/cookbook/security.
-**¿Por qué es importante?** La mayoría de exposiciones ocurren en copias secundarias o configuración, no rompiendo cifrado.
-**Evidencia de aprendizaje:** entrega SessionVault y logout completo, datos residuales detectados y test de cambio de cuenta.
-**Conceptos clave:** data classification, minimization, Keychain, Android Keystore, secure storage, backup, log redaction, screenshot, clipboard, token rotation, logout y privacy manifest.
-
-Una clave compilada puede extraerse; ningún `.env` empacado es bóveda. El cliente puede contener identificadores públicos, pero una credencial con autoridad debe vivir en servidor. Para tokens de usuario usa un plugin mantenido que delegue a Keychain/Keystore y configura accesibilidad, backup y autenticación según amenaza. Conserva datos grandes en almacenamiento privado con cifrado mantenido y política de retención.
-
-```dart
-abstract interface class SessionVault {
-  Future<void> writeRefreshToken(String token);
-  Future<String?> readRefreshToken();
-  Future<void> clear();
-}
-
-Future<void> logout(SessionVault vault, LocalDatabase db) async {
-  await syncEngine.cancel();
-  await vault.clear();
-  await db.deleteCurrentAccountData();
-  state.invalidateSession();
-}
-```
-
-Revisa copias: logs, analytics, crash reports, backups, notificaciones y capturas. Redacta por defecto y documenta qué SDK recoge qué dato y con qué propósito. Prueba cambio de cuenta y restauración; borrar un token sin borrar caché puede exponer la sesión anterior.
-
-**Analogía:** el almacén seguro es una caja fuerte, pero el dato también deja huellas en recibos, cámaras y papeleras.
-
-**¿Por qué es importante?** porque la mayoría de exposiciones ocurren en copias secundarias o configuración, no rompiendo cifrado.
-
-**Casos de uso reales:** API key en assets, token en preferencias, email en crash report, base restaurada en otro dispositivo y datos persistentes tras logout.
+Revisa copias: logs, analytics, crash reports, backups, notificaciones y capturas. Redacta por defecto y documenta qué SDK recoge qué dato y con qué propósito. Prueba cambio de cuenta y restauración; borrar un token sin borrar caché puede exponer la sesión anterior. La analogía: el almacén seguro es una caja fuerte, pero el dato también deja huellas en recibos, cámaras y papeleras.
 
 **Diagrama:**
-
-```text
-dato -> ¿necesario? -> clasificar -> vault/base protegida
-                              -> retención/borrado
-                              -> logs/telemetría redactados
-```
-
-**Diagrama: logout completo sin residuos**
 
 ```mermaid
 flowchart TD
@@ -194,7 +124,85 @@ flowchart TD
     E --> F["Ningún dato del conductor anterior sobrevive"]
 ```
 
-En el proyecto integrador RutaFlow, `SessionVault` vive en `lib/core/session_vault.dart`. Límite de la decisión: no conviene delegar a Keychain/Keystore un dato que no es sensible (un simple contador de sesiones, por ejemplo) — ese almacenamiento seguro tiene costo de acceso asíncrono y complejidad adicional; reservalo específicamente para tokens y credenciales, usando `shared_preferences` (Módulo 6) para el resto.
+**¿Por qué es importante?** Porque la mayoría de exposiciones ocurren en copias secundarias o configuración, no rompiendo cifrado. **Casos de uso reales:** API key en assets, token en preferencias, email en crash report, base restaurada en otro dispositivo y datos persistentes tras logout.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** crea un proyecto Flutter vacío y dentro el archivo que ejecuta el cierre de sesión; no depende de otro tema.
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+mkdir -p lib/core
+```
+
+Crea `lib/core/session_vault.dart` con este contenido completo:
+```dart
+abstract interface class SessionVault {
+  Future<void> writeRefreshToken(String token);
+  Future<String?> readRefreshToken();
+  Future<void> clear();
+}
+
+class LocalDatabase {
+  bool hasCurrentAccountData = true;
+  Future<void> deleteCurrentAccountData() async => hasCurrentAccountData = false;
+}
+
+class SyncEngine {
+  bool running = true;
+  Future<void> cancel() async => running = false;
+}
+
+class SessionState {
+  bool active = true;
+  void invalidateSession() => active = false;
+}
+
+final syncEngine = SyncEngine();
+final state = SessionState();
+
+Future<void> logout(SessionVault vault, LocalDatabase db) async {
+  await syncEngine.cancel();
+  await vault.clear();
+  await db.deleteCurrentAccountData();
+  state.invalidateSession();
+}
+
+class InMemoryVault implements SessionVault {
+  String? _token;
+  @override
+  Future<void> writeRefreshToken(String token) async => _token = token;
+  @override
+  Future<String?> readRefreshToken() async => _token;
+  @override
+  Future<void> clear() async => _token = null;
+}
+
+Future<void> main() async {
+  final vault = InMemoryVault();
+  await vault.writeRefreshToken('refresh-123');
+  final db = LocalDatabase();
+  await logout(vault, db);
+  print('token=${await vault.readRefreshToken()} cache=${db.hasCurrentAccountData} session=${state.active} sync=${syncEngine.running}');
+}
+```
+
+**Ejecuta el ejemplo** (desde `demo_flutter`):
+```bash
+dart run lib/core/session_vault.dart
+```
+Verifica la salida y compárala con el resultado esperado.
+
+Resultado esperado: `token=null cache=false session=false sync=false`. Explica cada línea: `SessionVault` separa el contrato del almacén seguro, `InMemoryVault` lo implementa para ejecutar sin dispositivo, `logout()` cancela la sincronización, borra el token, elimina los datos de envíos de la cuenta actual e invalida la sesión en memoria; el `print` final demuestra que no sobrevive ningún rastro.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** en `logout()` borra la línea `await db.deleteCurrentAccountData();` y ejecuta de nuevo. La salida cambia a `cache=true`: un segundo conductor que inicia sesión en el mismo dispositivo (un teléfono compartido en el depósito) todavía puede ver los envíos del conductor anterior, aunque el token ya no exista. **Pista:** el token y la caché son dos superficies distintas; cerrar sesión debe limpiar ambas.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `db.deleteCurrentAccountData()` y comprobá que la salida vuelve a `cache=false`. Agregá un test en `test/logout_test.dart` que simule logout seguido de login con otro conductor y confirme que `hasCurrentAccountData` es falso y la sesión anterior quedó invalidada. Después llevá el contrato al **proyecto integrador** RutaFlow: `SessionVault` vive en `lib/core/session_vault.dart`; no conviene delegar a Keychain/Keystore un dato que no es sensible (un contador de sesiones), porque el almacenamiento seguro tiene costo asíncrono y complejidad adicional; reservalo para tokens y credenciales y usá `shared_preferences` (Módulo 6) para el resto.
+
+#### Paso 7 · Cierre y evidencia
+Entregá `SessionVault` y `logout()` completos del Paso 4, la salida `cache=true` del fallo del Paso 5, y el test de cambio de cuenta del Paso 6; explicá por qué borrar el token sin borrar la caché local puede exponer la sesión anterior en un dispositivo compartido. Siguiente paso: estudia cómo medir y optimizar fluidez contra el presupuesto de cada frame. Errores comunes: guardar tokens en `.env` empacado o en storage sin cifrado dedicado, borrar el token sin borrar la caché local relacionada, y no redactar valores sensibles en logs/crash reports. Límites y decisión de uso: el almacenamiento seguro no vuelve confidencial un dato que la aplicación sigue enviando a logs o telemetría; la redacción y la retención se revisan aparte. Fuente oficial: https://docs.flutter.dev/cookbook/security.
 
 ### Tema 3: Fluidez se mide contra el presupuesto de cada frame
 

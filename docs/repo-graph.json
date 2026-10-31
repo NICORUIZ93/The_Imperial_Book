@@ -182,7 +182,7 @@
     },
     {
       "path": "docs/PLAN-TOTAL-DE-CAMBIO.md",
-      "lines": 183,
+      "lines": 212,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -609,7 +609,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1911,
+      "lines": 1897,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -641,7 +641,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12480,
+      "lines": 12478,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -796,7 +796,7 @@
     },
     {
       "path": "docs/lesson-substance-baseline.json",
-      "lines": 1693,
+      "lines": 905,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -804,7 +804,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10037,
+      "lines": 10004,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -812,7 +812,7 @@
     },
     {
       "path": "docs/lesson-substance.md",
-      "lines": 85,
+      "lines": 84,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -8105,7 +8105,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 402,
+      "lines": 380,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8503,7 +8503,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-13.md",
-      "lines": 411,
+      "lines": 419,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8944,7 +8944,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-4.md",
-      "lines": 1009,
+      "lines": 1013,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9007,7 +9007,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 488,
+      "lines": 416,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9721,7 +9721,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 468,
+      "lines": 485,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10225,7 +10225,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-12.md",
-      "lines": 465,
+      "lines": 446,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

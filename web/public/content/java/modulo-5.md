@@ -249,50 +249,68 @@ El servicio de tracking lanza dos llamadas relacionadas con `CompletableFuture` 
 #### Paso 3 · Teoría, modelo mental y analogía
 Structured concurrency trata un grupo de subtareas relacionadas como una única unidad: todas nacen dentro del mismo scope y ese scope no termina hasta que todas terminan (o se cancelan). La analogía: un padre que lleva a sus hijos a un museo — si uno se pierde, no se va dejando a los demás dispersos; reúne o cancela el paseo completo antes de continuar.
 
-**Evidencia de aprendizaje:** entrega scope con cancelación conjunta funcionando, subtarea huérfana reproducida y tercera subtarea agregada correctamente.
 **Conceptos clave:** StructuredTaskScope, fork, join, Joiner, cancelación conjunta, árbol de tareas.
 
-Cada operación del proyecto integrador de este track que dependa de varias subtareas relacionadas (ej. validar un pedido consultando stock y precio a la vez) debería usar structured concurrency en vez de lanzar `CompletableFuture` sueltos sin ningún scope que los agrupe.
+Cada operación del **proyecto integrador** de este track que dependa de varias subtareas relacionadas (ej. validar un pedido consultando stock y precio a la vez) debería usar structured concurrency en vez de lanzar `CompletableFuture` sueltos sin ningún scope que los agrupe.
 
-**Cuándo no usarlo:** para una única tarea asíncrona sin ninguna otra subtarea relacionada, `StructuredTaskScope` agrega ceremonia sin beneficio; basta con `Executors.newVirtualThreadPerTaskExecutor()` y esperar ese único resultado.
-
-Structured concurrency (todavía en preview en Java 25 — JEP 505, quinta ronda) trata un conjunto de subtareas lanzadas dentro de un mismo `StructuredTaskScope` como una única unidad de trabajo con un ciclo de vida compartido: el scope no puede cerrarse (saliendo del bloque `try`) hasta que todas sus subtareas hayan terminado, y un `Joiner` como `allSuccessfulOrThrow()` cancela automáticamente las subtareas restantes en cuanto cualquiera falla, en vez de dejarlas corriendo de forma huérfana sin que el código que las lanzó se entere o las controle.
-
-**Analogía:** `StructuredTaskScope` es como un padre que lleva a sus hijos a un museo: todos entran juntos y el padre no se va hasta reunir a todos (o decide terminar el paseo para todos si uno se pierde), en vez de que cada hijo deambule de forma independiente sin que nadie sepa cuándo terminaron ni pueda reunirlos si algo sale mal.
+**Cuándo no usarlo:** para una única tarea asíncrona sin ninguna otra subtarea relacionada, `StructuredTaskScope` agrega ceremonia sin beneficio; basta con `Executors.newVirtualThreadPerTaskExecutor()` y esperar ese único resultado. Tampoco reemplaza el diseño de timeouts y presupuestos de latencia: el scope acota el ciclo de vida, no la duración de cada subtarea.
 
 **¿Por qué es importante?** `StructuredTaskScope` garantiza que un grupo de subtareas relacionadas comparta un ciclo de vida común, cancelando el resto automáticamente si cualquiera falla, eliminando las subtareas huérfanas que `CompletableFuture` suelto no previene.
 
-**Código del ejemplo:**
-
-```java
-try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.<Object>allSuccessfulOrThrow())) {
-    Subtask<Double> distancia = scope.fork(() -> obtenerDistancia(ruta));
-    Subtask<Boolean> disponible = scope.fork(() -> verificarDisponibilidad(conductorId));
-    scope.join();
-    return calcularTarifa(distancia.get(), disponible.get());
-}
-```
-
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/main/java/academia/concurrencia/CalculoTarifaEstructurado.java` dentro.
+**Ejemplo independiente (desde cero):** crea una **carpeta vacía** y dentro el archivo Java completo; no necesitás Gradle ni un proyecto previo.
 ```bash
-mkdir ejemplo && cd ejemplo && gradle init --type java-application
+mkdir -p ejemplo/src/academia/concurrencia && cd ejemplo
 ```
 
-Crea `src/main/java/academia/concurrencia/CalculoTarifaEstructurado.java`:
+Crea `src/academia/concurrencia/CalculoTarifaEstructurado.java` con este contenido completo:
 ```java
-try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.<Object>allSuccessfulOrThrow())) {
-    Subtask<Double> distancia = scope.fork(() -> obtenerDistancia(ruta));
-    Subtask<Boolean> disponible = scope.fork(() -> verificarDisponibilidad(conductorId));
-    scope.join();
-    return calcularTarifa(distancia.get(), disponible.get());
+package academia.concurrencia;
+
+import java.util.concurrent.StructuredTaskScope;
+
+public class CalculoTarifaEstructurado {
+    static double obtenerDistancia(String ruta) {
+        throw new IllegalStateException("ruta sin coordenadas");
+    }
+
+    static boolean verificarDisponibilidad(String conductorId) {
+        try {
+            Thread.sleep(5_000);
+        } catch (InterruptedException e) {
+            System.out.println("disponibilidad cancelada");
+            return false;
+        }
+        System.out.println("disponibilidad terminó");
+        return true;
+    }
+
+    static double calcularTarifa(double distancia, boolean disponible) {
+        return distancia * (disponible ? 1.2 : 1.0);
+    }
+
+    public static void main(String[] args) throws Exception {
+        try (var scope = StructuredTaskScope.open(
+                StructuredTaskScope.Joiner.<Object>allSuccessfulOrThrow())) {
+            var distancia = scope.fork(() -> obtenerDistancia("ruta-42"));
+            var disponible = scope.fork(() -> verificarDisponibilidad("conductor-7"));
+            scope.join();
+            System.out.println(calcularTarifa(distancia.get(), disponible.get()));
+        } catch (Exception e) {
+            System.out.println("falló: " + e.getMessage());
+        }
+    }
 }
 ```
+
+**Ejecuta el ejemplo** (compila y corre con la preview de Java 25):
 ```bash
-javac --release 25 --enable-preview -d out src/main/java/academia/concurrencia/CalculoTarifaEstructurado.java
+javac --release 25 --enable-preview -d out src/academia/concurrencia/CalculoTarifaEstructurado.java
 java --enable-preview -cp out academia.concurrencia.CalculoTarifaEstructurado
 ```
-Resultado esperado: si `obtenerDistancia` lanza una excepción, `scope.join()` cancela automáticamente `verificarDisponibilidad` (si todavía no terminó) y relanza la excepción original, sin dejar ninguna subtarea corriendo de forma huérfana en segundo plano. La JVM además imprime una advertencia de que estás usando funcionalidades en preview.
+Verifica la salida y compárala con el resultado esperado.
+
+Resultado esperado: `disponibilidad cancelada` y `falló: java.lang.IllegalStateException: ruta sin coordenadas`; nunca aparece `disponibilidad terminó`, porque `scope.join()` cancela la otra subtarea en cuanto una falla. La JVM además imprime una advertencia de que estás usando funcionalidades en preview. Explica cada bloque: `open` crea el scope con un `Joiner` que exige éxito de todas las subtareas, `fork` lanza cada subtarea dentro del mismo árbol, `join` espera el cierre conjunto y `Subtask.get()` solo se lee después, cuando el resultado ya está disponible.
 
 ```mermaid
 flowchart LR
@@ -310,8 +328,7 @@ Pista: reemplazá el `StructuredTaskScope` por dos `CompletableFuture.supplyAsyn
 Corregí el Paso 5 volviendo a `StructuredTaskScope` con `fork`/`join`, y agregá una tercera subtarea (por ejemplo, registrar el intento en un log de auditoría) confirmando que las tres se cancelan juntas si cualquiera falla.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el scope con cancelación conjunta del Paso 4, la subtarea huérfana del Paso 5, y la tercera subtarea agregada del Paso 6; explicá por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene. Siguiente paso: estudia Scoped Values, el complemento de structured concurrency para propagar contexto sin ThreadLocal. Errores comunes: lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí. Fuentes oficiales: https://openjdk.org/jeps/505 y https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html. **Actualización de plataforma (octubre 2026):** en JDK 27 (la entrega más reciente, liberada en septiembre de 2026) esta misma feature avanzó a su séptima ronda de preview (JEP 533) y ya fue propuesta como candidata a finalizarse sin cambios adicionales — el código de este Tema, compilado con `--release 25 --enable-preview`, sigue siendo válido; solo cambia el número de JEP y de ronda si migrás a una JDK más reciente.
-**¿Por qué es importante?** Un grupo de subtareas relacionadas que no comparte un ciclo de vida común puede dejar trabajo huérfano corriendo en segundo plano cuando una falla, consumiendo recursos para un resultado que ya nadie espera.
+Entregá el scope con cancelación conjunta del Paso 4, la subtarea huérfana del Paso 5, y la tercera subtarea agregada del Paso 6; explicá por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene. Siguiente paso: estudia Scoped Values, el complemento de structured concurrency para propagar contexto sin ThreadLocal. Errores comunes: lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí. Límites y decisión de uso: el scope no impone timeouts ni presupuestos de latencia por sí solo, y no conviene adoptarlo para una única llamada asíncrona sin subtareas hermanas. Fuentes oficiales: https://openjdk.org/jeps/505 y https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html. **Actualización de plataforma (octubre 2026):** en JDK 27 (la entrega más reciente, liberada en septiembre de 2026) esta misma feature avanzó a su séptima ronda de preview (JEP 533) y ya fue propuesta como candidata a finalizarse sin cambios adicionales — el código de este Tema, compilado con `--release 25 --enable-preview`, sigue siendo válido; solo cambia el número de JEP y de ronda si migrás a una JDK más reciente.
 
 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
 

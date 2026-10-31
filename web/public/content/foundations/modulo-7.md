@@ -295,15 +295,27 @@ Entregá la interfaz real leída del Paso 4, el adaptador en memoria probado del
 Al finalizar vas a escribir el ADR real que justifica por qué RutaFlow usa DynamoDB para `ShipmentEvents` en vez de una base relacional. Prerrequisitos: ninguno adicional (el Módulo 4 del track Cloud profundiza la decisión en sí).
 
 #### Paso 2 · Contexto y caso real
-Esa decisión ya está tomada en el código (`ShipmentEvents` con clave `shipmentId`+`sequence`), pero nadie documentó todavía el contexto y las consecuencias — exactamente lo que un ADR existe para registrar antes de que la próxima persona se pregunte "¿por qué no es SQL?".
+Esa decisión ya está tomada en el código (`ShipmentEvents` con clave `shipmentId`+`sequence`), pero nadie documentó todavía el contexto y las consecuencias — exactamente lo que un ADR existe para registrar antes de que la próxima persona se pregunte "¿por qué no es SQL?". **¿Por qué es importante?** Porque una decisión importante sin contexto documentado se reinterpreta como accidente, y una deuda sin condición de pago se convierte en una reescritura total sin criterio.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un ADR es la bitácora de navegación: no vende la decisión, registra el contexto que la motivó y qué consecuencias aceptaste a cambio — para que la próxima tripulación no la confunda con un accidente.
+Un ADR es la bitácora de navegación: no vende la decisión, registra el contexto que la motivó y qué consecuencias aceptaste a cambio — para que la próxima tripulación no la confunda con un accidente. **Conceptos clave:** ADR, documentación viva, deuda técnica, mantenimiento correctivo/adaptativo/perfectivo/preventivo, compatibilidad, deprecación, migración y observabilidad.
+
+Documentación profesional responde preguntas para una audiencia: README permite ejecutar; arquitectura explica estructura; runbook opera; ADR registra una decisión significativa y su contexto. Deuda técnica es una decisión que aumenta coste futuro, a veces consciente: registra principal (trabajo pendiente), interés (coste recurrente), riesgo, propietario y condición de pago; no es deuda cualquier código desagradable ni sirve para justificar una reescritura total. Mantenimiento incluye corregir defectos, adaptarse a entornos, mejorar capacidad y prevenir degradación; un cambio público requiere versionado, migración, periodo de deprecación, telemetría de uso y rollback. La ética atraviesa esas decisiones: accesibilidad, privacidad, sesgo, sostenibilidad y condiciones laborales; un requisito legal es el mínimo, no siempre el límite de responsabilidad.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    DEC["decisión"] --> ADR["ADR"] --> IMPL["implementación"] --> METRICS["métricas"]
+    METRICS --> EVIDENCE2["nueva evidencia"] --> REVIEW["mantener o revisar"]
+```
+
+Un ADR no vende la decisión; registra consecuencias y disparadores de revisión. Diagramas sin fecha y alcance se vuelven engañosos; validá enlaces, ejemplos y comandos de la documentación en CI. **Límites:** un ADR no sustituye el diseño ni la prueba; si el código y el ADR discrepan, alguno está desactualizado y hay que decidir cuál corregir.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+**Ejemplo independiente (desde cero):** crea una **carpeta vacía** y dentro el ADR como archivo real; no hace falta ningún proyecto previo.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir -p ejemplo-adr/docs/adr && cd ejemplo-adr
 ```
 
 ```markdown
@@ -324,107 +336,23 @@ ninguna consulta ad hoc nueva ("todos los envíos de este mes") es gratis sin un
 diseñado para ese patrón específico.
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+**Ejecuta la verificación** (comprueba que el ADR tiene las tres secciones):
 
 ```bash
-python3 ejemplo.py
+python3 -c "import pathlib,sys; t=pathlib.Path('docs/adr/ADR-004-dynamodb-shipmentevents.md').read_text(); faltan=[s for s in ('### Contexto','### Decisión','### Consecuencias') if s not in t]; print('faltan:', faltan) if faltan else print('ADR completo'); sys.exit(1 if faltan else 0)"
 ```
-Observa la salida impresa y compárala con el resultado esperado.
+Observa la salida y compárala con el resultado esperado.
 
-Resultado esperado: un documento completo con contexto, decisión y consecuencias — no solo "elegimos DynamoDB", sino por qué y qué se sacrificó a cambio.
+Resultado esperado: `ADR completo`. Explica cada parte: `Estado` dice si la decisión sigue vigente; `Contexto` registra las fuerzas y alternativas; `Decisión` responde qué se eligió; `Consecuencias` acepta el costo y deja el disparador de revisión (aquí, un GSI si aparece una consulta ad hoc recurrente).
 
 #### Paso 5 · Práctica guiada
-Pista: borrá la sección "Consecuencias" y dejá solo "Decisión: usar DynamoDB" — ese es el fallo deliberado: sin consecuencias documentadas, cualquiera que necesite una consulta ad hoc nueva en seis meses va a asumir que DynamoDB "simplemente no sirve para eso", en vez de entender que fue un trade-off consciente con una salida conocida (agregar un GSI, Módulo 4 Tema 5 del track Cloud).
+**Fallo deliberado:** borra la sección `### Consecuencias` y vuelve a ejecutar la verificación. Falla con `faltan: ['### Consecuencias']`, porque el ADR ya no registra qué se sacrificó. **Pista:** ese es el fallo de un ADR que solo vende la decisión: cualquiera que necesite una consulta ad hoc nueva en seis meses asumirá que DynamoDB "simplemente no sirve para eso", en vez de entender que fue un trade-off consciente con una salida conocida (agregar un GSI, Módulo 4 Tema 5 del track Cloud). Corrige el archivo y confirma que vuelve a imprimir `ADR completo`.
 
 #### Paso 6 · Práctica independiente
-Documentá, como deuda técnica explícita (no como ADR), que `ShipmentEvents` no tiene todavía un GSI para "envíos por estado actual" — con su principal (el trabajo pendiente), su interés (qué cuesta no tenerlo hoy), y su condición de pago (qué señal dispararía construirlo).
+Documentá, como deuda técnica explícita (no como ADR) y en un archivo propio `docs/deuda.md`, que `ShipmentEvents` no tiene todavía un GSI para "envíos por estado actual": escribí principal (el trabajo pendiente), interés (qué cuesta no tenerlo hoy), riesgo, propietario y condición de pago (qué señal dispararía construirlo). Después llevá lo aprendido al **proyecto integrador** Fundamentos: documentá en `docs/adr/0001-almacenamiento-json.md` por qué su `almacenamiento.py` guarda las tareas en un archivo JSON plano y no en SQLite, con las consecuencias de esa elección (simple de inspeccionar a mano, sin escritura concurrente segura), y verificá con `python3 -m pytest tests/test_almacenamiento.py` que el comportamiento documentado sigue siendo el real.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el ADR completo del Paso 4, la consecuencia faltante y su riesgo del Paso 5, y la deuda técnica documentada del Paso 6; explicá la diferencia entre un ADR (decisión ya tomada, con consecuencias) y una entrada de deuda técnica (trabajo pendiente, con condición de pago). Errores comunes: escribir un ADR que solo vende la decisión sin registrar las consecuencias negativas, llamar "deuda técnica" a cualquier código desprolijo sin principal ni condición de pago, y dejar una decisión importante sin documentar porque "ya se sabe por qué se hizo". Fuentes oficiales: https://adr.github.io/.
-**¿Por qué es importante?** Porque sin el ADR-004 documentado, en seis meses alguien va a asumir que DynamoDB fue un error en vez de entender que fue un trade-off consciente con una salida ya conocida (un GSI).
-**Escenario:** Tu equipo elige SQLite sobre PostgreSQL. Sin documentar. Pasó un año, alguien pregunta: "¿por qué SQLite y no Postgres?" Nadie recuerda las fuerzas.
-
-**Tu tarea:**
-1. ¿Cuándo escribir un ADR?
-2. ¿Cuándo es overkill? (Pista: "usar `if` en vez de ternario".)
-3. ¿Cuándo un ADR genera deuda técnica?
-4. ¿Qué debe tener un ADR mínimo?
-
-[SOLUCIÓN PLEGADA]
-> ADR para decisiones "difíciles de cambiar" (BD, arquitectura, licencia, framework). No para detalles tácticos (variable naming, loop vs map). Genera deuda si usa recursos sin límite — un ADR por cada línea costaría más que desarrollar. Mínimo: (1) estado (aceptada/derogada), (2) contexto (restricciones, alternativas), (3) decisión (qué y por qué), (4) consecuencias (costos, riesgos, alternativa futura). Sin esto, es solo una nota.
-
-**¿Por qué es importante?** El código cambia; registrar contexto, consecuencias y deuda permite evolucionarlo sin repetir decisiones ni romper contratos silenciosamente.
-
-**Conceptos clave:** ADR, documentación viva, deuda técnica, mantenimiento correctivo/adaptativo/perfectivo/preventivo, compatibilidad, deprecación, migración y observabilidad.
-
-Documentación profesional responde preguntas para una audiencia. README permite ejecutar; arquitectura explica estructura; runbook opera; ADR registra una decisión significativa y su contexto.
-
-```markdown
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-# ADR-003: SQLite como persistencia inicial
-Estado: aceptada
-
-## Contexto
-Una sola instancia, datos relacionales y operación local.
-
-## Decisión
-Usar SQLite con migraciones versionadas.
-
-## Consecuencias
-Transacciones simples y despliegue fácil; escritura concurrente limitada.
-Revisar si aparece requisito multi-instancia.
-```
-
-Un ADR no vende la decisión; registra consecuencias y disparadores de revisión. Diagramas sin fecha/alcance se vuelven engañosos. Valida documentación en CI: enlaces, ejemplos, comandos.
-
-Deuda técnica es una decisión que aumenta coste futuro, a veces consciente. Registra principal (trabajo pendiente), interés (coste recurrente), riesgo, propietario y condición de pago. No llames deuda a cualquier código desagradable ni úsala para justificar reescritura total.
-
-Mantenimiento incluye corregir defectos, adaptarse a entornos, mejorar capacidad y prevenir degradación. Cambios públicos requieren compatibilidad: versionado, migración, periodo de deprecación, telemetría de uso y rollback. “Breaking change” sin plan transfiere coste a usuarios.
-
-La ética atraviesa decisiones: accesibilidad, privacidad, sesgo, sostenibilidad y condiciones laborales. Un requisito legal es mínimo, no siempre el límite de responsabilidad.
-
-**Analogía:** un ADR es la bitácora de navegación; la deuda es tomar una ruta más rápida con coste futuro conocido. Sin registro, la siguiente tripulación cree que fue accidente.
-
-**¿Por qué es importante?** La mayor parte del coste ocurre después de la primera versión. Documentación y evolución responsable preservan conocimiento y confianza.
-
-**Casos de uso reales:** migraciones, cambios API, actualización de frameworks, incidentes, onboarding y retiro de funciones.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    DEC["decisión"] --> ADR["ADR"] --> IMPL["implementación"] --> METRICS["métricas"]
-    METRICS --> EVIDENCE2["nueva evidencia"] --> REVIEW["mantener o revisar"]
-```
-
-El proyecto integrador Fundamentos necesita exactamente este tipo de ADR para su propia decisión temprana: por qué `almacenamiento.py` guarda las tareas en un archivo JSON plano y no en SQLite desde el primer módulo. Documentá esa decisión en `docs/adr/0001-almacenamiento-json.md` con sus consecuencias (simple de inspeccionar a mano, pero sin escritura concurrente segura), y verificá con Python 3 (`python3 -m pytest tests/test_almacenamiento.py`) que el comportamiento documentado sigue siendo el real antes de dar por cerrado el ADR.
-
-## Construcción guiada del capítulo
-
-### Proyecto 7: rediseñar el inventario como producto mantenible
-
-1. Crea `requirements/` con stakeholders, alcance, historias y criterios.
-2. Define cinco atributos de calidad mediante escenarios medibles.
-3. Dibuja C4 contexto, contenedores y componentes.
-4. Crea ADRs para SQLite, arquitectura modular, autenticación y audit log.
-5. Añade pruebas caracterizadoras al diseño actual.
-6. Refactoriza hacia `domain/`, `application/`, `infrastructure/` y `interfaces/`.
-7. Introduce puertos solo en límites justificados.
-8. Ejecuta pruebas después de cada paso y separa commits de comportamiento/refactor.
-9. Añade una fitness function que impida que dominio importe infraestructura.
-10. Registra deuda con coste/riesgo y crea roadmap de tres entregas.
-11. Diseña deprecación para cambiar el formato de exportación sin romper clientes.
-
-**Verificación:** cada requisito enlaza prueba/evidencia; diagramas coinciden con código; ADRs incluyen consecuencias; dominio funciona sin SQLite; historia Git permite revisar pasos; deuda tiene criterio de pago.
-
-**Errores comunes y soluciones**
-
-- Requisitos vagos: añade escenario, medida y contexto.
-- Diagramar clases antes de entender sistema: comienza en contexto.
-- Aplicar todos los patrones: justifica fuerzas y coste.
-- Refactor grande sin tests: caracteriza y divide.
-- Documentar solo éxito: registra consecuencias y límites.
-
+**Evidencia de aprendizaje:** entregá el ADR completo del Paso 4, la salida `faltan: ['### Consecuencias']` del fallo del Paso 5 junto con el archivo corregido, y la entrada de deuda del Paso 6; explicá la diferencia entre un ADR (decisión ya tomada, con consecuencias) y una entrada de deuda técnica (trabajo pendiente, con condición de pago). Como **siguiente** paso, usá ese estándar en el proyecto del módulo: requisitos con criterios medibles, ADRs para SQLite, arquitectura modular, autenticación y audit log, pruebas caracterizadoras antes de refactorizar y una fitness function que impida que el dominio importe infraestructura. **Errores comunes:** escribir un ADR que solo vende la decisión sin registrar las consecuencias negativas, llamar "deuda técnica" a cualquier código desprolijo sin principal ni condición de pago, y dejar una decisión importante sin documentar porque "ya se sabe por qué se hizo". **Límites y decisión de uso:** un ADR por cada detalle táctico (nombre de variable, `if` frente a ternario) cuesta más de lo que documenta; el umbral es "difícil de cambiar". **Fuentes oficiales:** https://adr.github.io/ y https://refactoring.com/catalog/.
 
 ## Aplicación del material de referencia
 

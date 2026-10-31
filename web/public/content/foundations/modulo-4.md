@@ -390,27 +390,28 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/indice.sql` dentro.
+**Ejemplo independiente (desde cero):** crea una **carpeta vacía** con su propia base SQLite; el experimento no depende de la base de otro tema.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir -p ejemplo-indice && cd ejemplo-indice
 ```
 
-Parte de la base `tareas.db` del Tema 1 y crea `src/indice.sql`:
+Crea `tareas.db` y la tabla con este comando:
 ```bash
-cd fundamentos-sqlite
+sqlite3 tareas.db "CREATE TABLE tareas (id INTEGER PRIMARY KEY, titulo TEXT, categoria_id INTEGER, estado TEXT NOT NULL DEFAULT 'pendiente'); INSERT INTO tareas (titulo, categoria_id) VALUES ('revisar stock', 1), ('enviar pedido', 2);"
 ```
+
+Crea `indice.sql` con este contenido completo:
 ```sql
-ALTER TABLE tareas ADD COLUMN estado TEXT NOT NULL DEFAULT 'pendiente';
-UPDATE tareas SET estado='completada' WHERE id=1;
-
 EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
 
 CREATE INDEX idx_tareas_estado ON tareas(estado);
 
 EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado='pendiente';
 ```
+
+**Ejecuta el ejemplo** (desde `ejemplo-indice`):
 ```bash
-sqlite3 tareas.db < src/indice.sql
+sqlite3 tareas.db < indice.sql
 ```
 **Resultado esperado:** el primer `EXPLAIN QUERY PLAN` muestra `SCAN tareas`; el segundo, después de crear el índice, muestra `SEARCH tareas USING INDEX idx_tareas_estado (estado=?)`. **Fallo deliberado:** ejecutá de nuevo `CREATE INDEX idx_tareas_estado ON tareas(estado);` sin borrar el anterior; SQLite responde `index idx_tareas_estado already exists` y la migración se detiene ahí. Corregilo con `CREATE INDEX IF NOT EXISTS idx_tareas_estado ON tareas(estado);`, que no falla si el índice ya fue creado por una ejecución anterior de la misma migración.
 
@@ -421,8 +422,7 @@ Pista: repetí el experimento filtrando por dos columnas (`WHERE estado='pendien
 Generá 5 000 tareas de prueba con un bucle en Python, medí el tiempo de la consulta por `estado` antes y después del índice con el módulo `time`, y documentá si la diferencia es perceptible con ese volumen o si recién se nota con más datos.
 
 #### Paso 7 · Cierre y evidencia
-Entregá los dos `EXPLAIN QUERY PLAN` (antes/después del índice) del Paso 4, el índice compuesto del Paso 5, y la medición de tiempo del Paso 6. Como siguiente paso, en el Tema 4 vas a envolver varias operaciones sobre estas mismas tablas dentro de una transacción para que un fallo a mitad de camino no deje la base a medio actualizar. Errores comunes: crear un índice por columna sin medir si realmente se usa; crear el mismo índice dos veces en una migración sin `IF NOT EXISTS`; medir con pocos datos y concluir que el índice "no sirve". Fuentes oficiales: https://www.sqlite.org/eqp.html y https://www.sqlite.org/lang_createindex.html.
-**¿Por qué es importante?** Porque un índice mal elegido (o la ausencia de uno) es la causa más común de que una consulta que funcionaba bien con pocos datos se vuelva inutilizable cuando el proyecto crece — y `EXPLAIN QUERY PLAN` es la única forma de confirmarlo en vez de adivinarlo.
+Entregá los dos `EXPLAIN QUERY PLAN` (antes/después del índice) del Paso 4, el índice compuesto del Paso 5, y la medición de tiempo del Paso 6. Como siguiente paso, en el Tema 4 vas a envolver varias operaciones sobre estas mismas tablas dentro de una transacción para que un fallo a mitad de camino no deje la base a medio actualizar. Errores comunes: crear un índice por columna sin medir si realmente se usa; crear el mismo índice dos veces en una migración sin `IF NOT EXISTS`; medir con pocos datos y concluir que el índice "no sirve". Límites y decisión de uso: un índice no corrige un `SELECT *`, una paginación sin límite ni un modelo incoherente; primero se corrige la consulta y después se mide el plan. Fuentes oficiales: https://www.sqlite.org/eqp.html y https://www.sqlite.org/lang_createindex.html.
 
 ### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL
 
@@ -528,20 +528,21 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/transaccion.py` dentro.
+**Ejemplo independiente (desde cero):** crea una **carpeta vacía** con su propio script y su base; no depende de los archivos de otro tema.
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir -p ejemplo-transaccion && cd ejemplo-transaccion
 ```
 
-Parte de la base `tareas.db` de los Temas anteriores y crea `src/transaccion.py`:
-```bash
-cd fundamentos-sqlite
-```
+Crea `transaccion.py` con este contenido completo:
 ```python
 import sqlite3
 
 conexion = sqlite3.connect("tareas.db")
-conexion.execute("CREATE TABLE historial(id INTEGER PRIMARY KEY, tarea_id INTEGER NOT NULL, accion TEXT NOT NULL)")
+conexion.executescript("""
+CREATE TABLE IF NOT EXISTS tareas(id INTEGER PRIMARY KEY, titulo TEXT, estado TEXT NOT NULL DEFAULT 'pendiente');
+CREATE TABLE IF NOT EXISTS historial(id INTEGER PRIMARY KEY, tarea_id INTEGER NOT NULL, accion TEXT NOT NULL);
+INSERT OR IGNORE INTO tareas(id, titulo, estado) VALUES (2, 'enviar pedido', 'pendiente');
+""")
 conexion.commit()
 
 def completar_con_transaccion(tarea_id, simular_fallo=False):
@@ -560,10 +561,14 @@ completar_con_transaccion(2, simular_fallo=True)
 print(conexion.execute("SELECT id, estado FROM tareas WHERE id=2").fetchone())
 print(conexion.execute("SELECT * FROM historial WHERE tarea_id=2").fetchall())
 ```
+
+**Ejecuta el ejemplo** (desde `ejemplo-transaccion`):
 ```bash
-python3 src/transaccion.py
+python3 transaccion.py
 ```
-**Resultado esperado:** después del `ROLLBACK`, la tarea 2 sigue con su estado original (no quedó "completada") y `historial` no tiene ninguna fila para esa tarea — el `UPDATE` que sí llegó a ejecutarse se revirtió por completo. **Fallo deliberado:** quitá el `BEGIN`/`try`/`rollback` y ejecutá las mismas dos sentencias sueltas, cada una con su propio `commit()` inmediato, con la excepción simulada entre medio: ahora la tarea 2 QUEDA marcada como "completada" (ese `UPDATE` ya se confirmó solo) pero `historial` sigue vacío para esa tarea — una inconsistencia que ningún `ROLLBACK` puede deshacer porque nunca hubo una transacción que agrupara ambos cambios.
+Verifica la salida y compárala con el resultado esperado.
+
+**Resultado esperado:** `Revertido: fallo simulado: el disco se llenó`, luego `(2, 'pendiente')` y `[]`: después del `ROLLBACK`, la tarea 2 sigue con su estado original (no quedó "completada") y `historial` no tiene ninguna fila para esa tarea — el `UPDATE` que sí llegó a ejecutarse se revirtió por completo. **Fallo deliberado:** quitá el `BEGIN`/`try`/`rollback` y ejecutá las mismas dos sentencias sueltas, cada una con su propio `commit()` inmediato, con la excepción simulada entre medio: ahora la tarea 2 QUEDA marcada como "completada" (ese `UPDATE` ya se confirmó solo) pero `historial` sigue vacío para esa tarea — una inconsistencia que ningún `ROLLBACK` puede deshacer porque nunca hubo una transacción que agrupara ambos cambios.
 
 #### Paso 5 · Práctica guiada
 Pista: repetí `completar_con_transaccion` con `simular_fallo=False` para confirmar el camino feliz: la tarea queda completada Y aparece en `historial` en el mismo `COMMIT`. Después agregá una tercera operación dentro de la misma transacción (por ejemplo, decrementar un contador de "tareas pendientes" en otra tabla) y confirmá que un fallo en esa tercera operación también revierte las dos anteriores.
@@ -572,8 +577,7 @@ Pista: repetí `completar_con_transaccion` con `simular_fallo=False` para confir
 Documentá una comparación de una línea cada caso: qué pasaría con este mismo escenario (completar tarea + historial) en una base de documentos sin transacciones multi-documento, y en qué casos esa falta de garantías sería aceptable para Fundamentos y en cuáles no.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el camino feliz y el `ROLLBACK` del Paso 4, la transacción de tres pasos del Paso 5, y la comparación SQL/NoSQL del Paso 6. Con esto cerrás el Módulo 4; como siguiente paso, en el Módulo 5 (Testing, depuración, Git y CI) vas a escribir tests automatizados y usar Git/CI para que estos mismos cambios de esquema y consultas queden verificados antes de integrarse. Errores comunes: olvidar `BEGIN` y asumir que dos `execute()` consecutivos ya son atómicos; dejar transacciones abiertas por mucho tiempo bloqueando otras escrituras; elegir NoSQL únicamente para evitar diseñar un esquema. Fuentes oficiales: https://www.sqlite.org/lang_transaction.html y https://www.sqlite.org/atomiccommit.html.
-**¿Por qué es importante?** Porque un fallo a mitad de camino no es un caso raro de laboratorio: un proceso puede interrumpirse por cualquier motivo, y sin transacción la base queda en un estado que ninguna de tus validaciones anticipó.
+Entregá el camino feliz y el `ROLLBACK` del Paso 4, la transacción de tres pasos del Paso 5, y la comparación SQL/NoSQL del Paso 6. Con esto cerrás el Módulo 4; como siguiente paso, en el Módulo 5 (Testing, depuración, Git y CI) vas a escribir tests automatizados y usar Git/CI para que estos mismos cambios de esquema y consultas queden verificados antes de integrarse. Errores comunes: olvidar `BEGIN` y asumir que dos `execute()` consecutivos ya son atómicos; dejar transacciones abiertas por mucho tiempo bloqueando otras escrituras; elegir NoSQL únicamente para evitar diseñar un esquema. Límites y decisión de uso: una transacción no corrige un modelo incoherente ni reemplaza la validación de entrada; y en bases distribuidas, confirmar entre regiones puede costar más latencia que la operación original. Fuentes oficiales: https://www.sqlite.org/lang_transaction.html y https://www.sqlite.org/atomiccommit.html.
 
 ### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana
 

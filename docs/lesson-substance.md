@@ -7,17 +7,16 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1100 |
-| Temas con algún defecto | 303 |
+| Temas con algún defecto | 293 |
 | Módulos con apéndices heredados | 184/245 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `andamiaje-generico` | 125 |
-| `bloque-repetido` | 202 |
-| `cola-tras-cierre` | 1 |
-| `parrafo-repetido` | 5 |
+| `andamiaje-generico` | 118 |
+| `bloque-repetido` | 192 |
+| `parrafo-repetido` | 1 |
 | `tema-breve` | 2 |
 
 ## Apéndices heredados más frecuentes
@@ -32,16 +31,6 @@ defectos detectados tampoco acredita haber sido comprendida.
 
 | Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |
 |---|---|---:|---:|---|
-| foundations / 7 | Tema 4: Decisiones, documentación, deuda y evolución | 1099 | 664 | andamiaje-generico, bloque-repetido, cola-tras-cierre |
-| devops / 14 | Tema 4: Una plataforma interna es un producto con límites | 956 | 145 | andamiaje-generico, bloque-repetido, parrafo-repetido |
-| flutter / 13 | Tema 2: Los secretos no pertenecen al binario | 798 | 458 | bloque-repetido, parrafo-repetido |
-| devops / 14 | Tema 1: Confiabilidad es una expectativa cuantificada | 857 | 449 | andamiaje-generico, bloque-repetido |
-| java / 5 | Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) | 1036 | 230 | andamiaje-generico, bloque-repetido |
-| foundations / 4 | Tema 3: Índices, restricciones y planes de consulta | 1341 | 164 | andamiaje-generico, bloque-repetido |
-| foundations / 4 | Tema 4: Transacciones, concurrencia y elección SQL/NoSQL | 1404 | 152 | andamiaje-generico, bloque-repetido |
-| kotlin-multiplatform / 12 | Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos | 1104 | 151 | bloque-repetido, parrafo-repetido |
-| kotlin-multiplatform / 12 | Tema 1: La mejor frontera compartida es deliberadamente pequeña | 1166 | 150 | bloque-repetido, parrafo-repetido |
-| kotlin-multiplatform / 12 | Tema 3: Un artefacto compatible necesita más que el mismo número de versión | 1101 | 147 | andamiaje-generico, bloque-repetido |
 | kotlin-multiplatform / 8 | Tema 1: El framework generado para iOS | 937 | 145 | andamiaje-generico, bloque-repetido |
 | flutter / 11 | Tema 2: Iconos y splash screens | 828 | 141 | andamiaje-generico, bloque-repetido |
 | devops / 13 | Tema 3: Cierre del track — checklist final y reflexión | 1213 | 138 | andamiaje-generico, bloque-repetido |
@@ -72,6 +61,16 @@ defectos detectados tampoco acredita haber sido comprendida.
 | ios / 11 | Tema 2: Archivar, subir y TestFlight | 844 | 488 | bloque-repetido |
 | react / 10 | Tema 3: Streaming con Suspense en el servidor | 835 | 485 | bloque-repetido |
 | java / 11 | Tema 4: Foreign Function & Memory API (Java 22) | 906 | 484 | bloque-repetido |
+| react / 2 | Tema 2: useRef — valores mutables sin re-render | 890 | 484 | bloque-repetido |
+| java / 0 | Tema 6: Operadores, precedencia y control de flujo | 953 | 478 | bloque-repetido |
+| cloud / 33 | Tema 2: Kubernetes administrado, ECS y Service Mesh | 838 | 473 | andamiaje-generico |
+| java / 8 | Tema 2: Ciclo de vida de build y scopes | 909 | 473 | bloque-repetido |
+| java / 9 | Tema 1: JUnit 5 — anotaciones y ciclo de vida | 824 | 472 | bloque-repetido |
+| cloud / 13 | Tema 3: Migrations | 862 | 467 | andamiaje-generico |
+| flutter / 14 | Tema 2: Google Maps y localización en tiempo real | 778 | 466 | andamiaje-generico |
+| ios / 10 | Tema 1: Instruments | 820 | 464 | bloque-repetido |
+| ios / 9 | Tema 2: Testing de código async | 801 | 464 | bloque-repetido |
+| java / 8 | Tema 1: pom.xml vs build.gradle.kts | 824 | 464 | bloque-repetido |
 
 ## Cómo se corrige
 
@@ -81,4 +80,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `bab7a609124d18661020850b274f7435af0868cb41f6d5b548ffb572b47f8296`
+Huella del contenido: `341712c9e99178b332dfea854c5f7461ebaae1be1b50db9eb3078555f4ed60ba`

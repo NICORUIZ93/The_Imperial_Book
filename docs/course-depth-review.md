@@ -6,19 +6,19 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
-| foundations | 99 | 8 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
+| foundations | 99 | 9 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 77 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 85 | 46 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 85 | 45 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 7 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 113 | 2 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
@@ -350,7 +350,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | devops / 13 | [Tema 1: El pipeline completo — de commit a producción verificada](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 13 | [Tema 2: Uniendo cada módulo del track en un solo flujo](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 13 | [Tema 3: Cierre del track — checklist final y reflexión](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| devops / 14 | [Tema 1: Confiabilidad es una expectativa cuantificada](../web/public/content/devops/modulo-14.md) | ejemplo-breve-revisar-contexto |
+| devops / 14 | [Tema 1: Confiabilidad es una expectativa cuantificada](../web/public/content/devops/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 14 | [Tema 2: Una alerta debe conducir a una acción](../web/public/content/devops/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 14 | [Tema 3: Construir una imagen no demuestra de dónde proviene](../web/public/content/devops/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 14 | [Tema 4: Una plataforma interna es un producto con límites](../web/public/content/devops/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
@@ -559,7 +559,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | foundations / 3 | [Tema 5: HTML semántico y CSS responsive desde un archivo vacío](../web/public/content/foundations/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 1: Del mundo real al modelo relacional](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 2: SQL para definir, escribir, consultar y relacionar](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 4 | [Tema 3: Índices, restricciones y planes de consulta](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 4 | [Tema 3: Índices, restricciones y planes de consulta](../web/public/content/foundations/modulo-4.md) | ejemplo-breve-revisar-contexto |
 | foundations / 4 | [Tema 4: Transacciones, concurrencia y elección SQL/NoSQL](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 4 | [Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL](../web/public/content/foundations/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
@@ -711,7 +711,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
+| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 6 | [Tema 1: NIO.2 — Path y Files](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |

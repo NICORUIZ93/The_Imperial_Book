@@ -1647,12 +1647,11 @@
     }
   ],
   "summary": {
-    "fingerprint": "bab7a609124d18661020850b274f7435af0868cb41f6d5b548ffb572b47f8296",
+    "fingerprint": "341712c9e99178b332dfea854c5f7461ebaae1be1b50db9eb3078555f4ed60ba",
     "issues": {
-      "andamiaje-generico": 125,
-      "bloque-repetido": 202,
-      "cola-tras-cierre": 1,
-      "parrafo-repetido": 5,
+      "andamiaje-generico": 118,
+      "bloque-repetido": 192,
+      "parrafo-repetido": 1,
       "tema-breve": 2
     },
     "legacySections": {
@@ -1663,7 +1662,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1100,
-    "topicsWithIssues": 303
+    "topicsWithIssues": 293
   },
   "topics": {
     "android": [
@@ -4044,14 +4043,11 @@
         "words": 1213
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 449,
+        "tailWords": 139,
         "topic": "Tema 1: Confiabilidad es una expectativa cuantificada",
-        "words": 857
+        "words": 882
       },
       {
         "issues": [
@@ -4074,15 +4070,11 @@
         "words": 950
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido",
-          "parrafo-repetido"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 145,
+        "tailWords": 143,
         "topic": "Tema 4: Una plataforma interna es un producto con límites",
-        "words": 956
+        "words": 965
       },
       {
         "issues": [
@@ -4754,14 +4746,11 @@
         "words": 863
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "parrafo-repetido"
-        ],
+        "issues": [],
         "module": 13,
-        "tailWords": 458,
+        "tailWords": 130,
         "topic": "Tema 2: Los secretos no pertenecen al binario",
-        "words": 798
+        "words": 881
       },
       {
         "issues": [
@@ -5693,24 +5682,18 @@
         "words": 1323
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 164,
+        "tailWords": 144,
         "topic": "Tema 3: Índices, restricciones y planes de consulta",
-        "words": 1341
+        "words": 1330
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 4,
-        "tailWords": 152,
+        "tailWords": 145,
         "topic": "Tema 4: Transacciones, concurrencia y elección SQL/NoSQL",
-        "words": 1404
+        "words": 1436
       },
       {
         "issues": [],
@@ -5847,15 +5830,11 @@
         "words": 965
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido",
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 664,
+        "tailWords": 179,
         "topic": "Tema 4: Decisiones, documentación, deuda y evolución",
-        "words": 1099
+        "words": 1000
       },
       {
         "issues": [],
@@ -6948,14 +6927,11 @@
         "words": 923
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 5,
-        "tailWords": 230,
+        "tailWords": 222,
         "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
-        "words": 1036
+        "words": 975
       },
       {
         "issues": [],
@@ -7824,34 +7800,25 @@
         "words": 1103
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "parrafo-repetido"
-        ],
+        "issues": [],
         "module": 12,
         "tailWords": 150,
         "topic": "Tema 1: La mejor frontera compartida es deliberadamente pequeña",
-        "words": 1166
+        "words": 1076
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "parrafo-repetido"
-        ],
+        "issues": [],
         "module": 12,
-        "tailWords": 151,
+        "tailWords": 165,
         "topic": "Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos",
-        "words": 1104
+        "words": 1066
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 12,
-        "tailWords": 147,
+        "tailWords": 154,
         "topic": "Tema 3: Un artefacto compatible necesita más que el mismo número de versión",
-        "words": 1101
+        "words": 1169
       },
       {
         "issues": [

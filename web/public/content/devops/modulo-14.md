@@ -14,61 +14,15 @@ Al finalizar vas a definir un SLI/SLO para el viaje "crear un envío y verlo con
 El equipo de RutaFlow discute si la API "está estable" basándose en impresiones subjetivas de cada persona — nadie definió todavía una medida objetiva y compartida de qué significa "estable" para el viaje crítico de crear un envío.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un SLI es una proporción medible de eventos buenos sobre válidos; un SLO fija el objetivo durante una ventana; el presupuesto de error es el margen restante antes de incumplir ese objetivo — combustible para cambiar con velocidad controlada, no permiso para ignorar fallos.
+Empieza por una experiencia: "crear una tarea y verla confirmada". Un SLI es una proporción medible de eventos buenos sobre válidos; un SLO fija el objetivo durante una ventana; el presupuesto de error es el margen restante antes de incumplir ese objetivo — combustible para cambiar con velocidad controlada, no permiso para ignorar fallos. Un SLA es un compromiso contractual y no debe confundirse con el objetivo interno; 100% suele ser económicamente imposible e incluso frena cambios que mejorarían el producto. **Conceptos clave:** user journey, SLI, SLO, SLA, error budget, availability, latency, correctness, window, burn rate y toil.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-Ejecuta `docker` para levantar Prometheus y ejecuta `npm` para instrumentar tu aplicación Node. La consulta PromQL calcula tu SLI:
+Define eventos válidos y exclusiones antes de mirar el resultado. Para 99.9% mensual, el 0.1% restante es presupuesto de error. Si se consume rápido, reduce cambios riesgosos y prioriza confiabilidad; si permanece saludable, existe espacio para evolucionar. Usa burn rate en ventanas corta y larga para detectar consumo rápido sin alertar por cada error aislado. En producción, el SLI de `/envios` se calcula con PromQL sobre las métricas del servicio:
 
 ```promql
 sum(rate(http_requests_total{route="/envios",code=~"2.."}[5m]))
 /
 sum(rate(http_requests_total{route="/envios"}[5m]))
 ```
-
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
-
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
-Resultado esperado: esta consulta devuelve la proporción real de peticiones exitosas a `/envios` en los últimos 5 minutos; comparada contra un SLO de 99.9% mensual, permite calcular cuánto del presupuesto de error ya se consumió en lo que va del mes.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
-```
-#### Paso 5 · Práctica guiada
-Pista: definí el SLO de disponibilidad para `/envios` como "100% — nunca debería fallar" — ese es el fallo deliberado: con ese objetivo, cualquier error consume presupuesto y dispara alertas constantes, y un objetivo de 100% suele ser económicamente imposible además de frenar cualquier cambio que introduzca el más mínimo riesgo, incluso mejoras reales al producto.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 definiendo un SLO realista (99.9% mensual) basado en el comportamiento histórico real de `/envios`, y calculá explícitamente cuántos minutos de presupuesto de error representa ese 0.1% en un mes de 30 días.
-
-#### Paso 7 · Cierre y evidencia
-Entregá el SLI/SLO definido en el Paso 4, el SLO de 100% económicamente inviable del Paso 5, y el cálculo de presupuesto en minutos del Paso 6; explicá por qué un SLO de 100% no es "más seguro" sino contraproducente en la práctica. Siguiente paso: estudia cómo una alerta debe conducir a una acción. Errores comunes: definir SLOs sin basarse en el comportamiento histórico real del servicio, confundir SLO con SLA, y no definir explícitamente qué eventos cuentan como "válidos" antes de medir. Fuentes oficiales: https://sre.google/sre-book/service-level-objectives/ y https://prometheus.io/docs/practices/instrumentation/.
-**¿Por qué es importante?** Un SLI/SLO alinea ingeniería y producto con una regla observable, en vez de discutir si el servicio "parece estable".
-**Evidencia de aprendizaje:** entrega consulta SLI, SLO de 100% inviable detectado y presupuesto de error calculado en minutos.
-**Conceptos clave:** user journey, SLI, SLO, SLA, error budget, availability, latency, correctness, window, burn rate y toil.
-
-Empieza por una experiencia: “crear una tarea y verla confirmada”. Un SLI es una proporción medible de eventos buenos sobre válidos; un SLO fija el objetivo durante una ventana. Un SLA es compromiso contractual y no debe confundirse con el objetivo interno. 100% suele ser económicamente imposible e incluso frena cambios que mejorarían el producto.
-
-```promql
-sum(rate(http_requests_total{route="/tasks",code=~"2.."}[5m]))
-/
-sum(rate(http_requests_total{route="/tasks"}[5m]))
-```
-
-Define eventos válidos y exclusiones antes de mirar el resultado. Para 99.9% mensual, el 0.1% restante es presupuesto de error. Si se consume rápido, reduce cambios riesgosos y prioriza confiabilidad; si permanece saludable, existe espacio para evolucionar. Usa burn rate en ventanas corta y larga para detectar consumo rápido sin alertar por cada error aislado.
-
-**Analogía:** el presupuesto de error es combustible para cambiar con velocidad controlada, no permiso para ignorar fallos.
-
-**¿Por qué es importante?** porque alinea ingeniería y producto con una regla observable en vez de discutir si “parece estable”.
-
-**Casos de uso reales:** API disponible pero incorrecta, dependencia excluida artificialmente, SLO imposible, freeze de cambios y latencia que afecta conversión.
 
 **Diagrama:**
 
@@ -81,11 +35,45 @@ flowchart LR
     P -->|"agotado"| EST["estabilizar, congelar cambios riesgosos"]
 ```
 
-En el proyecto integrador RutaFlow, este SLI se calcularía contra el mismo
-`examples/rutaflow/devops/deployment.yaml` que expone `/envios` vía `rutaflow-delivery-api` —
-sus `readinessProbe`/`livenessProbe` no conviene confundirlos con el SLO de negocio: una Pod
-puede estar "lista" (probe verde) y el viaje completo igual estar fuera del SLO si la
-dependencia de DynamoDB (Módulo Cloud 4) responde lenta.
+**¿Por qué es importante?** Porque un SLI/SLO alinea ingeniería y producto con una regla observable, en vez de discutir si el servicio "parece estable". **Casos de uso reales:** API disponible pero incorrecta, dependencia excluida artificialmente, SLO imposible, freeze de cambios y latencia que afecta conversión.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** crea una **carpeta vacía** con un calculador mínimo; no hace falta Prometheus ni un clúster para ver la aritmética del presupuesto.
+```bash
+mkdir -p ejemplo-slo && cd ejemplo-slo
+```
+
+Crea `sli.py` con este contenido completo:
+```python
+validos = 1_000_000
+buenos = 999_450
+slo = 0.999
+sli = buenos / validos
+presupuesto = validos * (1 - slo)
+consumido = validos - buenos
+print(f"SLI: {sli:.4%}")
+print(f"Presupuesto: {presupuesto:.0f} eventos")
+print(f"Consumido: {consumido:.0f} ({consumido / presupuesto:.1%} del presupuesto)")
+if consumido > presupuesto:
+    raise SystemExit("presupuesto de error agotado: congelar cambios riesgosos")
+```
+
+**Ejecuta el ejemplo** (desde la carpeta creada):
+```bash
+python3 sli.py
+```
+Verifica la salida y compárala con el resultado esperado.
+
+Resultado esperado: `SLI: 99.9450%`, `Presupuesto: 1000 eventos` y `Consumido: 550 (55.0% del presupuesto)`. Explica cada línea: `validos` y `buenos` son los conteos de la ventana, `slo` fija el objetivo, `presupuesto` es el 0.1% de eventos válidos y `consumido` es la diferencia entre válidos y buenos; mientras el consumo no supere el presupuesto, el proceso termina con código 0.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** cambiá `slo = 0.999` por `slo = 1.0` y ejecutá de nuevo. Falla con `presupuesto de error agotado` en cuanto hay un solo evento malo, porque con ese objetivo cualquier error consume presupuesto y dispara alertas constantes; un objetivo de 100% suele ser económicamente imposible además de frenar cualquier cambio que introduzca el más mínimo riesgo, incluso mejoras reales al producto. **Pista:** el presupuesto no es un adorno; si vale cero, el sistema solo puede congelarse.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a `slo = 0.999` y calculá explícitamente cuántos minutos de presupuesto representa el 0.1% en un mes de 30 días (agregá `print(f"Minutos: {0.001 * 30 * 24 * 60:.1f}")` al script). Después llevá el cálculo al **proyecto integrador** RutaFlow: su SLI de `/envios` se mide contra `examples/rutaflow/devops/deployment.yaml`, que expone el viaje vía `rutaflow-delivery-api`; no confundas sus `readinessProbe`/`livenessProbe` con el SLO de negocio, porque un Pod "listo" (probe verde) puede dejar el viaje completo fuera del SLO si la dependencia de DynamoDB (Módulo Cloud 4) responde lenta.
+
+#### Paso 7 · Cierre y evidencia
+Entregá el `sli.py` con la salida del Paso 4, la salida `presupuesto de error agotado` del SLO de 100% del Paso 5, y el cálculo de minutos del Paso 6; explicá por qué un SLO de 100% no es "más seguro" sino contraproducente en la práctica. Siguiente paso: estudia cómo una alerta debe conducir a una acción. Errores comunes: definir SLOs sin basarse en el comportamiento histórico real del servicio, confundir SLO con SLA, y no definir explícitamente qué eventos cuentan como "válidos" antes de medir. Límites y decisión de uso: un SLI no captura todo lo que el usuario percibe; no conviene usarlo como única señal si el viaje depende de una experiencia que las métricas del servidor no observan. Fuentes oficiales: https://sre.google/sre-book/service-level-objectives/ y https://prometheus.io/docs/practices/instrumentation/.
 
 ### Tema 2: Una alerta debe conducir a una acción
 
@@ -277,31 +265,15 @@ Un desarrollador nuevo en el equipo de RutaFlow tardó tres días en lograr su p
 #### Paso 3 · Teoría, modelo mental y analogía
 Policy as code aplica límites antes y durante el despliegue como software verificable; un golden path provee plantilla, pipeline y soporte para el caso común, permitiendo escape consciente cuando el dominio lo requiere. La analogía: una carretera bien señalizada con barreras, no una que obligue a todos los vehículos a ser iguales.
 
-**Evidencia de aprendizaje:** entrega política Rego funcionando, métrica de adopción incompleta detectada y métricas de producto corregidas.
 **Conceptos clave:** GitOps, reconciliation, drift, pull model, policy as code, golden path, self-service, platform API, tenancy, guardrail, developer experience y product metrics.
 
 GitOps declara estado versionado y un reconciler converge el entorno. El repositorio no debe guardar secretos en claro; usa referencias o cifrado con gestión de claves. Separa promoción de configuración, controla quién aprueba y evita cambios manuales permanentes. Drift debe reconciliarse o documentarse, no normalizarse.
 
 Policy as code aplica límites antes y durante despliegue: imágenes firmadas, recursos, namespaces, red y privilegios. Prueba políticas como software y ofrece mensajes reparables. Un golden path proporciona plantilla, pipeline, telemetría, documentación y soporte para el caso común, permitiendo escape consciente cuando el dominio lo requiere.
 
-```rego
-package kubernetes.admission
+**¿Por qué es importante?** Porque estandarizar solo YAML no reduce la carga cognitiva ni crea una experiencia operable; una plataforma interna es un producto que se mide con las mismas métricas que cualquier producto real.
 
-deny[msg] {
-  input.kind.kind == "Pod"
-  c := input.spec.containers[_]
-  not c.securityContext.runAsNonRoot
-  msg := sprintf("%s debe ejecutar como non-root", [c.name])
-}
-```
-
-Mide la plataforma como producto: tiempo hasta primer deploy, éxito de pipelines, adopción, tickets, satisfacción y carga cognitiva. Centralizar sin escuchar crea otro cuello de botella. Define ownership, compatibilidad y deprecación de la API de plataforma.
-
-**Analogía:** un golden path es una carretera bien señalizada con barreras; no obliga a todos los vehículos a ser iguales, pero hace seguro el viaje común.
-
-**¿Por qué es importante?** porque estandarizar solo YAML no reduce la carga cognitiva ni crea una experiencia operable.
-
-**Casos de uso reales:** drift manual, secreto en Git, política incomprensible, plantilla abandonada y plataforma que aumenta tickets.
+Mide la plataforma como producto: tiempo hasta primer deploy, éxito de pipelines, adopción, tickets, satisfacción y carga cognitiva. Centralizar sin escuchar crea otro cuello de botella. Define ownership, compatibilidad y deprecación de la API de plataforma. **Casos de uso reales:** drift manual, secreto en Git, política incomprensible, plantilla abandonada y plataforma que aumenta tickets.
 
 **Diagrama:**
 
@@ -313,26 +285,13 @@ flowchart LR
     CL -.->|"métricas/feedback"| GP
 ```
 
-Aplicá y probá esta política contra el mismo manifiesto del proyecto integrador RutaFlow:
-
-```bash
-opa eval -d policy.rego -i examples/rutaflow/devops/deployment.yaml \
-  'data.kubernetes.admission.deny'
-kubectl apply --dry-run=server -f examples/rutaflow/devops/deployment.yaml
-```
-
-Resultado esperado: `opa eval` devuelve un arreglo vacío porque
-`rutaflow-delivery-api` ya declara `runAsNonRoot: true` en su `securityContext` — si alguien
-quitara esa línea, la política lo rechazaría antes de llegar al clúster, no después. No
-conviene medir adopción del golden path solo por cuántos equipos lo usan: ese número no
-distingue adopción real de uso forzado sin alternativa.
-
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+**Ejemplo independiente (desde cero):** crea una **carpeta vacía** con la política y su manifiesto de prueba; no necesitás un clúster para ver la decisión de admisión.
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir -p ejemplo-politica && cd ejemplo-politica
 ```
 
+Crea `policy.rego` con este contenido completo:
 ```rego
 package kubernetes.admission
 
@@ -344,24 +303,43 @@ deny[msg] {
 }
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+Crea `pod-root.yaml` con este contenido completo:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-root
+spec:
+  containers:
+    - name: app
+      image: nginx:1.27
+```
+
+**Ejecuta la evaluación** (desde una terminal con `opa` y `kubectl` instalados):
 
 ```bash
-bash ejemplo.sh
+opa eval -d policy.rego -i pod-root.yaml 'data.kubernetes.admission.deny'
+kubectl apply --dry-run=client -f pod-root.yaml
 ```
-Verifica la salida y el estado de los recursos creados.
+Verifica la salida de `opa` y el estado del manifiesto.
 
-Resultado esperado: un Pod de RutaFlow que no declara `runAsNonRoot: true` en su `securityContext` es rechazado en el momento de la admisión, con un mensaje específico que indica exactamente qué contenedor y qué regla violó.
+Resultado esperado: `opa eval` devuelve un resultado con el mensaje `app debe ejecutar como non-root`, porque el Pod de prueba no declara `securityContext.runAsNonRoot`; `kubectl apply --dry-run=client` acepta el YAML sintácticamente, pero la política lo rechazaría en admisión. Explica cada bloque: `package` fija el namespace de la política, `input.kind.kind` limita la regla a Pods, `input.spec.containers[_]` recorre todos los contenedores y `msg` produce un error reparable que nombra el contenedor.
 
 #### Paso 5 · Práctica guiada
 Pista: medí la "adopción de la plataforma" contando únicamente cuántos equipos usan el golden path, sin medir el tiempo real hasta el primer deploy exitoso ni los tickets de soporte generados — ese es el fallo deliberado: esa métrica puede mostrar "alta adopción" mientras los equipos abren decenas de tickets porque el golden path es confuso, ocultando un problema real detrás de un número que solo mide uso forzado.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando métricas de producto reales a la plataforma (tiempo hasta primer deploy, tickets de soporte por equipo, encuesta de satisfacción), y medí el tiempo real del próximo desarrollador nuevo que use el golden path desde cero.
+Corregí el Paso 5 agregando métricas de producto reales a la plataforma (tiempo hasta primer deploy, tickets de soporte por equipo, encuesta de satisfacción), y medí el tiempo real del próximo desarrollador nuevo que use el golden path desde cero. Después aplicá la misma política al **proyecto integrador** RutaFlow y comprobá que su manifiesto real ya cumple:
+
+```bash
+opa eval -d policy.rego -i examples/rutaflow/devops/deployment.yaml 'data.kubernetes.admission.deny'
+kubectl apply --dry-run=server -f examples/rutaflow/devops/deployment.yaml
+```
+
+Resultado esperado: `opa eval` devuelve un arreglo vacío porque `rutaflow-delivery-api` ya declara `runAsNonRoot: true` en su `securityContext`; si alguien quitara esa línea, la política lo rechazaría antes de llegar al clúster, no después.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la política Rego del Paso 4, la métrica de adopción incompleta del Paso 5, y las métricas de producto corregidas del Paso 6; explicá por qué "centralizar sin escuchar" crea otro cuello de botella en vez de resolver el problema original. Siguiente paso: cerrá el módulo integrando SLO, alertas, supply chain y platform engineering en la operación completa de RutaFlow. Errores comunes: medir adopción de una plataforma interna sin medir satisfacción ni tiempo real de onboarding, escribir políticas sin mensajes de error reparables, y centralizar la plataforma sin ningún canal de feedback de los equipos que la usan. Fuentes oficiales: https://www.openpolicyagent.org/docs/latest/ y https://internaldeveloperplatform.org/.
-**¿Por qué es importante?** Estandarizar solo YAML no reduce la carga cognitiva ni crea una experiencia operable; una plataforma interna es un producto que se mide con las mismas métricas que cualquier producto real.
+Entregá la política Rego del Paso 4, la métrica de adopción incompleta del Paso 5, y las métricas de producto corregidas del Paso 6; explicá por qué "centralizar sin escuchar" crea otro cuello de botella en vez de resolver el problema original. Siguiente paso: cerrá el módulo integrando SLO, alertas, supply chain y platform engineering en la operación completa de RutaFlow. Errores comunes: medir adopción de una plataforma interna sin medir satisfacción ni tiempo real de onboarding, escribir políticas sin mensajes de error reparables, y centralizar la plataforma sin ningún canal de feedback de los equipos que la usan. Límites y decisión de uso: un golden path no reemplaza el criterio de dominio; forzar el caso común y eliminar las vías de escape convierte la plataforma en otro cuello de botella. Fuentes oficiales: https://www.openpolicyagent.org/docs/latest/ y https://internaldeveloperplatform.org/.
 
 ## Revisión oficial de plataforma — julio de 2026
 
