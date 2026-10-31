@@ -1011,6 +1011,27 @@
       "headings": []
     },
     {
+      "path": "docs/revision-completa.md",
+      "lines": 3271,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Revisi\u00f3n completa \u2014 The Imperial Book",
+        "## Resumen ejecutivo",
+        "## Distribuci\u00f3n por prioridad",
+        "## Pasos faltantes (global)",
+        "## Cobertura por track",
+        "## Listado de temas por curso",
+        "### Track: android (73 temas en 19 m\u00f3dulos)",
+        "### Track: angular (71 temas en 17 m\u00f3dulos)",
+        "### Track: cloud (156 temas en 35 m\u00f3dulos)",
+        "### Track: devops (129 temas en 23 m\u00f3dulos)",
+        "### Track: flutter (63 temas en 16 m\u00f3dulos)",
+        "### Track: foundations (99 temas en 16 m\u00f3dulos)"
+      ]
+    },
+    {
       "path": "docs/revision-por-curso.md",
       "lines": 132,
       "kind": "documentation",
@@ -5996,6 +6017,36 @@
         "pathlib",
         "re",
         "audit_topic_learning_quality"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/audit_full.py",
+      "lines": 278,
+      "kind": "automation-script",
+      "symbols": [
+        "Tema",
+        "structural_text",
+        "split_temas",
+        "evaluar",
+        "recolectar",
+        "shingles",
+        "detectar_duplicados",
+        "pct",
+        "generar_informe",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "sys",
+        "collections",
+        "dataclasses",
+        "datetime",
+        "pathlib",
+        "audit_code_visual_quality"
       ],
       "headings": []
     },
