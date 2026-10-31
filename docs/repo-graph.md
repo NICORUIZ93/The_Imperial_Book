@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 18:46 UTC
+Generated: 2026-10-31 19:46 UTC
 Root: `Academia_Floci`
-Indexed files: 966
+Indexed files: 978
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -17,26 +17,26 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `angular-app`: 58 files
 - `automation-script`: 39 files
-- `course-content`: 254 files
+- `course-content`: 260 files
 - `documentation`: 62 files
-- `example`: 490 files
+- `example`: 495 files
 - `local-infra`: 1 files
-- `project-file`: 62 files
+- `project-file`: 63 files
 
 ## File Types
 
-- `.md`: 325
+- `.md`: 329
 - `.py`: 165
-- `.json`: 73
+- `.json`: 74
 - `.java`: 73
 - `.ts`: 65
 - `.js`: 54
-- `.html`: 38
+- `.html`: 44
 - `.rs`: 25
 - `.go`: 24
 - `.dart`: 22
 - `.swift`: 20
-- `.mjs`: 18
+- `.mjs`: 19
 - `.kt`: 13
 - `.yaml`: 9
 - `.yml`: 8
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1157 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1156 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -216,7 +216,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
-- ... 236 more files
+- ... 242 more files
 
 ### documentation
 
@@ -243,6 +243,9 @@ For automated lookups, use `docs/repo-graph.json`.
 ### example
 
 - `examples/README.md` (157 lines) - headings: # Ejemplos de referencia, ## Ejemplos por operación (node/, python/, java/, go/, rust/), # Node.js (requiere: npm install en examples/node/), # Python (requiere: pip install boto3)
+- `examples/anatomy/outbox/build.mjs` (759 lines) - imports: node:fs, node:path, node:url, ../../../.agents/skills/anatomy/kit/iso-kit.mjs, ../../../.agents/skills/anatomy/scripts/inline-kit.mjs
+- `examples/anatomy/outbox/outbox-light.html` (1050 lines) - symbols: ${id}
+- `examples/anatomy/outbox/outbox.html` (1050 lines) - symbols: ${id}
 - `examples/archify/README.md` (10 lines) - headings: # Primer mapa Archify de la academia
 - `examples/archify/mobile-controls.css` (11 lines)
 - `examples/archify/recorrido-estudio.workflow.json` (235 lines)
@@ -257,10 +260,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
-- `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
-- `examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json` (183 lines)
-- `examples/archify/temas/foundations/modulo-12-tema-17-plc-scan.workflow.json` (189 lines)
-- ... 472 more files
+- ... 477 more files
 
 ### local-infra
 
@@ -286,4 +286,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (819 lines)
 - `docs/lesson-substance.json` (9642 lines)
-- ... 44 more files
+- ... 45 more files

@@ -19,6 +19,17 @@ describe('ProgressService', () => {
     expect(service.percentComplete('java', 15)).toBe(7);
   });
 
+  it('unmarks a module when toggled twice', () => {
+    const service = TestBed.inject(ProgressService);
+
+    service.toggleModuleComplete('java', 3);
+    expect(service.isModuleComplete('java', 3)).toBe(true);
+
+    service.toggleModuleComplete('java', 3);
+    expect(service.isModuleComplete('java', 3)).toBe(false);
+    expect(service.trackProgress('java').completedModules).toEqual([]);
+  });
+
   it('exports and restores a versioned progress backup', () => {
     const service = TestBed.inject(ProgressService);
     service.toggleModuleComplete('java', 2);

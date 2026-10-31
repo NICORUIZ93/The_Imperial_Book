@@ -1176,6 +1176,40 @@
       ]
     },
     {
+      "path": "examples/anatomy/outbox/build.mjs",
+      "lines": 759,
+      "kind": "example",
+      "symbols": [],
+      "imports": [
+        "node:fs",
+        "node:path",
+        "node:url",
+        "../../../.agents/skills/anatomy/kit/iso-kit.mjs",
+        "../../../.agents/skills/anatomy/scripts/inline-kit.mjs"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/anatomy/outbox/outbox-light.html",
+      "lines": 1050,
+      "kind": "example",
+      "symbols": [
+        "${id}"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/anatomy/outbox/outbox.html",
+      "lines": 1050,
+      "kind": "example",
+      "symbols": [
+        "${id}"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/archify/README.md",
       "lines": 10,
       "kind": "example",
@@ -1294,6 +1328,47 @@
       "lines": 1012,
       "kind": "example",
       "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/devops/modulo-19-tema-2-contextos.architecture.json",
+      "lines": 270,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archify/temas/devops/modulo-19-tema-2-contextos.html",
+      "lines": 14810,
+      "kind": "example",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0",
+        "1"
+      ],
       "imports": [],
       "headings": []
     },
@@ -8366,6 +8441,27 @@
       ]
     },
     {
+      "path": "web/public/content/devops/modulo-19.md",
+      "lines": 588,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 19: Arquitectura moderna y DDD: l\u00edmites que sobreviven al cambio",
+        "## Aprende construyendo",
+        "### Tema 1: L\u00edmites, acoplamiento y monolito modular: cu\u00e1ndo un microservicio no es la respuesta",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo env\u00edo no significa lo mismo",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
       "path": "web/public/content/devops/modulo-2.md",
       "lines": 617,
       "kind": "course-content",
@@ -8383,6 +8479,69 @@
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: Capas e invalidaci\u00f3n de cach\u00e9",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/devops/modulo-20.md",
+      "lines": 643,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 20: Eventos de dominio y consistencia eventual",
+        "## Aprende construyendo",
+        "### Tema 1: Eventos de dominio e integraci\u00f3n: hechos, no comandos",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/devops/modulo-21.md",
+      "lines": 587,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 21: Microservicios: contratos, datos y operaci\u00f3n",
+        "## Aprende construyendo",
+        "### Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Datos por servicio: propiedad, composici\u00f3n y r\u00e9plicas",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/devops/modulo-22.md",
+      "lines": 713,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 22: Laboratorio DevOps con Floci: ejercicios verificables",
+        "## Aprende construyendo",
+        "### Tema 1: Floci desde cero: instalar, aislar y verificar",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: S3 y diagn\u00f3stico de red: objetos, metadatos y errores",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
@@ -8546,6 +8705,26 @@
     {
       "path": "web/public/content/figures/event-loop-dispatcher/figure.html",
       "lines": 856,
+      "kind": "course-content",
+      "symbols": [
+        "${id}"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/figures/outbox-transaccional/figure-light.html",
+      "lines": 1050,
+      "kind": "course-content",
+      "symbols": [
+        "${id}"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/figures/outbox-transaccional/figure.html",
+      "lines": 1050,
       "kind": "course-content",
       "symbols": [
         "${id}"
@@ -12062,6 +12241,39 @@
       "headings": []
     },
     {
+      "path": "web/public/visuals/temas/devops/modulo-19-tema-2-contextos.html",
+      "lines": 14810,
+      "kind": "project-file",
+      "symbols": [
+        "archify-fonts",
+        "btn-theme",
+        "theme-icon",
+        "theme-label",
+        "btn-preset",
+        "preset-label",
+        "preset-menu",
+        "btn-motion",
+        "motion-label",
+        "btn-present",
+        "present-icon",
+        "present-label",
+        "btn-export",
+        "export-menu",
+        "archify-i18n-data",
+        "archify-diagram-title",
+        "archify-diagram-description",
+        "arrowhead",
+        "arrowhead-emphasis",
+        "arrowhead-security",
+        "arrowhead-dashed",
+        "grid",
+        "0",
+        "1"
+      ],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/public/visuals/temas/devops/modulo-4-tema-4-pipeline-ci.html",
       "lines": 14765,
       "kind": "project-file",
@@ -12936,7 +13148,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1157,
+      "lines": 1156,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -13006,7 +13218,7 @@
     },
     {
       "path": "web/src/app/course/track-overview.ts",
-      "lines": 100,
+      "lines": 96,
       "kind": "angular-app",
       "symbols": [
         "TrackOverviewComponent",
@@ -13134,7 +13346,7 @@
     },
     {
       "path": "web/src/app/progress.service.spec.ts",
-      "lines": 64,
+      "lines": 75,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
