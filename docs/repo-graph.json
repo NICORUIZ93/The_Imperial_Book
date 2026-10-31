@@ -181,7 +181,7 @@
     },
     {
       "path": "docs/PLAN-TOTAL-DE-CAMBIO.md",
-      "lines": 365,
+      "lines": 388,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -795,7 +795,7 @@
     },
     {
       "path": "docs/lesson-substance-baseline.json",
-      "lines": 825,
+      "lines": 819,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6627,7 +6627,7 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 549,
+      "lines": 648,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

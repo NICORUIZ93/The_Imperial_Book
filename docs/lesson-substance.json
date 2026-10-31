@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "3ce3c9f5139fa8da155698bd8560cbb05ff44cf10b7d768d9e80cb32184ce146",
+    "fingerprint": "fd63161a8efbfe9aa23ea1c301b07740803bd0f063d1f92f74e5b499b945e8b4",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1682,16 +1682,16 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 226,
+        "tailWords": 169,
         "topic": "Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla",
-        "words": 729
+        "words": 1029
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 219,
+        "tailWords": 186,
         "topic": "Tema 5: Coroutines — asincronía sin bloquear la UI",
-        "words": 678
+        "words": 1007
       },
       {
         "issues": [],

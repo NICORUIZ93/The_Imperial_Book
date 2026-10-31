@@ -155,6 +155,29 @@ la convierte en una deuda **medida y decreciente** en lugar de una promesa
 implícita de calidad. Reescribir 1.100 temas a mano requiere 2.000–4.000 horas:
 por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 
+La investigación externa y su criterio de incorporación se mantienen en
+[`investigacion-cursos-libros-red-2026.md`](./investigacion-cursos-libros-red-2026.md).
+Los cursos comerciales o audiovisuales aportan secuencia y proyectos comparables;
+la documentación primaria conserva autoridad sobre APIs y versiones, y no se copia
+contenido protegido.
+
+## Lote de investigación externa 1 — Android Kotlin y corrutinas (2026-10-31)
+
+Se reescribieron `android/modulo-0` temas 4 y 5 a partir del contraste entre el
+curso oficial Android Basics with Compose, documentación Kotlin/Android y temarios
+públicos de cursos extensos por proyectos. Se corrigió la mezcla no reproducible
+entre `gradle init` y tareas `:app`: ambos ejemplos trabajan ahora en el proyecto
+Android real y ejecutan tests de JVM del módulo.
+
+Kotlin progresa desde valores y nulabilidad hasta modelos sellados y decisiones de
+modelado. Corrutinas progresa desde suspensión/bloqueo hasta concurrencia
+estructurada, cancelación, dispatchers, fallos y `viewModelScope`; el test con tiempo
+virtual distingue dos operaciones concurrentes (1.000 ms virtuales) de la versión
+serial accidental (2.000 ms). La deuda aceptada baja de 273 a 271 temas. La
+ejecución del ejemplo editorial requiere un proyecto Android creado por el alumno;
+en este repositorio se verificaron estructura, auditorías y aplicación web, no se
+inventó una corrida Gradle de ese proyecto externo.
+
 ## Piloto de reducción de sustancia (2026-10-30)
 
 Se reescribieron los 10 temas con más señales del corte anterior. El resultado

@@ -387,128 +387,227 @@ En el repositorio The_Imperial_Book verás esta estructura ejemplificada en `exa
 ### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar dominarás los elementos de Kotlin que aparecen en TODO el track: `val`/`var`, null safety (`?`, `?.`, `?:`), `data class`, `when`, funciones lambda y las funciones de alcance (`let`, `apply`, `copy`). Prerrequisitos: Android Studio instalado (Antes de comenzar).
+Al finalizar podrás modelar una tarea inmutable, transformar una colección y representar la ausencia de datos sin producir un `NullPointerException`. No se promete «dominar Kotlin» en un tema: aquí construirás la base que después reutilizan Compose, ViewModel, Room y Retrofit. **Prerrequisitos:** Temas 1–3 y el proyecto `academia-android` compilando.
 
 #### Paso 2 · Contexto y caso real
-El resto del track usa Kotlin desde la primera pantalla (ViewModels, StateFlow, Compose), pero nunca lo introduce. Sin estas bases, el código de los módulos siguientes parece magia. Aquí construyes el modelo `Tarea` que usarás en todo el proyecto integrador.
+**¿Por qué es importante?** RutaFlow recibe envíos incompletos, muestra listas filtradas y actualiza estados. Si `null`, mutabilidad y transformaciones se usan sin un modelo mental, la interfaz puede mostrar datos viejos o fallar después de una rotación. Por eso el curso oficial de Android comienza con Kotlin antes de introducir Compose: primero hay que comprender qué valores existen y quién puede cambiarlos.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Kotlin es explícito sobre lo que puede ser nulo: un `String` NUNCA es null; un `String?` sí puede serlo, y el compilador te obliga a manejar ese caso antes de usarlo. Una `data class` genera por ti `equals`, `hashCode`, `toString` y `copy`. El `when` es un `switch` que también devuelve valor.
+Kotlin distingue valores que no cambian (`val`) de referencias reasignables (`var`). Prefiere `val`: reduce estados posibles y hace más fácil razonar sobre recomposición y concurrencia. `String` excluye `null`; `String?` lo admite. Los operadores `?.` y `?:` obligan a decidir qué hacer cuando falta un valor, pero `!!` desactiva esa protección y debe reservarse para invariantes realmente demostradas.
 
-**Analogía:** el `?` de Kotlin es como una etiqueta en una caja que avisa "puede estar vacía": no puedes sacar el contenido sin comprobar primero, y eso evita el error nulo más común de la programación (el `NullPointerException`).
+Una `data class` representa datos y genera igualdad por valor, `toString` y `copy`. `copy` crea otra instancia: no modifica la original. `when` puede devolver un valor y, con una jerarquía `sealed`, el compilador comprueba que se trataron todos los estados. Las funciones `filter`, `map` y `sortedByDescending` transforman colecciones sin mutarlas. Una lambda es una función que se pasa como dato; por ejemplo, el predicado de `filter`.
+
+| De cero | Aplicación | Decisión profesional |
+|---|---|---|
+| `val titulo = "Caja"` infiere `String` | `titulo?.trim().orEmpty()` normaliza entrada nullable | No declares todo nullable «por si acaso»: modela la ausencia solo donde el dominio la permite |
+| `data class` guarda valores relacionados | `copy(estado = Entregado)` produce un estado nuevo | Inmutabilidad facilita comparar estados y evita cambios invisibles para Compose |
+| `filter` selecciona y `map` transforma | una cadena de operaciones expresa una consulta | Si la colección es enorme o infinita, evalúa `Sequence`; para listas pequeñas evita optimización prematura |
+
+**Analogía:** `String?` es una caja etiquetada «puede estar vacía». El compilador no deja usar su contenido hasta abrirla de forma segura. La analogía termina ahí: `null` no explica por qué falta el dato; cuando esa razón importa, conviene un tipo de dominio como `EstadoCarga.Error`.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+Trabaja dentro del proyecto Android creado en el Tema 1. Confirma primero que estás en la raíz correcta:
+
 ```bash
-gradle init --type kotlin-application
+cd academia-android
+test -f settings.gradle.kts && test -d app/src/main
+mkdir -p app/src/main/java/com/academia/model
+mkdir -p app/src/test/java/com/academia/model
 ```
 
-Crea un archivo Kotlin (en Android Studio: botón derecho ▸ New ▸ Kotlin Class/File, o usa el scratch file ⌘⇧N) con `fun main()`:
+Crea `app/src/main/java/com/academia/model/Tarea.kt`:
 
 ```kotlin
-data class Tarea(val id: String, val titulo: String, val completada: Boolean = false)
+package com.academia.model
 
-fun resumen(tarea: Tarea?): String = when {
-    tarea == null -> "Sin tarea"
-    tarea.completada -> "✓ ${tarea.titulo}"
-    else -> "○ ${tarea.titulo}"
+enum class EstadoTarea { PENDIENTE, EN_CURSO, COMPLETADA }
+
+data class Tarea(
+    val id: String,
+    val titulo: String,
+    val estado: EstadoTarea = EstadoTarea.PENDIENTE,
+    val prioridad: Int = 0,
+)
+
+fun resumen(tarea: Tarea?): String = when (tarea?.estado) {
+    null -> "Sin tarea"
+    EstadoTarea.PENDIENTE -> "○ ${tarea.titulo}"
+    EstadoTarea.EN_CURSO -> "→ ${tarea.titulo}"
+    EstadoTarea.COMPLETADA -> "✓ ${tarea.titulo}"
 }
 
-fun main() {
-    val tarea = Tarea(id = "RF-1", titulo = "Entregar paquete")
-    val entregada = tarea.copy(completada = true)   // copia inmutable con un cambio
-    println(resumen(tarea))        // ○ Entregar paquete
-    println(resumen(entregada))    // ✓ Entregar paquete
-    println(resumen(null))         // Sin tarea
+fun pendientesPorPrioridad(tareas: List<Tarea>): List<String> = tareas
+    .filter { it.estado != EstadoTarea.COMPLETADA }
+    .sortedByDescending { it.prioridad }
+    .map { it.titulo }
+```
 
-    val titulo: String? = null
-    println(titulo?.uppercase() ?: "SIN TÍTULO")   // null safety + Elvis
+Crea `app/src/test/java/com/academia/model/TareaTest.kt`:
+
+```kotlin
+package com.academia.model
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class TareaTest {
+    @Test
+    fun copia_filtrado_y_ausencia_son_observables() {
+        val original = Tarea("RF-1", "Entregar paquete", prioridad = 2)
+        val entregada = original.copy(estado = EstadoTarea.COMPLETADA)
+        val urgente = Tarea("RF-2", "Recoger devolución", prioridad = 9)
+
+        assertEquals("○ Entregar paquete", resumen(original))
+        assertEquals("✓ Entregar paquete", resumen(entregada))
+        assertEquals("Sin tarea", resumen(null))
+        assertEquals(listOf("Recoger devolución"), pendientesPorPrioridad(listOf(original, entregada, urgente)).take(1))
+        assertEquals(EstadoTarea.PENDIENTE, original.estado) // copy no mutó el original
+    }
 }
 ```
 
-**Ejecuta el ejemplo** (compila el módulo o corre el archivo con el toolchain de Kotlin):
+Ejecuta desde la raíz del proyecto:
 
 ```bash
-./gradlew :app:compileDebugKotlin
+./gradlew :app:testDebugUnitTest --tests com.academia.model.TareaTest
 ```
-En Android Studio, también puedes pulsar el ▶ junto a `fun main()` para ejecutarlo directamente.
 
-**Resultado esperado:** imprime `○ Entregar paquete`, `✓ Entregar paquete`, `Sin tarea` y `SIN TÍTULO`. **Fallo deliberado:** cambia `val titulo: String?` por `val titulo: String = null`; el código NO compila, con el error "Null can not be a value of a non-null type String". Diagnostica por qué Kotlin te protege en tiempo de compilación del `NullPointerException`, a diferencia de lenguajes donde el null explota en ejecución.
+**Resultado esperado:** Gradle termina con `BUILD SUCCESSFUL`; las cinco aserciones prueban igualdad por valor, `copy`, `when`, null safety y transformaciones de colección. El test importa el modelo real del módulo `:app`, por lo que no es un ejemplo desconectado.
+
+**Explicación del mecanismo:** `tarea?.estado` produce `null` sin lanzar una excepción cuando no hay tarea. Como `when` devuelve `String`, todas las ramas deben producir el mismo tipo. La cadena de colección crea listas nuevas; ni `original` ni la lista de entrada cambian.
+
+**Fallo deliberado:** cambia temporalmente `fun resumen(tarea: Tarea?)` por `fun resumen(tarea: Tarea)` y conserva `resumen(null)` en el test. Ejecuta de nuevo: la compilación falla porque `null` no pertenece a `Tarea`. No lo «corrijas» con `!!`; decide si la ausencia es válida. En esta función sí lo es, así que restaura `Tarea?` y la rama `null`.
 
 #### Paso 5 · Práctica guiada
-Añade a `Tarea` un campo `prioridad: Int = 0` y usa `copy` para subir la prioridad sin mutar el objeto original. Pista: `copy` devuelve una instancia nueva; el original no cambia.
+Agrega `val etiquetas: Set<String> = emptySet()` y crea una copia con `etiquetas = original.etiquetas + "frágil"`. Escribe dos aserciones: la copia contiene la etiqueta y el original sigue vacío. **Pista:** `+` devuelve un conjunto nuevo.
 
 #### Paso 6 · Práctica independiente
-Escribe una función que reciba `List<Tarea>` y devuelva, usando `filter` y `map`, los títulos de las tareas no completadas. Entrega la salida con una lista de ejemplo.
+Reemplaza `EstadoTarea` por una `sealed interface` con estados `Pendiente`, `EnCurso(val conductor: String)` y `Completada(val instanteIso: String)`. Adapta `resumen` sin rama `else` y demuestra con un test que el conductor aparece solo en `EnCurso`. Después explica qué información permite conservar este modelo que un enum no puede transportar.
 
 #### Paso 7 · Cierre
-Entrega el modelo `Tarea`, el `when`, el manejo de null y el filtrado funcional. **¿Por qué es importante?** Kotlin es el lenguaje de Android moderno: cada ViewModel, cada estado de Compose y cada repositorio del resto del track se escribe con estos elementos. Dominar `data class`, null safety y lambdas aquí hace que todo lo demás se entienda en vez de copiarse a ciegas. Fuentes: [Kotlin docs — Basics](https://kotlinlang.org/docs/basic-syntax.html) y [Null safety](https://kotlinlang.org/docs/null-safety.html).
-**Conceptos clave:** `val`/`var`, null safety, `data class`, `copy`, `when`, lambdas y funciones de orden superior.
-**Cuándo no usarlo:** no fuerces una `data class` para objetos con identidad y ciclo de vida (como una Activity); las data class son para contenedores de datos inmutables, no para entidades con comportamiento mutable.
+Entrega `Tarea.kt`, el test verde, el fallo de nulabilidad reproducido y el modelo sellado independiente. El siguiente tema usa estos tipos dentro de trabajo asíncrono cancelable.
 
-**Transferencia al proyecto integrador «RutaFlow»:** define el modelo `Tarea`/`Envio` del proyecto como `data class` con null safety, y úsalo sin cambios en los ViewModels de los módulos siguientes.
-**Errores comunes:** asumir que `tarea.copy(completada = true)` modifica `tarea` en memoria —no lo hace, crea una instancia nueva— y seguir leyendo la variable original esperando el cambio; o declarar un campo como `String?` "por si acaso" sin necesitarlo, lo que obliga a propagar `?.`/`?:` por todo el archivo sin un motivo real.
-**Fuente oficial:** [documentación de Android](https://developer.android.com/docs).
+**Decisión profesional y cuándo no usarlo:** usa `data class` para valores cuyo contenido define la igualdad; no para `Activity`, sockets o repositorios con identidad y ciclo de vida. Usa `sealed` cuando cada estado necesita datos distintos o comportamiento exhaustivo. Evita funciones de alcance anidadas (`let` dentro de `apply`) si ocultan qué representa `this` o `it`.
+
+**Transferencia al proyecto integrador «RutaFlow»:** `Envio` será un valor inmutable que el ViewModel reemplaza con `copy`; esa sustitución produce un estado nuevo observable por Compose. **Errores comunes:** creer que `copy` muta el original, propagar `String?` sin motivo y usar `!!` para silenciar al compilador.
+
+**Fuentes oficiales:** [Android Basics with Compose](https://developer.android.com/courses/android-basics-compose/course), [Kotlin — sintaxis básica](https://kotlinlang.org/docs/basic-syntax.html), [null safety](https://kotlinlang.org/docs/null-safety.html) y [data classes](https://kotlinlang.org/docs/data-classes.html).
 ### Tema 5: Coroutines — asincronía sin bloquear la UI
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás lanzar una operación asíncrona con una corrutina (`suspend` + `launch`) sin congelar la interfaz, y entender `viewModelScope`, que usarás en cada ViewModel del track. Prerrequisitos: Tema 4 de este módulo (Kotlin esencial).
+Al finalizar podrás distinguir suspensión de bloqueo, ejecutar dos operaciones con concurrencia estructurada, cancelar trabajo cooperativamente y decidir qué dispatcher corresponde. **Prerrequisitos:** Tema 4 y su suite verde.
 
 #### Paso 2 · Contexto y caso real
-Cargar los envíos desde la red tarda. Si lo haces en el hilo principal, la app se congela y Android puede matarla por "ANR" (Application Not Responding). Las corrutinas permiten escribir código asíncrono que se lee como secuencial, sin callbacks anidados — y el track las usa desde el Módulo 5 (Retrofit) sin introducirlas.
+**¿Por qué es importante?** RutaFlow consulta detalles y eventos de un envío. Si bloquea el hilo principal, la interfaz deja de responder y puede producir un ANR. Si lanza trabajo en un scope global, la petición puede sobrevivir a la pantalla y escribir un resultado obsoleto. El problema profesional no es solo «hacerlo asíncrono»: es definir propietario, cancelación, errores y orden de resultados.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una función `suspend` puede pausarse y reanudarse sin bloquear el hilo. `launch` inicia una corrutina; `viewModelScope` la ata al ciclo de vida del ViewModel (se cancela sola si el ViewModel muere). `withContext(Dispatchers.IO)` mueve el trabajo pesado a un pool de hilos de E/S.
+Una función `suspend` puede detener su continuación y reanudarse después; no significa automáticamente «otro hilo». `CoroutineScope` define la vida del trabajo. `launch` devuelve un `Job` sin resultado; `async` devuelve un `Deferred<T>` cuyo resultado se obtiene con `await`. En concurrencia estructurada, las tareas hijas pertenecen a un scope: el padre no termina antes que ellas y la cancelación se propaga.
 
-**Analogía:** una corrutina es como pedir comida y recibir un buzón vibrador: no te quedas parado en la caja bloqueando la fila (el hilo), te vas a tu mesa y el buzón te avisa cuando está lista. `suspend` es ese "te aviso cuando esté".
+`Dispatchers.Main` actualiza UI, `IO` sirve para E/S bloqueante y `Default` para CPU. Una API `suspend` de Retrofit o Room ya administra su ejecución; envolver todo ciegamente en `withContext(IO)` añade cambios de contexto sin necesidad. La cancelación es cooperativa: `delay`, `yield` y muchas APIs suspendibles comprueban el estado; un bucle de CPU debe hacerlo explícitamente.
+
+| Nivel | Pregunta | Evidencia |
+|---|---|---|
+| Fundamento | ¿suspende o bloquea? | el tiempo virtual avanza sin dormir el hilo del test |
+| Aplicación | ¿necesito resultado? | `launch` para efecto; `async` solo para resultados concurrentes |
+| Integración | ¿quién es dueño del trabajo? | `viewModelScope` para UI, scope inyectado para trabajo de aplicación |
+| Profesional | ¿qué ocurre al cancelar o fallar una hija? | test de cancelación, política de error y estado final observable |
+
+**Analogía:** pedir comida con un avisador permite liberar la fila mientras esperas. La analogía no cubre cancelación ni fallos: en software debes decidir quién devuelve el avisador, qué pasa con pedidos hermanos y dónde se registra el error.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.kt` con el contenido de este tema.
+Continúa en `academia-android`. Agrega a las dependencias de prueba de `app/build.gradle.kts` la biblioteca oficial para tiempo virtual:
+
 ```bash
-gradle init --type kotlin-application
+cd academia-android
+grep -q 'kotlinx-coroutines-test' app/build.gradle.kts || \
+  sed -i.bak '/dependencies {/a\    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")' app/build.gradle.kts
+mkdir -p app/src/main/java/com/academia/envios app/src/test/java/com/academia/envios
 ```
+
+Crea `app/src/main/java/com/academia/envios/CargarResumen.kt`:
 
 ```kotlin
-import kotlinx.coroutines.*
+package com.academia.envios
 
-suspend fun cargarEnvios(): List<String> {
-    delay(1000)                       // simula una llamada de red (suspende, no bloquea)
-    return listOf("RF-4471", "RF-5002")
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+
+interface EnviosRepository {
+    suspend fun detalle(id: String): String
+    suspend fun eventos(id: String): List<String>
 }
 
-fun main() = runBlocking {            // runBlocking solo para este ejemplo de consola
-    println("Cargando…")
-    val envios = withContext(Dispatchers.Default) { cargarEnvios() }
-    println("Recibidos: $envios")
+data class ResumenEnvio(val detalle: String, val eventos: List<String>)
+
+class CargarResumen(private val repository: EnviosRepository) {
+    suspend operator fun invoke(id: String): ResumenEnvio = coroutineScope {
+        val detalle = async { repository.detalle(id) }
+        val eventos = async { repository.eventos(id) }
+        ResumenEnvio(detalle.await(), eventos.await())
+    }
 }
 ```
 
-**Ejecuta el ejemplo** (necesita la dependencia `kotlinx-coroutines-core`; en un módulo Android ya está disponible):
+Crea `app/src/test/java/com/academia/envios/CargarResumenTest.kt`:
+
+```kotlin
+package com.academia.envios
+
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class CargarResumenTest {
+    @Test
+    fun detalle_y_eventos_se_cargan_concurrentemente() = runTest {
+        val fake = object : EnviosRepository {
+            override suspend fun detalle(id: String): String {
+                delay(1_000)
+                return "$id: en ruta"
+            }
+
+            override suspend fun eventos(id: String): List<String> {
+                delay(1_000)
+                return listOf("creado", "recogido")
+            }
+        }
+
+        val resumen = CargarResumen(fake)("RF-4471")
+
+        assertEquals("RF-4471: en ruta", resumen.detalle)
+        assertEquals(listOf("creado", "recogido"), resumen.eventos)
+        assertEquals(1_000L, testScheduler.currentTime)
+    }
+}
+```
+
+Ejecuta:
 
 ```bash
-./gradlew :app:compileDebugKotlin
+./gradlew :app:testDebugUnitTest --tests com.academia.envios.CargarResumenTest
 ```
-En Android Studio, pulsa el ▶ junto a `fun main()`.
 
-**Resultado esperado:** imprime "Cargando…", espera ~1 segundo (la corrutina suspende sin bloquear) y luego "Recibidos: [RF-4471, RF-5002]". En un ViewModel real usarías `viewModelScope.launch { ... }` en vez de `runBlocking`. **Fallo deliberado:** reemplaza `delay(1000)` por `Thread.sleep(1000)`: `Thread.sleep` BLOQUEA el hilo de verdad (no suspende), que es exactamente lo que causa el ANR en una app real. Diagnostica la diferencia entre suspender (liberar el hilo) y bloquear (retenerlo).
+**Resultado esperado:** `BUILD SUCCESSFUL`. El reloj virtual termina en `1000`, no `2000`: ambas hijas avanzaron concurrentemente. La prueba no espera un segundo real; `runTest` controla el tiempo y conserva determinismo.
+
+**Explicación:** `coroutineScope` no devuelve hasta que sus hijas terminan. Si `detalle` falla, el scope cancela `eventos` y propaga el error; así no se construye un resumen parcial accidental. `async` se usa porque ambas operaciones devuelven valores necesarios.
+
+**Fallo deliberado:** mueve el segundo `async` debajo de `detalle.await()`. El test falla porque `currentTime` pasa a `2000`: convertiste concurrencia en secuencia. Restaura ambos `async` antes de los `await`. Después sustituye un `delay` por `Thread.sleep(1000)` y observa que el test tarda tiempo real; revierte el cambio. Eso demuestra la diferencia entre suspender y bloquear.
 
 #### Paso 5 · Práctica guiada
-Lanza DOS cargas en paralelo con `async`/`await` y mide que juntas tardan ~1 segundo, no 2. Pista: `async` devuelve un `Deferred`; `await()` espera su resultado; dos `async` corren concurrentemente.
+Haz que `eventos` lance `IllegalStateException("backend no disponible")`. Usa `assertFailsWith` y agrega un indicador en un bloque `finally` del fake para comprobar que la otra operación se cancela. **Pista:** no captures la excepción dentro de cada `async`; deja que el scope aplique su política estructurada.
 
 #### Paso 6 · Práctica independiente
-Simula un error en `cargarEnvios` (lanza una excepción) y manéjalo con `try/catch` dentro de la corrutina, devolviendo una lista vacía. Explica por qué el `try/catch` funciona aunque el código sea asíncrono.
+Integra el caso de uso en un `ViewModel`: expón `StateFlow<UiState>`, inicia la carga con `viewModelScope.launch`, representa `Cargando`, `Listo` y `Error`, y cancela el `Job` anterior si llega otra búsqueda. Escribe una prueba con dispatcher principal controlado que demuestre que la segunda búsqueda no puede ser sobrescrita por la primera.
 
 #### Paso 7 · Cierre
-Entrega la carga asíncrona, las dos cargas en paralelo y el manejo de error. **¿Por qué es importante?** Toda operación de red, base de datos o archivo en Android se hace con corrutinas: `viewModelScope`, `Dispatchers.IO`, `suspend` aparecen en cada módulo del track a partir del 4. Entenderlas aquí convierte el resto del curso en comprensible. Fuentes: [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) y [Android — Coroutines](https://developer.android.com/kotlin/coroutines).
-**Conceptos clave:** `suspend`, `launch`, `async`/`await`, `viewModelScope`, `Dispatchers`, suspender vs bloquear.
-**Cuándo no usarlo:** para trabajo puramente síncrono y rápido (una suma, formatear un texto) no necesitas corrutinas; añaden complejidad sin beneficio. Son para operaciones que esperan (E/S) o que tardan.
+Entrega el caso de uso, los tests de concurrencia y fallo, y el ViewModel independiente. Explica quién posee cada corrutina y qué ocurre al cancelar. El siguiente módulo aplicará esta base al ciclo de vida real de una Activity y un ViewModel.
 
-**Transferencia al proyecto integrador «RutaFlow»:** carga la lista de envíos en el ViewModel con `viewModelScope.launch` y `Dispatchers.IO`, y confirma que la UI no se congela durante la carga.
+**Decisión profesional:** no uses `GlobalScope`; inyecta o elige un scope con dueño. No uses `async` para una sola llamada ni paralelices operaciones con dependencia de datos. No envuelvas automáticamente toda función `suspend` en `Dispatchers.IO`. Para trabajo que debe sobrevivir al cierre de pantalla o proceso, usa WorkManager en lugar de `viewModelScope`.
 
----
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** llamar código bloqueante (`Thread.sleep`, una lectura de archivo síncrona) dentro de una corrutina creyendo que "suspender" la protege, o copiar `runBlocking` a un ViewModel real en vez de `viewModelScope.launch`, lo que bloquea el hilo principal igual que si no hubiera corrutinas.
-**Fuente oficial:** [documentación de Android](https://developer.android.com/docs).
+**Transferencia al proyecto integrador «RutaFlow»:** detalle y eventos se consultan juntos; una nueva búsqueda cancela la anterior y el estado expuesto nunca mezcla dos envíos. **Errores comunes:** `Thread.sleep` dentro de una corrutina, capturar `CancellationException` como error ordinario, olvidar esperar un `Deferred` y actualizar UI desde trabajo sin propietario.
+
+**Fuentes oficiales:** [Kotlin — fundamentos de corrutinas](https://kotlinlang.org/docs/coroutines-basic-jvm.html), [Android — corrutinas](https://developer.android.com/kotlin/coroutines), [pruebas de corrutinas](https://developer.android.com/kotlin/coroutines/test) y [ViewModelScope](https://developer.android.com/topic/libraries/architecture/coroutines#viewmodelscope).
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con crea una carpeta vacía `academia-android`, abre Android Studio y genera allí un proyecto **Empty Activity**; luego ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

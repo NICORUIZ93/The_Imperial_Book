@@ -1,11 +1,5 @@
 {
   "allowed": {
-    "android/0/Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla": [
-      "andamiaje-generico"
-    ],
-    "android/0/Tema 5: Coroutines — asincronía sin bloquear la UI": [
-      "andamiaje-generico"
-    ],
     "angular/1/Tema 5: Consultas signal y trabajo posterior al render": [
       "andamiaje-generico"
     ],
