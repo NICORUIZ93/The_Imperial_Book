@@ -19,8 +19,10 @@
     "openjdk.org",
     "opentelemetry.io",
     "peps.python.org",
+    "sre.google",
     "tc39.es",
     "www.gnu.org",
+    "www.microsoft.com",
     "www.postgresql.org",
     "www.sqlite.org",
     "www.typescriptlang.org"
@@ -179,67 +181,80 @@
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-10.md",
       "topic": "Tema 1: La red convierte el resultado en una incertidumbre",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://sre.google/sre-book"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 8,
       "originalProseUrls": [
-        "https://sre.google/sre-book."
+        "https://sre.google/sre-book"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Libro oficial de Google SRE; falta revisar su aplicación a la afirmación concreta."
     },
     {
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-10.md",
       "topic": "Tema 2: Replicación, consistencia y decisiones explícitas",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://learn.microsoft.com/azure/cosmos-db/consistency-levels"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 135,
       "originalProseUrls": [
-        "https://martinfowler.com/articles/patterns-of-distributed-systems."
+        "https://martinfowler.com/articles/patterns-of-distributed-systems",
+        "https://learn.microsoft.com/azure/cosmos-db/consistency-levels"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Documentación del proveedor sobre un sistema replicado concreto; falta revisar la generalización del tema."
     },
     {
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-10.md",
       "topic": "Tema 3: Mensajes que se procesan con efectos exactamente una vez",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 250,
       "originalProseUrls": [
-        "https://microservices.io/patterns/data/transactional-outbox.html."
+        "https://microservices.io/patterns/data/transactional-outbox.html",
+        "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Guía oficial de AWS sobre transactional outbox; falta revisar su aplicación al ejemplo local."
     },
     {
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-10.md",
       "topic": "Tema 4: Resiliencia y observabilidad orientadas a objetivos",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://sre.google/sre-book/monitoring-distributed-systems/"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 376,
       "originalProseUrls": [
-        "https://sre.google/sre-book/monitoring-distributed-systems/."
+        "https://sre.google/sre-book/monitoring-distributed-systems/"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Capítulo oficial de Google SRE; falta revisar su aplicación a la práctica concreta."
     },
     {
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-10.md",
       "topic": "Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
-      "providerCitations": [],
+      "providerCitations": [
+        "https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/",
+        "https://www.postgresql.org/docs/current/two-phase.html"
+      ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 494,
       "originalProseUrls": [
-        "https://en.wikipedia.org/wiki/Two-phase_commit_protocol",
-        "https://lamport.azurewebsites.net/pubs/time-clocks.pdf"
+        "https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/",
+        "https://www.postgresql.org/docs/current/two-phase.html"
       ],
-      "recognitionStatus": "unrecognized-source-pending",
-      "reason": "El host no está clasificado; no se acepta automáticamente una referencia secundaria, un repositorio ni una URL de ejemplo."
+      "recognitionStatus": "primary-domain-detected",
+      "reason": "Publicación primaria de Lamport y documentación oficial de una implementación 2PC; falta revisar la cobertura completa del tema."
     },
     {
       "track": "foundations",
@@ -5660,6 +5675,15 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html",
+      "status": 200,
+      "finalUrl": "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html",
+      "contentType": "text/html",
+      "title": "Transactional outbox pattern",
+      "checkedAt": "2026-10-31T15:23:57Z",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.github.com/actions",
       "status": 200,
       "finalUrl": "https://docs.github.com/en/actions",
@@ -6495,6 +6519,15 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://learn.microsoft.com/azure/cosmos-db/consistency-levels",
+      "status": 200,
+      "finalUrl": "https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels",
+      "contentType": "text/html",
+      "title": "Consistency levels in Azure Cosmos DB",
+      "checkedAt": "2026-10-31T15:23:57Z",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
       "url": "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
       "status": 200,
       "finalUrl": "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
@@ -6621,6 +6654,24 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://sre.google/sre-book",
+      "status": 200,
+      "finalUrl": "https://sre.google/sre-book/introduction/",
+      "contentType": "text/html",
+      "title": "Site Reliability Engineering",
+      "checkedAt": "2026-10-31T15:23:57Z",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
+      "url": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "status": 200,
+      "finalUrl": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "contentType": "text/html",
+      "title": "Monitoring Distributed Systems",
+      "checkedAt": "2026-10-31T15:23:57Z",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
       "url": "https://tc39.es/ecma262/",
       "status": 200,
       "finalUrl": "https://tc39.es/ecma262/",
@@ -6690,6 +6741,15 @@
       "contentType": "text/html; charset=UTF-8",
       "title": "The GNU C Library - GNU Project - Free Software Foundation (FSF)",
       "checkedAt": "2026-10-31T15:07:28.604055+00:00",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
+      "url": "https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/",
+      "status": 200,
+      "finalUrl": "https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/",
+      "contentType": "text/html; charset=UTF-8",
+      "title": "Time, Clocks and the Ordering of Events in a Distributed System",
+      "checkedAt": "2026-10-31T15:23:57Z",
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
@@ -6816,6 +6876,15 @@
       "contentType": "text/html; charset=utf-8",
       "title": "PostgreSQL: Documentation: 18: 3.4. Transactions",
       "checkedAt": "2026-10-31T15:07:29.654934+00:00",
+      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/current/two-phase.html",
+      "status": 200,
+      "finalUrl": "https://www.postgresql.org/docs/current/two-phase.html",
+      "contentType": "text/html; charset=utf-8",
+      "title": "Two-Phase Transactions",
+      "checkedAt": "2026-10-31T15:23:57Z",
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
@@ -7065,11 +7134,11 @@
   "responsible": "Agente Qoder (inventario y HTTP; no firma pedagógica humana)",
   "summary": {
     "baselineUnrecognizedTopics": 378,
-    "additionalRecognizedTopics": 133,
-    "remainingUnrecognizedTopics": 245,
+    "additionalRecognizedTopics": 138,
+    "remainingUnrecognizedTopics": 240,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 169,
-    "urlsReachable": 169,
+    "urlsChecked": 175,
+    "urlsReachable": 175,
     "urlsPending": 0
   },
   "corrections": [

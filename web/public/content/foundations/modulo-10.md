@@ -245,7 +245,7 @@ Pista: usá el valor de la réplica para decidir si facturar el envío como comp
 Identificá, para RutaFlow, una operación que SÍ toleraría leer de la réplica (pista: mostrar el historial de ubicaciones en un panel de analítica, Módulo 19 del track Cloud) frente a una que no (pista: decidir si cobrar o reembolsar) — documentando el criterio que usaste para distinguirlas.
 
 #### Paso 7 · Cierre
-Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturación del Paso 5, y la clasificación de operaciones del Paso 6; explicá por qué "elegir una base AP o CP" no sustituye decidir, operación por operación, qué inconsistencia tolera el negocio. Siguiente paso: estudiar mensajes. Errores comunes: prometer consistencia sin coste y ocultar lecturas obsoletas. Fuente oficial: https://martinfowler.com/articles/patterns-of-distributed-systems.
+Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturación del Paso 5, y la clasificación de operaciones del Paso 6; explicá por qué "elegir una base AP o CP" no sustituye decidir, operación por operación, qué inconsistencia tolera el negocio. Siguiente paso: estudiar mensajes. Errores comunes: prometer consistencia sin coste y ocultar lecturas obsoletas. Fuentes oficiales y de contraste: [patrones de sistemas distribuidos de Martin Fowler](https://martinfowler.com/articles/patterns-of-distributed-systems) y [niveles de consistencia documentados por Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/consistency-levels). La segunda fuente muestra compromisos concretos entre consistencia, latencia, disponibilidad y throughput; no convierte el comportamiento de Cosmos DB en una garantía universal.
 
 ### Tema 3: Mensajes que se procesan con efectos exactamente una vez
 
@@ -371,7 +371,7 @@ Pista: cambiá el segundo comando para que use `commandId: "cmd-2"` (distinto) p
 Agregá un `console.log` dentro de `repo.confirm` para contar cuántas veces se ejecuta de verdad, y repetí el comando original (`cmd-1`) cinco veces seguidas — confirmá que el contador queda en 1, sin importar cuántos reintentos reciba.
 
 #### Paso 7 · Cierre
-Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID distinto del Paso 5, y el contador en 1 tras cinco reintentos del Paso 6; explicá por qué la garantía es "exactamente una vez por `commandId`", no "exactamente una vez por envío" en términos absolutos. Siguiente paso: estudiar resiliencia. Errores comunes: confundir entrega con efecto y reintentar operaciones no idempotentes. Fuente oficial: https://microservices.io/patterns/data/transactional-outbox.html.
+Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID distinto del Paso 5, y el contador en 1 tras cinco reintentos del Paso 6; explicá por qué la garantía es "exactamente una vez por `commandId`", no "exactamente una vez por envío" en términos absolutos. Siguiente paso: estudiar resiliencia. Errores comunes: confundir entrega con efecto y reintentar operaciones no idempotentes. Fuentes oficiales y de contraste: [descripción del patrón por Chris Richardson](https://microservices.io/patterns/data/transactional-outbox.html) y [guía de transactional outbox de AWS](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html). AWS advierte sobre mensajes duplicados, orden e idempotencia; la guía no acredita por sí sola esta implementación.
 
 ### Tema 4: Resiliencia y observabilidad orientadas a objetivos
 
@@ -617,7 +617,7 @@ Simula en `dos_fases` que el coordinador cae después de recibir los votos y ant
 
 #### Paso 7 · Cierre
 **¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
-**Fuente oficial:** [Lamport: Time, Clocks, and the Ordering of Events (1978)](https://lamport.azurewebsites.net/pubs/time-clocks.pdf), [Two-phase commit protocol (Wikipedia)](https://en.wikipedia.org/wiki/Two-phase_commit_protocol); Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3.
+**Fuentes oficiales y primarias:** [Lamport: *Time, Clocks, and the Ordering of Events* (Microsoft Research)](https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/) y [transacciones en dos fases de PostgreSQL](https://www.postgresql.org/docs/current/two-phase.html). La primera sustenta el orden causal mediante relojes lógicos; la segunda documenta `PREPARE TRANSACTION`, `COMMIT PREPARED` y `ROLLBACK PREPARED` en una implementación real. Como lectura de contexto permanece Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3, pendiente de revisión completa en el disco externo.
 **Conceptos clave:** reloj lógico, relación "ocurrió antes", eventos concurrentes, elección de líder, algoritmo del matón, commit en dos fases, protocolo bloqueante.
 **Cuándo no usarlo:** no implementes estos algoritmos en producción: usa herramientas probadas (etcd, ZooKeeper, transacciones de la base de datos, sagas). Implementarlos sirve para entender sus garantías y límites.
 

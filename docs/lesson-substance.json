@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "49ab5630162e2f9af63d10ca13aa512a159845a025e533337e82625a1fb176a8",
+    "fingerprint": "1d28f26b0a2df8cc6abb8111dc9e12fe5da84f8f38727f6b8b8cd50217b66199",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -4975,16 +4975,16 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 68,
+        "tailWords": 119,
         "topic": "Tema 2: Replicación, consistencia y decisiones explícitas",
-        "words": 1127
+        "words": 1178
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 72,
+        "tailWords": 119,
         "topic": "Tema 3: Mensajes que se procesan con efectos exactamente una vez",
-        "words": 1155
+        "words": 1202
       },
       {
         "issues": [],
@@ -4996,9 +4996,9 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 223,
+        "tailWords": 272,
         "topic": "Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
-        "words": 1191
+        "words": 1240
       },
       {
         "issues": [],
