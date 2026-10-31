@@ -1,6 +1,8 @@
 # Módulo 4: Concurrencia moderna: async/await
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: async/await y Task
@@ -33,8 +35,7 @@ El modificador `.task { }` en una vista SwiftUI lanza una `Task` vinculada autom
 
 **Analogía:** `async`/`await` es como poder escribir instrucciones de cocina en el orden natural en que ocurren ("hierve el agua, luego agrega la pasta"), en vez de tener que estructurarlas como una cadena de notas de "cuando termines esto, avísame para hacer lo siguiente" (callbacks anidados); `.task` vinculado al ciclo de vida es como cancelar automáticamente un pedido si el cliente que lo hizo ya se retiró del restaurante.
 
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, carga la lista de envíos con async/await y cancela al salir.
 
 **Límites y decisión de uso:** Async permite suspender, pero no hace que cualquier cálculo deje de bloquear el contexto donde se ejecuta. La cancelación es cooperativa: compruébala y libera recursos en las operaciones largas, sin asumir que cancelar mata trabajo arbitrario.
 
@@ -60,7 +61,7 @@ struct DetalleEnvio: View {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -104,7 +105,7 @@ await withTaskGroup(of: Int.self) { group in
 print(await contador.confirmar()) // debería ser 101 tras 100 confirmaciones concurrentes + esta
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -144,8 +145,7 @@ actor CacheTareas {
 // El compilador exige `await` para acceder desde fuera del actor, serializando el acceso automáticamente
 ```
 
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, protege el contador de intentos con un actor.
 
 **Límites y decisión de uso:** Un actor protege acceso a su estado, pero una operación puede intercalarse con otra al suspenderse. Revalida las condiciones después de await; agrupa los cambios que requieren atomicidad sin depender de una suposición anterior a la suspensión.
 
@@ -212,7 +212,7 @@ class DetalleEnvioViewModel {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -253,8 +253,7 @@ Entregá las dos consultas paralelas del Paso 4, el crash potencial sin `@MainAc
 
 ---
 
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, descarga varias fotos en paralelo y actualiza la UI en MainActor.
 
 ## Laboratorio de transferencia
 

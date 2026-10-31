@@ -13,7 +13,7 @@ Una pantalla remota no tiene solo datos: puede estar cargando, desactualizada, v
 
 **¿Por qué es importante?** Porque evita spinners infinitos, datos viejos presentados como actuales y componentes imposibles de probar. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** una pantalla que gira sin fin porque la petición falló; datos de hace diez minutos mostrados como actuales; un componente que no puede representar «vacío». Modela carga, error, vacío y desactualizado antes de conectar el transporte.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -151,7 +151,7 @@ No se renderizan miles de marcadores DOM. El servidor limita por bounding box; e
 
 **¿Por qué es importante?** Porque mantiene legible y rápida una herramienta de decisión. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un operador con miles de marcadores en pantalla; una posición de hace cinco minutos sin hora visible; un estado comunicado solo por color. Agrupa, limita por caja y añade texto e icono antes de animar.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -303,7 +303,7 @@ El mapa tiene alternativa tabular; filtros poseen etiquetas; diálogos gestionan
 
 **¿Por qué es importante?** Porque una aplicación profesional funciona bajo discapacidad, mala red y dispositivos modestos. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un usuario que navega el tracking solo con teclado; un bundle que tarda en una red móvil; un campo de dirección que inyecta HTML. Mide LCP, prueba con teclado y escapa el dato externo antes de publicar.
 
 #### Paso 1 · Objetivo y preparación
 

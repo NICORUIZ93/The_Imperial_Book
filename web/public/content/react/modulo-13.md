@@ -5,6 +5,8 @@ Una SPA puede aprobar el flujo feliz y aun desaparecer ante un error de render, 
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: Diseñar estados de carga, error y recuperación
 
 #### Paso 1 · Objetivo y preparación
@@ -87,9 +89,6 @@ evento async -> catch explícito -> estado recuperable
 reset -> nuevo recurso/precondición, no repetir objeto rechazado
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 **Límites y decisión de uso:** Un spinner indefinido no resuelve una operación cuyo resultado se desconoce. Define plazos, cancelación y reconciliación; un timeout de confirmación no autoriza a repetir un efecto sin identidad estable.
 
@@ -118,15 +117,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error.
+Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: implementá `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agregá un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red.
+Corregí el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agregá un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red. Integra el boundary en la vista de detalle del proyecto integrador RutaFlow y prueba el reintento con MSW.
 
 #### Paso 7 · Cierre
 Entregá el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explicá por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
@@ -185,10 +183,6 @@ Testing Library/axe -> regresión automática
 teclado + lector -> flujo completo comprensible
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 **Límites y decisión de uso:** Un componente visual reutilizable puede romper la semántica si genera controles anidados o pierde referencias de foco. Prueba el árbol accesible y teclado en la composición final, no solo en su ejemplo aislado.
 
@@ -213,15 +207,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir.
+Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá `aria-describedby` y dejá solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba.
+Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba. Aplica el orden de foco al formulario del proyecto integrador RutaFlow y verifica con teclado qué campo recibe el foco tras el error.
 
 #### Paso 7 · Cierre
 Entregá el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explicá por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
@@ -278,9 +271,6 @@ texto -> escape React; HTML permitido -> sanitizador -> sink auditado
 CSP/Trusted Types cubren DOM completo
 ```
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 **Límites y decisión de uso:** Renderizar en servidor no vuelve confiables entradas ni oculta automáticamente secretos. Revalida sesión y autorización en cada operación y limita los datos enviados al cliente; un control de navegación no sustituye ese límite.
 
@@ -302,15 +292,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario.
+Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual.
+Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual. Aplica la validación de sesión del proyecto integrador RutaFlow en el servidor y verifica que el cliente no pueda saltarla.
 
 #### Paso 7 · Cierre
 Entregá la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explicá por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
@@ -396,9 +385,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados — sin ninguna advertencia de mismatch de hidratación en consola.
+Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados — sin ninguna advertencia de mismatch de hidratación en consola. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
@@ -467,7 +455,3 @@ Derivado de la [documentación oficial](https://react.dev/reference/react), sus 
 
 Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
 <!-- OFFICIAL-TOPIC-ATLAS:END -->
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Visualización: concepto mostrado en diagrama

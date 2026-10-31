@@ -1,6 +1,8 @@
 # Módulo 9: Testing en iOS
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: XCTest clásico y Swift Testing
@@ -35,7 +37,7 @@ struct EsEnvioAtrasadoTests {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -94,8 +96,7 @@ XCTAssertEqual(Calculadora().sumar(2, 3), 5)
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, escribe pruebas de la lógica de entregas con XCTest y Swift Testing.
 
 ### Tema 2: Testing de código async
 
@@ -116,7 +117,7 @@ Marcar el test mismo como `async` permite usar `await` directamente dentro del t
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -161,8 +162,7 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, prueba la carga asíncrona de envíos con expectativas controladas.
 
 ### Tema 3: UI Tests con XCUITest
 
@@ -235,7 +235,7 @@ func testConfirmarEntregaDesdeLaUI() {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -278,5 +278,4 @@ Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, recorre la confirmación de entrega con XCUITest.

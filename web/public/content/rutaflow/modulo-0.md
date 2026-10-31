@@ -31,7 +31,7 @@ Una guía pasa por admisión, clasificación, asignación, tránsito, intento y 
 
 **¿Por qué es importante?** Porque evita que cada aplicación invente reglas contradictorias y permite auditar decisiones. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** una entrega confirmada que un reintento intenta devolver a tránsito; un cliente que consulta solo su envío; un operador que reasigna sin borrar el historial. Dibuja el flujo y marca la invariante antes de escribir código.
 
 **Diagrama:**
 
@@ -138,7 +138,7 @@ El punto de partida será un monorepo con apps, servicios, paquetes, infraestruc
 
 **¿Por qué es importante?** Porque reduce el tiempo perdido por diferencias locales y vuelve repetible cada laboratorio. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un compañero en Windows con WSL 2, otro en macOS con Homebrew y CI en Linux ejecutan la misma prueba y obtienen versiones distintas. Fija versiones, valida con `node --version` y documenta la diferencia antes de culpar al código.
 
 **Diagrama:**
 
@@ -237,7 +237,7 @@ Se comienza con un monolito modular porque despliegues distribuidos no corrigen 
 
 **¿Por qué es importante?** Porque la arquitectura queda guiada por riesgo y cambio, no por moda. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un ADR que justifica el monolito modular; una foto de entrega con retención limitada; un atacante que intenta leer coordenadas históricas desde un tracking público. Clasifica el dato y revisa el threat model antes de exponer el endpoint.
 
 **Diagrama:**
 

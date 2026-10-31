@@ -1,6 +1,8 @@
 # Módulo 14: SwiftUI Master: pruebas, animación e interoperabilidad
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: Swift Testing y pruebas asíncronas
@@ -19,7 +21,7 @@ cd ejemplo-ios-cancelacion
 swift test
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -122,7 +124,7 @@ import ViewInspector
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -168,7 +170,7 @@ $textoBusqueda
     .store(in: &cancelables)
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -224,7 +226,7 @@ EncabezadoEnvio(envio: envio)
     .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -280,7 +282,7 @@ struct MapaRuta: UIViewRepresentable {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -343,7 +345,7 @@ struct SelectorFotoEntrega: UIViewControllerRepresentable {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build

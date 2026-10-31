@@ -63,9 +63,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué el intervalo importa al integrar?
 3. ¿Qué cambia al duplicar la frecuencia de muestreo?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** confundir el área bajo la curva con el valor de la función en un extremo; mezclar horas y segundos en una fórmula de carga; extrapolar una tabla fuera del intervalo medido. Si fallas una pregunta, rehaz la integral con una tabla de tres puntos y comprueba el trapecio contra un caso lineal exacto.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/). La integración numérica y la suma de Riemann se consultan allí; la sintaxis de Python, en [docs.python.org](https://docs.python.org/3/).
 
 ### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton
 
@@ -118,9 +118,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué cambia la salida al conectar una carga?
 3. ¿Qué fuentes se desactivan para calcular Rth?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** medir la tensión de circuito abierto con la carga conectada; anular una fuente de corriente cortocircuitándola en vez de abrirla; reutilizar el equivalente de Thévenin con otra carga sin recalcular. Si fallas una pregunta, dibuja el circuito sin carga y obtén Voc e Isc por separado.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). El curso cubre superposición, Thévenin y Norton con las convenciones de signo usadas en el tema.
 
 ### Tema 3: Electrónica analógica: diodos, transistores y amplificadores
 
@@ -173,9 +173,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Cuándo falla V+=V−?
 3. ¿Por qué importa la polaridad de un diodo?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** aplicar la ganancia lineal más allá de los rieles de alimentación; ignorar el offset de entrada al comparar la salida esperada; cambiar la realimentación sin recalcular la ganancia. Si fallas una pregunta, lleva la entrada hasta que la salida toque el riel y localiza dónde deja de valer el modelo.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Los amplificadores operacionales, la realimentación negativa y la saturación se desarrollan en ese curso.
 
 ### Tema 4: Electrónica digital: lógica y máquinas de estados
 
@@ -230,9 +230,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Dónde se guarda el estado?
 3. ¿Por qué 3.3 V no siempre es compatible con 5 V?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** confundir nivel lógico con tensión sin revisar los umbrales del dispositivo; tratar una entrada flotante como un cero; simplificar la tabla de verdad y eliminar una combinación de seguridad. Si fallas una pregunta, rehaz las cuatro filas del interlock y verifica cuál habilita la puerta.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Computation Structures](https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/). Lógica combinacional, tablas de verdad y temporización digital se cubren en ese curso.
 
 ### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones
 
@@ -285,9 +285,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué PWM no es tensión analógica instantánea?
 3. ¿Qué trabajo debe evitar una interrupción?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** dividir por 4095 en vez de 4096 al escalar un ADC de 12 bits; comparar cuentas de placas con distinta referencia; confundir resolución con exactitud. Si fallas una pregunta, calcula la cuenta de 0 V y la de Vref y comprueba que el rango completo ocupa 4096 pasos.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [Arduino: entradas analógicas](https://docs.arduino.cc/learn/microcontrollers/analog-input/). La referencia describe `analogRead`, la tensión de referencia y cómo la resolución depende de la placa; el ejemplo usa 12 bits, así que su divisor es 4096.
 
 ### Tema 6: Comunicaciones: modulación y detección de errores
 
@@ -340,9 +340,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué paridad falla con dos cambios?
 3. ¿Detectar errores autentica al sensor?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** suponer que un bit de paridad detecta cualquier error; confundir detección con corrección; comparar protocolos sin contar la cabecera. Si fallas una pregunta, altera dos bits del mismo mensaje y explica por qué la paridad vuelve a coincidir.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Digital Communication Systems](https://ocw.mit.edu/courses/6-02-introduction-to-eecs-ii-digital-communication-systems-fall-2012/). Detección de errores, codificación y capacidad del canal se tratan con el formalismo que el tema solo introduce.
 
 ### Tema 7: Señales y sistemas: muestreo, Fourier y convolución
 
@@ -395,9 +395,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Qué es aliasing?
 3. ¿Por qué el filtro antialias debe actuar antes del ADC?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** inferir la frecuencia original mirando solo las muestras; muestrear sin filtro antialias; confundir la frecuencia de Nyquist con el doble de la frecuencia de muestreo. Si fallas una pregunta, sube `fs` a 20 y repite la comparación antes de afirmar qué señal se observó.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Signals and Systems](https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/). El muestreo y el teorema de Nyquist se desarrollan allí; para implementar filtros en Python, [SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html).
 
 **Diagrama interactivo:** [Muestreo y aliasing: 7 Hz y 3 Hz a 10 muestras/s](/visuals/temas/foundations/modulo-12-tema-7-aliasing.html).
 
@@ -452,9 +452,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Cuál es la diferencia FIR/IIR?
 3. ¿Qué evidencia permite elegir una ventana?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** centrar una ventana causal y adelantar la salida en el tiempo; usar el suavizado para ocultar una alarma sin medir el retardo; comparar señales sin alinear sus índices. Si fallas una pregunta, filtra un escalón y anota en qué muestra la salida alcanza el nuevo nivel.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [SciPy: referencia de `scipy.signal`](https://docs.scipy.org/doc/scipy/reference/signal.html). Allí se documentan filtros FIR/IIR, `lfilter` y `filtfilt`; la diferencia entre filtrado causal y de fase cero se explica en la guía de procesamiento de señal.
 
 **Diagrama interactivo:** [Media móvil causal: ventanas, salida y retardo](/visuals/temas/foundations/modulo-12-tema-8-media-movil.html).
 
@@ -509,9 +509,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Qué distingue resolución y exactitud?
 3. ¿Por qué se necesita un tercer punto?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** extrapolar fuera del intervalo calibrado; confundir resolución con exactitud; aceptar una recta de dos puntos sin una tercera referencia. Si fallas una pregunta, agrega un punto intermedio, calcula su residuo y documenta la incertidumbre antes de aprobar el sensor.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [NIST Technical Note 1297: incertidumbre de medida](https://www.nist.gov/pml/nist-technical-note-1297). Es la guía de referencia para expresar incertidumbre; la calibración concreta depende del certificado y del instrumento patrón.
 
 ### Tema 10: Control automático: realimentación, PID y estabilidad
 
@@ -565,9 +565,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué P deja error?
 3. ¿Qué ocurre con la integral cuando el actuador satura?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** subir Kp para eliminar el error estacionario sin revisar estabilidad; ignorar la saturación del actuador; confundir error de régimen con lentitud de respuesta. Si fallas una pregunta, calcula el equilibrio de la planta y explica por qué la temperatura no llega a la referencia.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Feedback Systems](https://ocw.mit.edu/courses/6-302-feedback-systems-spring-2007/). Realimentación, estabilidad y análisis de lazo cerrado se cubren en ese curso; el PID con anti-windup requiere además la hoja del fabricante del controlador.
 
 **Diagrama interactivo:** [Lazo proporcional: realimentación y error estacionario](/visuals/temas/foundations/modulo-12-tema-10-lazo-p.html).
 
@@ -622,9 +622,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué hay pérdidas?
 3. ¿Por qué medir eficiencia a varias cargas?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** confundir duty con eficiencia; usar una eficiencia mayor que 1 y obtener pérdidas negativas; atribuir toda la pérdida a un solo componente sin descomponerla. Si fallas una pregunta, recalcula con 80% y comprueba que la entrada sigue siendo mayor que la salida.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Power Electronics](https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/). Convertidores buck y boost, conmutación y pérdidas se analizan allí; inductancia, MOSFET y lazo de compensación exigen el diseño completo del convertidor.
 
 ### Tema 12: PCB: esquemático, ERC, DRC y fabricación
 
@@ -675,9 +675,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Qué diferencia esquemático y layout?
 3. ¿Dónde regresa la corriente?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** confundir ERC (conectividad y reglas eléctricas) con DRC (geometría); aceptar un clearance menor que la regla sin justificarlo; medir en unidades de pantalla en vez de milímetros. Si fallas una pregunta, abre el reporte de DRC y localiza el par de pistas que incumple antes de mover nada.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [Documentación de KiCad](https://docs.kicad.org/). Allí se describen el editor de PCB, las reglas de diseño y el DRC; los valores de clearance de fabricación se contrastan con la capacidad del fabricante, no con el ejemplo.
 
 ### Tema 13: Sistemas embebidos: RTOS, buses y firmware
 
@@ -750,9 +750,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué baja utilización no prueba cumplimiento?
 3. ¿Qué hace firmware cuando pierde red?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** sumar utilizaciones y concluir que se cumplen deadlines; ignorar la inversión de prioridad y el bloqueo de bus; confundir tiempo real con velocidad media. Si fallas una pregunta, ejecuta la simulación con la tarea de 100 ms y localiza el tick exacto del incumplimiento.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [Zephyr: planificación del kernel](https://docs.zephyrproject.org/latest/kernel/services/scheduling/index.html). La documentación describe prioridades, preempción y planificación; garantías temporales de un sistema concreto exigen medir WCET, jitter y bloqueos.
 
 ### Tema 14: Programación de bajo nivel: C, memoria y depuración
 
@@ -804,9 +804,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Cuántos valores caben en 16 bits?
 3. ¿Por qué C necesita comprobar límites?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** decodificar sin acordar endianness y tamaño; suponer que `<H` acepta cualquier valor sin comprobar el rango; confundir un valor legal con un valor correcto. Si fallas una pregunta, empaqueta 513 y 65536 y anota qué bytes o excepción aparecen en cada caso.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [Python: módulo `struct`](https://docs.python.org/3/library/struct.html). La tabla de formatos define tamaño y alineación; para C, el contrato equivalente se consulta en la norma del lenguaje y en la documentación del compilador.
 
 ### Tema 15: Electromagnetismo: Faraday y líneas de transmisión
 
@@ -857,9 +857,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Qué expresa el signo negativo?
 3. ¿Cuándo una pista exige modelo de línea?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** convertir cm² a m² dividiendo por 100 en vez de 10 000; olvidar que la inducción exige flujo variable; ignorar la orientación del lazo respecto al campo. Si fallas una pregunta, repite el cálculo con el área en m² y con el lazo paralelo al campo.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Electricity and Magnetism](https://ocw.mit.edu/courses/8-02-physics-ii-electricity-and-magnetism-spring-2007/). Ley de Faraday, flujo e inducción se desarrollan allí; el comportamiento de una pista rápida exige además simulación electromagnética.
 
 ### Tema 16: Gestión profesional: requisitos, riesgos y evidencia
 
@@ -911,9 +911,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Por qué documentar supuestos?
 3. ¿Quién decide si una desviación es aceptable?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** redactar un requisito sin umbral ni condición de medida; cambiar el umbral para que pase la prueba; presentar tres puntos como cobertura de todo el rango. Si fallas una pregunta, escribe la evidencia que falta (punto, condición y responsable) antes de declarar aceptado el sensor.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [MIT OpenCourseWare: Fundamentals of Systems Engineering](https://ocw.mit.edu/courses/16-842-fundamentals-of-systems-engineering-fall-2015/). El curso cubre requisitos, verificación y gestión de riesgos; la aceptación formal de un producto se rige además por el contrato y la norma aplicable.
 
 ### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3
 
@@ -964,9 +964,9 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 2. ¿Quién valida una orden de la HMI?
 3. ¿Por qué se separa control normal y seguridad?
 
-**Errores comunes:** omitir las unidades; tratar un modelo ideal como dispositivo real; aceptar el caso normal sin revisar el contraejemplo descrito. Si fallas una pregunta, vuelve a la analogía y repite el cálculo con otros datos; no memorices solo la salida.
+**Errores comunes:** confundir la HMI con el control de seguridad; asumir que un scan es instantáneo; presentar un interlock didáctico como seguridad funcional certificada. Si fallas una pregunta, dibuja la tabla de entradas del scan y localiza qué combinación habilita el motor sin puerta cerrada.
 
-**Fuente oficial:** [MIT OpenCourseWare: circuitos y electrónica](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Para procesamiento digital: [referencia de SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html). Las herramientas específicas citadas en el tema requieren su propia documentación.
+**Fuente oficial:** [IEC 61131-3: controladores programables](https://webstore.iec.ch/en/publication/3800). La norma define los lenguajes de programación; el ciclo de scan, el watchdog y la seguridad funcional dependen del controlador y de la edición aplicable del estándar.
 
 **Diagrama interactivo:** [Scan PLC: interlock y actualización de salida](/visuals/temas/foundations/modulo-12-tema-17-plc-scan.html).
 

@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: Estructura del proyecto integrador
 
 #### Paso 1 · Objetivo y preparación
@@ -69,9 +71,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: recorriendo el código fuente carpeta por carpeta, ningún archivo de `features/envios/` importa nada de `features/auth/` directamente (ambos se comunican solo a través de `RutaProtegida`), y `uiStore.ts` no contiene ningún dato que provenga de una API.
+Resultado esperado: recorriendo el código fuente carpeta por carpeta, ningún archivo de `features/envios/` importa nada de `features/auth/` directamente (ambos se comunican solo a través de `RutaProtegida`), y `uiStore.ts` no contiene ningún dato que provenga de una API. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: agregá temporalmente el estado de "sesión activa" (que viene de `useAuth`) dentro de `uiStore.ts` de Zustand, "para tenerlo centralizado" — ese es el fallo deliberado: ahora existen dos fuentes para saber si hay sesión activa (el store de Zustand y el propio `useAuth`), y pueden desincronizarse si alguna actualiza sin que la otra se entere.
@@ -106,7 +107,6 @@ src/
   router.tsx
 ```
 
-* Ejecutar: `npm test`
 
 **Límites y decisión de uso:** Organizar por funcionalidades no exige duplicar cada componente compartido ni crear una capa para cada carpeta. Mueve piezas según responsabilidades y cambios conjuntos, manteniendo las pruebas que permiten reorganizar sin alterar comportamiento.
 
@@ -140,9 +140,6 @@ ListaTareas.tsx → consume useTareas() → TanStack Query gestiona cache/invali
 uiStore.ts (Zustand) → solo estado de UI pura, desacoplado de useTareas
 ```
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
@@ -166,15 +163,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: un conductor sin sesión es redirigido a `/login` antes de que `ListaEnvios` llegue a montarse, por lo que `useEnvios()` nunca dispara ninguna petición de red para un usuario no autenticado.
+Resultado esperado: un conductor sin sesión es redirigido a `/login` antes de que `ListaEnvios` llegue a montarse, por lo que `useEnvios()` nunca dispara ninguna petición de red para un usuario no autenticado. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: movés la llamada a `useEnvios()` a un componente por encima de `RutaProtegida` en el árbol (por ejemplo, el layout raíz de la app) "para cargar los datos más temprano" — ese es el fallo deliberado: ahora `useEnvios()` dispara su petición antes de que `RutaProtegida` verifique la sesión, consultando `/api/envios` incluso para un conductor sin sesión activa.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `useEnvios()` dentro de `ListaEnvios` (bajo `RutaProtegida`), y confirmá con la pestaña Network que ningún conductor sin sesión dispara esa petición.
+Corregí el Paso 5 devolviendo `useEnvios()` dentro de `ListaEnvios` (bajo `RutaProtegida`), y confirmá con la pestaña Network que ningún conductor sin sesión dispara esa petición. En el proyecto integrador RutaFlow, separa la ruta, la query de envíos y el filtro de Zustand, y prueba la pantalla con red lenta.
 
 #### Paso 7 · Cierre
 Entregá la integración correctamente ordenada del Paso 4, la petición indebida provocada en el Paso 5, y la corrección confirmada del Paso 6; explicá por qué el orden en el árbol de componentes determina cuándo efectivamente se dispara una consulta de datos. Siguiente paso: estudia useEnvios en profundidad. Errores comunes: disparar consultas de datos sensibles antes de verificar autenticación, mezclar el store de Zustand con lógica de autenticación que ya tiene su propia fuente en `useAuth`, y duplicar el layout de rutas protegidas en cada vista individual. Fuentes oficiales: https://reactrouter.com/start/framework/routing y https://tanstack.com/query/latest/docs/framework/react/overview.
@@ -208,15 +204,16 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: `ListaEnvios`, `ResumenZona` y `ContadorPendientes` llaman los tres a `useEnvios()` sin que ninguno escriba `queryKey` ni `queryFn` directamente — los tres comparten automáticamente la misma cache, sin riesgo de un typo que rompa la deduplicación entre ellos.
+
+Ejecuta `npm test` y confirma que las pruebas del hook de TanStack Query pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: agregá un cuarto componente que, "para un caso puntual", invoque `useQuery` directamente con `queryKey: ['envio']` (singular, un typo) en vez de usar `useEnvios()` — ese es el fallo deliberado: ese componente mantiene su propia cache separada y desincronizada del resto, disparando una petición de red adicional redundante que los otros tres ya tenían cacheada bajo la key correcta.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo ese cuarto componente a `useEnvios()`, y agregá un `useCrearEnvio()` complementario que envuelva `useMutation` con su propia invalidación de `['envios']` configurada.
+Corregí el Paso 5 devolviendo ese cuarto componente a `useEnvios()`, y agregá un `useCrearEnvio()` complementario que envuelva `useMutation` con su propia invalidación de `['envios']` configurada. Extrae el hook de tareas del proyecto integrador RutaFlow y comprueba que dos componentes compartan la misma query sin duplicar peticiones.
 
 #### Paso 7 · Cierre
 Entregá `useEnvios()` compartido por tres componentes del Paso 4, la cache duplicada por typo del Paso 5, y `useCrearEnvio()` del Paso 6; explicá por qué encapsular el acceso a datos detrás de un hook con nombre significativo previene exactamente la clase de error que ocurrió en el Paso 5. Siguiente paso: cerrá el track con el laboratorio integrador completo. Errores comunes: invocar `useQuery` directamente en vez de a través de un hook dedicado, escribir la misma `queryKey` a mano en múltiples lugares, y no extender la misma capa de hooks a las mutaciones relacionadas. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/query-keys y https://react.dev/learn/reusing-logic-with-custom-hooks.
@@ -251,7 +248,6 @@ graph TD
 
 * Ejecutar: `npm test -- --testNamePattern="custom.hook|query.*key"`
 * Código: `src/hooks/useTareas.tsx`
-* Proyecto: proyecto integrador RutaFlow
 * Cuándo: encapsular `useQuery` siempre cuando múltiples componentes lo usen; no conviene si es usado una única vez en un componente aislado (entonces usa `useQuery` directamente).
 
 **¿Por qué es importante?** Encapsular `queryKey`/`queryFn` detrás de un hook con nombre significativo centraliza los detalles de acceso a datos, facilitando cambios futuros y evitando inconsistencias entre componentes.
@@ -278,7 +274,3 @@ graph TD
 - **Omitir tests del flujo crítico.** Prioriza probar el camino principal completo (login → ver tareas → crear tarea) sobre casos secundarios.
 
 ---
-
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama

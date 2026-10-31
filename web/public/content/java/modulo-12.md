@@ -1,6 +1,8 @@
 # Módulo 12: Buenas prácticas y patrones de diseño
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: Builder — configuración paso a paso y validación
@@ -47,7 +49,7 @@ cd ejemplo-builder-pedido
 mkdir -p src/main/java/academia/pedidos
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -119,7 +121,7 @@ cd ejemplo-factory-strategy
 mkdir -p src/main/java/academia/notificaciones
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -189,7 +191,7 @@ final class LocalFactory implements TransportistaFactory {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 **Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
@@ -281,7 +283,7 @@ cd ejemplo-srp-pedido
 mkdir -p src/main/java/academia/pedidos
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

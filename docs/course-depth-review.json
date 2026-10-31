@@ -6352,7 +6352,7 @@
       "module": 10,
       "title": "Tema 1: Instruments",
       "file": "web/public/content/ios/modulo-10.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6363,7 +6363,7 @@
       "module": 10,
       "title": "Tema 2: Accesibilidad con VoiceOver",
       "file": "web/public/content/ios/modulo-10.md",
-      "line": 65,
+      "line": 66,
       "signals": [
         "ejemplo-breve-revisar-contexto"
       ],
@@ -6387,7 +6387,7 @@
       "module": 10,
       "title": "Tema 4: UIKit desde cero para mantener aplicaciones reales",
       "file": "web/public/content/ios/modulo-10.md",
-      "line": 192,
+      "line": 191,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6398,7 +6398,7 @@
       "module": 11,
       "title": "Tema 1: Certificados y provisioning profiles",
       "file": "web/public/content/ios/modulo-11.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6409,7 +6409,7 @@
       "module": 11,
       "title": "Tema 2: Archivar, subir y TestFlight",
       "file": "web/public/content/ios/modulo-11.md",
-      "line": 66,
+      "line": 67,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6431,7 +6431,7 @@
       "module": 12,
       "title": "Tema 1: Arquitectura del proyecto integrador",
       "file": "web/public/content/ios/modulo-12.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6442,7 +6442,7 @@
       "module": 12,
       "title": "Tema 2: Sincronización entre red y persistencia local",
       "file": "web/public/content/ios/modulo-12.md",
-      "line": 89,
+      "line": 91,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6453,7 +6453,7 @@
       "module": 12,
       "title": "Tema 3: Cierre del track",
       "file": "web/public/content/ios/modulo-12.md",
-      "line": 169,
+      "line": 171,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6464,7 +6464,7 @@
       "module": 13,
       "title": "Tema 1: El sandbox reduce superficie, pero no valida intenciones",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 8,
+      "line": 10,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6475,7 +6475,7 @@
       "module": 13,
       "title": "Tema 2: Proteger datos es controlar todas sus copias",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 101,
+      "line": 103,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6486,7 +6486,7 @@
       "module": 13,
       "title": "Tema 3: Offline-first es un protocolo, no una caché",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 194,
+      "line": 196,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6497,7 +6497,7 @@
       "module": 13,
       "title": "Tema 4: Operar significa detectar, limitar y aprender del fallo",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 301,
+      "line": 303,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6508,7 +6508,7 @@
       "module": 13,
       "title": "Tema 5: Keychain — guardar secretos de forma segura",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 386,
+      "line": 388,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6519,7 +6519,7 @@
       "module": 13,
       "title": "Tema 6: Permisos y privacidad — pedir acceso con criterio",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 458,
+      "line": 460,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6530,7 +6530,7 @@
       "module": 13,
       "title": "Tema 7: Notificaciones push con APNs",
       "file": "web/public/content/ios/modulo-13.md",
-      "line": 521,
+      "line": 523,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6541,7 +6541,7 @@
       "module": 14,
       "title": "Tema 1: Swift Testing y pruebas asíncronas",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6552,7 +6552,7 @@
       "module": 14,
       "title": "Tema 2: ViewInspector con criterio",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 104,
+      "line": 106,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6563,7 +6563,7 @@
       "module": 14,
       "title": "Tema 3: Combine avanzado",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 153,
+      "line": 155,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6574,7 +6574,7 @@
       "module": 14,
       "title": "Tema 4: Animaciones y matchedGeometryEffect",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 206,
+      "line": 208,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6585,7 +6585,7 @@
       "module": 14,
       "title": "Tema 5: UIViewRepresentable",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 255,
+      "line": 257,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6596,7 +6596,7 @@
       "module": 14,
       "title": "Tema 6: UIViewControllerRepresentable y Coordinator",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 312,
+      "line": 314,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6607,7 +6607,7 @@
       "module": 14,
       "title": "Tema 7: Core ML y Vision — inferencia en el dispositivo",
       "file": "web/public/content/ios/modulo-14.md",
-      "line": 374,
+      "line": 376,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6629,7 +6629,7 @@
       "module": 2,
       "title": "Tema 2: @Observable",
       "file": "web/public/content/ios/modulo-2.md",
-      "line": 106,
+      "line": 105,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6640,7 +6640,7 @@
       "module": 2,
       "title": "Tema 3: @Environment y identidad vs valor",
       "file": "web/public/content/ios/modulo-2.md",
-      "line": 192,
+      "line": 190,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6651,7 +6651,7 @@
       "module": 3,
       "title": "Tema 1: NavigationStack y NavigationPath",
       "file": "web/public/content/ios/modulo-3.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6662,7 +6662,7 @@
       "module": 3,
       "title": "Tema 2: Sheets, full screen covers y TabView",
       "file": "web/public/content/ios/modulo-3.md",
-      "line": 81,
+      "line": 82,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6673,7 +6673,7 @@
       "module": 3,
       "title": "Tema 3: Deep linking y controles de formulario",
       "file": "web/public/content/ios/modulo-3.md",
-      "line": 148,
+      "line": 149,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6684,7 +6684,7 @@
       "module": 4,
       "title": "Tema 1: async/await y Task",
       "file": "web/public/content/ios/modulo-4.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6695,7 +6695,7 @@
       "module": 4,
       "title": "Tema 2: Actors para estado mutable seguro",
       "file": "web/public/content/ios/modulo-4.md",
-      "line": 80,
+      "line": 81,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6717,7 +6717,7 @@
       "module": 4,
       "title": "Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
       "file": "web/public/content/ios/modulo-4.md",
-      "line": 261,
+      "line": 260,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
@@ -6728,7 +6728,7 @@
       "module": 5,
       "title": "Tema 1: URLSession con async/await y Codable",
       "file": "web/public/content/ios/modulo-5.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6739,7 +6739,7 @@
       "module": 5,
       "title": "Tema 2: Errores tipados",
       "file": "web/public/content/ios/modulo-5.md",
-      "line": 85,
+      "line": 86,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6761,7 +6761,7 @@
       "module": 6,
       "title": "Tema 1: @Model y ModelContainer",
       "file": "web/public/content/ios/modulo-6.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6772,7 +6772,7 @@
       "module": 6,
       "title": "Tema 2: @Query y operaciones de escritura",
       "file": "web/public/content/ios/modulo-6.md",
-      "line": 89,
+      "line": 90,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6794,7 +6794,7 @@
       "module": 7,
       "title": "Tema 1: Publishers y Subscribers",
       "file": "web/public/content/ios/modulo-7.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6805,7 +6805,7 @@
       "module": 7,
       "title": "Tema 2: Operadores: debounce y combineLatest",
       "file": "web/public/content/ios/modulo-7.md",
-      "line": 81,
+      "line": 82,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6830,7 +6830,7 @@
       "module": 8,
       "title": "Tema 1: De una vista \"gorda\" a MVVM",
       "file": "web/public/content/ios/modulo-8.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6841,7 +6841,7 @@
       "module": 8,
       "title": "Tema 2: Capas del proyecto e inyección por inicializador",
       "file": "web/public/content/ios/modulo-8.md",
-      "line": 88,
+      "line": 89,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6852,7 +6852,7 @@
       "module": 8,
       "title": "Tema 3: Cuándo MVVM no alcanza",
       "file": "web/public/content/ios/modulo-8.md",
-      "line": 155,
+      "line": 156,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6863,7 +6863,7 @@
       "module": 9,
       "title": "Tema 1: XCTest clásico y Swift Testing",
       "file": "web/public/content/ios/modulo-9.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6874,7 +6874,7 @@
       "module": 9,
       "title": "Tema 2: Testing de código async",
       "file": "web/public/content/ios/modulo-9.md",
-      "line": 100,
+      "line": 101,
       "signals": [
         "ejemplo-breve-revisar-contexto"
       ],
@@ -6898,7 +6898,7 @@
       "module": 0,
       "title": "Tema 1: Del código fuente a la JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 28,
+      "line": 30,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6909,7 +6909,7 @@
       "module": 0,
       "title": "Tema 2: public static void main — qué significa cada palabra",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 101,
+      "line": 103,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6920,7 +6920,7 @@
       "module": 0,
       "title": "Tema 3: JDK, JRE y JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 156,
+      "line": 158,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6931,7 +6931,7 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 214,
+      "line": 216,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6942,7 +6942,7 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 287,
+      "line": 289,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6953,7 +6953,7 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 342,
+      "line": 344,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6964,7 +6964,7 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 426,
+      "line": 428,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6975,7 +6975,7 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 507,
+      "line": 509,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -6986,7 +6986,7 @@
       "module": 1,
       "title": "Tema 1: Clases, objetos, constructores y encapsulación",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -6999,7 +6999,7 @@
       "module": 1,
       "title": "Tema 2: Herencia y sobreescritura",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 43,
+      "line": 45,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7010,7 +7010,7 @@
       "module": 1,
       "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 141,
+      "line": 143,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7021,7 +7021,7 @@
       "module": 1,
       "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 209,
+      "line": 211,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7034,7 +7034,7 @@
       "module": 10,
       "title": "Tema 1: module-info.java y encapsulación fuerte",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7047,7 +7047,7 @@
       "module": 10,
       "title": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 74,
+      "line": 76,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7060,7 +7060,7 @@
       "module": 10,
       "title": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 138,
+      "line": 140,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7073,7 +7073,7 @@
       "module": 11,
       "title": "Tema 1: Generaciones de memoria y recolectores",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7086,7 +7086,7 @@
       "module": 11,
       "title": "Tema 2: Java Flight Recorder y JIT compilation",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 72,
+      "line": 74,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7099,7 +7099,7 @@
       "module": 11,
       "title": "Tema 3: Referencias especiales y heap dumps",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 136,
+      "line": 138,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7112,7 +7112,7 @@
       "module": 11,
       "title": "Tema 4: Foreign Function & Memory API (Java 22)",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 200,
+      "line": 202,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7125,7 +7125,7 @@
       "module": 12,
       "title": "Tema 1: Builder — configuración paso a paso y validación",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7138,7 +7138,7 @@
       "module": 12,
       "title": "Tema 2: Factory Method y Strategy",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 70,
+      "line": 72,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7149,7 +7149,7 @@
       "module": 12,
       "title": "Tema 3: Abstract Factory y familias de productos compatibles",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 158,
+      "line": 160,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7160,7 +7160,7 @@
       "module": 12,
       "title": "Tema 4: SOLID y cuándo NO aplicar un patrón",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 228,
+      "line": 230,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7173,7 +7173,7 @@
       "module": 12,
       "title": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 305,
+      "line": 307,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7184,7 +7184,7 @@
       "module": 12,
       "title": "Tema 6: Patrones estructurales — elegir por intención",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 378,
+      "line": 380,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7232,7 +7232,7 @@
       "module": 14,
       "title": "Tema 1: Compartir memoria requiere orden y visibilidad",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7245,7 +7245,7 @@
       "module": 14,
       "title": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 107,
+      "line": 109,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7256,7 +7256,7 @@
       "module": 14,
       "title": "Tema 3: Deserializar es permitir construcción y comportamiento",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 188,
+      "line": 190,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7269,7 +7269,7 @@
       "module": 14,
       "title": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 272,
+      "line": 274,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7280,7 +7280,7 @@
       "module": 15,
       "title": "Tema 1: Maven avanzado",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 7,
+      "line": 9,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7293,7 +7293,7 @@
       "module": 15,
       "title": "Tema 2: Gradle y builds reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 59,
+      "line": 61,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7304,7 +7304,7 @@
       "module": 15,
       "title": "Tema 3: Proyectos multi-módulo sin ciclos",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 126,
+      "line": 128,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7317,7 +7317,7 @@
       "module": 15,
       "title": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 188,
+      "line": 190,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7330,7 +7330,7 @@
       "module": 15,
       "title": "Tema 5: Pruebas de integración reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 253,
+      "line": 255,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7343,7 +7343,7 @@
       "module": 15,
       "title": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 315,
+      "line": 317,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7356,7 +7356,7 @@
       "module": 16,
       "title": "Tema 1: Entidades y relaciones JPA",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 14,
+      "line": 16,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7367,7 +7367,7 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 123,
+      "line": 125,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7378,7 +7378,7 @@
       "module": 17,
       "title": "Tema 1: JDBC, PreparedStatement y DAO",
       "file": "web/public/content/java/modulo-17.md",
-      "line": 14,
+      "line": 16,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7389,7 +7389,7 @@
       "module": 17,
       "title": "Tema 2: Transacciones, ACID y aislamiento",
       "file": "web/public/content/java/modulo-17.md",
-      "line": 91,
+      "line": 93,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7402,7 +7402,7 @@
       "module": 18,
       "title": "Tema 1: HttpClient, REST, timeouts y fallos",
       "file": "web/public/content/java/modulo-18.md",
-      "line": 14,
+      "line": 16,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7413,7 +7413,7 @@
       "module": 18,
       "title": "Tema 2: Tokens, validación y límites de seguridad",
       "file": "web/public/content/java/modulo-18.md",
-      "line": 93,
+      "line": 95,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7612,7 +7612,7 @@
       "module": 4,
       "title": "Tema 1: Stream API — map, filter, reduce, collect",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7625,7 +7625,7 @@
       "module": 4,
       "title": "Tema 2: Optional — evitar null explícitamente",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 66,
+      "line": 68,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7638,7 +7638,7 @@
       "module": 4,
       "title": "Tema 3: Streams paralelos y referencias a métodos",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 122,
+      "line": 124,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7651,7 +7651,7 @@
       "module": 4,
       "title": "Tema 4: Stream Gatherers (Java 24)",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 181,
+      "line": 183,
       "signals": [
         "ejemplo-breve-revisar-contexto",
         "clase-java-no-visible"
@@ -7665,7 +7665,7 @@
       "module": 5,
       "title": "Tema 1: ExecutorService y gestión de hilos",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7676,7 +7676,7 @@
       "module": 5,
       "title": "Tema 2: CompletableFuture",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 68,
+      "line": 70,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7689,7 +7689,7 @@
       "module": 5,
       "title": "Tema 3: Virtual threads",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 128,
+      "line": 130,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7702,7 +7702,7 @@
       "module": 5,
       "title": "Tema 4: Condiciones de carrera y sincronización",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 184,
+      "line": 186,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7715,7 +7715,7 @@
       "module": 5,
       "title": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 238,
+      "line": 240,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7726,7 +7726,7 @@
       "module": 5,
       "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 330,
+      "line": 332,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7739,7 +7739,7 @@
       "module": 5,
       "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 412,
+      "line": 414,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
@@ -7787,7 +7787,7 @@
       "module": 7,
       "title": "Tema 1: record — modelos inmutables sin boilerplate",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7800,7 +7800,7 @@
       "module": 7,
       "title": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 64,
+      "line": 66,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7813,7 +7813,7 @@
       "module": 7,
       "title": "Tema 3: Pattern matching exhaustivo y para instanceof",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 120,
+      "line": 122,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -7826,7 +7826,7 @@
       "module": 7,
       "title": "Tema 4: Unnamed variables y patterns (_, Java 22)",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 183,
+      "line": 185,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -8262,7 +8262,7 @@
       "module": 14,
       "title": "Tema 1: TypeScript avanzado",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8284,7 +8284,7 @@
       "module": 14,
       "title": "Tema 3: Bundlers y optimización",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 198,
+      "line": 196,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8295,7 +8295,7 @@
       "module": 14,
       "title": "Tema 4: Accesibilidad web",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 291,
+      "line": 287,
       "signals": [
         "comprobar-script-test"
       ],
@@ -8308,7 +8308,7 @@
       "module": 14,
       "title": "Tema 5: WebAssembly con Rust o C",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 386,
+      "line": 380,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8319,7 +8319,7 @@
       "module": 14,
       "title": "Tema 6: Web3 y machine learning en navegador",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 482,
+      "line": 474,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8330,7 +8330,7 @@
       "module": 14,
       "title": "Tema 7: Geolocalización, permisos y precisión GPS",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 570,
+      "line": 560,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8341,7 +8341,7 @@
       "module": 14,
       "title": "Tema 8: sessionStorage, cookies e IndexedDB",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 656,
+      "line": 644,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8352,7 +8352,7 @@
       "module": 14,
       "title": "Tema 9: Expresiones regulares avanzadas y Unicode",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 735,
+      "line": 721,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8363,7 +8363,7 @@
       "module": 14,
       "title": "Tema 10: Patrones Factory, Strategy, Observer y Pub/Sub",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 814,
+      "line": 798,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8374,7 +8374,7 @@
       "module": 14,
       "title": "Tema 11: Service Workers, PWA y estrategias de caché",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 896,
+      "line": 878,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8385,7 +8385,7 @@
       "module": 14,
       "title": "Tema 12: WebSocket y comunicación en tiempo real",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 989,
+      "line": 969,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8396,7 +8396,7 @@
       "module": 14,
       "title": "Tema 13: Typed Arrays, ArrayBuffer y DataView",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 1073,
+      "line": 1051,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8407,7 +8407,7 @@
       "module": 14,
       "title": "Tema 14: ECMAScript moderno, Temporal e iterator helpers",
       "file": "web/public/content/javascript/modulo-14.md",
-      "line": 1148,
+      "line": 1124,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10400,7 +10400,7 @@
       "module": 0,
       "title": "Tema 1: JSX es azúcar sintáctica sobre createElement",
       "file": "web/public/content/react/modulo-0.md",
-      "line": 27,
+      "line": 29,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10411,7 +10411,7 @@
       "module": 0,
       "title": "Tema 2: Listas con key estable",
       "file": "web/public/content/react/modulo-0.md",
-      "line": 108,
+      "line": 110,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10424,7 +10424,7 @@
       "module": 0,
       "title": "Tema 3: Composición sobre herencia, y Fragments",
       "file": "web/public/content/react/modulo-0.md",
-      "line": 216,
+      "line": 214,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10437,7 +10437,7 @@
       "module": 0,
       "title": "Tema 4: Renderizado condicional y estilos",
       "file": "web/public/content/react/modulo-0.md",
-      "line": 330,
+      "line": 324,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10450,7 +10450,7 @@
       "module": 1,
       "title": "Tema 1: useState y actualizaciones funcionales",
       "file": "web/public/content/react/modulo-1.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10463,7 +10463,7 @@
       "module": 1,
       "title": "Tema 2: Render frente a commit",
       "file": "web/public/content/react/modulo-1.md",
-      "line": 127,
+      "line": 125,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10476,7 +10476,7 @@
       "module": 1,
       "title": "Tema 3: Batching de actualizaciones",
       "file": "web/public/content/react/modulo-1.md",
-      "line": 220,
+      "line": 214,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10489,7 +10489,7 @@
       "module": 1,
       "title": "Tema 4: Componentes controlados",
       "file": "web/public/content/react/modulo-1.md",
-      "line": 308,
+      "line": 298,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10502,7 +10502,7 @@
       "module": 10,
       "title": "Tema 1: Server Components por defecto",
       "file": "web/public/content/react/modulo-10.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10513,7 +10513,7 @@
       "module": 10,
       "title": "Tema 2: use client para interactividad",
       "file": "web/public/content/react/modulo-10.md",
-      "line": 95,
+      "line": 97,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10526,7 +10526,7 @@
       "module": 10,
       "title": "Tema 3: Streaming con Suspense en el servidor",
       "file": "web/public/content/react/modulo-10.md",
-      "line": 159,
+      "line": 157,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -10540,7 +10540,7 @@
       "module": 10,
       "title": "Tema 4: Server Actions",
       "file": "web/public/content/react/modulo-10.md",
-      "line": 220,
+      "line": 214,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10553,7 +10553,7 @@
       "module": 11,
       "title": "Tema 1: Tipado de props y children",
       "file": "web/public/content/react/modulo-11.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10566,7 +10566,7 @@
       "module": 11,
       "title": "Tema 2: Hooks genéricos",
       "file": "web/public/content/react/modulo-11.md",
-      "line": 108,
+      "line": 106,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10579,7 +10579,7 @@
       "module": 11,
       "title": "Tema 3: Eventos tipados y componentes polimórficos",
       "file": "web/public/content/react/modulo-11.md",
-      "line": 184,
+      "line": 177,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10592,7 +10592,7 @@
       "module": 12,
       "title": "Tema 1: Estructura del proyecto integrador",
       "file": "web/public/content/react/modulo-12.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10618,7 +10618,7 @@
       "module": 12,
       "title": "Tema 3: useTareas — hook dedicado con TanStack Query",
       "file": "web/public/content/react/modulo-12.md",
-      "line": 183,
+      "line": 179,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10631,7 +10631,7 @@
       "module": 13,
       "title": "Tema 1: Diseñar estados de carga, error y recuperación",
       "file": "web/public/content/react/modulo-13.md",
-      "line": 8,
+      "line": 10,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10644,7 +10644,7 @@
       "module": 13,
       "title": "Tema 2: La composición visual debe conservar semántica y foco",
       "file": "web/public/content/react/modulo-13.md",
-      "line": 135,
+      "line": 133,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10657,7 +10657,7 @@
       "module": 13,
       "title": "Tema 3: Cliente y servidor forman una sola frontera de seguridad",
       "file": "web/public/content/react/modulo-13.md",
-      "line": 230,
+      "line": 223,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10670,7 +10670,7 @@
       "module": 13,
       "title": "Tema 4: Hidratación determinista, idioma y releases medibles",
       "file": "web/public/content/react/modulo-13.md",
-      "line": 319,
+      "line": 308,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -10750,7 +10750,7 @@
       "module": 2,
       "title": "Tema 1: useEffect — dependencias y limpieza",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10763,7 +10763,7 @@
       "module": 2,
       "title": "Tema 2: useRef — valores mutables sin re-render",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 92,
+      "line": 91,
       "signals": [
         "comprobar-script-test",
         "comprobar-fragmento-incompleto"
@@ -10777,7 +10777,7 @@
       "module": 2,
       "title": "Tema 3: useMemo y useCallback con criterio",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 173,
+      "line": 168,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -10791,7 +10791,7 @@
       "module": 2,
       "title": "Tema 4: Reglas de los hooks, useReducer y useImperativeHandle",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 266,
+      "line": 257,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10804,7 +10804,7 @@
       "module": 2,
       "title": "Tema 5: Error Boundaries — contener errores de render sin romper toda la app",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 349,
+      "line": 340,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10815,7 +10815,7 @@
       "module": 2,
       "title": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
       "file": "web/public/content/react/modulo-2.md",
-      "line": 473,
+      "line": 460,
       "signals": [],
       "newLaboratory": true,
       "humanPedagogicalReview": "pending",
@@ -10826,7 +10826,7 @@
       "module": 3,
       "title": "Tema 1: React Hook Form y el problema del re-render por tecla",
       "file": "web/public/content/react/modulo-3.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10839,7 +10839,7 @@
       "module": 3,
       "title": "Tema 2: Validación con zod y formularios multi-paso",
       "file": "web/public/content/react/modulo-3.md",
-      "line": 94,
+      "line": 92,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10852,7 +10852,7 @@
       "module": 3,
       "title": "Tema 3: Eventos sintéticos",
       "file": "web/public/content/react/modulo-3.md",
-      "line": 168,
+      "line": 163,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10865,7 +10865,7 @@
       "module": 4,
       "title": "Tema 1: createContext y useContext",
       "file": "web/public/content/react/modulo-4.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10878,7 +10878,7 @@
       "module": 4,
       "title": "Tema 2: Cuándo Context es suficiente y cuándo no",
       "file": "web/public/content/react/modulo-4.md",
-      "line": 116,
+      "line": 114,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -10892,7 +10892,7 @@
       "module": 4,
       "title": "Tema 3: Componentes compuestos, render props y hooks personalizados",
       "file": "web/public/content/react/modulo-4.md",
-      "line": 186,
+      "line": 179,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10905,7 +10905,7 @@
       "module": 5,
       "title": "Tema 1: Rutas anidadas y layouts compartidos",
       "file": "web/public/content/react/modulo-5.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10918,7 +10918,7 @@
       "module": 5,
       "title": "Tema 2: Loaders — datos antes de renderizar",
       "file": "web/public/content/react/modulo-5.md",
-      "line": 104,
+      "line": 102,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10931,7 +10931,7 @@
       "module": 5,
       "title": "Tema 3: Rutas protegidas y code-splitting por ruta",
       "file": "web/public/content/react/modulo-5.md",
-      "line": 179,
+      "line": 173,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10944,7 +10944,7 @@
       "module": 6,
       "title": "Tema 1: useQuery y el problema que resuelve",
       "file": "web/public/content/react/modulo-6.md",
-      "line": 6,
+      "line": 8,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10968,7 +10968,7 @@
       "module": 6,
       "title": "Tema 3: Optimistic updates",
       "file": "web/public/content/react/modulo-6.md",
-      "line": 225,
+      "line": 221,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10981,7 +10981,7 @@
       "module": 7,
       "title": "Tema 1: Zustand — stores mínimos sin boilerplate",
       "file": "web/public/content/react/modulo-7.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -10994,7 +10994,7 @@
       "module": 7,
       "title": "Tema 2: Redux Toolkit — slices y ceremonia",
       "file": "web/public/content/react/modulo-7.md",
-      "line": 99,
+      "line": 97,
       "signals": [
         "comprobar-script-test",
         "comprobar-fragmento-incompleto"
@@ -11008,7 +11008,7 @@
       "module": 7,
       "title": "Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto",
       "file": "web/public/content/react/modulo-7.md",
-      "line": 178,
+      "line": 172,
       "signals": [
         "comprobar-script-test"
       ],
@@ -11021,7 +11021,7 @@
       "module": 7,
       "title": "Tema 4: Jotai, Recoil y XState como alternativas",
       "file": "web/public/content/react/modulo-7.md",
-      "line": 244,
+      "line": 233,
       "signals": [
         "comprobar-script-test"
       ],
@@ -11034,7 +11034,7 @@
       "module": 8,
       "title": "Tema 1: Queries por rol, no por clase CSS",
       "file": "web/public/content/react/modulo-8.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -11048,7 +11048,7 @@
       "module": 8,
       "title": "Tema 2: Mock Service Worker (MSW)",
       "file": "web/public/content/react/modulo-8.md",
-      "line": 90,
+      "line": 88,
       "signals": [
         "comprobar-script-test"
       ],
@@ -11061,7 +11061,7 @@
       "module": 8,
       "title": "Tema 3: Testing de hooks personalizados",
       "file": "web/public/content/react/modulo-8.md",
-      "line": 157,
+      "line": 151,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -11075,7 +11075,7 @@
       "module": 9,
       "title": "Tema 1: Medir antes de optimizar",
       "file": "web/public/content/react/modulo-9.md",
-      "line": 6,
+      "line": 8,
       "signals": [
         "comprobar-script-test"
       ],
@@ -11088,7 +11088,7 @@
       "module": 9,
       "title": "Tema 2: React.memo con criterio",
       "file": "web/public/content/react/modulo-9.md",
-      "line": 93,
+      "line": 91,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -11102,7 +11102,7 @@
       "module": 9,
       "title": "Tema 3: Virtualización y code-splitting",
       "file": "web/public/content/react/modulo-9.md",
-      "line": 165,
+      "line": 158,
       "signals": [
         "comprobar-script-test",
         "ejemplo-breve-revisar-contexto"
@@ -11116,7 +11116,7 @@
       "module": 9,
       "title": "Tema 4: useTransition, useDeferredValue y Fiber",
       "file": "web/public/content/react/modulo-9.md",
-      "line": 231,
+      "line": 219,
       "signals": [
         "comprobar-script-test"
       ],
@@ -11129,7 +11129,7 @@
       "module": 9,
       "title": "Tema 5: Suspense y React.lazy — carga diferida del lado cliente",
       "file": "web/public/content/react/modulo-9.md",
-      "line": 308,
+      "line": 296,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

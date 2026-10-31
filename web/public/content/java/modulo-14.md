@@ -3,6 +3,8 @@
 El proyecto anterior usa concurrencia y produce un artefacto reproducible. Para operarlo profesionalmente todavía debes demostrar que los hilos observan estado válido, que las optimizaciones no engañan tus mediciones, que datos hostiles no construyen objetos arbitrarios y que el runtime puede actualizarse y diagnosticarse. Este módulo trabaja esas fronteras con experimentos.
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: Compartir memoria requiere orden y visibilidad
@@ -83,7 +85,7 @@ cd ejemplo-visibilidad-volatile
 mkdir -p src/main/java/academia/concurrencia
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -249,7 +251,7 @@ cd ejemplo-objectinputfilter
 mkdir -p src/main/java/academia/dto
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -329,7 +331,7 @@ cd ejemplo-jlink-runtime
 mkdir -p src/main/java/academia/runtime
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

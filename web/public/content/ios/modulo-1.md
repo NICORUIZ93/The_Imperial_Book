@@ -423,5 +423,4 @@ Entregá la grilla con Preview funcionando del Paso 4, el intento de red real ro
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, aplica la cuadrícula y los wrappers a la pantalla de envíos.

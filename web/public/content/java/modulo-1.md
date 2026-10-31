@@ -1,6 +1,8 @@
 # Módulo 1: Programación orientada a objetos
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: Clases, objetos, constructores y encapsulación
@@ -118,7 +120,7 @@ cd ejemplo-herencia-anotacion
 mkdir -p src/main/java/academia/animales
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -185,7 +187,7 @@ cd ejemplo-interfaz-abstracta
 mkdir -p src/main/java/academia/formas
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -248,7 +250,7 @@ cd ejemplo-sobrecarga-visibilidad
 mkdir -p src/main/java/academia/tarifas
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

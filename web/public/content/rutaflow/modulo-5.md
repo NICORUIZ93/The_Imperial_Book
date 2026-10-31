@@ -13,7 +13,7 @@ La ruta más corta puede incumplir capacidad, prioridad o horario. El problema r
 
 **¿Por qué es importante?** Porque permite explicar por qué una ruta es viable aunque no sea geométricamente mínima. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** una ruta geométricamente corta que incumple una ventana horaria; una parada con prioridad alta; una heurística que cambia de resultado en cada ejecución. Registra semilla, tiempo y brecha frente a la referencia.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -135,7 +135,7 @@ Geocodificar produce candidatos con confianza, no verdad. Se normaliza sin destr
 
 **¿Por qué es importante?** Porque evita despachos a coordenadas plausibles pero incorrectas. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** una dirección que produce tres candidatos; un GPS que salta a una vía paralela; una corrección manual que debe conservar la entrada original. Exige confianza y procedencia antes de despachar.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -247,7 +247,7 @@ El stream particiona por conductor, usa sequence_number y tolera eventos tardío
 
 **¿Por qué es importante?** Porque protege infraestructura y confianza del usuario. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un evento que llega tarde y no debe retroceder la posición; un ETA con intervalo amplio por tráfico incierto; un cliente que recibe cada punto bruto y satura la red. Particiona por conductor y limita la frecuencia.
 
 #### Paso 1 · Objetivo y preparación
 

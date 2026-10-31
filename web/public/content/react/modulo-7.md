@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: Zustand — stores mínimos sin boilerplate
 
 #### Paso 1 · Objetivo y preparación
@@ -57,9 +59,6 @@ function Carrito() {
 }
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -82,15 +81,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: `PanelEnvios`, en cualquier otra parte del árbol, lee `useFiltroStore(state => state.zona)` y recibe el mismo valor actualizado sin que ningún Provider envuelva a ninguno de los dos componentes.
+Resultado esperado: `PanelEnvios`, en cualquier otra parte del árbol, lee `useFiltroStore(state => state.zona)` y recibe el mismo valor actualizado sin que ningún Provider envuelva a ninguno de los dos componentes. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: agregá un segundo `useState('todas')` local dentro de `PanelEnvios` "para la zona", en vez de leer del store — ese es el fallo deliberado: cambiar la zona en `BarraFiltro` actualiza el store, pero `PanelEnvios` sigue consultando su propio `useState` local desincronizado, mostrando envíos de una zona distinta a la que `BarraFiltro` muestra seleccionada.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agregá un tercer componente (`ContadorZona`) que también lea `zona` del mismo store, confirmando que los tres siempre muestran el mismo valor sin ninguna sincronización manual entre ellos.
+Corregí el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agregá un tercer componente (`ContadorZona`) que también lea `zona` del mismo store, confirmando que los tres siempre muestran el mismo valor sin ninguna sincronización manual entre ellos. Conecta el filtro de zona del proyecto integrador RutaFlow a un store mínimo y confirma que panel y contador coinciden.
 
 #### Paso 7 · Cierre
 Entregá el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explicá por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuentes oficiales: https://zustand.docs.pmnd.rs/getting-started/introduction y https://zustand.docs.pmnd.rs/guides/typescript.
@@ -128,9 +126,6 @@ const carritoSlice = createSlice({
 });
 ```
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -152,9 +147,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: lograr el mismo comportamiento que el store de Zustand del Tema 1 exige además definir el slice, configurar `configureStore`, y envolver la aplicación completa con `<Provider>` — tres piezas de infraestructura que Zustand no necesitó para el mismo filtro de zona.
+Resultado esperado: lograr el mismo comportamiento que el store de Zustand del Tema 1 exige además definir el slice, configurar `configureStore`, y envolver la aplicación completa con `<Provider>` — tres piezas de infraestructura que Zustand no necesitó para el mismo filtro de zona. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 **Demo con Redux DevTools:**
 1. Abre la app con Redux Toolkit implementado
@@ -169,7 +163,7 @@ Resultado esperado: lograr el mismo comportamiento que el store de Zustand del T
 Pista: usá `useSelector(state => state.filtro)` en un componente para leer todo el slice `filtro` en vez de `useSelector(state => state.filtro.zona)` — ese es el fallo deliberado: si el slice `filtro` más adelante agrega otro campo (`orden`) que cambia con frecuencia, ese componente se re-renderiza también ante cambios de `orden`, aunque solo le interese `zona`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.zona`), y envolvé la aplicación con `<Provider store={store}>`, confirmando que el componente ya no se re-renderiza ante cambios de otros campos del mismo slice.
+Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.zona`), y envolvé la aplicación con `<Provider store={store}>`, confirmando que el componente ya no se re-renderiza ante cambios de otros campos del mismo slice. Si el proyecto integrador RutaFlow necesitara Redux, define un slice de filtros y compara la ceremonia con Zustand.
 
 #### Paso 7 · Cierre
 Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
@@ -205,10 +199,6 @@ Estado de cliente puro (modal abierto, tema) → Zustand / Context / useState lo
 Estado usado en un único componente → useState local, sin ninguna librería global
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -227,15 +217,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: con `envios` metido en Zustand, cualquier necesidad de revalidación, cache por zona, o invalidación tras una mutación (todo lo que TanStack Query ya resuelve, Módulo 6) tendría que reimplementarse manualmente dentro del store — y efectivamente nadie lo hace, dejando esos datos sin revalidar nunca después de la carga inicial.
+Resultado esperado: con `envios` metido en Zustand, cualquier necesidad de revalidación, cache por zona, o invalidación tras una mutación (todo lo que TanStack Query ya resuelve, Módulo 6) tendría que reimplementarse manualmente dentro del store — y efectivamente nadie lo hace, dejando esos datos sin revalidar nunca después de la carga inicial. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: implementá un botón "Refrescar" que llame manualmente a `setEnvios(nuevosDatos)` después de un `fetch` directo, en paralelo a seguir usando `useQuery` para la carga inicial en otro componente — ese es el fallo deliberado: ahora hay dos fuentes de la lista de envíos (la cache de TanStack Query y la copia en Zustand), y pueden mostrar datos distintos entre sí según cuál se refrescó más recientemente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por completo, dejando que `useQuery` (Módulo 6) sea la única fuente de la lista de envíos, y que el store de Zustand contenga solamente `zona` (estado de cliente puro).
+Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por completo, dejando que `useQuery` (Módulo 6) sea la única fuente de la lista de envíos, y que el store de Zustand contenga solamente `zona` (estado de cliente puro). Deja que `useQuery` sea la fuente de envíos del proyecto integrador RutaFlow y limita Zustand al estado de cliente.
 
 #### Paso 7 · Cierre
 Entregá la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explicá con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/getting-started/introduction.
@@ -305,9 +294,10 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: enviar el evento `EXITO` mientras la máquina está en `inactivo` no produce ninguna transición (la máquina permanece en `inactivo`), porque ese estado solo declara una transición válida para el evento `CONFIRMAR` — a diferencia de un reducer manual, donde un `case 'EXITO':` sin ninguna guarda aplicaría ese cambio sin importar el estado actual.
+
+Ejecuta `npm test` y confirma que las pruebas de las alternativas de estado pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: implementá el mismo flujo con un `useReducer` simple donde el `case 'EXITO'` no verifica el estado actual antes de aplicar la transición — ese es el fallo deliberado: llamar `dispatch({ type: 'EXITO' })` estando en `inactivo` (por un bug en otra parte del código) transiciona igual a `exito`, un estado lógicamente imposible en el flujo real, sin que nada en el reducer lo haya impedido.
@@ -341,7 +331,3 @@ Entregá la máquina con transiciones explícitas del Paso 4, la transición inv
 - **Suscribirse al store completo en vez de seleccionar la porción específica necesaria.** Usa una función selectora (`state => state.items`) para limitar los re-renders.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Visualización: concepto mostrado en diagrama

@@ -1,6 +1,8 @@
 # Módulo 11: JVM interna — GC, profiling y JIT
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: Generaciones de memoria y recolectores
@@ -49,7 +51,7 @@ cd ejemplo-g1-vs-zgc
 mkdir -p src/main/java/academia/perf
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -112,7 +114,7 @@ cd ejemplo-jfr-warmup
 mkdir -p src/main/java/academia/perf
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -176,7 +178,7 @@ cd ejemplo-heap-dump-oom
 mkdir -p src/main/java/academia/perf
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -222,7 +224,7 @@ try (Arena arena = Arena.ofConfined()) {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

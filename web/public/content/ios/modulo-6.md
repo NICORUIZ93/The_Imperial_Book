@@ -1,6 +1,8 @@
 # Módulo 6: Persistencia con SwiftData
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: @Model y ModelContainer
@@ -26,7 +28,7 @@ class EnvioLocal {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -83,8 +85,7 @@ class Tarea {
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, guarda la cola de entregas con @Model y ModelContainer.
 
 ### Tema 2: @Query y operaciones de escritura
 
@@ -110,7 +111,7 @@ struct PendientesDeSincronizar: View {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -155,8 +156,7 @@ SwiftData datos cambian → @Query re-evalúa automáticamente → la vista se a
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, lista y actualiza las entregas pendientes con @Query.
 
 **Límites y decisión de uso:** Una consulta reactiva actualiza la vista, pero no define resolución de conflictos ni convierte varias escrituras en una operación de negocio indivisible. Prueba persistencia, restricciones y errores de guardado fuera del caso feliz.
 
@@ -213,7 +213,7 @@ class EnvioLocal {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -254,5 +254,4 @@ Entregá la migración liviana del Paso 4, el campo requerido que rompe datos ex
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, migra el esquema de entregas y documenta la decisión frente a Core Data.

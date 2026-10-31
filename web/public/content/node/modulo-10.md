@@ -56,7 +56,7 @@ graph LR
 
 **Cuándo:** aplicar `helmet()` en toda app de producción con Express; no conviene en desarrollo local sin HTTPS (HSTS es problemático en localhost).
 
-* Proyecto: proyecto integrador RutaFlow
+* Proyecto: en el proyecto integrador RutaFlow, aplica `helmet()` a la API y comprueba con `curl -I` que aparecen las cabeceras de seguridad.
 
 **Código del ejemplo:**
 

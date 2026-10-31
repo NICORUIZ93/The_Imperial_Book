@@ -1,6 +1,8 @@
 # Módulo 14: JavaScript Master: TypeScript, WASM y cómputo emergente
 
 
+**Preparación del módulo:** cada tema trabaja sobre una copia independiente del laboratorio, creada desde la raíz del repositorio con Node 24 LTS. El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y la carpeta de cada tema. Las rutas del tema son relativas a esa copia: los archivos existen para poder ejecutar antes de modificarlos, y conviene reescribir el ejemplo y comparar con la versión inicial.
+
 ## Aprende construyendo
 
 ### Tema 1: TypeScript avanzado
@@ -39,14 +41,12 @@ flowchart LR
 ```
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-1
 cd ejemplo-js-modulo-14-tema-1
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/domain/delivery-status.ts`:
 
@@ -141,14 +141,12 @@ sequenceDiagram
 ```
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-2
 cd ejemplo-js-modulo-14-tema-2
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/workers/route.worker.ts`:
 
@@ -229,14 +227,12 @@ flowchart LR
 ```
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-3
 cd ejemplo-js-modulo-14-tema-3
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `vite.config.ts`:
 
@@ -325,14 +321,12 @@ flowchart LR
 ```
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-4
 cd ejemplo-js-modulo-14-tema-4
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 El `src/main.ts` incluido monta el comportamiento con un servicio simulado que resuelve a los 300 ms. Añade un `<button id="confirm-delivery">Confirmar entrega</button>` y `<p id="delivery-feedback" role="status" aria-live="polite"></p>`. Crea `src/ui/delivery-button.ts`:
 
@@ -418,14 +412,12 @@ flowchart LR
 ```
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-5
 cd ejemplo-js-modulo-14-tema-5
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `wasm/src/lib.rs`:
 
@@ -514,14 +506,12 @@ flowchart TD
 ```
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-6
 cd ejemplo-js-modulo-14-tema-6
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/risk/delivery-risk.ts`:
 
@@ -596,14 +586,12 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-7
 cd ejemplo-js-modulo-14-tema-7
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/location/watch-location.js`:
 
@@ -681,14 +669,12 @@ El proyecto conservará un borrador por pestaña y una cola offline estructurada
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-8
 cd ejemplo-js-modulo-14-tema-8
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/storage/delivery-draft.js`:
 
@@ -762,14 +748,12 @@ patronSeguro.test('código: CO-2026 (urgente) recibido'); // true, sin que "(" a
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-9
 cd ejemplo-js-modulo-14-tema-9
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/validation/tracking-code.js`:
 
@@ -842,14 +826,12 @@ classDiagram
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-10
 cd ejemplo-js-modulo-14-tema-10
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/routing/route-strategy.js`:
 
@@ -923,14 +905,12 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-11
 cd ejemplo-js-modulo-14-tema-11
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `public/sw.js`:
 
@@ -1008,14 +988,12 @@ El proyecto mantendrá un socket por vista/servicio, validará cada evento y ded
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-12
 cd ejemplo-js-modulo-14-tema-12
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/realtime/tracking-socket.js`:
 
@@ -1092,14 +1070,12 @@ El proyecto recibe dos coordenadas escaladas por un millón en ocho bytes big-en
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-13
 cd ejemplo-js-modulo-14-tema-13
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/binary/decode-gps.js`:
 
@@ -1184,14 +1160,12 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Prepara una copia independiente desde la raíz del repositorio (Node 24 LTS). El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y las carpetas de cada tema:
 ```bash
 cp -R examples/javascript-master ejemplo-js-modulo-14-tema-14
 cd ejemplo-js-modulo-14-tema-14
 npm ci
 npm run check
 ```
-Las rutas siguientes son relativas a ESTA carpeta. Los archivos existen para poder ejecutar antes de modificarlos; reescribe el ejemplo y compara con la versión inicial.
 
 Crea `src/platform/time.js`:
 

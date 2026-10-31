@@ -1,5 +1,7 @@
 # Módulo 17: JDBC, DAO y transacciones
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 Este módulo construye una capa JDBC pequeña y verificable. El objetivo es entender lo que un ORM automatiza y qué garantías siguen siendo responsabilidad del programa.
@@ -58,7 +60,7 @@ public final class EnvioDao {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -122,7 +124,7 @@ try (Connection connection = dataSource.getConnection()) {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

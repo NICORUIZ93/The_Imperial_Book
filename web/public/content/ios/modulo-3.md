@@ -1,6 +1,8 @@
 # Módulo 3: Navegación
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: NavigationStack y NavigationPath
@@ -28,7 +30,7 @@ struct AppRutaFlow: View {
 // path.append(Envio(guia: "RF-4471"))
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -73,8 +75,7 @@ path.append(tarea) // push programático
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, navega del listado al detalle de envío con NavigationStack.
 
 **Límites y decisión de uso:** La pila de navegación representa destinos, no autorización sobre sus datos. Guarda identidades estables en lugar de objetos vivos y valida una ruta restaurada: el recurso pudo eliminarse o dejar de pertenecer al usuario.
 
@@ -97,7 +98,7 @@ TabView {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -141,7 +142,7 @@ TabView
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
+* Proyecto: en el proyecto integrador RutaFlow, presenta la confirmación como sheet y conserva el estado al cerrar.
 
 **Límites y decisión de uso:** Una presentación modal no debe ocultar una tarea incompleta sin posibilidad de recuperación. Define qué se guarda al cerrar y prueba cancelación; evita abrir varios modales simultáneos como respuesta a eventos repetidos.
 
@@ -193,7 +194,7 @@ En el proyecto integrador RutaFlow, este handler vive en `examples/rutaflow/ios/
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -235,5 +236,4 @@ Entregá el deep link validado del Paso 4, el formato no validado y su riesgo de
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, abre el detalle de un envío por deep link y valida el formulario.

@@ -2,6 +2,8 @@
 
 Este capítulo endurece el proyecto multi-módulo del Módulo 14 como producto mantenible. Trabaja sobre ese mismo repositorio; no crea seis demostraciones aisladas.
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: Maven avanzado
@@ -142,7 +144,7 @@ cd ejemplo-archunit-capas
 mkdir -p domain/src/main/java application/src/main/java infrastructure/src/main/java api/src/main/java architecture-tests/src/test/java
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -204,7 +206,7 @@ cd ejemplo-confirmar-entrega
 mkdir -p application/src/main/java application/src/test/java
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -269,7 +271,7 @@ cd ejemplo-testcontainers-postgres
 mkdir -p infrastructure/src/integrationTest/java infrastructure/src/main/resources/db/migration
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -331,7 +333,7 @@ cd ejemplo-mdc-correlacion
 mkdir -p api/src/main/resources api/src/main/java/academia/api
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

@@ -24,6 +24,8 @@ Abre la dirección que muestra la terminal, normalmente `http://localhost:5173`.
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: JSX es azúcar sintáctica sobre createElement
 
 #### Paso 1 · Objetivo y preparación
@@ -153,9 +155,6 @@ Usar el índice del array como `key` (`key={indice}`) parece funcionar en casos 
 // key={indice}: riesgoso si la lista se reordena o filtra
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 **Límites y decisión de uso:** La key identifica hermanos a lo largo de los renders; no debe generarse de nuevo cada vez ni basarse en posición si la lista cambia. Usa identidad persistente según la [guía de listas de React](https://react.dev/learn/rendering-lists).
 
@@ -177,9 +176,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: al reordenar `envios` (por ejemplo, moviendo un envío urgente al principio del array), cada `EnvioCard` conserva su propio estado interno (como un `<input>` de nota que el operador esté escribiendo en esa fila) asociado al envío correcto, porque `key={envio.id}` identifica cada fila por su identidad real, no por su posición circunstancial.
+Resultado esperado: al reordenar `envios` (por ejemplo, moviendo un envío urgente al principio del array), cada `EnvioCard` conserva su propio estado interno (como un `<input>` de nota que el operador esté escribiendo en esa fila) asociado al envío correcto, porque `key={envio.id}` identifica cada fila por su identidad real, no por su posición circunstancial. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 **Demo con React DevTools:**
 1. Abre tu aplicación con una lista de 3+ elementos, cada uno con un `<input>` controlado dentro
@@ -207,7 +205,7 @@ Cambiá ahora a `key={Math.random()}` — cada render genera una key nueva, así
 Crea una lista donde dos envíos tienen el mismo `id` accidentalmente y usa `key={envio.id}`. React renderiza ambos elementos en el DOM pero solo puede trackear uno correctamente, causando comportamientos impredecibles cuando filtras o reordenas.
 **Pista:** reproduce los fallos #1, #2 y #3 de a uno, restaurando `key={envio.id}` entre cada uno — mezclarlos te deja con dos causas distintas (índice inestable y key duplicada) produciendo el mismo síntoma confuso en el DOM.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `key={envio.id}`, y agregá un botón "mover al principio" que reordene el array — confirmá que el texto escrito en el input de nota de cualquier fila sigue esa fila específica, sin importar a qué posición se mueva.
+Corregí el Paso 5 devolviendo `key={envio.id}`, y agregá un botón "mover al principio" que reordene el array — confirmá que el texto escrito en el input de nota de cualquier fila sigue esa fila específica, sin importar a qué posición se mueva. Cuando lo tengas verde, traslada la lista de envíos del proyecto integrador RutaFlow a `key={envio.id}` y documenta qué fila conserva su nota al reordenar.
 
 #### Paso 7 · Cierre
 Entregá la lista con key estable del Paso 4, el bug de identidad provocado en el Paso 5, y la prueba de reordenamiento del Paso 6; explicá por qué el índice "funciona" en una lista que nunca cambia de orden ni de longitud, pero falla en cuanto eso deja de ser cierto. Siguiente paso: estudia composición con `children` y Fragments. Errores comunes: usar el índice como key en listas que se reordenan o filtran, generar una key aleatoria en cada render (`key={Math.random()}`), y repetir keys duplicadas dentro de la misma lista. Fuentes oficiales: https://react.dev/learn/rendering-lists y https://react.dev/learn/preserving-and-resetting-state.
@@ -268,9 +266,6 @@ function Tarjeta({ children }) {
 // Composición: Tarjeta no sabe qué contenido recibirá, solo lo envuelve
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -297,9 +292,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: `Tarjeta` no sabe nada sobre guías ni direcciones — solo envuelve lo que reciba en `children` con el marco visual común; el Fragment (`<> </>`) agrupa los dos `<p>` sin agregar ningún `<div>` extra al DOM.
+Resultado esperado: `Tarjeta` no sabe nada sobre guías ni direcciones — solo envuelve lo que reciba en `children` con el marco visual común; el Fragment (`<> </>`) agrupa los dos `<p>` sin agregar ningún `<div>` extra al DOM. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 **Demo con React DevTools:**
 1. Crea `<Tarjeta>`, `<EnvioCard>` y `<ConductorCard>` (distinto contenido)
@@ -321,7 +315,7 @@ Reemplazá `<>...</>` por `<React.Fragment>...</React.Fragment>` — funciona ig
 Crea una versión incorrecta de `Tarjeta` que no use `children`: `function Tarjeta() { return <div>contenido fijo</div>; }`. Ahora usa `<Tarjeta><p>Esto se ignora</p></Tarjeta>` — el `<p>` simplemente desaparece, no se renderiza. Luego corrige a `function Tarjeta({ children })` para demostrar que `children` es un prop como cualquier otro, que debe ser recibido explícitamente.
 **Pista:** revertí cada fallo antes de probar el siguiente — el error de compilación del Fallo #1 es ruidoso y fácil de notar, pero el `<p>` que desaparece silenciosamente en el Fallo #3 solo se nota si comparás el DOM renderizado contra lo que esperabas.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el Fragment, y creá una segunda tarjeta (`ConductorCard`) que también use `Tarjeta` con contenido completamente distinto (nombre y vehículo del conductor) — confirmá que `Tarjeta` no necesitó ningún cambio para soportar este nuevo caso.
+Corregí el Paso 5 restaurando el Fragment, y creá una segunda tarjeta (`ConductorCard`) que también use `Tarjeta` con contenido completamente distinto (nombre y vehículo del conductor) — confirmá que `Tarjeta` no necesitó ningún cambio para soportar este nuevo caso. En el proyecto integrador RutaFlow, aplica `Tarjeta` a la ficha del envío y a la del conductor sin duplicar estilos, y anota qué parte quedó compartida.
 
 #### Paso 7 · Cierre
 Entregá `Tarjeta` con `children` del Paso 4, el error de compilación del Paso 5, y `ConductorCard` del Paso 6; explicá por qué `Tarjeta` pudo reutilizarse para un contenido completamente distinto sin ninguna modificación, algo que una jerarquía de herencia rígida no ofrece con la misma facilidad. Siguiente paso: estudia renderizado condicional y estilos. Errores comunes: hacer que un componente "contenedor" conozca detalles específicos del contenido que envuelve, olvidar que un componente debe devolver un único elemento raíz, y usar un `<div>` extra en vez de un Fragment cuando no se necesita ningún elemento real. Fuentes oficiales: https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children y https://react.dev/reference/react/Fragment.
@@ -379,7 +373,6 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: mientras `cargando` es `true`, se muestra el `Spinner` (y nada más si `cargando` es `false`, gracias al cortocircuito); una vez que `envio` tiene datos, se muestra su dirección; si nunca llegó ningún envío, se muestra "Sin datos todavía" en vez de nada.
 
@@ -392,6 +385,8 @@ Resultado esperado: mientras `cargando` es `true`, se muestra el `Spinner` (y na
 6. Ahora edita `envio` de `null` a un objeto con datos: `{ id: 1, direccion: "..." }`
 7. Verás que el renderizado condicional cambia: ahora aparece `<p>Calle Principal 123</p>` en vez del "Sin datos todavía"
 8. Resultado esperado: comprender en tiempo real cómo los props controlan qué se renderiza.
+
+Ejecuta `npm test` y confirma que las pruebas de renderizado condicional pasan.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado #1 (ternario con 0 falsy):**
@@ -408,14 +403,13 @@ Intenta renderizar directamente:
 Escribe: `function Card() { if (loading) { <Spinner /> } return <div>...</div>; }` — el `<Spinner />` nunca se renderiza porque no está en un return. El if debe devolver algo que React pueda procesar.
 **Pista:** prueba primero con `cargando` en `false` y `envio` en `null` y cambia una sola prop a la vez desde React DevTools — así identificás exactamente cuál combinación produce el "0" fantasma antes de pasar a la siguiente.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `{cargando && <Spinner />}`, y agregá estilos con CSS Modules o Tailwind a la tarjeta para que el estado de carga tenga una apariencia visualmente distinta al estado con datos.
+Corregí el Paso 5 volviendo a `{cargando && <Spinner />}`, y agregá estilos con CSS Modules o Tailwind a la tarjeta para que el estado de carga tenga una apariencia visualmente distinta al estado con datos. En el proyecto integrador RutaFlow, reemplaza el `&&` del estado vacío por un ternario cuando haya dos alternativas y documenta el caso del `0` fantasma.
 
 #### Paso 7 · Cierre
 Entregá el renderizado condicional del Paso 4, el "0" fantasma detectado en el Paso 5, y los estilos del Paso 6; explicá por qué `&&` con un operando numérico falsy (`0`, no `false`) es una trampa específica de JSX que no ocurre con un booleano. Siguiente paso: estudia cómo React maneja el estado con `useState`. Errores comunes: usar `&&` con un valor que puede ser `0`, confundir cuándo usar `&&` (una alternativa) frente al ternario (dos alternativas reales), y depender solo del color para comunicar estado sin texto ni ícono adicional. Fuentes oficiales: https://react.dev/learn/conditional-rendering y https://react.dev/learn/writing-markup-with-jsx.
 
 * Ejecutar: `npm test -- --match="*conditional*"`
 * Código: `src/components/ConditionalRendering.tsx`
-* Proyecto: proyecto integrador RutaFlow
 **¿Por qué es importante?** Elegir entre `&&` y el ternario según si existe una única alternativa o dos alternativas de contenido reales evita bugs como el "0" fantasma y produce código más predecible.
 ## Ruta de proyecto progresivo desde carpeta vacía
 
@@ -454,7 +448,3 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 - **Confundir `class` con `className`.** JSX usa `className` porque `class` es palabra reservada en JavaScript.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow

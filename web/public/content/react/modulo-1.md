@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: useState y actualizaciones funcionales
 
 #### Paso 1 · Objetivo y preparación
@@ -76,9 +78,6 @@ setCount(c => c + 1);
 setCount(c => c + 1); // ahora sí suma 2
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -99,9 +98,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado.
+Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 **Demo con React DevTools:**
 1. Abre tu aplicación con el componente anterior
@@ -118,7 +116,7 @@ Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2
 Pista: dejá el código del Paso 4 y esperá que `intentos` llegue a 2 "porque llamé a `setIntentos` dos veces" — ese es el fallo deliberado: el contador queda en 1, no en 2, porque ambas llamadas leyeron el mismo `intentos` capturado antes de que ninguna de las dos se aplicara.
 
 #### Paso 6 · Práctica independiente
-Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirmá que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica.
+Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirmá que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica. Lleva la forma funcional al contador de intentos del proyecto integrador RutaFlow y verifica que dos confirmaciones seguidas no se pierdan.
 
 #### Paso 7 · Cierre
 Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
@@ -183,9 +181,6 @@ Commit:  compara con el árbol anterior → aplica solo los cambios mínimos al 
 (Render puede ocurrir sin que el commit produzca ningún cambio visual)
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -203,15 +198,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: llamar a `setPin('837201')` con el mismo valor que `pin` ya tiene dispara una nueva ejecución de la función (el `console.log` se imprime de nuevo), pero el input en pantalla no cambia visualmente, porque React compara el árbol resultante y no encuentra ninguna diferencia real que aplicar al DOM.
+Resultado esperado: llamar a `setPin('837201')` con el mismo valor que `pin` ya tiene dispara una nueva ejecución de la función (el `console.log` se imprime de nuevo), pero el input en pantalla no cambia visualmente, porque React compara el árbol resultante y no encuentra ninguna diferencia real que aplicar al DOM. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: afirmá que "si el `console.log` se imprime de nuevo, significa que algo cambió visualmente" sin comprobar el caso contrario — ese es el fallo deliberado: llamar a `setPin` con el mismo valor también reimprime el `console.log`, sin que haya ningún cambio visual real; la frecuencia del log no te dice nada por sí sola sobre si hubo un commit visible.
 
 #### Paso 6 · Práctica independiente
-Corregí tu conclusión del Paso 5 agregando una segunda prueba: actualizá `pin` a un valor distinto y confirmá explícitamente (mirando el input renderizado) que esta vez sí hubo un cambio visual, a diferencia del Paso 4 donde el valor era idéntico.
+Corregí tu conclusión del Paso 5 agregando una segunda prueba: actualizá `pin` a un valor distinto y confirmá explícitamente (mirando el input renderizado) que esta vez sí hubo un cambio visual, a diferencia del Paso 4 donde el valor era idéntico. En el proyecto integrador RutaFlow, registra qué actualización de estado produce un commit visible y cuál solo cambia una referencia.
 
 #### Paso 7 · Cierre
 Entregá la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explicá por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
@@ -268,9 +262,6 @@ function manejarClick() {
 }
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 **Límites y decisión de uso:** El batching agrupa trabajo, pero no convierte el estado leído en un valor actualizado inmediatamente. Si una actualización depende de la anterior, usa su forma funcional y comprueba la secuencia, como explica [React sobre actualizaciones de estado](https://react.dev/learn/queueing-a-series-of-state-updates).
 
@@ -291,15 +282,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: después de un click que dispara `confirmar()`, el `console.log('render')` se imprime una única vez adicional, no tres — las tres llamadas a setters se agrupan en un único ciclo de render y commit que refleja el efecto combinado de las tres.
+Resultado esperado: después de un click que dispara `confirmar()`, el `console.log('render')` se imprime una única vez adicional, no tres — las tres llamadas a setters se agrupan en un único ciclo de render y commit que refleja el efecto combinado de las tres. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: envolvé cada `setState` dentro de su propio `setTimeout(() => ..., 0)` por separado — ese es el fallo deliberado: sacar las actualizaciones del manejador síncrono original rompe el batching automático en ese contexto, y ahora el `console.log` se imprime varias veces en vez de una sola.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando los `setTimeout` innecesarios, y agregá una cuarta actualización de estado (`setUltimoIntento(new Date())`) al mismo manejador — confirmá que sigue siendo un único render adicional, no cuatro.
+Corregí el Paso 5 quitando los `setTimeout` innecesarios, y agregá una cuarta actualización de estado (`setUltimoIntento(new Date())`) al mismo manejador — confirmá que sigue siendo un único render adicional, no cuatro. Aplica el batching al manejador de confirmación del proyecto integrador RutaFlow y cuenta los renders adicionales con el Profiler.
 
 #### Paso 7 · Cierre
 Entregá la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explicá por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
@@ -359,22 +349,22 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: escribir letras en el campo de PIN no las muestra en absoluto (`.replace(/\D/g, '')` las descarta antes de llegar a `setPin`), y el input nunca puede mostrar más de 6 caracteres — el valor mostrado en pantalla es siempre exactamente lo que React decidió que `pin` debía ser, nunca lo que el usuario tecleó directamente sin pasar por esa validación.
+
+Ejecuta `npm test` y confirma que las pruebas de componentes controlados pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá el atributo `value` del input, dejando solo `onChange` ("para que sea más simple") — ese es el fallo deliberado: el input pasa a ser no controlado (React ya no gobierna su valor), y la transformación de `onChange` deja de reflejarse visualmente en el campo, porque el DOM ahora mantiene su propio valor interno sin que React lo sincronice de vuelta.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `value={pin}`, y agregá un segundo input controlado para la guía del envío, con su propia validación (sin espacios) — confirmá que ambos campos están sincronizados con su estado de React respectivo.
+Corregí el Paso 5 restaurando `value={pin}`, y agregá un segundo input controlado para la guía del envío, con su propia validación (sin espacios) — confirmá que ambos campos están sincronizados con su estado de React respectivo. Lleva el input controlado al formulario de entrega del proyecto integrador RutaFlow y mide cuántos renders provoca cada tecla.
 
 #### Paso 7 · Cierre
 Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización del Paso 5, y el segundo campo del Paso 6; explicá por qué quitar `value` (dejando solo `onChange`) convierte un input controlado en no controlado, y qué se pierde exactamente al hacerlo. Siguiente paso: estudia efectos con `useEffect`. Errores comunes: dejar `onChange` sin `value` (input no controlado accidental), mezclar un input controlado con manipulación directa del DOM vía referencia, y no considerar el costo de un re-render por tecla en formularios extremadamente grandes. Fuentes oficiales: https://react.dev/reference/react-dom/components/input y https://react.dev/learn/sharing-state-between-components.
 
 * Ejecutar: `npm test -- --match="*controlled*"`
 * Código: `src/components/ControlledInput.tsx`
-* Proyecto: proyecto integrador RutaFlow
 * Cuándo: usar componentes controlados para validación y transformación en tiempo real; no conviene en formularios con miles de campos donde el costo de re-render por tecla se vuelve relevante (usa React Hook Form en ese caso).
 
 **¿Por qué es importante?** Los componentes controlados hacen del estado de React la única fuente de verdad del valor de un input, permitiendo validación y transformación centralizada en cada cambio.
@@ -401,7 +391,3 @@ Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización d
 - **Mezclar un input controlado con actualización directa del DOM.** No mezcles `value` controlado con manipulación directa del elemento vía referencia.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow

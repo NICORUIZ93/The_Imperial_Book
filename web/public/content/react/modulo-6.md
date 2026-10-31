@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: useQuery y el problema que resuelve
 
 #### Paso 1 · Objetivo y preparación
@@ -94,7 +96,7 @@ Explica cada bloque: QueryClientProvider hace disponible la caché, queryKey ide
 Pista: usá `queryKey: ['envios']` (sin incluir `zona`) en ambos componentes, pero seguí pasando `zona` dentro de `queryFn` — ese es el fallo deliberado: cambiar de zona no dispara una nueva petición, porque TanStack Query identifica la query por su `queryKey`, y como esa key no cambió, sigue devolviendo el resultado cacheado de la zona anterior aunque `queryFn` internamente apunte a la zona nueva.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `zona` a la `queryKey`, y agregá una tercera consulta (`['envios', zona, 'urgentes']`) para los envíos marcados como urgentes de esa misma zona, confirmando que cada combinación distinta de `queryKey` cachea de forma independiente.
+Corregí el Paso 5 devolviendo `zona` a la `queryKey`, y agregá una tercera consulta (`['envios', zona, 'urgentes']`) para los envíos marcados como urgentes de esa misma zona, confirmando que cada combinación distinta de `queryKey` cachea de forma independiente. Reemplaza la carga manual de envíos del proyecto integrador RutaFlow por `useQuery` y documenta qué estados aparecen.
 
 #### Paso 7 · Cierre
 Entregá la deduplicación del Paso 4, la cache desincronizada por `queryKey` incompleta del Paso 5, y la tercera consulta del Paso 6; explicá por qué la `queryKey` debe incluir cualquier variable que afecte qué datos trae `queryFn`, no solo las que "parecen importantes". Siguiente paso: estudia mutations e invalidación. Errores comunes: una `queryKey` que no incluye todas las variables relevantes del `queryFn`, seguir usando `useState`+`useEffect` para datos que ya tiene una query equivalente, y no aprovechar React Query Devtools para inspeccionar el estado real de la cache. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/queries y https://tanstack.com/query/latest/docs/framework/react/guides/query-keys.
@@ -116,8 +118,6 @@ const { data, isLoading, error } = useQuery({
 });
 ```
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
 
 **Límites y decisión de uso:** La caché de consultas no conoce por sí sola cambios realizados fuera de su cliente. Define claves, caducidad e invalidación, y prueba mutaciones y cambio de identidad para no reutilizar datos privados de otra sesión.
 
@@ -181,9 +181,6 @@ const crear = useMutation({
 });
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -201,9 +198,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: al llamar `registrar.mutate(nuevoEnvio)` y completarse exitosamente, TanStack Query invalida todas las queries cuya key empiece con `['envios']` (incluyendo `['envios', 'norte']`, `['envios', 'sur']`, etc.) y las refetchea automáticamente — `PanelEnvios` muestra el nuevo envío sin que nadie haya llamado a `setEnvios` manualmente.
+Resultado esperado: al llamar `registrar.mutate(nuevoEnvio)` y completarse exitosamente, TanStack Query invalida todas las queries cuya key empiece con `['envios']` (incluyendo `['envios', 'norte']`, `['envios', 'sur']`, etc.) y las refetchea automáticamente — `PanelEnvios` muestra el nuevo envío sin que nadie haya llamado a `setEnvios` manualmente. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado #1 (olvidar invalidación):**
@@ -216,7 +212,7 @@ Cambiá `invalidateQueries({ queryKey: ['envios'] })` a `invalidateQueries({ que
 Remové el `await queryClient.cancelQueries(...)` del `onMutate` en un optimistic update — ahora el `getQueryData` obtiene datos desactualizados porque la query aún se estaba refetcheando.
 **Pista:** restaurá cada fallo antes de probar el siguiente — el Fallo #1 y el #2 se notan de inmediato en `PanelEnvios`, pero el Fallo #3 solo aparece bajo una carrera real entre el refetch en curso y la cancelación faltante.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día.
+Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día. En el proyecto integrador RutaFlow, invalida `['envios']` y `['estadisticas']` al marcar una entrega y verifica ambas consultas.
 
 #### Paso 7 · Cierre
 Entregá la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explicá por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
@@ -312,9 +308,10 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: tocar "Marcar entregado" cambia visualmente el estado del envío en la lista de forma instantánea, sin esperar ninguna respuesta de red; si la mutación falla (el servidor rechaza porque ese envío ya fue entregado por otro operador), la lista vuelve exactamente al estado anterior guardado en `anterior`.
+
+Ejecuta `npm test` y confirma que las pruebas de optimistic updates pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá `await queryClient.cancelQueries({ queryKey: ['envios'] })` del `onMutate` — ese es el fallo deliberado: si un refetch en segundo plano de `['envios']` estaba en vuelo y completa después del `setQueryData` optimista, esa respuesta vieja sobrescribe el cambio optimista, haciendo que el envío "vuelva" a verse como no entregado por un instante confuso.
@@ -348,8 +345,3 @@ Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo 
 - **No implementar `onError` para revertir.** Sin reversión, la interfaz puede mostrar un cambio que en realidad nunca se aplicó en el servidor.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama

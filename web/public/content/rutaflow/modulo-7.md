@@ -13,7 +13,7 @@ Terraform crea redes, datos e identidades con estado protegido; Kubernetes ejecu
 
 **¿Por qué es importante?** Porque reduce configuraciones manuales y permite saber exactamente qué se desplegó. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un despliegue manual que nadie puede reproducir; una imagen promovida sin SBOM ni firma; un digest distinto entre staging y producción. Promueve el mismo artefacto y conserva la cadena de custodia.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -148,7 +148,7 @@ Disponibilidad útil mide confirmaciones válidas, no procesos vivos. Un SLO fij
 
 **¿Por qué es importante?** Porque conecta decisiones técnicas con impacto en entregas. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un SLO de confirmaciones válidas que cae mientras los procesos siguen vivos; una alerta que despierta al equipo por un síntoma menor; un postmortem que culpa a una persona. Alerta por burn rate y registra acciones con responsable.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -342,7 +342,7 @@ Un backup no está probado hasta restaurarlo y verificar integridad. RPO limita 
 
 **¿Por qué es importante?** Porque convierte documentación optimista en capacidad operacional demostrada. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** restaurar un backup y descubrir que no abre; una caída del proveedor de mapas que detiene el despacho; un coste cloud que crece sin dueño. Simula la caída, mide RPO/RTO y atribuye coste por servicio.
 
 #### Paso 1 · Objetivo y preparación
 

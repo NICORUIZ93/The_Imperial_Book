@@ -79,7 +79,7 @@ Entregá el compose con healthcheck del Paso 4, el bloqueo por dependencia unhea
 **Conceptos clave:** healthcheck, depends_on, service_healthy, BuildKit, multi-stage build, cache mount, profile y readiness.
 
 * Código: `docker-compose.yml`
-* Proyecto: proyecto integrador RutaFlow
+* Proyecto: en el proyecto integrador RutaFlow, aplica límites, healthchecks y perfiles al compose.
 
 **Diagrama:**
 
@@ -150,7 +150,7 @@ Entregá el hook `pre-upgrade` del Paso 4, la carrera de tiempos del Paso 5, y l
 **Conceptos clave:** Helm hook, hook-weight, hook-delete-policy, Job, release, CRD, values override y upgrade.
 
 * Código: `chart/templates/hooks/migrate.yaml`
-* Proyecto: proyecto integrador RutaFlow
+* Proyecto: en el proyecto integrador RutaFlow, empaqueta el despliegue en un chart con values por entorno.
 
 **Diagrama:**
 

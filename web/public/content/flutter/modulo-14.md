@@ -88,11 +88,11 @@ final class JourneyFailure extends JourneyState {
 
 `JourneyController` coordina casos de uso y emite estos estados; no importa widgets, `BuildContext`, Dio ni SQLite. La vista usa un `switch` exhaustivo para renderizar progreso, mapa, cola pendiente o recuperación. Esto permite probar el flujo sin inicializar plugins móviles y hace imposible olvidar visualmente el estado offline.
 
-**Analogía:** Es como una central de despacho: cada mensaje necesita identidad, hora, destino y confirmación; ver un vehículo en pantalla no demuestra que el paquete fue entregado.
+**Analogía:** Es como un tablero de una sola aguja: en lugar de encender y apagar tres luces que pueden contradecirse, un indicador único dice «en ruta», «sin señal» o «fallo», y no admite dos a la vez.
 
 **¿Por qué es importante?** Porque una aplicación logística funciona en movimiento, con mala red, concurrencia y datos sensibles. La corrección debe sobrevivir fuera de una demostración local.
 
-**Casos de uso reales:** posición tardía, token vencido, fotografía pesada, comando repetido y usuario intentando acceder a una entrega ajena.
+**Casos de uso reales:** una jornada que pasa de «sin conexión» a «reintentando» sin mostrar a la vez error y carga; un operador que ve la cola pendiente y el botón de reintento solo cuando corresponde; una prueba del controlador sin emulador.
 
 **Diagrama: cómo leer la dependencia:** la UI solicita una acción al controlador; el caso de uso aplica la regla; el repositorio decide entre adaptadores sin que el dominio conozca plugins.
 
@@ -320,11 +320,11 @@ Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como
 
 El marcador no salta entre puntos: interpola posición y rumbo durante un intervalo limitado. Los eventos fuera de orden no retroceden el vehículo. AnimationController se libera en dispose y el frame budget se mide con DevTools. La animación comunica movimiento estimado; no fabrica precisión que el GPS no posee. La implementación se conecta al resto de la app y se prueba con camino feliz, entrada inválida, repetición y dependencia no disponible.
 
-**Analogía:** Es como una central de despacho: cada mensaje necesita identidad, hora, destino y confirmación; ver un vehículo en pantalla no demuestra que el paquete fue entregado.
+**Analogía:** Es como un tren que se desliza entre dos estaciones: suaviza el trayecto visible, pero no puede pasar por una vía que no existe.
 
 **¿Por qué es importante?** Porque interpolar entre dos muestras válidas evita saltos visuales sin inventar una ruta que el vehículo no recorrió realmente; una animación que haga parecer actual una posición obsoleta engaña al operador que la observa.
 
-**Casos de uso reales:** posición tardía, token vencido, fotografía pesada, comando repetido y usuario intentando acceder a una entrega ajena.
+**Casos de uso reales:** dos muestras GPS separadas por 30 m y un segundo; una muestra vieja que llega después de la nueva y no debe mover el marcador hacia atrás; una animación interrumpida por una posición más reciente.
 
 **Diagrama:**
 
@@ -377,11 +377,11 @@ Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como
 
 SQLite conserva jornada, paradas y un outbox de comandos. Capturar foto genera un archivo comprimido y cifrado con referencia local; no guarda bytes grandes en una fila. Cada confirmación usa UUID idempotente y estados pending/syncing/synced/failed. image_picker/camera manejan cancelación, metadatos y permisos. La implementación se conecta al resto de la app y se prueba con camino feliz, entrada inválida, repetición y dependencia no disponible.
 
-**Analogía:** Es como una central de despacho: cada mensaje necesita identidad, hora, destino y confirmación; ver un vehículo en pantalla no demuestra que el paquete fue entregado.
+**Analogía:** Es como un libro de recibos que viaja en la guantera: el conductor anota la entrega aunque no haya cobertura, y cada recibo tiene un número que impide contarla dos veces.
 
 **¿Por qué es importante?** Porque una cola local con estado explícito y UUID idempotente evita perder una confirmación de entrega al reiniciar sin conexión, y evita duplicar el cobro o la entrega cuando la sincronización se reintenta.
 
-**Casos de uso reales:** posición tardía, token vencido, fotografía pesada, comando repetido y usuario intentando acceder a una entrega ajena.
+**Casos de uso reales:** confirmar una entrega en un sótano sin señal; reiniciar la app con tres comandos pendientes; reintentar una foto pesada sin duplicar la evidencia.
 
 **Diagrama:**
 
@@ -436,11 +436,11 @@ Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como
 
 Dio configura timeouts, cancelación, interceptores seguros y subida multipart con progreso. El refresh de token se serializa para evitar una tormenta de solicitudes. FCM/APNs despierta o informa, pero la app consulta el backend como fuente de verdad. El token push rota, se asocia a instalación y nunca autoriza operaciones. La implementación se conecta al resto de la app y se prueba con camino feliz, entrada inválida, repetición y dependencia no disponible.
 
-**Analogía:** Es como una central de despacho: cada mensaje necesita identidad, hora, destino y confirmación; ver un vehículo en pantalla no demuestra que el paquete fue entregado.
+**Analogía:** Es como una ventanilla con un solo turno para renovar el pase: si diez personas llegan a la vez, comparten la misma renovación en lugar de pedir diez pases nuevos.
 
 **¿Por qué es importante?** Porque serializar la renovación del token evita una tormenta de solicitudes de refresh, y tratar el push únicamente como aviso (no como autorización) evita que un mensaje falso o repetido conceda acceso a un recurso ajeno.
 
-**Casos de uso reales:** posición tardía, token vencido, fotografía pesada, comando repetido y usuario intentando acceder a una entrega ajena.
+**Casos de uso reales:** cinco peticiones que reciben 401 al mismo tiempo y esperan un único refresh; una push que anuncia una entrega nueva y la app consulta el backend antes de abrirla; una notificación con datos incompletos que no debe habilitar una acción.
 
 **Diagrama:**
 

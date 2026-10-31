@@ -1,6 +1,8 @@
 # Módulo 4: Streams y programación funcional
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: Stream API — map, filter, reduce, collect
@@ -198,7 +200,7 @@ List<List<Entrega>> ventanas = entregas.stream()
     .toList();
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

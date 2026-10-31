@@ -1,6 +1,8 @@
 # Módulo 10: Módulos (JPMS) y proyectos grandes
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: module-info.java y encapsulación fuerte
@@ -50,7 +52,7 @@ mkdir -p core/src/main/java/academia/core/dominio
 mkdir -p core/src/main/java/academia/core/interno
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -114,7 +116,7 @@ mkdir -p domain/src/main/java/academia/domain
 mkdir -p application/src/main/java/academia/application
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven
@@ -179,7 +181,7 @@ cd ejemplo-jpms-opens
 mkdir -p dominio/src/main/java/academia/dominio
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

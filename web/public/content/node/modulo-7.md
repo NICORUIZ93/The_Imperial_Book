@@ -437,7 +437,7 @@ graph LR
 **¿Por qué es importante?** El test runner nativo elimina la dependencia externa para proyectos donde instalar un framework de testing completo sería desproporcionado, pero descubre archivos por convención de nombre — una convención que, si se rompe, falla silenciosamente con "0 tests" en vez de un error explícito.
 
 * Cuándo: usar `node:test` en scripts pequeños, herramientas sin servidor; Vitest para apps complejas con watch mode. No conviene `node:test` si necesitas mocking avanzado (usa Vitest).
-* Proyecto: proyecto integrador RutaFlow
+* Proyecto: en el proyecto integrador RutaFlow, prueba el endpoint de envíos con `node:test` y verifica que el runner descubre el archivo sin instalar dependencias.
 
 **Prueba en terminal:**
 

@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: createContext y useContext
 
 #### Paso 1 · Objetivo y preparación
@@ -69,9 +71,6 @@ function BotonToggle() {
 }
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -99,15 +98,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: `BarraSuperior`, sin importar cuántos componentes intermedios existan entre ella y `App`, lee `operador.nombre` directamente — ningún componente entre ambos necesitó recibir ni reenviar esa prop.
+Resultado esperado: `BarraSuperior`, sin importar cuántos componentes intermedios existan entre ella y `App`, lee `operador.nombre` directamente — ningún componente entre ambos necesitó recibir ni reenviar esa prop. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: renderizá `BarraSuperior` en una parte del árbol que queda fuera de `SesionContext.Provider` (por ejemplo, un modal montado vía portal directamente en el `<body>`, sin envolverlo con el Provider) — ese es el fallo deliberado: `useContext(SesionContext)` devuelve `null`, y leer `operador.nombre` lanza un error en tiempo de ejecución porque `operador` es `null`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, y agregá una validación explícita en `BarraSuperior` que muestre un mensaje claro de error de configuración si el contexto llega como `null`, en vez de crashear con un error críptico.
+Corregí el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, y agregá una validación explícita en `BarraSuperior` que muestre un mensaje claro de error de configuración si el contexto llega como `null`, en vez de crashear con un error críptico. Envuelve el modal de confirmación del proyecto integrador RutaFlow con el proveedor de sesión y documenta el error de contexto ausente.
 
 #### Paso 7 · Cierre
 Entregá el Context funcionando del Paso 4, el crash por Provider faltante del Paso 5, y la validación explícita del Paso 6; explicá por qué `useContext` nunca "busca" el Provider más cercano en todo el árbol, sino solo entre los ancestros reales del componente que lo consume. Siguiente paso: estudia cuándo Context deja de ser suficiente. Errores comunes: olvidar envolver una parte del árbol (especialmente contenido montado vía portales) con el Provider correspondiente, no validar que el valor del contexto no sea el valor por defecto antes de usarlo, y crear un nuevo objeto de valor en cada render del Provider sin memoizarlo. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/reference/react/useContext.
@@ -140,10 +138,6 @@ Context apropiado: tema, idioma, usuario autenticado (cambia poco, se lee en muc
 Context problemático: valor de un input en cada tecla (cambia mucho, re-renderiza TODOS los consumidores)
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -158,9 +152,8 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: agregando un `console.log('render')` en `BarraSuperior` (que solo lee `operador`, nunca `filtroBusqueda`), escribir en el campo de búsqueda re-renderiza `BarraSuperior` de todas formas — React re-renderiza todos los consumidores del Context cuando el valor provisto cambia, sin importar qué parte de ese valor cada consumidor efectivamente lee.
+Resultado esperado: agregando un `console.log('render')` en `BarraSuperior` (que solo lee `operador`, nunca `filtroBusqueda`), escribir en el campo de búsqueda re-renderiza `BarraSuperior` de todas formas — React re-renderiza todos los consumidores del Context cuando el valor provisto cambia, sin importar qué parte de ese valor cada consumidor efectivamente lee. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 **Demo con React DevTools:**
 1. Crea un componente `BarraSuperior` que consuma `SesionContext` y solo lea `operador`
@@ -177,7 +170,7 @@ Resultado esperado: agregando un `console.log('render')` en `BarraSuperior` (que
 Pista: dejá `filtroBusqueda` dentro de `SesionContext` y escribí rápido en el campo de búsqueda mientras mirás el `console.log` de `BarraSuperior` — ese es el fallo deliberado confirmado: `BarraSuperior` se re-renderiza en cada tecla aunque nunca lee `filtroBusqueda`, un desperdicio que empeora proporcionalmente a la cantidad de consumidores de `SesionContext`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con un `useState` local dentro del componente de búsqueda, sin Context, porque solo lo necesita ese componente y sus hijos directos — confirmá que `BarraSuperior` ya no se re-renderiza al escribir.
+Corregí el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con un `useState` local dentro del componente de búsqueda, sin Context, porque solo lo necesita ese componente y sus hijos directos — confirmá que `BarraSuperior` ya no se re-renderiza al escribir. En el proyecto integrador RutaFlow, mueve el filtro de búsqueda a estado local y confirma qué componentes dejan de re-renderizarse.
 
 #### Paso 7 · Cierre
 Entregá la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explicá con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.
@@ -220,15 +213,16 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: `<Pestanias><Pestanias.Panel indice={0} titulo="Envíos activos">...</Pestanias.Panel></Pestanias>` coordina automáticamente cuál panel se muestra, sin que el código que usa `Pestanias` escriba ningún `useState` propio para rastrear la pestaña activa.
+
+Ejecuta `npm test` y confirma que las pruebas de componentes compuestos pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: usá `Pestanias.Panel` fuera de un `<Pestanias>` envolvente, directamente en la pantalla — ese es el fallo deliberado: `useContext(PestaniasContext)` devuelve `null` dentro de `Panel`, y desestructurar `{ activa, setActiva }` de `null` lanza un error en tiempo de ejecución, porque `Panel` depende implícitamente de estar dentro de un `Pestanias`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `Panel` dentro de `Pestanias`, y agregá una validación explícita dentro de `Panel` que lance un error descriptivo ("Pestanias.Panel debe usarse dentro de Pestanias") si el contexto es `null`, en vez de un error críptico de desestructuración.
+Corregí el Paso 5 devolviendo `Panel` dentro de `Pestanias`, y agregá una validación explícita dentro de `Panel` que lance un error descriptivo ("Pestanias.Panel debe usarse dentro de Pestanias") si el contexto es `null`, en vez de un error críptico de desestructuración. Extrae las pestañas del detalle de envío del proyecto integrador RutaFlow a un componente compuesto y conserva el foco.
 
 #### Paso 7 · Cierre
 Entregá el componente compuesto funcionando del Paso 4, el error por uso fuera de contexto del Paso 5, y el mensaje de error descriptivo del Paso 6; explicá por qué `Pestanias.Panel` depende implícitamente de un ancestro `Pestanias`, y por qué hacer ese error explícito mejora la experiencia de quien use el componente. Siguiente paso: integrá esto al panel de operador completo. Errores comunes: exponer el Context interno de un componente compuesto directamente al usuario, no validar el caso de uso fuera de contexto con un mensaje claro, y recrear patrones antiguos (render props, HOCs) cuando un componente compuesto expresa la misma idea de forma más directa. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/reusing-logic-with-custom-hooks.
@@ -256,7 +250,6 @@ graph TD
 
 * Ejecutar: `npm test -- --testNamePattern="compound|tabs"`
 * Código: `src/components/CompoundTabs.tsx`
-* Proyecto: proyecto integrador RutaFlow
 * Cuándo: usar componentes compuestos cuando varios componentes relacionados necesitan coordinación interna oculta; no conviene cuando la coordinación es simple o cuando la lógica se reutiliza en contextos distintos (usa hooks personalizados en ese caso).
 
 **¿Por qué es importante?** Los componentes compuestos ofrecen una API declarativa y limpia para el usuario final, ocultando la coordinación interna necesaria sin exponer detalles de implementación.
@@ -282,8 +275,3 @@ graph TD
 - **Olvidar envolver la aplicación (o el subárbol relevante) con el Provider.** Sin el Provider, `useContext` devuelve el valor por defecto, no el valor esperado.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama

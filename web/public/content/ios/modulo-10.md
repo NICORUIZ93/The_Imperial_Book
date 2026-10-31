@@ -1,6 +1,8 @@
 # Módulo 10: Performance, accesibilidad y HIG
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: Instruments
@@ -22,7 +24,7 @@ Instruments mide CPU, memoria y frames reales durante una interacción concreta 
 4. Detené la grabación y ordená por "Self Weight"
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -59,8 +61,7 @@ Core Animation   → frames perdidos en animaciones/scroll
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, perfila la pantalla de seguimiento y documenta la métrica medida.
 
 ### Tema 2: Accesibilidad con VoiceOver
 
@@ -81,7 +82,7 @@ Button(action: confirmarEntrega) {
 .accessibilityLabel("Confirmar entrega")
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -120,8 +121,7 @@ Image(systemName: "trash").accessibilityLabel("Eliminar tarea")
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, recorre el detalle de envío con VoiceOver y corrige las etiquetas.
 
 **Límites y decisión de uso:** Escuchar una etiqueta correcta no demuestra que el recorrido completo sea accesible. Prueba orden de navegación, acciones y actualizaciones; no agrupes controles independientes en un elemento que impida ejecutarlos con VoiceOver.
 
@@ -156,8 +156,7 @@ UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de S
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, prueba el detalle con Dynamic Type y una vista UIKit envuelta.
 
 **Límites y decisión de uso:** Seguir una guía visual no garantiza legibilidad con texto ampliado o idiomas largos. Prueba tamaños de accesibilidad y el ciclo de vida del componente UIKit incorporado, evitando supuestos de altura fija.
 
@@ -170,7 +169,7 @@ Button(action: confirmarEntrega) {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -351,7 +350,7 @@ final class StopsViewController: UIViewController {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build

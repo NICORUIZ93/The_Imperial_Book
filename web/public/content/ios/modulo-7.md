@@ -1,6 +1,8 @@
 # Módulo 7: Combine y programación reactiva
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: Publishers y Subscribers
@@ -25,7 +27,7 @@ class BuscadorEnviosViewModel: ObservableObject {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -75,8 +77,7 @@ $texto
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, publica la posición del conductor y verifica el subscriber.
 
 ### Tema 2: Operadores: debounce y combineLatest
 
@@ -99,7 +100,7 @@ Publishers.CombineLatest($textoBusqueda, $zonaFiltro)
     .store(in: &cancelables)
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -136,8 +137,7 @@ Publishers.CombineLatest($filtro, $orden)
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, aplica debounce a la búsqueda y combina posición y filtro.
 
 **Límites y decisión de uso:** Debounce retrasa emisiones y puede ser inapropiado para acciones que deben ejecutarse inmediatamente. combineLatest necesita valores de sus fuentes; define estados iniciales y prueba ausencia de datos para no dejar la pantalla esperando sin explicación.
 
@@ -158,7 +158,7 @@ $textoBusqueda.debounce(for: .milliseconds(300), scheduler: RunLoop.main).sink {
 let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -227,5 +227,4 @@ En el proyecto integrador RutaFlow, `confirmarEntrega` vive en `examples/rutaflo
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, compara la misma carga con Combine y async/await y elige una.

@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: Tipado de props y children
 
 #### Paso 1 · Objetivo y preparación
@@ -56,15 +58,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: `<EnvioCard direccion="Calle 10" />` (sin `guia`) falla en tiempo de compilación con un error explícito señalando que falta la prop obligatoria `guia` — nunca llega a ejecutarse con un valor `undefined` en producción.
+Resultado esperado: `<EnvioCard direccion="Calle 10" />` (sin `guia`) falla en tiempo de compilación con un error explícito señalando que falta la prop obligatoria `guia` — nunca llega a ejecutarse con un valor `undefined` en producción. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: cambiá `guia: string` a `guia: any` "para que compile rápido mientras terminás otra cosa" — ese es el fallo deliberado: ahora `<EnvioCard guia={123} direccion="Calle 10" />` (pasando un número) compila sin ningún error, aunque el resto del código de `EnvioCard` asuma que `guia` siempre es un string.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `guia: string`, y agregá una segunda prop opcional `destacado?: boolean`, confirmando que usar `EnvioCard` sin esa prop sigue compilando (por ser opcional) pero pasar un valor del tipo incorrecto sigue siendo rechazado.
+Corregí el Paso 5 devolviendo `guia: string`, y agregá una segunda prop opcional `destacado?: boolean`, confirmando que usar `EnvioCard` sin esa prop sigue compilando (por ser opcional) pero pasar un valor del tipo incorrecto sigue siendo rechazado. Tipa las props de `EnvioCard` en el proyecto integrador RutaFlow y verifica que una prop opcional omitida siga compilando.
 
 #### Paso 7 · Cierre
 Entregá `EnvioCard` tipada del Paso 4, el `any` que oculta el error del Paso 5, y la prop opcional del Paso 6; explicá por qué `any` no es "un tipo más flexible" sino la desactivación completa de la verificación de tipos para ese valor. Siguiente paso: estudia hooks genéricos. Errores comunes: usar `any` para evitar pensar el tipo correcto, tipar `children` como `React.ReactElement` cuando el componente acepta contenido arbitrario, y marcar como opcional una prop que en realidad siempre debería proporcionarse. Fuentes oficiales: https://react.dev/learn/typescript y https://www.typescriptlang.org/docs/handbook/2/objects.html.
@@ -99,9 +100,6 @@ function Tarjeta({ titulo, children, onSeleccionar }: TarjetaProps) {
 }
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 **Límites y decisión de uso:** Tipar props detecta errores de desarrollo, pero no valida JSON remoto ni asegura semántica accesible de children. Valida datos externos y usa contratos más precisos cuando un componente necesita acciones o estructura determinadas.
 
@@ -140,10 +138,6 @@ function useLocalStorage<T>(clave: string, valorInicial: T) {
 const [tema, setTema] = useLocalStorage<'claro' | 'oscuro'>('tema', 'claro');
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
@@ -167,15 +161,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: el mismo `useLocalStorage` tipa correctamente `zona` como `string` y `columnas` como `string[]` en cada punto de uso, sin que la implementación del hook necesite conocer de antemano cuáles serían esos tipos concretos.
+Resultado esperado: el mismo `useLocalStorage` tipa correctamente `zona` como `string` y `columnas` como `string[]` en cada punto de uso, sin que la implementación del hook necesite conocer de antemano cuáles serían esos tipos concretos. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: invocá el hook con un valor inicial ambiguo (`useLocalStorage('zona', null)`) en vez de especificar el tipo explícitamente — ese es el fallo deliberado: TypeScript infiere `T` como `null`, y `setZona('norte')` ahora es rechazado (porque `T` quedó fijado en `null`, no en `string`), perdiendo la utilidad real del tipo por depender de una inferencia ambigua.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLocalStorage<string>('zona', 'todas')`) en vez de depender de la inferencia en un caso ambiguo, y confirmá que `setZona(42)` ahora sí es rechazado en tiempo de compilación.
+Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLocalStorage<string>('zona', 'todas')`) en vez de depender de la inferencia en un caso ambiguo, y confirmá que `setZona(42)` ahora sí es rechazado en tiempo de compilación. Tipa el hook de almacenamiento del proyecto integrador RutaFlow y comprueba que un valor de tipo incorrecto falle al compilar.
 
 #### Paso 7 · Cierre
 Entregá el hook genérico reutilizado para dos tipos distintos del Paso 4, el caso de inferencia ambigua del Paso 5, y la especificación explícita del Paso 6; explicá cuándo conviene especificar el parámetro de tipo explícitamente en vez de depender de que TypeScript lo infiera solo. Siguiente paso: estudia eventos tipados y componentes polimórficos. Errores comunes: depender de la inferencia de tipos en casos ambiguos donde el valor inicial no determina claramente el tipo deseado, duplicar un hook para cada tipo de dato en vez de generalizarlo, y omitir el parámetro de tipo cuando TypeScript realmente no puede inferirlo del contexto. Fuentes oficiales: https://www.typescriptlang.org/docs/handbook/2/generics.html y https://react.dev/learn/reusing-logic-with-custom-hooks.
@@ -234,7 +227,7 @@ Ejercicio: compilá el proyecto y confirmá que TypeScript rechaza la combinaci�
 ```bash
 npm run build
 ```
-Resultado esperado: la compilación falla si algún lugar del código pasa `href` a `<Boton>` sin `as="a"`, señalando el error de tipos exactamente en esa línea antes de llegar a producción.
+Resultado esperado: la compilación falla si algún lugar del código pasa `href` a `<Boton>` sin `as="a"`, señalando el error de tipos exactamente en esa línea antes de llegar a producción. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 ---
 
@@ -259,9 +252,10 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: `<Boton as="a" href="/envios/RF-4471">` compila correctamente (TypeScript sabe que `<a>` acepta `href`); `<Boton href="/envios/RF-4471">` sin `as="a"` (dejando el `button` por defecto) es rechazado en tiempo de compilación, porque un `<button>` no tiene una prop `href` válida.
+
+Ejecuta `npm test` y confirma que las pruebas de eventos tipados pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: cambiá el tipo del manejador de `React.ChangeEvent<HTMLInputElement>` a `React.ChangeEvent<HTMLElement>` (el tipo base genérico) — ese es el fallo deliberado: TypeScript ya no reconoce que `.value` existe en `e.target`, y acceder a `e.target.value` ahora produce un error de compilación, perdiendo exactamente la seguridad de tipos que el tipo específico ofrecía.
@@ -295,8 +289,3 @@ Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida d
 - **Olvidar el parámetro de tipo al invocar un hook genérico.** Especifícalo explícitamente cuando TypeScript no pueda inferirlo del contexto.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama

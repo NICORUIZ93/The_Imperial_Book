@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre el puerto que imprima la terminal (`http://localhost:3000` en Next.js, `5173` en Vite) y ejecuta `npm test` para las pruebas.
+
 ### Tema 1: Server Components por defecto
 
 #### Paso 1 · Objetivo y preparación
@@ -122,9 +124,6 @@ Esta directiva establece un límite explícito y deliberado en el árbol de comp
 
 **¿Por qué es importante?** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible en el árbol maximiza la cantidad de código que permanece exclusivamente en el servidor.
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
@@ -142,15 +141,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente.
+Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: agregá `"use client"` directamente en `PaginaEnvio` "para que todo funcione sin pensar en la frontera" — ese es el fallo deliberado: ahora toda la página (incluyendo la consulta a la base de datos) se convierte en Client Component, perdiendo el acceso directo a la base de datos y obligando a reemplazar esa consulta por un endpoint API adicional que antes no era necesario.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa.
+Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa. Marca como cliente solo el componente interactivo del proyecto integrador RutaFlow y comprueba qué parte sigue renderizándose en el servidor.
 
 #### Paso 7 · Cierre
 Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
@@ -182,15 +180,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: `DatosBasicosEnvio` (guía, destinatario, estado) aparece en pantalla de inmediato; el spinner de `HistorialUbicaciones` se reemplaza por el historial real varios segundos después, sin que el resto de la página haya esperado ese tiempo.
+Resultado esperado: `DatosBasicosEnvio` (guía, destinatario, estado) aparece en pantalla de inmediato; el spinner de `HistorialUbicaciones` se reemplaza por el historial real varios segundos después, sin que el resto de la página haya esperado ese tiempo. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá el `<Suspense>` que envuelve a `HistorialUbicaciones` — ese es el fallo deliberado: ahora toda `PaginaEnvio` (incluyendo `DatosBasicosEnvio`, que estaba listo instantáneamente) espera los mismos varios segundos que tarda la consulta lenta del historial, antes de mostrar absolutamente cualquier cosa en pantalla.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `Suspense`, y agregá un segundo `Suspense` independiente alrededor de una sección de "envíos relacionados" (otra consulta lenta distinta), confirmando que ambas secciones lentas se completan y aparecen de forma independiente entre sí.
+Corregí el Paso 5 restaurando el `Suspense`, y agregá un segundo `Suspense` independiente alrededor de una sección de "envíos relacionados" (otra consulta lenta distinta), confirmando que ambas secciones lentas se completan y aparecen de forma independiente entre sí. Envuelve la lista de envíos del proyecto integrador RutaFlow en Suspense y observa el orden en que llegan los fragmentos.
 
 #### Paso 7 · Cierre
 Entregá el streaming con una sección lenta del Paso 4, el bloqueo total provocado en el Paso 5, y las dos secciones independientes del Paso 6; explicá por qué envolver cada sección lenta en su propio `Suspense` (en vez de uno solo envolviendo toda la página) permite que cada una aparezca en cuanto esté lista, independientemente de las demás. Siguiente paso: estudia Server Actions para procesar formularios sin un endpoint API separado. Errores comunes: no envolver ninguna sección lenta en Suspense, envolver toda la página en un único Suspense perdiendo el beneficio de mostrar lo que ya está listo, y asumir que Suspense acelera la consulta lenta en sí (solo cambia cuándo se muestra, no cuánto tarda). Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
@@ -213,9 +210,6 @@ Este mismo `Suspense` que en el Módulo 5 se usaba para mostrar un `fallback` mi
 </Suspense>
 ```
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 ### Tema 4: Server Actions
 
@@ -249,15 +243,16 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: enviar el formulario ejecuta `confirmarEntregaAction` directamente en el servidor con los datos del formulario, sin ninguna ruta API adicional definida ni ningún `fetch` manual escrito en el cliente.
+
+Ejecuta `npm test` y confirma que las pruebas de Server Actions pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: dentro de `confirmarEntregaAction`, actualizá el envío usando directamente el PIN recibido sin verificar que coincide con el PIN real del envío en la base de datos — ese es el fallo deliberado: cualquiera que envíe el formulario con cualquier PIN (incluso uno incorrecto) confirma igual la entrega, porque la Server Action nunca valida la autorización, solo ejecuta la actualización ciegamente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando la verificación del PIN dentro de la Server Action antes de actualizar (`if (envioReal.pin !== pin) throw new Error('PIN incorrecto')`), confirmando que un PIN incorrecto ahora rechaza la confirmación en el servidor.
+Corregí el Paso 5 agregando la verificación del PIN dentro de la Server Action antes de actualizar (`if (envioReal.pin !== pin) throw new Error('PIN incorrecto')`), confirmando que un PIN incorrecto ahora rechaza la confirmación en el servidor. Mueve la confirmación de entrega del proyecto integrador RutaFlow a una Server Action y valida el formulario también en el servidor.
 
 #### Paso 7 · Cierre
 Entregá la Server Action funcionando del Paso 4, la confirmación sin validar PIN provocada en el Paso 5, y la verificación agregada del Paso 6; explicá por qué una Server Action, al eliminar el endpoint API explícito, puede hacer más fácil olvidar que esa función sigue necesitando las mismas validaciones de autorización que cualquier otro código de servidor. Siguiente paso: cerrá el módulo integrando Server Components, Suspense y Server Actions en una página completa de seguimiento. Errores comunes: omitir validación de autorización dentro de una Server Action asumiendo que "ya no hay API expuesta", no manejar el estado pending del formulario mientras la acción procesa, y ejecutar lógica sensible a secretos sin confirmar que la Server Action nunca se ejecuta en el cliente. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
@@ -279,7 +274,6 @@ graph LR
 ```
 
 * Ejecutar: `npm test -- --testNamePattern="server.action|form"`
-* Proyecto: proyecto integrador RutaFlow
 * Cuándo: usar Server Actions para formularios simples donde la lógica es directa; no conviene si la validación es muy compleja (mantén un endpoint API explícito) o si necesitas más control sobre headers y serialización.
 
 **¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado, pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
@@ -305,7 +299,3 @@ graph LR
 - **Envolver la sección lenta sin `Suspense`.** Sin `Suspense`, toda la página espera a que la sección lenta complete antes de mostrarse.
 
 ---
-
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama

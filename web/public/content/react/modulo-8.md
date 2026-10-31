@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+
 ### Tema 1: Queries por rol, no por clase CSS
 
 #### Paso 1 · Objetivo y preparación
@@ -51,15 +53,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: el test encuentra el botón por su rol semántico (`button`) y su nombre accesible ("Confirmar entrega"), sin importar qué clase CSS tenga en ese momento, y confirma que el mensaje de éxito aparece tras el click.
+Resultado esperado: el test encuentra el botón por su rol semántico (`button`) y su nombre accesible ("Confirmar entrega"), sin importar qué clase CSS tenga en ese momento, y confirma que el mensaje de éxito aparece tras el click. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: escribí deliberadamente una segunda versión del mismo test usando `document.querySelector('.btn-primary')` en vez de `getByRole` — ese es el fallo deliberado: cambiá la clase de `BotonConfirmar` a `btn-confirmar-v2` (un rediseño puramente cosmético) y esa segunda versión del test se rompe inmediatamente, aunque el comportamiento real del botón no cambió en absoluto.
 
 #### Paso 6 · Práctica independiente
-Confirmá que la versión del Paso 4 (con `getByRole`) sigue pasando sin ningún cambio después del rediseño, y documentá explícitamente qué detalle de implementación cambió (la clase CSS) frente a qué se mantuvo igual (el rol y el nombre accesible del botón).
+Confirmá que la versión del Paso 4 (con `getByRole`) sigue pasando sin ningún cambio después del rediseño, y documentá explícitamente qué detalle de implementación cambió (la clase CSS) frente a qué se mantuvo igual (el rol y el nombre accesible del botón). Aplica la consulta por rol a la pantalla de envíos del proyecto integrador RutaFlow y registra qué cambió tras el rediseño.
 
 #### Paso 7 · Cierre
 Entregá el test resiliente del Paso 4, la comparación con el selector de clase roto del Paso 5, y la confirmación del Paso 6; explicá qué detalle de implementación cambió y por qué no debería haber roto ningún test de comportamiento. Siguiente paso: estudia cómo interceptar la llamada de red real con MSW. Errores comunes: consultar por clase CSS o estructura del DOM en vez de por rol/texto, usar `getByText` con un texto que cambia seguido por copywriting en vez de un rol estable, y usar `container.querySelector` como escape hatch habitual en vez de ocasional. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/intro/ y https://testing-library.com/docs/queries/byrole/.
@@ -83,9 +84,6 @@ await userEvent.click(boton);
 expect(screen.getByText(/enviado con éxito/i)).toBeInTheDocument();
 ```
 
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
 
 ### Tema 2: Mock Service Worker (MSW)
 
@@ -117,9 +115,6 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
 
-* Ejecutar: `npm test`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
 
 **Límites y decisión de uso:** MSW controla la red de la prueba, pero no demuestra que el backend real cumpla el contrato. Mantén pruebas contractuales o de integración y configura handlers que rechacen solicitudes no previstas para no ocultar rutas equivocadas.
 
@@ -140,15 +135,14 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
-Resultado esperado: al hacer click en "Confirmar entrega" dentro del test, la llamada real a `fetch('/api/envios/RF-4471/confirmar', ...)` del código de `DetalleEnvio` es interceptada por MSW, que responde con `{ estado: 'entregado' }` sin que ningún servidor real haya recibido nada.
+Resultado esperado: al hacer click en "Confirmar entrega" dentro del test, la llamada real a `fetch('/api/envios/RF-4471/confirmar', ...)` del código de `DetalleEnvio` es interceptada por MSW, que responde con `{ estado: 'entregado' }` sin que ningún servidor real haya recibido nada. Ejecuta `npm test` para comprobar las pruebas del tema.
 
 #### Paso 5 · Práctica guiada
 Pista: dentro de un test agregá `server.use(http.post('/api/envios/:id/confirmar', () => HttpResponse.error()))` para simular un fallo, y quitá el `afterEach(() => server.resetHandlers())` global — ese es el fallo deliberado: ese handler de error queda activo y afecta a la PRÓXIMA prueba de la suite, que ahora falla inesperadamente aunque su propio código esté correcto.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agregá una prueba explícita del caso de error verificando que `DetalleEnvio` muestra un mensaje de error apropiado, no una pantalla en blanco.
+Corregí el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agregá una prueba explícita del caso de error verificando que `DetalleEnvio` muestra un mensaje de error apropiado, no una pantalla en blanco. Simula con MSW el fallo del endpoint de entregas del proyecto integrador RutaFlow y prueba el camino de error.
 
 #### Paso 7 · Cierre
 Entregá el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explicá por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
@@ -217,9 +211,10 @@ npm create vite@latest demo-react -- --template react
 cd demo-react && npm install
 npm run dev
 ```
-Abre http://localhost:5173 para ver el resultado; corre las pruebas con `npm test`.
 
 Resultado esperado: el test confirma que `useFiltroZona` normaliza `'NORTE'` a `'norte'` internamente, sin haber renderizado ningún componente visual — solo se invocó el hook y se inspeccionó su resultado.
+
+Ejecuta `npm test` y confirma que las pruebas del hook personalizado pasan.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá `act(...)` y llamá directamente `result.current.setZona('NORTE')` fuera de ese wrapper — ese es el fallo deliberado: React advierte en consola que una actualización no fue envuelta en `act(...)`, y en casos más complejos la aserción siguiente puede ejecutarse antes de que React termine de procesar la actualización, leyendo un valor todavía no actualizado.
@@ -254,8 +249,3 @@ Entregá el test aislado del Paso 4, la advertencia de React por falta de `act` 
 - **No envolver actualizaciones de estado del hook en `act`.** Sin `act`, la aserción puede ejecutarse antes de que React procese la actualización.
 
 ---
-
-* Ejecutar: `npm test`
-* Código: `examples/rutaflow/react/use-shipment-tracking.tsx`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama

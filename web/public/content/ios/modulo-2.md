@@ -44,8 +44,7 @@ struct BotonContador: View {
 **Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, conecta el formulario de confirmación con @State y @Binding.
 
 **Límites y decisión de uso:** State conserva estado ligado a la identidad de la vista, no almacenamiento durable. Usa Binding para editar la fuente existente y persistencia para datos que deben sobrevivir al cierre; copiar valores en otra fuente puede desincronizarlos.
 
@@ -184,8 +183,7 @@ class TareasViewModel {
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, mueve el estado de la jornada a un modelo @Observable.
 
 **Límites y decisión de uso:** Observar cambios no establece una política de persistencia ni de concurrencia. Define quién posee el modelo y dónde puede mutarlo; una propiedad observable compartida sin esas reglas puede seguir produciendo estados incoherentes.
 
@@ -309,5 +307,4 @@ Entregá la inyección funcionando a través de varios niveles del Paso 4, el cr
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, inyecta la sesión del conductor por @Environment y comprueba la identidad.

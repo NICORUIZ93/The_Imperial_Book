@@ -13,7 +13,7 @@ La app separa jornada, paradas, escaneo, evidencia y sincronización. Widgets re
 
 **¿Por qué es importante?** Porque reduce acoplamiento a plugins y hace verificables las reglas offline. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** cambiar el plugin de cámara sin tocar el dominio; probar la regla offline sin emulador; reemplazar SQLite por otro almacenamiento local. Comprueba que las dependencias apunten hacia las políticas, no al revés.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -172,7 +172,7 @@ La política combina movimiento, etapa y carga: detenido usa menor frecuencia; r
 
 **¿Por qué es importante?** Porque preserva jornada y privacidad sin perder señal operacional útil. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un conductor detenido que no necesita muestreo alto; un permiso denegado al abrir la app sin contexto; un servicio en segundo plano limitado por el sistema. Prueba en dispositivo real y documenta la frecuencia elegida.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -286,7 +286,7 @@ Confirmar entrega guarda primero un comando local con UUID y evidencia; luego si
 
 **¿Por qué es importante?** Porque el trabajo del conductor no desaparece al entrar a un ascensor sin señal. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** confirmar una entrega dentro de un ascensor; una foto que se sube dos veces al recuperar señal; un conflicto de versión al sincronizar. Conserva el comando local y define qué significa «pendiente».
 
 #### Paso 1 · Objetivo y preparación
 

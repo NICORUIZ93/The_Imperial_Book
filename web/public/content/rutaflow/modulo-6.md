@@ -13,7 +13,7 @@ Money combina entero en unidad menor y moneda; nunca float. La cotización guard
 
 **¿Por qué es importante?** Porque soporte y auditoría pueden reproducir cada cobro. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** reproducir un cobro de hace meses con la tarifa vigente entonces; cambiar la tarifa sin alterar facturas emitidas; calcular un impuesto según jurisdicción y fecha. Guarda versión, entradas y desglose.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -146,7 +146,7 @@ Cobrar efectivo aumenta caja del conductor y obligación a entregar; liquidar mu
 
 **¿Por qué es importante?** Porque separa el movimiento real de la representación contable. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un pago electrónico que llega al banco pero no al ledger; una diferencia de un centavo entre fuentes; un efectivo liquidado dos veces. Compara por referencia, monto, moneda y ventana, y deja la diferencia en cola.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -274,7 +274,7 @@ Velocidad imposible, evidencia repetida o concentración de reversos son señale
 
 **¿Por qué es importante?** Porque reduce pérdidas sin convertir correlaciones defectuosas en decisiones irreversibles. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** una velocidad imposible causada por GPS impreciso en zona rural; una foto repetida que parece fraude; un bloqueo automático que deja al conductor sin trabajo. Puntúa para revisión, mide falsos positivos y ofrece apelación.
 
 #### Paso 1 · Objetivo y preparación
 

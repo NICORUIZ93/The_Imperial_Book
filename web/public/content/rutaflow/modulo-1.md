@@ -13,7 +13,7 @@ Envio representa el agregado; EnvioEvento registra hechos inmutables. Una transi
 
 **¿Por qué es importante?** Porque permite explicar qué ocurrió y reconstruir proyecciones. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** corregir una dirección sin borrar la anterior; reconstruir el estado de un envío a una hora concreta; aplicar una migración sobre datos reales y revertirla. Si el historial se pierde, el caso de auditoría desaparece.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -121,7 +121,7 @@ Latitud y longitud no son texto. Se almacenan con sistema de referencia explíci
 
 **¿Por qué es importante?** Porque impide decisiones falsas, consultas lentas y exposición innecesaria. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** una coordenada con 20 m de error mostrada como exacta; una consulta por caja delimitadora que devuelve miles de puntos; una dirección pública que expone el domicilio. Guarda referencia y precisión, y consulta con índice espacial.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -221,7 +221,7 @@ El saldo es una proyección de movimientos, no un campo que se corrige manualmen
 
 **¿Por qué es importante?** Porque hace auditables el efectivo, pagos, liquidaciones y reversos. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un cobro en efectivo que aumenta la caja del conductor; una liquidación que mueve dos cuentas; un reverso que debe conservar el asiento original. Comprueba que cada asiento balancee débitos y créditos.
 
 #### Paso 1 · Objetivo y preparación
 

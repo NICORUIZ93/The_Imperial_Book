@@ -1,6 +1,8 @@
 # Módulo 5: Concurrencia — hilos y virtual threads
 
 
+**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+
 ## Aprende construyendo
 
 ### Tema 1: ExecutorService y gestión de hilos
@@ -351,7 +353,7 @@ ScopedValue.where(ID_CORRELACION, generarId()).run(() -> {
 });
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
+**Ejecuta el ejemplo:**
 
 ```bash
 # Maven

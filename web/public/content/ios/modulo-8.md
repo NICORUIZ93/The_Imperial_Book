@@ -1,6 +1,8 @@
 # Módulo 8: Arquitectura MVVM
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: De una vista "gorda" a MVVM
@@ -46,7 +48,7 @@ struct ListaEnvios: View {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -80,8 +82,7 @@ struct ListaEnvios: View {
 ```
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, separa la vista de detalle en vista, modelo y servicio.
 
 **Límites y decisión de uso:** MVVM no exige que cada vista tenga una clase nueva ni que toda transformación pase por un ViewModel. Extrae reglas y efectos que necesiten pruebas; conserva presentación simple en la vista cuando no introduce dependencias ocultas.
 
@@ -116,7 +117,7 @@ class EnviosViewModel {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -181,7 +182,7 @@ class EnviosViewModel { private let esAtrasado = EsEnvioAtrasado() }
 class DetalleEnvioViewModel { private let esAtrasado = EsEnvioAtrasado() }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -259,5 +260,4 @@ En el proyecto integrador RutaFlow, `EsEnvioAtrasado` vive en `examples/ios-lab/
 ---
 
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, documenta un caso donde MVVM no basta y justifica la alternativa.

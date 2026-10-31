@@ -13,7 +13,7 @@ OpenAPI define entradas, salidas y errores antes de acoplar clientes. Autenticac
 
 **¿Por qué es importante?** Porque un endpoint funcional sin autorización contextual sigue siendo una vulnerabilidad. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** un conductor consulta un envío ajeno; un tracking público devuelve notas internas; un cliente antiguo recibe un campo nuevo que no esperaba. Define contrato y permiso por recurso antes de probar el camino feliz.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -154,7 +154,7 @@ Confirmar entrega es un caso de uso: carga el envío, valida versión y transici
 
 **¿Por qué es importante?** Porque los móviles pierden conectividad y los gateways reintentan; la duplicación es normal. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** el móvil pierde señal tras confirmar y reintenta con la misma clave; dos operadores editan la misma versión; el gateway duplica la petición. Verifica que el segundo intento devuelva el resultado anterior, no un segundo efecto.
 
 #### Paso 1 · Objetivo y preparación
 
@@ -285,7 +285,7 @@ Guardar datos y publicar directamente crea una ventana de fallo. El outbox persi
 
 **¿Por qué es importante?** Porque convierte fallos parciales en trabajo recuperable y observable. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
 
-**Casos de uso reales:** estudia el flujo normal, un reintento, un dato tardío y un acceso sin permiso. Dibuja primero el flujo y marca dónde puede fallar.
+**Casos de uso reales:** la base confirma el cambio pero el broker cae antes de publicar; un consumidor recibe dos veces el mismo `message_id`; el backlog crece sin que nadie lo note. Sigue la traza desde la API hasta el worker y mide el retraso.
 
 #### Paso 1 · Objetivo y preparación
 

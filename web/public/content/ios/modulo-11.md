@@ -1,6 +1,8 @@
 # Módulo 11: Publicación en App Store
 
 
+**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+
 ## Aprende construyendo
 
 ### Tema 1: Certificados y provisioning profiles
@@ -22,7 +24,7 @@ Un certificado identifica al firmante; un provisioning profile vincula ese certi
 4. Product > Archive
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -60,8 +62,7 @@ Provisioning profile        → vincula certificado + App ID + dispositivos auto
 
 * Ejecutar: `swift test`
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, firma la app con un perfil de desarrollo y documenta el equipo.
 
 ### Tema 2: Archivar, subir y TestFlight
 
@@ -82,7 +83,7 @@ Archive produce un artefacto firmado localmente; subirlo a App Store Connect lo 
 4. TestFlight > Internal Testing -> agregate como tester
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -122,8 +123,7 @@ Xcode Archive → App Store Connect → TestFlight (testers internos/externos) �
 
 * Ejecutar: `swift test`
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, archiva la app y súbela a TestFlight con una nota de prueba.
 
 ### Tema 3: Metadata y versionado
 
@@ -181,7 +181,7 @@ CFBundleShortVersionString: 1.3.0   ← versión visible (semver), cambia por re
 CFBundleVersion: 42                  ← número de build, SIEMPRE incremental
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode: File ▸ New ▸ Project ▸ App, interfaz SwiftUI, nómbralo `RutaFlowApp`; pega el código y confirma que compila):
+**Ejecuta el ejemplo:**
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -228,5 +228,4 @@ Entregá la metadata completa del Paso 4, la confusión de versión detectada en
 
 * Ejecutar: `swift test`
 * Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: proyecto integrador RutaFlow
-* Visualización: concepto mostrado en diagrama
+* Proyecto: en el proyecto integrador RutaFlow, define versión y build y registra qué cambia en cada entrega.
