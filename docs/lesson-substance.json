@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "cd2619289be03e6ad54704b784cc9a3283f3d199d4143d5e90ab018e38d0ad94",
+    "fingerprint": "3ce3c9f5139fa8da155698bd8560cbb05ff44cf10b7d768d9e80cb32184ce146",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -3767,9 +3767,9 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 158,
+        "tailWords": 159,
         "topic": "Tema 5: Monorepos vs polyrepos",
-        "words": 802
+        "words": 803
       },
       {
         "issues": [],
@@ -3900,9 +3900,9 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 206,
+        "tailWords": 207,
         "topic": "Tema 6: Platform Engineering — Internal Developer Platforms (IDPs)",
-        "words": 1145
+        "words": 1146
       },
       {
         "issues": [],
@@ -5493,9 +5493,9 @@
       {
         "issues": [],
         "module": 7,
-        "tailWords": 96,
+        "tailWords": 97,
         "topic": "Tema 1: Requisitos, stakeholders y criterios verificables",
-        "words": 992
+        "words": 993
       },
       {
         "issues": [],

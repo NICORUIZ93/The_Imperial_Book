@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 15:38 UTC
+Generated: 2026-10-31 15:41 UTC
 Root: `Academia_Floci`
-Indexed files: 963
+Indexed files: 964
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,7 +16,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 60 files
-- `automation-script`: 38 files
+- `automation-script`: 39 files
 - `course-content`: 251 files
 - `documentation`: 61 files
 - `example`: 490 files
@@ -26,7 +26,7 @@ For automated lookups, use `docs/repo-graph.json`.
 ## File Types
 
 - `.md`: 321
-- `.py`: 164
+- `.py`: 165
 - `.json`: 73
 - `.java`: 73
 - `.ts`: 67
@@ -194,8 +194,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/merge_duplicate_sections.py` (178 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
-- `scripts/relocate_tail_to_theory.py` (162 lines) - symbols: topic_slice, relocate, guard, improve_topic, main; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance
-- ... 20 more files
+- `scripts/rebuild_topic_source_review.py` (148 lines) - symbols: topic_blocks, prose_urls, check_url, is_reachable, rebuild, main; imports: __future__, argparse, json, re, subprocess, concurrent.futures, datetime, pathlib
+- ... 21 more files
 
 ### course-content
 

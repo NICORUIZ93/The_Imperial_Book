@@ -6239,6 +6239,32 @@
       "headings": []
     },
     {
+      "path": "scripts/rebuild_topic_source_review.py",
+      "lines": 148,
+      "kind": "automation-script",
+      "symbols": [
+        "topic_blocks",
+        "prose_urls",
+        "check_url",
+        "is_reachable",
+        "rebuild",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "subprocess",
+        "concurrent.futures",
+        "datetime",
+        "pathlib",
+        "urllib.parse",
+        "audit_code_visual_quality"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/relocate_tail_to_theory.py",
       "lines": 162,
       "kind": "automation-script",

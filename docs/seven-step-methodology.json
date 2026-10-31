@@ -72,9 +72,9 @@
       "independentPractice": 113,
       "closure": 113,
       "commonErrors": 113,
-      "resources": 111,
+      "resources": 113,
       "standaloneExample": 113,
-      "complete": 111
+      "complete": 113
     },
     "flutter": {
       "topics": 63,
@@ -110,9 +110,9 @@
       "independentPractice": 99,
       "closure": 99,
       "commonErrors": 99,
-      "resources": 98,
+      "resources": 99,
       "standaloneExample": 99,
-      "complete": 98
+      "complete": 99
     },
     "ios": {
       "topics": 56,
@@ -7792,12 +7792,12 @@
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
-          "resources": false,
+          "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 14,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
@@ -8267,12 +8267,12 @@
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
-          "resources": false,
+          "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 14,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
@@ -13946,12 +13946,12 @@
           "independentPractice": true,
           "closure": true,
           "commonErrors": true,
-          "resources": false,
+          "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 14,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
