@@ -33,7 +33,7 @@ describe('App', () => {
     expect(harness.routeNativeElement?.querySelectorAll('.card-icon img').length).toBeGreaterThanOrEqual(12);
     expect(text).toContain('Fundamentos de Ingeniería de Software');
     expect(text).toContain('Cloud Local — AWS, Azure y GCP');
-    expect(text).toContain('RutaFlow — Plataforma profesional de entregas');
+    expect(text).toContain('RutaFlow — Proyecto integrador logístico');
   });
 
   it('renders a clean educational lesson with progressive topics', async () => {

@@ -1,7 +1,7 @@
 # Auditoría de profundidad y cobertura — The Imperial Book
 
-**Fecha:** 2026-10-28
-**Alcance:** los 14 tracks (987 temas). Auditoría honesta, basada en lectura real de
+**Fecha de la instantánea inicial:** 2026-10-28
+**Alcance inicial:** los 14 tracks (987 temas en esa instantánea). Auditoría basada en lectura de
 contenido + datos cuantitativos + comparación contra temario estándar de cada stack.
 **Encargo:** el contenido se percibe "básico, no de cero a profesional, faltan temas,
 ejemplos y explicación". Se auditan **dos ejes**: profundidad (¿los temas que existen
@@ -12,6 +12,28 @@ enseñan de verdad?) y cobertura (¿están todos los temas que debería tener el
 > de títulos contra un temario estándar. **No** ejecuta los ejemplos ni sustituye la
 > revisión humana. Cuando una métrica automática y la lectura humana discrepan, se
 > prioriza la lectura.
+
+## Corrección de estado — 2026-10-30
+
+El inventario actual es de 1.098 temas, por lo que las cifras y las tablas
+posteriores de este documento son una instantánea histórica, no el estado de
+cobertura vigente. La crítica de que los temas se sienten básicos y superficiales
+es válida: contar comandos, código o encabezados no mide si una persona puede
+construir, explicar, depurar y extender un sistema real.
+
+La revisión actual registra señales de sustancia en 306/1.098 temas, bloques
+repetidos en 202, andamiaje genérico en 128 y secciones heredadas en 184/245
+módulos. Son señales heurísticas, no veredictos tema por tema. La revisión
+pedagógica humana sigue pendiente para todos los temas y solo 13 de 14
+laboratorios nuevos seleccionados figuran como comprobados con límites. Por
+tanto, no hay evidencia para prometer que las rutas actuales llevan de cero a
+profesional. El detalle y las limitaciones están en
+[`full-review.md`](./full-review.md).
+
+Los veredictos históricos como «Sólido» y «Bueno» de las tablas siguientes se
+basaban principalmente en conteos de comandos, no en evaluación de profundidad;
+no deben interpretarse como certificación. El trabajo pendiente es reescribir y
+probar las lecciones, no mejorar la puntuación de los detectores.
 
 ---
 

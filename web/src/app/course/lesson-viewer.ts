@@ -6,6 +6,7 @@ import { BookOpen, Boxes, Check, CircleCheck, ChevronLeft, ChevronRight, Clock3,
 import { map } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { findTrack } from '../course-data';
+import { courseLevelLabel } from '../course-module.model';
 import type { CourseModule } from '../course-module.model';
 import { ANATOMY_SLUG_CLASS_PREFIX, ContentService } from '../content.service';
 import { ProgressService } from '../progress.service';
@@ -162,10 +163,8 @@ export class LessonViewerComponent implements OnDestroy {
     return Boolean(this.trackProject()) && this.moduleIndex() === (track?.modules.length ?? 0) - 1;
   });
   readonly moduleIndex = computed(() => this.track()?.modules.findIndex(m => m.id === this.moduleId()) ?? -1);
-  // Barra "de cero a master": las 4 etapas reales del modelo de datos
-  // (course-module.model.ts), para señalar visualmente en qué punto de la
-  // escala Fundamentos → Experto está el módulo actual del track.
-  readonly levelStages = LEVEL_STAGES;
+  readonly levelStages = LEVEL_STAGES.map(courseLevelLabel);
+  readonly levelLabel = courseLevelLabel;
   readonly levelIndex = computed(() => {
     const level = this.module()?.level;
     return level ? LEVEL_STAGES.indexOf(level) : -1;

@@ -1,8 +1,12 @@
-# Plan de estudio RutaFlow — de cero a profesional
+# Plan de referencia para estudiar RutaFlow
 
 Fuente principal: **IMG_1030** (temario maestro del proyecto, dividido en APP y BACKEND),
 complementado con el material técnico extraído del resto de imágenes de Descargas
 (ver `docs/inventario-imagenes.md`).
+
+Este documento ordena temas y dependencias; no es un curso verificado de cero a
+nivel profesional. La profundidad, ejecución integral del proyecto y evaluación
+de competencias siguen pendientes.
 
 RutaFlow es una aplicación de logística/entregas con geolocalización en tiempo real:
 - **APP**: Flutter (gestión de estado con Riverpod, mapas, tiempo real).
@@ -86,7 +90,7 @@ RutaFlow es una aplicación de logística/entregas con geolocalización en tiemp
 
 ---
 
-## Orden recomendado global (de cero a profesional)
+## Orden recomendado global por dependencias
 
 1. **Fundamentos** — Java (B1) y Dart/Flutter (A0). *[vacíos a cubrir en el temario original]*
 2. **Backend base** — B2 → B3 → B4 → B5 (ya hay una API CRUD funcionando).

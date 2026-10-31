@@ -26,7 +26,7 @@
           <p><strong>Tu evidencia de trabajo:</strong> {{ guide.evidence }}</p>
         </details>
         <div class="scale" *ngIf="levelIndex() >= 0" aria-label="Etapa de este capítulo en el recorrido">
-          <div class="scale-label"><span>Etapa del recorrido</span><strong>{{ m.level }}</strong></div>
+          <div class="scale-label"><span>Etapa del recorrido</span><strong>{{ levelLabel(m.level) }}</strong></div>
           <div class="scale-track"><div class="scale-fill" [style.width.%]="levelFillPercent()"></div></div>
           <div class="scale-ticks">
             <span *ngFor="let stage of levelStages; let i = index" [class.reached]="i <= levelIndex()" [class.current]="i === levelIndex()">{{ stage }}</span>

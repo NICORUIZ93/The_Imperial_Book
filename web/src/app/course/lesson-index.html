@@ -5,7 +5,7 @@
   </label>
   <p class="topic-search-empty" *ngIf="topicQuery() && !hasSearchMatches()" role="status" aria-live="polite">No hay temas que coincidan con «{{ topicQuery() }}».</p>
   <div class="lesson-index-group" *ngFor="let group of groups()">
-    <span class="lesson-index-level">{{ group.level }}</span>
+    <span class="lesson-index-level">{{ levelLabel(group.level) }}</span>
     <div class="module-entry" *ngFor="let module of group.modules" [hidden]="!moduleMatches(module)">
       <a
         class="lesson-index-item"

@@ -41,16 +41,17 @@
         <div><span class="section-kicker">Secuencia de estudio</span><h2 id="module-list-title">Módulos de esta ruta</h2></div>
         <span class="section-note">Una etapa a la vez</span>
       </div>
+      <p class="section-note">Los niveles describen la progresión prevista; no son una evaluación ni una certificación de dominio.</p>
       <div class="module-groups">
         <section class="module-group" *ngFor="let group of groups()">
-          <div class="group-heading"><span>{{ group.level }}</span><small>{{ group.modules.length }} {{ group.modules.length === 1 ? 'módulo' : 'módulos' }} · {{ moduleHours(group.modules) }}</small></div>
+          <div class="group-heading"><span>{{ levelLabel(group.level) }}</span><small>{{ group.modules.length }} {{ group.modules.length === 1 ? 'módulo' : 'módulos' }} · {{ moduleHours(group.modules) }}</small></div>
           <ol class="module-list">
             <li *ngFor="let module of group.modules" class="module-row" [class.is-next]="status(module.id) === 'next'" [class.is-done]="status(module.id) === 'done'">
               <div class="module-number" aria-hidden="true">{{ moduleIndex(module.id).toString().padStart(2, '0') }}</div>
               <div class="module-main">
                 <div class="module-title-line"><h3>{{ module.shortTitle }}</h3><span class="module-status" [class]="'status-' + status(module.id)"><lucide-icon [img]="status(module.id) === 'done' ? icons.Check : icons.Play" />{{ statusLabel(module.id) }}</span></div>
                 <p>{{ module.description }}</p>
-                <div class="module-meta"><span>{{ topicCount(module.id) || '—' }} temas</span><span>{{ module.duration }}</span><span>{{ module.level }}</span></div>
+                <div class="module-meta"><span>{{ topicCount(module.id) || '—' }} temas</span><span>{{ module.duration }}</span><span>{{ levelLabel(module.level) }}</span></div>
               </div>
               <a class="module-link" [routerLink]="['/curso', t.id, module.id]" [attr.aria-label]="'Abrir módulo ' + moduleIndex(module.id) + ': ' + module.shortTitle">Abrir <lucide-icon [img]="icons.ArrowRight" /></a>
             </li>

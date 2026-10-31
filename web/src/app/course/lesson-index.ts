@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { CourseModule, findTrack } from '../course-data';
+import { courseLevelLabel } from '../course-module.model';
 import { ProgressService } from '../progress.service';
 import { IndexedTopic, TopicIndexService } from '../topic-index.service';
 
@@ -27,6 +28,7 @@ export class LessonIndexComponent {
   private readonly router = inject(Router);
   readonly topicIndex = inject(TopicIndexService);
   readonly topicQuery = signal('');
+  readonly levelLabel = courseLevelLabel;
 
   readonly track = computed(() => findTrack(this.trackId));
 

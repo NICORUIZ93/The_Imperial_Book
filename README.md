@@ -1,6 +1,6 @@
 # The_Imperial_Book
 
-Academia en español para estudiar desarrollo profesional y cloud local. La
+Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
 La academia reúne 14 tracks, 245 módulos y 1098 temas editoriales en formato de

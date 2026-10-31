@@ -182,14 +182,14 @@
     },
     {
       "path": "docs/PLAN-TOTAL-DE-CAMBIO.md",
-      "lines": 174,
+      "lines": 183,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Plan total de cambio",
+        "# Plan total de mejora de profundidad",
         "## Diagn\u00f3stico",
-        "## Definici\u00f3n operativa de \u00abde cero a profesional\u00bb",
+        "## Objetivo de salida \u2014 todav\u00eda no acreditado",
         "## Fases",
         "### Fase 0 \u2014 Instrumento y verdad (implementada)",
         "### Fase 1 \u2014 Cirug\u00eda estructural (iniciada)",
@@ -344,12 +344,13 @@
     },
     {
       "path": "docs/auditoria-profundidad-cobertura.md",
-      "lines": 213,
+      "lines": 235,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Auditor\u00eda de profundidad y cobertura \u2014 The Imperial Book",
+        "## Correcci\u00f3n de estado \u2014 2026-10-30",
         "## Resumen ejecutivo (sin adornos)",
         "## Eje 1 \u2014 PROFUNDIDAD (\u00bfel Paso 4 es ejecutable de cero a profesional?)",
         "### Evidencia directa (le\u00edda, no inferida)",
@@ -359,8 +360,7 @@
         "## Plan de correcci\u00f3n priorizado (propuesta, no ejecutado)",
         "### P0 \u2014 Arreglar el instrumento de medici\u00f3n",
         "### P1 \u2014 Profundidad cr\u00edtica (Paso 4 ejecutable)",
-        "### P2 \u2014 Cobertura: puerta de entrada",
-        "### P3 \u2014 Cobertura: huecos por track"
+        "### P2 \u2014 Cobertura: puerta de entrada"
       ]
     },
     {
@@ -873,18 +873,18 @@
     },
     {
       "path": "docs/plan-estudio-rutaflow.md",
-      "lines": 116,
+      "lines": 120,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Plan de estudio RutaFlow \u2014 de cero a profesional",
+        "# Plan de referencia para estudiar RutaFlow",
         "## Temario original (tal cual aparece en IMG_1030)",
         "### APP",
         "### BACKEND",
         "## Ruta BACKEND (Spring Boot) \u2014 ordenada por dependencias",
         "## Ruta APP (Flutter) \u2014 ordenada por dependencias",
-        "## Orden recomendado global (de cero a profesional)",
+        "## Orden recomendado global por dependencias",
         "## Vac\u00edos a cubrir \u2014 RESUELTOS tras el cruce con el repo",
         "## Lo que s\u00ed queda pendiente (coherencia, no contenido faltante)",
         "## Material de apoyo (del inventario de im\u00e1genes)"
@@ -6297,7 +6297,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 333,
+      "lines": 350,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -12526,7 +12526,7 @@
     },
     {
       "path": "web/src/app/course/lesson-index.ts",
-      "lines": 91,
+      "lines": 93,
       "kind": "angular-app",
       "symbols": [
         "LessonIndexComponent",
@@ -12542,6 +12542,7 @@
         "@angular/router",
         "rxjs",
         "../course-data",
+        "../course-module.model",
         "../progress.service",
         "../topic-index.service"
       ],
@@ -12568,7 +12569,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1164,
+      "lines": 1163,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12620,7 +12621,7 @@
     },
     {
       "path": "web/src/app/course/track-overview.html",
-      "lines": 72,
+      "lines": 73,
       "kind": "angular-app",
       "symbols": [
         "module-list",
@@ -12639,7 +12640,7 @@
     },
     {
       "path": "web/src/app/course/track-overview.ts",
-      "lines": 98,
+      "lines": 100,
       "kind": "angular-app",
       "symbols": [
         "TrackOverviewComponent",
@@ -12658,6 +12659,7 @@
         "lucide-angular",
         "rxjs",
         "../course-data",
+        "../course-module.model",
         "../track-guides",
         "../learning-activities",
         "../progress.service",
@@ -12693,8 +12695,18 @@
       "headings": []
     },
     {
+      "path": "web/src/app/course-module.model.spec.ts",
+      "lines": 14,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "./course-module.model"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/course-module.model.ts",
-      "lines": 34,
+      "lines": 37,
       "kind": "angular-app",
       "symbols": [
         "CourseModule",
@@ -13259,6 +13271,10 @@
     {
       "source": "web/src/app/course-data.ts",
       "target": "web/src/app/tracks/rutaflow.track.ts"
+    },
+    {
+      "source": "web/src/app/course-module.model.spec.ts",
+      "target": "web/src/app/course-module.model.ts"
     },
     {
       "source": "web/src/app/learning-activities.spec.ts",

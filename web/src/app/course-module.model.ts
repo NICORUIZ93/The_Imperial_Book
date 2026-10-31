@@ -14,6 +14,9 @@ export interface CourseModule {
   clouds?: ('aws' | 'azure' | 'gcp')[];
 }
 
+export const courseLevelLabel = (level: CourseModule['level']): string =>
+  level === 'Experto' ? 'Especialización (objetivo)' : level;
+
 export interface Track {
   id: string;
   name: string;

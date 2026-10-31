@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-30 23:36 UTC
+Generated: 2026-10-31 00:08 UTC
 Root: `Academia_Floci`
-Indexed files: 934
-Import edges: 56
+Indexed files: 935
+Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,7 +15,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 59 files
+- `angular-app`: 60 files
 - `automation-script`: 39 files
 - `course-content`: 251 files
 - `documentation`: 57 files
@@ -28,7 +28,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.md`: 315
 - `.py`: 165
 - `.json`: 72
-- `.ts`: 66
+- `.ts`: 67
 - `.java`: 54
 - `.js`: 54
 - `.html`: 38
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1164 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1163 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -116,6 +116,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/react.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/rutaflow.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/spring-boot.track.ts`
+- `web/src/app/course-module.model.spec.ts` -> `web/src/app/course-module.model.ts`
 - `web/src/app/course/course-shell.ts` -> `web/src/app/course/lesson-index.ts`
 - `web/src/app/learning-activities.spec.ts` -> `web/src/app/learning-activities.ts`
 - `web/src/app/learning-prompts.spec.ts` -> `web/src/app/learning-prompts.ts`
@@ -135,6 +136,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/javascript-master/src/demo.ts`: in=0, out=5
 - `web/src/app/command-palette.ts`: in=1, out=3
 - `web/src/app/app.ts`: in=2, out=1
+- `web/src/app/course-module.model.ts`: in=2, out=0
 - `web/src/app/catalog/course-catalog.ts`: in=2, out=0
 - `examples/rutaflow-material/socketio/gateway.mjs`: in=2, out=0
 - `examples/javascript-master/src/ui/delivery-button.ts`: in=2, out=0
@@ -147,7 +149,6 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/tracks/spring-boot.track.ts`: in=1, out=0
 - `web/src/app/tracks/rutaflow.track.ts`: in=1, out=0
 - `web/src/app/tracks/react.track.ts`: in=1, out=0
-- `web/src/app/tracks/node.track.ts`: in=1, out=0
 
 ## Files By Area
 
@@ -168,11 +169,11 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/command-palette.ts` (129 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (40 lines) - symbols: ContentService; imports: @angular/core, marked
 - `web/src/app/course-data.ts` (887 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
-- `web/src/app/course-module.model.ts` (34 lines) - symbols: CourseModule, Track
+- `web/src/app/course-module.model.spec.ts` (14 lines) - imports: ./course-module.model
+- `web/src/app/course-module.model.ts` (37 lines) - symbols: CourseModule, Track
 - `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
 - `web/src/app/course/course-shell.scss` (79 lines)
-- `web/src/app/course/course-shell.ts` (68 lines) - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../command-palette.service
-- ... 41 more files
+- ... 42 more files
 
 ### automation-script
 
@@ -230,13 +231,13 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (57 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
-- `docs/PLAN-TOTAL-DE-CAMBIO.md` (174 lines) - headings: # Plan total de cambio, ## Diagnóstico, ## Definición operativa de «de cero a profesional», ## Fases
+- `docs/PLAN-TOTAL-DE-CAMBIO.md` (183 lines) - headings: # Plan total de mejora de profundidad, ## Diagnóstico, ## Objetivo de salida — todavía no acreditado, ## Fases
 - `docs/PLANTILLA-LECCION.md` (109 lines) - headings: # Plantilla de Lección — Prompt Maestro para Claude / Codex, ## PROMPT MAESTRO (copiar desde aquí), ## DATOS DE LA LECCIÓN, ## REGLAS DE ESTILO
 - `docs/PROMPTS-FORMACION.md` (30 lines) - headings: # Prompts de formación profesional a partir de merged.pdf, ## Tutor paso a paso (página 1), ## Ruta de 30 pasos (página 21), ## Revisión profesional (página 55)
 - `docs/RUNBOOKS-CLOUD.md` (1633 lines) - headings: # Cloud Runbooks — Troubleshooting Operacional, ## Runbook 1: DynamoDB Throttling, ### Síntomas, ### Diagnosis
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
-- `docs/auditoria-profundidad-cobertura.md` (213 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?), ### Evidencia directa (leída, no inferida)
+- `docs/auditoria-profundidad-cobertura.md` (235 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Corrección de estado — 2026-10-30, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
 - ... 39 more files
 

@@ -1,27 +1,30 @@
-# Plan total de cambio
+# Plan total de mejora de profundidad
 
 Fecha: 2026-10-30. Alcance: contenido, medición y estructura de la academia.
 Este documento reemplaza la estrategia de crecer por lotes y marcadores.
 
 ## Diagnóstico
 
-La aplicación no falla por falta de contenido: tiene 1.084 temas y 1,1 millones
-de palabras. Falla porque el sistema que produce ese contenido mide presencia de
-marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
+La percepción de que los temas son básicos y superficiales tiene fundamento. El
+inventario actual contiene 1.098 temas, pero volumen, rutas y marcadores no
+demuestran profundidad ni preparación profesional. La auditoría disponible
+detecta señales de sustancia en 306 temas, bloques editoriales repetidos en 202,
+andamiaje genérico en 128 y secciones heredadas en 184 de 245 módulos. Son
+señales estáticas que requieren revisión; no equivalen a 306 errores confirmados.
+Consulta [la revisión integral](./full-review.md) para cobertura y límites.
+
+Los datos siguientes describen la deuda medida:
 
 | Síntoma | Dato |
 |---|---|
-| Uniformidad artificial | 1098/1098 temas con bloque `bash`, «resultado esperado» y URL; 97,8% con «fallo deliberado» |
-| Repetición interna | 218 temas con una sección editorial duplicada; 362 repiten «¿Por qué es importante?» |
-| Cola editorial | 382 temas con más de 500 palabras después del cierre |
+| Estructura editorial repetida | 202 temas con bloques repetidos |
+| Cola editorial | 1 tema con señal de cola tras el cierre |
 | Apéndices heredados | 184/245 módulos con «Errores comunes y soluciones», ruta de proyecto o laboratorio pegados al final |
-| Profundidad plana | «Experto»: 972 palabras/tema; «Fundamentos»: 1.029 |
-| Sin evaluación | 33 ejercicios verificables en 1.098 temas; `completedExercises` no se escribe desde la interfaz |
 | Sin proyecto acumulativo | 12/245 módulos con ruta de proyecto progresivo |
 | Andamiaje genérico | 128 temas con frases plantilla que prometen independencia sin demostrarla |
 | Dos fuentes de verdad | `cloud` vive en `course-data.ts`; los otros 13 tracks en `tracks/*.ts` |
 
-## Definición operativa de «de cero a profesional»
+## Objetivo de salida — todavía no acreditado
 
 - **Cero**: carpeta vacía, sin cuenta cloud pagada, en Windows, macOS y Linux.
 - **Profesional**: entrega un artefacto que corre, explica sus decisiones,
@@ -30,6 +33,12 @@ marcadores, no aprendizaje. Los datos medidos sobre el repositorio:
   (compone) → `Especialización` (decide, mide y defiende).
 - **Regla dura**: un tema solo se declara completo si tiene un checkpoint
   ejecutable que falla sin el trabajo del alumno y pasa con él.
+
+Este contrato expresa la meta de rediseño, no el estado actual de los 1.098
+temas. La auditoría de marcadores y la etiqueta «Experto» no son evidencia de que
+un estudiante alcance dominio profesional. Para afirmar ese resultado se
+requieren proyectos acumulativos ejecutados, criterios de salida observables,
+revisión técnica y validación humana; esas capas siguen incompletas.
 
 ## Fases
 

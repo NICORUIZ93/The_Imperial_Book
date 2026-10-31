@@ -21,6 +21,23 @@ test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({
   await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
 });
 
+test('ruta: presenta los niveles como orientación, no como certificación', async ({ page }) => {
+  await page.goto('/curso/javascript/overview');
+
+  await expect(page.locator('.overview-page h1')).toContainText('fundamentos y temas avanzados');
+  await expect(page.locator('.module-section')).toContainText(
+    'Los niveles describen la progresión prevista; no son una evaluación ni una certificación de dominio.',
+  );
+  await expect(
+    page.locator('.module-group .group-heading').filter({ hasText: 'Especialización (objetivo)' }),
+  ).toHaveCount(1);
+  await expect(page.locator('.overview-page')).not.toContainText('Experto');
+
+  await page.goto('/curso/javascript/14');
+  await expect(page.locator('.scale-label')).toContainText('Especialización (objetivo)');
+  await expect(page.locator('.scale-label')).not.toContainText('Experto');
+});
+
 test('catalogo: informa si el índice de temas no está disponible', async ({ page }) => {
   let requests = 0;
   await page.route('**/content/topic-index.json', route => {

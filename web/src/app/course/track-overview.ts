@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArrowRight, BookOpen, Check, Clock3, LucideAngularModule, Play, Target } from 'lucide-angular';
 import { map } from 'rxjs';
 import { CourseModule, findTrack } from '../course-data';
+import { courseLevelLabel } from '../course-module.model';
 import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { ProgressService } from '../progress.service';
@@ -25,6 +26,7 @@ interface ModuleGroup {
 })
 export class TrackOverviewComponent {
   readonly icons = { ArrowRight, BookOpen, Check, Clock3, Play, Target };
+  readonly levelLabel = courseLevelLabel;
   readonly topicIndex = inject(TopicIndexService);
   readonly progressService = inject(ProgressService);
   private readonly route = inject(ActivatedRoute);
