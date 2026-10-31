@@ -64,7 +64,7 @@
       "topics": 113,
       "explanation": 113,
       "code": 113,
-      "visual": 104,
+      "visual": 105,
       "filePath": 113,
       "runCommand": 113,
       "expectedResult": 113,
@@ -176,7 +176,7 @@
       "topics": 77,
       "explanation": 77,
       "code": 77,
-      "visual": 27,
+      "visual": 28,
       "filePath": 77,
       "runCommand": 77,
       "expectedResult": 77,
@@ -7379,7 +7379,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -7389,7 +7389,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -19471,7 +19471,7 @@
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": false,
+          "visual": true,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -19481,7 +19481,7 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

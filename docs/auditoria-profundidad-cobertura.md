@@ -21,8 +21,8 @@ cobertura vigente. La crítica de que los temas se sienten básicos y superficia
 es válida: contar comandos, código o encabezados no mide si una persona puede
 construir, explicar, depurar y extender un sistema real.
 
-La revisión actual registra señales de sustancia en 293/1.100 temas, bloques
-repetidos en 192, andamiaje genérico en 118 y secciones heredadas en 184/245
+La revisión actual registra señales de sustancia en 283/1.100 temas, bloques
+repetidos en 182, andamiaje genérico en 109 y secciones heredadas en 184/245
 módulos. Son señales heurísticas, no veredictos tema por tema. La revisión
 pedagógica humana sigue pendiente para todos los temas y solo 13 de 14
 laboratorios nuevos seleccionados figuran como comprobados con límites. Por

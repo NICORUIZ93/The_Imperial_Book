@@ -182,7 +182,7 @@
     },
     {
       "path": "docs/PLAN-TOTAL-DE-CAMBIO.md",
-      "lines": 212,
+      "lines": 245,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -609,7 +609,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1897,
+      "lines": 1883,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -641,7 +641,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12478,
+      "lines": 12476,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -796,7 +796,7 @@
     },
     {
       "path": "docs/lesson-substance-baseline.json",
-      "lines": 905,
+      "lines": 865,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -804,7 +804,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10004,
+      "lines": 9973,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -812,7 +812,7 @@
     },
     {
       "path": "docs/lesson-substance.md",
-      "lines": 84,
+      "lines": 83,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -8105,7 +8105,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 380,
+      "lines": 458,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9007,7 +9007,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 416,
+      "lines": 464,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9018,17 +9018,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Profundizaci\u00f3n \u00b7 De requisito vago a criterio verificable en el CLI",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Arquitectura guiada por atributos de calidad"
+        "### Tema 2: Arquitectura guiada por atributos de calidad",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-8.md",
-      "lines": 547,
+      "lines": 546,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9039,17 +9039,17 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Profundizaci\u00f3n \u00b7 Dos instancias del CLI, dos procesos distintos",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Memoria y concurrencia sin magia"
+        "### Tema 2: Memoria y concurrencia sin magia",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
       "path": "web/public/content/foundations/modulo-9.md",
-      "lines": 455,
+      "lines": 444,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10540,7 +10540,7 @@
     },
     {
       "path": "web/public/content/node/modulo-13.md",
-      "lines": 606,
+      "lines": 626,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

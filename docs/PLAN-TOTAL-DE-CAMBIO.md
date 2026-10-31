@@ -8,20 +8,20 @@ Este documento reemplaza la estrategia de crecer por lotes y marcadores.
 La percepción de que los temas son básicos y superficiales tiene fundamento. El
 inventario actual contiene 1.100 temas, pero volumen, rutas y marcadores no
 demuestran profundidad ni preparación profesional. La auditoría disponible
-detecta señales de sustancia en 293 temas, bloques editoriales repetidos en 192,
-andamiaje genérico en 118 y secciones heredadas en 184 de 245 módulos. Son
-señales estáticas que requieren revisión; no equivalen a 293 errores confirmados.
+detecta señales de sustancia en 283 temas, bloques editoriales repetidos en 182,
+andamiaje genérico en 109 y secciones heredadas en 184 de 245 módulos. Son
+señales estáticas que requieren revisión; no equivalen a 283 errores confirmados.
 Consulta [la revisión integral](./full-review.md) para cobertura y límites.
 
 Los datos siguientes describen la deuda medida:
 
 | Síntoma | Dato |
 |---|---|
-| Estructura editorial repetida | 202 temas con bloques repetidos |
+| Estructura editorial repetida | 182 temas con bloques repetidos |
 | Cola editorial | 1 tema con señal de cola tras el cierre |
 | Apéndices heredados | 184/245 módulos con «Errores comunes y soluciones», ruta de proyecto o laboratorio pegados al final |
 | Sin proyecto acumulativo | 12/245 módulos con ruta de proyecto progresivo |
-| Andamiaje genérico | 128 temas con frases plantilla que prometen independencia sin demostrarla |
+| Andamiaje genérico | 109 temas con frases plantilla que prometen independencia sin demostrarla |
 | Dos fuentes de verdad | `cloud` vive en `course-data.ts`; los otros 13 tracks en `tracks/*.ts` |
 
 ## Objetivo de salida — todavía no acreditado
@@ -183,6 +183,39 @@ Temas corregidos: `foundations` 4/3, 4/4 y 7/4; `devops` 14/1 y 14/4; `flutter`
 quedó verificado por lectura y documentación primaria, no ejecutado en este
 entorno (Gradle no está instalado); no se declara como probado.
 
+## Segundo lote piloto (2026-10-30)
+
+Se reescribieron diez temas en cinco módulos: `foundations` 7/1–3, 8/1 y 8/3,
+9/2–3; `node` 13/4; y `devops` 14/2–3. El criterio de selección fue agrupar
+temas con señales de repetición y andamiaje genérico para corregirlos en
+contexto, no por cifra aislada. El resultado medido es 293 → 283 temas con
+señales; siete pasos sigue en 1100/1100 y criterios editoriales en 1094/1100
+con la misma deuda de 6. La deuda aceptada en `lesson-substance-baseline.json`
+bajó de 293 a 283 entradas sin añadir ninguna.
+
+Cada tema recibió un ejemplo reproducible en `ejemplo/`, ejecutado en este
+entorno salvo las excepciones declaradas:
+
+| Tema | Artefacto y salida observada |
+|---|---|
+| foundations 7/1 | `criterios.md` + `verificar_criterios.py`: `criterios: 3 / verificables: 3`; un criterio vago produce «adjetivo sin medida numérica» y código 1 |
+| foundations 7/2 | `escenario.txt` + `escenario.py` con SQLite en memoria: `campos del escenario: 6/6`, `filas sin restricción: 2`, `filas con UNIQUE(command_id): 1` |
+| foundations 7/3 | `cp examples/rutaflow/node/confirm-delivery.ts ejemplo/` + `verificar_puerto.py`: `métodos esperados: True`, `referencias de infraestructura: 0` |
+| foundations 8/1 | `lento.py` sobre `domain.py`: proceso visto con `ps` (PID 75497), terminación 137 con `SIGKILL` frente a 143 con `SIGTERM` |
+| foundations 8/3 | `python3 -m http.server 8765`, `lsof -nP -iTCP:8765 -sTCP:LISTEN` y `curl --fail`: `ok / sano`, línea LISTEN y código 7 tras `kill -9` |
+| foundations 9/2 | `relacion.py` sobre `domain.py`: `pares: 3`, `simétrica: False`, `antisimétrica: True`; el Paso 5 invierte la última a `False` |
+| foundations 9/3 | `grafo.py` sobre `domain.py`: `nodos: 4`, `tiene ciclo: False`; con la arista de vuelta en el Paso 5, `True` |
+| node 13/4 | `firma.mjs`: `firma válida: true`, `cuerpo alterado: false`, `timestamp alterado: false`; el fallo deliberado sustituye `timingSafeEqual` por comparación de strings |
+| devops 14/2 | `alerta.yaml` + `verificar_alerta.py`: `alertas: 1`, `labels: service, severity`, `annotations: runbook, summary`; `request_id` como label produce «labels de alta cardinalidad» y código 1 |
+| devops 14/3 | `politica.yaml` + `verificar_politica.py`: la política con subject de `rutaflow/api` pasa; sin subject falla con «sin subject que limite el repositorio firmante» |
+
+Límites explícitos: `syft` y `cosign` no están instalados en este entorno y no
+se ejecutaron; el ejemplo de devops 14/3 valida la estructura de la política,
+no una firma real. La sonda de procesos y la de red se ejecutaron en macOS, por
+lo que `lsof` es el comando principal y `ss` queda como alternativa Linux. Las
+tres sustituiciones de diagramas ASCII por Mermaid redujeron los visuales ASCII
+pendientes de 216 a 213 (Mermaid pasó de 581 a 583 temas).
+
 ## Verificación de esta entrega (2026-10-30)
 
 | Comprobación | Resultado |
@@ -193,7 +226,7 @@ entorno (Gradle no está instalado); no se declara como probado.
 | E2E Chrome | 48 correctas (24 escenarios en escritorio y móvil) |
 | Metodología de siete pasos | 1100/1100 completos |
 | Criterios editoriales | 1094/1100 practicables; deuda de 6 |
-| Sustancia | 293 temas con señales (10 menos que antes del piloto); `--strict` no registra defectos nuevos |
+| Sustancia | 283 temas con señales (20 menos que antes del primer piloto); `--strict` no registra defectos nuevos |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
 Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,

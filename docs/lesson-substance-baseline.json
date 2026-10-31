@@ -162,14 +162,6 @@
       "andamiaje-generico",
       "bloque-repetido"
     ],
-    "devops/14/Tema 2: Una alerta debe conducir a una acción": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "devops/14/Tema 3: Construir una imagen no demuestra de dónde proviene": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
     "devops/15/Tema 1: Docker y Compose avanzados": [
       "andamiaje-generico"
     ],
@@ -446,42 +438,14 @@
       "andamiaje-generico",
       "bloque-repetido"
     ],
-    "foundations/7/Tema 1: Requisitos, stakeholders y criterios verificables": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/7/Tema 2: Arquitectura guiada por atributos de calidad": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/7/Tema 3: Diseño modular, principios, patrones y refactoring": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/8/Tema 1: El sistema operativo como administrador y frontera": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
     "foundations/8/Tema 2: Memoria y concurrencia sin magia": [
       "andamiaje-generico"
-    ],
-    "foundations/8/Tema 3: Linux como entorno observable": [
-      "andamiaje-generico",
-      "bloque-repetido"
     ],
     "foundations/8/Tema 4: Contenedores: aislamiento reproducible": [
       "bloque-repetido"
     ],
     "foundations/9/Tema 1: Lógica para especificar antes de programar": [
       "andamiaje-generico"
-    ],
-    "foundations/9/Tema 2: Conjuntos, relaciones, funciones e inducción": [
-      "andamiaje-generico",
-      "bloque-repetido"
-    ],
-    "foundations/9/Tema 3: Conteo, grafos y estructuras conectadas": [
-      "andamiaje-generico",
-      "bloque-repetido"
     ],
     "foundations/9/Tema 4: Probabilidad y evidencia para decisiones técnicas": [
       "andamiaje-generico"
@@ -765,10 +729,6 @@
     ],
     "node/13/Tema 3: Reintentar sin duplicar el efecto": [
       "bloque-repetido"
-    ],
-    "node/13/Tema 4: Webhooks verificables y recuperación por reconciliación": [
-      "bloque-repetido",
-      "parrafo-repetido"
     ],
     "react/0/Tema 1: JSX es azúcar sintáctica sobre createElement": [
       "bloque-repetido"

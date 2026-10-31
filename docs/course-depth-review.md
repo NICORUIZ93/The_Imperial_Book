@@ -8,7 +8,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 99 | 9 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 77 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 85 | 45 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
@@ -900,7 +900,7 @@ La revisión pedagógica humana permanece pendiente para todos los temas. Los la
 | node / 13 | [Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera](../web/public/content/node/modulo-13.md) | comprobar-script-test |
 | node / 13 | [Tema 2: Un contrato HTTP es comportamiento, no solo documentación](../web/public/content/node/modulo-13.md) | comprobar-script-test |
 | node / 13 | [Tema 3: Reintentar sin duplicar el efecto](../web/public/content/node/modulo-13.md) | comprobar-script-test |
-| node / 13 | [Tema 4: Webhooks verificables y recuperación por reconciliación](../web/public/content/node/modulo-13.md) | comprobar-script-test |
+| node / 13 | [Tema 4: Webhooks verificables y recuperación por reconciliación](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 13 | [Tema 5: OpenAPI como contrato ejecutable](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 14 | [Tema 1: TypeScript en Node.js](../web/public/content/node/modulo-14.md) | comprobar-script-test |
 | node / 14 | [Tema 2: GraphQL avanzado y Federation](../web/public/content/node/modulo-14.md) | comprobar-script-test |

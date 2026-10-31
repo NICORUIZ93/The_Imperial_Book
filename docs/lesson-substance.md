@@ -7,16 +7,15 @@ defectos detectados tampoco acredita haber sido comprendida.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1100 |
-| Temas con algún defecto | 293 |
+| Temas con algún defecto | 283 |
 | Módulos con apéndices heredados | 184/245 |
 
 ## Defectos por tipo
 
 | Código | Temas |
 |---|---:|
-| `andamiaje-generico` | 118 |
-| `bloque-repetido` | 192 |
-| `parrafo-repetido` | 1 |
+| `andamiaje-generico` | 109 |
+| `bloque-repetido` | 182 |
 | `tema-breve` | 2 |
 
 ## Apéndices heredados más frecuentes
@@ -35,22 +34,12 @@ defectos detectados tampoco acredita haber sido comprendida.
 | flutter / 11 | Tema 2: Iconos y splash screens | 828 | 141 | andamiaje-generico, bloque-repetido |
 | devops / 13 | Tema 3: Cierre del track — checklist final y reflexión | 1213 | 138 | andamiaje-generico, bloque-repetido |
 | flutter / 11 | Tema 1: Builds de release para cada plataforma | 956 | 138 | andamiaje-generico, bloque-repetido |
-| foundations / 8 | Tema 1: El sistema operativo como administrador y frontera | 1170 | 138 | andamiaje-generico, bloque-repetido |
 | devops / 13 | Tema 2: Uniendo cada módulo del track en un solo flujo | 1149 | 137 | andamiaje-generico, bloque-repetido |
-| devops / 14 | Tema 3: Construir una imagen no demuestra de dónde proviene | 950 | 136 | andamiaje-generico, bloque-repetido |
-| foundations / 9 | Tema 2: Conjuntos, relaciones, funciones e inducción | 1057 | 136 | andamiaje-generico, bloque-repetido |
-| foundations / 7 | Tema 3: Diseño modular, principios, patrones y refactoring | 965 | 135 | andamiaje-generico, bloque-repetido |
-| foundations / 8 | Tema 3: Linux como entorno observable | 962 | 133 | andamiaje-generico, bloque-repetido |
 | devops / 13 | Tema 1: El pipeline completo — de commit a producción verificada | 1095 | 131 | andamiaje-generico, bloque-repetido |
-| foundations / 7 | Tema 2: Arquitectura guiada por atributos de calidad | 1010 | 131 | andamiaje-generico, bloque-repetido |
-| devops / 14 | Tema 2: Una alerta debe conducir a una acción | 937 | 130 | andamiaje-generico, bloque-repetido |
-| foundations / 9 | Tema 3: Conteo, grafos y estructuras conectadas | 1098 | 130 | andamiaje-generico, bloque-repetido |
 | foundations / 6 | Tema 4: Validación, vulnerabilidades web, privacidad y respuesta | 1029 | 123 | andamiaje-generico, bloque-repetido |
 | foundations / 6 | Tema 1: Activos, amenazas, riesgos y límites de confianza | 938 | 119 | andamiaje-generico, bloque-repetido |
 | foundations / 6 | Tema 2: Identidad, contraseñas, sesiones y autorización | 970 | 118 | andamiaje-generico, bloque-repetido |
 | foundations / 6 | Tema 3: Criptografía aplicada, TLS, claves y secretos | 1014 | 118 | andamiaje-generico, bloque-repetido |
-| node / 13 | Tema 4: Webhooks verificables y recuperación por reconciliación | 872 | 116 | bloque-repetido, parrafo-repetido |
-| foundations / 7 | Tema 1: Requisitos, stakeholders y criterios verificables | 1054 | 110 | andamiaje-generico, bloque-repetido |
 | ios / 9 | Tema 1: XCTest clásico y Swift Testing | 875 | 498 | bloque-repetido |
 | react / 8 | Tema 1: Queries por rol, no por clase CSS | 930 | 498 | bloque-repetido |
 | cloud / 23 | Tema 3: Creación de clústeres y conexión con clientes estándar | 839 | 497 | andamiaje-generico |
@@ -71,6 +60,16 @@ defectos detectados tampoco acredita haber sido comprendida.
 | ios / 10 | Tema 1: Instruments | 820 | 464 | bloque-repetido |
 | ios / 9 | Tema 2: Testing de código async | 801 | 464 | bloque-repetido |
 | java / 8 | Tema 1: pom.xml vs build.gradle.kts | 824 | 464 | bloque-repetido |
+| cloud / 32 | Tema 2: Una landing zone convierte gobierno en una base repetible | 807 | 453 | andamiaje-generico |
+| ios / 7 | Tema 1: Publishers y Subscribers | 751 | 443 | bloque-repetido |
+| ios / 5 | Tema 2: Errores tipados | 845 | 440 | bloque-repetido |
+| cloud / 16 | Tema 2: Choice state, Retry y Catch | 897 | 438 | andamiaje-generico |
+| ios / 8 | Tema 3: Cuándo MVVM no alcanza | 828 | 429 | bloque-repetido |
+| java / 4 | Tema 4: Stream Gatherers (Java 24) | 841 | 428 | bloque-repetido |
+| ios / 6 | Tema 1: @Model y ModelContainer | 770 | 423 | bloque-repetido |
+| ios / 8 | Tema 2: Capas del proyecto e inyección por inicializador | 765 | 415 | bloque-repetido |
+| cloud / 32 | Tema 3: Disponibilidad y recuperación responden preguntas distintas | 805 | 414 | andamiaje-generico |
+| foundations / 11 | Tema 3: Bases de datos, almacenes analíticos y minería de datos | 695 | 412 | andamiaje-generico |
 
 ## Cómo se corrige
 
@@ -80,4 +79,4 @@ defectos detectados tampoco acredita haber sido comprendida.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estos defectos.
 
-Huella del contenido: `341712c9e99178b332dfea854c5f7461ebaae1be1b50db9eb3078555f4ed60ba`
+Huella del contenido: `f97e284a3d45b632dfd08ce30ee80d01ae204856424719d05cf8a160fab23b74`

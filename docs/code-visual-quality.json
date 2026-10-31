@@ -27,10 +27,10 @@
     "devops": {
       "topics": 113,
       "code": 113,
-      "commentedCode": 64,
-      "mermaid": 62,
+      "commentedCode": 65,
+      "mermaid": 63,
       "archifyVisual": 1,
-      "asciiVisual": 43,
+      "asciiVisual": 42,
       "misleadingDiagramLabel": 0,
       "filePath": 113,
       "runCommand": 112,
@@ -51,10 +51,10 @@
     "node": {
       "topics": 77,
       "code": 77,
-      "commentedCode": 42,
-      "mermaid": 23,
+      "commentedCode": 43,
+      "mermaid": 24,
       "archifyVisual": 0,
-      "asciiVisual": 13,
+      "asciiVisual": 12,
       "misleadingDiagramLabel": 0,
       "filePath": 77,
       "runCommand": 77,
@@ -564,13 +564,6 @@
     },
     {
       "track": "devops",
-      "module": 14,
-      "topic": "Tema 2: Una alerta debe conducir a una acción",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
       "module": 15,
       "topic": "Tema 1: Docker y Compose avanzados",
       "missingCode": false,
@@ -944,13 +937,6 @@
       "track": "node",
       "module": 12,
       "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 13,
-      "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación",
       "missingCode": false,
       "missingComments": true
     },

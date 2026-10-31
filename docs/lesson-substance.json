@@ -1647,11 +1647,10 @@
     }
   ],
   "summary": {
-    "fingerprint": "341712c9e99178b332dfea854c5f7461ebaae1be1b50db9eb3078555f4ed60ba",
+    "fingerprint": "f97e284a3d45b632dfd08ce30ee80d01ae204856424719d05cf8a160fab23b74",
     "issues": {
-      "andamiaje-generico": 118,
-      "bloque-repetido": 192,
-      "parrafo-repetido": 1,
+      "andamiaje-generico": 109,
+      "bloque-repetido": 182,
       "tema-breve": 2
     },
     "legacySections": {
@@ -1662,7 +1661,7 @@
     "modules": 245,
     "modulesWithLegacySections": 184,
     "topics": 1100,
-    "topicsWithIssues": 293
+    "topicsWithIssues": 283
   },
   "topics": {
     "android": [
@@ -4050,24 +4049,18 @@
         "words": 882
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 130,
+        "tailWords": 107,
         "topic": "Tema 2: Una alerta debe conducir a una acción",
-        "words": 937
+        "words": 1072
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 14,
-        "tailWords": 136,
+        "tailWords": 113,
         "topic": "Tema 3: Construir una imagen no demuestra de dónde proviene",
-        "words": 950
+        "words": 1070
       },
       {
         "issues": [],
@@ -5800,34 +5793,25 @@
         "words": 1102
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 110,
+        "tailWords": 96,
         "topic": "Tema 1: Requisitos, stakeholders y criterios verificables",
-        "words": 1054
+        "words": 994
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 131,
+        "tailWords": 113,
         "topic": "Tema 2: Arquitectura guiada por atributos de calidad",
-        "words": 1010
+        "words": 933
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 7,
-        "tailWords": 135,
+        "tailWords": 104,
         "topic": "Tema 3: Diseño modular, principios, patrones y refactoring",
-        "words": 965
+        "words": 891
       },
       {
         "issues": [],
@@ -5844,14 +5828,11 @@
         "words": 665
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 8,
-        "tailWords": 138,
+        "tailWords": 121,
         "topic": "Tema 1: El sistema operativo como administrador y frontera",
-        "words": 1170
+        "words": 954
       },
       {
         "issues": [
@@ -5863,14 +5844,11 @@
         "words": 1091
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 8,
-        "tailWords": 133,
+        "tailWords": 132,
         "topic": "Tema 3: Linux como entorno observable",
-        "words": 962
+        "words": 886
       },
       {
         "issues": [
@@ -5898,24 +5876,18 @@
         "words": 1143
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 136,
+        "tailWords": 95,
         "topic": "Tema 2: Conjuntos, relaciones, funciones e inducción",
-        "words": 1057
+        "words": 878
       },
       {
-        "issues": [
-          "andamiaje-generico",
-          "bloque-repetido"
-        ],
+        "issues": [],
         "module": 9,
-        "tailWords": 130,
+        "tailWords": 112,
         "topic": "Tema 3: Conteo, grafos y estructuras conectadas",
-        "words": 1098
+        "words": 924
       },
       {
         "issues": [
@@ -8315,14 +8287,11 @@
         "words": 1067
       },
       {
-        "issues": [
-          "bloque-repetido",
-          "parrafo-repetido"
-        ],
+        "issues": [],
         "module": 13,
-        "tailWords": 116,
+        "tailWords": 112,
         "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación",
-        "words": 872
+        "words": 957
       },
       {
         "issues": [],

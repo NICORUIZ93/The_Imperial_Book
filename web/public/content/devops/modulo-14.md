@@ -107,60 +107,103 @@ Durante incidente separa coordinación, operaciones y comunicación. Mitiga prim
 
 **Analogía:** una alarma de incendio útil indica zona y procedimiento; una sirena constante termina ignorada.
 
-**¿Por qué es importante?** porque detectar sin responder solo transforma fallos técnicos en fatiga humana.
+**¿Por qué es importante?** Detectar sin responder solo transforma fallos técnicos en fatiga humana; una alerta bien diseñada lleva directamente a una acción concreta.
 
 **Casos de uso reales:** alerta ruidosa sin runbook, rollback sin permisos, dependencia caída, certificado vencido y postmortem con acciones olvidadas.
 
 **Diagrama:**
 
-```text
-detectar -> declarar -> roles -> contener -> recuperar
-                                      -> timeline -> aprender -> acciones
+```mermaid
+flowchart LR
+    DET[detectar] --> DEC[declarar] --> ROL[roles] --> CON[contener] --> REC[recuperar]
+    CON --> TL[timeline] --> AP[aprender] --> ACC[acciones]
 ```
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Reescribe una alerta del servicio con impacto, responsable y primer comando de diagnóstico. Realiza un simulacro y mide si otra persona puede identificar la causa usando solo el aviso y el runbook.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.yaml` dentro.
+Crea una carpeta nueva con `alerta.yaml` y `verificar_alerta.py` para comprobar los campos de la regla:
+
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo && cd ejemplo
 ```
 
-Configura tu Prometheus con el YAML de alertas y ejecuta `kubectl` para aplicar el AlertManager:
+Archivo `alerta.yaml`:
 
 ```yaml
-- alert: FastErrorBudgetBurnEnvios
-  expr: job:slo_errors_per_request:ratio_rate5m{route="/envios"} > (14.4 * 0.001)
-  for: 2m
-  labels: { severity: page, service: rutaflow-api }
-  annotations:
-    summary: "La API de envíos consume rápidamente su presupuesto de error"
-    runbook: "https://runbooks.rutaflow.app/envios-api/high-burn"
+groups:
+  - name: rutaflow-slo
+    rules:
+      - alert: FastErrorBudgetBurnEnvios
+        expr: job:slo_errors_per_request:ratio_rate5m{route="/envios"} > (14.4 * 0.001)
+        for: 2m
+        labels:
+          severity: page
+          service: rutaflow-api
+        annotations:
+          summary: "La API de envíos consume rápidamente su presupuesto de error"
+          runbook: "https://runbooks.rutaflow.app/envios-api/high-burn"
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+Archivo `verificar_alerta.py`:
+
+```python
+import sys
+from pathlib import Path
+
+import yaml
+
+PERMITIDOS = {"severity", "service", "team"}
+documento = yaml.safe_load(Path("alerta.yaml").read_text(encoding="utf-8"))
+reglas = [regla for grupo in documento["groups"] for regla in grupo["rules"]]
+fallos = []
+for regla in reglas:
+    for campo in ("alert", "expr", "for"):
+        if campo not in regla:
+            fallos.append(f"{regla.get('alert', '?')}: falta {campo}")
+    labels = regla.get("labels", {})
+    extra = set(labels) - PERMITIDOS
+    if extra:
+        fallos.append(f"{regla['alert']}: labels de alta cardinalidad {sorted(extra)}")
+    if "severity" not in labels:
+        fallos.append(f"{regla['alert']}: falta labels.severity")
+    annotations = regla.get("annotations", {})
+    if not annotations.get("runbook"):
+        fallos.append(f"{regla['alert']}: falta annotations.runbook")
+    if "ratio_rate5m" not in regla.get("expr", ""):
+        fallos.append(f"{regla['alert']}: la expresión no mide consumo de presupuesto")
+print(f"alertas: {len(reglas)}")
+print("labels:", ", ".join(sorted(set().union(*(r.get('labels', {}) for r in reglas)))))
+print("annotations:", ", ".join(sorted(set().union(*(r.get('annotations', {}) for r in reglas)))))
+for fallo in fallos:
+    print("fallo:", fallo)
+sys.exit(1 if fallos else 0)
+```
+
+Instalá PyYAML si falta (`python3 -m pip install pyyaml`) y ejecutá:
 
 ```bash
-bash ejemplo.sh
+python3 verificar_alerta.py
 ```
-Verifica la salida y el estado de los recursos creados.
 
-Resultado esperado: esta alerta se dispara únicamente cuando la tasa de consumo de presupuesto es lo bastante rápida como para agotarlo en horas, señalando urgencia genuina; quien la recibe abre directamente el runbook vinculado en `annotations.runbook` y sabe qué verificar primero.
-**Ejecuta el ejemplo** con el comando de su stack:
-```bash
-terraform plan
+Resultado esperado:
+
+```text
+alertas: 1
+labels: service, severity
+annotations: runbook, summary
 ```
+
+La regla tiene expresión de consumo de presupuesto, duración, severidad de página, servicio y runbook; los labels son pocos y estables. El verificador comprueba la forma de la regla, no que Prometheus la cargue ni que la alerta se dispare: eso exige un servidor Prometheus y una serie temporal real.
+
 #### Paso 5 · Práctica guiada
-Pista: agregá el `request_id` de la última petición fallida como un label adicional "para tener más contexto" — ese es el fallo deliberado: como cada petición tiene un `request_id` distinto, Prometheus trata cada valor único como una serie temporal completamente nueva, multiplicando sin límite la cardinalidad de series activas.
+Pista: agregá `request_id: req-42` junto a `service` en `labels` y volvé a ejecutar. Ese es el fallo deliberado: `verificar_alerta.py` imprime `fallo: FastErrorBudgetBurnEnvios: labels de alta cardinalidad ['request_id']` y sale con código 1, porque cada petición crearía una serie temporal nueva sin límite.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 moviendo el `request_id` a `annotations` (donde sí pertenece el contexto de alta cardinalidad), dejando en `labels` únicamente valores pequeños y estables como `severity` y `service`.
-
-**Evidencia de aprendizaje:** entrega alerta con labels/annotations correctos, cardinalidad descontrolada detectada y corrección verificada.
+Movés `request_id` a `annotations`, donde no participa de agrupación ni enrutamiento, y confirmás que el verificador vuelve a pasar. Después agregás una segunda alerta para latencia y comprobás que ambas comparten severidad y runbook con nombres distintos.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la alerta con labels/annotations correctos del Paso 4, la cardinalidad descontrolada provocada en el Paso 5, y la corrección del Paso 6; explicá por qué un identificador de alta cardinalidad en un label multiplica series, mientras que en una annotation no tiene ese costo. Siguiente paso: estudia por qué construir una imagen no demuestra de dónde proviene. Errores comunes: colocar identificadores de alta cardinalidad en labels en vez de annotations, alertas sin runbook vinculado, y alertar por causa interna en vez de por síntoma observado por el usuario. Fuentes oficiales: https://prometheus.io/docs/practices/naming/ y https://sre.google/workbook/alerting-on-slos/.
-**¿Por qué es importante?** Detectar sin responder solo transforma fallos técnicos en fatiga humana; una alerta bien diseñada lleva directamente a una acción concreta.
+Entregá la salida del verificador del Paso 4, el fallo de cardinalidad del Paso 5, y la corrección y segunda alerta del Paso 6; explicá por qué un identificador de alta cardinalidad multiplica series en un label pero no en una annotation. Como siguiente paso, aplicá el mismo verificador a las otras alertas del servicio antes de conectarlas a Alertmanager. Errores comunes: colocar identificadores de alta cardinalidad en labels en vez de annotations, alertas sin runbook vinculado, y alertar por causa interna en vez de por síntoma observado por el usuario. Fuentes oficiales: https://prometheus.io/docs/practices/naming/ y https://sre.google/workbook/alerting-on-slos/.
 
 ### Tema 3: Construir una imagen no demuestra de dónde proviene
 
@@ -188,11 +231,13 @@ cosign verify \
 
 En el comando de `cosign verify`, `--certificate-identity-regexp` es la bandera que fija qué identidad (repositorio de origen) debe haber firmado la imagen; `--certificate-oidc-issuer` es la bandera que fija qué proveedor OIDC debe haber emitido esa identidad (aquí, GitHub Actions) — juntas evitan aceptar una firma válida pero de un origen no autorizado.
 
+**Límite:** una firma demuestra origen e integridad del artefacto, no que su contenido sea seguro. El escaneo de vulnerabilidades y la revisión de dependencias siguen siendo necesarios, y ninguno de los dos sustituye una política de admisión configurada.
+
 Promueve exactamente el mismo digest entre ambientes. Nunca reconstruyas “la misma versión” para producción. Conserva attestations y bloquea en admisión imágenes sin procedencia permitida. Las excepciones de vulnerabilidad requieren alcance, justificación, compensación y vencimiento.
 
 **Analogía:** el SBOM es la lista de ingredientes; la firma sella el paquete; la procedencia registra la cocina. Ninguno sustituye inspección y política.
 
-**¿Por qué es importante?** porque el pipeline y sus dependencias son parte del producto desplegado.
+**¿Por qué es importante?** El pipeline y sus dependencias son parte del producto desplegado; sin procedencia verificable, construir una imagen no demuestra de dónde proviene realmente.
 
 **Casos de uso reales:** action comprometida, tag mutable, paquete transitivo vulnerable, imagen reconstruida y firma válida de identidad no autorizada.
 
@@ -207,52 +252,85 @@ flowchart LR
     POL -->|"firma de origen no autorizado"| REJ["rechazado"]
 ```
 
-Antes de confiar en la firma, confirmá que el clúster de RutaFlow realmente exige verificación
-en admisión, no solo que `cosign verify` funcione en tu terminal:
-
-```bash
-kubectl get validatingwebhookconfiguration cosign-policy -o yaml
-```
-
-Resultado esperado: el webhook existe y referencia la misma política de identidad OIDC del
-Paso 4 — sin este paso, `cosign verify` manual es solo una comprobación de desarrollador, no una
-garantía del clúster. En el proyecto integrador RutaFlow, esta política protegería exactamente
-`rutaflow-delivery-api` en `examples/rutaflow/devops/deployment.yaml`.
-
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-Ejecuta `syft` para generar SBOM y `cosign` para verificar firmas de tu imagen:
+Crea una carpeta nueva con `politica.yaml` y `verificar_politica.py` para comprobar si la política restringe identidad y emisor:
 
 ```bash
-syft packages registry.rutaflow.app/api@sha256:ABC -o cyclonedx-json > sbom.json
-cosign verify \
-  --certificate-identity-regexp='github.com/rutaflow/api/' \
-  --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  registry.rutaflow.app/api@sha256:ABC
+mkdir ejemplo && cd ejemplo
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+Archivo `politica.yaml`:
+
+```yaml
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: rutaflow-api
+spec:
+  images:
+    - glob: "registry.rutaflow.app/api:*"
+  authorities:
+    - keyless:
+        url: https://fulcio.sigstore.dev
+        identities:
+          - issuer: https://token.actions.githubusercontent.com
+            subject: https://github.com/rutaflow/api/.github/workflows/release.yml@refs/heads/main
+```
+
+Archivo `verificar_politica.py`:
+
+```python
+import sys
+from pathlib import Path
+
+import yaml
+
+documento = yaml.safe_load(Path("politica.yaml").read_text(encoding="utf-8"))
+autoridades = documento.get("spec", {}).get("authorities", [])
+identidades = [ident for autoridad in autoridades for ident in autoridad.get("keyless", {}).get("identities", [])]
+fallos = []
+if not documento.get("spec", {}).get("images"):
+    fallos.append("la política no limita ninguna imagen")
+for identidad in identidades:
+    if identidad.get("issuer") != "https://token.actions.githubusercontent.com":
+        fallos.append("emisor OIDC no es el builder autorizado")
+    if "/rutaflow/api/" not in identidad.get("subject", ""):
+        fallos.append("sin subject que limite el repositorio firmante")
+if not identidades:
+    fallos.append("no exige identidad keyless")
+print(f"imágenes limitadas: {len(documento['spec']['images'])}")
+print(f"identidades verificadas: {len(identidades)}")
+for identidad in identidades:
+    print("issuer:", identidad.get("issuer"))
+    print("subject:", identidad.get("subject", "<sin restricción>"))
+for fallo in fallos:
+    print("fallo:", fallo)
+sys.exit(1 if fallos else 0)
+```
 
 ```bash
-bash ejemplo.sh
+python3 verificar_politica.py
 ```
-Verifica la salida y el estado de los recursos creados.
 
-Resultado esperado: `cosign verify` confirma que la imagen con ese digest exacto fue firmada específicamente por el workflow de GitHub Actions del repositorio `rutaflow/api`, mediante una identidad OIDC emitida por GitHub — no por cualquier firma válida de cualquier origen.
+Resultado esperado:
+
+```text
+imágenes limitadas: 1
+identidades verificadas: 1
+issuer: https://token.actions.githubusercontent.com
+subject: https://github.com/rutaflow/api/.github/workflows/release.yml@refs/heads/main
+```
+
+La política limita una imagen y exige una identidad keyless emitida por GitHub Actions para el repositorio `rutaflow/api`. El verificador comprueba la configuración, no la firma real: `syft` y `cosign` contra un registry requieren las herramientas y un artefacto firmado, y no se ejecutan en este ejemplo.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `--certificate-identity-regexp` de la verificación, dejando solo que la firma sea criptográficamente válida sin importar de qué repositorio — ese es el fallo deliberado: una imagen firmada legítimamente por el pipeline de OTRO proyecto distinto (con una identidad OIDC real pero no autorizada para RutaFlow) pasaría la verificación igual.
+Pista: quitá la línea `subject:` de `politica.yaml` y volvé a ejecutar. Ese es el fallo deliberado: el verificador imprime `fallo: sin subject que limite el repositorio firmante` y sale con código 1, porque cualquier imagen firmada por cualquier repositorio que use GitHub Actions pasaría la política.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `--certificate-identity-regexp` apuntando específicamente al repositorio `rutaflow/api`, y agregá una política de admisión en el clúster que rechace cualquier imagen sin esa firma verificada.
+Restaurá `subject` con el repositorio `rutaflow/api` y agregá una regla que rechace una imagen por digest no promovido. Documentá qué parte de la cadena —SBOM, firma, política de admisión— impide cada uno de estos casos: imagen reconstruida fuera del pipeline, tag mutable y firma válida de otro repositorio. En el proyecto integrador RutaFlow, la política debe proteger `rutaflow-delivery-api` del manifiesto de `examples/rutaflow/devops/`.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la verificación de SBOM + firma del Paso 4, la aceptación de un origen no autorizado del Paso 5, y la política de admisión del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Siguiente paso: estudia por qué una plataforma interna es un producto con límites. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
-**¿Por qué es importante?** El pipeline y sus dependencias son parte del producto desplegado; sin procedencia verificable, construir una imagen no demuestra de dónde proviene realmente.
+Entregá la salida del verificador del Paso 4, el fallo sin `subject` del Paso 5, y la política ampliada del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Como siguiente paso, conectá esta política al webhook de admisión del clúster y probá el rechazo con una imagen sin firma. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
 
 ### Tema 4: Una plataforma interna es un producto con límites
 

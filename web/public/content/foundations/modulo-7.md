@@ -39,7 +39,9 @@ Prioriza por valor, riesgo, dependencia y coste de retraso. “Todo es prioridad
 
 **Analogía:** requisitos son el contrato de resultado de una obra; “que sea cómoda” necesita convertirse en medidas y escenarios sin fingir que toda experiencia humana se reduce a números.
 
-**¿Por qué es importante?** Código correcto para un requisito equivocado sigue siendo fracaso. Criterios claros reducen retrabajo y hacen evaluación objetiva.
+**¿Por qué es importante?** Porque `confirmDelivery()` ya fue programado correctamente contra una regla de 6 dígitos: el riesgo real en este tema nunca fue el código, sino quedarse con un requisito ambiguo antes de escribirlo.
+
+**Límite de uso:** escribir un criterio por cada detalle trivial convierte el documento en burocracia; el umbral es que el criterio cambie una decisión de diseño o una prueba observable.
 
 **Casos de uso reales:** historias, contratos API, SLO, accesibilidad, cumplimiento, migraciones y aceptación.
 
@@ -50,53 +52,68 @@ flowchart LR
     ST["stakeholder"] --> NEED["necesidad"] --> REQ["requisito"] --> CRITERIA["criterio"]
     CRITERIA --> DESIGN["diseño"] --> TEST["prueba"] --> EVIDENCE["evidencia"]
 ```
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-#### Profundización · De requisito vago a criterio verificable en el CLI
-
-El gestor de tareas del proyecto integrador tiene una función `prioritize()` pensada para "ayudar al usuario a enfocarse en lo urgente" — una frase tan poco verificable como "el sistema debe ser rápido".
-
-Convertí ese requisito en al menos tres criterios de aceptación (dado/cuando/entonces), con el mismo rigor del Paso 4: definí qué campo determina "urgente" (¿una prioridad explícita del 1 al 5? ¿una fecha límite?), qué pasa si dos tareas empatan en prioridad, y qué pasa si una tarea no tiene prioridad asignada.
-
-[SOLUCIÓN PLEGADA]
-> "Dado un listado con tareas de prioridad 1 a 5, cuando se invoca `prioritize`, entonces se muestran primero las de prioridad 1, en orden descendente." + "Dado dos tareas con la misma prioridad, cuando se invoca `prioritize`, entonces se ordenan por fecha de creación, la más antigua primero." + "Dado una tarea sin prioridad asignada, cuando se invoca `prioritize`, entonces se trata como prioridad 5, nunca como error."
-
-**¿Por qué importa?** Sin estos criterios, "ayudar a enfocarse en lo urgente" es una frase que cualquier implementación puede reclamar cumplir, incluso una que ordena al azar.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+Crea una carpeta nueva con `criterios.md` y `verificar_criterios.py`, los dos archivos del ejemplo:
+
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
 
-```text
-Como conductor de RutaFlow
-quiero confirmar la entrega de un envío
-para que el cliente sepa que su paquete llegó.
+Archivo `criterios.md`:
 
-Criterios:
+```text
 - Dado un comando con recipientPin de 6 dígitos y shipmentId válido, cuando se confirma, entonces el envío queda "delivered".
 - Dado un recipientPin de 4 dígitos, cuando se confirma, entonces se rechaza con TypeError, sin cambiar el estado del envío.
 - Dado un commandId ya procesado antes, cuando se reenvía el mismo comando, entonces se devuelve el resultado anterior sin volver a confirmar.
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+Archivo `verificar_criterios.py`:
+
+```python
+import re
+import sys
+from pathlib import Path
+
+VAGOS = ("rápido", "rapido", "lento", "seguro", "fácil", "facil", "cómodo", "comodo", "estable")
+lineas = [l.strip() for l in Path("criterios.md").read_text(encoding="utf-8").splitlines() if l.strip()]
+fallos = []
+for numero, linea in enumerate(lineas, 1):
+    texto = linea.lower()
+    if not all(palabra in texto for palabra in ("dado", "cuando", "entonces")):
+        fallos.append(f"criterio {numero}: falta dado/cuando/entonces")
+    elif any(vago in texto for vago in VAGOS) and not re.search(r"\d", linea):
+        fallos.append(f"criterio {numero}: adjetivo sin medida numérica")
+if not any("6 dígitos" in l for l in lineas):
+    fallos.append("falta la regla del PIN de 6 dígitos")
+print(f"criterios: {len(lineas)}")
+print(f"verificables: {len(lineas) - len(fallos)}")
+for fallo in fallos:
+    print("fallo:", fallo)
+sys.exit(1 if fallos else 0)
+```
 
 ```bash
-python3 ejemplo.py
+python3 verificar_criterios.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: tres criterios, cada uno con un "dado/cuando/entonces" verificable — los tres ya están implementados literalmente en `confirmDelivery()`, lo que confirma que la especificación describe el código real, no una aspiración.
+Resultado esperado:
+
+```text
+criterios: 3
+verificables: 3
+```
+
+Las tres líneas tienen dado/cuando/entonces, ninguna usa un adjetivo sin medida y la regla del PIN aparece escrita. El script comprueba la forma del criterio, no que `confirmDelivery()` la cumpla; esa correspondencia exige una prueba sobre el código real.
 
 #### Paso 5 · Práctica guiada
-Pista: escribí un cuarto criterio deliberadamente vago ("el sistema debe responder rápido") y tratá de convertirlo en una prueba — ese es el fallo deliberado: no podés escribir un `assert` sin una métrica, un umbral y un contexto ("95% de confirmaciones en menos de 200ms con el motor de pruebas local"); sin eso, "rápido" no es un criterio, es una opinión.
+Pista: agregá a `criterios.md` la línea "Dado cualquier comando, cuando se confirma, entonces el sistema debe responder rápido" y volvé a ejecutar el verificador. Ese es el fallo deliberado: imprime `verificables: 3` y `fallo: criterio 4: adjetivo sin medida numérica`, con código de salida 1, porque "rápido" no tiene métrica, umbral ni contexto. Corregilo con "95 % de confirmaciones en menos de 200 ms con el motor de pruebas local" y el criterio pasa.
 
 #### Paso 6 · Práctica independiente
-Escribe 5 criterios TUYOS que sean verificables, directamente del CLI del proyecto integrador Fundamentos. Por ejemplo: "tarea add 'hacer compras' debe guardar y después listar mostrará esa tarea".
+Escribí 5 criterios verificables para el CLI del proyecto integrador Fundamentos. Por ejemplo: "tarea add 'hacer compras' debe guardar y después listar mostrará esa tarea", con una condición observable y sin adjetivos sin número.
 
 #### Paso 7 · Cierre y evidencia
-Entregá los tres criterios verificables del Paso 4, el criterio vago corregido del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuentes oficiales: https://www.iso.org/standard/72089.html.
-**¿Por qué es importante?** Porque `confirmDelivery()` ya fue programado correctamente contra una regla de 6 dígitos — el riesgo real en este Tema nunca fue el código, sino quedarse con un requisito ambiguo antes de escribirlo.
+Entregá los tres criterios verificables del Paso 4, la salida del criterio vago y su corrección del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Como siguiente paso, usá estos criterios en el proyecto del módulo antes de escribir el código correspondiente. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuentes oficiales: https://www.iso.org/standard/72089.html.
 ### Tema 2: Arquitectura guiada por atributos de calidad
 
 #### Paso 1 · Objetivo y preparación
@@ -107,17 +124,6 @@ El comentario del código real dice: "La implementación SQL debe insertar `comm
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un escenario de calidad tiene fuente, estímulo, artefacto, entorno, respuesta y medida — no es un diagrama bonito, es una frase verificable sobre qué pasa cuando algo sale mal.
-
-**Escenario:** Tu arquitectura decidió que el dominio NO importa infraestructura. Pasaron 6 meses, un nuevo miembro accidentalmente añade `import sqlite3` en `domain.py`. Sin fitness function, lo merges a main.
-
-**Tu tarea:**
-1. Escribe una fitness function que detecte esa violación.
-2. ¿Dónde se ejecuta? (CI, pre-commit, local.)
-3. ¿Cómo comunica violaciones sin bloquear?
-4. ¿Cuándo es estricta (bloquear) vs suave (advertir)?
-
-[SOLUCIÓN PLEGADA]
-> Fitness function en Python: `for line in open('src/domain.py'): if 'import sqlite' in line: raise Exception()`. Se ejecuta en CI after build, bloqueante. Alternativa softer: escanear dependencias con `pipdeptree` y comparar contra whitelist, reportando en logs sin fallar. Estricta si es arquitectura de seguridad (dominio nunca confía). Suave si es estilo (permitir excepciones documentadas con `# noqa: dependency-check`).
 
 **Conceptos clave:** arquitectura, componente, conector, límite, dependencia, atributo de calidad, escenario, trade-off, C4 y fitness function.
 
@@ -147,7 +153,7 @@ Fitness functions automatizan propiedades: reglas de dependencia, presupuesto de
 
 **Analogía:** arquitectura decide estructura, circulación y servicios de un edificio según uso y riesgos; decorar habitaciones no corrige una salida de emergencia inexistente.
 
-**¿Por qué es importante?** Los atributos compiten: cifrado, redundancia o abstracción añaden coste. Arquitectura hace explícitos trade-offs y evita dependencias accidentales.
+**¿Por qué es importante?** Porque la restricción `UNIQUE(command_id)` no es un capricho de la base de datos: es la respuesta directa a un escenario de calidad real (reintentos de red) que, sin documentarlo, parece una regla arbitraria.
 
 **Casos de uso reales:** monolito modular, microservicios, móvil offline, sistemas regulados y plataformas multi-equipo.
 
@@ -160,15 +166,16 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Define disponibilidad, facilidad de prueba y recuperación requeridas por el gestor. Compara dos diseños mediante un escenario concreto de archivo corrupto, en vez de elegir capas solo por su nombre.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir el archivo del ejemplo dentro.
+Crea una carpeta nueva con `escenario.txt` y `escenario.py`, el escenario y su comprobación en SQLite:
+
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
 
-Crea `escenario.txt` y guarda este escenario de calidad completo:
+Archivo `escenario.txt`:
+
 ```text
 Fuente: red inestable del conductor
 Estímulo: el mismo comando "confirmar entrega" se reenvía dos veces (reintento automático)
@@ -178,23 +185,57 @@ Respuesta: la segunda llamada devuelve el resultado ya guardado, sin volver a co
 Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
 ```
 
-**Comprueba el artefacto de diseño desde la carpeta donde lo guardaste:**
-```bash
-python3 -c "from pathlib import Path; print(Path('escenario.txt').read_text(encoding='utf-8'))"
-```
-Debes observar las partes del escenario que acabas de escribir. Esta lectura verifica el archivo, no demuestra que una base de datos cumpla la durabilidad prometida; esa evidencia requiere un ensayo separado.
+Archivo `escenario.py`:
 
-Resultado esperado: un escenario completo que explica por qué el código ya revisado en el Tema 1 necesita esa restricción — no es un detalle de implementación arbitrario, responde a un escenario de red real.
+```python
+import sqlite3
+from pathlib import Path
+
+CAMPOS = ("Fuente:", "Estímulo:", "Artefacto:", "Entorno:", "Respuesta:", "Medida:")
+texto = Path("escenario.txt").read_text(encoding="utf-8")
+faltan = [campo for campo in CAMPOS if campo not in texto]
+print(f"campos del escenario: {len(CAMPOS) - len(faltan)}/{len(CAMPOS)}")
+if faltan:
+    print("faltan:", faltan)
+    raise SystemExit(1)
+
+def filas(con_restriccion: bool) -> int:
+    conexion = sqlite3.connect(":memory:")
+    sufijo = " UNIQUE" if con_restriccion else ""
+    conexion.execute(f"CREATE TABLE confirmacion(id INTEGER PRIMARY KEY, command_id TEXT{sufijo})")
+    for _ in range(2):
+        try:
+            conexion.execute("INSERT INTO confirmacion(command_id) VALUES ('cmd-1')")
+        except sqlite3.IntegrityError:
+            pass
+    return conexion.execute("SELECT COUNT(*) FROM confirmacion").fetchone()[0]
+
+print("filas sin restricción:", filas(False))
+print("filas con UNIQUE(command_id):", filas(True))
+```
+
+```bash
+python3 escenario.py
+```
+
+Resultado esperado:
+
+```text
+campos del escenario: 6/6
+filas sin restricción: 2
+filas con UNIQUE(command_id): 1
+```
+
+El escenario completo explica por qué el código del Tema 1 necesita esa restricción: sin ella, dos reintentos del mismo comando dejan dos filas y la medida "cero entregas duplicadas" deja de cumplirse.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá mentalmente la restricción `UNIQUE(command_id)` del diseño y repetí el escenario — ese es el fallo deliberado: sin esa restricción, dos reintentos del mismo comando podrían insertar dos filas de confirmación para el mismo envío, rompiendo exactamente la medida ("cero entregas duplicadas") que el escenario exige.
+Pista: en `escenario.py`, quitá `UNIQUE` de la definición de la tabla y volvé a ejecutar. Ese es el fallo deliberado: la última línea pasa a `filas con UNIQUE(command_id): 2`, porque sin la restricción la segunda inserción del mismo `cmd-1` se acepta y la medida del escenario ya no se cumple.
 
 #### Paso 6 · Práctica independiente
-Escribí un segundo escenario de calidad para un atributo distinto (por ejemplo, rendimiento: "el 95% de las confirmaciones deben procesarse en menos de 200ms con 100 conductores simultáneos") y documentá qué decisión de diseño (no solo de base de datos) ese escenario favorecería.
+Restaurá la restricción y agregá un segundo escenario para otro atributo, por ejemplo rendimiento: "el 95 % de las confirmaciones se procesa en menos de 200 ms con 100 conductores simultáneos". Documentá qué decisión de diseño —no solo de base de datos— favorece ese escenario.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el escenario de durabilidad del Paso 4, la restricción removida y su consecuencia del Paso 5, y el segundo escenario del Paso 6; explicá por qué los atributos de calidad compiten entre sí (durabilidad vs. velocidad) y la arquitectura hace ese trade-off explícito. Errores comunes: diagramar la arquitectura sin un escenario de calidad medible detrás, tratar una restricción de base de datos como detalle de implementación en vez de una decisión arquitectónica, y agregar una fitness function nueva sin decidir si debe bloquear o solo advertir. Fuentes oficiales: https://c4model.com/.
-**¿Por qué es importante?** Porque la restricción `UNIQUE(command_id)` no es un capricho de la base de datos: es la respuesta directa a un escenario de calidad real (reintentos de red) que, sin documentarlo, parece una regla arbitraria.
+Entregá el escenario verificado y las dos corridas del Paso 4, la fila duplicada del Paso 5, y el segundo escenario del Paso 6; explicá por qué los atributos de calidad compiten (durabilidad frente a velocidad) y cómo la arquitectura hace explícito ese trade-off. Como siguiente paso, llevá el escenario al ADR del Tema 4 y dejá registrada la restricción que lo hace cumplir. Errores comunes: diagramar la arquitectura sin un escenario de calidad medible detrás, tratar una restricción de base de datos como detalle de implementación en vez de una decisión arquitectónica, y agregar una fitness function nueva sin decidir si debe bloquear o solo advertir. Fuentes oficiales: https://c4model.com/.
 ### Tema 3: Diseño modular, principios, patrones y refactoring
 
 #### Paso 1 · Objetivo y preparación
@@ -205,17 +246,6 @@ Al finalizar vas a leer el puerto `DeliveryRepository` real de RutaFlow y a escr
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del repositorio (dos métodos), nunca cómo esos datos llegan a disco — el mismo principio de "el dominio no importa SQLite" aplicado a un archivo que ya existe.
-
-**Escenario:** Tienes `class RepositorioProductos` que usa SQLite. Alguien pide: "¿y si después queremos cambiar a PostgreSQL?" ¿Extraes una interfaz ahora o esperas?
-
-**Tu tarea:**
-1. Escribe la interfaz (`Protocol` en Python).
-2. ¿Bajo qué condiciones es sobre-ingeniería?
-3. ¿Cuándo es justificable?
-4. ¿Cómo sabes si una interfaz se usa o es fantasma?
-
-[SOLUCIÓN PLEGADA]
-> Interfaz es sobre-ingeniería si: (1) no hay alternativa real en vista, (2) solo se usa en un lugar. Justificable si: (1) hay pruebas que necesitan fake/stub, (2) la alternativa es probable (múltiples proveedores, migraciones planeadas). Detectar fantasma: grep por implementaciones — una interfaz con solo una clase la implementa es candidata a eliminar. Regla práctica: introduce interfaz cuando aparece la SEGUNDA implementación, no antes.
 
 **Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, patrón, code smell, refactoring y prueba caracterizadora.
 
@@ -246,7 +276,7 @@ Refactoring cambia estructura preservando comportamiento. Antes de código hered
 
 **Analogía:** principios son criterios de diseño; patrones son planos reutilizables. Usar un plano de aeropuerto para una casa demuestra conocimiento del patrón, no buen juicio.
 
-**¿Por qué es importante?** Diseño modular localiza cambios y permite evolución. Sin pruebas, grandes refactors se convierten en reescrituras de riesgo.
+**¿Por qué es importante?** Porque poder cambiar de un repositorio real a uno en memoria sin tocar una línea de `confirmDelivery` es la evidencia concreta de que el dominio no depende de cómo se guardan los datos, no solo una afirmación de buenas intenciones.
 
 **Casos de uso reales:** cambio de base, múltiples proveedores, reglas configurables, integraciones y sistemas legacy.
 
@@ -259,36 +289,54 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Refactoriza el almacenamiento detrás de un contrato pequeño conservando las pruebas de uso. Sustituye el archivo por un fake y demuestra que crear y completar tareas mantienen su comportamiento.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+Crea una carpeta nueva con `verificar_puerto.py` y copiá `confirm-delivery.ts` para comprobar qué expone el contrato:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo && cp examples/rutaflow/node/confirm-delivery.ts ejemplo/ && cd ejemplo
+```
+
+Archivo `verificar_puerto.py`:
+
+```python
+import re
+from pathlib import Path
+
+fuente = Path("confirm-delivery.ts").read_text(encoding="utf-8")
+bloque = re.search(r"export interface DeliveryRepository \{(.*?)\n\}", fuente, re.S)
+if not bloque:
+    raise SystemExit("no se encontró DeliveryRepository")
+cuerpo = bloque.group(1)
+metodos = re.findall(r"^\s{2}(\w+)\(", cuerpo, re.M)
+infra = re.findall(r"(?i)\b(sqlite|sql|http|fetch|dynamodb|aws)\b", cuerpo)
+print("métodos:", ", ".join(metodos))
+print("métodos esperados:", len(metodos) == 2)
+print("referencias de infraestructura:", len(infra))
 ```
 
 ```bash
-grep -n "interface DeliveryRepository" -A 3 examples/rutaflow/node/confirm-delivery.ts
+python3 verificar_puerto.py
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+Resultado esperado:
 
-```bash
-python3 ejemplo.py
+```text
+métodos: findCommandResult, confirm
+métodos esperados: True
+referencias de infraestructura: 0
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: ves `findCommandResult(commandId)` y `confirm(command)` — dos métodos, nada de SQL, DynamoDB ni HTTP en la firma. `confirmDelivery` solo conoce ese contrato.
+El contrato expone solo los dos métodos que `confirmDelivery` necesita y ninguna referencia a SQL, HTTP ni DynamoDB. El script verifica la forma del contrato, no que una implementación cumpla el comportamiento; eso se demuestra con el adaptador del Paso 5.
 
 #### Paso 5 · Práctica guiada
-Pista: escribí un adaptador en memoria (`class RepositorioEnMemoria implements DeliveryRepository`) e inyectalo en `confirmDelivery` dos veces con el mismo `commandId` — en la segunda llamada, el fallo deliberado que buscás NO debería ocurrir: `findCommandResult` debe devolver el resultado ya guardado, y `confirmDelivery` nunca debe volver a llamar `confirm()`. Si tu adaptador en memoria vuelve a confirmar, el bug está en el adaptador, no en el dominio.
+Pista: escribí un adaptador en memoria que implemente ese contrato e inyectalo en `confirmDelivery` dos veces con el mismo `commandId`. Ese es el fallo deliberado a evitar: la segunda llamada no debe volver a confirmar; `findCommandResult` devuelve el resultado ya guardado. Si tu adaptador vuelve a llamar `confirm()`, el defecto está en el adaptador, no en el dominio: contá las confirmaciones y comprobá que el contador queda en 1.
 
 #### Paso 6 · Práctica independiente
-Escribí una prueba caracterizadora sobre `confirmDelivery` usando tu adaptador en memoria del Paso 5: documentá el comportamiento actual (qué devuelve con PIN válido, con PIN de 4 dígitos, con `commandId` repetido) antes de proponer ningún cambio al código.
+Escribí una prueba caracterizadora sobre `confirmDelivery` usando el adaptador en memoria del Paso 5: documentá qué devuelve con PIN válido, con PIN de 4 dígitos y con `commandId` repetido, antes de proponer cualquier cambio al código real.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la interfaz real leída del Paso 4, el adaptador en memoria probado del Paso 5, y la prueba caracterizadora del Paso 6; explicá por qué poder escribir ese segundo adaptador sin tocar `confirmDelivery` es la prueba de que el diseño real ya separó dominio de infraestructura. Errores comunes: introducir una interfaz antes de que exista una segunda implementación real, aplicar un patrón de diseño porque "es lo profesional" sin identificar el problema que resuelve, y refactorizar código heredado sin antes escribir una prueba caracterizadora. Fuentes oficiales: https://refactoring.com/catalog/.
-**¿Por qué es importante?** Porque poder cambiar de un repositorio real a uno en memoria sin tocar una línea de `confirmDelivery` es la evidencia concreta de que el dominio no depende de cómo se guardan los datos, no solo una afirmación de buenas intenciones.
+Entregá la salida del contrato verificada en el Paso 4, el adaptador con su contador de confirmaciones del Paso 5, y la prueba caracterizadora del Paso 6; explicá por qué escribir ese segundo adaptador sin tocar `confirmDelivery` demuestra que el diseño real separó dominio de infraestructura. Como siguiente paso, escribí la prueba caracterizadora sobre el repositorio real antes de refactorizarlo. Errores comunes: introducir una interfaz antes de que exista una segunda implementación real, aplicar un patrón de diseño porque "es lo profesional" sin identificar el problema que resuelve, y refactorizar código heredado sin antes escribir una prueba caracterizadora. Fuentes oficiales: https://refactoring.com/catalog/.
 ### Tema 4: Decisiones, documentación, deuda y evolución
 
 #### Paso 1 · Objetivo y preparación

@@ -16,17 +16,6 @@ A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundament
 #### Paso 3 · Teoría, modelo mental y analogía
 Un programa es el archivo `domain.py`; un proceso es ese programa corriendo de verdad, con PID, memoria y descriptores propios — el kernel es el bibliotecario que presta esos recursos, nunca el programa accediendo directo al hardware.
 
-**Escenario:** Tu worker de validación procesa batches de 1000 entregas. Recibe SIGTERM a mitad de un batch. ¿Cómo terminas sin corrupción?
-
-**Tu tarea:**
-1. Diseña qué debe pasar en el handler.
-2. ¿Cómo evitas que SIGTERM intervenga en medio de una transacción BD?
-3. ¿Timeout de gracia? ¿Cuántos segundos?
-4. ¿Qué logueas antes de salir?
-
-[SOLUCIÓN PLEGADA]
-> Handler: cambiar flag `shutdown_requested=True`, rechazar entrada, esperar workers en vuelo. Protección BD: transacciones son atómicas — si SIGTERM interrumpe, la BD revierte automáticamente (el conexión se cierra). Timeout de gracia: 30 segundos (configurable, < readiness probe de Kubernetes). Log: `{timestamp, entregas_procesadas, entregas_pendientes, motivo_salida}`. Salir con código 0 (éxito ordenado) para que Kubernetes no reinicie indefinidamente.
-
 **Conceptos clave:** hardware, kernel, espacio de usuario, llamada al sistema, programa, proceso, PID, descriptor de archivo, sistema de archivos, usuario, permisos, señal y código de salida.
 
 Un **programa** es información almacenada en un archivo. Un **proceso** es una instancia viva del programa con identidad, memoria, recursos y estado. Al ejecutar `python app.py`, la shell pide al kernel crear un proceso. El kernel carga el intérprete, asigna memoria, agenda momentos de CPU y registra descriptores para entrada, salida y errores. Python no escribe directamente en el disco: solicita la operación mediante llamadas al sistema.
@@ -45,7 +34,7 @@ Los permisos clásicos distinguen propietario, grupo y otros mediante lectura (`
 
 **Analogía:** el kernel es la administración de una biblioteca. Los lectores no entran al depósito: presentan solicitudes, reciben préstamos identificados y respetan permisos y turnos.
 
-**¿Por qué es importante?** porque “permiso denegado”, un puerto ocupado o datos sin vaciar no se comprenden mirando solamente el código fuente.
+**¿Por qué es importante?** Porque un proceso que recibe SIGKILL no tiene ninguna oportunidad de cerrar una transacción o loguear su estado: la diferencia entre SIGTERM y SIGKILL es la diferencia entre un apagado ordenado y una pérdida de evidencia.
 
 **Casos de uso reales:** apagar una API sin perder solicitudes, investigar permisos, redirigir logs en CI y terminar un worker atascado conservando evidencia.
 
@@ -60,45 +49,56 @@ flowchart LR
     KERNEL --> DISK["disco"]
     KERNEL --> NET["red"]
 ```
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-#### Profundización · Dos instancias del CLI, dos procesos distintos
-
-Lanzá el gestor de tareas del proyecto integrador dos veces en paralelo (`python3 cli.py list &` repetido dos veces) e inspeccioná ambas con `ps -o pid,ppid,etime,command | grep cli.py`.
-
-Vas a ver dos PIDs distintos, cada uno con su propia memoria y sus propios descriptores de archivo — aunque los dos ejecuten exactamente el mismo programa `cli.py`, el sistema operativo nunca confunde ni comparte su estado entre sí.
-
-[SOLUCIÓN PLEGADA]
-> Dos líneas en la salida de `ps`, con PIDs diferentes y el mismo `command`. Si `almacenamiento.py` no coordina el acceso al archivo de tareas (ver Tema 2 de este módulo), ambas instancias podrían leer y escribir `tareas.json` al mismo tiempo y perder una actualización silenciosamente.
-
-**¿Por qué importa?** Confundir "programa" con "proceso" hace invisible el riesgo de que dos instancias del mismo CLI interfieran entre sí sin que el código tenga ningún error evidente.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
-```bash
-mkdir ejemplo && cd ejemplo
-```
+Crea una carpeta nueva con `lento.py`, copiando antes `domain.py` desde `examples/rutaflow/foundation/`:
 
 ```bash
-python3 -c "
-import time
-from examples.rutaflow.foundation.domain import Stop, nearest_neighbor_route
-paradas = [Stop(f'RF-{i}', i*0.01, i*0.01) for i in range(50000)]
-time.sleep(5)
-nearest_neighbor_route((0,0), paradas)
-" &
-ps -o pid,ppid,state,etime,command | grep python3
+mkdir ejemplo && cp examples/rutaflow/foundation/domain.py ejemplo/ && cd ejemplo
 ```
-Resultado esperado: `ps` muestra el proceso con su propio PID, su estado y el tiempo transcurrido — el cálculo O(n²) sobre 50000 paradas todavía no terminó, y el sistema operativo ya le asignó identidad y recursos propios desde el instante en que arrancó.
+
+Archivo `lento.py`:
+
+```python
+import os
+import time
+
+from domain import Stop, nearest_neighbor_route
+
+paradas = [Stop(f"RF-{i}", i * 0.01, i * 0.01) for i in range(50000)]
+print(f"pid={os.getpid()} paradas={len(paradas)}", flush=True)
+time.sleep(30)
+nearest_neighbor_route((0, 0), paradas)
+```
+
+Lanzalo en segundo plano y observá su identidad real:
+
+```bash
+python3 lento.py > proceso.log 2>&1 &
+PID=$!
+sleep 1
+ps -o pid,ppid,state,etime,command -p "$PID"
+cat proceso.log
+```
+
+Resultado esperado (el PID y el tiempo varían):
+
+```text
+  PID  PPID STAT ELAPSED COMMAND
+75497 75491 SN     00:01 python3 lento.py
+pid=75497 paradas=50000
+```
+
+El kernel le asignó PID, proceso padre, estado, tiempo transcurrido y memoria propios desde que arrancó. El cálculo O(n²) todavía no empezó: el proceso duerme 30 segundos antes de ejecutar `nearest_neighbor_route`.
 
 #### Paso 5 · Práctica guiada
-Pista: enviá `kill -9 <PID>` (SIGKILL) a ese proceso mientras todavía calcula — ese es el fallo deliberado: el proceso termina de inmediato sin poder liberar nada ni loguear qué estaba haciendo, a diferencia de `kill -TERM <PID>`, que le daría la oportunidad de cerrar ordenadamente.
+Pista: enviá `kill -9 "$PID"` mientras el proceso sigue durmiendo. Ese es el fallo deliberado: `kill -9` no puede manejarse, así que el proceso muere sin ejecutar ningún cierre ni escribir una última línea de log. Comprobá con `wait "$PID"; echo $?` que el código de salida es 137, no 0. Repetilo con `kill -TERM "$PID"`: el código de salida es 143 y el proceso tuvo la oportunidad de manejar la señal.
 
 #### Paso 6 · Práctica independiente
-Repetí el cálculo con una lista de paradas mucho más chica (50 en vez de 50000), y comparzá cuánto tarda en terminar solo con el tiempo reportado por `ps -o etime` en ambos casos — documentando por qué `kill -TERM` sí alcanzaría a interrumpirlo a tiempo en el caso chico.
+Cambiá `lento.py` para que registre una señal con `signal.signal(signal.SIGTERM, ...)` y escriba "cierre ordenado" antes de salir. Comparé `kill -TERM` (imprime el mensaje, sale con 0) con `kill -9` (no imprime nada, sale con 137) y documentá por qué esa diferencia importa para un worker que escribe en una base de datos.
 
 #### Paso 7 · Cierre y evidencia
-Entregá el proceso real inspeccionado con `ps` del Paso 4, la terminación abrupta con SIGKILL del Paso 5, y la comparación de tiempos del Paso 6; explicá la diferencia entre SIGTERM y SIGKILL en términos de qué puede (y qué no puede) hacer tu código antes de terminar. Errores comunes: usar `kill -9` como primer recurso en vez de `SIGTERM`, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
-**¿Por qué es importante?** Porque un proceso que recibe SIGKILL no tiene ninguna oportunidad de cerrar una transacción o loguear su estado — la diferencia entre SIGTERM y SIGKILL es la diferencia entre un apagado ordenado y una pérdida de evidencia.
+Entregá la salida de `ps` del Paso 4, los códigos de salida de SIGKILL y SIGTERM del Paso 5, y el manejador de señal del Paso 6; explicá la diferencia entre ambas señales en términos de qué puede y qué no puede hacer tu código antes de terminar. Como siguiente paso, aplicá el mismo diagnóstico a un proceso que escribe en SQLite y comprobá qué deja a medio hacer un SIGKILL. Errores comunes: usar `kill -9` como primer recurso en vez de SIGTERM, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
 ### Tema 2: Memoria y concurrencia sin magia
 
 #### Paso 1 · Objetivo y preparación
@@ -220,17 +220,6 @@ Si el servicio que calcula rutas para RutaFlow dejara de responder, un operador 
 #### Paso 3 · Teoría, modelo mental y analogía
 Operar un servicio es como la medicina clínica: observás signos (CPU, puertos, logs) antes de intervenir, en vez de "reiniciar y ver si se arregla".
 
-**Escenario:** Tu worker de validación "usa demasiada memoria" según quejas. Necesitas inspeccionar `/proc/PID/status` para diagnosticar.
-
-**Tu tarea:**
-1. ¿Qué es `VmRSS` vs `VmSize`? ¿Cuál es el problema real?
-2. ¿Qué es `VmPeak`? ¿Cuándo es útil?
-3. Lee `/proc/self/status` en vivo desde tu shell, explica 5 campos.
-4. ¿Cómo una fuga de memoria se ve en `/proc`?
-
-[SOLUCIÓN PLEGADA]
-> `VmSize`: memoria virtual total; `VmRSS`: resident (realmente usada). Si VmSize >> VmRSS, es fragmentación, no fuga. `VmPeak`: máximo histórico de VmSize. Una fuga se ve como `VmRSS` creciente sin límite. `FDSize`: file descriptors abiertos (fuga de archivos o sockets se vería como FDSize creciente). `Threads`: cantidad de hilos (spike indebido señala paralización descontrolada).
-
 **Conceptos clave:** shell, variable de entorno, pipe, proceso padre, daemon, servicio, log, socket, puerto, healthcheck, CPU, memoria y runbook.
 
 Operar Linux no significa encadenar comandos desconocidos. Formula una pregunta y conserva evidencia. `pwd` responde dónde estás; `id`, con qué identidad; `ps`, qué procesos existen; `ss -ltnp`, qué sockets TCP escuchan; `df -h`, cuánto almacenamiento queda; `free -h`, el estado de memoria; `top`, actividad dinámica.
@@ -247,7 +236,7 @@ ss -ltnp
 
 **Analogía:** operar un servicio se parece a la medicina clínica: antes de intervenir, se observan signos, se formula una hipótesis y se solicita una prueba capaz de refutarla.
 
-**¿Por qué es importante?** porque reiniciar a ciegas puede ocultar síntomas y destruir la evidencia necesaria para encontrar la causa raíz.
+**¿Por qué es importante?** Porque `ps` puede mostrar que el proceso sigue vivo mientras `curl --fail` confirma que ya no responde: sin los tres ángulos de diagnóstico, reiniciar a ciegas destruye la evidencia de qué estaba fallando realmente.
 
 **Casos de uso reales:** localizar quién ocupa un puerto, distinguir falta de CPU de espera de I/O, detectar disco lleno, seguir logs y comprobar un despliegue.
 
@@ -262,32 +251,42 @@ flowchart LR
 ```
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Identifica proceso, puerto y logs del gestor en Linux. Detén únicamente el proceso de laboratorio y conserva el diagnóstico que diferencia aplicación detenida de error en sus datos.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+Crea una carpeta nueva con `index.html` y un servicio mínimo, y diagnosticálo desde tres ángulos distintos:
+
 ```bash
 mkdir ejemplo && cd ejemplo
+echo "ok" > index.html
+python3 -m http.server 8765 > servicio.log 2>&1 &
+PID=$!
+sleep 1
+curl --fail --silent http://127.0.0.1:8765/ && echo "sano"
+lsof -nP -iTCP:8765 -sTCP:LISTEN
+ps -o pid,state,command -p "$PID"
 ```
 
-```bash
-python3 -m http.server 8000 --directory /tmp &
-sleep 1
-curl --fail --silent http://127.0.0.1:8000/ > /dev/null && echo "sano"
-ss -ltnp | grep 8000
-ps -o pid,ppid,%cpu,%mem,command | grep http.server
+Resultado esperado (el PID y la ruta del intérprete varían):
+
+```text
+ok
+sano
+COMMAND   PID        USER   FD   TYPE  NAME
+Python  77911 nicolasruiz    5u  IPv6  TCP *:8765 (LISTEN)
+  PID STAT COMMAND
+77911 SN   python3 -m http.server 8765
 ```
-Resultado esperado: `curl --fail` confirma que el servicio responde (`sano`); `ss -ltnp` muestra el puerto `8000` escuchando con su PID; `ps` confirma el mismo proceso con su consumo real de CPU y memoria — tres ángulos distintos del mismo servicio, antes de tocar nada.
+
+`curl --fail` confirma que el servicio responde; `lsof` muestra el puerto escuchando con su PID (en Linux, `ss -ltnp | grep 8765` da la misma información); `ps` confirma el mismo proceso con su estado. Son tres ángulos del mismo servicio, capturados antes de tocar nada.
 
 #### Paso 5 · Práctica guiada
-Pista: matá el proceso con `kill -9 <PID>` y repetí el mismo `curl --fail` — ese es el fallo deliberado reproducido a propósito: el comando termina con error (código de salida distinto de 0) en vez de "sano", confirmando con evidencia, no con una suposición, que el servicio ya no responde.
+Pista: matá el proceso con `kill -9 "$PID"` y repetí `curl --fail --silent http://127.0.0.1:8765/`. Ese es el fallo deliberado reproducido a propósito: el comando termina con código 7 (conexión rechazada) y no imprime "sano". Comprobá el código con `echo $?` después del `curl`: la evidencia confirma que el servicio ya no responde, en vez de suponerlo.
 
 #### Paso 6 · Práctica independiente
-Repetí el Paso 4 completo, pero esta vez redirigiendo la salida del servidor a un log (`> servicio.log 2>&1 &`) y seguilo con `tail -f servicio.log` mientras hacés una petición — documentando qué evidencia adicional te da el log que `ps` y `ss` no muestran.
+Repetí el Paso 4 redirigiendo la salida del servidor a un log (`> servicio.log 2>&1 &`) y seguilo con `tail -f servicio.log` mientras hacés una petición. Documentá qué evidencia adicional aporta el log que `ps` y `ss` no muestran, y limpiá el proceso con `kill -TERM "$PID"` al terminar.
 
 #### Paso 7 · Cierre y evidencia
-Entregá los tres ángulos de diagnóstico del Paso 4, el fallo real confirmado con `curl --fail` del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Errores comunes: reiniciar el servicio antes de capturar `ps`, `ss` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/ss.8.html.
-**¿Por qué es importante?** Porque `ps` puede mostrar que el proceso sigue vivo mientras `curl --fail` confirma que ya no responde — sin los tres ángulos de diagnóstico, reiniciar a ciegas destruye la evidencia de qué estaba fallando realmente.
+Entregá los tres ángulos de diagnóstico del Paso 4, el código de salida del `curl` tras el fallo del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Como siguiente paso, repetí el diagnóstico con un servicio que exponga `/health` y compará qué responde cuando el proceso vive pero la base no. Errores comunes: reiniciar el servicio antes de capturar `ps`, `lsof` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/lsof.8.html y https://man7.org/linux/man-pages/man8/ss.8.html.
 ### Tema 4: Contenedores: aislamiento reproducible
 
 #### Paso 1 · Objetivo y preparación

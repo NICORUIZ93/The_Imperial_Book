@@ -129,17 +129,6 @@ Al finalizar vas a confirmar que `ALLOWED_TRANSITIONS` de RutaFlow es, matemáti
 #### Paso 3 · Teoría, modelo mental y analogía
 Una relación de equivalencia es reflexiva, simétrica y transitiva; un orden parcial es reflexivo, antisimétrico y transitivo — "es prerrequisito de" debería ser un orden, nunca una equivalencia, porque un envío entregado nunca vuelve a estar creado.
 
-**Escenario:** ¿Puede un envío transicionar de DELIVERED a DELIVERED (es decir, confirmarse dos veces)?
-
-**Tu tarea:**
-1. Define reflexividad en ALLOWED_TRANSITIONS.
-2. ¿Por qué podría ser permitido? (Reintento.)
-3. ¿Por qué podría estar prohibido? (Idempotencia.)
-4. Escribe test: `transition(DELIVERED, DELIVERED)` — ¿debe pasar o fallar?
-
-[SOLUCIÓN PLEGADA]
-> Reflexividad: (a,a) ∈ relación. En ALLOWED_TRANSITIONS, ¿{DELIVERED: {DELIVERED}}? Permitido si soportas reintentos (segundo intento de confirmar devuelve resultado anterior sin cambio). Prohibido si cada confirmación es nueva (evento nuevo). Decisión: si usas `command_id` único, reflexividad es permitida (idempotencia) y test debe pasar. Si cada intento es suceso, test debe fallar. El test define la regla de negocio, no al revés.
-
 **Conceptos clave:** conjunto, pertenencia, subconjunto, unión, intersección, diferencia, producto cartesiano, función, inyección, sobreyección, relación, equivalencia, orden parcial, caso base, paso inductivo y recursión.
 
 Un conjunto agrupa elementos sin orden ni repetición. Si `A` contiene permisos concedidos y `R` permisos requeridos, la autorización puede expresarse `R ⊆ A`. La intersección encuentra elementos comunes; la diferencia identifica faltantes. Estas operaciones están detrás de roles, filtros, etiquetas y consultas.
@@ -161,7 +150,7 @@ Una prueba de corrección no demuestra eficiencia ni ausencia de errores de impl
 
 **Analogía:** la inducción es una fila de fichas de dominó: verificas que la primera cae y que cada ficha que cae derriba la siguiente. Ambas partes son necesarias.
 
-**¿Por qué es importante?** porque conjuntos y relaciones modelan sistemas sin depender del lenguaje, mientras la inducción permite justificar bucles, recursión y estructuras construidas paso a paso.
+**¿Por qué es importante?** Porque modelar una regla de negocio como relación matemática (orden parcial, no equivalencia) permite demostrar con precisión qué transiciones son imposibles, en vez de confiar en que el código "simplemente funciona así".
 
 **Casos de uso reales:** permisos por conjuntos, deduplicación, modelos relacionales, orden de migraciones, tipos opcionales, recorridos recursivos y pruebas de algoritmos.
 
@@ -175,41 +164,48 @@ flowchart LR
     BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
 ```
 
-Esta verificación corre directamente sobre `examples/rutaflow/foundation/domain.py`, el mismo archivo del proyecto integrador que usás desde el Módulo 6: `ALLOWED_TRANSITIONS` es el diccionario real que define ahí la relación de orden parcial entre estados de envío.
-
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+Crea una carpeta nueva con `relacion.py`, copiando antes `domain.py` desde `examples/rutaflow/foundation/`, y verificá las propiedades de la relación:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo && cp examples/rutaflow/foundation/domain.py ejemplo/ && cd ejemplo
 ```
 
+Archivo `relacion.py`:
+
 ```python
-from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
+from domain import ALLOWED_TRANSITIONS
 
 pares = {(a, b) for a, destinos in ALLOWED_TRANSITIONS.items() for b in destinos}
 simetrica = all((b, a) in pares for (a, b) in pares)
+antisimetrica = all((b, a) not in pares for (a, b) in pares if a != b)
+print("pares:", len(pares))
 print("simétrica:", simetrica)
-print("pares:", pares)
+print("antisimétrica:", antisimetrica)
 ```
-
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
 
 ```bash
-python3 ejemplo.py
+python3 relacion.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: `simétrica: False` — para cada par `(CREATED, ASSIGNED)` en la relación, el par inverso `(ASSIGNED, CREATED)` NO está, confirmando que esto NO es una relación de equivalencia (que dividiría los estados en clases intercambiables), sino algo con dirección.
+Resultado esperado:
+
+```text
+pares: 3
+simétrica: False
+antisimétrica: True
+```
+
+`simétrica: False` confirma que la relación no es de equivalencia: existe `CREATED → ASSIGNED`, pero no `ASSIGNED → CREATED`. `antisimétrica: True` confirma que es un orden parcial: ningún par tiene su inverso, y por eso un envío no retrocede de estado.
 
 #### Paso 5 · Práctica guiada
-Pista: agregá a mano `ALLOWED_TRANSITIONS[ShipmentStatus.ASSIGNED].add(ShipmentStatus.CREATED)` (permitir volver atrás) y repetí el cálculo de `simetrica` para ese par específico — ese es el fallo deliberado: ahora `(ASSIGNED, CREATED)` SÍ existe junto a `(CREATED, ASSIGNED)`, y agregar esa transición de vuelta rompe la propiedad de orden que un pipeline de entregas necesita (un envío "desasignándose" solo no tiene sentido de negocio).
+Pista: agregá `from domain import ShipmentStatus` e insertá `ALLOWED_TRANSITIONS[ShipmentStatus.ASSIGNED].add(ShipmentStatus.CREATED)` antes de calcular `antisimetrica`, y volvé a ejecutar. Ese es el fallo deliberado: la salida pasa a `antisimétrica: False`, porque `(CREATED, ASSIGNED)` y `(ASSIGNED, CREATED)` existen a la vez. Una transición de vuelta rompe el orden que un pipeline de entregas necesita.
 
 #### Paso 6 · Práctica independiente
-Deshacé el Paso 5, y verificá la propiedad antisimétrica real: para cada par `(a,b)` con `a != b` en la relación, confirmá que `(b,a)` nunca está — documentando por qué esa propiedad es exactamente lo que impide que un envío "entregado" regrese a "creado" sin pasar por un proceso explícito nuevo.
+Deshacé el Paso 5 y comprobá la propiedad reflexiva: ¿existe algún par `(a, a)`? Documentá por qué permitir `DELIVERED → DELIVERED` (idempotencia) es una decisión de negocio distinta de permitir retroceder de estado, y cómo cambia la relación en cada caso. En el proyecto integrador Fundamentos, usá esta propiedad para justificar qué transiciones del gestor de tareas no deben existir.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la relación no simétrica confirmada del Paso 4, la transición hacia atrás rota del Paso 5, y la verificación de antisimetría del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como un orden parcial (no una equivalencia) es la razón matemática detrás de la regla de negocio "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
-**¿Por qué es importante?** Porque modelar una regla de negocio como relación matemática (orden parcial, no equivalencia) permite demostrar con precisión qué transiciones son imposibles, en vez de confiar en que el código "simplemente funciona así".
+Entregá la salida de las tres propiedades del Paso 4, la relación rota del Paso 5, y el análisis de reflexividad del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como orden parcial (no equivalencia) es la razón matemática detrás de la regla "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
 
 ### Tema 3: Conteo, grafos y estructuras conectadas
 
@@ -221,17 +217,6 @@ Si `ALLOWED_TRANSITIONS` tuviera un ciclo (por ejemplo, `DELIVERED` pudiendo vol
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un grafo dirigido sin ciclos (DAG) admite un orden topológico — como una lista de tareas donde cada una depende solo de las anteriores, nunca de una futura.
-
-**Escenario:** Tu pipelines de trabajo: ingesta → validación → enriquecimiento → persistencia. Necesitas asegurar que se ejecutan en ese orden (topológico) sin que ciclos bloqueen.
-
-**Tu tarea:**
-1. Modelar como grafo dirigido acíclico (DAG).
-2. Escribe un algoritmo que detecte ciclos.
-3. ¿Cuándo un orden topológico es válido? (No únicamente uno.)
-4. ¿Cómo ejecutar en paralelo respetando dependencias?
-
-[SOLUCIÓN PLEGADA]
-> DAG: nodo = etapa, arista = dependencia. Detección de ciclo: DFS con colores (blanco/gris/negro) — gris-a-gris = ciclo. Orden topológico: Kahn o DFS-post. Válido si satisface todas las dependencias (pueden haber múltiples órdenes válidos). Ejecución paralela: ejecutar todas las etapas sin dependencias juntas, esperar que terminen, seguir. Herramientas: Airflow, Prefect modelan esto automáticamente.
 
 **Conceptos clave:** regla de suma, regla de producto, permutación, combinación, principio del palomar, grafo, vértice, arista, grado, camino, ciclo, grafo dirigido, DAG, árbol, BFS, DFS y orden topológico.
 
@@ -265,7 +250,7 @@ La terminación depende de marcar visitados; la detección del ciclo usa el conj
 
 **Analogía:** un grafo de dependencias es un mapa de tareas. Un ciclo significa que A espera a B mientras B, directa o indirectamente, espera a A: ninguna puede empezar.
 
-**¿Por qué es importante?** porque redes, rutas, paquetes, builds, relaciones sociales y arquitectura comparten las mismas estructuras; reconocerlas permite reutilizar algoritmos conocidos.
+**¿Por qué es importante?** Porque confirmar formalmente que un grafo de dependencias es un DAG es la diferencia entre saber que un pipeline siempre termina y simplemente no haber visto todavía el ciclo que lo cuelga.
 
 **Casos de uso reales:** dependencias de paquetes, planificación de cursos, rutas de red, motores de recomendación, detección de fraude, árboles del DOM y análisis de arquitectura.
 
@@ -279,17 +264,17 @@ flowchart LR
     A["A"] --> B["B"] --> C["C"] --> A
 ```
 
-`tiene_ciclo()` se aplicó arriba al grafo real construido desde `examples/rutaflow/foundation/domain.py` — el mismo archivo que sostiene el proyecto integrador Fundamentos desde el Módulo 6, ahora leído como estructura de grafo en vez de solo como función de transición.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema también se puede reproducir en una **carpeta vacía**, como **proyecto nuevo**, sin arrastrar estado de otros temas: crea el andamiaje y vuelve a escribir `src/ejemplo.py` dentro.
+Crea una carpeta nueva con `grafo.py`, copiando antes `domain.py` desde `examples/rutaflow/foundation/`, y comprobá si su grafo de estados tiene ciclos:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo && cp examples/rutaflow/foundation/domain.py ejemplo/ && cd ejemplo
 ```
 
+Archivo `grafo.py`:
+
 ```python
-from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS
+from domain import ALLOWED_TRANSITIONS
 
 grafo = {estado.value: {destino.value for destino in destinos} for estado, destinos in ALLOWED_TRANSITIONS.items()}
 
@@ -305,27 +290,31 @@ def tiene_ciclo(grafo):
         return False
     return any(visitar(n) for n in grafo)
 
+print("nodos:", len(grafo))
 print("tiene ciclo:", tiene_ciclo(grafo))
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
 ```bash
-python3 ejemplo.py
+python3 grafo.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: `tiene ciclo: False` — `ALLOWED_TRANSITIONS` es un DAG real, usando la misma función `tiene_ciclo` que ya viste en la teoría de este Tema, aplicada ahora al grafo real del dominio de RutaFlow.
+Resultado esperado:
+
+```text
+nodos: 4
+tiene ciclo: False
+```
+
+`ALLOWED_TRANSITIONS` es un DAG real de cuatro estados. La función distingue `visitados` de `activos`: solo un nodo en la ruta actual (`activos`) indica un ciclo; marcar todo lo visitado como ciclo produciría falsos positivos.
 
 #### Paso 5 · Práctica guiada
-Pista: agregá `grafo["delivered"] = {"created"}` (permitir que un envío entregado vuelva a creado) y volvé a correr `tiene_ciclo(grafo)` — ese es el fallo deliberado: ahora devuelve `True`, porque `created → assigned → out_for_delivery → delivered → created` forma un ciclo completo; un envío podría procesarse infinitamente sin que el sistema lo detecte como "terminado" nunca.
+Pista: agregá `print("con ciclo:", tiene_ciclo({**grafo, "delivered": {"created"}}))` al final de `grafo.py` y volvé a ejecutar. Ese es el fallo deliberado: la salida añade `con ciclo: True`, porque se forma `created → assigned → out_for_delivery → delivered → created`. Un envío podría procesarse indefinidamente sin que el sistema lo detecte como terminado.
 
 #### Paso 6 · Práctica independiente
-Deshacé el Paso 5, y calculá un orden topológico válido de los 4 estados a mano (hay solo uno posible en este caso, por ser una cadena lineal) — documentá qué pasaría con el orden topológico si `ASSIGNED` pudiera ir tanto a `OUT_FOR_DELIVERY` como directamente a un nuevo estado hipotético `CANCELLED`.
+Deshacé el Paso 5 y calculá a mano un orden topológico de los cuatro estados. Luego agregá un nodo `cancelled` con aristas desde `created` y `assigned`, y documentá cuántos órdenes topológicos válidos aparecen y por qué el orden deja de ser único. En el proyecto integrador RutaFlow, aplicá el mismo chequeo al grafo de dependencias de los módulos antes de fijar el orden de build.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la confirmación de DAG del Paso 4, el ciclo introducido y detectado del Paso 5, y el orden topológico del Paso 6; explicá por qué un ciclo en este grafo específico sería un defecto de diseño, no solo una curiosidad matemática. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
-**¿Por qué es importante?** Porque confirmar formalmente que un grafo de dependencias es un DAG es la diferencia entre saber que un pipeline siempre termina y simplemente no haber visto todavía el ciclo que lo cuelga.
+Entregá la salida del DAG del Paso 4, el ciclo detectado del Paso 5, y el análisis del orden topológico del Paso 6; explicá por qué un ciclo en este grafo sería un defecto de diseño, no solo una curiosidad matemática. Como siguiente paso, aplicá `tiene_ciclo` a las dependencias reales de tu proyecto antes de automatizar el orden de build. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
 ### Tema 4: Probabilidad y evidencia para decisiones técnicas
 
 #### Paso 1 · Objetivo y preparación

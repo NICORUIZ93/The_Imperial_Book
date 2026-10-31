@@ -378,56 +378,76 @@ Los reintentos no bastan. Una tarea periódica de reconciliación compara la fue
 
 **Analogía:** la entrega certificada tiene sello verificable, número, intentos registrados y un libro maestro para comprobar después qué destinatarios no recibieron. El mensajero no improvisa una entrega infinita.
 
-**¿Por qué es importante?** porque las integraciones viven fuera de tu despliegue y control. Una garantía profesional incluye autenticidad, duplicación, retraso, caída prolongada y reparación posterior.
-
 **Casos de uso reales:** proveedor de pagos, GitHub webhooks, notificaciones de pedidos, sincronización CRM, callbacks de procesamiento y exportaciones.
 
 **Diagrama:**
 
-```text
-outbox -> delivery persistido -> HTTP firmado -> receptor dedupe + ACK
-              | fallo             |
-              `-> retry/jitter ----´
-reconciliador compara fuente/proyección -> replay auditado
+```mermaid
+flowchart LR
+    O[outbox] --> D[delivery persistido] --> H[HTTP firmado] --> R[receptor: dedupe + ACK]
+    D -. fallo .-> RET[retry con jitter]
+    RET --> D
+    RC[reconciliador] --> C[compara fuente y proyección] --> RP[replay auditado]
 ```
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Recibe un webhook con firma comprobable y registra su identificador antes de aplicar efectos. Reenvíalo y ejecuta reconciliación de un evento perdido; ambos caminos deben converger al mismo estado.
 
 #### Paso 4 · Demostración guiada desde cero
 
-Crea `src/webhooks/signature-verify.ts` en tu proyecto Node para manejar verificación de firmas:
-
-```typescript
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
-function validSignature(raw: Buffer, timestamp: string, receivedHex: string, secret: string) {
-  const expected = createHmac('sha256', secret)
-    .update(`v1.${timestamp}.`)
-    .update(raw)
-    .digest();
-  const received = Buffer.from(receivedHex, 'hex');
-  return received.length === expected.length && timingSafeEqual(received, expected);
-}
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
+Crea una carpeta nueva con `firma.mjs`, que firma un cuerpo y lo verifica:
 
 ```bash
-npm init -y && npm install
-node index.js
+mkdir ejemplo && cd ejemplo
 ```
-Para las pruebas: `npm test`.
 
-Resultado esperado: un webhook con la firma correcta (calculada por el proveedor real con el secreto compartido) pasa la verificación; un POST falso sin conocer el secreto falla la comparación y se rechaza antes de procesar ningún cambio de estado.
+Archivo `firma.mjs`:
+
+```javascript
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+const secreto = 'secreto-de-prueba';
+const cuerpo = Buffer.from(JSON.stringify({ id: 'evt_1', monto: 1500 }));
+const timestamp = '1760000000';
+
+function firmar(cuerpo, timestamp) {
+  return createHmac('sha256', secreto).update(`v1.${timestamp}.`).update(cuerpo).digest('hex');
+}
+
+function verificar(cuerpo, timestamp, recibida) {
+  const esperada = Buffer.from(firmar(cuerpo, timestamp), 'hex');
+  const recibidaBuf = Buffer.from(recibida, 'hex');
+  return recibidaBuf.length === esperada.length && timingSafeEqual(recibidaBuf, esperada);
+}
+
+const firma = firmar(cuerpo, timestamp);
+console.log('firma válida:', verificar(cuerpo, timestamp, firma));
+const alterado = Buffer.from(cuerpo.toString().replace('1500', '1'));
+console.log('cuerpo alterado:', verificar(alterado, timestamp, firma));
+console.log('timestamp alterado:', verificar(cuerpo, '1760000001', firma));
+```
+
+```bash
+node firma.mjs
+```
+
+Resultado esperado:
+
+```text
+firma válida: true
+cuerpo alterado: false
+timestamp alterado: false
+```
+
+La firma original se verifica; cambiar un byte del cuerpo o el timestamp invalida la comparación. La firma cubre `v1.<timestamp>.<cuerpo crudo>`, no un JSON reserializado, y `timingSafeEqual` compara longitudes antes de comparar contenido: una firma de longitud distinta no lanza excepción.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá `timingSafeEqual(received, expected)` por una comparación directa `received.toString('hex') === receivedHex` de strings — ese es el fallo deliberado: una comparación de strings normal retorna más rápido en cuanto encuentra el primer carácter distinto, filtrando por temporización cuántos caracteres iniciales coinciden, una vulnerabilidad de timing attack que permitiría reconstruir la firma correcta byte por byte midiendo tiempos de respuesta.
+Pista: reemplazá `timingSafeEqual(recibidaBuf, esperada)` por `recibidaBuf.toString('hex') === recibida` en `verificar` y ejecutá de nuevo: los tres resultados no cambian. Ese es el fallo deliberado: la comparación de strings funciona igual en la salida, pero retorna en cuanto encuentra el primer carácter distinto y filtra por temporización cuántos caracteres iniciales coinciden. La prueba no lo detecta porque el resultado es correcto; solo la revisión del mecanismo y una medición de tiempos lo exponen.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `timingSafeEqual`, y agregá el rechazo de timestamps fuera de una ventana razonable (5 minutos) para prevenir ataques de replay con una firma válida pero capturada previamente.
+Restaurá `timingSafeEqual` y agregá el rechazo de timestamps fuera de una ventana de 5 minutos respecto de la hora actual. Comprobá que una firma válida con un timestamp viejo se rechaza con un mensaje distinto del de una firma inválida, y documentá por qué ambos casos necesitan códigos de respuesta diferentes.
 
 #### Paso 7 · Cierre y evidencia
-Entregá la verificación HMAC del Paso 4, la vulnerabilidad de timing attack del Paso 5, y el rechazo de timestamps antiguos del Paso 6; explicá por qué una comparación de strings normal filtra información por temporización, y por qué `timingSafeEqual` existe específicamente para evitar ese canal lateral. Siguiente paso: cerrá el módulo integrando validación, contratos, idempotencia y webhooks en la API completa de RutaFlow. Errores comunes: comparar firmas con el operador `===` normal en vez de una comparación en tiempo constante, no rechazar timestamps fuera de ventana, y reintentar indefinidamente un webhook que responde `400`. Fuentes oficiales: https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b y https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries.
+Entregá la salida de la firma válida y los dos casos alterados del Paso 4, la comparación no segura del Paso 5 y su explicación, y el rechazo por ventana de tiempo del Paso 6; explicá por qué `timingSafeEqual` existe específicamente para evitar el canal lateral de temporización. Como cierre del módulo, integrá validación, contratos, idempotencia y webhooks en la API de RutaFlow. Errores comunes: comparar firmas con `===` en vez de una comparación en tiempo constante, no rechazar timestamps fuera de ventana, y reintentar indefinidamente un webhook que responde `400`. Fuentes oficiales: https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b y https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries.
 
 ## Revisión oficial de plataforma — julio de 2026
 
