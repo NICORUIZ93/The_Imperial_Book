@@ -57,5 +57,5 @@ Lo que ninguna de las dos capas anteriores puede medir:
 - ¿El recorrido de "elegir ruta -> abrir módulo -> siguiente tema" es obvio para alguien nuevo?
 
 Esta capa cubre solo una muestra (todo lo que la Capa 2 marcó, más 1-2 temas al azar por ruta
-inspeccionada) porque no escala a los 983 temas en una sesión razonable. Documenta siempre cuántos
+inspeccionada) porque no escala a los 1100 temas en una sesión razonable. Documenta siempre cuántos
 temas pasaron por aquí realmente, frente a cuántos solo pasaron por las Capas 1 y 2.

@@ -5,8 +5,8 @@ description: Inspecciona The Imperial Book (la app Angular en web/) como lo har�
 
 # Academia Flow Inspector
 
-Esta skill es para un proyecto concreto: The_Imperial_Book, una academia de 14 rutas / 236 módulos /
-983 temas servida por una sola app Angular (`web/`). El contenido real vive en Markdown
+Esta skill es para un proyecto concreto: The_Imperial_Book, una academia de 14 rutas / 245 módulos /
+1100 temas servida por una sola app Angular (`web/`). El contenido real vive en Markdown
 (`web/public/content/<track>/modulo-N.md`); la app lo renderiza con `marked` y `lesson-viewer.ts`
 le añade estructura por tema (`.topic-card`, callouts, prompts de estudio, etc.).
 
@@ -22,7 +22,7 @@ El objetivo es responder dos preguntas que los validadores existentes **no** res
 **No vuelvas a inventar lo que ya existe.** `scripts/audit_topic_learning_quality.py` y
 `scripts/audit_seven_step_methodology.py` ya evalúan, sobre el Markdown, los 9 criterios
 editoriales de `docs/editorial-contract.md` (explicación, código, ruta de archivo, comando
-ejecutable, resultado esperado, práctica, proyecto, modelo mental, límites) para los 983 temas.
+ejecutable, resultado esperado, práctica, proyecto, modelo mental, límites) para los 1100 temas.
 Si un tema no tiene ejemplo o explicación, esos scripts ya lo saben -- correrlos es más rápido y
 más fiable que leer markdown a mano. Esta skill empieza por ahí y se concentra en la capa que
 esos scripts no pueden ver porque nunca abren un navegador: renderizado real y flujo de
@@ -40,11 +40,11 @@ python3 scripts/audit_seven_step_methodology.py --check
 
 Lee `docs/topic-learning-quality.json` y `docs/seven-step-methodology.json`: ya traen, por tema,
 qué criterio falta. Si el usuario preguntó "¿todos los temas tienen ejemplo y explicación?", la
-respuesta a esa pregunta específica sale de aquí, no de abrir el navegador 983 veces.
+respuesta a esa pregunta específica sale de aquí, no de abrir el navegador 1100 veces.
 
 ### 2. Decide el alcance con el usuario
 
-Barrer las 236 páginas de módulo con un navegador real toma varios minutos. Antes de lanzarlo,
+Barrer las 245 páginas de módulo con un navegador real toma varios minutos. Antes de lanzarlo,
 confirma el alcance si no es obvio por el pedido: ¿toda la academia, una ruta, o un módulo? Si el
 usuario ya fue específico ("revisa Fundamentos", "la ruta de Angular"), no hace falta preguntar.
 
@@ -93,7 +93,7 @@ el navegador integrado, según cuál esté disponible en esta sesión) y mira co
   cualquier punto donde el camino no sea obvio o se rompa la navegación (progreso que no se
   guarda, breadcrumbs inconsistentes, botones que no responden).
 
-No necesitas abrir los 983 temas a mano: el barrido ya cubrió la escala; esta capa es para
+No necesitas abrir los 1100 temas a mano: el barrido ya cubrió la escala; esta capa es para
 calidad humana sobre una muestra con sentido, no para repetir el barrido con tus ojos.
 
 ### 5. Reporta hallazgos, no un veredicto global
@@ -115,6 +115,6 @@ estándar de `docs/editorial-contract.md`: no reclames más cobertura de la que 
 - No reescribas los 9 criterios editoriales a mano revisando Markdown: ya están automatizados.
 - No conviertas un hallazgo del barrido en un veredicto sin mirarlo tú mismo cuando sea relevante
   para la respuesta que le vas a dar al usuario.
-- No reportes "983/983 temas verificados visualmente" -- nunca es cierto a esa escala; sé preciso
+- No reportes "1100/1100 temas verificados visualmente" -- nunca es cierto a esa escala; sé preciso
   sobre cuántos se inspeccionaron con el navegador y cuántos solo pasaron por el barrido o las
   auditorías estáticas.

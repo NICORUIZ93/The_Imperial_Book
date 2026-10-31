@@ -197,3 +197,10 @@ con Prototype y selección de patrones estructurales por intención. El nuevo
 el fallo de una lista compartida. La demo estructural existente ejecuta Adapter, Decorator,
 Facade, Composite, Proxy y Bridge. Flyweight queda pendiente hasta diseñar una medición de memoria
 representativa; no se añadió una caché sin evidencia.
+
+La captura `IMG_1036.PNG` se contrastó con la documentación de Spring Kafka correspondiente al
+4.1.1 que resuelve el laboratorio. Se confirmó que `@RetryableTopic` crea una ruta no bloqueante
+por tópicos, con pérdida de orden y límites frente a batch listeners y transacciones del
+contenedor. Spring Boot 21 ahora explica por qué el laboratorio conserva `FixedBackOff` y propone
+una prueba de eventos fuera de orden antes de adoptar retry topics. No se añadió la anotación sin
+esa prueba ni se presentaron las demoras de la captura como configuración universal.

@@ -322,6 +322,19 @@ la ausencia antes de insertar, una barrera controlada y PostgreSQL real; queda c
 La imagen de retry topics no equivale a este ejemplo: aquí se usa `FixedBackOff` en el consumidor,
 no tópicos separados con demoras de 5, 10 y 20 segundos.
 
+La investigación oficial del 2026-10-30 confirma que Spring Kafka ofrece reintentos no
+bloqueantes mediante `@RetryableTopic` o `RetryTopicConfiguration`: el registro fallido se
+republica a uno o más tópicos de retry y finalmente puede llegar a DLT. Esa decisión sacrifica el
+orden del tópico principal y no se combina con listeners batch ni con transacciones del contenedor.
+El laboratorio resuelve fallos breves con dos reintentos bloqueantes de un segundo; cambiarlo a
+retry topics sería una decisión de arquitectura, no una mejora automática. Consulta
+[Non-Blocking Retries](https://docs.spring.io/spring-kafka/reference/retrytopic.html) y
+[How the Pattern Works](https://docs.spring.io/spring-kafka/reference/retrytopic/how-the-pattern-works.html).
+El árbol de dependencias ejecutado usa Spring Kafka 4.1.1; no se copió una configuración de otra
+versión. Si implementas la ampliación, prueba explícitamente el orden observado para dos eventos
+con la misma `envioId` y define cómo reconciliar una actualización antigua que salga de retry
+después de una nueva.
+
 #### Paso 5 · Práctica guiada
 
 1. Cambia temporalmente la referencia del evento inválido por una referencia válida y ejecuta

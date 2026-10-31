@@ -1647,7 +1647,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ade80b20576ba5270a10d8041fbc43f6100e30f61754a26d75c47a3145c3318d",
+    "fingerprint": "bab7a609124d18661020850b274f7435af0868cb41f6d5b548ffb572b47f8296",
     "issues": {
       "andamiaje-generico": 125,
       "bloque-repetido": 202,
@@ -9826,7 +9826,7 @@
         "module": 21,
         "tailWords": 178,
         "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
-        "words": 1435
+        "words": 1598
       },
       {
         "issues": [],

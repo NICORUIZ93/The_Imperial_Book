@@ -49,7 +49,7 @@ Las demás observaciones técnicas son puntos de revisión antes de integrar. No
 | 22 | `IMG_1023.PNG` | Temario de ingeniería electrónica | Fuera del alcance; posible conexión de lógica/estados con Foundations, por evaluar. |
 | 23 | `IMG_1030.PNG` | Temario Flutter y Spring para tracking | Comparar con RutaFlow; no es una especificación completa ni código probado. |
 | 24 | `IMG_1033.PNG` | Publicidad de microservicios y observabilidad | Kafka, RabbitMQ, Zipkin, Grafana y Prometheus; anuncio, no implementación. |
-| 25 | `IMG_1036.PNG` | Kafka Retry Topics y DLT | Spring 8 ya tiene DLT; contrastar reintentos no bloqueantes, orden e idempotencia antes de ampliar. |
+| 25 | `IMG_1036.PNG` | Kafka Retry Topics y DLT | Contrastado con Spring Kafka 4.1.1: soporte no bloqueante confirmado; pierde orden del tópico y no combina con batch listeners ni transacciones del contenedor. Integrado como comparación y ampliación condicionada en Spring Boot 21. |
 | 26 | `IMG_1040.PNG` | QuickRef.me | Recurso de consulta omitido antes; no sustituye documentación oficial. |
 | 27 | `IMG_1041 2.PNG` | QuickRef, categorías | Duplicado visual de IMG_1041.PNG; ambos revisados. |
 | 28 | `IMG_1041.PNG` | QuickRef, categorías | Referencia de consulta, no contenido nuevo desarrollado. |

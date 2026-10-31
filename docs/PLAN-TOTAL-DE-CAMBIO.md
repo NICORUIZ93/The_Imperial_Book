@@ -6,11 +6,11 @@ Este documento reemplaza la estrategia de crecer por lotes y marcadores.
 ## Diagnóstico
 
 La percepción de que los temas son básicos y superficiales tiene fundamento. El
-inventario actual contiene 1.098 temas, pero volumen, rutas y marcadores no
+inventario actual contiene 1.100 temas, pero volumen, rutas y marcadores no
 demuestran profundidad ni preparación profesional. La auditoría disponible
-detecta señales de sustancia en 306 temas, bloques editoriales repetidos en 202,
-andamiaje genérico en 128 y secciones heredadas en 184 de 245 módulos. Son
-señales estáticas que requieren revisión; no equivalen a 306 errores confirmados.
+detecta señales de sustancia en 303 temas, bloques editoriales repetidos en 202,
+andamiaje genérico en 125 y secciones heredadas en 184 de 245 módulos. Son
+señales estáticas que requieren revisión; no equivalen a 303 errores confirmados.
 Consulta [la revisión integral](./full-review.md) para cobertura y límites.
 
 Los datos siguientes describen la deuda medida:
@@ -34,7 +34,7 @@ Los datos siguientes describen la deuda medida:
 - **Regla dura**: un tema solo se declara completo si tiene un checkpoint
   ejecutable que falla sin el trabajo del alumno y pasa con él.
 
-Este contrato expresa la meta de rediseño, no el estado actual de los 1.098
+Este contrato expresa la meta de rediseño, no el estado actual de los 1.100
 temas. La auditoría de marcadores y la etiqueta «Experto» no son evidencia de que
 un estudiante alcance dominio profesional. Para afirmar ese resultado se
 requieren proyectos acumulativos ejecutados, criterios de salida observables,
@@ -60,7 +60,7 @@ revisión técnica y validación humana; esas capas siguen incompletas.
 - [x] Documento de continuación actualizado a los números reales.
 - [x] Limpieza con guarda: 154 recortes en tres pasadas sin perder criterios
   ni romper fences (`scripts/clean_legacy_tails.py`).
-- [ ] Resto de apéndices y secciones duplicadas (**476 temas**): requiere
+- [ ] Resto de apéndices y secciones duplicadas (medido en `lesson-substance.md`): requiere
   revisión editorial, no un script ciego.
 - [ ] Unificar `cloud` en `tracks/cloud.track.ts`.
 - [ ] Sustituir «Experto» por los cuatro niveles operativos y retirar la
@@ -149,9 +149,9 @@ El PDF es una recopilación de publicaciones técnicas. Sus temas se mapearon as
 
 ## Estado y riesgo
 
-La deuda histórica (476 temas con defectos) no se elimina en una sesión. El plan
+La deuda editorial medida no se elimina en una sesión. El plan
 la convierte en una deuda **medida y decreciente** en lugar de una promesa
-implícita de calidad. Reescribir 1.098 temas a mano requiere 2.000–4.000 horas:
+implícita de calidad. Reescribir 1.100 temas a mano requiere 2.000–4.000 horas:
 por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 
 ## Verificación de esta entrega (2026-10-30)
@@ -159,12 +159,12 @@ por eso el núcleo se reduce y el resto se declara biblioteca de referencia.
 | Comprobación | Resultado |
 |---|---|
 | `./scripts/validate.sh` | Código 0: 21 pruebas Python, pedagogía, currículo, fuentes, fences, índices y grafos |
-| Build Angular | Correcto; aviso de bundle inicial 625,24 kB frente al presupuesto de 600 kB (no se amplió) |
-| Pruebas unitarias Angular | 17 correctas (incluye evidencia por tema) |
-| E2E Chrome | 46 correctas (42 previas + 4 de la ruta por tema) |
-| Metodología de siete pasos | 1098/1098 completos |
-| Criterios editoriales | 1092/1098 practicables; deuda de 6 |
-| Sustancia | 476 temas con defectos históricos; 123 menos que al inicio; **0 defectos nuevos** |
+| Build Angular | Correcto; aviso de bundle inicial 625,49 kB frente al presupuesto de 600 kB (no se amplió) |
+| Pruebas unitarias Angular | 19 correctas (incluye evidencia por tema) |
+| E2E Chrome | 48 correctas (24 escenarios en escritorio y móvil) |
+| Metodología de siete pasos | 1100/1100 completos |
+| Criterios editoriales | 1094/1100 practicables; deuda de 6 |
+| Sustancia | 303 temas con señales en el corte actual; `--strict` no registra defectos nuevos |
 | Módulos nuevos | 4 (`devops` 17 y 18, `java` 20, `spring-boot` 22) con 14 temas; el repositorio queda con 163 laboratorios |
 
 Los módulos nuevos se escribieron con el estándar que el plan exige: siete pasos,
@@ -174,7 +174,7 @@ validadores Node de C4 y ADR se probaron con el resultado documentado.
 
 ### Lo que sigue pendiente
 
-1. Los 476 temas con repetición o cola heredada: se reducen por tandas y el
+1. Los temas con repetición o cola heredada: se reducen por tandas y el
    baseline solo puede bajar.
 2. La ruta piloto completa (Fundamentos + Java) con checkpoints por módulo.
 3. `cloud` fuera de `course-data.ts` y una sola fuente de verdad por track.

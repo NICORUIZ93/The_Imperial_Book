@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 The_Imperial_Book is a Spanish-language academy for cloud/dev learning. The official product is an
-Angular app (`web/`) that renders 14 curriculum tracks (236 modules, 983 topics) authored as
+Angular app (`web/`) that renders 14 curriculum tracks (245 modules, 1100 topics) authored as
 Markdown lessons in `web/public/content/<track>/modulo-N.md`. Progress is stored client-side in
 `localStorage` — there are no quizzes, XP, or badges. Each specialization track has an integrator
 project; `RutaFlow` (`examples/rutaflow/`) is a cross-cutting logistics project that ties tracks
@@ -35,7 +35,7 @@ Angular app (run from `web/`):
 npm ci
 npm start                       # ng serve, http://localhost:4200
 npm run build --silent          # ng build
-npm test -- --watch=false       # unit tests (Karma/Jasmine)
+npm test -- --watch=false       # unit tests (Vitest)
 npm run e2e                     # playwright test (full learning journeys)
 ```
 

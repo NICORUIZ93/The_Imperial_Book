@@ -111,7 +111,7 @@ def build() -> str:
         "",
         "El registro estructural incluye una fila por tema y conserva `humanPedagogicalReview` como estado separado. Ningún tema se marca como pedagógicamente revisado por ejecutar un script, generar un reporte o superar una prueba de navegador. Para cerrar una revisión humana hay que actualizar el registro tema por tema con responsable, fecha, evidencia examinada y resultado.",
         "",
-        "La validación de navegador es otra capa. El snapshot anterior cubre menos temas que el inventario actual y no registra su fecha; hasta regenerarlo y documentar el recorrido real, no se declara que los 1.098 temas se hayan probado en navegador.",
+        f"La validación de navegador es otra capa. El snapshot anterior cubre menos temas que el inventario actual y no registra su fecha; hasta regenerarlo y documentar el recorrido real, no se declara que los {topic_total} temas se hayan probado en navegador.",
         "",
         "## Reproducibilidad",
         "",

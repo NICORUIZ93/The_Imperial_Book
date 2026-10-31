@@ -103,7 +103,7 @@ Fuentes primarias consultadas: [Python I/O](https://docs.python.org/3/tutorial/i
 
 ## Estado de la revisión del proyecto
 
-El índice del proyecto incluye archivos versionables, símbolos, imports y encabezados; dependencias instaladas y artefactos privados/ignorados quedan fuera del mapa del producto. La academia tiene 14 tracks, 236 módulos y 983 temas. La presencia editorial detectada cubre 983 temas; la metodología de siete pasos detecta 493 completos y 490 pendientes. Estas cifras no certifican calidad técnica ni ejecución de los ejemplos históricos. El informe por tema y la lista de trabajo están en `seven-step-methodology.md` y `editorial-backlog.md`.
+El índice del proyecto incluye archivos versionables, símbolos, imports y encabezados; dependencias instaladas y artefactos privados/ignorados quedan fuera del mapa del producto. La academia tiene 14 tracks; esta revisión trabajó sobre 236 módulos y 983 temas, mientras el inventario actual es de 245 módulos y 1100 temas. La metodología de siete pasos detectaba entonces 493 temas completos y 490 pendientes; hoy registra los marcadores completos en 1100 temas. Estas cifras no certifican calidad técnica ni ejecución de los ejemplos históricos. El informe por tema y la lista de trabajo están en `seven-step-methodology.md` y `editorial-backlog.md`.
 
 ## Validación de esta integración
 

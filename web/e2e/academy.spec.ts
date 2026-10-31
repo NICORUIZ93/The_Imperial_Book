@@ -128,7 +128,7 @@ test('accesibilidad y respaldo: exporta y restaura progreso desde controles etiq
   });
   await expect(page.getByRole('status')).toContainText('Progreso restaurado y aplicado');
   const javaCard = page.locator('.card').filter({
-    has: page.locator('.card-head[aria-label="Abrir Java de cero a avanzado"]'),
+    has: page.getByRole('link', { name: 'Abrir Java: fundamentos y temas avanzados', exact: true }),
   });
   await expect(javaCard.locator('.card-bottom')).toContainText('5% marcado');
 });

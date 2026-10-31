@@ -754,7 +754,7 @@
     },
     {
       "path": "docs/integracion-biblioteca-externa-progreso.md",
-      "lines": 200,
+      "lines": 207,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2221,6 +2221,14 @@
     {
       "path": "examples/java/patrones-rutaflow/ObserverDemo.java",
       "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/java/patrones-rutaflow/PrototypeDemo.java",
+      "lines": 51,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6215,7 +6223,7 @@
     },
     {
       "path": "scripts/tests/test_backup_verified.py",
-      "lines": 104,
+      "lines": 105,
       "kind": "automation-script",
       "symbols": [
         "BackupVerificationTests"
@@ -11519,7 +11527,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 516,
+      "lines": 529,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

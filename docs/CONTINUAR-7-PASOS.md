@@ -1,6 +1,6 @@
 # Continuación de la metodología de siete pasos
 
-Estado al 2026-10-30: **1098/1098 temas completos**. El punto de partida
+Estado al 2026-10-30: **1100/1100 temas completos**. El punto de partida
 histórico de esta deuda fue 496; los números «752/1007» de versiones anteriores
 de este documento quedaron obsoletos al fusionar la reescritura de Java.
 

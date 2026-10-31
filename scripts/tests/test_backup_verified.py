@@ -19,7 +19,8 @@ class BackupVerificationTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         socket = self.root / "socket"
         socket.mkdir()
-        self.env = {**os.environ, "PGHOST": str(socket), "PGPORT": "55479",
+        # PostgreSQL en macOS aborta al arrancar si el locale heredado no resuelve.
+        self.env = {**os.environ, "LC_ALL": "C", "PGHOST": str(socket), "PGPORT": "55479",
                     "PGUSER": "floci_lab", "PGDATABASE": "postgres",
                     "DATABASE_URL": "postgresql:///source_lab"}
         for key in ("PGSERVICE", "PGSERVICEFILE", "PGHOSTADDR", "PGOPTIONS"):

@@ -15,14 +15,14 @@ enseñan de verdad?) y cobertura (¿están todos los temas que debería tener el
 
 ## Corrección de estado — 2026-10-30
 
-El inventario actual es de 1.098 temas, por lo que las cifras y las tablas
+El inventario actual es de 1.100 temas, por lo que las cifras y las tablas
 posteriores de este documento son una instantánea histórica, no el estado de
 cobertura vigente. La crítica de que los temas se sienten básicos y superficiales
 es válida: contar comandos, código o encabezados no mide si una persona puede
 construir, explicar, depurar y extender un sistema real.
 
-La revisión actual registra señales de sustancia en 306/1.098 temas, bloques
-repetidos en 202, andamiaje genérico en 128 y secciones heredadas en 184/245
+La revisión actual registra señales de sustancia en 303/1.100 temas, bloques
+repetidos en 202, andamiaje genérico en 125 y secciones heredadas en 184/245
 módulos. Son señales heurísticas, no veredictos tema por tema. La revisión
 pedagógica humana sigue pendiente para todos los temas y solo 13 de 14
 laboratorios nuevos seleccionados figuran como comprobados con límites. Por
