@@ -99,7 +99,7 @@
     "spring-boot": {
       "topics": 91,
       "code": 91,
-      "commentedCode": 74,
+      "commentedCode": 77,
       "mermaid": 47,
       "archifyVisual": 4,
       "asciiVisual": 20,
@@ -1525,27 +1525,6 @@
       "track": "spring-boot",
       "module": 20,
       "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 21,
-      "topic": "Tema 1: Productor, tópico, key y consumidor",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 21,
-      "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 21,
-      "topic": "Tema 3: Outbox transaccional y flujo de negocio",
       "missingCode": false,
       "missingComments": true
     },

@@ -168,3 +168,18 @@ git switch --track origin/codex/biblioteca-continuidad-20261013
 Si la rama ya existe localmente, usa `git switch codex/biblioteca-continuidad-20261013`. Abre este documento y `docs/biblioteca/cola.md`, conecta el disco y ajusta `--root`. Los PDFs permanecen en el disco externo. Esta rama contiene únicamente el incremento de biblioteca y Java; los cambios locales anteriores de interfaz y Flutter siguen en el área de trabajo original.
 
 Validación: `./scripts/validate.sh` completada con código 0 tanto en el área original como en una copia aislada basada en `cbdf1ac`. El conteo estructural de metodología informa 478/935 temas completos; no se declara la academia al 100 %.
+
+
+## Continuidad de Copilot — 2026-10-30
+
+Se retomó el laboratorio `examples/spring-kafka-rutaflow/` y Spring Boot, módulo 21.
+Se profundizaron productor/key, consumidor, reintentos, DLT, inbox y outbox con fallos
+reproducibles y resultados SQL observables. Se corrigió la conservación de bytes malformados
+en DLT y una comprobación de duplicados que podía pasar antes de consumir la segunda copia.
+El módulo distingue el backoff bloqueante implementado de un diseño con retry topics.
+
+La evidencia de ejecución y sus límites se conserva en
+[el registro del laboratorio](../examples/spring-kafka-rutaflow/VERIFICATION.md).
+Este incremento usa código local y documentación primaria de Spring; no añade lectura
+verificada de libros. El disco externo no está montado en esta sesión. La lectura integral
+de la biblioteca y la integración de todos los temas de las imágenes siguen pendientes.

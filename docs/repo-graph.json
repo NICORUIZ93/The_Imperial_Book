@@ -609,7 +609,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1925,
+      "lines": 1904,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -641,7 +641,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 12460,
+      "lines": 12458,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -754,7 +754,7 @@
     },
     {
       "path": "docs/integracion-biblioteca-externa-progreso.md",
-      "lines": 171,
+      "lines": 186,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -769,7 +769,8 @@
         "## Continuidad entre m\u00e1quinas \u2014 actualizaci\u00f3n 2026-10-13",
         "## Siguiente acci\u00f3n concreta",
         "## Verificaci\u00f3n del primer incremento",
-        "## Recuperar este incremento en otra PC"
+        "## Recuperar este incremento en otra PC",
+        "## Continuidad de Copilot \u2014 2026-10-30"
       ]
     },
     {
@@ -803,7 +804,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 10029,
+      "lines": 10023,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -5111,7 +5112,7 @@
     },
     {
       "path": "examples/spring-kafka-rutaflow/compose.yaml",
-      "lines": 21,
+      "lines": 40,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -11331,16 +11332,16 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 362,
+      "lines": 516,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 21: Apache Kafka con Spring Boot \u2014 eventos, consumidores y recuperaci\u00f3n",
         "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
         "### Tema 1: Productor, t\u00f3pico, key y consumidor",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "# Copia ejecutable de referencia; se conserva el original para comparar los cambios.",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",

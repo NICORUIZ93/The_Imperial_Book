@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 245,
     "topics": 1098,
-    "topicsWithSignals": 148,
+    "topicsWithSignals": 147,
     "newLaboratories": 25
   },
   "priorities": {
@@ -12115,7 +12115,7 @@
       "module": 21,
       "title": "Tema 1: Productor, tópico, key y consumidor",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 14,
+      "line": 17,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12126,7 +12126,7 @@
       "module": 21,
       "title": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 182,
+      "line": 192,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12137,10 +12137,8 @@
       "module": 21,
       "title": "Tema 3: Outbox transaccional y flujo de negocio",
       "file": "web/public/content/spring-boot/modulo-21.md",
-      "line": 281,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "line": 372,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

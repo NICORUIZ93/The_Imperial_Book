@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: spring-kafka-rutaflow
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/rutaflow}
+    username: ${SPRING_DATASOURCE_USERNAME:rutaflow}
+    password: ${SPRING_DATASOURCE_PASSWORD:rutaflow}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.academia.rutaflow.config.EventOrBytesSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: rutaflow-ruteo
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+        spring.json.value.default.type: com.academia.rutaflow.event.EnvioCreado
+        spring.json.trusted.packages: com.academia.rutaflow.event
+        spring.json.use.type.headers: false
+    listener:
+      ack-mode: record
+
+server:
+  port: 8080
+
+rutaflow:
+  outbox:
+    initial-delay: 1000
+    fixed-delay: 1000
