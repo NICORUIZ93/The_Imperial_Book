@@ -8,22 +8,22 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1100 | 0 |
-| Código | 1100 | 0 |
-| Ruta | 1100 | 0 |
-| Ejecución | 1100 | 0 |
-| Resultado | 1100 | 0 |
-| Modificación | 1100 | 0 |
-| Conexión con un proyecto | 1100 | 0 |
-| Modelo mental | 1100 | 0 |
-| Límites | 1100 | 0 |
-| **Perfil de criterios detectado** | **1100** | **0** |
+| Explicación | 1106 | 0 |
+| Código | 1106 | 0 |
+| Ruta | 1106 | 0 |
+| Ejecución | 1106 | 0 |
+| Resultado | 1106 | 0 |
+| Modificación | 1106 | 0 |
+| Conexión con un proyecto | 1106 | 0 |
+| Modelo mental | 1106 | 0 |
+| Límites | 1106 | 0 |
+| **Perfil de criterios detectado** | **1106** | **0** |
 
 ## Prioridad por track
 
 | Track | Temas | Sin código | Sin ruta | Sin ejecución | Sin resultado | Sin modificación | Sin proyecto | Sin límites |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| android | 64 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | devops | 113 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |

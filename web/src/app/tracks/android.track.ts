@@ -203,4 +203,11 @@ export const ANDROID_MODULES: CourseModule[] = [
     ['¿Qué diferencia hay entre un Intent explícito y uno implícito?', '¿Por qué Android 14 exige declarar el tipo de un foreground service?', '¿Por qué está prohibido compartir URI file:// entre apps?'],
     ['Android Studio', 'Jetpack Compose', 'Play Services Location', 'adb'],
     'Detalle de entrega integrado con mapas, mensajería, eventos de batería, seguimiento en primer plano y envío de comprobantes, con README de permisos.'),
+  m(16, 'Android profesional: privacidad, datos, escala e identidad', 'Android profesional', 'Experto', '14 h', '#3ddc84',
+    'Completa capacidades profesionales ausentes: mínimo privilegio, preferencias consistentes, paginación, push confiable, UI adaptativa e identidad moderna verificada por servidor.',
+    ['Runtime permissions y Photo Picker', 'DataStore', 'Paging 3 y RemoteMediator', 'Firebase Cloud Messaging', 'Adaptive layouts', 'Credential Manager y passkeys'],
+    ['Adjunta una foto sin permiso amplio', 'Migra preferencias a DataStore', 'Pagina Room y red con estados de carga', 'Reconcilia mensajes FCM idempotentemente', 'Prueba teléfono, tablet y foldable', 'Bloquea replay de challenge en backend'],
+    ['¿Cuándo la mejor petición de permiso es ninguna?', '¿Por qué un push no es fuente de verdad?', '¿Qué debe verificar el servidor en una passkey?'],
+    ['AndroidX DataStore', 'Paging 3', 'Firebase Cloud Messaging', 'Material Adaptive', 'Credential Manager'],
+    'RutaFlow con permisos mínimos, datos paginados/offline, push reconciliado, interfaz adaptativa y autenticación resistente a replay.'),
 ];

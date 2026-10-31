@@ -13,7 +13,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 85 | 45 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 7 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| android | 58 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
+| android | 64 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
@@ -23,7 +23,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1100 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1106 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -60,6 +60,12 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | android / 15 | [Tema 2: BroadcastReceiver: reaccionar a eventos del sistema](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 15 | [Tema 3: Foreground Service de ubicación con FusedLocationProvider](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 15 | [Tema 4: Compartir archivos con FileProvider y content://](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 2: DataStore para preferencias consistentes y migrables](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 3: Paging 3, estados de carga y RemoteMediator](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 4: FCM, permiso de notificaciones y sincronización confiable](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 5: Interfaces adaptativas para teléfono, tablet y foldable](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 6: Credential Manager, passkeys y verificación en servidor](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 2 | [Tema 1: Composables y recomposición](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 2 | [Tema 2: State hoisting](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 2 | [Tema 3: remember, rememberSaveable y layout básico](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

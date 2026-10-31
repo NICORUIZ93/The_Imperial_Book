@@ -1,23 +1,23 @@
 {
   "summary": {
     "android": {
-      "topics": 58,
-      "objective": 58,
-      "prerequisites": 58,
-      "context": 58,
-      "theoryAnalogy": 58,
-      "guidedDemo": 58,
-      "codeExplanation": 58,
-      "execution": 58,
-      "expectedResult": 58,
-      "deliberateFailure": 58,
-      "guidedPractice": 58,
-      "independentPractice": 58,
-      "closure": 58,
-      "commonErrors": 58,
-      "resources": 58,
-      "standaloneExample": 58,
-      "complete": 58
+      "topics": 64,
+      "objective": 64,
+      "prerequisites": 64,
+      "context": 64,
+      "theoryAnalogy": 64,
+      "guidedDemo": 64,
+      "codeExplanation": 64,
+      "execution": 64,
+      "expectedResult": 64,
+      "deliberateFailure": 64,
+      "guidedPractice": 64,
+      "independentPractice": 64,
+      "closure": 64,
+      "commonErrors": 64,
+      "resources": 64,
+      "standaloneExample": 64,
+      "complete": 64
     },
     "angular": {
       "topics": 71,
@@ -1047,6 +1047,156 @@
       {
         "module": 15,
         "topic": "Tema 4: Compartir archivos con FileProvider y content://",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 2: DataStore para preferencias consistentes y migrables",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 3: Paging 3, estados de carga y RemoteMediator",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 4: FCM, permiso de notificaciones y sincronización confiable",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 5: Interfaces adaptativas para teléfono, tablet y foldable",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 6: Credential Manager, passkeys y verificación en servidor",
         "criteria": {
           "objective": true,
           "prerequisites": true,

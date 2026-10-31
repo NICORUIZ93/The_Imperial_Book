@@ -86,11 +86,36 @@ Cambios realizados:
 - Ambos temas conectan el fundamento con RutaFlow y una práctica independiente de
   nivel profesional, sin copiar proyectos de los cursos consultados.
 
+## Segundo lote aplicado: Android 16, seis vacíos de producción
+
+La comparación del track completo con las rutas oficiales de calidad de Android y
+con temarios públicos actuales reveló seis capacidades que no estaban enseñadas como
+temas autónomos. Se añadió **Android profesional: privacidad, datos, escala e
+identidad**, con práctica desde cero y transferencia al proyecto RutaFlow:
+
+1. permisos en tiempo de ejecución y alternativas que evitan pedirlos;
+2. DataStore, migración desde `SharedPreferences` y límites frente a Room;
+3. Paging 3, `LoadState` y `RemoteMediator` con base local como fuente de verdad;
+4. FCM, `POST_NOTIFICATIONS`, renovación de token y reconciliación idempotente;
+5. layouts adaptativos para teléfono, tablet, ventana dividida y foldable;
+6. Credential Manager, passkeys, challenge de un solo uso y verificación en servidor.
+
+Las referencias primarias contrastadas fueron las guías de
+[permisos](https://developer.android.com/training/permissions/requesting),
+[DataStore](https://developer.android.com/topic/libraries/architecture/datastore),
+[Paging](https://developer.android.com/topic/libraries/architecture/paging/v3-overview),
+[FCM](https://firebase.google.com/docs/cloud-messaging/android/get-started),
+[calidad adaptativa](https://developer.android.com/develop/adaptive-apps/quality-guidelines/core-app-quality)
+y [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager).
+Los catálogos de cursos y libros se usaron para detectar secuencia y expectativas de
+alcance, no para copiar contenido protegido. La explicación, el código, los fallos y
+las prácticas del módulo son propios del repositorio.
+
 ## Cola y regla de avance
 
 La línea base de sustancia contiene la cola medible. Se trabaja por módulos para no
 romper continuidad: primero fundamentos de entrada y temas con andamiaje genérico;
 después integración y operación. Cada lote debe reducir la línea base, regenerar
 reportes, ejecutar `./scripts/validate.sh`, construir Angular y correr las pruebas
-relevantes. No se declarará que los 1.100 temas alcanzaron profundidad profesional
+relevantes. No se declarará que los 1.106 temas alcanzaron profundidad profesional
 hasta que la cola sea cero y exista revisión pedagógica humana separada.

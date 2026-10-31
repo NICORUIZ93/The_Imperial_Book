@@ -13,18 +13,18 @@
   ],
   "summary": {
     "android": {
-      "topics": 58,
-      "explanation": 58,
-      "code": 58,
-      "visual": 55,
-      "filePath": 58,
-      "runCommand": 58,
-      "expectedResult": 58,
-      "practice": 58,
-      "project": 58,
-      "modelMental": 58,
-      "limitsDecision": 58,
-      "practicable": 58,
+      "topics": 64,
+      "explanation": 64,
+      "code": 64,
+      "visual": 58,
+      "filePath": 64,
+      "runCommand": 64,
+      "expectedResult": 64,
+      "practice": 64,
+      "project": 64,
+      "modelMental": 64,
+      "limitsDecision": 64,
+      "practicable": 64,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -924,6 +924,138 @@
       {
         "module": 15,
         "topic": "Tema 4: Compartir archivos con FileProvider y content://",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 2: DataStore para preferencias consistentes y migrables",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 3: Paging 3, estados de carga y RemoteMediator",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 4: FCM, permiso de notificaciones y sincronización confiable",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 5: Interfaces adaptativas para teléfono, tablet y foldable",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 6: Credential Manager, passkeys y verificación en servidor",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 16:15 UTC
+Generated: 2026-10-31 16:22 UTC
 Root: `Academia_Floci`
-Indexed files: 964
+Indexed files: 965
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 60 files
 - `automation-script`: 39 files
 - `course-content`: 251 files
-- `documentation`: 61 files
+- `documentation`: 62 files
 - `example`: 490 files
 - `local-infra`: 1 files
 - `project-file`: 62 files
 
 ## File Types
 
-- `.md`: 321
+- `.md`: 322
 - `.py`: 165
 - `.json`: 73
 - `.java`: 73
@@ -239,7 +239,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (235 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Corrección de estado — 2026-10-30, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?)
 - `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 43 more files
+- ... 44 more files
 
 ### example
 
@@ -281,10 +281,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2712 lines)
-- `docs/code-visual-quality.json` (1855 lines)
-- `docs/course-depth-review.json` (13600 lines)
+- `docs/code-visual-quality.json` (1876 lines)
+- `docs/course-depth-review.json` (13672 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (819 lines)
-- `docs/lesson-substance.json` (9390 lines)
+- `docs/lesson-substance.json` (9437 lines)
 - ... 44 more files

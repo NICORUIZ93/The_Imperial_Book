@@ -4,7 +4,7 @@ Esta auditoría mide exclusivamente la presencia de criterios en el contenido ed
 
 | Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 0 | 0 |
+| android | 64 | 64 | 64 | 64 | 64 | 64 | 64 | 64 | 64 | 64 | 64 | 0 | 0 |
 | angular | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 71 | 0 | 0 |
 | cloud | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 156 | 0 | 0 |
 | devops | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 113 | 0 | 0 |
@@ -18,7 +18,7 @@ Esta auditoría mide exclusivamente la presencia de criterios en el contenido ed
 | react | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 0 | 0 |
 | rutaflow | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 0 | 0 |
 | spring-boot | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 0 | 0 |
-| **Total** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **1100** | **0** | **0** |
+| **Total** | **1106** | **1106** | **1106** | **1106** | **1106** | **1106** | **1106** | **1106** | **1106** | **1106** | **1106** | **0** | **0** |
 
 ## Regla editorial
 

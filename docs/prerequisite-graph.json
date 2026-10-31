@@ -7521,6 +7521,72 @@
       ]
     },
     {
+      "id": "android:16:1",
+      "track": "android",
+      "module": 16,
+      "position": 1,
+      "title": "Permisos en tiempo de ejecución y alternativas sin permiso",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:15:4"
+      ]
+    },
+    {
+      "id": "android:16:2",
+      "track": "android",
+      "module": 16,
+      "position": 2,
+      "title": "DataStore para preferencias consistentes y migrables",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:16:1"
+      ]
+    },
+    {
+      "id": "android:16:3",
+      "track": "android",
+      "module": 16,
+      "position": 3,
+      "title": "Paging 3, estados de carga y RemoteMediator",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:16:2"
+      ]
+    },
+    {
+      "id": "android:16:4",
+      "track": "android",
+      "module": 16,
+      "position": 4,
+      "title": "FCM, permiso de notificaciones y sincronización confiable",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:16:3"
+      ]
+    },
+    {
+      "id": "android:16:5",
+      "track": "android",
+      "module": 16,
+      "position": 5,
+      "title": "Interfaces adaptativas para teléfono, tablet y foldable",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:16:4"
+      ]
+    },
+    {
+      "id": "android:16:6",
+      "track": "android",
+      "module": 16,
+      "position": 6,
+      "title": "Credential Manager, passkeys y verificación en servidor",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:16:5"
+      ]
+    },
+    {
       "id": "ios:0:1",
       "track": "ios",
       "module": 0,

@@ -57,6 +57,11 @@
       "track": "android"
     },
     {
+      "legacySections": [],
+      "module": 16,
+      "track": "android"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
@@ -1644,16 +1649,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "fd63161a8efbfe9aa23ea1c301b07740803bd0f063d1f92f74e5b499b945e8b4",
+    "fingerprint": "52e68c27ec09ea12febf127d31cf2d59ae214afa0ebc80415285731beac7e786",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 181
     },
-    "modules": 245,
+    "modules": 246,
     "modulesWithLegacySections": 183,
-    "topics": 1100,
+    "topics": 1106,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -1881,6 +1886,48 @@
         "tailWords": 185,
         "topic": "Tema 4: Compartir archivos con FileProvider y content://",
         "words": 924
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 113,
+        "topic": "Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso",
+        "words": 567
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 75,
+        "topic": "Tema 2: DataStore para preferencias consistentes y migrables",
+        "words": 502
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 97,
+        "topic": "Tema 3: Paging 3, estados de carga y RemoteMediator",
+        "words": 484
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 94,
+        "topic": "Tema 4: FCM, permiso de notificaciones y sincronización confiable",
+        "words": 530
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 86,
+        "topic": "Tema 5: Interfaces adaptativas para teléfono, tablet y foldable",
+        "words": 521
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 100,
+        "topic": "Tema 6: Credential Manager, passkeys y verificación en servidor",
+        "words": 544
       },
       {
         "issues": [],

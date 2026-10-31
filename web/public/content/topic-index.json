@@ -144,6 +144,32 @@
         "fragment": "tema-4-compartir-archivos-con-fileprovider-y-content"
       }
     ],
+    "16": [
+      {
+        "title": "Permisos en tiempo de ejecución y alternativas sin permiso",
+        "fragment": "tema-1-permisos-en-tiempo-de-ejecucion-y-alternativas-sin-permiso"
+      },
+      {
+        "title": "DataStore para preferencias consistentes y migrables",
+        "fragment": "tema-2-datastore-para-preferencias-consistentes-y-migrables"
+      },
+      {
+        "title": "Paging 3, estados de carga y RemoteMediator",
+        "fragment": "tema-3-paging-3-estados-de-carga-y-remotemediator"
+      },
+      {
+        "title": "FCM, permiso de notificaciones y sincronización confiable",
+        "fragment": "tema-4-fcm-permiso-de-notificaciones-y-sincronizacion-confiable"
+      },
+      {
+        "title": "Interfaces adaptativas para teléfono, tablet y foldable",
+        "fragment": "tema-5-interfaces-adaptativas-para-telefono-tablet-y-foldable"
+      },
+      {
+        "title": "Credential Manager, passkeys y verificación en servidor",
+        "fragment": "tema-6-credential-manager-passkeys-y-verificacion-en-servidor"
+      }
+    ],
     "2": [
       {
         "title": "Composables y recomposición",

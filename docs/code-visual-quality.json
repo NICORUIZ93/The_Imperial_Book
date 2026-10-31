@@ -121,16 +121,16 @@
       "officialSource": 56
     },
     "android": {
-      "topics": 58,
-      "code": 58,
-      "commentedCode": 53,
-      "mermaid": 15,
+      "topics": 64,
+      "code": 64,
+      "commentedCode": 56,
+      "mermaid": 18,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 57,
-      "runCommand": 57,
-      "officialSource": 58
+      "filePath": 62,
+      "runCommand": 62,
+      "officialSource": 63
     },
     "ios": {
       "topics": 56,
@@ -1595,6 +1595,27 @@
       "track": "android",
       "module": 11,
       "topic": "Tema 3: Versionado, tracks y políticas",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 16,
+      "topic": "Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 16,
+      "topic": "Tema 2: DataStore para preferencias consistentes y migrables",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "android",
+      "module": 16,
+      "topic": "Tema 3: Paging 3, estados de carga y RemoteMediator",
       "missingCode": false,
       "missingComments": true
     },

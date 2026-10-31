@@ -608,7 +608,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1855,
+      "lines": 1876,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -640,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13600,
+      "lines": 13672,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -648,7 +648,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1131,
+      "lines": 1137,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -794,6 +794,23 @@
       ]
     },
     {
+      "path": "docs/investigacion-cursos-libros-red-2026.md",
+      "lines": 122,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Investigaci\u00f3n externa para elevar cada tema de cero a profesional",
+        "## Objetivo y l\u00edmites",
+        "## R\u00fabrica de reescritura",
+        "## Fuentes marco",
+        "## Familias de contraste por track",
+        "## Primer lote aplicado: Android 0, temas 4\u20135",
+        "## Segundo lote aplicado: Android 16, seis vac\u00edos de producci\u00f3n",
+        "## Cola y regla de avance"
+      ]
+    },
+    {
       "path": "docs/lesson-substance-baseline.json",
       "lines": 819,
       "kind": "project-file",
@@ -803,7 +820,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9390,
+      "lines": 9437,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -905,7 +922,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12108,
+      "lines": 12174,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1031,7 +1048,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 27801,
+      "lines": 27951,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1058,7 +1075,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1294,
+      "lines": 1295,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1076,7 +1093,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24471,
+      "lines": 24603,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -11792,7 +11809,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4921,
+      "lines": 4947,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13174,7 +13191,7 @@
     },
     {
       "path": "web/src/app/tracks/android.track.ts",
-      "lines": 207,
+      "lines": 214,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
