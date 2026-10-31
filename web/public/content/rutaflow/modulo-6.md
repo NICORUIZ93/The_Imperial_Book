@@ -383,7 +383,7 @@ Implementa `DetectorSenalFraude` completo con al menos dos señales (distancia G
 
 #### Paso 7 · Cierre y proyecto
 
-Entrega `DetectorSenalFraude.java`, el caso encolado real para RF-7788, la versión de auto-bloqueo del fallo deliberado y una breve explicación de por qué ninguna señal automatizada debe decidir sola. El siguiente módulo (**Módulo 7: Producción — Tema 1: Infraestructura y entrega segura**) retoma esta misma disciplina: ninguna automatización del pipeline o de la operación debe tener poder de decisión final sin evidencia y, cuando aplica, sin revisión humana. **Fuente oficial:** [GDPR — Artículo 22: decisiones individuales automatizadas](https://gdpr-info.eu/art-22-gdpr/).
+Entrega `DetectorSenalFraude.java`, el caso encolado real para RF-7788, la versión de auto-bloqueo del fallo deliberado y una breve explicación de por qué ninguna señal automatizada debe decidir sola. El siguiente módulo (**Módulo 7: Producción — Tema 1: Infraestructura y entrega segura**) retoma esta misma disciplina: ninguna automatización del pipeline o de la operación debe tener poder de decisión final sin evidencia y, cuando aplica, sin revisión humana. **Fuente oficial:** [Reglamento (UE) 2016/679, artículo 22](https://eur-lex.europa.eu/eli/reg/2016/679/oj).
 
 **Errores comunes:** dejar que una señal automatizada escriba un `EstadoEnvio` terminal; usar un solo umbral sin registrar la distancia real para el analista; tratar la señal como culpabilidad en vez de como prioridad de revisión; no versionar el umbral, perdiendo la capacidad de explicar por qué un caso viejo se marcó y uno nuevo no.
 

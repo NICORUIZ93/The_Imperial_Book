@@ -1095,7 +1095,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 7181,
+      "lines": 10957,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -5861,7 +5861,7 @@
     },
     {
       "path": "scripts/audit_code_visual_quality.py",
-      "lines": 168,
+      "lines": 226,
       "kind": "automation-script",
       "symbols": [
         "student_visible_content",
@@ -6304,7 +6304,7 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 165,
+      "lines": 202,
       "kind": "automation-script",
       "symbols": [
         "EditorialValidationTests",
@@ -6312,6 +6312,7 @@
       ],
       "imports": [
         "json",
+        "re",
         "subprocess",
         "sys",
         "tempfile",
@@ -6350,7 +6351,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 181,
+      "lines": 182,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],

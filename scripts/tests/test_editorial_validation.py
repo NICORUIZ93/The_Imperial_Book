@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -73,12 +74,27 @@ El proyecto integrador tiene límites.
             with self.subTest(host=host):
                 self.assertTrue(visual_audit.evaluate(f"https://{host}/docs")["officialSource"])
 
+        for host in ("www.rfc-editor.org", "owasp.org", "vitest.dev", "pub.dev",
+                     "expressjs.com", "projectreactor.io", "prometheus.io", "refactoring.guru"):
+            with self.subTest(project_host=host):
+                self.assertTrue(visual_audit.evaluate(f"https://{host}/docs")["officialSource"])
+
     def test_source_host_prefixes_and_userinfo_are_not_accepted(self):
         for url in ("https://angular.dev.evil.example/", "https://docs.python.org.evil.example/",
                     "https://angular.dev@evil.example/", "https://someone@docs.python.org/",
                     "https://github.com/someone/documentation", "https://en.wikipedia.org/wiki/Python"):
             with self.subTest(url=url):
                 self.assertFalse(visual_audit.evaluate(url)["officialSource"])
+
+        for url in ("https://github.com/actions/setup-node-evil",
+                    "https://github.com/actions/setup-node.evil/readme",
+                    "https://github.com/attacker/setup-node"):
+            with self.subTest(github_url=url):
+                self.assertFalse(visual_audit.evaluate(url)["officialSource"])
+
+        self.assertTrue(visual_audit.evaluate(
+            "https://github.com/actions/setup-node#caching-global-packages-data"
+        )["officialSource"])
 
     def test_source_inside_code_or_hidden_complements_is_not_counted(self):
         for block in (
@@ -95,10 +111,31 @@ El proyecto integrador tiene límites.
         self.assertEqual(summary["baselineUnrecognizedTopics"], len(data["topics"]))
         self.assertEqual(summary["additionalRecognizedTopics"], sum(bool(row["providerCitations"]) for row in data["topics"]))
         self.assertEqual(summary["remainingUnrecognizedTopics"], sum(not row["providerCitations"] for row in data["topics"]))
-        self.assertEqual(summary["urlsReachable"], sum(row.get("status") == 200 for row in data["urlChecks"]))
-        self.assertEqual(summary["urlsPending"], sum(row.get("status") != 200 for row in data["urlChecks"]))
+        reachable = lambda row: isinstance(row.get("status"), int) and 200 <= row["status"] < 400
+        self.assertEqual(summary["urlsReachable"], sum(reachable(row) for row in data["urlChecks"]))
+        self.assertEqual(summary["urlsPending"], sum(not reachable(row) for row in data["urlChecks"]))
         self.assertTrue(all(row["applicabilityReview"] == "revisión manual pendiente" for row in data["topics"]))
-        self.assertTrue(set(data["providerHostsReviewed"]).issubset(visual_audit.OFFICIAL_SOURCE_HOSTS))
+        allowed_hosts = set(visual_audit.OFFICIAL_SOURCE_HOSTS) | {"github.com"}
+        self.assertTrue(set(data["providerHostsReviewed"]).issubset(allowed_hosts))
+
+    def test_source_review_matches_current_markdown(self):
+        root = Path(__file__).resolve().parents[2]
+        data = json.loads((root / "docs/topic-source-review.json").read_text())
+        by_path = {}
+        for row in data["topics"]:
+            path = row["path"]
+            if path not in by_path:
+                text = (root / path).read_text()
+                headings = list(re.finditer(r"^###\s+(Tema(?:[^:]*)?:\s*[^\n]+)", text, re.MULTILINE))
+                by_path[path] = {
+                    heading.group(1).strip(): text[
+                        heading.start():headings[index + 1].start() if index + 1 < len(headings) else len(text)
+                    ]
+                    for index, heading in enumerate(headings)
+                }
+            block = by_path[path][row["topic"]]
+            detected = {url.rstrip(".,;:") for url in visual_audit.official_source_urls(block)}
+            self.assertEqual(sorted(row["providerCitations"]), sorted(detected))
 
     def test_real_file_types_and_commands_are_recognized(self):
         for filename, command in [("index.html", "python3 -m http.server"),

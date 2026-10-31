@@ -32,8 +32,61 @@ OFFICIAL_SOURCE_HOSTS = frozenset({
     "dart.dev", "api.flutter.dev", "docs.gradle.org", "maven.apache.org",
     "www.postgresql.org", "www.sqlite.org", "code.visualstudio.com", "docs.github.com",
     "aws.amazon.com", "opentelemetry.io",
-    "sre.google", "www.microsoft.com", "ocw.mit.edu", "cs.brown.edu",
+    "sre.google", "research.google", "www.microsoft.com", "ocw.mit.edu", "cs.brown.edu",
+    # Estándares, seguridad y organismos públicos.
+    "www.rfc-editor.org", "datatracker.ietf.org", "owasp.org",
+    "cheatsheetseries.owasp.org", "www.w3.org", "www.nist.gov", "www.cisa.gov",
+    "www.iso.org", "webstore.iec.ch", "jakarta.ee", "spec.openapis.org",
+    "spec.graphql.org", "httpwg.org",
+    # Documentación mantenida por proyectos y proveedores del currículo.
+    "pub.dev", "vitest.dev", "vite.dev", "rollupjs.org", "webpack.js.org",
+    "swc.rs", "prettier.io", "web.dev", "v8.dev", "www.tensorflow.org",
+    "testing-library.com", "mswjs.io", "playwright.dev", "nextjs.org",
+    "next-intl.dev", "reactrouter.com", "react-hook-form.com", "react-redux.js.org",
+    "redux-toolkit.js.org", "react-spectrum.adobe.com", "tanstack.com", "zod.dev",
+    "jotai.org", "stately.ai", "zustand.docs.pmnd.rs", "pmnd.rs",
+    "expressjs.com", "fastify.dev", "node-postgres.com", "mongoosejs.com",
+    "www.mongodb.com", "redis.io", "docs.bullmq.io", "kafka.js.org",
+    "graphql.org", "grpc.io", "socket.io", "www.apollographql.com",
+    "docs.prisma.io", "www.prisma.io", "swagger.io", "redocly.com",
+    "docs.stripe.com", "start.spring.io", "springdoc.org", "projectreactor.io",
+    "resilience4j.readme.io", "docs.temporal.io", "docs.jboss.org",
+    "mapstruct.org", "projectlombok.org", "www.archunit.org", "junit.org",
+    "site.mockito.org", "www.jacoco.org", "wiremock.org", "logback.qos.ch",
+    "kafka.apache.org", "tinkerpop.apache.org", "maven.apache.org",
+    "testcontainers.com", "java.testcontainers.org", "node.testcontainers.org",
+    "ktor.io", "insert-koin.io", "cashapp.github.io", "www.jetbrains.com",
+    "blog.jetbrains.com", "rxjs.dev", "ngrx.io", "material.angular.dev",
+    "square.github.io", "riverpod.dev", "bloclibrary.dev", "docs.fastlane.tools",
+    "prometheus.io", "grafana.com", "nginx.org", "www.freedesktop.org",
+    "man7.org", "man.openbsd.org", "documentation.ubuntu.com", "helm.sh",
+    "istio.io", "docs.ansible.com", "www.pulumi.com", "opentofu.org",
+    "trivy.dev", "docs.sigstore.dev", "slsa.dev", "opengitops.dev",
+    "www.openpolicyagent.org", "docs.localstack.cloud", "www.jenkins.io",
+    "learning.postman.com", "docs.usebruno.com", "restic.readthedocs.io",
+    "letsencrypt.org", "certbot.eff.org", "dora.dev", "www.elastic.co",
+    "docs.zephyrproject.org", "docs.arduino.cc", "docs.scipy.org",
+    "scikit-learn.org", "matplotlib.org", "docs.kicad.org",
+    "openpyxl.readthedocs.io", "hypothesis.readthedocs.io",
+    "postgis.net", "maplibre.org", "nominatim.org", "project-osrm.org",
+    # Fuentes primarias de autores y modelos usados explícitamente.
+    "refactoring.guru", "refactoring.com", "martinfowler.com", "microservices.io",
+    "12factor.net", "c4model.com", "pages.cs.wisc.edu", "craftinginterpreters.com",
+    "trunkbaseddevelopment.com",
+    "adr.github.io", "www.atlassian.com", "cacm.acm.org", "cyclonedx.org",
+    "platformengineering.org", "documentation.red-gate.com", "javadoc.io",
+    "sqldelight.github.io", "eur-lex.europa.eu",
 })
+
+# Repositorios canónicos cuyo producto documenta su uso en el propio README/wiki.
+# No se admite github.com en general: la ruta completa debe pertenecer al proyecto.
+OFFICIAL_GITHUB_PREFIXES = (
+    "https://github.com/GoogleContainerTools/distroless",
+    "https://github.com/actions/setup-node",
+    "https://github.com/aquasecurity/trivy-action",
+    "https://github.com/ng-native/ng-native",
+    "https://github.com/spring-projects/spring-boot/wiki",
+)
 
 
 def student_visible_content(text: str) -> str:
@@ -75,7 +128,12 @@ def official_source_urls(block: str) -> list[str]:
             parsed = urlsplit(url)
         except ValueError:
             continue
-        if parsed.hostname in OFFICIAL_SOURCE_HOSTS and parsed.username is None:
+        canonical_url = url.rstrip(".,;:")
+        official_github_url = any(
+            canonical_url == prefix or canonical_url.startswith(prefix + "/") or canonical_url.startswith(prefix + "#")
+            for prefix in OFFICIAL_GITHUB_PREFIXES
+        )
+        if parsed.username is None and (parsed.hostname in OFFICIAL_SOURCE_HOSTS or official_github_url):
             urls.append(url)
     return urls
 

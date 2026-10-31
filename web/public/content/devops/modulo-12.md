@@ -588,7 +588,7 @@ Documenta en una frase qué otra práctica de este track (por ejemplo, un dashbo
 
 #### Paso 7 · Cierre
 
-Ya explicas el problema que resuelve una IDP y demuestras, con un ejemplo mínimo, cómo garantiza consistencia entre equipos sin que cada uno redescubra las mismas buenas prácticas de forma independiente. Esto cierra el track de DevOps completo: desde el shell scripting básico del Módulo 0 hasta la consolidación organizacional de estas prácticas en una plataforma interna; el siguiente módulo aplica todo este recorrido en conjunto sobre un proyecto propio. Fuente oficial: [Platform Engineering — What is an Internal Developer Platform](https://platformengineering.org/blog/what-is-an-internal-developer-platform).
+Ya explicas el problema que resuelve una IDP y demuestras, con un ejemplo mínimo, cómo garantiza consistencia entre equipos sin que cada uno redescubra las mismas buenas prácticas de forma independiente. Esto cierra el track de DevOps completo: desde el shell scripting básico del Módulo 0 hasta la consolidación organizacional de estas prácticas en una plataforma interna; el siguiente módulo aplica todo este recorrido en conjunto sobre un proyecto propio. Fuente del proyecto: [Platform Engineering](https://platformengineering.org/).
 
 **Errores comunes:** construir una IDP demasiado rígida que no permite ninguna personalización legítima que un equipo específico realmente necesite; confundir una IDP con simplemente documentación de buenas prácticas sin ninguna automatización real que las aplique por defecto.
 

@@ -108,7 +108,7 @@ Documenta en una frase por qué declarar `ApiService` como una interfaz (en vez 
 
 #### Paso 7 · Cierre
 
-Ya declaras un endpoint HTTP con Retrofit como función `suspend`, leíble de forma lineal sin callbacks anidados. El siguiente tema formaliza cómo distinguir y manejar los distintos tipos de error que esa llamada puede producir. Fuente oficial: [Retrofit — Square, Inc.](https://square.github.io/retrofit/).
+Ya declaras un endpoint HTTP con Retrofit como función `suspend`, leíble de forma lineal sin callbacks anidados. El siguiente tema formaliza cómo distinguir y manejar los distintos tipos de error que esa llamada puede producir. Fuente oficial: [Retrofit — API publicada por Square](https://javadoc.io/doc/com.squareup.retrofit2/retrofit/latest/index.html).
 
 **Errores comunes:** olvidar el modificador `suspend` en la función de la interfaz, lo que rompe la integración con coroutines; asumir que la deserialización siempre tendrá éxito sin considerar respuestas con forma inesperada.
 
@@ -212,7 +212,7 @@ Documenta en una frase una política de reintento automático razonable (cuánta
 
 #### Paso 7 · Cierre
 
-Ya distingues `HttpException` de `IOException` en un `ViewModel`, dando mensajes específicos y accionables para cada caso. El siguiente tema cubre cómo aplicar transformaciones transversales (logging, autenticación) a todas las peticiones sin repetir código en cada llamada. Fuente oficial: [Square — Retrofit HttpException](https://square.github.io/retrofit/2.x/retrofit/retrofit2/HttpException.html).
+Ya distingues `HttpException` de `IOException` en un `ViewModel`, dando mensajes específicos y accionables para cada caso. El siguiente tema cubre cómo aplicar transformaciones transversales (logging, autenticación) a todas las peticiones sin repetir código en cada llamada. Fuente oficial: [Square — Retrofit HttpException](https://javadoc.io/doc/com.squareup.retrofit2/retrofit/latest/retrofit2/HttpException.html).
 
 **Errores comunes:** capturar `Exception` genérica sin distinguir categorías, perdiendo la posibilidad de mensajes específicos; reintentar automáticamente ante cualquier tipo de error, incluyendo errores definitivos como un 404 donde reintentar no cambiaría el resultado.
 
@@ -329,7 +329,7 @@ Documenta en una frase por qué `HttpLoggingInterceptor().apply { level = ... BO
 
 #### Paso 7 · Cierre
 
-Ya configuras interceptores de OkHttp para logging y autenticación, y explicas concretamente por qué su orden de registro afecta qué información capturan los logs. Esto cierra el módulo de networking; el siguiente módulo del track aborda persistencia local con Room. Fuente oficial: [Square — OkHttp Interceptors](https://square.github.io/okhttp/features/interceptors/).
+Ya configuras interceptores de OkHttp para logging y autenticación, y explicas concretamente por qué su orden de registro afecta qué información capturan los logs. Esto cierra el módulo de networking; el siguiente módulo del track aborda persistencia local con Room. Fuente oficial: [Square — API de OkHttp](https://javadoc.io/doc/com.squareup.okhttp3/okhttp/latest/index.html).
 
 **Errores comunes:** dejar `HttpLoggingInterceptor` en nivel `BODY` (verboso, incluyendo cuerpos completos con posibles datos sensibles) en builds de producción; registrar el interceptor de autenticación después del de logging cuando se necesita depurar problemas relacionados con el header.
 

@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "e2b7a3e2c1f665bd3a74d2059906a143a7423ce89963ac456cd176a3c0142277",
+    "fingerprint": "cd2619289be03e6ad54704b784cc9a3283f3d199d4143d5e90ab018e38d0ad94",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1962,23 +1962,23 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 142,
+        "tailWords": 150,
         "topic": "Tema 1: Retrofit con coroutines",
-        "words": 928
-      },
-      {
-        "issues": [],
-        "module": 5,
-        "tailWords": 163,
-        "topic": "Tema 2: Manejo de errores HTTP",
-        "words": 981
+        "words": 936
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 164,
+        "topic": "Tema 2: Manejo de errores HTTP",
+        "words": 982
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 169,
         "topic": "Tema 3: Interceptores de OkHttp",
-        "words": 1058
+        "words": 1063
       },
       {
         "issues": [],
@@ -2820,9 +2820,9 @@
       {
         "issues": [],
         "module": 18,
-        "tailWords": 58,
+        "tailWords": 57,
         "topic": "Tema 1: Por qué no construir tu propio sistema de autenticación",
-        "words": 1125
+        "words": 1124
       },
       {
         "issues": [],
@@ -3823,9 +3823,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 164,
+        "tailWords": 163,
         "topic": "Tema 2: Integración en el pipeline",
-        "words": 922
+        "words": 921
       },
       {
         "issues": [],
@@ -3900,9 +3900,9 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 218,
+        "tailWords": 206,
         "topic": "Tema 6: Platform Engineering — Internal Developer Platforms (IDPs)",
-        "words": 1157
+        "words": 1145
       },
       {
         "issues": [],
@@ -3963,9 +3963,9 @@
       {
         "issues": [],
         "module": 15,
-        "tailWords": 209,
+        "tailWords": 208,
         "topic": "Tema 2: Kubernetes extensible y Helm avanzado",
-        "words": 642
+        "words": 641
       },
       {
         "issues": [],
@@ -3998,9 +3998,9 @@
       {
         "issues": [],
         "module": 16,
-        "tailWords": 178,
+        "tailWords": 188,
         "topic": "Tema 1: Postman y Newman — tu primera colección contra una API real",
-        "words": 1005
+        "words": 1015
       },
       {
         "issues": [],
@@ -5486,9 +5486,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 215,
+        "tailWords": 206,
         "topic": "Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
-        "words": 4273
+        "words": 4264
       },
       {
         "issues": [],
@@ -7286,9 +7286,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 157,
+        "tailWords": 161,
         "topic": "Tema 2: Sincronización de datos remotos con caché local",
-        "words": 1151
+        "words": 1155
       },
       {
         "issues": [],
@@ -7496,16 +7496,16 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 165,
+        "tailWords": 166,
         "topic": "Tema 1: Esquemas SQLDelight y queries tipadas",
-        "words": 1253
+        "words": 1254
       },
       {
         "issues": [],
         "module": 6,
-        "tailWords": 152,
+        "tailWords": 151,
         "topic": "Tema 2: Drivers por plataforma",
-        "words": 1189
+        "words": 1188
       },
       {
         "issues": [],
@@ -7517,9 +7517,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 185,
+        "tailWords": 184,
         "topic": "Tema 4: Transacciones: atomicidad en operaciones multi-tabla",
-        "words": 1352
+        "words": 1351
       },
       {
         "issues": [],
@@ -8459,9 +8459,9 @@
       {
         "issues": [],
         "module": 7,
-        "tailWords": 155,
+        "tailWords": 144,
         "topic": "Tema 1: Zustand — stores mínimos sin boilerplate",
-        "words": 903
+        "words": 892
       },
       {
         "issues": [],
@@ -8473,9 +8473,9 @@
       {
         "issues": [],
         "module": 7,
-        "tailWords": 167,
+        "tailWords": 164,
         "topic": "Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto",
-        "words": 1006
+        "words": 1003
       },
       {
         "issues": [],
@@ -8622,9 +8622,9 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 167,
+        "tailWords": 168,
         "topic": "Tema 2: Mapas operativos",
-        "words": 1218
+        "words": 1219
       },
       {
         "issues": [],
@@ -8706,9 +8706,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 215,
+        "tailWords": 218,
         "topic": "Tema 3: Fraude responsable",
-        "words": 1290
+        "words": 1293
       },
       {
         "issues": [],
@@ -9226,9 +9226,9 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 161,
+        "tailWords": 158,
         "topic": "Tema 3: Migraciones con Flyway",
-        "words": 1115
+        "words": 1112
       },
       {
         "issues": [],

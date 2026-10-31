@@ -188,7 +188,7 @@ Agrega un segundo umbral de severidad (`HIGH`) que solo genere una advertencia s
 
 #### Paso 7 · Cierre
 
-Ya conviertes el escaneo de seguridad en un gate automático y obligatorio del pipeline, eliminando la dependencia de que alguien lo ejecute manualmente. El siguiente tema aborda cómo gestionar secretos de forma segura dentro de ese mismo pipeline. Fuente oficial: [Trivy — GitHub Actions integration](https://trivy.dev/latest/docs/ecosystem/ci/).
+Ya conviertes el escaneo de seguridad en un gate automático y obligatorio del pipeline, eliminando la dependencia de que alguien lo ejecute manualmente. El siguiente tema aborda cómo gestionar secretos de forma segura dentro de ese mismo pipeline. Fuente oficial: [Trivy Action — repositorio oficial](https://github.com/aquasecurity/trivy-action).
 
 **Errores comunes:** bloquear el pipeline ante cualquier severidad (incluyendo baja/media) generando fricción y fatiga de alertas; escanear una etiqueta genérica como `latest` en vez de la imagen exacta del commit, perdiendo trazabilidad precisa.
 

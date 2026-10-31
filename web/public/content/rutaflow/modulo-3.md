@@ -287,7 +287,7 @@ Implementa una función `actualizarClusters(puntosPx, clusterRadius, bbox)` que 
 
 #### Paso 7 · Cierre y proyecto
 
-Entrega `src/clustering.js` con la salida de 36 grupos, la salida de `500 de 500` del fallo deliberado reproducida, y una explicación de por qué agrupar por celda resuelve el problema medido. El siguiente tema (**Tema 3: Accesibilidad, seguridad y rendimiento**) retoma este mismo mapa para agregarle una alternativa tabular y hacerlo utilizable con teclado y lector de pantalla. **Fuente oficial:** [https://maplibre.org/maplibre-gl-js/docs/examples/cluster/](https://maplibre.org/maplibre-gl-js/docs/examples/cluster/).
+Entrega `src/clustering.js` con la salida de 36 grupos, la salida de `500 de 500` del fallo deliberado reproducida, y una explicación de por qué agrupar por celda resuelve el problema medido. El siguiente tema (**Tema 3: Accesibilidad, seguridad y rendimiento**) retoma este mismo mapa para agregarle una alternativa tabular y hacerlo utilizable con teclado y lector de pantalla. **Fuente oficial:** [MapLibre GL JS — crear y estilizar clústeres](https://maplibre.org/maplibre-gl-js/docs/examples/create-and-style-clusters/).
 
 **Errores comunes:** renderizar un marcador DOM por punto en vez de usar una fuente GeoJSON agrupable; elegir un `clusterRadius` sin medir cuántos grupos produce; recalcular los 500 puntos completos en cada movimiento del mapa en vez de solo los del viewport; confundir "menos marcadores en pantalla" con "menos datos": el conteo del cluster debe seguir siendo exacto.
 

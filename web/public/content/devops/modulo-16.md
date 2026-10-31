@@ -118,7 +118,7 @@ Agrega una variable `nombreServicio` al environment con el valor `"RutaFlow"`, y
 
 #### Paso 7 · Cierre
 
-Ya ejecutas una colección Postman real desde la terminal con Newman, separando la definición de las peticiones (colección) de dónde apuntan (environment). El siguiente tema agrega scripts y aserciones más completas sobre el cuerpo de la respuesta. Fuentes oficiales: [Postman — Collection Format](https://learning.postman.com/docs/collections/collection-utility-functions/) y [Newman — npm](https://www.npmjs.com/package/newman).
+Ya ejecutas una colección Postman real desde la terminal con Newman, separando la definición de las peticiones (colección) de dónde apuntan (environment). El siguiente tema agrega scripts y aserciones más completas sobre el cuerpo de la respuesta. Fuentes oficiales: [Postman — integración de Newman en línea de comandos](https://learning.postman.com/docs/collections/using-newman-cli/command-line-integration-with-newman/) y [Newman — npm](https://www.npmjs.com/package/newman).
 
 **Errores comunes:** hardcodear la URL completa en cada petición en vez de usar `{{baseUrl}}`, obligando a editar toda la colección para cambiar de entorno; usar `localhost` en vez de una IP explícita y tropezar con resolución DNS inconsistente entre máquinas.
 

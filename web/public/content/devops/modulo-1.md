@@ -402,7 +402,7 @@ Simula ahora el equivalente en polyrepo: crea dos carpetas Git independientes (`
 
 #### Paso 7 · Cierre
 
-Ya distingues cuándo el cambio atómico de un monorepo compensa la ceremonia de coordinar múltiples repositorios. El siguiente tema cubre comandos puntuales para deshacer cambios sin perder historial. Fuente oficial: [Google — Why Google Stores Billions of Lines in a Single Repository](https://cacm.acm.org/research/why-google-stores-billions-of-lines-of-code-in-a-single-repository/).
+Ya distingues cuándo el cambio atómico de un monorepo compensa la ceremonia de coordinar múltiples repositorios. El siguiente tema cubre comandos puntuales para deshacer cambios sin perder historial. Fuente primaria: [Google Research — Why Google Stores Billions of Lines in a Single Repository](https://research.google/pubs/why-google-stores-billions-of-lines-of-code-in-a-single-repository/).
 
 **Errores comunes:** tratar un monorepo como una excusa para no versionar cuidadosamente cada paquete por separado; subestimar la fricción real de coordinar cambios cruzados en polyrepo.
 

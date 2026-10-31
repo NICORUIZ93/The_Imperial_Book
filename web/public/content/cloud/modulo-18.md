@@ -64,7 +64,7 @@ Pista: confirmá el registro con un código inventado (`aws cognito-idp confirm-
 #### Paso 6 · Práctica independiente
 Intentá `initiate-auth` con ese mismo conductor antes de confirmar su registro, y después de confirmarlo (usando el código real que Floci expone en local) — comparando el error `UserNotConfirmedException` del primer intento contra el login exitoso del segundo.
 #### Paso 7 · Cierre
-Entregá el registro del conductor, el código inválido del Paso 5 y la diferencia confirmado/no confirmado del Paso 6; explicá qué parte de este flujo habrías tenido que construir a mano sin Cognito. Siguiente paso: JWT. Errores comunes: confiar solo en frontend y mensajes que revelan usuarios. Fuente oficial: https://owasp.org/www-project-authentication-cheat-sheet/.
+Entregá el registro del conductor, el código inválido del Paso 5 y la diferencia confirmado/no confirmado del Paso 6; explicá qué parte de este flujo habrías tenido que construir a mano sin Cognito. Siguiente paso: JWT. Errores comunes: confiar solo en frontend y mensajes que revelan usuarios. Fuente oficial: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html.
 
 ### Tema 2: Access Token, ID Token y Refresh Token
 

@@ -95,7 +95,7 @@ Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Arranca, prueba y destruye un contenedor.
 #### Paso 7 · Cierre
-Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-node/.
+Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/.
 **Conceptos clave:** motores reales, no simulaciones aproximadas; sin costo para pruebas de integración repetidas.
 
 cloud local se distingue de simulaciones más superficiales de servicios cloud por su filosofía de "real engines, not mocks": cuando se crea una instancia RDS, corre PostgreSQL real (Módulo 13); cuando se crea un cluster ECS, corren contenedores Docker reales (Módulo 14); cuando se invoca Lambda, ejecuta el runtime real correspondiente en un contenedor Docker real, no una simulación aproximada de su comportamiento con lógica propia potencialmente divergente del comportamiento real de AWS; esta fidelidad de emulación, construida internamente sobre GraalVM (una máquina virtual que permite arranque considerablemente más rápido, en el orden de ~24 milisegundos, comparado con el arranque de una JVM tradicional) hace que cloud local sea considerablemente más confiable como entorno de pruebas que emuladores que reimplementan la lógica de cada servicio de forma aproximada y potencialmente divergente del comportamiento real.

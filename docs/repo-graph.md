@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 15:30 UTC
+Generated: 2026-10-31 15:38 UTC
 Root: `Academia_Floci`
 Indexed files: 963
 Import edges: 57
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (364 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (181 lines, automation-script)
+- `scripts/validate.sh` (182 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -177,7 +177,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### automation-script
 
-- `scripts/audit_code_visual_quality.py` (168 lines) - symbols: student_visible_content, structural_text, blocks, official_source_urls, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, urllib.parse, audit_topic_learning_quality
+- `scripts/audit_code_visual_quality.py` (226 lines) - symbols: student_visible_content, structural_text, blocks, official_source_urls, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, urllib.parse, audit_topic_learning_quality
 - `scripts/audit_course_depth.py` (140 lines) - symbols: signals, human_review_status, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (174 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
