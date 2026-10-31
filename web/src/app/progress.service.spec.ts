@@ -71,4 +71,60 @@ describe('ProgressService', () => {
 
     expect(() => service.importProgress(backup)).toThrowError('El archivo supera el tamaño máximo de 1 MB.');
   });
+
+  it('tracks topic reading per module and keeps it when other progress changes', () => {
+    const service = TestBed.inject(ProgressService);
+
+    service.toggleTopicComplete('angular', 0, 'tema-1-objetivo');
+    expect(service.isTopicComplete('angular', 0, 'tema-1-objetivo')).toBe(true);
+    expect(service.isTopicComplete('angular', 1, 'tema-1-objetivo')).toBe(false);
+
+    service.toggleModuleComplete('angular', 0);
+    service.completeExercise('angular', 0, 'componente-1');
+    expect(service.isTopicComplete('angular', 0, 'tema-1-objetivo')).toBe(true);
+
+    service.toggleTopicComplete('angular', 0, 'tema-1-objetivo');
+    expect(service.isTopicComplete('angular', 0, 'tema-1-objetivo')).toBe(false);
+    expect(service.trackProgress('angular').completedTopics).toEqual([]);
+    expect(service.trackProgress('angular').completedModules).toEqual([0]);
+  });
+
+  it('roundtrips topic reading in a backup and accepts backups without that field', () => {
+    const service = TestBed.inject(ProgressService);
+    service.toggleTopicComplete('java', 4, 'clases-y-objetos');
+    const backup = service.exportProgress();
+
+    localStorage.clear();
+    const restored = new ProgressService();
+    restored.importProgress(backup);
+    expect(restored.isTopicComplete('java', 4, 'clases-y-objetos')).toBe(true);
+
+    restored.importProgress(JSON.stringify({
+      format: 'academia-floci-progress',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      tracks: { java: { completedModules: [], completedExercises: [] } },
+    }));
+    expect(restored.trackProgress('java').completedTopics).toEqual([]);
+  });
+
+  it('rejects invalid topic keys in a backup without changing current progress', () => {
+    const service = TestBed.inject(ProgressService);
+    service.toggleTopicComplete('java', 1, 'tema-2');
+
+    const invalidBackup = (completedTopics: unknown) => JSON.stringify({
+      format: 'academia-floci-progress',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      tracks: { java: { completedModules: [], completedExercises: [], completedTopics } },
+    });
+
+    expect(() => service.importProgress(invalidBackup(['sin-modulo'])))
+      .toThrowError('La copia contiene progreso inválido para la ruta "java".');
+    expect(() => service.importProgress(invalidBackup(['99:tema'])))
+      .toThrowError('La copia contiene progreso inválido para la ruta "java".');
+    expect(() => service.importProgress(invalidBackup('tema-2')))
+      .toThrowError('La copia contiene progreso inválido para la ruta "java".');
+    expect(service.isTopicComplete('java', 1, 'tema-2')).toBe(true);
+  });
 });

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { App } from './app';
 import { routes } from './app.routes';
@@ -9,6 +9,25 @@ import { TRACKS } from './course-data';
 
 describe('App', () => {
   beforeEach(async () => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+    // jsdom no implementa scroll; el visor lo usa al cambiar de capítulo y al saltar a la práctica.
+    Object.defineProperty(window, 'scrollTo', { value: vi.fn(), configurable: true, writable: true });
+    Object.defineProperty(Element.prototype, 'scrollIntoView', { value: vi.fn(), configurable: true, writable: true });
+    Object.defineProperty(window, 'matchMedia', {
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false, media: query, onchange: null,
+        addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+      })),
+      configurable: true,
+      writable: true,
+    });
+    // jsdom no trae CSS.escape y la navegación por fragmento lo usa.
+    Object.defineProperty(globalThis, 'CSS', {
+      value: { escape: (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, character => `\\${character}`) },
+      configurable: true,
+      writable: true,
+    });
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [provideRouter(routes)],
@@ -174,6 +193,130 @@ Construye y verifica el ejemplo.
     } finally {
       spy.mockRestore();
     }
+  });
+
+  const navigationLesson = `# Capítulo de prueba
+
+## Aprende construyendo
+
+### Tema 1: Primero
+
+Contenido uno.
+
+### Tema 2: Segundo
+
+Contenido dos.
+
+## Construcción guiada del capítulo
+
+### Comprueba lo construido
+
+#### Ejercicio verificable 1
+
+¿Cuánto es 2 + 2?
+
+**Respuesta esperada:** 4`;
+
+  const navigationTopics = JSON.stringify({
+    foundations: {
+      '0': [
+        { title: 'Primero', fragment: 'tema-1-primero' },
+        { title: 'Segundo', fragment: 'tema-2-segundo' },
+      ],
+    },
+  });
+
+  function mockNavigationLesson(): void {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(input => {
+      const url = String(input);
+      return Promise.resolve(url.includes('topic-index.json')
+        ? new Response(navigationTopics, { status: 200, headers: { 'Content-Type': 'application/json' } })
+        : new Response(navigationLesson, { status: 200 }));
+    });
+  }
+
+  async function settle(harness: RouterTestingHarness): Promise<void> {
+    // La lección se mejora después del render (afterNextRender); un solo tick no basta.
+    for (let i = 0; i < 4; i += 1) {
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+    }
+  }
+
+  async function openNavigationLesson(): Promise<RouterTestingHarness> {
+    mockNavigationLesson();
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/curso/foundations/0');
+    await settle(harness);
+    return harness;
+  }
+
+  it('marca temas leídos, los conserva y continúa desde el último tema al capítulo siguiente', async () => {
+    const harness = await openNavigationLesson();
+    const page = harness.fixture.nativeElement as HTMLElement;
+    const router = TestBed.inject(Router);
+
+    const stripCount = () => page.querySelector('.chapter-topic-strip-heading small')?.textContent ?? '';
+    expect(stripCount()).toContain('0 leídos');
+
+    const firstTopic = page.querySelector<HTMLButtonElement>('.topic-complete');
+    expect(firstTopic?.getAttribute('aria-pressed')).toBe('false');
+    firstTopic!.click();
+    harness.detectChanges();
+    expect(firstTopic?.getAttribute('aria-pressed')).toBe('true');
+    expect(firstTopic?.textContent).toContain('Tema leído');
+    expect(stripCount()).toContain('1 leídos');
+    expect(page.querySelector('.chapter-topic-strip-list a.done')).toBeTruthy();
+
+    const nextChapter = page.querySelector<HTMLAnchorElement>('[data-next-module]');
+    expect(nextChapter?.getAttribute('data-next-module')).toBe('1');
+    nextChapter!.click();
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(router.url).toBe('/curso/foundations/1');
+
+    await harness.navigateByUrl('/curso/foundations/0');
+    await settle(harness);
+    const restoredPage = harness.fixture.nativeElement as HTMLElement;
+    expect(restoredPage.querySelector('.topic-complete')?.getAttribute('aria-pressed')).toBe('true');
+    restoredPage.querySelector<HTMLButtonElement>('.topic-complete')!.click();
+    harness.detectChanges();
+    expect(restoredPage.querySelector('.chapter-topic-strip-heading small')?.textContent).toContain('0 leídos');
+  });
+
+  it('navega entre capítulos con j y k sin reaccionar cuando se escribe', async () => {
+    const harness = await openNavigationLesson();
+    const router = TestBed.inject(Router);
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'j' }));
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(router.url).toBe('/curso/foundations/1');
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k' }));
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(router.url).toBe('/curso/foundations/0');
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'j', bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'j', metaKey: true }));
+    expect(router.url).toBe('/curso/foundations/0');
+    input.remove();
+  });
+
+  it('enlaza cada tema con la práctica del capítulo cuando el autor la escribió', async () => {
+    const harness = await openNavigationLesson();
+    const page = harness.fixture.nativeElement as HTMLElement;
+    const router = TestBed.inject(Router);
+
+    expect(page.querySelectorAll('.topic-practice-link')).toHaveLength(2);
+    expect(page.querySelector('#practica-del-capitulo')?.textContent).toContain('Comprueba lo construido');
+
+    page.querySelector<HTMLAnchorElement>('[data-practice-link]')!.click();
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/curso/foundations/0#practica-del-capitulo');
   });
 
 });

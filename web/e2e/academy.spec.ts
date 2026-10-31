@@ -370,3 +370,61 @@ test('tema: el enlace «Ver solo este tema» abre la ruta enfocada', async ({ pa
   await expect(page).toHaveURL(/\/curso\/angular\/0\/tema\/3$/);
   await expect(page.locator('.topic-card').nth(2)).toHaveClass(/expanded/);
 });
+
+test('lector: marca un tema como leído y lo conserva al recargar', async ({ page }) => {
+  await page.goto('/curso/angular/0');
+  const button = page.locator('.topic-card').first().locator('.topic-complete');
+  const stripCount = page.locator('.chapter-topic-strip-heading small');
+
+  await expect(button).toHaveAttribute('aria-pressed', 'false');
+  await expect(stripCount).toContainText('0 leídos');
+  await button.click();
+  await expect(button).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.chapter-topic-strip-list a.done')).toHaveCount(1);
+  await expect(stripCount).toContainText('1 leídos');
+
+  await page.reload();
+  await expect(page.locator('.topic-card').first().locator('.topic-complete')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.chapter-topic-strip-heading small')).toContainText('1 leídos');
+});
+
+test('lector: j y k cambian de capítulo y no reaccionan al escribir', async ({ page }) => {
+  await page.goto('/curso/angular/0');
+  await expect(page.locator('.topic-step-navigation').first()).toBeVisible();
+
+  await page.keyboard.press('j');
+  await expect(page).toHaveURL(/\/curso\/angular\/1$/);
+  await expect(page.locator('.lesson h1')).toBeVisible();
+  await page.keyboard.press('k');
+  await expect(page).toHaveURL(/\/curso\/angular\/0$/);
+  await expect(page.locator('.lesson h1')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Buscar cursos, módulos y temas' }).click();
+  const search = page.getByRole('textbox', { name: 'Buscar cursos, módulos y temas' });
+  await search.fill('componente');
+  await page.keyboard.press('j');
+  await expect(page).toHaveURL(/\/curso\/angular\/0$/);
+  await expect(search).toHaveValue('componentej');
+});
+
+test('lector: el último tema continúa al capítulo siguiente', async ({ page }) => {
+  await page.goto('/curso/angular/0');
+  const lastTopic = page.locator('.topic-card').last();
+  const nextChapter = lastTopic.locator('[data-next-module]');
+
+  await expect(nextChapter).toHaveAttribute('data-next-module', '1');
+  await lastTopic.locator('.topic-toggle').click();
+  await nextChapter.click();
+  await expect(page).toHaveURL(/\/curso\/angular\/1$/);
+  await expect(page.locator('.lesson h1')).toBeVisible();
+});
+
+test('lector: enlaza el tema con la práctica del capítulo cuando existe', async ({ page }) => {
+  await page.goto('/curso/javascript/6');
+  const practiceLink = page.locator('[data-practice-link]').first();
+
+  await expect(practiceLink).toBeVisible();
+  await practiceLink.click();
+  await expect(page).toHaveURL(/#practica-del-capitulo$/);
+  await expect(page.locator('#practica-del-capitulo')).toBeInViewport();
+});

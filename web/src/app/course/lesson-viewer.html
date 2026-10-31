@@ -14,9 +14,9 @@
           </button>
         </div>
         <nav class="chapter-topic-strip" *ngIf="chapterTopics().length > 1" aria-label="Temas de este capítulo">
-          <div class="chapter-topic-strip-heading"><span>Temas de este capítulo</span><small>{{ currentTopicIndex() + 1 }} de {{ chapterTopics().length }}</small></div>
+          <div class="chapter-topic-strip-heading"><span>Temas de este capítulo</span><small>{{ currentTopicIndex() + 1 }} de {{ chapterTopics().length }} · {{ completedTopicCount() }} leídos</small></div>
           <div class="chapter-topic-strip-list">
-            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="i < currentTopicIndex()" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ topic.title }}</a>
+            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="isTopicDone(topic)" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ topic.title }}</a>
           </div>
         </nav>
         <details class="course-guide" *ngIf="moduleId() === 0 && courseGuide() as guide">
@@ -97,9 +97,10 @@
           <span>{{ isComplete() ? 'Capítulo leído' : 'Marcar capítulo como leído' }}</span>
         </button>
         <div class="lesson-nav">
-          <button *ngIf="previousModule() as prev" [attr.aria-label]="'Ir al capítulo anterior: ' + prev.shortTitle" (click)="goToModule(prev.id)"><lucide-icon [img]="icons.ChevronLeft" /><span>{{ prev.shortTitle }}</span></button>
-          <button *ngIf="nextModule() as next" class="next" [attr.aria-label]="'Ir al capítulo siguiente: ' + next.shortTitle" (click)="goToModule(next.id)"><span>{{ next.shortTitle }}</span><lucide-icon [img]="icons.ChevronRight" /></button>
+          <button *ngIf="previousModule() as prev" aria-keyshortcuts="k" [attr.aria-label]="'Ir al capítulo anterior: ' + prev.shortTitle" (click)="goToModule(prev.id)"><lucide-icon [img]="icons.ChevronLeft" /><span>{{ prev.shortTitle }}</span></button>
+          <button *ngIf="nextModule() as next" class="next" aria-keyshortcuts="j" [attr.aria-label]="'Ir al capítulo siguiente: ' + next.shortTitle" (click)="goToModule(next.id)"><span>{{ next.shortTitle }}</span><lucide-icon [img]="icons.ChevronRight" /></button>
         </div>
+        <p class="lesson-shortcuts">Atajos de lectura: <kbd>k</kbd> capítulo anterior · <kbd>j</kbd> capítulo siguiente</p>
       </footer>
     </article>
   </div>

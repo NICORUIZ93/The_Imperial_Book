@@ -187,7 +187,14 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep .topic-troubleshooting ol { margin:0; padding:2px 34px 10px; color:$i3; font:500 11.5px/1.55 var(--font-sans); }
 .lesson-markdown ::ng-deep .topic-troubleshooting p { margin:0; padding:11px 14px; border-top:1px solid $bd; color:$mu; font:550 11px/1.5 var(--font-sans); }
 .lesson-markdown ::ng-deep .topic-step-navigation { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:12px; margin:30px -24px 0; padding:16px 24px; border-top:1px solid $bd; font-family:var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-step-navigation > strong { color:$mu; font:700 10px/1.3 var(--font-sans); letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; }
+.lesson-markdown ::ng-deep .topic-step-navigation > strong,
+.lesson-markdown ::ng-deep .topic-step-center strong { color:$mu; font:700 10px/1.3 var(--font-sans); letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; }
+.lesson-markdown ::ng-deep .topic-step-center { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.lesson-markdown ::ng-deep .topic-complete { min-height:32px; padding:5px 11px; border:1px solid $bd2; border-radius:999px; color:$i3; background:$wh; font:700 10.5px/1.2 var(--font-sans); white-space:nowrap; cursor:pointer; }
+.lesson-markdown ::ng-deep .topic-complete:hover { border-color:var(--accent); color:var(--accent); }
+.lesson-markdown ::ng-deep .topic-complete.done { border-color:color-mix(in srgb,var(--accent) 35%,#{$bd}); color:var(--accent); background:color-mix(in srgb,var(--accent) 8%,#{$wh}); }
+.lesson-markdown ::ng-deep .topic-step-navigation .topic-practice-link { min-height:0; padding:0; border:0; align-items:center; gap:0; color:$mu; background:transparent; font:600 10.5px/1.3 var(--font-sans); text-align:center; text-decoration:underline; text-underline-offset:3px; }
+.lesson-markdown ::ng-deep .topic-step-navigation .topic-practice-link:hover { color:var(--accent); background:transparent; }
 .lesson-markdown ::ng-deep .topic-step-navigation a { min-height:48px; display:flex; flex-direction:column; justify-content:center; gap:3px; padding:8px 11px; border:1px solid transparent; border-radius:10px; color:$i3; text-decoration:none; }
 .lesson-markdown ::ng-deep .topic-step-navigation a:last-child { align-items:flex-end; text-align:right; }
 .lesson-markdown ::ng-deep .topic-step-navigation a span { color:var(--accent); font:750 11px/1.2 var(--font-sans); }
@@ -372,6 +379,8 @@ $sans-ui:var(--font-sans);
 .lesson-nav button:hover { border-color:var(--accent); color:$p; box-shadow:$sh; transform:translateY(-1px); }
 .lesson-nav button.next { justify-content:flex-end; text-align:right; grid-column:2; }
 .lesson-nav lucide-icon { width:17px; flex-shrink:0; }
+.lesson-shortcuts { margin:0; color:$mu; font:500 11px/1.5 var(--font-sans); }
+.lesson-shortcuts kbd { padding:1px 5px; border:1px solid $bd2; border-radius:4px; background:$wh; color:$i3; font:700 10px var(--font-mono); }
 .lesson-missing { padding:70px 24px; text-align:center; color:$mu; }
 .lesson-missing a { color:$p; font-weight:700; }
 
@@ -404,7 +413,12 @@ $sans-ui:var(--font-sans);
   .lesson-markdown ::ng-deep .topic-card:not(.expanded) > .topic-heading { margin-bottom:0; }
   .lesson-markdown ::ng-deep .topic-body { padding-bottom:18px; }
   .lesson-markdown ::ng-deep .topic-step-navigation { grid-template-columns:1fr 1fr; margin:26px -16px 0; padding:14px 16px; }
-  .lesson-markdown ::ng-deep .topic-step-navigation > strong { grid-column:1/-1; grid-row:1; text-align:center; }
+  .lesson-markdown ::ng-deep .topic-step-navigation > strong,
+  .lesson-markdown ::ng-deep .topic-step-center { grid-column:1/-1; grid-row:1; text-align:center; }
+  .lesson-markdown ::ng-deep .topic-step-navigation .topic-prev,
+  .lesson-markdown ::ng-deep .topic-step-navigation .topic-prev-slot { grid-column:1; grid-row:2; }
+  .lesson-markdown ::ng-deep .topic-step-navigation .topic-next,
+  .lesson-markdown ::ng-deep .topic-step-navigation .topic-next-slot { grid-column:2; grid-row:2; }
   .lesson-markdown ::ng-deep .topic-step-navigation a { grid-row:2; }
   .lesson-markdown ::ng-deep .topic-step-navigation a small { max-width:132px; }
   .lesson-markdown ::ng-deep .section-guide { align-items:flex-start; flex-direction:column; gap:4px; }

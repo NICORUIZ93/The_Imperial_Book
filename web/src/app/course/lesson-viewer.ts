@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Injector, OnDestroy, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injector, OnDestroy, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BookOpen, Boxes, Check, CircleCheck, ChevronLeft, ChevronRight, Clock3, Code2, Copy, Database, Gauge, LockKeyhole, LucideAngularModule, ShieldCheck, Zap } from 'lucide-angular';
@@ -13,7 +13,7 @@ import { ThemeService } from '../theme.service';
 import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { glossaryFor } from '../technical-glossary';
-import { TopicIndexService } from '../topic-index.service';
+import { TopicIndexService, type IndexedTopic } from '../topic-index.service';
 
 let mermaidInitialized = false;
 
@@ -208,6 +208,14 @@ export class LessonViewerComponent implements OnDestroy {
     const index = fragment ? topics.findIndex(topic => topic.fragment === fragment) : -1;
     return index >= 0 ? index : 0;
   });
+  readonly completedTopicCount = computed(() => {
+    const trackId = this.trackId();
+    const moduleId = this.moduleId();
+    return this.chapterTopics()
+      .filter(topic => this.progressService.isTopicComplete(trackId, moduleId, topic.fragment))
+      .length;
+  });
+  private static readonly PRACTICE_ANCHOR = 'practica-del-capitulo';
 
   readonly lessonHtml = signal<string | null>(null);
   readonly lessonLoading = signal(true);
@@ -255,6 +263,9 @@ export class LessonViewerComponent implements OnDestroy {
     effect(() => {
       const trackId = this.trackId();
       const module = this.module();
+      // El componente se reutiliza entre capítulos: sin esto la lectura del
+      // siguiente empieza con el scroll del anterior.
+      window.scrollTo({ top: 0, behavior: 'auto' });
       void this.loadLesson(trackId, module?.id);
     });
 
@@ -365,9 +376,10 @@ export class LessonViewerComponent implements OnDestroy {
     this.prepareAnatomyFigures(container);
     this.prepareArchifyVisuals(container);
     this.enhanceEducationalContent(container);
+    const hasPractice = this.markChapterPractice(container);
     this.applyTopicFocus(container);
     this.enhanceVerifiableExercises(container);
-    this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')));
+    this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')), hasPractice);
     const fragment = this.requestedFragment();
     if (fragment) this.scrollToRequestedFragment(container, fragment);
     window.removeEventListener('scroll', this.updateReadingProgress);
@@ -962,7 +974,22 @@ export class LessonViewerComponent implements OnDestroy {
     requestAnimationFrame(() => card.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' }));
   }
 
-  private addTopicNavigation(headings: HTMLHeadingElement[]): void {
+  /** Da ancla a la sección de práctica del capítulo cuando el autor la escribió. */
+  private markChapterPractice(container: HTMLElement): boolean {
+    const heading = Array.from(container.querySelectorAll<HTMLHeadingElement>('h3'))
+      .find(item => !item.classList.contains('topic-heading') && /^Comprueba lo construido\b/i.test(item.textContent?.trim() ?? ''));
+    if (!heading) return false;
+    heading.id = LessonViewerComponent.PRACTICE_ANCHOR;
+    return true;
+  }
+
+  isTopicDone(topic: IndexedTopic): boolean {
+    return this.progressService.isTopicComplete(this.trackId(), this.moduleId(), topic.fragment);
+  }
+
+  private addTopicNavigation(headings: HTMLHeadingElement[], hasPractice: boolean): void {
+    const trackId = this.trackId();
+    const moduleId = this.moduleId();
     headings.forEach((heading, index) => {
       const card = heading.closest<HTMLElement>('.topic-card');
       const body = card?.querySelector<HTMLElement>(':scope > .topic-body');
@@ -972,10 +999,23 @@ export class LessonViewerComponent implements OnDestroy {
       navigation.setAttribute('aria-label', `Navegación del tema ${index + 1}`);
       const previous = index > 0 ? headings[index - 1] : null;
       const next = index < headings.length - 1 ? headings[index + 1] : null;
+      // En el último tema la flecha sigue hacia el capítulo siguiente en vez
+      // de quedar vacía: la lectura continúa sin volver al pie.
+      const followingModule = next ? null : this.nextModule();
+      const followingLink = next
+        ? `<a class="topic-next" href="#${escapeHtml(next.id)}" data-topic-destination="${escapeHtml(next.id)}"><span>Siguiente →</span><small>${escapeHtml(this.topicTitle(next))}</small></a>`
+        : followingModule
+          ? `<a class="topic-next topic-module-next" href="/curso/${encodeURIComponent(trackId)}/${followingModule.id}" data-next-module="${followingModule.id}"><span>Capítulo siguiente →</span><small>${escapeHtml(followingModule.shortTitle)}</small></a>`
+          : '<span class="topic-next-slot"></span>';
+      const done = this.progressService.isTopicComplete(trackId, moduleId, heading.id);
       navigation.innerHTML = `
-        ${previous ? `<a href="#${escapeHtml(previous.id)}" data-topic-destination="${escapeHtml(previous.id)}"><span>← Anterior</span><small>${escapeHtml(this.topicTitle(previous))}</small></a>` : '<span></span>'}
-        <strong>Tema ${index + 1} de ${headings.length}</strong>
-        ${next ? `<a href="#${escapeHtml(next.id)}" data-topic-destination="${escapeHtml(next.id)}"><span>Siguiente →</span><small>${escapeHtml(this.topicTitle(next))}</small></a>` : '<span></span>'}`;
+        ${previous ? `<a class="topic-prev" href="#${escapeHtml(previous.id)}" data-topic-destination="${escapeHtml(previous.id)}"><span>← Anterior</span><small>${escapeHtml(this.topicTitle(previous))}</small></a>` : '<span class="topic-prev-slot"></span>'}
+        <div class="topic-step-center">
+          <strong>Tema ${index + 1} de ${headings.length}</strong>
+          <button type="button" class="topic-complete${done ? ' done' : ''}" data-topic-complete="${escapeHtml(heading.id)}" aria-pressed="${done}">${done ? 'Tema leído' : 'Marcar tema como leído'}</button>
+          ${hasPractice ? `<a class="topic-practice-link" href="#${LessonViewerComponent.PRACTICE_ANCHOR}" data-practice-link>Práctica del capítulo</a>` : ''}
+        </div>
+        ${followingLink}`;
       body.appendChild(navigation);
     });
   }
@@ -1050,6 +1090,33 @@ export class LessonViewerComponent implements OnDestroy {
         verifyButton.disabled = true;
         verifyButton.textContent = 'Completado';
       }
+      return;
+    }
+    const topicComplete = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-topic-complete]');
+    if (topicComplete) {
+      const key = topicComplete.dataset['topicComplete'];
+      if (!key) return;
+      this.progressService.toggleTopicComplete(this.trackId(), this.moduleId(), key);
+      const done = this.progressService.isTopicComplete(this.trackId(), this.moduleId(), key);
+      topicComplete.setAttribute('aria-pressed', String(done));
+      topicComplete.classList.toggle('done', done);
+      topicComplete.textContent = done ? 'Tema leído' : 'Marcar tema como leído';
+      return;
+    }
+    const nextModuleLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('[data-next-module]');
+    if (nextModuleLink) {
+      event.preventDefault();
+      const destination = Number(nextModuleLink.dataset['nextModule']);
+      if (Number.isInteger(destination)) this.goToModule(destination);
+      return;
+    }
+    const practiceLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('[data-practice-link]');
+    if (practiceLink) {
+      event.preventDefault();
+      const container = this.lessonContent()?.nativeElement;
+      container?.querySelector<HTMLElement>(`#${LessonViewerComponent.PRACTICE_ANCHOR}`)
+        ?.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' });
+      void this.router.navigate([], { relativeTo: this.route, fragment: LessonViewerComponent.PRACTICE_ANCHOR, replaceUrl: true });
       return;
     }
     const focusLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('[data-topic-focus]');
@@ -1127,6 +1194,20 @@ export class LessonViewerComponent implements OnDestroy {
 
   goToModule(moduleId: number): void {
     this.router.navigate(['/curso', this.trackId(), moduleId]);
+  }
+
+  /** j/k siguen el orden de lectura; se ignoran al escribir o con un diálogo abierto. */
+  @HostListener('window:keydown', ['$event'])
+  onShortcut(event: KeyboardEvent): void {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+    if (document.querySelector('dialog[open]')) return;
+    const target = event.target as HTMLElement | null;
+    if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName ?? ''))) return;
+    const key = event.key.toLowerCase();
+    const destination = key === 'j' ? this.nextModule() : key === 'k' ? this.previousModule() : null;
+    if (!destination) return;
+    event.preventDefault();
+    this.goToModule(destination.id);
   }
 
   jumpToTopic(event: Event, fragment: string): void {

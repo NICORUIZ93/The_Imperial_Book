@@ -4,6 +4,7 @@ import { TRACKS } from './course-data';
 export interface TrackProgress {
   completedModules: number[];
   completedExercises: string[];
+  completedTopics: string[];
 }
 
 type ProgressState = Record<string, TrackProgress>;
@@ -11,6 +12,7 @@ type ProgressState = Record<string, TrackProgress>;
 const EMPTY_TRACK_PROGRESS: TrackProgress = {
   completedModules: [],
   completedExercises: [],
+  completedTopics: [],
 };
 const STORAGE_KEY = 'academia-progress-v2';
 const LEGACY_CLOUD_KEY = 'cloud-local-academy-progress';
@@ -42,6 +44,7 @@ export class ProgressService {
         cloud: {
           completedModules: legacy.completedModules ?? [],
           completedExercises: [],
+          completedTopics: [],
         },
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
@@ -81,8 +84,14 @@ export class ProgressService {
     this.state.set(progress);
   }
 
-  private validateBackup(value: unknown): ProgressState {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+  /** Clave `módulo:identificador` usada por ejercicios y temas completados. */
+  private isValidTopicKey(key: unknown, totalModules: number): boolean {
+    if (typeof key !== 'string') return false;
+    const match = /^(\d+):.{1,200}$/.exec(key);
+    return !!match && Number.isSafeInteger(Number(match[1])) && Number(match[1]) < totalModules;
+  }
+
+  private validateBackup(value: unknown): ProgressState {    if (!value || typeof value !== 'object' || Array.isArray(value)) {
       throw new Error('La copia no tiene un formato reconocido.');
     }
     const backup = value as Record<string, unknown>;
@@ -112,6 +121,8 @@ export class ProgressService {
       const track = progress as Record<string, unknown>;
       const modules = track['completedModules'];
       const exercises = track['completedExercises'];
+      // Las copias v1 anteriores al seguimiento por tema no traen este campo.
+      const topics = track['completedTopics'] ?? [];
       if (
         !Array.isArray(modules) ||
         modules.length > totalModules ||
@@ -119,18 +130,19 @@ export class ProgressService {
         new Set(modules).size !== modules.length ||
         !Array.isArray(exercises) ||
         exercises.length > 10_000 ||
-        !exercises.every(key => {
-          if (typeof key !== 'string') return false;
-          const match = /^(\d+):.{1,200}$/.exec(key);
-          return !!match && Number.isSafeInteger(Number(match[1])) && Number(match[1]) < totalModules;
-        }) ||
-        new Set(exercises).size !== exercises.length
+        !exercises.every(key => this.isValidTopicKey(key, totalModules)) ||
+        new Set(exercises).size !== exercises.length ||
+        !Array.isArray(topics) ||
+        topics.length > 10_000 ||
+        !topics.every(key => this.isValidTopicKey(key, totalModules)) ||
+        new Set(topics).size !== topics.length
       ) {
         throw new Error(`La copia contiene progreso inválido para la ruta "${trackId}".`);
       }
       tracks[trackId] = {
         completedModules: modules,
         completedExercises: exercises,
+        completedTopics: topics,
       };
     }
     return tracks;
@@ -170,6 +182,20 @@ export class ProgressService {
       ...state,
       [trackId]: { ...current, completedExercises: [...current.completedExercises, key] },
     }));
+    this.persist();
+  }
+
+  isTopicComplete(trackId: string, moduleId: number, topicKey: string): boolean {
+    return this.trackProgress(trackId).completedTopics.includes(`${moduleId}:${topicKey}`);
+  }
+
+  toggleTopicComplete(trackId: string, moduleId: number, topicKey: string): void {
+    const current = this.trackProgress(trackId);
+    const key = `${moduleId}:${topicKey}`;
+    const completedTopics = current.completedTopics.includes(key)
+      ? current.completedTopics.filter(item => item !== key)
+      : [...current.completedTopics, key];
+    this.state.update(state => ({ ...state, [trackId]: { ...current, completedTopics } }));
     this.persist();
   }
 

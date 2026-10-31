@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 19:50 UTC
+Generated: 2026-10-31 20:12 UTC
 Root: `Academia_Floci`
 Indexed files: 979
 Import edges: 57
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1156 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1237 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -158,7 +158,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (29 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (180 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (323 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (133 lines)

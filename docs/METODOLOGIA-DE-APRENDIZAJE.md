@@ -31,7 +31,7 @@ La solución se consulta después de un intento verificable. Antes de abrirla, l
 
 ## Aplicación en el lector
 
-El lector presenta permanentemente la secuencia **Objetivo → Explicación → Demostración → Tarea → Repaso**. Las introducciones de sección explican qué hacer, el laboratorio muestra el resultado esperado, las soluciones se mantienen plegadas y los modos de estudio permiten concentrarse en aprender, practicar o repasar.
+El lector agrupa el capítulo en temas y, al pie de cada uno, muestra el avance **Tema N de M**, la marca explícita de tema leído y —cuando el autor escribió esa sección— el enlace a la práctica del capítulo. Las soluciones se mantienen plegadas y el último tema continúa hacia el capítulo siguiente. Esa secuencia está implementada. Los **modos de estudio «aprender / practicar / repasar» no existen en la aplicación**: se registran como deuda porque requieren práctica verificable por tema y hoy solo 11 de 252 módulos la tienen.
 
 ## Mantenimiento tecnológico
 

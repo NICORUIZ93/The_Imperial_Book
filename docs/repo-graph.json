@@ -6661,7 +6661,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 373,
+      "lines": 431,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -12883,7 +12883,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 180,
+      "lines": 323,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -13128,7 +13128,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.html",
-      "lines": 130,
+      "lines": 131,
       "kind": "angular-app",
       "symbols": [
         "floci-overview-title",
@@ -13140,7 +13140,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 517,
+      "lines": 531,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -13148,7 +13148,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1156,
+      "lines": 1237,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -13169,12 +13169,12 @@
         "chapterTopics",
         "focusedTopic",
         "currentTopicIndex",
+        "completedTopicCount",
         "lessonHtml",
         "lessonLoading",
         "lessonError",
         "diagramError",
-        "readingProgress",
-        "focusMode"
+        "readingProgress"
       ],
       "imports": [
         "@angular/common",
@@ -13346,7 +13346,7 @@
     },
     {
       "path": "web/src/app/progress.service.spec.ts",
-      "lines": 75,
+      "lines": 131,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -13357,7 +13357,7 @@
     },
     {
       "path": "web/src/app/progress.service.ts",
-      "lines": 184,
+      "lines": 210,
       "kind": "angular-app",
       "symbols": [
         "ProgressService",
