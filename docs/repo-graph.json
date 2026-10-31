@@ -824,6 +824,19 @@
       ]
     },
     {
+      "path": "docs/manual-review-log.md",
+      "lines": 44,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Registro de revisi\u00f3n pedag\u00f3gica humana",
+        "## M\u00e9todo",
+        "## Registro",
+        "## Estado global"
+      ]
+    },
+    {
       "path": "docs/merged-pdf-index.json",
       "lines": 426,
       "kind": "project-file",
