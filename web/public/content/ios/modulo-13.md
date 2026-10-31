@@ -55,7 +55,7 @@ web/notificación/widget -> frontera iOS -> validar estructura
 **Diagrama: validación en capas de un Universal Link**
 
 ```mermaid
-flowchart TD
+flowchart LR
     A["URL entrante"] --> B{"scheme/host/ruta válidos?"}
     B -->|No| C[".malformed"]
     B -->|Sí| D{"session.puedeLeer(id)?"}

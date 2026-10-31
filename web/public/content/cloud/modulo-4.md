@@ -254,7 +254,7 @@ Hoy guardás un `L` de strings con rutas (`fotos: ["envio-4471/entrega-001.jpg",
 
 </details>
 
-### Fallo Deliberado: Números guardados como strings en DynamoDB
+#### Fallo Deliberado: Números guardados como strings en DynamoDB
 
 **Error real que deberías observar:**
 ```error-output

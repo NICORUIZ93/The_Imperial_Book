@@ -180,7 +180,7 @@ act(() => result.current.incrementar());
 expect(result.current.valor).toBe(1);
 ```
 
-#### Paso 8 · Diseño y decisiones de arquitectura
+#### Profundización · Diseño y decisiones de arquitectura
 **Cuándo NO usar `renderHook`:** si el hook depende fuertemente del árbol de contexto o del layout real (por ejemplo un hook que lee `getBoundingClientRect` de un elemento padre específico), aislarlo con `renderHook` produce un falso positivo — en ese caso conviene testear a través de un componente real con `render`, aceptando el costo extra de montar el árbol completo a cambio de una prueba fiel al comportamiento real en pantalla.
 
 En el proyecto integrador RutaFlow (`examples/rutaflow/react/dashboard/src/hooks/useFiltroZona.test.ts`), este hook se testea de forma aislada porque su lógica (normalizar el texto de zona) no depende de ningún layout visual — justo el caso donde `renderHook` es la decisión correcta frente a un test de componente más costoso.

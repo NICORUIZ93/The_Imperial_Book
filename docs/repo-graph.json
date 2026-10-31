@@ -6472,7 +6472,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 350,
+      "lines": 371,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -12725,18 +12725,19 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.html",
-      "lines": 139,
+      "lines": 155,
       "kind": "angular-app",
       "symbols": [
         "project-progress-title",
-        "floci-overview-title"
+        "floci-overview-title",
+        "diagram-dialog-title"
       ],
       "imports": [],
       "headings": []
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 535,
+      "lines": 558,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12744,7 +12745,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1104,
+      "lines": 1230,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",

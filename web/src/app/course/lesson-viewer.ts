@@ -242,6 +242,21 @@ export class LessonViewerComponent implements OnDestroy {
   readonly focusMode = signal(false);
   readonly copiedCode = signal<string | null>(null);
   private copyTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // La caja de lectura limita cada diagrama a 680×360 para no romper la columna
+  // de texto; los diagramas anchos o altos se leen en este diálogo, a tamaño
+  // natural y con desplazamiento, en vez de encogerse hasta ser ilegibles.
+  readonly diagramDialogTitle = signal('');
+  readonly diagramZoom = signal(1);
+  readonly diagramZoomLabel = computed(() => `${Math.round(this.diagramZoom() * 100)} %`);
+  private readonly diagramDialog = viewChild<ElementRef<HTMLDialogElement>>('diagramDialog');
+  private readonly diagramDialogBody = viewChild<ElementRef<HTMLElement>>('diagramDialogBody');
+  private expandedSvg: SVGSVGElement | null = null;
+  private expandedPre: HTMLElement | null = null;
+  private expandedSvgStyle: string | null = null;
+  private diagramTrigger: HTMLElement | null = null;
+  private previousBodyOverflow = '';
+  private static readonly DIAGRAM_ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5];
   private readonly updateReadingProgress = (): void => {
     const article = this.lessonContent()?.nativeElement;
     if (!article) return;
@@ -299,6 +314,7 @@ export class LessonViewerComponent implements OnDestroy {
 
   private async loadLesson(trackId: string, moduleId: number | undefined): Promise<void> {
     const request = ++this.lessonRequest;
+    this.closeDiagram();
     this.lessonHtml.set(null);
     this.lessonError.set(null);
     this.lessonLoading.set(moduleId !== undefined);
@@ -362,6 +378,7 @@ export class LessonViewerComponent implements OnDestroy {
               : String(error);
         this.diagramError.set(`No se pudo renderizar un diagrama: ${detail}`);
       }
+      this.attachDiagramZoom(container);
     }
 
     this.prepareAnatomyFigures(container);
@@ -397,6 +414,95 @@ export class LessonViewerComponent implements OnDestroy {
       diagram.setAttribute('aria-label', `Relaciones y flujo de ${context}`);
       diagram.tabIndex = 0;
     });
+  }
+
+  private attachDiagramZoom(container: HTMLElement): void {
+    container.querySelectorAll<HTMLElement>('.visual-diagram').forEach(figure => {
+      if (figure.querySelector('.diagram-zoom-open') || !figure.querySelector('svg')) return;
+      const title = figure.querySelector('figcaption strong')?.textContent?.trim() || 'Diagrama';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'diagram-zoom-open';
+      button.textContent = 'Ampliar';
+      button.setAttribute('aria-label', `Ampliar el diagrama: ${title}`);
+      button.addEventListener('click', () => this.openDiagram(figure, title, button));
+      (figure.querySelector('figcaption') ?? figure).append(button);
+      const pre = figure.querySelector<HTMLElement>('pre.mermaid');
+      if (pre) {
+        pre.style.cursor = 'zoom-in';
+        pre.setAttribute('aria-label', `${pre.getAttribute('aria-label') ?? 'Diagrama'}. Pulsa Enter para ampliarlo.`);
+        pre.addEventListener('click', () => this.openDiagram(figure, title, button));
+        pre.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          this.openDiagram(figure, title, button);
+        });
+      }
+    });
+  }
+
+  private openDiagram(figure: HTMLElement, title: string, trigger: HTMLElement): void {
+    const svg = figure.querySelector<SVGSVGElement>('pre.mermaid svg');
+    const dialog = this.diagramDialog()?.nativeElement;
+    const body = this.diagramDialogBody()?.nativeElement;
+    if (!svg || !dialog || !body) return;
+    this.expandedSvg = svg;
+    this.expandedPre = svg.parentElement;
+    this.expandedSvgStyle = svg.getAttribute('style');
+    this.diagramTrigger = trigger;
+    this.diagramDialogTitle.set(title);
+    this.diagramZoom.set(1);
+    body.replaceChildren(svg);
+    this.applyDiagramZoom();
+    this.previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dialog.showModal();
+  }
+
+  closeDiagram(): void {
+    const dialog = this.diagramDialog()?.nativeElement;
+    if (dialog?.open) dialog.close();
+  }
+
+  closeDiagramFromBackdrop(event: MouseEvent): void {
+    if (event.target === this.diagramDialog()?.nativeElement) this.closeDiagram();
+  }
+
+  stepDiagramZoom(direction: number): void {
+    const steps = LessonViewerComponent.DIAGRAM_ZOOM_STEPS;
+    const current = this.diagramZoom();
+    const found = steps.findIndex(step => Math.abs(step - current) < 0.01);
+    const index = found < 0 ? steps.indexOf(1) : found;
+    const next = steps[Math.max(0, Math.min(steps.length - 1, index + direction))];
+    this.diagramZoom.set(next);
+    this.applyDiagramZoom();
+  }
+
+  private applyDiagramZoom(): void {
+    const svg = this.expandedSvg;
+    if (!svg) return;
+    const naturalWidth = svg.viewBox.baseVal.width || svg.getBoundingClientRect().width;
+    svg.style.width = `${Math.round(naturalWidth * this.diagramZoom())}px`;
+    svg.style.maxWidth = 'none';
+    svg.style.height = 'auto';
+  }
+
+  /** Devuelve el SVG a su figura original cuando el diálogo se cierra o el lector navega. */
+  restoreDiagram(): void {
+    const svg = this.expandedSvg;
+    if (svg) {
+      if (this.expandedSvgStyle === null) svg.removeAttribute('style');
+      else svg.setAttribute('style', this.expandedSvgStyle);
+      if (this.expandedPre?.isConnected) this.expandedPre.appendChild(svg);
+    }
+    this.expandedSvg = null;
+    this.expandedPre = null;
+    this.expandedSvgStyle = null;
+    document.body.style.overflow = this.previousBodyOverflow;
+    this.diagramZoom.set(1);
+    const trigger = this.diagramTrigger;
+    this.diagramTrigger = null;
+    trigger?.focus();
   }
 
   // Un <div class="anatomy-figure" data-figure="..."> es un marcador que dejó
@@ -555,24 +661,42 @@ export class LessonViewerComponent implements OnDestroy {
    * Los "Paso N · Título" de un Tema dejan de ser encabezados sueltos y se
    * agrupan en una única ficha de sesión (checklist compacto), en vez de una
    * escalera de círculos numerados intercalada en la lectura. Solo agrupa si
-   * hay 2+ pasos consecutivos justo después del encabezado del Tema.
+   * hay 2+ pasos consecutivos tras el contenido de apertura del Tema.
    */
   private buildSessionCards(container: HTMLElement): void {
     container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading').forEach(heading => {
       type Step = { number: string; label: string; headingEl: Element; bodyNodes: Element[] };
       const steps: Step[] = [];
+      // El tema puede abrir con objetivo, conceptos clave, un diagrama o una
+      // subsección propia ("Cómo leer @id, @default...") antes del Paso 1: ese
+      // contenido se lee antes de la ficha y no pertenece a un paso, así que la
+      // ficha se inserta después de él, no tras el encabezado.
+      let insertAfter: Element = heading;
       let node: Element | null = heading.nextElementSibling;
+      while (node && !['H2', 'H3'].includes(node.tagName)) {
+        if (node.tagName === 'H4' && /^Paso\s+\d+/i.test(node.textContent?.trim() ?? '')) break;
+        insertAfter = node;
+        node = node.nextElementSibling;
+      }
       while (node && node.tagName === 'H4') {
         const match = node.textContent?.trim().match(/^Paso\s+(\d+)\s*(?:·|-|:)?\s*(.*)$/i);
-        if (!match) break;
-        const [, number, label] = match;
         const bodyNodes: Element[] = [];
         let sibling: Element | null = node.nextElementSibling;
         while (sibling && sibling.tagName !== 'H4' && !['H2', 'H3'].includes(sibling.tagName)) {
           bodyNodes.push(sibling);
           sibling = sibling.nextElementSibling;
         }
-        steps.push({ number, label, headingEl: node, bodyNodes });
+        if (match) {
+          const [, number, label] = match;
+          steps.push({ number, label, headingEl: node, bodyNodes });
+        } else if (steps.length) {
+          // Sección intermedia del tema ("Profundización · Diseño", notas de
+          // arquitectura): se lee dentro del paso anterior en vez de cortar la
+          // ficha y dejar los pasos siguientes como encabezados sueltos.
+          steps[steps.length - 1].bodyNodes.push(node, ...bodyNodes);
+        } else {
+          break;
+        }
         node = sibling;
       }
       if (steps.length < 2) return;
@@ -600,7 +724,7 @@ export class LessonViewerComponent implements OnDestroy {
         list.appendChild(li);
       });
       card.append(head, list);
-      heading.insertAdjacentElement('afterend', card);
+      insertAfter.insertAdjacentElement('afterend', card);
       steps.forEach(step => step.headingEl.remove());
     });
   }
@@ -1097,6 +1221,8 @@ export class LessonViewerComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     ++this.lessonRequest;
+    this.closeDiagram();
+    this.restoreDiagram();
     window.removeEventListener('scroll', this.updateReadingProgress);
     if (this.copyTimer) clearTimeout(this.copyTimer);
   }

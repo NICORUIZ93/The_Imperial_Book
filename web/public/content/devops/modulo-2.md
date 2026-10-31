@@ -127,7 +127,7 @@ La regla general: coloca primero las instrucciones que cambian con menor frecuen
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Correcto["Orden CORRECTO (maximiza caché)"]
         direction TD
         C1["COPY package*.json ./ (cambia poco)"] --> C2["RUN npm ci (se cachea)"] --> C3["COPY . . (cambia)"]

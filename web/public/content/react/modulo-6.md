@@ -260,7 +260,7 @@ useMutation({
 });
 ```
 
-#### Paso 8 · Diseño y decisiones de arquitectura
+#### Profundización · Diseño y decisiones de arquitectura
 **Cuándo NO usar optimistic updates:** si la mutación tiene alta probabilidad de fallar (pagos con validación de fondos en tiempo real) o si revertir visualmente confunde más de lo que ayuda (operaciones irreversibles como "eliminar cuenta"), conviene esperar la confirmación del servidor aunque introduzca latencia perceptible — el trade-off es velocidad percibida frente al riesgo de mostrar temporalmente un estado que resulta falso.
 
 En el proyecto integrador RutaFlow (`examples/rutaflow/react/dashboard/src/hooks/useMarcarEntregado.ts`), este patrón se aplica al botón "Marcar entregado": como la probabilidad de rechazo del servidor es baja, el optimistic update mejora la experiencia del operador sin generar reversiones frecuentes y confusas.

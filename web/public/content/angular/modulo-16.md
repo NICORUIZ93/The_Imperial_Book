@@ -254,7 +254,7 @@ Al finalizar vas a navegar entre dos pantallas con `@angular/router` sobre stack
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["/entregas (lista, stack raíz)"] -- "push" --> B["/entregas/:guia (detalle)"]
     B -- "inject LocationService" --> C[Módulo de Expo: ubicación nativa]
     C --> D[Coordenadas reales del dispositivo]

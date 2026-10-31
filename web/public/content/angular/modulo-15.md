@@ -28,7 +28,7 @@ Al finalizar podrás montar un componente standalone real con `TestBed`, estable
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
   A["TestBed.configureTestingModule"] --> B["createComponent(Comp)"]
   B --> C["componentRef.setInput(...)"]
   C --> D["fixture.detectChanges()"]

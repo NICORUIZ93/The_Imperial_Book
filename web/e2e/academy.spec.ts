@@ -85,6 +85,27 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
   }
 });
 
+test('diagramas: la vista ampliada muestra el diagrama completo sin encogerlo', async ({ page }) => {
+  await page.goto('/curso/angular/16');
+  const figure = page.locator('.visual-diagram').nth(3);
+  const topicCard = figure.locator('xpath=ancestor::section[contains(@class, "topic-card")]');
+  if (!(await topicCard.getAttribute('class'))?.includes('expanded')) {
+    await topicCard.locator('.topic-toggle').click();
+  }
+  const open = figure.getByRole('button', { name: /^Ampliar el diagrama/ });
+  await open.scrollIntoViewIfNeeded();
+  await open.click();
+  const dialog = page.locator('dialog.diagram-dialog');
+  await expect(dialog).toBeVisible();
+  const natural = await dialog.locator('svg').evaluate(svg => (svg as SVGSVGElement).viewBox.baseVal.width);
+  const rendered = await dialog.locator('svg').evaluate(svg => svg.getBoundingClientRect().width);
+  expect(natural).toBeGreaterThan(680);
+  expect(rendered).toBeGreaterThan(natural * 0.99);
+  await dialog.getByRole('button', { name: 'Cerrar' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(figure.locator('pre.mermaid svg')).toHaveCount(1);
+});
+
 test('diagramas Archify: muestra Java y Spring Boot dentro de la lección', async ({ page }) => {
   for (const path of ['/curso/java/4', '/curso/spring-boot/0']) {
     await page.goto(path);

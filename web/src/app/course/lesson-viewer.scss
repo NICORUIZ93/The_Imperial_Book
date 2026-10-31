@@ -335,6 +335,29 @@ $sans-ui:var(--font-sans);
 .lesson-markdown ::ng-deep pre.mermaid { min-width:100%; min-height:88px; margin:0; padding:20px 18px; display:flex; justify-content:center; align-items:center; overflow:auto; border:0; border-radius:0; color:$i3; background:linear-gradient(145deg,$wh,$bg2); box-shadow:none; font:500 11px/1.45 var(--font-sans); white-space:pre-wrap; }
 .lesson-markdown ::ng-deep pre.mermaid svg { display:block; width:min(100%,680px); min-width:0; max-width:680px; max-height:360px; height:auto; }
 .lesson-markdown ::ng-deep pre.mermaid svg text { font-family:var(--font-sans) !important; font-size:12px !important; }
+.lesson-markdown ::ng-deep .diagram-zoom-open { margin-left:auto; flex:0 0 auto; align-self:center; min-height:32px; padding:7px 13px; border:1px solid color-mix(in srgb,var(--accent) 38%,#{$bd}); border-radius:999px; color:var(--accent); background:$wh; font:750 10px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; cursor:zoom-in; }
+.lesson-markdown ::ng-deep .diagram-zoom-open:hover { background:color-mix(in srgb,var(--accent) 9%,$wh); }
+.lesson-markdown ::ng-deep .diagram-zoom-open:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 55%,white); outline-offset:2px; }
+
+// La vista ampliada no reemplaza la figura: mueve el mismo SVG al diálogo para
+// no duplicar ids de Mermaid y lo devuelve a su <pre> al cerrar.
+.diagram-dialog { width:min(94vw,1440px); height:min(90vh,900px); max-width:none; max-height:none; padding:0; overflow:hidden; border:1px solid color-mix(in srgb,var(--accent) 30%,#{$bd}); border-radius:16px; background:$wh; color:$ink; box-shadow:$sh; }
+.diagram-dialog[open] { display:flex; flex-direction:column; }
+.diagram-dialog::backdrop { background:rgba(10,17,28,.64); }
+.diagram-dialog-bar { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid $bd; background:color-mix(in srgb,var(--accent) 5%,#{$bg2}); }
+.diagram-dialog-heading { flex:1 1 240px; min-width:0; }
+.diagram-dialog-heading small { display:block; color:var(--accent); font:800 9px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.diagram-dialog-heading h2 { margin:3px 0 0; color:$ink; font:750 14px/1.35 var(--font-sans); }
+.diagram-dialog-controls { display:flex; align-items:center; gap:6px; margin-left:auto; }
+.diagram-dialog-controls button { min-width:38px; min-height:38px; padding:0 10px; border:1px solid $bd; border-radius:9px; color:$ink; background:$wh; font:700 15px/1 var(--font-sans); cursor:pointer; }
+.diagram-dialog-controls button:hover { border-color:color-mix(in srgb,var(--accent) 40%,#{$bd}); background:color-mix(in srgb,var(--accent) 7%,$wh); }
+.diagram-dialog-controls button:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 55%,white); outline-offset:2px; }
+.diagram-dialog-zoom { min-width:52px; color:$mu; font:650 11px/1 var(--font-sans); text-align:center; }
+.diagram-dialog-controls .diagram-dialog-close { color:var(--accent); font-size:10px; letter-spacing:.06em; text-transform:uppercase; }
+.diagram-dialog-body { flex:1; min-height:0; padding:20px; overflow:auto; background:linear-gradient(145deg,$wh,$bg2); }
+.diagram-dialog-body ::ng-deep svg { display:block; margin:0 auto; max-width:none !important; max-height:none !important; }
+.diagram-dialog-body ::ng-deep svg text { font-family:var(--font-sans) !important; font-size:12px !important; }
+@media (max-width:560px){ .diagram-dialog { width:100vw; height:100dvh; border:0; border-radius:0; } .diagram-dialog-body { padding:12px; } }
 .lesson-markdown ::ng-deep .anatomy-figure { margin:34px 0; overflow:hidden; border:1px solid color-mix(in srgb,var(--accent) 22%,#{$bd}); border-radius:18px; background:$ink; box-shadow:$shm; }
 .lesson-markdown ::ng-deep .anatomy-figure-frame { display:block; width:100%; height:720px; border:0; background:$ink; }
 @media (max-width:560px){ .lesson-markdown ::ng-deep .anatomy-figure { margin:28px -2px; border-radius:14px; } .lesson-markdown ::ng-deep .anatomy-figure-frame { height:560px; } }

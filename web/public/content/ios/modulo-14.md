@@ -363,7 +363,7 @@ Entregá el picker funcional del Paso 4, el fallo silencioso por delegate faltan
 **Diagrama: Coordinator como puente de delegate**
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["UIImagePickerController"] -->|delegate = context.coordinator| B["Coordinator\n(NSObject, UIImagePickerControllerDelegate)"]
     B -->|didFinishPickingMediaWithInfo| C["foto = info[.originalImage]"]
     C -->|Binding| D["Vista SwiftUI se actualiza"]

@@ -27,7 +27,7 @@ La arquitectura hexagonal separa tres zonas: el **dominio** (tipos y reglas), la
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
     Controlador["Controlador HTTP"] --> CasoUso["Caso de uso CrearReserva"]
     CasoUso --> Puerto["Puerto ReservaRepository"]
     Puerto -.->|implementa| Adaptador["Adaptador: memoria o JPA"]

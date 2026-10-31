@@ -130,6 +130,22 @@
   </div>
 </ng-container>
 
+<dialog #diagramDialog class="diagram-dialog" aria-labelledby="diagram-dialog-title" (close)="restoreDiagram()" (click)="closeDiagramFromBackdrop($event)">
+  <div class="diagram-dialog-bar">
+    <div class="diagram-dialog-heading">
+      <small>Diagrama</small>
+      <h2 id="diagram-dialog-title">{{ diagramDialogTitle() }}</h2>
+    </div>
+    <div class="diagram-dialog-controls">
+      <button type="button" (click)="stepDiagramZoom(-1)" aria-label="Reducir el diagrama">−</button>
+      <span class="diagram-dialog-zoom" aria-live="polite">{{ diagramZoomLabel() }}</span>
+      <button type="button" (click)="stepDiagramZoom(1)" aria-label="Ampliar más el diagrama">+</button>
+      <button type="button" class="diagram-dialog-close" (click)="closeDiagram()">Cerrar</button>
+    </div>
+  </div>
+  <div class="diagram-dialog-body" #diagramDialogBody></div>
+</dialog>
+
 <ng-template #notFound>
   <div class="lesson-missing">
     <p>No encontramos este capítulo.</p>

@@ -1644,7 +1644,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "883adf1e27410b09de32228f3e3fb4b36cadf525cdde2c9f37bcf3d5d0dde142",
+    "fingerprint": "071e9153ae1651e2973e39b85b2f240ee0df370d51992f95c2eb78a7e3e84a50",
     "issues": {
       "andamiaje-generico": 99,
       "bloque-repetido": 172,
@@ -8719,7 +8719,7 @@
         "module": 11,
         "tailWords": 163,
         "topic": "Tema 3: Eventos tipados y componentes polimórficos",
-        "words": 1135
+        "words": 1134
       },
       {
         "issues": [],
@@ -8964,7 +8964,7 @@
         "module": 6,
         "tailWords": 139,
         "topic": "Tema 3: Optimistic updates",
-        "words": 1161
+        "words": 1160
       },
       {
         "issues": [
@@ -9023,7 +9023,7 @@
         "module": 8,
         "tailWords": 159,
         "topic": "Tema 3: Testing de hooks personalizados",
-        "words": 932
+        "words": 931
       },
       {
         "issues": [],

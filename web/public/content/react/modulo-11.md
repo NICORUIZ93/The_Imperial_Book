@@ -215,7 +215,7 @@ function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonPr
 }
 ```
 
-#### Paso 8 · Diseño y decisiones de arquitectura
+#### Profundización · Diseño y decisiones de arquitectura
 **Cuándo NO usar un componente polimórfico:** si solo necesitás dos variantes fijas y nunca van a crecer (por ejemplo "botón" vs "link" y nada más), un componente polimórfico genérico con `T extends React.ElementType` agrega complejidad de tipos que no se paga a sí misma — en ese caso, dos componentes simples y explícitos (`BotonAccion` y `EnlaceAccion`) son más fáciles de leer y mantener que una abstracción genérica para dos casos.
 
 En el proyecto integrador RutaFlow (`examples/rutaflow/react/dashboard/src/components/Boton.tsx`), el componente polimórfico se justifica porque "Ver detalle" aparece en más de cinco contextos distintos del dashboard (tabla de envíos, tarjeta de resumen, notificación, breadcrumb, modal), algunos como navegación real y otros como acción en el momento — la cantidad de variantes reales justifica el costo de la abstracción genérica.

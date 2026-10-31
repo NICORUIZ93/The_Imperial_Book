@@ -261,7 +261,7 @@ Un **foreground service** es un servicio que el usuario sabe que está corriendo
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[am start-foreground-service] --> S[SeguimientoService]
     S --> N[Notificación persistente]
     S --> F[FusedLocationProviderClient]

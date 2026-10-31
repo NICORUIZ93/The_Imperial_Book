@@ -506,7 +506,7 @@ Un modelo de riesgo simple que corre completamente en el navegador del usuario (
 **Diagrama:**
 
 ```mermaid
-flowchart LR
+flowchart TD
   I[battery, accuracy, minutesLate] --> R["deliveryRisk(): cálculo 100% local"]
   R --> S["score + factores explicables"]
   S --> H["Revisión humana, nunca sanción automática"]
