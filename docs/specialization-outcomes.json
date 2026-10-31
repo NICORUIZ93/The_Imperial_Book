@@ -1150,6 +1150,31 @@
             "Software Engineering Operations",
             "Software Architecture"
           ]
+        },
+        {
+          "id": "DEVOPS-7",
+          "level": "Experto",
+          "statement": "Diseñar límites de dominio, eventos e integraciones entre servicios, y verificar el conjunto en un laboratorio cloud local reproducible.",
+          "moduleIds": [
+            19,
+            20,
+            21,
+            22
+          ],
+          "evidence": [
+            "modelo de dominio con invariantes y ADR",
+            "outbox e idempotencia probados",
+            "laboratorio Floci con S3, SQS y Terraform verificado"
+          ],
+          "cs2023": [
+            "SE",
+            "PDC"
+          ],
+          "swebok": [
+            "Software Architecture",
+            "Software Design",
+            "Software Engineering Operations"
+          ]
         }
       ]
     },

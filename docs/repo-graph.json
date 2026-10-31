@@ -640,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13780,
+      "lines": 13972,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -648,7 +648,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1146,
+      "lines": 1162,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9510,
+      "lines": 9642,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -922,7 +922,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12273,
+      "lines": 12449,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1048,7 +1048,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28176,
+      "lines": 28576,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1075,7 +1075,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1297,
+      "lines": 1322,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1093,7 +1093,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 24801,
+      "lines": 25153,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6586,7 +6586,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 366,
+      "lines": 373,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -6614,12 +6614,13 @@
     },
     {
       "path": "web/public/content/ATRIBUCION.md",
-      "lines": 20,
+      "lines": 39,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Atribucion y licencia"
+        "# Atribucion y licencia",
+        "## Fuentes consultadas para la ampliacion de DevOps"
       ]
     },
     {
@@ -6828,6 +6829,48 @@
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre",
         "### Tema 2: DataStore para preferencias consistentes y migrables",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/android/modulo-17.md",
+      "lines": 444,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 17: Compose profesional \u2014 layouts, formularios, listas y efectos",
+        "## Aprende construyendo",
+        "### Tema 1: Constraints, Modifier y componentes con slots",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: LazyColumn, grids, claves estables y estado de scroll",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+      ]
+    },
+    {
+      "path": "web/public/content/android/modulo-18.md",
+      "lines": 337,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 18: Build profesional \u2014 variantes, m\u00f3dulos, optimizaci\u00f3n y CI",
+        "## Aprende construyendo",
+        "### Tema 1: Gradle, version catalogs y resoluci\u00f3n de dependencias",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Build types, product flavors y configuraci\u00f3n segura",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
@@ -11830,7 +11873,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 4987,
+      "lines": 5059,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12628,7 +12671,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 181,
+      "lines": 180,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -12873,11 +12916,11 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.html",
-      "lines": 155,
+      "lines": 130,
       "kind": "angular-app",
       "symbols": [
-        "project-progress-title",
         "floci-overview-title",
+        "project-progress-title",
         "diagram-dialog-title"
       ],
       "imports": [],
@@ -12885,7 +12928,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 553,
+      "lines": 517,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -12893,7 +12936,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1165,
+      "lines": 1157,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -12907,9 +12950,6 @@
         "projectProgress",
         "showTrackProject",
         "moduleIndex",
-        "levelIndex",
-        "levelFillPercent",
-        "chapterPrerequisite",
         "isCloudIntroduction",
         "previousModule",
         "nextModule",
@@ -12919,7 +12959,10 @@
         "currentTopicIndex",
         "lessonHtml",
         "lessonLoading",
-        "lessonError"
+        "lessonError",
+        "diagramError",
+        "readingProgress",
+        "focusMode"
       ],
       "imports": [
         "@angular/common",
@@ -13212,7 +13255,7 @@
     },
     {
       "path": "web/src/app/tracks/devops.track.ts",
-      "lines": 240,
+      "lines": 288,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

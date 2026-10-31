@@ -544,10 +544,30 @@
       "track": "devops"
     },
     {
+      "legacySections": [],
+      "module": 19,
+      "track": "devops"
+    },
+    {
       "legacySections": [
         "**Errores comunes y soluciones**"
       ],
       "module": 2,
+      "track": "devops"
+    },
+    {
+      "legacySections": [],
+      "module": 20,
+      "track": "devops"
+    },
+    {
+      "legacySections": [],
+      "module": 21,
+      "track": "devops"
+    },
+    {
+      "legacySections": [],
+      "module": 22,
       "track": "devops"
     },
     {
@@ -1659,16 +1679,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "a544e605758a88ce5bf749c5e789f914e7a01e8b6cb5b40df0ffc9a47acfae96",
+    "fingerprint": "a04ae4ab80311bba5055aa808fc9dba2045c0fd907e07a83402f40f213ff5408",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 181
     },
-    "modules": 248,
+    "modules": 252,
     "modulesWithLegacySections": 183,
-    "topics": 1115,
+    "topics": 1131,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -4215,6 +4235,34 @@
       },
       {
         "issues": [],
+        "module": 19,
+        "tailWords": 156,
+        "topic": "Tema 1: Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+        "words": 1594
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 139,
+        "topic": "Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
+        "words": 1515
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 149,
+        "topic": "Tema 3: Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
+        "words": 1418
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 131,
+        "topic": "Tema 4: ADR y fitness functions: decisiones que el código puede defender",
+        "words": 1269
+      },
+      {
+        "issues": [],
         "module": 2,
         "tailWords": 151,
         "topic": "Tema 1: Dockerfile multi-stage",
@@ -4261,6 +4309,90 @@
         "tailWords": 204,
         "topic": "Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes",
         "words": 1099
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 147,
+        "topic": "Tema 1: Eventos de dominio e integración: hechos, no comandos",
+        "words": 1401
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 152,
+        "topic": "Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos",
+        "words": 1717
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 160,
+        "topic": "Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos",
+        "words": 1495
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 142,
+        "topic": "Tema 4: Sagas y compensaciones: procesos largos sin transacción distribuida",
+        "words": 1340
+      },
+      {
+        "issues": [],
+        "module": 21,
+        "tailWords": 134,
+        "topic": "Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato",
+        "words": 1302
+      },
+      {
+        "issues": [],
+        "module": 21,
+        "tailWords": 150,
+        "topic": "Tema 2: Datos por servicio: propiedad, composición y réplicas",
+        "words": 1291
+      },
+      {
+        "issues": [],
+        "module": 21,
+        "tailWords": 158,
+        "topic": "Tema 3: Resiliencia: timeouts, reintentos y cortacircuitos",
+        "words": 1520
+      },
+      {
+        "issues": [],
+        "module": 21,
+        "tailWords": 144,
+        "topic": "Tema 4: Observabilidad distribuida: trazas, correlación y SLO",
+        "words": 1508
+      },
+      {
+        "issues": [],
+        "module": 22,
+        "tailWords": 160,
+        "topic": "Tema 1: Floci desde cero: instalar, aislar y verificar",
+        "words": 1737
+      },
+      {
+        "issues": [],
+        "module": 22,
+        "tailWords": 176,
+        "topic": "Tema 2: S3 y diagnóstico de red: objetos, metadatos y errores",
+        "words": 1771
+      },
+      {
+        "issues": [],
+        "module": 22,
+        "tailWords": 174,
+        "topic": "Tema 3: Contenedores y CI: una imagen que se prueba contra Floci",
+        "words": 1794
+      },
+      {
+        "issues": [],
+        "module": 22,
+        "tailWords": 224,
+        "topic": "Tema 4: Terraform, SQS y operación: infraestructura reproducible y ejercicios",
+        "words": 1652
       },
       {
         "issues": [],

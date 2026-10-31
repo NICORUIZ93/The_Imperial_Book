@@ -9,7 +9,7 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 tracks, 248 módulos y 1115 temas editoriales en formato de
+La academia reúne 14 tracks, 252 módulos y 1131 temas editoriales en formato de
 libro. Esos 14 tracks son Fundamentos + RutaFlow + 12 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
@@ -196,8 +196,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 248
-módulos y 1115 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 252
+módulos y 1131 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -206,8 +206,8 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1115/1115 temas con los nueve criterios detectados. La
-auditoría independiente de metodología registra 1115/1115 con sus marcadores de
+versionado registra 1131/1131 temas con los nueve criterios detectados. La
+auditoría independiente de metodología registra 1131/1131 con sus marcadores de
 siete pasos. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en
@@ -252,7 +252,7 @@ como certificaciones.
 |---|---|---|
 | Fundamentos | 16 | Computador, programación, algoritmos, web, datos e ingeniería de software |
 | Cloud Local | 35 | AWS, Azure y GCP en local con Floci |
-| DevOps | 19 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation, sistemas distribuidos, servidor propio |
+| DevOps | 23 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation, sistemas distribuidos, servidor propio, DDD, eventos, microservicios y laboratorio Floci |
 | JavaScript | 15 | Lenguaje, DOM, asincronía, rendimiento |
 | Node.js | 15 | Backend, APIs, bases de datos, producción |
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |

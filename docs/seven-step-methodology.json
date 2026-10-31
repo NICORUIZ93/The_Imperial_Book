@@ -58,23 +58,23 @@
       "complete": 156
     },
     "devops": {
-      "topics": 113,
-      "objective": 113,
-      "prerequisites": 113,
-      "context": 113,
-      "theoryAnalogy": 113,
-      "guidedDemo": 113,
-      "codeExplanation": 113,
-      "execution": 113,
-      "expectedResult": 113,
-      "deliberateFailure": 113,
-      "guidedPractice": 113,
-      "independentPractice": 113,
-      "closure": 113,
-      "commonErrors": 113,
-      "resources": 113,
-      "standaloneExample": 113,
-      "complete": 113
+      "topics": 129,
+      "objective": 129,
+      "prerequisites": 129,
+      "context": 129,
+      "theoryAnalogy": 129,
+      "guidedDemo": 129,
+      "codeExplanation": 129,
+      "execution": 129,
+      "expectedResult": 129,
+      "deliberateFailure": 129,
+      "guidedPractice": 129,
+      "independentPractice": 129,
+      "closure": 129,
+      "commonErrors": 129,
+      "resources": 129,
+      "standaloneExample": 129,
+      "complete": 129
     },
     "flutter": {
       "topics": 63,
@@ -9326,6 +9326,106 @@
         }
       },
       {
+        "module": 19,
+        "topic": "Tema 1: Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 3: Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 4: ADR y fitness functions: decisiones que el código puede defender",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: Dockerfile multi-stage",
         "criteria": {
@@ -9478,6 +9578,306 @@
       {
         "module": 2,
         "topic": "Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 1: Eventos de dominio e integración: hechos, no comandos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 4: Sagas y compensaciones: procesos largos sin transacción distribuida",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 2: Datos por servicio: propiedad, composición y réplicas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 3: Resiliencia: timeouts, reintentos y cortacircuitos",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 4: Observabilidad distribuida: trazas, correlación y SLO",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 1: Floci desde cero: instalar, aislar y verificar",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 2: S3 y diagnóstico de red: objetos, metadatos y errores",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 3: Contenedores y CI: una imagen que se prueba contra Floci",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 4: Terraform, SQS y operación: infraestructura reproducible y ejercicios",
         "criteria": {
           "objective": true,
           "prerequisites": true,

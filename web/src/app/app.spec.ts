@@ -116,10 +116,9 @@ Construye y verifica el ejemplo.
       expect(page.querySelector('.lesson-toc')).toBeFalsy();
       expect(page.querySelector('.module-checkpoint')).toBeFalsy();
       expect(page.querySelector('.module-lab-link')).toBeFalsy();
-      expect(page.querySelector('.code-example .window-controls')).toBeTruthy();
-      expect(page.querySelector('.code-example .code-example-language')).toBeTruthy();
-      expect(text).toContain('TypeScript');
-      expect(text).toContain('1 línea');
+      expect(page.querySelector('.code-example .window-controls')).toBeFalsy();
+      expect(page.querySelector('.code-example .code-example-label')?.textContent).toContain('TypeScript');
+      expect(text).not.toContain('1 línea');
       const wrapCode = page.querySelector<HTMLButtonElement>('[data-wrap-code]');
       expect(wrapCode?.getAttribute('aria-pressed')).toBe('false');
       wrapCode?.click();

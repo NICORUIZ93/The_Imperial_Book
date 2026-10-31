@@ -79,10 +79,6 @@ export class TrackOverviewComponent {
     }[this.status(moduleId)];
   }
 
-  moduleIndex(moduleId: number): number {
-    return (this.track()?.modules.findIndex(module => module.id === moduleId) ?? 0) + 1;
-  }
-
   totalTopics(): number {
     return this.track()?.modules.reduce((total, module) => total + this.topicCount(module.id), 0) ?? 0;
   }

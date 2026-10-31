@@ -25,16 +25,16 @@
       "officialSource": 156
     },
     "devops": {
-      "topics": 113,
-      "code": 113,
-      "commentedCode": 67,
-      "mermaid": 66,
-      "archifyVisual": 1,
+      "topics": 129,
+      "code": 129,
+      "commentedCode": 83,
+      "mermaid": 82,
+      "archifyVisual": 2,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 113,
-      "runCommand": 112,
-      "officialSource": 113
+      "filePath": 129,
+      "runCommand": 128,
+      "officialSource": 129
     },
     "javascript": {
       "topics": 88,

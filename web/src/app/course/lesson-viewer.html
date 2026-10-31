@@ -3,7 +3,7 @@
   <div class="lesson-layout" [class.focus-mode="focusMode()"]>
     <article class="lesson">
       <header class="lesson-hero">
-        <div class="lesson-eyebrow"><lucide-icon [img]="icons.BookOpen" /> {{ track()?.name }} · Módulo {{ moduleIndex() + 1 }} de {{ track()?.modules?.length }}</div>
+        <div class="lesson-eyebrow"><lucide-icon [img]="icons.BookOpen" /> {{ track()?.name }} · Módulo {{ m.id }} · {{ track()?.modules?.length }} módulos · {{ levelLabel(m.level) }}</div>
         <h1>{{ m.title }}</h1>
         <p class="lesson-description">{{ m.description }}</p>
         <div class="lesson-meta">
@@ -25,56 +25,12 @@
           <ul><li *ngFor="let skill of guide.skills">{{ skill }}</li></ul>
           <p><strong>Resultado del curso:</strong> {{ guide.outcome }}</p>
         </details>
-        <div class="scale" *ngIf="levelIndex() >= 0" aria-label="Etapa de este capítulo en el recorrido">
-          <div class="scale-label"><span>Etapa del recorrido</span><strong>{{ levelLabel(m.level) }}</strong></div>
-          <div class="scale-track"><div class="scale-fill" [style.width.%]="levelFillPercent()"></div></div>
-          <div class="scale-ticks">
-            <span *ngFor="let stage of levelStages; let i = index" [class.reached]="i <= levelIndex()" [class.current]="i === levelIndex()">{{ stage }}</span>
-          </div>
-        </div>
-        <details class="chapter-map">
-          <summary><span>Mapa del capítulo</span><small>Orden de lectura, conceptos y resultado</small></summary>
-          <div class="chapter-map-grid">
-            <section>
-              <small>Capítulo anterior en el orden de lectura</small>
-              <strong *ngIf="chapterPrerequisite() as prerequisite; else firstChapter">{{ prerequisite.shortTitle }}</strong>
-              <ng-template #firstChapter><strong>Sin capítulos previos</strong></ng-template>
-            </section>
-            <section>
-              <small>Conceptos que conectarás</small>
-              <ul><li *ngFor="let concept of m.concepts.slice(0, 5)">{{ concept }}</li></ul>
-            </section>
-            <section>
-              <small>Resultado del capítulo</small>
-              <strong>{{ m.deliverable }}</strong>
-            </section>
-          </div>
-        </details>
       </header>
       <p class="topic-focus-banner" *ngIf="focusedTopic() as topic">
         <span>Vista de un tema: <strong>{{ topic.title }}</strong></span>
         <a [routerLink]="['/curso', trackId(), moduleId()]">Volver al capítulo completo</a>
       </p>
       <p class="sr-only" aria-live="polite">{{ chapterAnnouncement() }}</p>
-
-      <details class="project-progress-card" *ngIf="trackProject() as project" aria-labelledby="project-progress-title">
-        <summary>Proyecto de esta ruta <span>Ver hitos y progreso</span></summary>
-        <div class="project-progress-heading">
-          <div><small>Hilo conductor</small><h2 id="project-progress-title">{{ project.title }}</h2></div>
-          <strong>{{ projectProgress() }}%</strong>
-        </div>
-        <p><strong>Problema:</strong> {{ project.problem }}</p>
-        <p><strong>Entrega final:</strong> {{ project.deliverable }}</p>
-        <div class="project-progress-bar" role="progressbar" aria-label="Progreso del proyecto integrador" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="projectProgress()"><span [style.width.%]="projectProgress()"></span></div>
-        <ol class="project-milestones" aria-label="Hitos del proyecto">
-          <li *ngFor="let milestone of project.milestones; let i = index" [class.current]="i + 1 === projectStep()" [class.reached]="i + 1 < projectStep()"><span>{{ i + 1 }}</span><small>{{ milestone }}</small></li>
-        </ol>
-        <p class="project-current-step"><strong>Hoy:</strong> trabaja el hito {{ projectStep() }} de {{ project.milestones.length }}. Marca el capítulo al finalizar para conservar tu progreso.</p>
-        <div class="project-definition-of-done" *ngIf="showTrackProject()">
-          <h3>Definición de terminado</h3>
-          <ul><li *ngFor="let item of project.verification">{{ item }}</li></ul>
-        </div>
-      </details>
 
       <section class="floci-overview" *ngIf="isCloudIntroduction()" aria-labelledby="floci-overview-title">
         <div class="floci-overview-intro">
@@ -115,6 +71,25 @@
         </div>
         <p *ngIf="diagramError() as error" class="lesson-error" role="alert">{{ error }}</p>
       </section>
+
+      <details class="project-progress-card" *ngIf="trackProject() as project" aria-labelledby="project-progress-title">
+        <summary>Proyecto de esta ruta <span>Ver hitos y progreso</span></summary>
+        <div class="project-progress-heading">
+          <div><small>Hilo conductor</small><h2 id="project-progress-title">{{ project.title }}</h2></div>
+          <strong>{{ projectProgress() }}%</strong>
+        </div>
+        <p><strong>Problema:</strong> {{ project.problem }}</p>
+        <p><strong>Entrega final:</strong> {{ project.deliverable }}</p>
+        <div class="project-progress-bar" role="progressbar" aria-label="Progreso del proyecto integrador" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="projectProgress()"><span [style.width.%]="projectProgress()"></span></div>
+        <ol class="project-milestones" aria-label="Hitos del proyecto">
+          <li *ngFor="let milestone of project.milestones; let i = index" [class.current]="i + 1 === projectStep()" [class.reached]="i + 1 < projectStep()"><span>{{ i + 1 }}</span><small>{{ milestone }}</small></li>
+        </ol>
+        <p class="project-current-step"><strong>Hoy:</strong> trabaja el hito {{ projectStep() }} de {{ project.milestones.length }}. Marca el capítulo al finalizar para conservar tu progreso.</p>
+        <div class="project-definition-of-done" *ngIf="showTrackProject()">
+          <h3>Definición de terminado</h3>
+          <ul><li *ngFor="let item of project.verification">{{ item }}</li></ul>
+        </div>
+      </details>
 
       <footer class="lesson-footer">
         <button class="complete-toggle" [class.done]="isComplete()" [attr.aria-pressed]="isComplete()" (click)="toggleComplete()">

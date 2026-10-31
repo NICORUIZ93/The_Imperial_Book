@@ -7,7 +7,6 @@ import { map } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { findTrack } from '../course-data';
 import { courseLevelLabel } from '../course-module.model';
-import type { CourseModule } from '../course-module.model';
 import { ANATOMY_SLUG_CLASS_PREFIX, ContentService } from '../content.service';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
@@ -18,8 +17,6 @@ import { TopicIndexService } from '../topic-index.service';
 
 let mermaidInitialized = false;
 
-
-const LEVEL_STAGES: CourseModule['level'][] = ['Fundamentos', 'Aplicación', 'Integración', 'Experto'];
 
 const TRACK_OFFICIAL_SOURCES: Record<string, { label: string; url: string }> = {
   foundations: { label: 'Currículo oficial de MDN', url: 'https://developer.mozilla.org/en-US/curriculum/' },
@@ -162,21 +159,7 @@ export class LessonViewerComponent implements OnDestroy {
     return Boolean(this.trackProject()) && this.moduleIndex() === (track?.modules.length ?? 0) - 1;
   });
   readonly moduleIndex = computed(() => this.track()?.modules.findIndex(m => m.id === this.moduleId()) ?? -1);
-  readonly levelStages = LEVEL_STAGES.map(courseLevelLabel);
   readonly levelLabel = courseLevelLabel;
-  readonly levelIndex = computed(() => {
-    const level = this.module()?.level;
-    return level ? LEVEL_STAGES.indexOf(level) : -1;
-  });
-  readonly levelFillPercent = computed(() => {
-    const index = this.levelIndex();
-    return index < 0 ? 0 : ((index + 1) / LEVEL_STAGES.length) * 100;
-  });
-  readonly chapterPrerequisite = computed(() => {
-    const track = this.track();
-    const index = this.moduleIndex();
-    return track && index > 0 ? track.modules[index - 1] : null;
-  });
   readonly isCloudIntroduction = computed(() => this.trackId() === 'cloud' && this.moduleId() === 0);
   readonly flociMetrics = [
     { value: '24 ms', label: 'Arranque de referencia', detail: 'Binario nativo' },
@@ -207,9 +190,8 @@ export class LessonViewerComponent implements OnDestroy {
     return track && index >= 0 && index < track.modules.length - 1 ? track.modules[index + 1] : null;
   });
   readonly chapterAnnouncement = computed(() => {
-    const track = this.track();
     const module = this.module();
-    return track && module ? `Módulo ${this.moduleIndex() + 1} de ${track.modules.length}: ${module.title}` : '';
+    return module ? `Módulo ${module.id}: ${module.title}` : '';
   });
   /** Resumen corto del capítulo para que el siguiente tema no quede escondido
    * al final del documento largo. El Markdown sigue siendo la fuente real. */
@@ -386,7 +368,6 @@ export class LessonViewerComponent implements OnDestroy {
     this.applyTopicFocus(container);
     this.enhanceVerifiableExercises(container);
     this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')));
-    this.buildTopicMap(container);
     const fragment = this.requestedFragment();
     if (fragment) this.scrollToRequestedFragment(container, fragment);
     window.removeEventListener('scroll', this.updateReadingProgress);
@@ -579,7 +560,7 @@ export class LessonViewerComponent implements OnDestroy {
     // Numeración "§ capítulo.tema" (como un libro de texto real) en vez del
     // prefijo "Tema N:" suelto — el número se calcula, no se escribe a mano
     // en el Markdown, así que no depende de que cada archivo lo lleve bien.
-    const chapterNumber = this.moduleIndex() + 1;
+    const chapterNumber = this.module()?.id ?? 0;
     let temaIndex = 0;
     const topicSlugSeen = new Set<string>();
     container.querySelectorAll<HTMLHeadingElement>('h3').forEach(heading => {
@@ -619,7 +600,6 @@ export class LessonViewerComponent implements OnDestroy {
       const previous = pre.previousElementSibling;
       const previousText = previous?.matches('p, li') ? previous.textContent?.trim() ?? '' : '';
       const path = previousText.match(/(?:[\w.-]+\/)+(?:[\w.-]+\.[a-z0-9]+|[\w.-]+)/i)?.[0];
-      const label = path ?? (isTerminal ? 'Terminal' : language);
       const languageLabels: Record<string, string> = {
         bash: 'Terminal', sh: 'Terminal', shell: 'Terminal', console: 'Terminal', powershell: 'PowerShell', zsh: 'Terminal',
         js: 'JavaScript', javascript: 'JavaScript', ts: 'TypeScript', typescript: 'TypeScript', jsx: 'React JSX', tsx: 'React TSX',
@@ -627,11 +607,14 @@ export class LessonViewerComponent implements OnDestroy {
         html: 'HTML', css: 'CSS', scss: 'SCSS', sql: 'SQL', hcl: 'Terraform HCL', go: 'Go', rust: 'Rust', xml: 'XML',
       };
       const languageLabel = languageLabels[language.toLowerCase()] ?? language;
-      const lineCount = code?.textContent?.replace(/\n$/, '').split('\n').length ?? 0;
+      // Una sola etiqueta: si no hay ruta de archivo, el lenguaje ya es el
+      // título del bloque y repetirlo ("Terminal · Terminal") solo agrega ruido.
+      const label = path ?? languageLabel;
+      const showLanguage = Boolean(path) && languageLabel.toLowerCase() !== label.toLowerCase();
       const wrapper = document.createElement('div');
       wrapper.className = 'code-example';
       wrapper.dataset['language'] = language.toLowerCase();
-      wrapper.innerHTML = `<div class="code-example-bar"><span class="window-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-example-label">${escapeHtml(label)}</span><span class="code-example-meta"><span class="code-example-language">${escapeHtml(languageLabel)}</span><span>${lineCount} ${lineCount === 1 ? 'línea' : 'líneas'}</span></span><button type="button" data-wrap-code aria-pressed="false" aria-label="Ajustar líneas de ${escapeHtml(label)}">Ajustar</button><button type="button" data-copy-code="${index}" aria-label="Copiar ${escapeHtml(label)}">Copiar</button></div>`;
+      wrapper.innerHTML = `<div class="code-example-bar"><span class="code-example-label">${escapeHtml(label)}</span>${showLanguage ? `<span class="code-example-language">${escapeHtml(languageLabel)}</span>` : ''}<button type="button" data-wrap-code aria-pressed="false" aria-label="Ajustar líneas de ${escapeHtml(label)}">Ajustar</button><button type="button" data-copy-code="${index}" aria-label="Copiar ${escapeHtml(label)}">Copiar</button></div>`;
       pre.parentNode?.insertBefore(wrapper, pre);
       wrapper.appendChild(pre);
       this.decorateCodeLines(pre);
@@ -641,6 +624,7 @@ export class LessonViewerComponent implements OnDestroy {
     });
 
     this.buildSessionCards(container);
+    this.collapseProjectDeepDives(container);
     this.groupTopics(container);
     this.enhanceTextbookBlocks(container);
     this.annotateTechnicalTerms(container);
@@ -729,6 +713,38 @@ export class LessonViewerComponent implements OnDestroy {
   }
 
   /**
+   * "Profundización · Diseño: ..." es lectura complementaria sobre el proyecto
+   * integrador. Se conserva íntegra, pero plegada al cierre del tema: el
+   * recorrido principal (objetivo → teoría → demostración → práctica) no queda
+   * interrumpido por un bloque largo que se repite en cada tema.
+   */
+  private collapseProjectDeepDives(container: HTMLElement): void {
+    container.querySelectorAll<HTMLHeadingElement>('h4').forEach(heading => {
+      const text = heading.textContent?.trim() ?? '';
+      if (!/^Profundización\b/i.test(text) || heading.closest('.project-deep-dive')) return;
+      const title = text.replace(/^Profundización\s*(?:·|:|-)?\s*(?:Diseño\s*(?:·|:|-)?\s*)?/i, '').trim() || 'Proyecto integrador';
+      const details = document.createElement('details');
+      details.className = 'project-deep-dive';
+      const summary = document.createElement('summary');
+      summary.innerHTML = `<span>Conexión con el proyecto integrador</span><strong>${escapeHtml(title)}</strong>`;
+      const body = document.createElement('div');
+      body.className = 'project-deep-dive-body';
+      const nextSibling: Element | null = heading.nextElementSibling;
+      heading.parentNode?.insertBefore(details, heading);
+      details.appendChild(summary);
+      // El título ya vive en el summary; conservarlo dentro duplicaría el rótulo.
+      heading.remove();
+      let node: Element | null = nextSibling;
+      while (node && !(node instanceof HTMLHeadingElement && ['H2', 'H3', 'H4'].includes(node.tagName))) {
+        const next: Element | null = node.nextElementSibling;
+        body.appendChild(node);
+        node = next;
+      }
+      details.appendChild(body);
+    });
+  }
+
+  /**
    * "Conceptos clave: A, B, C" deja de ser una línea corrida con borde y pasa
    * a una caja de glosario reconocible, con un chip por término — el mismo
    * lenguaje visual que un recuadro de "términos clave" al inicio de una
@@ -806,31 +822,6 @@ export class LessonViewerComponent implements OnDestroy {
       if (nodes[i].parentNode) wrap.appendChild(nodes[i]);
     }
     if (answerIndex !== -1) (nodes[answerIndex] as HTMLElement).classList.add('sample-problem-answer');
-  }
-
-  /**
-   * Vista mapa/hub: en vez de forzar Tema 1 → 2 → 3 en un único scroll, el
-   * estudiante ve todos los temas del capítulo como tarjetas numeradas y elige
-   * cuál abrir primero. Reutiliza el mismo destino (`data-topic-destination`)
-   * que ya expande y desplaza hacia un tema puntual.
-   */
-  private buildTopicMap(container: HTMLElement): void {
-    if (container.querySelector('.topic-map')) return;
-    const cards = Array.from(container.querySelectorAll<HTMLElement>('.topic-card'));
-    if (cards.length < 2) return;
-    const firstCard = cards[0];
-    const chapter = this.moduleIndex() + 1;
-    const items = cards.map((card, index) => {
-      const heading = card.querySelector<HTMLElement>('.topic-heading');
-      const id = heading?.id ?? '';
-      const title = heading ? this.topicTitle(heading) : `Tema ${index + 1}`;
-      return `<a href="#${escapeHtml(id)}" data-topic-destination="${escapeHtml(id)}" class="topic-map-item"><span class="topic-map-index">${chapter}.${index + 1}</span><span class="topic-map-title">${escapeHtml(title)}</span></a>`;
-    }).join('');
-    const map = document.createElement('nav');
-    map.className = 'topic-map';
-    map.setAttribute('aria-label', 'Mapa de temas de este capítulo');
-    map.innerHTML = `<div class="topic-map-heading"><strong>En este capítulo</strong><span>Empieza por el primer tema si estás aprendiendo desde cero.</span></div><div class="topic-map-grid">${items}</div>`;
-    firstCard.parentNode?.insertBefore(map, firstCard);
   }
 
   private enhanceVerifiableExercises(container: HTMLElement): void {
@@ -939,18 +930,18 @@ export class LessonViewerComponent implements OnDestroy {
       card.classList.toggle('expanded', index === 0);
       card.appendChild(body);
       this.addTopicTroubleshooting(body);
-      this.addTopicFocusLink(card, index);
+      this.addTopicFocusLink(body, index);
     });
   }
 
-  /** Enlace permanente al tema como página propia. */
-  private addTopicFocusLink(card: HTMLElement, index: number): void {
+  /** Enlace permanente al tema como página propia; solo visible al abrir el tema. */
+  private addTopicFocusLink(container: HTMLElement, index: number): void {
     const link = document.createElement('a');
     link.className = 'topic-focus-link';
     link.href = `/curso/${encodeURIComponent(this.trackId())}/${this.moduleId()}/tema/${index + 1}`;
     link.dataset['topicFocus'] = String(index + 1);
     link.textContent = 'Ver solo este tema';
-    card.appendChild(link);
+    container.appendChild(link);
   }
 
   /** Deja expandido solo el tema pedido por la URL y lo trae a la vista. */

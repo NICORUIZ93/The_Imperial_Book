@@ -1618,6 +1618,24 @@
         "fragment": "tema-4-respaldos-que-se-restauran-restic-rpo-rto-y-simulacro"
       }
     ],
+    "19": [
+      {
+        "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+        "fragment": "tema-1-limites-acoplamiento-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
+      },
+      {
+        "title": "Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
+        "fragment": "tema-2-lenguaje-ubicuo-y-contextos-delimitados-el-mismo-envio-no-significa-lo-mismo"
+      },
+      {
+        "title": "Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
+        "fragment": "tema-3-agregados-invariantes-y-eventos-de-dominio-donde-vive-la-regla-que-no-se-puede-romper"
+      },
+      {
+        "title": "ADR y fitness functions: decisiones que el código puede defender",
+        "fragment": "tema-4-adr-y-fitness-functions-decisiones-que-el-codigo-puede-defender"
+      }
+    ],
     "2": [
       {
         "title": "Dockerfile multi-stage",
@@ -1646,6 +1664,60 @@
       {
         "title": "Operación diaria: inspect, stats, events y respaldo de volúmenes",
         "fragment": "tema-7-operacion-diaria-inspect-stats-events-y-respaldo-de-volumenes"
+      }
+    ],
+    "20": [
+      {
+        "title": "Eventos de dominio e integración: hechos, no comandos",
+        "fragment": "tema-1-eventos-de-dominio-e-integracion-hechos-no-comandos"
+      },
+      {
+        "title": "Outbox transaccional: guardar el hecho y el mensaje juntos",
+        "fragment": "tema-2-outbox-transaccional-guardar-el-hecho-y-el-mensaje-juntos"
+      },
+      {
+        "title": "Idempotencia y orden: consumidores que sobreviven a reintentos",
+        "fragment": "tema-3-idempotencia-y-orden-consumidores-que-sobreviven-a-reintentos"
+      },
+      {
+        "title": "Sagas y compensaciones: procesos largos sin transacción distribuida",
+        "fragment": "tema-4-sagas-y-compensaciones-procesos-largos-sin-transaccion-distribuida"
+      }
+    ],
+    "21": [
+      {
+        "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
+        "fragment": "tema-1-descomponer-por-capacidad-de-negocio-dos-servicios-un-contrato"
+      },
+      {
+        "title": "Datos por servicio: propiedad, composición y réplicas",
+        "fragment": "tema-2-datos-por-servicio-propiedad-composicion-y-replicas"
+      },
+      {
+        "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
+        "fragment": "tema-3-resiliencia-timeouts-reintentos-y-cortacircuitos"
+      },
+      {
+        "title": "Observabilidad distribuida: trazas, correlación y SLO",
+        "fragment": "tema-4-observabilidad-distribuida-trazas-correlacion-y-slo"
+      }
+    ],
+    "22": [
+      {
+        "title": "Floci desde cero: instalar, aislar y verificar",
+        "fragment": "tema-1-floci-desde-cero-instalar-aislar-y-verificar"
+      },
+      {
+        "title": "S3 y diagnóstico de red: objetos, metadatos y errores",
+        "fragment": "tema-2-s3-y-diagnostico-de-red-objetos-metadatos-y-errores"
+      },
+      {
+        "title": "Contenedores y CI: una imagen que se prueba contra Floci",
+        "fragment": "tema-3-contenedores-y-ci-una-imagen-que-se-prueba-contra-floci"
+      },
+      {
+        "title": "Terraform, SQS y operación: infraestructura reproducible y ejercicios",
+        "fragment": "tema-4-terraform-sqs-y-operacion-infraestructura-reproducible-y-ejercicios"
       }
     ],
     "3": [

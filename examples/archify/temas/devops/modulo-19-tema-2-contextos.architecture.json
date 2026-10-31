@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Mapa de contextos de RutaFlow",
+    "subtitle": "El mismo envío significa otra cosa en cada frontera",
+    "locale": "es",
+    "output": "modulo-19-tema-2-contextos.html",
+    "quality_profile": "showcase",
+    "visual_preset": "blueprint",
+    "animation": "trace",
+    "viewBox": [
+      880,
+      460
+    ],
+    "views": [
+      {
+        "id": "mapa",
+        "label": "Mapa completo",
+        "focus": [
+          "operaciones",
+          "acl-operaciones",
+          "facturacion",
+          "acl-facturacion",
+          "notificaciones"
+        ],
+        "note": "Tres contextos y dos traducciones explícitas."
+      },
+      {
+        "id": "frontera",
+        "label": "La frontera",
+        "focus": [
+          "operaciones",
+          "acl-operaciones",
+          "facturacion"
+        ],
+        "note": "Seleccionar, transformar y validar antes de cruzar."
+      }
+    ],
+    "legend": {
+      "mode": "auto"
+    }
+  },
+  "components": [
+    {
+      "id": "operaciones",
+      "type": "backend",
+      "label": "Operaciones",
+      "sublabel": "Entrega: estado, conductor, ubicación",
+      "tag": "ciclo logístico",
+      "pos": [
+        22,
+        80
+      ],
+      "size": [
+        150,
+        84
+      ]
+    },
+    {
+      "id": "acl-operaciones",
+      "type": "security",
+      "label": "Capa anticorrupción",
+      "sublabel": "traduce en la frontera",
+      "tag": "4 campos",
+      "pos": [
+        320,
+        88
+      ],
+      "size": [
+        166,
+        66
+      ],
+      "icon": "security"
+    },
+    {
+      "id": "facturacion",
+      "type": "backend",
+      "label": "Facturación",
+      "sublabel": "Cargo: peso, tarifa, impuesto",
+      "tag": "ciclo económico",
+      "pos": [
+        688,
+        80
+      ],
+      "size": [
+        170,
+        84
+      ]
+    },
+    {
+      "id": "acl-facturacion",
+      "type": "security",
+      "label": "Capa anticorrupción",
+      "sublabel": "sin datos fiscales",
+      "tag": "aviso",
+      "pos": [
+        660,
+        300
+      ],
+      "size": [
+        166,
+        66
+      ],
+      "icon": "security"
+    },
+    {
+      "id": "notificaciones",
+      "type": "backend",
+      "label": "Notificaciones",
+      "sublabel": "aviso al cliente",
+      "tag": "práctica del tema",
+      "pos": [
+        70,
+        300
+      ],
+      "size": [
+        150,
+        84
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Operaciones · contexto delimitado",
+      "wraps": [
+        "operaciones"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "region",
+      "label": "Facturación · contexto delimitado",
+      "wraps": [
+        "facturacion"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "region",
+      "label": "Notificaciones · contexto delimitado",
+      "wraps": [
+        "notificaciones"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "security-group",
+      "label": "ACL de entrada",
+      "wraps": [
+        "acl-operaciones"
+      ],
+      "pad": 12
+    },
+    {
+      "kind": "security-group",
+      "label": "ACL de salida",
+      "wraps": [
+        "acl-facturacion"
+      ],
+      "pad": 12
+    }
+  ],
+  "connections": [
+    {
+      "id": "hecho-entrega",
+      "from": "operaciones",
+      "to": "acl-operaciones",
+      "label": "EntregaConfirmada",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [
+        254,
+        116
+      ]
+    },
+    {
+      "id": "datos-cargo",
+      "from": "acl-operaciones",
+      "to": "facturacion",
+      "label": "solo 4 campos",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [
+        593,
+        116
+      ]
+    },
+    {
+      "id": "hecho-cargo",
+      "from": "facturacion",
+      "to": "acl-facturacion",
+      "label": "CargoEmitido",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [
+        800,
+        228
+      ]
+    },
+    {
+      "id": "aviso-cliente",
+      "from": "acl-facturacion",
+      "to": "notificaciones",
+      "label": "sin impuestos",
+      "fromSide": "left",
+      "toSide": "right",
+      "labelAt": [
+        442,
+        332
+      ]
+    },
+    {
+      "id": "entidad-prohibida",
+      "from": "facturacion",
+      "to": "operaciones",
+      "label": "entidad mutable compartida: prohibida",
+      "variant": "dashed",
+      "route": "orthogonal-v",
+      "fromSide": "top",
+      "toSide": "top",
+      "via": [
+        [
+          773,
+          36
+        ],
+        [
+          97,
+          36
+        ]
+      ],
+      "labelAt": [
+        435,
+        20
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Lenguaje ubicuo",
+      "items": [
+        "«Entrega» no es el mismo concepto en cada contexto",
+        "Operaciones: recorrido, conductor y estado logístico",
+        "Facturación: base del cargo, peso e impuesto"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Frontera",
+      "items": [
+        "Seleccionar: no copiar el objeto completo",
+        "Transformar unidades, nombres y formatos",
+        "Validar antes de que el mensaje cruce"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Decisión",
+      "items": [
+        "Compartir solo un kernel mínimo y estable",
+        "Si ambos modelos cambian juntos, revisa la frontera",
+        "La práctica pide añadir Clientes y su contrato"
+      ]
+    }
+  ]
+}

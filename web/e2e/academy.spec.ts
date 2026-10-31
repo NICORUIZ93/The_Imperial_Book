@@ -34,8 +34,9 @@ test('ruta: presenta los niveles como orientación, no como certificación', asy
   await expect(page.locator('.overview-page')).not.toContainText('Experto');
 
   await page.goto('/curso/javascript/14');
-  await expect(page.locator('.scale-label')).toContainText('Especialización (objetivo)');
-  await expect(page.locator('.scale-label')).not.toContainText('Experto');
+  const eyebrow = page.locator('.lesson-eyebrow');
+  await expect(eyebrow).toContainText('Especialización (objetivo)');
+  await expect(eyebrow).not.toContainText('Experto');
 });
 
 test('catalogo: informa si el índice de temas no está disponible', async ({ page }) => {
@@ -72,6 +73,10 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
     { track: 'cloud', module: 4, diagrams: 7 },
     { track: 'devops', module: 7, diagrams: 6 },
     { track: 'devops', module: 8, diagrams: 5 },
+    { track: 'devops', module: 19, diagrams: 4 },
+    { track: 'devops', module: 20, diagrams: 4 },
+    { track: 'devops', module: 21, diagrams: 4 },
+    { track: 'devops', module: 22, diagrams: 4 },
     { track: 'flutter', module: 5, diagrams: 3 },
     { track: 'foundations', module: 8, diagrams: 5 },
     { track: 'ios', module: 12, diagrams: 3 },
@@ -162,7 +167,7 @@ test('curso cloud: abre primero el mapa de ruta y después el contenido base de 
   await expect(page.locator('.overview-page')).toContainText('Cloud Local — AWS, Azure y GCP');
   await expect(page.locator('.module-row').first()).toContainText('Introducción');
   await expect(page.locator('.module-row').nth(1)).toContainText('Docker');
-  await page.locator('.module-row').first().getByRole('link', { name: /Abrir módulo 1/ }).click();
+  await page.locator('.module-row').first().getByRole('link', { name: /Abrir módulo 0/ }).click();
   await expect(page).toHaveURL(/\/curso\/cloud\/0$/);
   await expect(page.locator('body')).toContainText('Introducción y preparación');
 });
@@ -359,7 +364,9 @@ test('tema: la ruta propia enfoca un solo tema y vuelve al capítulo', async ({ 
 
 test('tema: el enlace «Ver solo este tema» abre la ruta enfocada', async ({ page }) => {
   await page.goto('/curso/angular/0');
-  await page.locator('.topic-card').nth(2).locator('.topic-focus-link').click();
+  const third = page.locator('.topic-card').nth(2);
+  await third.locator('.topic-toggle').click();
+  await third.locator('.topic-focus-link').click();
   await expect(page).toHaveURL(/\/curso\/angular\/0\/tema\/3$/);
   await expect(page.locator('.topic-card').nth(2)).toHaveClass(/expanded/);
 });

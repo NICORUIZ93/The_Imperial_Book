@@ -18,12 +18,12 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 0 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 113 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 129 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1115 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1131 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -390,6 +390,10 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 18 | [Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare](../web/public/content/devops/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 18 | [Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados](../web/public/content/devops/modulo-18.md) | ejemplo-breve-revisar-contexto |
 | devops / 18 | [Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro](../web/public/content/devops/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 19 | [Tema 1: Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta](../web/public/content/devops/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 19 | [Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo](../web/public/content/devops/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 19 | [Tema 3: Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper](../web/public/content/devops/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 19 | [Tema 4: ADR y fitness functions: decisiones que el código puede defender](../web/public/content/devops/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 1: Dockerfile multi-stage](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 2: Capas e invalidación de caché](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 3: Imágenes base distroless/alpine](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
@@ -397,6 +401,18 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 2 | [Tema 5: Redes en Docker](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 20 | [Tema 1: Eventos de dominio e integración: hechos, no comandos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 20 | [Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 20 | [Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 20 | [Tema 4: Sagas y compensaciones: procesos largos sin transacción distribuida](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 21 | [Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato](../web/public/content/devops/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 21 | [Tema 2: Datos por servicio: propiedad, composición y réplicas](../web/public/content/devops/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 21 | [Tema 3: Resiliencia: timeouts, reintentos y cortacircuitos](../web/public/content/devops/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 21 | [Tema 4: Observabilidad distribuida: trazas, correlación y SLO](../web/public/content/devops/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 22 | [Tema 1: Floci desde cero: instalar, aislar y verificar](../web/public/content/devops/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 22 | [Tema 2: S3 y diagnóstico de red: objetos, metadatos y errores](../web/public/content/devops/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 22 | [Tema 3: Contenedores y CI: una imagen que se prueba contra Floci](../web/public/content/devops/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 22 | [Tema 4: Terraform, SQS y operación: infraestructura reproducible y ejercicios](../web/public/content/devops/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 3 | [Tema 1: Servicios, dependencias y healthchecks](../web/public/content/devops/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 3 | [Tema 2: Variables de entorno y .env](../web/public/content/devops/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 3 | [Tema 3: Redes y descubrimiento por nombre de servicio](../web/public/content/devops/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

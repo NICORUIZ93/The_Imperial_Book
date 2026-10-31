@@ -10234,6 +10234,182 @@
       ]
     },
     {
+      "id": "devops:19:1",
+      "track": "devops",
+      "module": 19,
+      "position": 1,
+      "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+      "file": "web/public/content/devops/modulo-19.md",
+      "requires": [
+        "devops:18:4"
+      ]
+    },
+    {
+      "id": "devops:19:2",
+      "track": "devops",
+      "module": 19,
+      "position": 2,
+      "title": "Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
+      "file": "web/public/content/devops/modulo-19.md",
+      "requires": [
+        "devops:19:1"
+      ]
+    },
+    {
+      "id": "devops:19:3",
+      "track": "devops",
+      "module": 19,
+      "position": 3,
+      "title": "Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
+      "file": "web/public/content/devops/modulo-19.md",
+      "requires": [
+        "devops:19:2"
+      ]
+    },
+    {
+      "id": "devops:19:4",
+      "track": "devops",
+      "module": 19,
+      "position": 4,
+      "title": "ADR y fitness functions: decisiones que el código puede defender",
+      "file": "web/public/content/devops/modulo-19.md",
+      "requires": [
+        "devops:19:3"
+      ]
+    },
+    {
+      "id": "devops:20:1",
+      "track": "devops",
+      "module": 20,
+      "position": 1,
+      "title": "Eventos de dominio e integración: hechos, no comandos",
+      "file": "web/public/content/devops/modulo-20.md",
+      "requires": [
+        "devops:19:4"
+      ]
+    },
+    {
+      "id": "devops:20:2",
+      "track": "devops",
+      "module": 20,
+      "position": 2,
+      "title": "Outbox transaccional: guardar el hecho y el mensaje juntos",
+      "file": "web/public/content/devops/modulo-20.md",
+      "requires": [
+        "devops:20:1"
+      ]
+    },
+    {
+      "id": "devops:20:3",
+      "track": "devops",
+      "module": 20,
+      "position": 3,
+      "title": "Idempotencia y orden: consumidores que sobreviven a reintentos",
+      "file": "web/public/content/devops/modulo-20.md",
+      "requires": [
+        "devops:20:2"
+      ]
+    },
+    {
+      "id": "devops:20:4",
+      "track": "devops",
+      "module": 20,
+      "position": 4,
+      "title": "Sagas y compensaciones: procesos largos sin transacción distribuida",
+      "file": "web/public/content/devops/modulo-20.md",
+      "requires": [
+        "devops:20:3"
+      ]
+    },
+    {
+      "id": "devops:21:1",
+      "track": "devops",
+      "module": 21,
+      "position": 1,
+      "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
+      "file": "web/public/content/devops/modulo-21.md",
+      "requires": [
+        "devops:20:4"
+      ]
+    },
+    {
+      "id": "devops:21:2",
+      "track": "devops",
+      "module": 21,
+      "position": 2,
+      "title": "Datos por servicio: propiedad, composición y réplicas",
+      "file": "web/public/content/devops/modulo-21.md",
+      "requires": [
+        "devops:21:1"
+      ]
+    },
+    {
+      "id": "devops:21:3",
+      "track": "devops",
+      "module": 21,
+      "position": 3,
+      "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
+      "file": "web/public/content/devops/modulo-21.md",
+      "requires": [
+        "devops:21:2"
+      ]
+    },
+    {
+      "id": "devops:21:4",
+      "track": "devops",
+      "module": 21,
+      "position": 4,
+      "title": "Observabilidad distribuida: trazas, correlación y SLO",
+      "file": "web/public/content/devops/modulo-21.md",
+      "requires": [
+        "devops:21:3"
+      ]
+    },
+    {
+      "id": "devops:22:1",
+      "track": "devops",
+      "module": 22,
+      "position": 1,
+      "title": "Floci desde cero: instalar, aislar y verificar",
+      "file": "web/public/content/devops/modulo-22.md",
+      "requires": [
+        "devops:21:4"
+      ]
+    },
+    {
+      "id": "devops:22:2",
+      "track": "devops",
+      "module": 22,
+      "position": 2,
+      "title": "S3 y diagnóstico de red: objetos, metadatos y errores",
+      "file": "web/public/content/devops/modulo-22.md",
+      "requires": [
+        "devops:22:1"
+      ]
+    },
+    {
+      "id": "devops:22:3",
+      "track": "devops",
+      "module": 22,
+      "position": 3,
+      "title": "Contenedores y CI: una imagen que se prueba contra Floci",
+      "file": "web/public/content/devops/modulo-22.md",
+      "requires": [
+        "devops:22:2"
+      ]
+    },
+    {
+      "id": "devops:22:4",
+      "track": "devops",
+      "module": 22,
+      "position": 4,
+      "title": "Terraform, SQS y operación: infraestructura reproducible y ejercicios",
+      "file": "web/public/content/devops/modulo-22.md",
+      "requires": [
+        "devops:22:3"
+      ]
+    },
+    {
       "id": "cloud:0:1",
       "track": "cloud",
       "module": 0,
@@ -10241,7 +10417,7 @@
       "title": "Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo",
       "file": "web/public/content/cloud/modulo-0.md",
       "requires": [
-        "devops:18:4"
+        "devops:22:4"
       ]
     },
     {

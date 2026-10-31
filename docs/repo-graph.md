@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-10-31 17:45 UTC
+Generated: 2026-10-31 18:46 UTC
 Root: `Academia_Floci`
-Indexed files: 964
+Indexed files: 966
 Import edges: 56
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -17,7 +17,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `angular-app`: 58 files
 - `automation-script`: 39 files
-- `course-content`: 252 files
+- `course-content`: 254 files
 - `documentation`: 62 files
 - `example`: 490 files
 - `local-infra`: 1 files
@@ -25,7 +25,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## File Types
 
-- `.md`: 323
+- `.md`: 325
 - `.py`: 165
 - `.json`: 73
 - `.java`: 73
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (68 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1165 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1157 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -157,7 +157,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (29 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (181 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (180 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (133 lines)
@@ -198,7 +198,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ### course-content
 
-- `web/public/content/ATRIBUCION.md` (20 lines) - headings: # Atribucion y licencia
+- `web/public/content/ATRIBUCION.md` (39 lines) - headings: # Atribucion y licencia, ## Fuentes consultadas para la ampliacion de DevOps
 - `web/public/content/LICENCIA-CONTENIDO.md` (44 lines) - headings: # Licencia del contenido original, ## Exclusiones y avisos, ## Inventario de recursos de terceros de la aplicación
 - `web/public/content/LICENSE-FLOCI.txt` (21 lines)
 - `web/public/content/android/modulo-0.md` (648 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
@@ -210,13 +210,13 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-14.md` (813 lines) - headings: # Módulo 14: Compose Master — pruebas, accesibilidad y animación, ## Aprende construyendo, ### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-15.md` (556 lines) - headings: # Módulo 15: Android como plataforma — Intents, broadcasts, servicios y content providers, ## Aprende construyendo, ### Tema 1: Intents implícitos y Activity Result API, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-16.md` (537 lines) - headings: # Módulo 16: Android profesional — privacidad, datos, escala e identidad, ## Aprende construyendo, ### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-17.md` (444 lines) - headings: # Módulo 17: Compose profesional — layouts, formularios, listas y efectos, ## Aprende construyendo, ### Tema 1: Constraints, Modifier y componentes con slots, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-18.md` (337 lines) - headings: # Módulo 18: Build profesional — variantes, módulos, optimización y CI, ## Aprende construyendo, ### Tema 1: Gradle, version catalogs y resolución de dependencias, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-2.md` (366 lines) - headings: # Módulo 2: Jetpack Compose: UI declarativa, ## Aprende construyendo, ### Tema 1: Composables y recomposición, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-6.md` (406 lines) - headings: # Módulo 6: Persistencia local con Room, ## Aprende construyendo, ### Tema 1: Entities, DAOs y Database, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-7.md` (388 lines) - headings: # Módulo 7: Inyección de dependencias con Hilt, ## Aprende construyendo, ### Tema 1: Configuración básica de Hilt, #### Paso 1 · Objetivo y preparación
-- ... 234 more files
+- ... 236 more files
 
 ### documentation
 
@@ -281,9 +281,9 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2712 lines)
 - `docs/code-visual-quality.json` (1876 lines)
-- `docs/course-depth-review.json` (13780 lines)
+- `docs/course-depth-review.json` (13972 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (819 lines)
-- `docs/lesson-substance.json` (9510 lines)
+- `docs/lesson-substance.json` (9642 lines)
 - ... 44 more files
