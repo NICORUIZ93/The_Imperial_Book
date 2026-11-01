@@ -249,22 +249,22 @@
     },
     "spring-boot": {
       "topics": 91,
-      "objective": 20,
+      "objective": 18,
       "prerequisites": 91,
-      "context": 20,
-      "theoryAnalogy": 20,
-      "guidedDemo": 20,
+      "context": 18,
+      "theoryAnalogy": 18,
+      "guidedDemo": 18,
       "codeExplanation": 91,
       "execution": 91,
       "expectedResult": 91,
       "deliberateFailure": 91,
-      "guidedPractice": 20,
-      "independentPractice": 20,
-      "closure": 20,
+      "guidedPractice": 18,
+      "independentPractice": 18,
+      "closure": 18,
       "commonErrors": 91,
       "resources": 91,
       "standaloneExample": 90,
-      "complete": 20
+      "complete": 18
     }
   },
   "topics": {
@@ -27547,52 +27547,52 @@
       },
       {
         "module": 17,
-        "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
+        "topic": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 17,
-        "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
+        "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {

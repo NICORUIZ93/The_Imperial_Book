@@ -1,25 +1,116 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-31",
+  "updatedAt": "2026-11-01",
   "format": {
-    "requiredSections": ["Aprende", "Practica", "Aplica"],
-    "levels": ["Básico", "Intermedio", "Avanzado", "Experto"],
+    "requiredSections": [
+      "Aprende",
+      "Practica",
+      "Aplica"
+    ],
+    "levels": [
+      "Básico",
+      "Intermedio",
+      "Avanzado",
+      "Experto"
+    ],
     "checklistMinItems": 4
   },
   "tracks": {
-    "rutaflow": { "originalModules": 8, "originalTopics": 29, "migratedModules": [] },
-    "foundations": { "originalModules": 16, "originalTopics": 99, "migratedModules": [] },
-    "cloud": { "originalModules": 35, "originalTopics": 156, "migratedModules": [] },
-    "devops": { "originalModules": 23, "originalTopics": 129, "migratedModules": [] },
-    "javascript": { "originalModules": 15, "originalTopics": 88, "migratedModules": [] },
-    "node": { "originalModules": 15, "originalTopics": 77, "migratedModules": [] },
-    "angular": { "originalModules": 17, "originalTopics": 71, "migratedModules": [] },
-    "react": { "originalModules": 15, "originalTopics": 58, "migratedModules": [] },
-    "java": { "originalModules": 21, "originalTopics": 85, "addedModules": [21, 22], "migratedModules": [21, 22] },
-    "spring-boot": { "originalModules": 23, "originalTopics": 91, "migratedModules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] },
-    "kotlin-multiplatform": { "originalModules": 14, "originalTopics": 56, "migratedModules": [] },
-    "android": { "originalModules": 19, "originalTopics": 73, "migratedModules": [] },
-    "ios": { "originalModules": 15, "originalTopics": 56, "migratedModules": [] },
-    "flutter": { "originalModules": 16, "originalTopics": 63, "migratedModules": [] }
+    "rutaflow": {
+      "originalModules": 8,
+      "originalTopics": 29,
+      "migratedModules": []
+    },
+    "foundations": {
+      "originalModules": 16,
+      "originalTopics": 99,
+      "migratedModules": []
+    },
+    "cloud": {
+      "originalModules": 35,
+      "originalTopics": 156,
+      "migratedModules": []
+    },
+    "devops": {
+      "originalModules": 23,
+      "originalTopics": 129,
+      "migratedModules": []
+    },
+    "javascript": {
+      "originalModules": 15,
+      "originalTopics": 88,
+      "migratedModules": []
+    },
+    "node": {
+      "originalModules": 15,
+      "originalTopics": 77,
+      "migratedModules": []
+    },
+    "angular": {
+      "originalModules": 17,
+      "originalTopics": 71,
+      "migratedModules": []
+    },
+    "react": {
+      "originalModules": 15,
+      "originalTopics": 58,
+      "migratedModules": []
+    },
+    "java": {
+      "originalModules": 21,
+      "originalTopics": 85,
+      "addedModules": [
+        21,
+        22
+      ],
+      "migratedModules": [
+        21,
+        22
+      ]
+    },
+    "spring-boot": {
+      "originalModules": 23,
+      "originalTopics": 91,
+      "migratedModules": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "kotlin-multiplatform": {
+      "originalModules": 14,
+      "originalTopics": 56,
+      "migratedModules": []
+    },
+    "android": {
+      "originalModules": 19,
+      "originalTopics": 73,
+      "migratedModules": []
+    },
+    "ios": {
+      "originalModules": 15,
+      "originalTopics": 56,
+      "migratedModules": []
+    },
+    "flutter": {
+      "originalModules": 16,
+      "originalTopics": 63,
+      "migratedModules": []
+    }
   }
 }

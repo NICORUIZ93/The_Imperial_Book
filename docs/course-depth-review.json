@@ -13457,7 +13457,7 @@
     {
       "track": "spring-boot",
       "module": 17,
-      "title": "Tema 1: DataSource, JdbcTemplate y DAO",
+      "title": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-17.md",
       "line": 14,
       "signals": [],
@@ -13469,9 +13469,9 @@
     {
       "track": "spring-boot",
       "module": 17,
-      "title": "Tema 2: `@Transactional`, rollback y límites de transacción",
+      "title": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-17.md",
-      "line": 102,
+      "line": 117,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

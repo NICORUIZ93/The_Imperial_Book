@@ -91,7 +91,7 @@
     },
     {
       "path": "README.md",
-      "lines": 365,
+      "lines": 367,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -702,7 +702,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 60,
+      "lines": 48,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -900,7 +900,7 @@
     },
     {
       "path": "docs/migration-plan.md",
-      "lines": 186,
+      "lines": 192,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -918,7 +918,7 @@
     },
     {
       "path": "docs/migration-status.json",
-      "lines": 26,
+      "lines": 117,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6167,7 +6167,7 @@
     },
     {
       "path": "scripts/audit_topic_learning_quality.py",
-      "lines": 233,
+      "lines": 259,
       "kind": "automation-script",
       "symbols": [
         "student_visible_content",
@@ -6175,6 +6175,7 @@
         "topic_blocks",
         "resolve_archify_visual_link",
         "unresolved_archify_visual_links",
+        "canonical_practice",
         "evaluate",
         "classify",
         "demo_signature",
@@ -6537,7 +6538,7 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 204,
+      "lines": 219,
       "kind": "automation-script",
       "symbols": [
         "EditorialValidationTests",
@@ -11934,7 +11935,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-17.md",
-      "lines": 180,
+      "lines": 208,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11942,15 +11943,14 @@
         "# M\u00f3dulo 17: JDBC, DAO y transacciones en Spring Boot",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: DataSource, JdbcTemplate y DAO",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n"
+        "### Tema 1: DataSource, JdbcTemplate y DAO \u00b7 Avanzado \u00b7 1 h 40 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n \u00b7 Avanzado \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica"
       ]
     },
     {

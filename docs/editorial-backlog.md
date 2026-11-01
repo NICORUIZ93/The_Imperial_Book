@@ -13,11 +13,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ruta | 1141 | 0 |
 | Ejecución | 1141 | 0 |
 | Resultado | 1141 | 0 |
-| Modificación | 1128 | 13 |
+| Modificación | 1141 | 0 |
 | Conexión con un proyecto | 1141 | 0 |
 | Modelo mental | 1141 | 0 |
 | Límites | 1141 | 0 |
-| **Perfil de criterios detectado** | **1128** | **13** |
+| **Perfil de criterios detectado** | **1141** | **0** |
 
 ## Prioridad por track
 
@@ -36,23 +36,11 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | node | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 91 | 0 | 0 | 0 | 0 | 13 | 0 | 0 |
+| spring-boot | 91 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 
-- [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 1: Arquitectura del microservicio integrador · Experto · 3 h: modificación.
-- [spring-boot · módulo 12](../web/public/content/spring-boot/modulo-12.md) · Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min: modificación.
-- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min: modificación.
-- [spring-boot · módulo 13](../web/public/content/spring-boot/modulo-13.md) · Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min: modificación.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 1: CRUD API y contratos · Experto · 2 h 15 min: modificación.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min: modificación.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min: modificación.
-- [spring-boot · módulo 14](../web/public/content/spring-boot/modulo-14.md) · Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min: modificación.
-- [spring-boot · módulo 15](../web/public/content/spring-boot/modulo-15.md) · Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min: modificación.
-- [spring-boot · módulo 15](../web/public/content/spring-boot/modulo-15.md) · Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min: modificación.
-- [spring-boot · módulo 15](../web/public/content/spring-boot/modulo-15.md) · Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min: modificación.
-- [spring-boot · módulo 16](../web/public/content/spring-boot/modulo-16.md) · Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min: modificación.
-- [spring-boot · módulo 16](../web/public/content/spring-boot/modulo-16.md) · Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min: modificación.
+No hay criterios pendientes en esta auditoría de presencia editorial.
 
 ## Regla de cierre
 

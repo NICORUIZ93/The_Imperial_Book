@@ -1,6 +1,6 @@
 # Auditoría pedagógica tema por tema
 
-Esta auditoría mide exclusivamente la presencia de criterios en el contenido editorial real mediante heurísticas de texto. **Explicación** solo indica extensión mínima; no demuestra calidad. **Perfil cubierto** significa que aparecen explicación, código, ruta, ejecución, resultado, práctica, proyecto, modelo mental y límites; no acredita que sean suficientes, correctos, pedagógicamente eficaces ni ejecutables. **Texto genérico** detecta plantillas que nombran un tema sin enseñarlo. **Demo repetida** detecta el mismo Paso 4 reciclado en tres o más temas cambiando apenas nombres o números. Una ausencia o plantilla es deuda editorial explícita. La presencia visual reconoce Mermaid, diagramas ASCII y enlaces locales a HTML Archify existente; no acredita calidad ni revisión visual. Esta comprobación no ejecuta ejemplos ni sustituye la revisión humana. La metodología más estricta de siete pasos usa marcadores propios y mide un conjunto distinto de requisitos; consulta su reporte por separado.
+Esta auditoría mide exclusivamente la presencia de criterios en el contenido editorial real mediante heurísticas de texto. **Explicación** solo indica extensión mínima; no demuestra calidad. **Perfil cubierto** significa que aparecen explicación, código, ruta, ejecución, resultado, práctica, proyecto, modelo mental y límites; no acredita que sean suficientes, correctos, pedagógicamente eficaces ni ejecutables. **Texto genérico** detecta plantillas que nombran un tema sin enseñarlo. **Demo repetida** detecta el mismo Paso 4 reciclado en tres o más temas cambiando apenas nombres o números. Una ausencia o plantilla es deuda editorial explícita. La presencia visual reconoce Mermaid, diagramas ASCII y enlaces locales a HTML Archify existente; no acredita calidad ni revisión visual. Esta comprobación no ejecuta ejemplos ni sustituye la revisión humana. **Práctica** reconoce el vocabulario de los siete pasos o una sección `#### Practica` con cuerpo accionable (código, comando o archivo); un encabezado vacío no cuenta. La metodología más estricta de siete pasos usa marcadores propios y mide un conjunto distinto de requisitos; consulta su reporte por separado.
 
 | Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -17,8 +17,8 @@ Esta auditoría mide exclusivamente la presencia de criterios en el contenido ed
 | node | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 0 | 0 |
 | react | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 0 | 0 |
 | rutaflow | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 0 | 0 |
-| spring-boot | 91 | 91 | 91 | 91 | 91 | 91 | 78 | 91 | 91 | 91 | 78 | 0 | 0 |
-| **Total** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **1128** | **1141** | **1141** | **1141** | **1128** | **0** | **0** |
+| spring-boot | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 0 | 0 |
+| **Total** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **1141** | **0** | **0** |
 
 ## Regla editorial
 

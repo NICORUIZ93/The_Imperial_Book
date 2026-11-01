@@ -18,6 +18,20 @@ MD_REPORT = ROOT / "docs/topic-learning-quality.md"
 REQUIRED_CRITERIA = ("explanation", "code", "filePath", "runCommand", "expectedResult", "practice", "project", "modelMental", "limitsDecision")
 EDITORIAL_MARKERS = ("DEFINITIVE-COMPLEMENTS", "SUPPLEMENTAL-COMPLEMENTS", "REQUESTED-PRACTICAL-EXAMPLES")
 ARCHIFY_VISUAL_LINK = re.compile(r"\[[^\]]+\]\((/visuals/[^)\s]+\.html)\)")
+# runCommand: exige un comando de ejecución REAL al inicio de una línea
+# (opcionalmente tras `$ ` o `cd ... && `), no una palabra suelta en prosa
+# ni un marcador de lenguaje como ```swift o ```java. Esto evita el falso
+# positivo que hacía pasar temas sin ningún comando ejecutable.
+RUN_COMMAND = re.compile(
+    r"^(?:\s*(?:\$|>|#)\s*)?(?:[\w./-]+\s*&&\s*)*"
+    r"(swiftc|kotlinc|npm|npx|pnpm|yarn|node|deno|bun|python3?|pip3?|java|javac|\./gradlew|gradle|mvn|\./mvnw"
+    r"|flutter|dart|swift|xcodebuild|docker|docker-compose|kubectl|helm|terraform|tofu|ansible"
+    r"|aws|az|gcloud|curl|git|psql|pg_dump|sqlite3|cargo|dotnet|go|bash|sh|make|floci|ng|adb|pod|xcrun|ssh|scp|rsync|systemctl|journalctl|nginx|certbot|ufw|fail2ban-client|redis-cli|openssl|dig|restic|k6|wrk)\b",
+    re.MULTILINE | re.IGNORECASE,
+)
+FILE_PATH = re.compile(r"(?:src/|lib/|app/|\.github/|[\w-]+\.(?:ts|tsx|js|java|kt|swift|dart|py|tf|ya?ml|json|html|css|sql|sh|properties|kts|conf|service|env|ini|toml|md|cs|csproj))")
+PRACTICE_LEGACY = re.compile(r"(práctica|ejercicio|laboratorio|construcci[oó]n|predice|modifica)", re.IGNORECASE)
+CANONICAL_PRACTICA = re.compile(r"^####\s+Practica\s*$", re.MULTILINE | re.IGNORECASE)
 
 
 def student_visible_content(text: str) -> str:
@@ -68,6 +82,27 @@ def unresolved_archify_visual_links(block: str) -> list[str]:
     ]
 
 
+def canonical_practice(block: str) -> bool:
+    """Reconoce la sección `#### Practica` del formato Aprende/Practica/Aplica.
+
+    La migración sustituyó el vocabulario de los siete pasos por encabezados
+    canónicos; sin esta señal, un tema migrado con práctica real dejaba de
+    contarse. Exige cuerpo accionable (código, comando o archivo), no solo el
+    título: un encabezado vacío no acredita práctica.
+    """
+    structure = structural_text(block)
+    heading = CANONICAL_PRACTICA.search(structure)
+    if heading is None:
+        return False
+    rest = structure[heading.end():]
+    end = re.search(r"^####\s+|^###\s+", rest, re.MULTILINE)
+    stop = heading.end() + (end.start() if end else len(rest))
+    body = block[heading.end():stop]
+    if len(body.strip()) < 80:
+        return False
+    return bool(re.search(r"^```", body, re.MULTILINE) or RUN_COMMAND.search(body) or FILE_PATH.search(body))
+
+
 def evaluate(block: str) -> dict[str, bool]:
     return {
         "explanation": len(re.findall(r"\b\w+\b", block)) >= 90,
@@ -77,19 +112,10 @@ def evaluate(block: str) -> dict[str, bool]:
             or bool(re.search(r"[┌┐└┘├┤┬┴┼─│]", block))
             or any(resolve_archify_visual_link(href) for href in ARCHIFY_VISUAL_LINK.findall(block))
         ),
-        "filePath": bool(re.search(r"(?:src/|lib/|app/|\.github/|[\w-]+\.(?:ts|tsx|js|java|kt|swift|dart|py|tf|ya?ml|json|html|css|sql|sh|properties|kts|conf|service|env|ini|toml|md|cs|csproj))", block)),
-        # runCommand: exige un comando de ejecución REAL al inicio de una línea
-        # (opcionalmente tras `$ ` o `cd ... && `), no una palabra suelta en prosa
-        # ni un marcador de lenguaje como ```swift o ```java. Esto evita el falso
-        # positivo que hacía pasar temas sin ningún comando ejecutable.
-        "runCommand": bool(re.search(
-            r"^(?:\s*(?:\$|>|#)\s*)?(?:[\w./-]+\s*&&\s*)*"
-            r"(swiftc|kotlinc|npm|npx|pnpm|yarn|node|deno|bun|python3?|pip3?|java|javac|\./gradlew|gradle|mvn|\./mvnw"
-            r"|flutter|dart|swift|xcodebuild|docker|docker-compose|kubectl|helm|terraform|tofu|ansible"
-            r"|aws|az|gcloud|curl|git|psql|pg_dump|sqlite3|cargo|dotnet|go|bash|sh|make|floci|ng|adb|pod|xcrun|ssh|scp|rsync|systemctl|journalctl|nginx|certbot|ufw|fail2ban-client|redis-cli|openssl|dig|restic|k6|wrk)\b",
-            block, re.MULTILINE | re.IGNORECASE)),
+        "filePath": bool(FILE_PATH.search(block)),
+        "runCommand": bool(RUN_COMMAND.search(block)),
         "expectedResult": bool(re.search(r"(resultado esperado|salida esperada|debe mostrar|verifica)", block, re.IGNORECASE)),
-        "practice": bool(re.search(r"(práctica|ejercicio|laboratorio|construcci[oó]n|predice|modifica)", block, re.IGNORECASE)),
+        "practice": bool(PRACTICE_LEGACY.search(block) or canonical_practice(block)),
         "project": bool(re.search(r"proyecto (propio|integrador|real|de tamaño real|final)|proyecto transversal", block, re.IGNORECASE)),
         "modelMental": bool(re.search(r"(analogía|modelo mental|por qué es importante)", block, re.IGNORECASE)),
         "limitsDecision": bool(re.search(r"(cuándo|límite|limitación|no usar|no conviene|diferencia|frente a|trade.?off)", block, re.IGNORECASE)),
@@ -185,7 +211,7 @@ def build() -> dict:
 
 
 def render_markdown(data: dict) -> str:
-    lines = ["# Auditoría pedagógica tema por tema", "", "Esta auditoría mide exclusivamente la presencia de criterios en el contenido editorial real mediante heurísticas de texto. **Explicación** solo indica extensión mínima; no demuestra calidad. **Perfil cubierto** significa que aparecen explicación, código, ruta, ejecución, resultado, práctica, proyecto, modelo mental y límites; no acredita que sean suficientes, correctos, pedagógicamente eficaces ni ejecutables. **Texto genérico** detecta plantillas que nombran un tema sin enseñarlo. **Demo repetida** detecta el mismo Paso 4 reciclado en tres o más temas cambiando apenas nombres o números. Una ausencia o plantilla es deuda editorial explícita. La presencia visual reconoce Mermaid, diagramas ASCII y enlaces locales a HTML Archify existente; no acredita calidad ni revisión visual. Esta comprobación no ejecuta ejemplos ni sustituye la revisión humana. La metodología más estricta de siete pasos usa marcadores propios y mide un conjunto distinto de requisitos; consulta su reporte por separado.", "", "| Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |", "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    lines = ["# Auditoría pedagógica tema por tema", "", "Esta auditoría mide exclusivamente la presencia de criterios en el contenido editorial real mediante heurísticas de texto. **Explicación** solo indica extensión mínima; no demuestra calidad. **Perfil cubierto** significa que aparecen explicación, código, ruta, ejecución, resultado, práctica, proyecto, modelo mental y límites; no acredita que sean suficientes, correctos, pedagógicamente eficaces ni ejecutables. **Texto genérico** detecta plantillas que nombran un tema sin enseñarlo. **Demo repetida** detecta el mismo Paso 4 reciclado en tres o más temas cambiando apenas nombres o números. Una ausencia o plantilla es deuda editorial explícita. La presencia visual reconoce Mermaid, diagramas ASCII y enlaces locales a HTML Archify existente; no acredita calidad ni revisión visual. Esta comprobación no ejecuta ejemplos ni sustituye la revisión humana. **Práctica** reconoce el vocabulario de los siete pasos o una sección `#### Practica` con cuerpo accionable (código, comando o archivo); un encabezado vacío no cuenta. La metodología más estricta de siete pasos usa marcadores propios y mide un conjunto distinto de requisitos; consulta su reporte por separado.", "", "| Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |", "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for track, row in data["summary"].items():
         lines.append(f"| {track} | {row['topics']} | {row['explanation']} | {row['code']} | {row['filePath']} | {row['runCommand']} | {row['expectedResult']} | {row['practice']} | {row['project']} | {row['modelMental']} | {row['limitsDecision']} | {row['practicable']} | {row['genericScaffold']} | {row['repeatedDemo']} |")
     total = {key: sum(row[key] for row in data["summary"].values()) for key in ["topics", *data["criteria"], "practicable", "genericScaffold", "repeatedDemo"]}

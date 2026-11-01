@@ -11,7 +11,7 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 |---|---|---|
 | 0 · Sincronización | Cerrada | Corte del cierre: 252 módulos, 1131 temas; `validate.sh` en verde |
 | 1 · Infraestructura | Cerrada | Registro de migración, validador por módulo y auditorías adaptadas |
-| 2 · Piloto Spring Boot | En curso | M0–M16 migrados: 71/91 temas y 14 laboratorios de cierre |
+| 2 · Piloto Spring Boot | En curso | M0–M17 migrados: 73/91 temas y 14 laboratorios de cierre |
 | 3 · Java + Node.js | En curso | Java: Módulos 21–22 nuevos en formato nuevo (10 temas); M0–M20 y Node pendientes |
 | 4 · JavaScript + Angular + React | No iniciada | Depende del piloto |
 | 5 · Cloud + DevOps | No iniciada | Depende del piloto |
@@ -19,14 +19,20 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 | 7 · Fundamentos + RutaFlow | No iniciada | Depende del piloto |
 | 8 · Huecos curriculares | No iniciada | Requiere fases 2–7 cerradas |
 
-El piloto migró sus diecisiete primeros módulos sin perder temas ni fragmentos. El
+El piloto migró sus dieciocho primeros módulos sin perder temas ni fragmentos. El
 resto del contenido sigue en siete pasos; `docs/seven-step-methodology.md`
 declara ambos estados y `docs/migration-status.json` es la fuente de verdad.
+
+El criterio `practice` de `audit_topic_learning_quality.py` reconocía solo el
+vocabulario de los siete pasos. Al migrar M17, un tema con práctica real pero sin
+ese vocabulario dejó de contarse (1127/1141 frente a 1128/1141). Se corrigió el
+auditor para aceptar también una sección `#### Practica` con cuerpo accionable
+(código, comando o archivo); el umbral no se movió y la cifra volvió a 1141/1141.
 
 ## Contrato de correspondencia: siete pasos → Aprende/Practica/Aplica
 
 Decisión del 2026-10-31: el formato canónico de todo el sitio es
-Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M16 y Java M21–M22. Los
+Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M17 y Java M21–M22. Los
 siete pasos no se borran: cada uno tiene un destino y su texto se mueve, se
 conserva y se completa.
 
@@ -40,7 +46,7 @@ conserva y se completa.
 | 6 · Práctica independiente | `#### Aplica`: reto abierto |
 | 7 · Cierre | `#### Aplica`: siguiente paso, errores comunes, límites o cuándo no usarlo, fuente oficial y transferencia al proyecto |
 
-El piloto Spring Boot M0–M16 sirve de referencia para cada fila; ningún paso
+El piloto Spring Boot M0–M17 sirve de referencia para cada fila; ningún paso
 queda sin destino. El formato canónico exige además contenido que el texto
 legacy puede no tener y que se redacta durante la migración, nunca se genera:
 

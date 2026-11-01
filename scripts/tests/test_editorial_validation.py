@@ -25,6 +25,21 @@ class EditorialValidationTests(unittest.TestCase):
                 self.assertFalse(audit.classify({**criteria, key: False}, "")["practicable"])
         self.assertFalse(audit.classify(criteria, "passed: true")["practicable"])
 
+    def test_canonical_practica_section_counts_as_practice(self):
+        block = (
+            "#### Practica\n\n"
+            "Genera el proyecto y crea `src/main/java/demo/Repo.java` con el código.\n\n"
+            "```bash\n./mvnw test\n```\n"
+        )
+        self.assertIsNone(audit.PRACTICE_LEGACY.search(block))
+        self.assertTrue(audit.evaluate(block)["practice"])
+
+    def test_practice_heading_alone_or_inside_code_does_not_count(self):
+        self.assertFalse(audit.evaluate("#### Practica\n\n#### Aplica\nTexto.\n")["practice"])
+        self.assertFalse(audit.evaluate("```markdown\n#### Practica\n./mvnw test\n```\n")["practice"])
+        prose = "#### Practica\n\n" + "Texto descriptivo sin ejecución ni archivo. " * 4 + "\n"
+        self.assertFalse(audit.evaluate(prose)["practice"])
+
     def test_hidden_scaffold_cannot_supply_project_or_limits(self):
         markdown = """### Tema 1: Ejemplo
 Texto propio.

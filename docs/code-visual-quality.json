@@ -1412,14 +1412,14 @@
     {
       "track": "spring-boot",
       "module": 17,
-      "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
+      "topic": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 17,
-      "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
+      "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
       "missingCode": false,
       "missingComments": true
     },

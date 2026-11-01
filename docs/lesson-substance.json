@@ -1691,7 +1691,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "39ff776bb13276ffca000da1debb3cc1521ab72f596bcd5e32cc8b75f7b65153",
+    "fingerprint": "435dc958cb4802ea19d30121fda06ae8a21b3bbb5a7ca490753f173d0ecc3955",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9364,16 +9364,16 @@
       {
         "issues": [],
         "module": 17,
-        "tailWords": 110,
-        "topic": "Tema 1: DataSource, JdbcTemplate y DAO",
-        "words": 762
+        "tailWords": 289,
+        "topic": "Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min",
+        "words": 863
       },
       {
         "issues": [],
         "module": 17,
-        "tailWords": 124,
-        "topic": "Tema 2: `@Transactional`, rollback y límites de transacción",
-        "words": 738
+        "tailWords": 299,
+        "topic": "Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min",
+        "words": 857
       },
       {
         "issues": [],
