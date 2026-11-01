@@ -7,6 +7,7 @@ Cada tema demuestra un patrón de Spring Cloud con verificación real: Config Se
 ### Tema 1: Config Server y service discovery · Intermedio · 45 min
 
 **Prerrequisito:** Módulo 0 de este track (arranque de un proyecto Spring Boot).
+
 **Al terminar podrás:** levantar un Config Server real (backend nativo basado en archivos, sin depender de un servidor Git externo) que sirve configuración por HTTP, y resolver un nombre lógico de servicio a una instancia real usando `SimpleDiscoveryClient`, la implementación oficial de Spring Cloud Commons pensada exactamente para este escenario sin Eureka.
 
 #### Aprende
@@ -181,6 +182,7 @@ List<ServiceInstance> instancias = discoveryClient.____("servicio-pedidos");
 ### Tema 2: Spring Cloud Gateway · Intermedio · 40 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** configurar una ruta real de Spring Cloud Gateway y confirmar, con una petición HTTP real de extremo a extremo, que el gateway enruta correctamente según el patrón de la URL solicitada.
 
 #### Aprende
@@ -356,6 +358,7 @@ builder.routes()
 ### Tema 3: Circuit breaker con Resilience4j · Avanzado · 45 min
 
 **Prerrequisito:** Temas 1 y 2 de este módulo.
+
 **Al terminar podrás:** configurar un `CircuitBreaker` real de Resilience4j y confirmar, contando invocaciones reales, que abre el circuito tras superar un umbral de fallos y deja de intentar la llamada real mientras está abierto.
 
 #### Aprende
@@ -492,6 +495,7 @@ assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.____);
 ### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 50 min
 
 **Prerrequisito:** Módulo 4 de este track (Spring Security).
+
 **Al terminar podrás:** probar, con el post-processor oficial de `spring-security-test`, que un endpoint protegido como Resource Server distingue correctamente entre falta de token (401), scope insuficiente (403) y una petición autorizada (201), sin necesitar una instancia real de Keycloak corriendo para verificar la lógica de autorización.
 
 #### Aprende
@@ -689,6 +693,7 @@ mockMvc.perform(post("/api/journeys/1/positions")
 ### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 45 min
 
 **Prerrequisito:** Módulo 9 de este track (WebClient).
+
 **Al terminar podrás:** declarar un cliente HTTP con `@HttpExchange` y confirmar, midiendo tiempo real de ejecución contra un backend deliberadamente lento, que un deadline configurado corta la espera en vez de bloquear indefinidamente.
 
 #### Aprende
@@ -859,6 +864,7 @@ ClientHttpRequestFactorySettings.defaults().____(deadline);
 ### Tema 6: Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1) · Avanzado · 50 min
 
 **Prerrequisito:** Tema 5 de este módulo.
+
 **Al terminar podrás:** definir un contrato gRPC con `.proto`, generar el stub, y exponer/consumir un servicio interno con Spring gRPC (Spring Boot 4.1), confirmando con un cliente real que la comunicación binaria funciona entre dos servicios.
 
 #### Aprende
@@ -1008,6 +1014,7 @@ public class TarifaServiceImpl extends TarifaServiceGrpc.TarifaServiceImplBase {
 ### Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 45 min
 
 **Prerrequisito:** Módulo 3 de este track (JPA y entidades).
+
 **Al terminar podrás:** formalizar en un test JUnit real una invariante de dominio (una jornada cerrada rechaza nuevas posiciones), demostrando que la propiedad de una regla de negocio vive en un agregado del contexto correcto, no dispersa entre servicios.
 
 #### Aprende
@@ -1188,6 +1195,7 @@ if (status == JourneyStatus.CLOSED) {
 ### Tema 8: Orquestación de microservicios con Temporal y Spring Boot · Experto · 60 min
 
 **Prerrequisito:** Tema 3 de este módulo (circuit breaker con Resilience4j); el patrón Saga del track se introduce aquí de forma ejecutable. Nociones de microservicios que se comunican por red (Temas 1-7).
+
 **Al terminar podrás:** orquestar una transacción distribuida que cruza varios microservicios (aceptar un pedido, asignar un repartidor, cobrar y notificar) con un **Workflow de Temporal**, de forma que el proceso sobreviva a caídas y reinicios, reintente automáticamente los pasos que fallan de forma transitoria, y **compense** (deshaga) los pasos ya completados si uno posterior falla de forma definitiva, todo confirmado con el servidor de pruebas embebido de Temporal.
 
 #### Aprende

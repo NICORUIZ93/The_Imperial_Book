@@ -1691,7 +1691,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "aea881556d5edd6a785159e2ce820019da28610c9ba22c86c7d0661e41e8eaf6",
+    "fingerprint": "f791d3038c3c79ae00097d9b0879331cefea2e5b60ba4d6678127ce12e90e11b",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6797,9 +6797,9 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 222,
-        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
-        "words": 973
+        "tailWords": 221,
+        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
+        "words": 984
       },
       {
         "issues": [],
@@ -7650,7 +7650,7 @@
         "module": 12,
         "tailWords": 154,
         "topic": "Tema 3: Un artefacto compatible necesita más que el mismo número de versión",
-        "words": 1167
+        "words": 1191
       },
       {
         "issues": [],
@@ -9338,7 +9338,7 @@
         "module": 15,
         "tailWords": 67,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
-        "words": 756
+        "words": 757
       },
       {
         "issues": [],
@@ -9492,14 +9492,14 @@
         "module": 20,
         "tailWords": 101,
         "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-        "words": 864
+        "words": 865
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 81,
         "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
-        "words": 740
+        "words": 741
       },
       {
         "issues": [],

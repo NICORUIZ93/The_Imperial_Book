@@ -4980,16 +4980,16 @@
     {
       "track": "java",
       "path": "web/public/content/java/modulo-5.md",
-      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html",
-        "https://openjdk.org/jeps/505"
+        "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
+        "https://openjdk.org/jeps/533"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 240,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html",
-        "https://openjdk.org/jeps/505"
+        "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
+        "https://openjdk.org/jeps/533"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -5167,7 +5167,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 356,
+      "line": 358,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/circuitbreaker",
         "https://start.spring.io/starter.zip"
@@ -5183,7 +5183,7 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1008,
+      "line": 1014,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
@@ -5200,7 +5200,7 @@
         "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1188,
+      "line": 1195,
       "originalProseUrls": [
         "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
         "https://docs.temporal.io/design-patterns/saga-pattern",
@@ -5358,7 +5358,7 @@
         "https://jakarta.ee/specifications/bean-validation/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 127,
+      "line": 128,
       "originalProseUrls": [
         "https://jakarta.ee/specifications/bean-validation/"
       ],
@@ -5374,7 +5374,7 @@
         "https://projectlombok.org/features/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 343,
+      "line": 346,
       "originalProseUrls": [
         "https://mapstruct.org/documentation/stable/reference/html/",
         "https://projectlombok.org/features/"
@@ -5391,7 +5391,7 @@
         "https://springdoc.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 547,
+      "line": 551,
       "originalProseUrls": [
         "https://spec.openapis.org/oas/latest.html",
         "https://springdoc.org/"
@@ -5438,7 +5438,7 @@
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 195,
+      "line": 196,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
       ],
@@ -5453,7 +5453,7 @@
         "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 360,
+      "line": 362,
       "originalProseUrls": [
         "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
       ],
@@ -5468,7 +5468,7 @@
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 564,
+      "line": 567,
       "originalProseUrls": [
         "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
@@ -5484,7 +5484,7 @@
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 174,
+      "line": 175,
       "originalProseUrls": [
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
@@ -5499,7 +5499,7 @@
         "https://kafka.apache.org/documentation/#consumerconfigs"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 610,
+      "line": 613,
       "originalProseUrls": [
         "https://kafka.apache.org/documentation/#consumerconfigs"
       ],
@@ -5531,7 +5531,7 @@
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 514,
+      "line": 516,
       "originalProseUrls": [
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],
@@ -7079,15 +7079,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:19.846727+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html",
       "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html",
@@ -7194,6 +7185,15 @@
       "title": null,
       "checkedAt": "2026-10-31T15:33:19.962655+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html",
@@ -8771,15 +8771,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://openjdk.org/jeps/505",
-      "status": 200,
-      "finalUrl": "https://openjdk.org/jeps/505",
-      "contentType": "text/html",
-      "title": "JEP 505: Structured Concurrency (Fifth Preview)",
-      "checkedAt": "2026-10-31T15:07:26.001179+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
-    },
-    {
       "url": "https://openjdk.org/jeps/506",
       "status": 200,
       "finalUrl": "https://openjdk.org/jeps/506",
@@ -8787,6 +8778,15 @@
       "title": "JEP 506: Scoped Values",
       "checkedAt": "2026-10-31T15:07:25.867022+00:00",
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
+    },
+    {
+      "url": "https://openjdk.org/jeps/533",
+      "status": 0,
+      "finalUrl": "https://openjdk.org/jeps/533",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://openjdk.org/projects/code-tools/jmh/",
@@ -10938,8 +10938,8 @@
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
     "urlsChecked": 511,
-    "urlsReachable": 511,
-    "urlsPending": 0
+    "urlsReachable": 509,
+    "urlsPending": 2
   },
   "corrections": [
     {

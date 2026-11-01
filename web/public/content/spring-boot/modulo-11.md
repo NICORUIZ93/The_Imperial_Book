@@ -7,6 +7,7 @@ Cada tema se verifica con mecanismos reales y ejecutables sin depender de un dae
 ### Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min
 
 **Prerrequisito:** Módulo 0 de este track (empaquetado básico con `mvnw package`).
+
 **Al terminar podrás:** inspeccionar, con el propio JAR generado por Spring Boot, las capas reales que separan dependencias de código de aplicación, y explicar por qué esa separación reduce el tamaño de las actualizaciones de imagen.
 
 #### Aprende
@@ -136,6 +137,7 @@ java -D____=layertools -jar target/*.jar list
 ### Tema 2: GraalVM native image · Avanzado · 45 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** ejecutar el procesamiento AOT (ahead-of-time) real de Spring Boot con un comando de Maven rápido y sin GraalVM instalado, inspeccionando el código fuente generado como evidencia concreta de qué hace la compilación nativa antes de invertir en un build completo de `native-image`.
 
 #### Aprende
@@ -269,6 +271,7 @@ find target/spring-aot/main/sources -name "*ApplicationContextInitializer.java"
 ### Tema 3: Health checks para Kubernetes · Intermedio · 40 min
 
 **Prerrequisito:** Módulo 7 de este track (Actuator y `AvailabilityChangeEvent`).
+
 **Al terminar podrás:** confirmar, con una petición HTTP real, que los endpoints de Actuator agrupados por probes (`/actuator/health/liveness` y `/actuator/health/readiness`) responden con el código de estado correcto según el estado real de disponibilidad de la aplicación.
 
 #### Aprende

@@ -8,7 +8,7 @@
 ### Tema 1: Clases, objetos, constructores y encapsulación
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás diseñar una clase que valida sus invariantes en el constructor, de forma que ninguna instancia inválida pueda existir. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás diseñar una clase que valida sus invariantes en el constructor, de forma que ninguna instancia inválida pueda existir. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 En un caso real de entregas, una guía sin número o con peso fuera de rango no debería poder crearse nunca, en vez de crearse y luego validarse por separado en cada punto donde se use.
@@ -45,7 +45,7 @@ Esta misma disciplina (validar en el constructor, no exponer setters que rompan 
 ### Tema 2: Herencia y sobreescritura
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás demostrar polimorfismo de subtipo con `extends`/`@Override`, y diagnosticar el error de olvidar `@Retention(RUNTIME)` en una anotación propia. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás demostrar polimorfismo de subtipo con `extends`/`@Override`, y diagnosticar el error de olvidar `@Retention(RUNTIME)` en una anotación propia. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un sistema de reparto trata conductores y vehículos de forma polimórfica (todos "hablan"/operan igual desde afuera), pero cada tipo concreto responde distinto; además, auditar acciones sensibles (confirmar una entrega) requiere una anotación propia correctamente configurada para que un interceptor pueda descubrirla.
@@ -143,7 +143,7 @@ Guarda las clases, la anotación, la salida del polimorfismo y el diagnóstico d
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás elegir entre interfaz y clase abstracta según si existe comportamiento compartido real, e implementar ambas con una jerarquía `Forma`. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás elegir entre interfaz y clase abstracta según si existe comportamiento compartido real, e implementar ambas con una jerarquía `Forma`. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 El sistema necesita que tipos no relacionados (un `Pajaro` y un `Avion`, por ejemplo) cumplan un contrato común (`Volador`) sin compartir jerarquía; y necesita que figuras geométricas relacionadas (`Circulo`, `Cuadrado`) compartan una implementación común (`describir()`) además de un método propio (`area()`).
@@ -211,7 +211,7 @@ Guarda las clases, la salida de `describir()` para cada forma y el error de inst
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás distinguir sobrecarga (varias firmas, mismo nombre) de sobreescritura (Tema 2), y aplicar los cuatro niveles de visibilidad de Java. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás distinguir sobrecarga (varias firmas, mismo nombre) de sobreescritura (Tema 2), y aplicar los cuatro niveles de visibilidad de Java. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un servicio de tarifas necesita `sumar` para enteros y para decimales sin duplicar el nombre del método; y necesita que solo ciertas clases del mismo paquete puedan acceder a un campo interno, mientras otras partes del sistema no.

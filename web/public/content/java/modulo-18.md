@@ -17,7 +17,7 @@ La prueba real debe incluir timeout, límite de intentos, respuesta inválida y 
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada.
+Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 27+ y una API de prueba local o simulada.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 

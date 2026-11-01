@@ -7,7 +7,7 @@ El inventario y los destinos del material están en `docs/rutaflow-source-index.
 ## Ejecución
 
 - Socket.IO: `npm ci` y `npm test` dentro de `socketio/`. `node serve.mjs` abre solo loopback en el puerto 3100. La lección explica la conexión de Dart 3 con socket_io_client 3.1.6 y las limitaciones de autenticación del laboratorio.
-- Spring AI: JDK 25 y `mvn test` dentro de `spring-ai/`. Se usa un ChatModel controlado: no se llama a un proveedor de IA ni se generan costes. El recuperador RAG es léxico; no se presenta como un vector store.
+- Spring AI: JDK 27 y `mvn test` dentro de `spring-ai/`. Se usa un ChatModel controlado: no se llama a un proveedor de IA ni se generan costes. El recuperador RAG es léxico; no se presenta como un vector store.
 - OSRM: `python3 -m unittest discover -s examples/rutaflow-material/osrm` desde la raíz. La fixture es sintética y verifica contrato; no acredita una ruta calculada sobre un mapa real.
 - Compensación: `python3 -m unittest discover -s examples/rutaflow-material/sagas`.
 - Capacidad: `node examples/rutaflow-material/capacity/medir.mjs`.

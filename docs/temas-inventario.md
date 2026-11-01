@@ -650,7 +650,7 @@ Inventario generado por lectura directa de los archivos Markdown. Una fila por t
 | 640 | java | 5 | Tema 2: CompletableFuture | web/public/content/java/modulo-5.md:70 |
 | 641 | java | 5 | Tema 3: Virtual threads | web/public/content/java/modulo-5.md:130 |
 | 642 | java | 5 | Tema 4: Condiciones de carrera y sincronización | web/public/content/java/modulo-5.md:186 |
-| 643 | java | 5 | Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) | web/public/content/java/modulo-5.md:240 |
+| 643 | java | 5 | Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) | web/public/content/java/modulo-5.md:240 |
 | 644 | java | 5 | Tema 6: Scoped Values frente a ThreadLocal (Java 25) | web/public/content/java/modulo-5.md:332 |
 | 645 | java | 5 | Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos | web/public/content/java/modulo-5.md:414 |
 | 646 | java | 6 | Tema 1: NIO.2 — Path y Files | web/public/content/java/modulo-6.md:6 |

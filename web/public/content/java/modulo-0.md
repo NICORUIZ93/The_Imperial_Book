@@ -5,7 +5,7 @@
 
 ## Antes de comenzar: instala Java correctamente
 
-Necesitas un **JDK**, no solo “Java”. El JDK incluye el compilador `javac`, la JVM y herramientas de diagnóstico. Usaremos una versión LTS reciente (Java 25 o superior), Visual Studio Code con **Extension Pack for Java**, y Git.
+Necesitas un **JDK**, no solo “Java”. El JDK incluye el compilador `javac`, la JVM y herramientas de diagnóstico. Usaremos **JDK 27 o superior**, la entrega actual de Java (la serie 25 sigue siendo LTS si necesitas soporte extendido), Visual Studio Code con **Extension Pack for Java**, y Git.
 
 | Sistema | Instalación | Nota importante |
 |---|---|---|
@@ -30,7 +30,7 @@ Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.c
 ### Tema 1: Del código fuente a la JVM
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás compilar un programa Java a bytecode, inspeccionar las instrucciones generadas con `javap` y ejecutar ese bytecode con la JVM, explicando qué hace cada herramienta. Prerrequisitos: JDK 25 instalado y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
+Al finalizar podrás compilar un programa Java a bytecode, inspeccionar las instrucciones generadas con `javap` y ejecutar ese bytecode con la JVM, explicando qué hace cada herramienta. Prerrequisitos: JDK 27 instalado y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
 
 #### Paso 2 · Contexto y caso real
 Un equipo de una plataforma de entregas reporta que "el programa no corre en el servidor aunque compiló bien en mi máquina"; la causa casi siempre está en confundir dónde quedó el bytecode compilado (`.class`) con dónde se le pide a la JVM que lo busque. Entender el ciclo `javac`/`java` evita ese diagnóstico a ciegas.
@@ -103,7 +103,7 @@ Guarda `Saludo.java`, `out/Saludo.class`, la salida de `javap` y el `ClassNotFou
 ### Tema 2: public static void main — qué significa cada palabra
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás explicar qué significa cada palabra de `public static void main(String[] args)` y diagnosticar por qué la JVM rechaza cualquier firma que se desvíe de ella. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Al finalizar podrás explicar qué significa cada palabra de `public static void main(String[] args)` y diagnosticar por qué la JVM rechaza cualquier firma que se desvíe de ella. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un desarrollador junior copia un método `main` desde un tutorial y le agrega `private` "porque esta clase no debería exponerlo públicamente"; el programa compila sin ningún error, pero al ejecutarlo la JVM informa que no encuentra un punto de entrada válido. Entender qué papel cumple cada palabra de la firma evita ese tipo de "corrección" que en realidad rompe el programa.
@@ -158,7 +158,7 @@ Guarda `PuntoEntrada.java`, la ejecución con un argumento real, y el intento si
 ### Tema 3: JDK, JRE y JVM
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás distinguir con precisión qué instala el JDK, qué incluye el JRE y qué ejecuta específicamente la JVM, y decidir cuál necesitas en cada máquina. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
+Al finalizar podrás distinguir con precisión qué instala el JDK, qué incluye el JRE y qué ejecuta específicamente la JVM, y decidir cuál necesitas en cada máquina. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version` y `javac --version`.
 
 #### Paso 2 · Contexto y caso real
 Un pipeline de despliegue falla en el servidor con `javac: command not found`, aunque el programa ya compilado corre perfectamente en la máquina de desarrollo; el servidor de producción tiene instalado únicamente un JRE, porque ejecutar un `.class` ya compilado no exige el compilador.
@@ -216,7 +216,7 @@ Guarda la salida de `Entorno`, el error provocado por el nombre de herramienta i
 ### Tema 4: Tipos primitivos vs referencias
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás predecir, antes de ejecutar, si una variable copia un valor o comparte una referencia a un mismo objeto. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Al finalizar podrás predecir, antes de ejecutar, si una variable copia un valor o comparte una referencia a un mismo objeto. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un reporte de entregas muestra el mismo paquete con pesos distintos en dos pantallas que, según el código, debían ser independientes; la causa es que ambas pantallas comparten el mismo arreglo por referencia, y modificar una posición desde una de ellas también la modifica para la otra.
@@ -289,7 +289,7 @@ Guarda `ValoresYReferencias.java`, la salida `5 9 | 99 99`, y el `NullPointerExc
 ### Tema 5: Variables, conversiones y `String`
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás convertir texto externo a tipos numéricos de forma segura, elegir `BigDecimal` para dinero en vez de `double`, y comparar `String` por contenido en vez de por identidad. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Al finalizar podrás convertir texto externo a tipos numéricos de forma segura, elegir `BigDecimal` para dinero en vez de `double`, y comparar `String` por contenido en vez de por identidad. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Una tarifa de envío calculada con `double` acumula diferencias de centavos tras miles de operaciones, y al final del mes el total facturado no coincide con la suma manual de cada guía; el origen es representar dinero con un tipo binario de punto flotante en vez de con `BigDecimal`.
@@ -344,7 +344,7 @@ Convertir con `BigDecimal` desde texto (nunca `double`) para valores monetarios 
 ### Tema 6: Operadores, precedencia y control de flujo
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una expresión `switch` exhaustiva sobre un `enum` y explicar por qué `&&` evita un `NullPointerException` que `&` no evita. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Al finalizar podrás escribir una expresión `switch` exhaustiva sobre un `enum` y explicar por qué `&&` evita un `NullPointerException` que `&` no evita. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un equipo agrega un nuevo estado `CANCELADA` a las entregas y despliega sin tocar el código que decide qué mensaje mostrar; en producción, cada entrega cancelada pasa silenciosamente sin ningún mensaje, porque el `switch` que las procesa nunca se actualizó para contemplar el caso nuevo.
@@ -428,7 +428,7 @@ static boolean pesoValido(Paquete paquete) {
 ### Tema 7: Arreglos, wrappers y paso de argumentos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás predecir exactamente qué puede modificar un método al recibir un arreglo, y recorrer una secuencia sin salirte de sus límites válidos. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Al finalizar podrás predecir exactamente qué puede modificar un método al recibir un arreglo, y recorrer una secuencia sin salirte de sus límites válidos. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un método que "limpia" un arreglo de paradas reasignando el parámetro a un arreglo vacío no limpia nada desde el punto de vista del código que lo llamó; el arreglo original sigue intacto, porque reasignar la referencia local no afecta la variable del llamador — solo mutar el contenido del arreglo sí se observa desde afuera.
@@ -509,7 +509,7 @@ Guarda `Argumentos.java`, la salida `[99, 2, 3]` y el `ArrayIndexOutOfBoundsExce
 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás validar una fecha recibida como texto con `java.time`, y elegir entre `Random` y `SecureRandom` según si el valor generado protege algo. Prerrequisitos: JDK 25 y un editor de texto o IDE. Comprueba `java --version`.
+Al finalizar podrás validar una fecha recibida como texto con `java.time`, y elegir entre `Random` y `SecureRandom` según si el valor generado protege algo. Prerrequisitos: JDK 27 y un editor de texto o IDE. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un formulario de reprogramación de entregas acepta la nueva fecha como texto sin validarla antes de guardarla; un cliente escribe `31/02/2026` (un día que no existe) y el sistema lo acepta sin error, hasta que otro proceso que sí usa `java.time` para calcular plazos falla de forma inesperada semanas después.

@@ -894,7 +894,7 @@ Ya reconstruyes el estado de un agregado reproduciendo su historial completo de 
 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar recuperarás una compensación después de un fallo y un reinicio sin aplicar dos veces su efecto. **Prerrequisitos:** saga del tema anterior, transacciones locales, idempotencia y SQLite/Python 3. Es un ejemplo independiente desde carpeta vacía: aísla el participante antes de conectarlo a Kafka u otro coordinador.
+Al finalizar podrás recuperar una compensación después de un fallo y un reinicio sin aplicar dos veces su efecto. **Prerrequisitos:** saga del tema anterior, transacciones locales, idempotencia y SQLite/Python 3. Es un ejemplo independiente desde carpeta vacía: aísla el participante antes de conectarlo a Kafka u otro coordinador.
 
 #### Paso 2 · Contexto y caso real
 Reservaste inventario y el pago fue rechazado. La liberación de inventario también puede fallar. **¿Por qué es importante?** Devolver «saga terminada» tras capturar la primera excepción oculta trabajo todavía pendiente. El proyecto integrador necesita un estado observable y una acción de recuperación.
@@ -990,8 +990,8 @@ El siguiente paso es probar dos participantes y reentrega real de mensajes. **Er
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar separarás una regla de negocio en entidad, caso de uso, puerto y
-adaptador, y podrás explicar dónde entra Spring Boot, JPA y H2 sin convertirlos
+Al finalizar podrás separar una regla de negocio en entidad, caso de uso, puerto y
+adaptador, y explicar dónde entra Spring Boot, JPA y H2 sin convertirlos
 en el centro del dominio. **Prerrequisitos:** Módulo 3 (persistencia), Módulo 10
 Tema 7 (contextos delimitados e invariantes) y Java 21 o superior. El ejemplo
 independiente se compila con `javac`; no necesita levantar Spring para demostrar

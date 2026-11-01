@@ -18410,7 +18410,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
         "criteria": {
           "objective": true,
           "prerequisites": true,

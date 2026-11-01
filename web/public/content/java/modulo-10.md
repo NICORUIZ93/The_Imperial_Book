@@ -8,7 +8,7 @@
 ### Tema 1: module-info.java y encapsulación fuerte
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás declarar un módulo JPMS con `exports` y confirmar que un paquete `public` pero no exportado permanece inaccesible desde fuera del módulo. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás declarar un módulo JPMS con `exports` y confirmar que un paquete `public` pero no exportado permanece inaccesible desde fuera del módulo. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un paquete interno con detalles de implementación (`academia.core.interno`) tiene clases `public` solo porque otras clases del mismo módulo las necesitan; sin JPMS, cualquier otro módulo de la aplicación también puede importarlas directamente, aunque nunca fue la intención exponerlas como API.
@@ -76,7 +76,7 @@ Guarda el árbol de ambos módulos, el `module-info.java` y el fallo de compilac
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás modularizar incrementalmente un proyecto de varios módulos, empezando por el módulo "hoja" sin dependencias internas, y decidir si JPMS aporta valor real a un proyecto concreto. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás modularizar incrementalmente un proyecto de varios módulos, empezando por el módulo "hoja" sin dependencias internas, y decidir si JPMS aporta valor real a un proyecto concreto. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Convertir de una sola vez un proyecto legacy grande (sin módulos) a JPMS arriesga romper decenas de dependencias implícitas simultáneamente; migrar primero el módulo sin dependencias internas, y subir progresivamente, permite verificar en cada paso que la migración parcial sigue funcionando.
@@ -140,7 +140,7 @@ Guarda los tres `module-info.java`, el orden de migración documentado y el fall
 ### Tema 3: `opens` para acceso reflexivo controlado de frameworks
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás diagnosticar y corregir un `InaccessibleObjectException` que ocurre solo en tiempo de ejecución, cuando un framework necesita reflexión sobre un paquete que solo declaró `exports`. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás diagnosticar y corregir un `InaccessibleObjectException` que ocurre solo en tiempo de ejecución, cuando un framework necesita reflexión sobre un paquete que solo declaró `exports`. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un módulo de dominio compila perfectamente y `exports` su paquete principal, pero al intentar serializar uno de sus `record` con Jackson en tiempo de ejecución, la aplicación falla — `exports` permite la llamada directa de código, pero no el acceso reflexivo que Jackson necesita internamente para inspeccionar la clase.

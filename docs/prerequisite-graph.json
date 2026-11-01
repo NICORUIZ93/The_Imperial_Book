@@ -2355,7 +2355,7 @@
       "track": "java",
       "module": 5,
       "position": 5,
-      "title": "Structured Concurrency (StructuredTaskScope, Java 25)",
+      "title": "Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:4"

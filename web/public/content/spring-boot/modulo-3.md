@@ -7,6 +7,7 @@ Cada tema declara nivel, duración y una verificación real contra una base de d
 ### Tema 1: Entidades y repositorios derivados · Intermedio · 35 min
 
 **Prerrequisito:** Spring Initializr y starters (Módulo 1); DTOs vs entidades (Módulo 2).
+
 **Al terminar podrás:** mapear una clase Java a una tabla con `@Entity`, declarar un repositorio derivado y explicar cuándo se necesita `@Query` explícito.
 
 #### Aprende
@@ -195,6 +196,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 ### Tema 2: El problema N+1 y su corrección · Avanzado · 50 min
 
 **Prerrequisito:** Tema 1 de este módulo (entidades y repositorios).
+
 **Al terminar podrás:** reproducir el problema N+1 con una relación `@OneToMany`, medir el número real de consultas y corregirlo con `JOIN FETCH`.
 
 #### Aprende
@@ -360,6 +362,7 @@ List<Usuario> buscarConTareas();
 ### Tema 3: Migraciones con Flyway · Intermedio · 35 min
 
 **Prerrequisito:** Temas 1 y 2 de este módulo.
+
 **Al terminar podrás:** versionar un cambio de esquema con Flyway y explicar por qué `hibernate.ddl-auto=update` es riesgoso en producción.
 
 #### Aprende

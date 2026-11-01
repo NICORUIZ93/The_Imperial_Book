@@ -64,7 +64,7 @@ Si algo falla, consulta la [guía de solución de problemas](docs/troubleshootin
 - **Angular 21.2.** La aplicación usa `@angular/core` `^21.2.0` y se instala con `npm ci`; no requiere instalación global.
 - **Docker Engine con Compose v2.** Necesario para el stack `docker-compose.yml` y para Floci por contenedores.
 - **Python 3.11 o superior.** Lo usan los auditores, la validación y varios ejemplos (`python3 --version`).
-- **JDK 17 o superior.** Los ejemplos Java y Spring Boot se verificaron con JDK 25; el JDK solo es necesario para esos tracks.
+- **JDK 27 o superior (Temurin 27.0.1).** Los ejemplos Java se ejecutaron con JDK 27; los proyectos Spring Boot se compilaron y sus pruebas aisladas pasaron, salvo los laboratorios que exigen servicios externos. El JDK solo es necesario para esos tracks.
 - **Floci.** El Compose fija el emulador `2.2.0`; la CLI `0.4.0` es la release observada y su versión mínima compatible sigue sin verificarse ([detalle](docs/floci.md)).
 - **Go y Rust (opcional).** Solo para los ejemplos de `examples/go` y `examples/rust`; el repositorio no fija versión en `go.mod` ni `Cargo.toml`, así que anota la toolchain que uses al ejecutarlos.
 - **Toolchains móviles (opcional).** Android, iOS, Flutter y Kotlin Multiplatform requieren su SDK y emulador o simulador propios; no son necesarios para la aplicación web.

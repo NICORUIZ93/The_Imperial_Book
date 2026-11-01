@@ -193,7 +193,7 @@ Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reprodu
 ### Tema 3: Un artefacto compatible necesita más que el mismo número de versión
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a activar la validación binaria del plugin de Kotlin (`abiValidation`) para que `check` falle ante cualquier cambio de API no aprobado explícitamente. Prerrequisitos: Tema 2 de este módulo; JDK 17+ y Gradle 8.14+ para el ejemplo.
+Al finalizar vas a activar la validación binaria del plugin de Kotlin (`abiValidation`) para que `check` falle ante cualquier cambio de API no aprobado explícitamente. Prerrequisitos: Tema 2 de este módulo; JDK 17+ y Gradle 9.8+ para el ejemplo.
 
 #### Paso 2 · Contexto y caso real
 El equipo publicó una nueva versión del módulo compartido con el mismo número de versión semántica "menor" esperado, pero cambió silenciosamente el orden de los parámetros de una función pública — el consumidor Android recompiló sin problema, pero el consumidor iOS, que todavía no había actualizado, empezó a fallar en producción con datos corruptos.
@@ -263,7 +263,7 @@ rootProject.name = "ejemplo-abi"
 Crea `build.gradle.kts` con este contenido completo:
 ```kotlin
 plugins {
-    kotlin("multiplatform") version "2.2.20"
+    kotlin("multiplatform") version "2.4.21"
 }
 
 repositories {
@@ -284,13 +284,13 @@ package academia
 public fun saludo(nombre: String): String = "Hola, $nombre"
 ```
 
-**Ejecuta la validación** (requiere Gradle 8.14+; la primera ejecución descarga el plugin):
+**Ejecuta la validación** (requiere Gradle 9.8+; la primera ejecución descarga el plugin):
 ```bash
 gradle updateKotlinAbi
 gradle checkKotlinAbi
 ```
 
-Resultado esperado: `updateKotlinAbi` genera el dump ABI de `saludo` y `checkKotlinAbi` termina en `BUILD SUCCESSFUL` sin cambios. Si cambiás la firma a `saludo(nombre: String, idioma: String)` sin volver a ejecutar `updateKotlinAbi`, `checkKotlinAbi` falla y señala la firma modificada; ese es el cambio que un consumidor ya compilado no puede absorber.
+Resultado esperado: `updateKotlinAbi` genera el dump ABI de `saludo` y `checkKotlinAbi` termina en `BUILD SUCCESSFUL` sin cambios. Con JDK 27, Kotlin 2.4.21 avisa que todavía no genera bytecode 27 y compila para JVM 26; las tareas ABI funcionan igual. Si cambiás la firma a `saludo(nombre: String, idioma: String)` sin volver a ejecutar `updateKotlinAbi`, `checkKotlinAbi` falla y señala la firma modificada; ese es el cambio que un consumidor ya compilado no puede absorber.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado:** quitá `abiValidation()` del bloque `kotlin { }` (o no lo actives) "porque todavía no tenemos tiempo de revisar el dump completo" y agregá un parámetro sin valor default a `saludo`. `gradle check` vuelve a pasar sin ninguna advertencia, y recién se descubre que rompió la compatibilidad binaria cuando el consumidor iOS (que todavía no recompiló contra la nueva versión) falla en producción. **Pista:** el dump es el contrato que el compilador no puede inferir por ti.

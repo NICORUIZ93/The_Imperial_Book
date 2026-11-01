@@ -15,7 +15,7 @@ Usa JDBC cuando el SQL explícito simplifique el caso (por ejemplo, reportes y a
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás consultar e insertar datos con `JdbcTemplate`, proteger parámetros y separar persistencia del servicio. Genera una app Spring Boot con `jdbc` y `h2`; usa JDK 25+ y Maven.
+Al finalizar podrás consultar e insertar datos con `JdbcTemplate`, proteger parámetros y separar persistencia del servicio. Genera una app Spring Boot con `jdbc` y `h2`; usa JDK 27+ y Maven.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 

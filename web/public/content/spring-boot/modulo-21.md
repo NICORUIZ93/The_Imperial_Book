@@ -23,7 +23,7 @@ una vez, hacer los efectos SQL idempotentes y recuperar fallos sin perder silenc
 Al finalizar podrás seguir un `EnvioCreado` desde el outbox hasta el consumer group `rutaflow-ruteo`,
 explicar qué orden conserva Kafka y observar la partición, el offset y la key reales.
 
-Necesitas JDK 25+, Maven 3.9+ y Docker Compose v2 o Podman Compose. Trabaja sobre el proyecto
+Necesitas JDK 27+, Maven 3.9+ y Docker Compose v2 o Podman Compose. Trabaja sobre el proyecto
 `examples/spring-kafka-rutaflow/`; no generes otro proyecto Spring Initializr, porque las pruebas y
 los archivos siguientes ya están conectados entre sí.
 

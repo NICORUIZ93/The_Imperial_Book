@@ -753,7 +753,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
 | java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 6 | [Tema 1: NIO.2 — Path y Files](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |

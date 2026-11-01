@@ -8,7 +8,7 @@
 ### Tema 1: Stream API — map, filter, reduce, collect
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reemplazar un bucle manual con acumulador por un pipeline declarativo de `filter`/`map`/`collect`. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás reemplazar un bucle manual con acumulador por un pipeline declarativo de `filter`/`map`/`collect`. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un reporte necesita los nombres de todas las entregas activas de una lista, y el total de tarifas cobradas; escribirlo con bucles manuales y variables acumuladoras oculta la intención detrás de la mecánica de iteración.
@@ -68,7 +68,7 @@ Guarda ambas versiones (bucle y stream), la comparación de resultados y el agru
 ### Tema 2: Optional — evitar null explícitamente
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reemplazar un método que devuelve `null` por uno que devuelve `Optional`, forzando al llamador a decidir explícitamente qué hacer ante la ausencia. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás reemplazar un método que devuelve `null` por uno que devuelve `Optional`, forzando al llamador a decidir explícitamente qué hacer ante la ausencia. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Buscar una entrega por id en una lista puede no encontrar ninguna coincidencia; devolver `null` en ese caso deja que cualquier consumidor olvide verificarlo y provoque un `NullPointerException` mucho más adelante, lejos de la causa real.
@@ -124,7 +124,7 @@ Guarda el repositorio, las tres formas de manejar ausencia y el `NullPointerExce
 ### Tema 3: Streams paralelos y referencias a métodos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás medir si `parallelStream()` realmente mejora el rendimiento frente a `stream()` en un caso concreto, en vez de asumirlo. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás medir si `parallelStream()` realmente mejora el rendimiento frente a `stream()` en un caso concreto, en vez de asumirlo. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Verificar si un número grande es primo para una lista de un millón de candidatos es CPU-intensivo y sin efectos secundarios compartidos; es exactamente el tipo de operación donde vale la pena medir si paralelizar realmente ayuda.

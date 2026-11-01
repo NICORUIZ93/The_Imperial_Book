@@ -10,7 +10,7 @@ Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error
 
 Al finalizar vas a elegir la interfaz funcional correcta para cada intención —decidir, transformar, notificar o proveer— y a compilar un ejemplo que use las cuatro sin envolver lambdas a mano.
 
-**Conocimiento previo:** Java 21 o superior, lambdas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version`.
+**Conocimiento previo:** Java 27 o superior, lambdas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version`.
 
 #### Paso 2 · Contexto y caso real
 

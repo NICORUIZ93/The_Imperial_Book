@@ -7,7 +7,7 @@ Este capítulo no presupone que ya tienes una aplicación reactiva. Crearás `de
 
 ### 1. Comprueba el entorno antes de generar archivos
 
-Necesitas JDK 25, Git y una herramienta para descomprimir. Maven no se instala globalmente porque el proyecto incluirá Maven Wrapper.
+Necesitas JDK 27, Git y una herramienta para descomprimir. Maven no se instala globalmente porque el proyecto incluirá Maven Wrapper.
 
 ```bash
 java --version
@@ -41,7 +41,7 @@ cd demo-reactive
 ./mvnw test
 ```
 
-En Windows PowerShell puedes crear el mismo proyecto desde [start.spring.io](https://start.spring.io/) seleccionando Maven, Java, JDK 25 y las dependencias **Spring Reactive Web**, **Spring Data R2DBC**, **H2 Database** y **Validation**. Descomprime el ZIP, abre PowerShell dentro de la carpeta y ejecuta:
+En Windows PowerShell puedes crear el mismo proyecto desde [start.spring.io](https://start.spring.io/) seleccionando Maven, Java, JDK 27 y las dependencias **Spring Reactive Web**, **Spring Data R2DBC**, **H2 Database** y **Validation**. Descomprime el ZIP, abre PowerShell dentro de la carpeta y ejecuta:
 
 ```powershell
 .\mvnw.cmd test
@@ -213,6 +213,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 ### Tema 1: Mono y Flux · Intermedio · 40 min
 
 **Prerrequisito:** la sección "Comienza desde cero" de este módulo (proyecto `demo-reactive` con `DeliveryRepository` reactivo).
+
 **Al terminar podrás:** distinguir `Mono` de `Flux` por su cardinalidad, y confirmar con `StepVerifier` real que ninguno de los dos ejecuta su lógica productora hasta que existe un suscriptor.
 
 #### Aprende
@@ -346,6 +347,7 @@ StepVerifier.create(flux)
 ### Tema 2: WebClient y composición no bloqueante · Avanzado · 45 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** componer dos llamadas HTTP dependientes con `WebClient` y `flatMap`, confirmando contra un servidor HTTP real (no simulado en otro lenguaje) que ninguna llamada bloquea el thread.
 
 #### Aprende
@@ -514,6 +516,7 @@ public Mono<Double> calcularTarifaCompleta(String trackingCode) {
 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min
 
 **Prerrequisito:** Temas 1 y 2 de este módulo.
+
 **Al terminar podrás:** explicar, con evidencia real de una excepción real de Reactor, por qué mezclar código bloqueante dentro de un pipeline reactivo es un antipatrón grave, y cuándo WebFlux justifica su complejidad frente a Spring MVC.
 
 #### Aprende

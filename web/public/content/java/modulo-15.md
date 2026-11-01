@@ -9,7 +9,7 @@ Este capítulo endurece el proyecto multi-módulo del Módulo 14 como producto m
 ### Tema 1: Maven avanzado
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás usar Maven Enforcer para bloquear un build con versiones divergentes de una dependencia. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+Al finalizar podrás usar Maven Enforcer para bloquear un build con versiones divergentes de una dependencia. Prerrequisitos: JDK 27, Maven y un editor. Verifica java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Dos módulos de un mismo proyecto multi-módulo declaran versiones distintas de Jackson sin que nadie lo note, hasta que en producción una clase serializa con un comportamiento y otra con otro, según qué versión ganó la resolución de dependencias transitivas de Maven.
@@ -38,7 +38,7 @@ mvn -pl app -am verify -Ddomain.jackson=2.18.3
 **Resultado esperado:** Enforcer falla en app con `Dependency convergence error`, mostrando el camino directo a 2.19.2 y el transitivo por domain a 2.18.3. El conflicto está en un mismo árbol, no simplemente en dos módulos independientes. Corrige retirando la sobreescritura y ejecuta otra vez `mvn -pl app -am verify`; ambas ramas vuelven a la propiedad común.
 
 #### Paso 6 · Práctica independiente
-Ejecuta `mvn validate '-Drequired.java=[99,)'` para provocar un requisito imposible con tu JDK 25; restaura el valor por defecto. No uses `[22,)` para hacer fallar JDK 25, porque sí lo cumple. Genera `mvn help:effective-pom` y explica la versión resultante. Como extensión, sustituye la propiedad compartida por un BOM en dependencyManagement y elimina las versiones explícitas de los hijos antes de comprobar su efecto.
+Ejecuta `mvn validate '-Drequired.java=[99,)'` para provocar un requisito imposible con tu JDK 27; restaura el valor por defecto. No uses `[22,)` para hacer fallar JDK 27, porque sí lo cumple. Genera `mvn help:effective-pom` y explica la versión resultante. Como extensión, sustituye la propiedad compartida por un BOM en dependencyManagement y elimina las versiones explícitas de los hijos antes de comprobar su efecto.
 
 #### Paso 7 · Cierre
 Guarda el fallo de Enforcer por versiones divergentes, la corrección con la versión común, y el fallo por versión de JDK incompatible; como siguiente paso compara el mismo problema resuelto con Gradle. Errores comunes: usar perfiles de Maven para secretos o reglas de negocio en vez de solo diferencias del proceso de build, y mantener dos builds de producción (Maven y Gradle) en paralelo sin necesidad. Fuentes oficiales: https://maven.apache.org/enforcer/maven-enforcer-plugin/.
@@ -61,7 +61,7 @@ Este mismo Enforcer es el que protegería al Proyecto integrador (Módulo 13) de
 ### Tema 2: Gradle y builds reproducibles
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás producir un JAR con hash idéntico en dos builds sucesivos usando Gradle. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+Al finalizar podrás producir un JAR con hash idéntico en dos builds sucesivos usando Gradle. Prerrequisitos: JDK 27, Gradle y un editor. Verifica java --version.
 
 #### Paso 2 · Contexto y caso real
 Un pipeline de CI reconstruye el mismo commit dos veces (una en la laptop de un desarrollador, otra en el runner de CI) y obtiene JARs con hashes distintos, porque el manifest incluye un timestamp de compilación que cambia en cada build, dificultando verificar que el artefacto desplegado es realmente el que se probó.
@@ -70,7 +70,7 @@ Un pipeline de CI reconstruye el mismo commit dos veces (una en la laptop de un 
 El wrapper fija la versión de Gradle; toolchains selecciona el JDK de compilación; el bloqueo de dependencias registra versiones resueltas. Un build reproducible evita timestamps u orden no determinista. La analogía: una receta de cocina que produce exactamente el mismo plato sin importar quién la siga, porque cada ingrediente y cada paso están fijados sin ambigüedad.
 
 #### Paso 4 · Demostración guiada desde cero
-Requisitos precisos: JDK 25 tanto para ejecutar Gradle como para compilar, y Gradle 9.1.0 para generar el wrapper. Gradle 8.10 no puede ejecutarse con JDK 25. Si usas otro JDK para el proceso Gradle, verifica primero su matriz de compatibilidad; la toolchain no cambia esa JVM.
+Requisitos precisos: JDK 27 tanto para ejecutar Gradle como para compilar, y Gradle 9.1.0 para generar el wrapper. Gradle 8.10 no puede ejecutarse con JDK 27. Si usas otro JDK para el proceso Gradle, verifica primero su matriz de compatibilidad; la toolchain no cambia esa JVM.
 
 ```bash
 cp -R examples/java-gradle ejemplo-gradle-reproducible
@@ -110,10 +110,10 @@ La caché acelera solo tareas deterministas. Una tarea que consulta la hora o un
 
 #### Aplicación práctica
 
-En `gradle/wrapper/gradle-wrapper.properties` fija la distribución; en `build.gradle.kts` declara toolchain Java 25 y activa JAR reproducible:
+En `gradle/wrapper/gradle-wrapper.properties` fija la distribución; en `build.gradle.kts` declara toolchain Java 27 y activa JAR reproducible:
 
 ```kotlin
-java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+java { toolchain { languageVersion = JavaLanguageVersion.of(27) } }
 tasks.withType<Jar> { isPreserveFileTimestamps = false; isReproducibleFileOrder = true }
 ```
 
@@ -128,7 +128,7 @@ Un build reproducible es lo que permite firmar y auditar con confianza el artefa
 ### Tema 3: Proyectos multi-módulo sin ciclos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una prueba ArchUnit que impida que `domain` dependa de `infrastructure`. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+Al finalizar podrás escribir una prueba ArchUnit que impida que `domain` dependa de `infrastructure`. Prerrequisitos: JDK 27, Gradle y un editor. Verifica java --version.
 
 #### Paso 2 · Contexto y caso real
 Un desarrollador nuevo, bajo presión de tiempo, importa una clase de `infrastructure` (un cliente HTTP) directamente en `domain` para resolver rápido un caso de uso; nadie lo nota en el code review y la arquitectura por capas empieza a erosionarse silenciosamente.
@@ -190,7 +190,7 @@ Esta es la misma estructura de módulos (domain/application/infrastructure/api) 
 ### Tema 4: JUnit 5, Mockito y assertions expresivas
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir un test que combine un fake de repositorio y un mock de notificación para un caso de uso real. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+Al finalizar podrás escribir un test que combine un fake de repositorio y un mock de notificación para un caso de uso real. Prerrequisitos: JDK 27, Gradle y un editor. Verifica java --version.
 
 #### Paso 2 · Contexto y caso real
 Un caso de uso `ConfirmarEntrega` debe confirmar la entrega en el repositorio y notificar al cliente; probarlo con una base de datos real y un servicio de notificación real sería lento y frágil, pero probarlo mockeando absolutamente todo (incluida la lógica de dominio) no demostraría nada real.
@@ -255,7 +255,7 @@ Esta suite es la que protege el caso de uso central del Proyecto integrador (Mó
 ### Tema 5: Pruebas de integración reproducibles
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás probar un repositorio contra una base de datos PostgreSQL real usando Testcontainers. Prerrequisitos: JDK 25, Gradle, Docker en ejecución y un editor. Verifica java --version y docker --version.
+Al finalizar podrás probar un repositorio contra una base de datos PostgreSQL real usando Testcontainers. Prerrequisitos: JDK 27, Gradle, Docker en ejecución y un editor. Verifica java --version y docker --version.
 
 #### Paso 2 · Contexto y caso real
 Un repositorio probado únicamente con mocks de método nunca detecta que una migración de Flyway tiene un nombre de columna mal escrito, o que un tipo `NUMERIC` de PostgreSQL redondea de forma distinta a como el desarrollador asumió al leerlo como `double`.
@@ -317,7 +317,7 @@ Estas pruebas de integración son las que dan confianza real al desplegar el Pro
 ### Tema 6: SLF4J, Logback, MDC y logging estructurado
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás configurar logging JSON con `traceId` correlacionado y detectar contexto MDC contaminado entre solicitudes. Prerrequisitos: JDK 25, Gradle y un editor. Verifica java --version.
+Al finalizar podrás configurar logging JSON con `traceId` correlacionado y detectar contexto MDC contaminado entre solicitudes. Prerrequisitos: JDK 27, Gradle y un editor. Verifica java --version.
 
 #### Paso 2 · Contexto y caso real
 Durante un incidente en producción, un equipo necesita reconstruir exactamente qué pasó con la guía `GUIA-42`, pero los logs no tienen ningún identificador común entre las líneas de las distintas capas que procesaron esa solicitud, obligando a adivinar por timestamp cuáles líneas pertenecen al mismo request.

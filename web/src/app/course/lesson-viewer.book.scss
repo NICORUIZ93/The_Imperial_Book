@@ -1,0 +1,321 @@
+@use '../../styles/tokens' as *;
+
+// ── Modo libro ────────────────────────────────────────────────────────────
+// Reproduce la página de un manual técnico impreso: hoja blanca sobre la
+// mesa, márgenes amplios, prosa serif justificada y títulos sans con número
+// colgante. No hay tarjetas, píldoras, degradados ni sombras de interfaz:
+// solo tinta sobre papel. El objetivo, el resumen y la numeración provienen
+// del texto que ya escribió el autor.
+.book-hidden { display:none !important; }
+
+// La mesa y la hoja
+:host(.book-reading-host) { padding:44px clamp(16px,3vw,40px) 104px; }
+:host(.book-reading-host) .reading-progress { display:none; }
+.lesson-layout.book-reading { --font-serif:var(--font-reading); grid-template-columns:minmax(0,820px); max-width:1180px; }
+.lesson-layout.book-reading .lesson {
+  position:relative; min-height:calc(100vh - 88px);
+  padding:clamp(44px,6vw,84px) clamp(32px,7vw,82px) 72px;
+  border:0; border-radius:2px; background:$wh;
+  box-shadow:0 1px 2px rgba(15,23,42,.07), 0 30px 70px -36px rgba(15,23,42,.42);
+}
+
+// Cabeza corrida: rótulo discreto, salto de página y salida al capítulo.
+.book-pagebar {
+  position:sticky; top:0; z-index:15; display:flex; align-items:center; gap:16px;
+  margin:0 calc(-1 * clamp(32px,7vw,82px)) 44px; padding:10px clamp(32px,7vw,82px);
+  border-bottom:1px solid $bd; background:$wh;
+}
+.book-home { flex:0 0 auto; padding-right:14px; border-right:1px solid $bd; color:$mu; font:600 9.5px/1 var(--font-sans); letter-spacing:.12em; text-transform:uppercase; text-decoration:none; }
+.book-home:hover { color:var(--accent); }
+.book-running-head { min-width:0; display:flex; align-items:center; flex:1; }
+.book-running-head strong { overflow:hidden; color:$mu; font:600 9.5px/1.2 var(--font-sans); letter-spacing:.1em; text-transform:uppercase; text-overflow:ellipsis; white-space:nowrap; }
+.book-pager { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.book-pager-button { width:26px; height:26px; display:grid; place-items:center; border:0; border-radius:0; color:$mu; background:transparent; font:400 15px/1 var(--font-sans); }
+.book-pager-button:hover:not(:disabled) { color:var(--accent); }
+.book-pager-button:disabled { opacity:.3; cursor:not-allowed; }
+.book-page-select-label { display:flex; min-width:0; }
+.book-page-select { max-width:250px; min-width:0; min-height:26px; padding:0 2px; border:0; border-bottom:1px solid transparent; border-radius:0; color:$i3; background:transparent; font:500 11px/1 var(--font-sans); }
+.book-page-select:hover, .book-page-select:focus-visible { border-bottom-color:$bd2; }
+.book-page-count { color:$mu; font:500 10.5px/1 var(--font-mono); letter-spacing:.02em; white-space:nowrap; }
+.book-exit { min-height:26px; padding:0; border:0; border-radius:0; color:$mu; background:transparent; font:600 9.5px/1 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; white-space:nowrap; }
+.book-exit:hover { color:var(--accent); }
+
+// Portada del capítulo: número, título y entrada, como la apertura impresa.
+.lesson-layout.book-reading .lesson-hero { margin:0; padding:0; border:0; }
+.book-chapter-opener { margin:0 0 22px; }
+.book-chapter-number { display:block; margin-bottom:14px; color:$mu; font:700 12px/1.2 var(--font-sans); letter-spacing:.18em; text-transform:uppercase; }
+.book-chapter-opener h1 { max-width:20ch; margin:0 0 18px; color:$ink; font:700 clamp(30px,4vw,42px)/1.14 var(--font-sans); letter-spacing:-.02em; text-wrap:balance; }
+.book-chapter-description { max-width:56ch; margin:0 0 14px; color:$i3; font:400 18px/1.66 var(--font-reading); font-style:italic; }
+.book-chapter-byline { margin:0; color:$mu; font:500 11.5px/1.5 var(--font-sans); }
+.lesson-layout.book-reading .lesson-meta { margin-top:14px; gap:0 18px; color:$mu; font:500 11.5px/1.5 var(--font-sans); }
+.lesson-layout.book-reading .lesson-meta > span,
+.lesson-layout.book-reading .lesson-meta .focus-toggle { display:none; }
+.lesson-layout.book-reading .lesson-meta a { color:$p; }
+
+// Índice del capítulo: lista tipográfica con número de página, no tarjetas.
+.lesson-layout.book-reading .chapter-topic-strip { margin-top:32px; padding-top:26px; border-top:1px solid $bd; }
+.chapter-topic-strip-heading { margin-bottom:4px; }
+.chapter-topic-strip-heading span { color:$ink; font:700 10.5px/1.3 var(--font-sans); letter-spacing:.12em; text-transform:uppercase; }
+.chapter-topic-strip-heading small { color:$mu; font:500 10.5px var(--font-sans); }
+.lesson-layout.book-reading .chapter-topic-strip-list { display:block; }
+.lesson-layout.book-reading .chapter-topic-strip-list a { display:flex; align-items:baseline; gap:14px; padding:11px 0; border:0; border-bottom:1px solid $bd; border-radius:0; color:$ink; background:transparent; font:400 16.5px/1.45 var(--font-reading); }
+.lesson-layout.book-reading .chapter-topic-strip-list a:hover { color:var(--accent); background:transparent; }
+.lesson-layout.book-reading .chapter-topic-strip-list a.current { color:var(--accent); background:transparent; }
+.lesson-layout.book-reading .chapter-topic-strip-list a.done { color:$i3; }
+.lesson-layout.book-reading .chapter-topic-strip-list a > span { flex:0 0 2.4em; color:$mu; font:600 11px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .chapter-topic-strip-list a.current > span { color:var(--accent); }
+.book-toc-page { margin-left:auto; color:$mu; font:500 11px/1 var(--font-mono); }
+
+// Apertura de la página-tema: número, título, nivel y objetivo ya escritos.
+.book-topic-head { margin:0 0 32px; padding:0; border:0; }
+.book-topic-kicker { display:block; margin-bottom:12px; color:$mu; font:700 11px/1.3 var(--font-sans); letter-spacing:.14em; text-transform:uppercase; }
+.book-topic-head h2 { max-width:20ch; margin:0; color:$ink; font:700 clamp(29px,3.4vw,38px)/1.15 var(--font-sans); letter-spacing:-.02em; text-wrap:balance; }
+.book-topic-meta { display:flex; flex-wrap:wrap; gap:0; margin:12px 0 0; color:$mu; font:500 11.5px/1.5 var(--font-sans); }
+.book-topic-meta span { padding:0; border:0; border-radius:0; }
+.book-topic-meta span + span::before { content:'·'; margin:0 8px; }
+.book-topic-objective { max-width:66ch; margin:20px 0 0; padding:14px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; color:$i3; background:none; font:400 16.5px/1.66 var(--font-reading); font-style:italic; }
+.book-topic-objective strong { display:inline; margin-right:8px; color:$mu; font:700 10px/1.2 var(--font-sans); font-style:normal; letter-spacing:.1em; text-transform:uppercase; }
+
+// Cuerpo de la página: el texto manda.
+.lesson-layout.book-reading .lesson-markdown { color:$ink; font:400 18.5px/1.74 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep p { margin:0 0 18px; text-align:justify; hyphens:auto; text-justify:inter-word; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep h2 { margin:54px 0 18px; padding:0; border:0; color:$ink; font:700 25px/1.28 var(--font-sans); letter-spacing:-.015em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep h2:first-child { margin-top:0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep h3 { margin:42px 0 14px; color:$ink; font:700 20px/1.32 var(--font-sans); letter-spacing:-.01em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep h4 { margin:30px 0 10px; color:$ink; font:700 15.5px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep ul,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep ol { margin:0 0 20px; padding-left:1.4em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep li { margin:6px 0; padding-left:0; font-family:var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep li::marker { color:$ink; font-weight:400; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep strong { color:$ink; font-weight:700; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep a { color:$p; text-decoration-thickness:1px; text-underline-offset:3px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep blockquote { margin:24px 0; padding:0 2.2em; border:0; border-radius:0; background:none; font-style:italic; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep :not(pre) > code { padding:0; border:0; background:none; color:$ink; font-size:.88em; }
+
+// Marginalias (Definición, Analogía, Importancia, Casos de uso): no son
+// recuadros de aplicación, sino párrafos destacados del libro.
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .definition-callout,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-callout { margin:24px 2.2em; padding:0; border:0; border-radius:0; background:none; font:400 17.5px/1.72 var(--font-reading); font-style:italic; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .definition-callout > strong:first-child,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-callout > strong:first-child { display:block; margin-bottom:4px; color:$mu; font:700 10px/1.3 var(--font-sans); font-style:normal; letter-spacing:.1em; text-transform:uppercase; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .key-terms { margin:0 0 24px; padding:12px 0; border-top:1px solid $bd; border-bottom:1px solid $bd; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .key-terms-heading { color:$mu; font:700 10px/1.2 var(--font-sans); letter-spacing:.1em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .key-terms-chips { color:$i3; font:400 15px/1.6 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .margin-note { float:none; width:auto; margin:22px 2.4em; padding:0; border:0; border-radius:0; background:none; color:$i3; font:400 16px/1.68 var(--font-reading); font-style:italic; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .margin-note strong:first-child { color:$mu; font:700 10px var(--font-sans); font-style:normal; letter-spacing:.1em; text-transform:uppercase; }
+
+// Pasos de la sesión: secciones numeradas con número colgante, sin ficha.
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .session-card { margin:0; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .session-card-head { display:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .session-steps { display:block; margin:0; padding:0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .session-steps li { padding:0 0 30px; border:0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-icon { display:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-head { display:grid; grid-template-columns:2.6em minmax(0,1fr); align-items:baseline; gap:0; margin:28px 0 10px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-head b { color:$mu; font:700 15px/1.35 var(--font-sans); letter-spacing:-.01em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-head em { color:$ink; font:700 19px/1.32 var(--font-sans); font-style:normal; letter-spacing:-.01em; text-transform:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-body { padding-left:2.6em; font:400 18px/1.72 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-body p { text-align:justify; hyphens:auto; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .step-body .code-example { margin:18px 0 22px; }
+.lesson-panel ::ng-deep .step-closing { margin-top:18px; padding:16px 0 0; border:0; border-top:1px solid $bd; border-radius:0; background:none; }
+.lesson-panel ::ng-deep .step-closing .step-head em { color:$ink; }
+
+// Código y listados: monoespaciado sobre el papel, con filete de rótulo.
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example { margin:24px 0; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example-bar { grid-template-columns:auto auto minmax(0,1fr) auto auto; gap:14px; min-height:0; padding:0 0 6px; border:0; border-bottom:1px solid $bd; color:$mu; background:none; font:600 9.5px/1.2 var(--font-sans); letter-spacing:.1em; text-transform:uppercase; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example-number { color:$ink; font:600 9.5px/1.2 var(--font-sans); letter-spacing:.08em; white-space:nowrap; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example-label { color:$mu; font:600 9.5px/1.2 var(--font-sans); letter-spacing:.1em; text-transform:uppercase; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example-language { display:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example-bar button { min-height:24px; padding:0; border:0; border-radius:0; color:$mu; background:none; font:600 9.5px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example-bar button:hover { color:var(--accent); background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-example pre { padding:14px 0 18px 1.2em; border-bottom:1px solid $bd; color:$ink; background:none; font:400 12.8px/1.72 var(--font-mono); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-line { grid-template-columns:minmax(0,1fr); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .code-line-number { display:none; }
+
+// Figuras: imagen y pie, sin marco de aplicación.
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .visual-diagram,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .anatomy-figure { margin:28px 0; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .visual-diagram figcaption,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual figcaption { display:block; padding:10px 0 0; border:0; border-top:1px solid $bd; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .visual-diagram figcaption > span,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual figcaption > span { display:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .visual-diagram figcaption small,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual figcaption small { display:block; color:$mu; font:600 9.5px/1.3 var(--font-sans); letter-spacing:.1em; text-transform:uppercase; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .visual-diagram figcaption strong,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual figcaption strong { margin-top:3px; color:$ink; font:600 13px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .visual-diagram figcaption p,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual figcaption p { margin:3px 0 0; color:$i3; font:400 14px/1.55 var(--font-reading); font-style:italic; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .diagram-zoom-open { align-self:flex-end; margin:8px 0 0; min-height:26px; padding:0; border:0; border-radius:0; color:$mu; background:none; font:600 9.5px var(--font-sans); letter-spacing:.08em; text-decoration:underline; text-underline-offset:3px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .diagram-zoom-open:hover { color:var(--accent); background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep pre.mermaid { padding:14px 0; border:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .archify-visual-frame { height:640px; border:1px solid $bd; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .anatomy-figure-frame { height:640px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep figure:not(.visual-diagram) figcaption { color:$mu; font:400 13px/1.5 var(--font-reading); font-style:italic; text-align:left; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep img { border-radius:0; box-shadow:none; }
+
+// Tablas: filetes finos, sin caja redondeada.
+.lesson-layout.book-reading .lesson-markdown ::ng-deep table { margin:26px 0; border:0; border-top:1.5px solid $ink; border-bottom:1.5px solid $ink; border-radius:0; background:none; font:400 13.5px/1.6 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep th { border-bottom:1px solid $ink; background:none; color:$ink; font-weight:700; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep th,
+.lesson-layout.book-reading .lesson-markdown ::ng-deep td { padding:8px 10px 8px 0; border-right:0; border-bottom:1px solid $bd; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep tr:last-child td { border-bottom:0; }
+
+// Bloques de práctica y repaso: secciones del libro, no tarjetas.
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .verifiable-exercise { margin:28px 0; padding:18px 0; border:0; border-top:1px solid $ink; border-bottom:1px solid $bd; border-radius:0; background:none; font-family:var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .verifiable-exercise h4 { margin:0 0 12px; font:700 15px/1.35 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .exercise-controls label { font:600 11px/1.3 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; color:$mu; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .exercise-controls input { min-height:40px; padding:0 0 4px; border:0; border-bottom:1px solid $ink; border-radius:0; background:none; color:$ink; font:400 15px/1.4 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .exercise-controls button { min-height:40px; padding:0; border:0; border-radius:0; color:$p; background:none; font:700 10.5px/1 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .exercise-feedback { font:400 13px/1.5 var(--font-reading); color:$i3; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .checkpoint { clear:both; margin:26px 0; padding:16px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .checkpoint h4 { color:$ink; font:700 12px/1.3 var(--font-sans); letter-spacing:.1em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .checkpoint h4::before { display:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .checkpoint-reveal { min-height:32px; padding:0; border:0; border-radius:0; color:$p; background:none; font:700 10px/1 var(--font-sans); letter-spacing:.08em; text-decoration:underline; text-underline-offset:3px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .checkpoint-reveal:hover { background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem { margin:28px 0; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem h4 { margin:0; padding:12px 0; border:0; border-top:1px solid $ink; border-bottom:1px solid $bd; background:none; font:700 13px/1.35 var(--font-sans); letter-spacing:.04em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem > p { margin:14px 0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem-reasoning { margin:16px 0; padding:0 2.2em; border:0; border-radius:0; background:none; font-style:italic; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem-reasoning p:first-child strong:first-child { color:$mu; font:700 10px var(--font-sans); font-style:normal; letter-spacing:.1em; text-transform:uppercase; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem-answer { margin:16px 0 !important; padding:0 2.2em; border-radius:0; background:none; color:$ink; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-contract { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 28px; margin:0 0 24px; overflow:visible; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-contract div { padding:14px 0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-contract small { color:$mu; font:700 9.5px var(--font-sans); letter-spacing:.1em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-contract strong { color:$ink; font:400 14px/1.55 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .section-guide { display:block; margin:0 0 22px; padding:0 2.2em; border:0; border-radius:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .section-guide strong { display:inline; margin-right:8px; color:$mu; font:700 10px var(--font-sans); letter-spacing:.1em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .section-guide span { color:$i3; font:400 15px/1.65 var(--font-reading); font-style:italic; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .target-demo { margin:0 0 24px; padding:14px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; box-shadow:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .target-demo small { color:$mu; font:700 9.5px var(--font-sans); letter-spacing:.1em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .target-demo strong { color:$ink; font:600 15px/1.5 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .concept-flow { padding:14px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .concept-flow span { border:1px solid $bd; border-radius:2px; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-troubleshooting { margin:24px 0 4px; border:0; border-top:1px solid $bd; border-radius:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-troubleshooting summary { padding:12px 24px 12px 0; color:$ink; font:700 12px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-troubleshooting summary::after { right:0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-troubleshooting ol { padding:0 0 10px 1.4em; color:$i3; font:400 14px/1.65 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-troubleshooting p { padding:10px 0; border-top:1px solid $bd; color:$mu; font:400 13.5px/1.6 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .project-deep-dive { margin:22px 0 4px; border:0; border-top:1px solid $bd; border-radius:0; background:none; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .project-deep-dive summary { padding:12px 24px 12px 0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .project-deep-dive summary::after { right:0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .project-deep-dive summary span { color:$mu; font:700 9.5px var(--font-sans); letter-spacing:.1em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .project-deep-dive summary strong { color:$ink; font:600 13px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .project-deep-dive-body { padding:6px 0 16px; border-top:0; font:400 16px/1.7 var(--font-reading); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-step-navigation { margin:30px 0 0; padding:14px 0 0; border-top:1px solid $bd; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-step-navigation a { min-height:0; padding:0; border:0; border-radius:0; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-step-navigation a:hover { border:0; background:none; color:var(--accent); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-step-navigation a span { color:$mu; font:700 9.5px/1.3 var(--font-sans); letter-spacing:.08em; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-step-navigation a small { font:600 11px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-complete { min-height:32px; padding:0; border:0; border-radius:0; color:$p; background:none; font:700 10px/1 var(--font-sans); letter-spacing:.08em; text-decoration:underline; text-underline-offset:3px; }
+.lesson-layout.book-reading .lesson-markdown ::ng-deep .topic-complete.done { background:none; }
+
+// Proyecto y guía: filetes sin caja.
+.lesson-layout.book-reading .project-progress-card { margin:28px 0 0; padding:22px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-layout.book-reading .project-progress-heading small { color:$mu; font:700 9.5px var(--font-sans); letter-spacing:.12em; }
+.lesson-layout.book-reading .project-progress-heading h2 { font:700 20px/1.3 var(--font-sans); color:$ink; }
+.lesson-layout.book-reading .project-progress-heading > strong { color:$ink; font:700 22px/1 var(--font-sans); }
+.lesson-layout.book-reading .project-progress-card > p { color:$i3; font:400 15px/1.68 var(--font-reading); font-style:italic; }
+.lesson-layout.book-reading .project-progress-bar { height:3px; border-radius:0; background:$bd; }
+.lesson-layout.book-reading .project-progress-bar span { border-radius:0; background:$ink; }
+.lesson-layout.book-reading .project-milestones li { font:500 10px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .project-milestones li span { width:20px; height:20px; border:1px solid $bd2; border-radius:0; color:$mu; font:700 10px var(--font-sans); }
+.lesson-layout.book-reading .project-milestones li.current span,
+.lesson-layout.book-reading .project-milestones li.reached span { border-color:$ink; color:$wh; background:$ink; }
+.lesson-layout.book-reading .project-current-step { padding-top:12px; border-top:1px solid $bd; }
+.lesson-layout.book-reading .course-guide { margin-top:22px; padding:14px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; font:400 15px/1.7 var(--font-reading); }
+.lesson-layout.book-reading .course-guide summary { font:700 12px/1.5 var(--font-sans); }
+.lesson-layout.book-reading .course-guide summary span { color:$mu; font:500 11px/1.5 var(--font-sans); }
+
+// Aperturas especiales del track Cloud: misma tinta, sin degradados ni cajas.
+.lesson-layout.book-reading .floci-overview { margin:0 0 40px; overflow:visible; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-layout.book-reading .floci-overview-intro { padding:0 0 24px; border-bottom:1px solid $bd; background:none; color:$ink; }
+.lesson-layout.book-reading .floci-overview-intro > span { color:$mu; font:700 9.5px var(--font-sans); letter-spacing:.12em; }
+.lesson-layout.book-reading .floci-overview-intro h2 { color:$ink; font:700 clamp(26px,3vw,32px)/1.2 var(--font-sans); }
+.lesson-layout.book-reading .floci-overview-intro p { color:$i3; font:400 17px/1.7 var(--font-reading); }
+.lesson-layout.book-reading .floci-overview-actions a { min-height:0; padding:0; border:0; border-radius:0; color:$p; background:none; font:700 10px var(--font-sans); letter-spacing:.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; }
+.lesson-layout.book-reading .floci-overview-actions a.secondary { color:$mu; background:none; }
+.lesson-layout.book-reading .floci-metrics { border-top:1px solid $bd; border-bottom:1px solid $bd; }
+.lesson-layout.book-reading .floci-metrics div { padding:16px 12px 16px 0; border-right:0; }
+.lesson-layout.book-reading .floci-metrics dt { color:$ink; font:700 22px/1 var(--font-sans); }
+.lesson-layout.book-reading .floci-metrics dd { color:$i3; font:600 10px/1.4 var(--font-sans); }
+.lesson-layout.book-reading .floci-metrics small { color:$mu; }
+.lesson-layout.book-reading .floci-capabilities { gap:0 24px; border-bottom:1px solid $bd; background:none; }
+.lesson-layout.book-reading .floci-capabilities article { padding:18px 0; background:none; }
+.lesson-layout.book-reading .floci-capabilities lucide-icon { display:none; }
+.lesson-layout.book-reading .floci-capabilities h3 { color:$ink; font:700 15px/1.35 var(--font-sans); }
+.lesson-layout.book-reading .floci-capabilities p { color:$i3; font:400 14px/1.65 var(--font-reading); }
+.lesson-layout.book-reading .floci-real-engines { gap:24px; padding:22px 0; border-top:1px solid $bd; background:none; }
+.lesson-layout.book-reading .floci-real-engines h3 { color:$ink; font:700 18px/1.3 var(--font-sans); }
+.lesson-layout.book-reading .floci-real-engines p { color:$i3; font:400 14px/1.65 var(--font-reading); }
+.lesson-layout.book-reading .floci-real-engines li { padding:8px 0; border:0; border-radius:0; background:none; }
+.lesson-layout.book-reading .floci-real-engines li lucide-icon { display:none; }
+.lesson-layout.book-reading .floci-real-engines li strong { color:$ink; font:600 12px var(--font-sans); }
+.lesson-layout.book-reading .floci-real-engines li small { color:$mu; font:400 11px var(--font-sans); }
+.lesson-layout.book-reading .floci-study-loop { border-top:1px solid $bd; border-bottom:1px solid $bd; }
+.lesson-layout.book-reading .floci-study-loop li { padding:16px 12px 16px 0; border-right:0; }
+.lesson-layout.book-reading .floci-study-loop span { width:22px; height:22px; border:1px solid $bd2; border-radius:0; color:$ink; background:none; font:700 10px var(--font-sans); }
+.lesson-layout.book-reading .floci-study-loop strong { color:$ink; font:700 11px var(--font-sans); }
+.lesson-layout.book-reading .floci-study-loop small { color:$mu; font:400 10px/1.45 var(--font-sans); }
+.lesson-layout.book-reading .build-method { gap:0 20px; }
+.lesson-layout.book-reading .build-method li { padding:8px 0; border:0; border-radius:0; background:none; }
+.lesson-layout.book-reading .build-method li > span { border-radius:0; color:$mu; background:none; font:700 12px var(--font-mono); }
+
+// Cierre del capítulo: entrega y resumen con los cierres ya escritos.
+.book-back-cover { margin:0; padding:0; border:0; }
+.book-back-kicker { display:block; margin-bottom:12px; color:$mu; font:700 11px/1.3 var(--font-sans); letter-spacing:.14em; text-transform:uppercase; }
+.book-back-cover h2 { max-width:22ch; margin:0 0 18px; color:$ink; font:700 clamp(28px,3.2vw,36px)/1.16 var(--font-sans); letter-spacing:-.02em; }
+.book-back-deliverable { max-width:66ch; margin:0 0 20px; color:$i3; font:400 17px/1.7 var(--font-reading); font-style:italic; }
+.book-back-deliverable strong { display:inline; margin-right:8px; color:$mu; font:700 10px/1.3 var(--font-sans); font-style:normal; letter-spacing:.1em; text-transform:uppercase; }
+.book-summary-list { display:block; margin:28px 0 26px; padding:0; border-top:1px solid $bd; }
+.book-summary-list li { padding:14px 0; border-bottom:1px solid $bd; }
+.book-summary-topic { padding:0; border:0; color:$ink; background:none; font:700 15px/1.4 var(--font-sans); text-align:left; }
+.book-summary-topic:hover { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+.book-summary-list p { max-width:72ch; margin:6px 0 0; color:$i3; font:400 15px/1.65 var(--font-reading); text-align:justify; }
+.book-back-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding-top:22px; border-top:1px solid $bd; }
+.book-complete { min-height:40px; padding:0; border:0; border-radius:0; color:$p; background:none; font:700 10.5px/1 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; }
+.book-complete.done { color:$i3; background:none; }
+.book-chapter-nav { display:flex; flex-wrap:wrap; gap:20px; }
+.book-chapter-nav button { min-height:40px; padding:0; border:0; border-radius:0; color:$i3; background:none; font:600 11.5px/1.2 var(--font-sans); text-decoration:underline; text-underline-offset:3px; }
+.book-chapter-nav button:hover { color:var(--accent); }
+
+// Página visible: el encabezado del tema lo dibuja la apertura de página.
+.lesson-panel ::ng-deep .book-page-hidden { display:none !important; }
+.lesson-panel ::ng-deep .book-paged .topic-card > .topic-heading { display:none; }
+.lesson-panel ::ng-deep .book-paged .topic-focus-link { display:none; }
+.lesson-panel ::ng-deep .book-paged .book-objective-source { display:none; }
+.lesson-panel ::ng-deep .book-paged .topic-body { padding-bottom:0; border-bottom:0; }
+
+// Folio al pie de la hoja.
+.book-folio { margin:56px 0 0; color:$mu; font:500 10.5px/1 var(--font-mono); letter-spacing:.12em; text-align:center; }
+
+@media(max-width:900px) {
+  :host(.book-reading-host) { padding:0 0 64px; }
+  .lesson-layout.book-reading { max-width:100%; }
+  .lesson-layout.book-reading .lesson { min-height:100vh; padding:24px 22px 56px; border-radius:0; box-shadow:none; }
+  .book-pagebar { flex-wrap:wrap; gap:8px 14px; margin:0 -22px 30px; padding:8px 22px 10px; }
+  .book-running-head { display:none; }
+  .book-home { order:1; padding-right:0; border-right:0; }
+  .book-exit { order:2; align-self:center; margin-left:auto; font-size:9px; letter-spacing:.06em; }
+  .book-pager { order:3; flex:1 0 100%; justify-content:center; gap:10px; }
+  .book-page-select { max-width:190px; text-align:center; }
+  .book-page-count { display:block; }
+  .lesson-layout.book-reading .lesson-markdown { font-size:17.5px; }
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep p { text-align:left; hyphens:none; }
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .step-body p { text-align:left; hyphens:none; }
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .step-body { padding-left:0; }
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .step-head { grid-template-columns:2.2em minmax(0,1fr); }
+  .book-chapter-opener h1 { font-size:30px; }
+  .book-topic-head h2, .book-back-cover h2 { font-size:27px; }
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .definition-callout,
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .learning-callout,
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .margin-note,
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .section-guide,
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .sample-problem-reasoning { margin-inline:0; padding-inline:0; }
+  .lesson-layout.book-reading .lesson-markdown ::ng-deep .verifiable-exercise h4 { font-size:14px; }
+  .lesson-layout.book-reading .floci-capabilities { grid-template-columns:1fr; }
+  .lesson-layout.book-reading .floci-real-engines { grid-template-columns:1fr; }
+  .lesson-layout.book-reading .floci-study-loop { grid-template-columns:1fr 1fr; }
+  .lesson-layout.book-reading .floci-study-loop li { border-bottom:1px solid $bd; }
+  .lesson-layout.book-reading .learning-contract { grid-template-columns:1fr; }
+  .book-summary-list p { text-align:left; }
+}

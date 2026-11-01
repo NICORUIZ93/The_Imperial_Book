@@ -6,7 +6,7 @@
 ### Tema 1: Checked vs unchecked exceptions
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás decidir cuándo declarar una excepción checked con `throws` y cuándo dejar que una unchecked se propague sin declaración. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás decidir cuándo declarar una excepción checked con `throws` y cuándo dejar que una unchecked se propague sin declaración. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Leer un archivo de configuración puede fallar por una condición externa previsible (el archivo no existe); acceder a una posición fuera de rango de una lista es, en cambio, casi siempre un bug del propio código, no una condición externa a manejar en cada punto.
@@ -64,7 +64,7 @@ Guarda el código, la salida del `throws` obligatorio y la excepción unchecked 
 ### Tema 2: try-with-resources
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás garantizar el cierre de un recurso propio implementando `AutoCloseable`, incluso cuando el bloque `try` termina con una excepción. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás garantizar el cierre de un recurso propio implementando `AutoCloseable`, incluso cuando el bloque `try` termina con una excepción. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un lector de reportes de entregas abre un archivo grande; si el procesamiento falla a mitad de camino, el archivo debe cerrarse igual, sin depender de que el desarrollador recuerde escribir un `finally` correcto en cada punto donde se abre un recurso.
@@ -120,7 +120,7 @@ Guarda la clase `AutoCloseable`, la salida con y sin excepción, y el orden de c
 ### Tema 3: Excepciones personalizadas y no tragar excepciones
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás definir una excepción propia del dominio y diagnosticar por qué un catch vacío convierte un bug real en invisible. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás definir una excepción propia del dominio y diagnosticar por qué un catch vacío convierte un bug real en invisible. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un intento de retirar más saldo del disponible en una billetera de conductor es un error de dominio específico y esperado, distinto de un `RuntimeException` genérico; capturarlo y descartarlo en silencio dejaría que el conductor crea que la operación funcionó cuando en realidad falló.

@@ -8,7 +8,7 @@
 ### Tema 1: ExecutorService y gestión de hilos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar enviarás ocho cálculos a un executor de cuatro hilos, recogerás sus resultados y comprobarás su terminación. **Prerrequisitos:** clases, excepciones, lambdas y JDK 25. Comprueba `java --version` y `javac --version`. No necesitas Maven para este ejemplo independiente desde carpeta vacía.
+Al finalizar enviarás ocho cálculos a un executor de cuatro hilos, recogerás sus resultados y comprobarás su terminación. **Prerrequisitos:** clases, excepciones, lambdas y JDK 27. Comprueba `java --version` y `javac --version`. No necesitas Maven para este ejemplo independiente desde carpeta vacía.
 
 #### Paso 2 · Contexto y caso real
 El proyecto integrador calcula tarifas para varias entregas. **¿Por qué es importante?** Un executor permite limitar hilos activos y centralizar su ciclo de vida. No afirmamos que crear exactamente 200 hilos agote cualquier máquina ni que un pool siempre sea más rápido: depende del trabajo y de los recursos disponibles.
@@ -70,7 +70,7 @@ El siguiente tema compone dependencias con CompletableFuture; el laboratorio pos
 ### Tema 2: CompletableFuture
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás encadenar una obtención de datos asíncrona, una transformación y un manejo de errores centralizado con `CompletableFuture`. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás encadenar una obtención de datos asíncrona, una transformación y un manejo de errores centralizado con `CompletableFuture`. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Consultar la tarifa de una ruta requiere primero obtener la distancia (una llamada lenta) y luego calcular el precio con ella; anidar callbacks manualmente para esta secuencia se vuelve ilegible apenas se agrega un paso más.
@@ -130,7 +130,7 @@ Guarda la cadena completa, la salida exitosa y el error capturado por `exception
 ### Tema 3: Virtual threads
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás lanzar decenas de miles de tareas concurrentes de I/O bloqueante con virtual threads, algo inviable con threads de plataforma. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás lanzar decenas de miles de tareas concurrentes de I/O bloqueante con virtual threads, algo inviable con threads de plataforma. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Simular 50 000 solicitudes de tracking de entregas que cada una espera una respuesta de red simulada agotaría la memoria disponible con threads de plataforma tradicionales (aproximadamente 1 MB de stack cada uno); con virtual threads es viable.
@@ -180,13 +180,13 @@ Pista: cambia deliberadamente el executor a `Executors.newFixedThreadPool(200)` 
 Reemplaza `Thread.sleep(50)` por un cálculo puro de CPU (por ejemplo, contar primos) y repite la comparación; confirma que ahí los virtual threads no ofrecen ninguna ventaja sobre un pool de plataforma bien dimensionado.
 
 #### Paso 7 · Cierre
-Guarda ambas mediciones (I/O bloqueante y CPU pura) y la conclusión sobre cuándo virtual threads ayudan; como siguiente paso estudia condiciones de carrera. Errores comunes: asumir que los virtual threads aceleran cualquier carga sin medir, usar virtual threads para cálculo CPU-intensivo puro (no ofrecen ninguna ventaja ahí), y llamar código nativo (JNI o el Foreign Function & Memory API del Módulo 11) desde dentro de un virtual thread sin saber que eso todavía "fija" (pin) el carrier thread en JDK 25 — a diferencia de `synchronized`, cuyo pinning sí se eliminó en JDK 24 (JEP 491). Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
+Guarda ambas mediciones (I/O bloqueante y CPU pura) y la conclusión sobre cuándo virtual threads ayudan; como siguiente paso estudia condiciones de carrera. Errores comunes: asumir que los virtual threads aceleran cualquier carga sin medir, usar virtual threads para cálculo CPU-intensivo puro (no ofrecen ninguna ventaja ahí), y llamar código nativo (JNI o el Foreign Function & Memory API del Módulo 11) desde dentro de un virtual thread sin saber que eso todavía "fija" (pin) el carrier thread en JDK 27 — a diferencia de `synchronized`, cuyo pinning sí se eliminó en JDK 24 (JEP 491). Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
 **Implicación práctica:** Los virtual threads permiten decenas de miles de tareas de I/O bloqueante con una fracción de la memoria de los threads de plataforma, pero esa ventaja desaparece por completo para cálculo puro de CPU, donde un pool de plataforma bien dimensionado sigue siendo la elección correcta.
 
 ### Tema 4: Condiciones de carrera y sincronización
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir una condición de carrera real con un contador compartido y corregirla con `synchronized`. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás reproducir una condición de carrera real con un contador compartido y corregirla con `synchronized`. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Cien hilos incrementando simultáneamente un contador compartido de "entregas procesadas hoy" sin ninguna coordinación pierden incrementos silenciosamente: el total final es menor al esperado, sin ningún error explícito.
@@ -237,10 +237,10 @@ Reemplaza `synchronized` por `AtomicInteger` (usando `incrementAndGet()`) y conf
 Guarda ambas versiones (sin sincronizar y con `synchronized`/`AtomicInteger`), los resultados inconsistentes y el resultado corregido; como siguiente paso estudia NIO.2. Errores comunes: asumir que `contador++` es una operación atómica, sincronizar solo la lectura o solo la escritura en vez de la operación completa de leer-sumar-escribir, y usar `synchronized` en cada acceso a un contador de muy alta frecuencia cuando `AtomicInteger` rendiría mejor con la misma corrección. Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
 **Implicación práctica:** Una condición de carrera produce resultados incorrectos silenciosos (sin ninguna excepción) que dependen del orden impredecible de ejecución de los hilos, y solo una prueba con múltiples hilos reales la expone — nunca se detecta leyendo el código.
 
-### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
+### Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a lanzar dos subtareas relacionadas (distancia y disponibilidad del conductor) con `StructuredTaskScope`, cancelando automáticamente la otra si cualquiera falla. Prerrequisitos: JDK 25 y un editor. Comprueba java --version. **`StructuredTaskScope` todavía es una feature en preview (JEP 505, quinta ronda) en Java 25**, no finalizada: compilar y ejecutar requiere las banderas `--enable-preview --release 25` explícitas.
+Al finalizar vas a lanzar dos subtareas relacionadas (distancia y disponibilidad del conductor) con `StructuredTaskScope`, cancelando automáticamente la otra si cualquiera falla. Prerrequisitos: JDK 27 y un editor. Comprueba java --version. **`StructuredTaskScope` sigue en preview en JDK 27 (JEP 533, séptima ronda)**, no finalizada: compilar y ejecutar requiere las banderas `--enable-preview --release 27` explícitas, porque `javac` solo acepta previews de la release exacta del JDK que compila.
 
 #### Paso 2 · Contexto y caso real
 El servicio de tracking lanza dos llamadas relacionadas con `CompletableFuture` por separado (distancia y disponibilidad del conductor); si la de distancia falla, la de disponibilidad sigue corriendo en segundo plano sin que nadie la cancele, consumiendo recursos para un resultado que ya no se va a usar.
@@ -302,9 +302,9 @@ public class CalculoTarifaEstructurado {
 }
 ```
 
-**Ejecuta el ejemplo** (compila y corre con la preview de Java 25):
+**Ejecuta el ejemplo** (compila y corre con la preview de JDK 27):
 ```bash
-javac --release 25 --enable-preview -d out src/academia/concurrencia/CalculoTarifaEstructurado.java
+javac --release 27 --enable-preview -d out src/academia/concurrencia/CalculoTarifaEstructurado.java
 java --enable-preview -cp out academia.concurrencia.CalculoTarifaEstructurado
 ```
 Verifica la salida y compárala con el resultado esperado.
@@ -327,7 +327,7 @@ Pista: reemplazá el `StructuredTaskScope` por dos `CompletableFuture.supplyAsyn
 Corregí el Paso 5 volviendo a `StructuredTaskScope` con `fork`/`join`, y agregá una tercera subtarea (por ejemplo, registrar el intento en un log de auditoría) confirmando que las tres se cancelan juntas si cualquiera falla.
 
 #### Paso 7 · Cierre
-Entregá el scope con cancelación conjunta del Paso 4, la subtarea huérfana del Paso 5, y la tercera subtarea agregada del Paso 6; explicá por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene. Siguiente paso: estudia Scoped Values, el complemento de structured concurrency para propagar contexto sin ThreadLocal. Errores comunes: lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí. Límites y decisión de uso: el scope no impone timeouts ni presupuestos de latencia por sí solo, y no conviene adoptarlo para una única llamada asíncrona sin subtareas hermanas. Fuentes oficiales: https://openjdk.org/jeps/505 y https://docs.oracle.com/en/java/javase/25/core/structured-concurrency.html. **Actualización de plataforma (octubre 2026):** en JDK 27 (la entrega más reciente, liberada en septiembre de 2026) esta misma feature avanzó a su séptima ronda de preview (JEP 533) y ya fue propuesta como candidata a finalizarse sin cambios adicionales — el código de este Tema, compilado con `--release 25 --enable-preview`, sigue siendo válido; solo cambia el número de JEP y de ronda si migrás a una JDK más reciente.
+Entregá el scope con cancelación conjunta del Paso 4, la subtarea huérfana del Paso 5, y la tercera subtarea agregada del Paso 6; explicá por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene. Siguiente paso: estudia Scoped Values, el complemento de structured concurrency para propagar contexto sin ThreadLocal. Errores comunes: lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí. Límites y decisión de uso: el scope no impone timeouts ni presupuestos de latencia por sí solo, y no conviene adoptarlo para una única llamada asíncrona sin subtareas hermanas. Fuentes oficiales: https://openjdk.org/jeps/533 y https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html. **Actualización de plataforma (octubre 2026):** este Tema usa la séptima ronda de preview (JEP 533, JDK 27), ya propuesta como candidata a finalizarse sin cambios adicionales. Las banderas deben coincidir con la release del JDK en uso: `javac --release 25 --enable-preview` con JDK 27 falla con «preview language features are only supported for release 27», así que el ejemplo se compiló y ejecutó con `--release 27 --enable-preview`.
 
 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
 
@@ -414,7 +414,7 @@ Entregá la propagación con `ScopedValue` del Paso 4, el crecimiento de heap co
 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar limitarás una espera y comprobarás que una tarea acepta la interrupción antes de cerrar su executor. **Prerrequisitos:** excepciones, try/finally y Future. JDK 25; comprueba `java --version` y `javac --version`. Ejemplo independiente desde carpeta vacía.
+Al finalizar limitarás una espera y comprobarás que una tarea acepta la interrupción antes de cerrar su executor. **Prerrequisitos:** excepciones, try/finally y Future. JDK 27; comprueba `java --version` y `javac --version`. Ejemplo independiente desde carpeta vacía.
 
 #### Paso 2 · Contexto y caso real
 El proyecto integrador consulta un proveedor que puede tardar demasiado. Dejar de esperar no significa que ese trabajo se haya detenido. **¿Por qué es importante?** Tareas abandonadas siguen consumiendo conexiones, CPU o memoria.

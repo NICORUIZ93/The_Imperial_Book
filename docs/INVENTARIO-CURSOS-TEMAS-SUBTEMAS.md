@@ -7771,7 +7771,7 @@ Los subtemas son los apartados `####` de cada tema.
 - Paso 6 · Práctica independiente
 - Paso 7 · Cierre
 
-#### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
+#### Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)
 
 - Paso 1 · Objetivo y preparación
 - Paso 2 · Contexto y caso real

@@ -15,7 +15,7 @@ No arregles N+1 poniendo todas las asociaciones en `EAGER`: eso desplaza el cost
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás persistir `Cliente` y `Pedido` con Spring Data JPA y definir quién controla la clave foránea. Necesitas JDK 25+, Maven y PostgreSQL local o H2 para el test. Genera el proyecto con `web`, `data-jpa` y `h2`.
+Al finalizar podrás persistir `Cliente` y `Pedido` con Spring Data JPA y definir quién controla la clave foránea. Necesitas JDK 27+, Maven y PostgreSQL local o H2 para el test. Genera el proyecto con `web`, `data-jpa` y `h2`.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 

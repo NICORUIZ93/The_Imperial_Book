@@ -6,7 +6,7 @@
 ### Tema 1: Arquitectura por capas del proyecto integrador
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás ensamblar la estructura por capas (`dominio/`, `servicio/`, `infraestructura/`) del proyecto integrador, confirmando que el dominio no depende de ningún detalle de infraestructura. Prerrequisitos: JDK 25, Maven, Docker y un editor.
+Al finalizar podrás ensamblar la estructura por capas (`dominio/`, `servicio/`, `infraestructura/`) del proyecto integrador, confirmando que el dominio no depende de ningún detalle de infraestructura. Prerrequisitos: JDK 27, Maven, Docker y un editor.
 
 #### Paso 2 · Contexto y caso real
 Una aplicación de entregas que mezcla directamente lógica de negocio con detalles de persistencia (SQL embebido dentro del caso de uso, por ejemplo) obliga a modificar y volver a probar la lógica de negocio cada vez que cambia un detalle técnico de infraestructura, aunque la regla de negocio en sí no haya cambiado.
@@ -64,7 +64,7 @@ Guarda el árbol de capas, el `module-info` o estructura de paquetes, y una prue
 ### Tema 2: Integrando concurrencia, modelado y testing
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás procesar un lote de tareas con virtual threads, modelando explícitamente éxito y error como una sealed interface, y probar la lógica de negocio con mocks sin infraestructura real. Prerrequisitos: JDK 25, Maven, Docker y un editor.
+Al finalizar podrás procesar un lote de tareas con virtual threads, modelando explícitamente éxito y error como una sealed interface, y probar la lógica de negocio con mocks sin infraestructura real. Prerrequisitos: JDK 27, Maven, Docker y un editor.
 
 #### Paso 2 · Contexto y caso real
 Procesar cientos de tareas de entrega concurrentemente, donde algunas fallan y otras no, usando excepciones para el caso de fallo esperado obligaría a interrumpir todo el procesamiento por un único fallo individual; un resultado modelado explícitamente como éxito o error permite que el resto del lote siga procesándose.
@@ -125,7 +125,7 @@ Guarda el procesamiento con virtual threads, el `ResultadoProcesamiento` sellado
 ### Tema 3: Build reproducible y cierre del track
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás configurar el build del proyecto integrador para que cualquier persona lo clone y lo ejecute con un único comando documentado, sin pasos manuales adicionales. Prerrequisitos: JDK 25, Maven, Docker y un editor.
+Al finalizar podrás configurar el build del proyecto integrador para que cualquier persona lo clone y lo ejecute con un único comando documentado, sin pasos manuales adicionales. Prerrequisitos: JDK 27, Maven, Docker y un editor.
 
 #### Paso 2 · Contexto y caso real
 Un proyecto sin build reproducible obliga a cada nueva persona del equipo a seguir instrucciones manuales extensas (y propensas a desactualizarse) para preparar su entorno antes de poder ejecutar la aplicación; declarar explícitamente todas las dependencias y un único comando de ejecución elimina esa fricción.

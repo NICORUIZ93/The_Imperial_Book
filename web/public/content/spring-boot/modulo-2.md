@@ -6,7 +6,8 @@ Cada tema declara nivel, duración y una salida verificable. El módulo separa e
 
 ### Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min
 
-**Prerrequisito:** Módulo 1 (Spring Initializr, perfiles). JDK 25, Maven y un editor.
+**Prerrequisito:** Módulo 1 (Spring Initializr, perfiles). JDK 27, Maven y un editor.
+
 **Al terminar podrás:** explicar por qué exponer entidades JPA directamente es riesgoso y separar el contrato HTTP de la persistencia con DTOs.
 
 #### Aprende
@@ -127,6 +128,7 @@ public ResponseEntity<TareaDTO> crear(@RequestBody CrearTareaRequest request) {
 ### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** declarar restricciones sobre un DTO de entrada y controlar explícitamente el código de estado HTTP devuelto.
 
 #### Aprende
@@ -233,6 +235,7 @@ public ResponseEntity<TareaDTO> crear(@____ @RequestBody CrearTareaRequest reque
 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min
 
 **Prerrequisito:** Tema 2 de este módulo.
+
 **Al terminar podrás:** centralizar las excepciones de toda una API en un único lugar, sin repetir try/catch en cada controller.
 
 #### Aprende
@@ -343,6 +346,7 @@ public class GlobalExceptionHandler {
 ### Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min
 
 **Prerrequisito:** Tema 1 de este módulo (DTOs).
+
 **Al terminar podrás:** reducir código repetitivo con Lombok, generar el mapeo entre modelo y DTO con MapStruct en tiempo de compilación y hacer que el compilador falle si un campo queda sin mapear.
 
 #### Aprende
@@ -547,6 +551,7 @@ Las líneas de Maven se resumen: también verás el log de arranque de Spring y 
 ### Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min
 
 **Prerrequisito:** Temas 1 a 3 de este módulo.
+
 **Al terminar podrás:** generar la especificación OpenAPI de tu API, documentar operaciones, parámetros, respuestas y esquemas, y escribir una prueba que falle si el contrato publicado cambia.
 
 #### Aprende
@@ -723,7 +728,8 @@ La prueba levanta la aplicación en un puerto aleatorio y lee el contrato real. 
 
 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min
 
-**Prerrequisito:** Java, Maven, REST y Bean Validation. JDK 25 y curl; comprueba `java --version`.
+**Prerrequisito:** Java, Maven, REST y Bean Validation. JDK 27 y curl; comprueba `java --version`.
+
 **Al terminar podrás:** exponer una colección paginada y rechazar parámetros que exceden el contrato.
 
 #### Aprende
@@ -748,7 +754,7 @@ unzip pagina-demo.zip
 cd pagina-demo
 ```
 
-Si Initializr ya no ofrece esa versión estable, selecciona una estable compatible con Java 25 en su UI, conserva Web y Validation y registra la versión elegida; no uses una milestone sin declarar el cambio.
+Si Initializr ya no ofrece esa versión estable, selecciona una estable compatible con Java 27 en su UI, conserva Web y Validation y registra la versión elegida; no uses una milestone sin declarar el cambio.
 
 1. Crea `src/main/java/com/example/pagina/EnviosController.java`:
 

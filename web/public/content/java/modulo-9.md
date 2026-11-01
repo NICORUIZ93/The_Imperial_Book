@@ -6,7 +6,7 @@
 ### Tema 1: JUnit 5 — anotaciones y ciclo de vida
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir un test con `@Test`/`@BeforeEach` y garantizar que dos pruebas de la misma clase no se contaminen entre sí por estado compartido. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+Al finalizar podrás escribir un test con `@Test`/`@BeforeEach` y garantizar que dos pruebas de la misma clase no se contaminen entre sí por estado compartido. Prerrequisitos: JDK 27, Maven y un editor. Verifica java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Una suite de pruebas de la calculadora de tarifas empieza a fallar de forma intermitente solo cuando se ejecuta la suite completa (nunca al correr un test aislado); la causa es un campo de instancia compartido entre pruebas que una prueba anterior deja en un estado que la siguiente no esperaba.
@@ -65,7 +65,7 @@ Cada prueba unitaria que escribas para el Proyecto integrador (Módulo 13) debe 
 ### Tema 2: Mockito — aislar dependencias
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás sustituir una dependencia real (un repositorio con base de datos) por un mock de Mockito, probando la lógica de negocio sin levantar ninguna infraestructura externa. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+Al finalizar podrás sustituir una dependencia real (un repositorio con base de datos) por un mock de Mockito, probando la lógica de negocio sin levantar ninguna infraestructura externa. Prerrequisitos: JDK 27, Maven y un editor. Verifica java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Probar `ServicioPedidos.crear(...)` contra una base de datos real hace la suite lenta y frágil (depende de que la base esté disponible y en un estado conocido); la lógica de negocio que decide si un pedido es válido no necesita una base de datos real para verificarse, solo necesita que `RepositorioPedidos` responda de forma controlada.
@@ -130,7 +130,7 @@ Guarda el test, el fallo de `NullPointerException` provocado y su corrección; c
 ### Tema 3: Tests parametrizados y cobertura
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una única prueba parametrizada que cubra varios casos de entrada, y usar un reporte de cobertura para identificar qué rama de código ningún test ejercita todavía. Prerrequisitos: JDK 25, Maven y un editor. Verifica java --version y mvn --version.
+Al finalizar podrás escribir una única prueba parametrizada que cubra varios casos de entrada, y usar un reporte de cobertura para identificar qué rama de código ningún test ejercita todavía. Prerrequisitos: JDK 27, Maven y un editor. Verifica java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Verificar una función como "es Fibonacci" para cinco valores distintos copiando y pegando el mismo cuerpo de prueba cinco veces (cambiando solo el número) duplica la lógica de verificación; y sin un reporte de cobertura, nadie nota que una rama específica del código (por ejemplo, el caso de un número negativo) nunca se ejecutó en ninguna prueba.

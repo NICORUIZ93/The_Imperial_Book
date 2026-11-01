@@ -7,6 +7,7 @@ Cada tema declara nivel, duración y una verificación reproducible. La configur
 ### Tema 1: Spring Initializr y starters · Básico · 20 min
 
 **Prerrequisito:** Módulo 0 (contenedor de Spring, `@Service`).
+
 **Al terminar podrás:** elegir starters con criterio y comprobar que evitan el "dependency hell" de resolver manualmente versiones compatibles.
 
 #### Aprende
@@ -111,6 +112,7 @@ public class SaludController {
 ### Tema 2: application.yml vs application.properties · Básico · 20 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** elegir entre YAML y properties y confirmar con la aplicación real que ambos formatos son funcionalmente equivalentes.
 
 #### Aprende
@@ -228,6 +230,7 @@ ____:
 ### Tema 3: Perfiles y estructura por capas · Intermedio · 30 min
 
 **Prerrequisito:** Tema 2 de este módulo.
+
 **Al terminar podrás:** externalizar configuración por perfil y organizar el código en capas `controller`/`service`/`repository` con responsabilidades delimitadas.
 
 #### Aprende

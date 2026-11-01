@@ -8,7 +8,7 @@
 ### Tema 1: record — modelos inmutables sin boilerplate
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás modelar una entidad inmutable con `record`, con constructor compacto que valida sus invariantes. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás modelar una entidad inmutable con `record`, con constructor compacto que valida sus invariantes. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Una guía de entrega (número, peso, estado) no debería cambiar sus datos una vez creada; cualquier "actualización" real debería producir una nueva instancia, nunca mutar la existente en un lugar donde otro código todavía la referencia.
@@ -66,7 +66,7 @@ Guarda `Guia`, la validación del constructor compacto y la prueba de igualdad p
 ### Tema 2: sealed — jerarquías cerradas y exhaustividad
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás cerrar una jerarquía de estados con `sealed`/`permits`, de modo que agregar un estado nuevo sin actualizar el código existente falle en compilación. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás cerrar una jerarquía de estados con `sealed`/`permits`, de modo que agregar un estado nuevo sin actualizar el código existente falle en compilación. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Una entrega tiene un conjunto fijo de estados posibles (creada, en tránsito, entregada); si el código que procesa esos estados no se entera cuando alguien agrega un estado nuevo (cancelada), el nuevo estado queda silenciosamente sin manejar en producción.
@@ -122,7 +122,7 @@ Guarda la jerarquía sellada, el error de compilación al agregar un estado nuev
 ### Tema 3: Pattern matching exhaustivo y para instanceof
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular el costo de envío según el estado sellado de una entrega usando pattern matching, sin casteo manual. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás calcular el costo de envío según el estado sellado de una entrega usando pattern matching, sin casteo manual. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Calcular si una entrega puede reprogramarse depende de su estado exacto (no se puede reprogramar una ya `Entregada`); expresar esa lógica con casteos manuales anidados es más verboso y propenso a errores que un switch con pattern matching.

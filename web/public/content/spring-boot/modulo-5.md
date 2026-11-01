@@ -7,6 +7,7 @@ Cada tema declara su nivel, su duración y una verificación reproducible. La co
 ### Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min
 
 **Prerrequisito:** Spring Initializr y starters (Módulo 1); `application.yml` vs `application.properties` (Módulo 1).
+
 **Al terminar podrás:** agrupar configuración relacionada en un tipo fuertemente tipado con `@ConfigurationProperties`, y confirmar con un test real que los valores de `application.yml` se enlazan correctamente.
 
 #### Aprende
@@ -163,6 +164,7 @@ public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegund
 ### Tema 2: Fallar rápido al arranque · Intermedio · 30 min
 
 **Prerrequisito:** Tema 1 de este módulo (`@ConfigurationProperties`).
+
 **Al terminar podrás:** confirmar, con un test real, que la aplicación se niega a arrancar cuando falta un valor de configuración obligatorio, en vez de arrancar con un valor inválido que fallaría más tarde.
 
 #### Aprende
@@ -288,6 +290,7 @@ contextRunner.withPropertyValues("app.jwt.expiracion-segundos=900")
 ### Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min
 
 **Prerrequisito:** `@ControllerAdvice` y `ResponseEntity` (Módulo 2); Temas 1-2 de este módulo.
+
 **Al terminar podrás:** extender el manejo global de excepciones (Módulo 2) para una nueva excepción de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente.
 
 #### Aprende

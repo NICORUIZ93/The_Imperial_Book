@@ -13,7 +13,7 @@ y las credenciales locales son exclusivamente para aprendizaje.
 
 ## Requisitos
 
-- JDK 25 o posterior y Maven 3.9 o posterior.
+- JDK 27 o posterior y Maven 3.9 o posterior.
 - Docker Compose v2 (o Podman Compose).
 - Puertos locales libres `5432`, `8080` y `19092`.
 

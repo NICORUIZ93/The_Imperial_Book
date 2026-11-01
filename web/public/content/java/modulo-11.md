@@ -8,7 +8,7 @@
 ### Tema 1: Generaciones de memoria y recolectores
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás medir y comparar las pausas de G1 y ZGC bajo la misma carga de asignación de objetos, y decidir cuál recolector corresponde según throughput o latencia mínima. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás medir y comparar las pausas de G1 y ZGC bajo la misma carga de asignación de objetos, y decidir cuál recolector corresponde según throughput o latencia mínima. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un servicio de entregas reporta latencia creciente bajo carga, y el equipo "optimiza" cambiando el recolector a ciegas sin medir primero cuántas pausas de GC ocurren realmente ni cuánto duran, arriesgando cambiar algo que no era el cuello de botella real.
@@ -74,7 +74,7 @@ Guarda ambos logs de GC (G1 y ZGC) con sus pausas máximas comparadas; como sigu
 ### Tema 2: Java Flight Recorder y JIT compilation
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás grabar un perfil de JFR con overhead mínimo apto para producción, e identificar el método que realmente consume más CPU bajo una carga real. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás grabar un perfil de JFR con overhead mínimo apto para producción, e identificar el método que realmente consume más CPU bajo una carga real. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Medir el rendimiento de un método justo al arrancar la aplicación, antes de que el JIT haya compilado el código caliente a código máquina optimizado, mide el intérprete lento de arranque, no el rendimiento real que esa misma aplicación tendrá en producción tras unos segundos de uso continuo.
@@ -138,7 +138,7 @@ Guarda el comportamiento con y sin `-Xint`, y el resumen de `jfr print` mostrand
 ### Tema 3: Referencias especiales y heap dumps
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás provocar un `OutOfMemoryError` real, analizar el heap dump que genera, y corregirlo reemplazando referencias fuertes por `SoftReference` en una caché. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version.
+Al finalizar podrás provocar un `OutOfMemoryError` real, analizar el heap dump que genera, y corregirlo reemplazando referencias fuertes por `SoftReference` en una caché. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Una caché implementada con una lista que acumula objetos indefinidamente sin nunca liberarlos agota la heap disponible tarde o temprano; sin un heap dump del momento exacto del fallo, diagnosticar qué estaba acumulándose y desde dónde es mucho más difícil que con los logs normales de la aplicación.
@@ -202,7 +202,7 @@ Guarda el `.hprof` generado, el análisis de qué tipo dominaba la memoria, y la
 ### Tema 4: Foreign Function & Memory API (Java 22)
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a llamar una función nativa de C (`strlen` de la libc) desde Java con el Foreign Function & Memory API, sin escribir ningún código JNI. Prerrequisitos: JDK 22+ y Tema 3 de este módulo.
+Al finalizar vas a llamar una función nativa de C (`strlen` de la libc) desde Java con el Foreign Function & Memory API, sin escribir ningún código JNI. Prerrequisitos: JDK 27 y Tema 3 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 El equipo necesita invocar una librería nativa C ya probada en producción (no quiere reescribirla en Java); hacerlo con JNI tradicional requeriría generar cabeceras, compilar código C intermedio, y mantener ese puente nativo.

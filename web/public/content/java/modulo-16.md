@@ -17,7 +17,7 @@ La progresión importa: `EAGER` significa que la asociación debe estar disponib
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás mapear `Cliente` y `Pedido` como entidades, crear una relación bidireccional y guardar el agregado con una transacción. Necesitas JDK 25 o superior y Maven; genera un proyecto desde Spring Initializr con `data-jpa` y `h2`.
+Al finalizar podrás mapear `Cliente` y `Pedido` como entidades, crear una relación bidireccional y guardar el agregado con una transacción. Necesitas JDK 27 o superior y Maven; genera un proyecto desde Spring Initializr con `data-jpa` y `h2`.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 

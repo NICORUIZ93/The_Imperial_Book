@@ -7,6 +7,7 @@ Cada tema declara su nivel, su duración y una verificación reproducible. La sa
 ### Tema 1: Actuator y health checks personalizados · Intermedio · 35 min
 
 **Prerrequisito:** Spring Initializr y starters (Módulo 1); `@Component` y `@Service` (Módulo 1).
+
 **Al terminar podrás:** exponer `/actuator/health` con un `HealthIndicator` personalizado que refleja la disponibilidad real de una dependencia, y confirmar con `MockMvc` real los estados `UP` y `DOWN`.
 
 #### Aprende
@@ -191,6 +192,7 @@ public Health health() {
 ### Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** registrar una métrica de negocio custom con Micrometer, y confirmar con un test real que se incrementa correctamente y aparece en `/actuator/metrics`.
 
 #### Aprende
@@ -361,6 +363,7 @@ public void crear(String descripcion) {
 ### Tema 3: Liveness vs readiness · Intermedio · 30 min
 
 **Prerrequisito:** Temas 1 y 2 de este módulo.
+
 **Al terminar podrás:** configurar endpoints de liveness y readiness separados, y explicar con evidencia real por qué confundirlos causa reinicios innecesarios en un despliegue orquestado.
 
 #### Aprende

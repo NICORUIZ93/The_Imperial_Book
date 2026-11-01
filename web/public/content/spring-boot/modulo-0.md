@@ -4,13 +4,13 @@ Cada tema declara su nivel, su duración y un proyecto verificable. El mecanismo
 
 ## Antes de comenzar: del equipo vacío a Spring Boot
 
-Completa primero los fundamentos del track Java o asegúrate de entender clases, interfaces, excepciones y colecciones. Instala **JDK 25**, Git y un editor: IntelliJ IDEA Community es la opción más sencilla para Spring; VS Code con Extension Pack for Java y Spring Boot Extension Pack también funciona.
+Completa primero los fundamentos del track Java o asegúrate de entender clases, interfaces, excepciones y colecciones. Instala **JDK 27**, Git y un editor: IntelliJ IDEA Community es la opción más sencilla para Spring; VS Code con Extension Pack for Java y Spring Boot Extension Pack también funciona.
 
-- **Windows:** instala Eclipse Temurin JDK 25, Git e IntelliJ; verifica `java --version` y `javac --version` en PowerShell.
+- **Windows:** instala Eclipse Temurin JDK 27, Git e IntelliJ; verifica `java --version` y `javac --version` en PowerShell.
 - **macOS:** usa `brew install --cask temurin` y `brew install git`; instala IntelliJ desde JetBrains Toolbox.
-- **Ubuntu/Debian:** ejecuta `sudo apt install openjdk-21-jdk git`; descarga IntelliJ o usa SDKMAN.
+- **Ubuntu/Debian:** instala el paquete de Temurin 27 desde [Adoptium](https://adoptium.net/temurin/releases/?version=27) con `sudo apt install ./<archivo>.deb`, o usa SDKMAN; instala Git e IntelliJ.
 
-No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, Spring Boot estable, JDK 25 y la dependencia **Spring Web**. Descarga, descomprime y ejecuta:
+No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, Spring Boot estable, JDK 27 y la dependencia **Spring Web**. Descarga, descomprime y ejecuta:
 
 ```bash
 # macOS/Linux
@@ -27,6 +27,7 @@ Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pe
 ### Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min
 
 **Prerrequisito:** clases, interfaces y constructores (track de Java). No se requiere Spring previo.
+
 **Al terminar podrás:** explicar qué hace el contenedor de Spring por ti y comprobar con una aplicación real que una clase no construye sus propias dependencias.
 
 #### Aprende
@@ -54,7 +55,7 @@ Esta clase declara que `ServicioTareas` necesita un `RepositorioTareas`; el cont
 
 #### Practica
 
-**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto real en [start.spring.io](https://start.spring.io/) (Java, Maven, Spring Boot estable, JDK 25, dependencia **Spring Web**) y descomprímelo. Crea `src/main/java/com/example/demo/ServicioTareas.java`:
+**Demo paso a paso.** Desde una carpeta vacía, genera el proyecto real en [start.spring.io](https://start.spring.io/) (Java, Maven, Spring Boot estable, JDK 27, dependencia **Spring Web**) y descomprímelo. Crea `src/main/java/com/example/demo/ServicioTareas.java`:
 
 ```java
 package com.example.demo;
@@ -150,6 +151,7 @@ public class ServicioTareas {
 ### Tema 2: Inyección por constructor vs por campo · Básico · 20 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** explicar por qué la inyección por constructor permite dependencias `final` y tests sin contenedor, y demostrar el fallo de la inyección por campo en el mismo escenario.
 
 #### Aprende
@@ -289,6 +291,7 @@ private ____ RepositorioTareas repositorio;
 ### Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min
 
 **Prerrequisito:** Temas 1-2 de este módulo.
+
 **Al terminar podrás:** distinguir `@Component`/`@Service`/`@Repository`, explicar qué autoconfigura `spring-boot-starter-web` y elegir entre `singleton` y `prototype` con una prueba real.
 
 #### Aprende

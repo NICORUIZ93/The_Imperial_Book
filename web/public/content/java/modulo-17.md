@@ -17,7 +17,7 @@ No confundas seguridad SQL con consistencia: parametrizar evita que el valor se 
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+ y Maven. Crea un proyecto Java con JDBC y H2 como dependencias.
+Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 27+ y Maven. Crea un proyecto Java con JDBC y H2 como dependencias.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 

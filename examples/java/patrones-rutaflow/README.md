@@ -1,6 +1,6 @@
 # Patrones en el dominio RutaFlow
 
-Laboratorio independiente, sin conexión al backend de RutaFlow. Código original de la academia para Java 17 o superior; el curso usa JDK 25. Desde la raíz del repositorio:
+Laboratorio independiente, sin conexión al backend de RutaFlow. Código original de la academia para Java 17 o superior; el curso usa JDK 27. Desde la raíz del repositorio:
 
 ```sh
 java examples/java/patrones-rutaflow/StrategyDemo.java

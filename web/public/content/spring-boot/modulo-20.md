@@ -15,7 +15,7 @@ Este módulo demuestra el comportamiento dentro de una aplicación Spring. El m�
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás ejecutar una tarea periódica con Spring y probar su operación sin esperar al reloj real. Genera una app Spring Boot con `web` y `actuator`, JDK 25+ y Maven.
+Al finalizar podrás ejecutar una tarea periódica con Spring y probar su operación sin esperar al reloj real. Genera una app Spring Boot con `web` y `actuator`, JDK 27+ y Maven.
 **Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
 #### Paso 2 · Contexto y caso real
 
@@ -517,7 +517,7 @@ Entrega archivo, salida, fallo y tabla REST/SOAP/SFTP/SMTP con contratos y garan
 ### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar ejecutarás ChatClient contra un modelo controlado y un callback real de herramienta que rechaza un envío ajeno. **Prerrequisitos:** Java, interfaces, Maven, JUnit y autorización por recurso. JDK 25 y Maven. Ejemplo independiente desde carpeta vacía, con Spring AI 2.0.2 y Spring Boot 4.0.9; no usa claves, pagos ni llamadas a un modelo externo.
+Al finalizar podrás ejecutar ChatClient contra un modelo controlado y un callback real de herramienta que rechaza un envío ajeno. **Prerrequisitos:** Java, interfaces, Maven, JUnit y autorización por recurso. JDK 27 y Maven. Ejemplo independiente desde carpeta vacía, con Spring AI 2.0.2 y Spring Boot 4.0.9; no usa claves, pagos ni llamadas a un modelo externo.
 
 #### Paso 2 · Contexto y caso real
 El asistente del proyecto integrador podría consultar el estado de una entrega. **¿Por qué es importante?** Un modelo puede proponer una llamada, pero la aplicación decide si está autorizada. Añadir la instrucción «consulta solo mis envíos» al prompt no sustituye ese control.
@@ -540,7 +540,7 @@ Crea `spring-ai/pom.xml` con este contenido completo:
 <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
   <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.0.9</version><relativePath/></parent>
   <groupId>academia</groupId><artifactId>spring-ai-lab</artifactId><version>1</version>
-  <properties><java.version>25</java.version></properties>
+  <properties><java.version>27</java.version></properties>
   <dependencyManagement><dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-bom</artifactId><version>2.0.2</version><type>pom</type><scope>import</scope></dependency></dependencies></dependencyManagement>
   <dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-client-chat</artifactId></dependency><dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency></dependencies>
 </project>
@@ -604,7 +604,7 @@ El siguiente tema estudia qué documentos puede recibir el modelo para construir
 ### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar comprobarás que el contexto recuperado no contiene documentación de otra empresa y que una consulta sin evidencia devuelve una colección vacía. **Prerrequisitos:** colecciones Java, metadatos, pruebas y el proyecto Spring AI del tema anterior. Para un ejemplo independiente copia `examples/rutaflow-material/spring-ai` a una carpeta vacía y usa su pom completo.
+Al finalizar podrás comprobar que el contexto recuperado no contiene documentación de otra empresa y que una consulta sin evidencia devuelve una colección vacía. **Prerrequisitos:** colecciones Java, metadatos, pruebas y el proyecto Spring AI del tema anterior. Para un ejemplo independiente copia `examples/rutaflow-material/spring-ai` a una carpeta vacía y usa su pom completo.
 
 #### Paso 2 · Contexto y caso real
 En el proyecto integrador dos empresas consultan políticas de reembolso. Una búsqueda relevante pero de la empresa equivocada sigue siendo una fuga. **¿Por qué es importante?** La autorización se debe aplicar antes de enviar documentos al modelo, no después de ver su respuesta.

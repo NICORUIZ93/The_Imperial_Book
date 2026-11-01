@@ -3234,8 +3234,8 @@
         "fragment": "tema-4-condiciones-de-carrera-y-sincronizacion"
       },
       {
-        "title": "Structured Concurrency (StructuredTaskScope, Java 25)",
-        "fragment": "tema-5-structured-concurrency-structuredtaskscope-java-25"
+        "title": "Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
+        "fragment": "tema-5-structured-concurrency-structuredtaskscope-preview-en-jdk-27"
       },
       {
         "title": "Scoped Values frente a ThreadLocal (Java 25)",

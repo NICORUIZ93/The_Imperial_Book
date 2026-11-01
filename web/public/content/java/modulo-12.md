@@ -8,7 +8,7 @@
 ### Tema 1: Builder — configuración paso a paso y validación
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar construirás un objeto inmutable con campos obligatorios y opcionales, validarás el resultado en `build()` y justificarás cuándo no necesitas Builder. Prerrequisitos: JDK 25 y un editor. Comprueba `java --version`.
+Al finalizar construirás un objeto inmutable con campos obligatorios y opcionales, validarás el resultado en `build()` y justificarás cuándo no necesitas Builder. Prerrequisitos: JDK 27 y un editor. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un pedido puede requerir cliente y producto, pero incluir opciones variables como cantidad, instrucciones o ventana de entrega. Un constructor posicional largo obliga a pasar valores centinela y hace difícil revisar qué significa cada argumento.
@@ -72,7 +72,7 @@ Guarda el `Pedido.java` con su Builder, el fallo de validación provocado y la c
 ### Tema 2: Factory Method y Strategy
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar distinguirás una Factory simple del patrón GoF Factory Method y elegirás entre Factory Method y Strategy según cambie la creación o el algoritmo. Prerrequisitos: JDK 25 y un editor. Comprueba `java --version`.
+Al finalizar distinguirás una Factory simple del patrón GoF Factory Method y elegirás entre Factory Method y Strategy según cambie la creación o el algoritmo. Prerrequisitos: JDK 27 y un editor. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 RutaFlow puede enviar avisos por más de un canal y calcular tarifas con políticas distintas. La creación del notificador y el cálculo de la tarifa son variaciones diferentes: centralizar la primera no debe convertir al consumidor en una cadena de condicionales.
@@ -160,7 +160,7 @@ Guarda las dos formas de Factory, el fallo por tipo desconocido y su diagnóstic
 ### Tema 3: Abstract Factory y familias de productos compatibles
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar identificarás una familia de productos relacionados, crearás una factoría por variante y comprobarás que el cliente recibe productos compatibles sin depender de sus clases concretas. Prerrequisitos: JDK 25. Desde la raíz comprueba `java --version`.
+Al finalizar identificarás una familia de productos relacionados, crearás una factoría por variante y comprobarás que el cliente recibe productos compatibles sin depender de sus clases concretas. Prerrequisitos: JDK 27. Desde la raíz comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 RutaFlow genera una etiqueta y una guía de transporte. El servicio puede trabajar con envíos locales o internacionales; una etiqueta local junto con una guía internacional es una combinación inválida. El punto de composición elige la familia y el resto del flujo depende de los contratos.
@@ -230,7 +230,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 ### Tema 4: SOLID y cuándo NO aplicar un patrón
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar diagnosticarás responsabilidades mezcladas y explicarás los cinco principios SOLID con decisiones aplicables al servicio de entregas. Prerrequisitos: JDK 25 y un editor. Comprueba `java --version`.
+Al finalizar diagnosticarás responsabilidades mezcladas y explicarás los cinco principios SOLID con decisiones aplicables al servicio de entregas. Prerrequisitos: JDK 27 y un editor. Comprueba `java --version`.
 
 #### Paso 2 · Contexto y caso real
 Un servicio de despacho puede validar una entrega, calcular su tarifa, guardar el resultado y enviar una notificación. Si conoce cada política y cada adaptador concreto, cambiar almacenamiento o mensajería obliga a editar código de negocio que no debería depender de esos detalles.
@@ -310,7 +310,7 @@ Guarda la versión mezclada y la refactorizada, identifica dónde aplicarían OC
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar implementarás una interfaz de copia, distinguirás copia superficial de profunda y demostrarás con una colección mutable que original y copia son independientes. **Prerrequisitos:** JDK 25, listas mutables y constructores; comprueba `java --version`. El archivo de referencia es `examples/java/patrones-rutaflow/PrototypeDemo.java`.
+Al finalizar implementarás una interfaz de copia, distinguirás copia superficial de profunda y demostrarás con una colección mutable que original y copia son independientes. **Prerrequisitos:** JDK 27, listas mutables y constructores; comprueba `java --version`. El archivo de referencia es `examples/java/patrones-rutaflow/PrototypeDemo.java`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -383,7 +383,7 @@ Entrega `PackageTemplate.java`, el fallo por referencia compartida, la correcci�
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar ejecutarás seis patrones estructurales, identificarás el problema que resuelve cada uno y justificarás cuándo una clase envolvente es Adapter, Decorator, Facade o Proxy. **Prerrequisitos:** JDK 25, interfaces y composición; comprueba `java --version`. Usa `examples/java/patrones-rutaflow/StructuralPatternsDemo.java`.
+Al finalizar ejecutarás seis patrones estructurales, identificarás el problema que resuelve cada uno y justificarás cuándo una clase envolvente es Adapter, Decorator, Facade o Proxy. **Prerrequisitos:** JDK 27, interfaces y composición; comprueba `java --version`. Usa `examples/java/patrones-rutaflow/StructuralPatternsDemo.java`.
 
 #### Paso 2 · Contexto y caso real
 

@@ -7,6 +7,7 @@ Cada tema declara su nivel, su duración y un proyecto verificable. La frontera 
 ### Tema 1: SecurityFilterChain moderno · Intermedio · 40 min
 
 **Prerrequisito:** Spring Initializr y starters (Módulo 1); `@RestController` básico (Módulo 1).
+
 **Al terminar podrás:** declarar un `SecurityFilterChain` como `@Bean` que permite rutas públicas y exige autenticación en el resto, y confirmar con `MockMvc` real los códigos 200 y 401 correspondientes.
 
 #### Aprende
@@ -183,6 +184,7 @@ mvn test -Dtest=SecurityFilterChainTest           # Maven
 ### Tema 2: Filtro JWT y autorización por rol · Avanzado · 55 min
 
 **Prerrequisito:** Tema 1 de este módulo (SecurityFilterChain).
+
 **Al terminar podrás:** implementar un filtro que valida un JWT real en cada petición, y proteger un endpoint con `@PreAuthorize` según el rol contenido en ese token.
 
 #### Aprende
@@ -407,6 +409,7 @@ public void eliminar(@PathVariable Long id) { }
 ### Tema 3: CORS y CSRF · Intermedio · 35 min
 
 **Prerrequisito:** Temas 1 y 2 de este módulo.
+
 **Al terminar podrás:** configurar CORS para restringir qué orígenes de navegador consumen la API, y explicar por qué una API stateless con JWT generalmente no necesita protección CSRF.
 
 #### Aprende
@@ -564,6 +567,7 @@ config.setAllowedOrigins(List.of("____"));
 ### Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min
 
 **Prerrequisito:** Tema 2 de este módulo.
+
 **Al terminar podrás:** configurar un `InetAddressFilter` (Spring Boot 4.1) que bloquee las peticiones salientes de un cliente HTTP hacia direcciones de loopback, link-local y metadatos de nube, cerrando una vulnerabilidad SSRF real en un endpoint que acepta una URL del usuario.
 
 #### Aprende
@@ -598,7 +602,7 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Requisitos: JDK 25 y Maven 3.9. Copia el laboratorio independiente con BOM Spring Boot 4.1.1, cliente y pruebas:
+**Demo paso a paso.** Requisitos: JDK 27 y Maven 3.9. Copia el laboratorio independiente con BOM Spring Boot 4.1.1, cliente y pruebas:
 
 ```bash
 cp -R examples/spring-ssrf ejemplo-ssrf
@@ -692,6 +696,7 @@ var settings = HttpClientSettings.defaults()
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min
 
 **Prerrequisito:** Temas 1 (SecurityFilterChain) y 2 (filtro JWT) de este módulo.
+
 **Al terminar podrás:** unir las piezas de los temas anteriores en un flujo real: un endpoint `POST /api/auth/login` que verifica credenciales y devuelve un JWT firmado por el `JwtService` (Tema 2), y un endpoint protegido `GET /api/usuarios` que solo responde cuando ese token viaja en `Authorization: Bearer`, todo confirmado con `MockMvc` real.
 
 #### Aprende

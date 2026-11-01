@@ -6,7 +6,7 @@
 ### Tema 1: NIO.2 — Path y Files
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás leer y escribir archivos con `Path`/`Files`, validando que la ruta resuelta permanezca dentro de un directorio permitido. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version y mvn --version.
+Al finalizar podrás leer y escribir archivos con `Path`/`Files`, validando que la ruta resuelta permanezca dentro de un directorio permitido. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Una plataforma de entregas procesa comprobantes subidos por el usuario; si el nombre de archivo llega con `../../etc/passwd`, resolverlo sin validar permitiría leer archivos fuera del directorio de comprobantes.
@@ -107,7 +107,7 @@ Guarda el validador de rutas, la prueba de traversal rechazada y la lectura vál
 ### Tema 2: Serialización con Jackson
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás serializar y deserializar un `record` a/desde JSON con Jackson, confirmando que el ciclo completo preserva los datos. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version y mvn --version.
+Al finalizar podrás serializar y deserializar un `record` a/desde JSON con Jackson, confirmando que el ciclo completo preserva los datos. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Una API de entregas necesita convertir un objeto `Entrega` a JSON para responder a un cliente, y reconstruir un objeto `Entrega` a partir del JSON que envía otro servicio, sin escribir manualmente el parsing campo por campo.
@@ -165,7 +165,7 @@ Guarda el `record`, el JSON serializado y la confirmación de igualdad tras el c
 ### Tema 3: Archivos grandes y recursos del classpath
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás procesar un archivo grande línea por línea sin cargarlo completo en memoria, y cargar un recurso empaquetado en el classpath. Prerrequisitos: JDK 25, Maven y un editor. Comprueba java --version y mvn --version.
+Al finalizar podrás procesar un archivo grande línea por línea sin cargarlo completo en memoria, y cargar un recurso empaquetado en el classpath. Prerrequisitos: JDK 27, Maven y un editor. Comprueba java --version y mvn --version.
 
 #### Paso 2 · Contexto y caso real
 Un reporte diario de entregas puede tener cientos de miles de líneas; cargarlo completo con `readAllBytes` antes de procesarlo agotaría la memoria disponible en un servidor con recursos limitados.

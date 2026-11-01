@@ -7,6 +7,7 @@ Cada tema declara su nivel, su duración y una verificación reproducible. Los t
 ### Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min
 
 **Prerrequisito:** `@RestController` y `ResponseEntity` (Módulo 2); DTOs vs entities (Módulo 2).
+
 **Al terminar podrás:** probar la capa web de un controller con `@WebMvcTest`, mockeando el servicio inyectado, y explicar por qué este slice arranca más rápido que el contexto completo de la aplicación.
 
 #### Aprende
@@ -174,6 +175,7 @@ class TareaControllerTest {
 ### Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min
 
 **Prerrequisito:** Tema 1 de este módulo; entidades y repositorios (Módulo 3).
+
 **Al terminar podrás:** probar un repositorio contra una base de datos PostgreSQL real y desechable con Testcontainers, y explicar por qué es preferible a H2 en memoria para fidelidad de comportamiento.
 
 #### Aprende
@@ -341,6 +343,7 @@ static void propiedades(DynamicPropertyRegistry registry) {
 ### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min
 
 **Prerrequisito:** Temas 1 y 2 de este módulo.
+
 **Al terminar podrás:** escribir un test end-to-end con `@SpringBootTest` que ejercita controller, servicio y repositorio reales juntos, y explicar por qué debe reservarse para pocos flujos verdaderamente críticos.
 
 #### Aprende

@@ -6,7 +6,7 @@
 ### Tema 1: List, Set, Map y sus implementaciones
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás medir la diferencia real de rendimiento entre `ArrayList` y `LinkedList`, y elegir `HashSet`/`TreeSet` según si necesitas orden. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás medir la diferencia real de rendimiento entre `ArrayList` y `LinkedList`, y elegir `HashSet`/`TreeSet` según si necesitas orden. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un sistema de entregas debe insertar miles de registros al inicio de una cola de prioridad y, por separado, eliminar guías duplicadas de un lote importado; la estructura equivocada convierte una operación instantánea en una lenta.
@@ -69,7 +69,7 @@ Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cu�
 ### Tema 2: Genéricos, wildcards y type erasure
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una clase genérica propia (`Caja<T>`) y explicar por qué su información de tipo desaparece en tiempo de ejecución. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás escribir una clase genérica propia (`Caja<T>`) y explicar por qué su información de tipo desaparece en tiempo de ejecución. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un almacén temporal necesita guardar y devolver un valor de cualquier tipo (una guía, un paquete, un conductor) sin duplicar la misma clase contenedora para cada tipo distinto, y sin perder verificación de tipos en tiempo de compilación.
@@ -126,7 +126,7 @@ Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación pr
 ### Tema 3: Comparable vs Comparator, e iteración
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar el orden natural de una clase con `Comparable` y ofrecer órdenes alternativos con `Comparator`, sin modificar la clase original. Prerrequisitos: JDK 25 y un editor. Comprueba java --version.
+Al finalizar podrás implementar el orden natural de una clase con `Comparable` y ofrecer órdenes alternativos con `Comparator`, sin modificar la clase original. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
 
 #### Paso 2 · Contexto y caso real
 Un listado de entregas necesita un orden natural único por antigüedad (`Comparable`) y, además, la posibilidad de reordenarlo puntualmente por destino o por peso sin tocar la clase `Entrega`.

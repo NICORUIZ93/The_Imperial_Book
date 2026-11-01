@@ -8,6 +8,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 ### Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min
 
 **Prerrequisito:** `@Service` e inyección de dependencias (Módulo 1); manejo global de excepciones (Módulo 2).
+
 **Al terminar podrás:** publicar un evento con `KafkaTemplate` y consumirlo con `@KafkaListener`, confirmando con un broker Kafka real (embebido, sin Docker) que el desacoplamiento entre publicador y consumidor funciona de extremo a extremo.
 
 #### Aprende
@@ -210,6 +211,7 @@ public void escuchar(TareaCreadaEvent evento) { }
 ### Tema 2: Dead-letter queue · Avanzado · 45 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** configurar reintentos limitados y una dead-letter queue para mensajes que fallan repetidamente, confirmando con un broker real que el mensaje problemático termina exactamente ahí, sin bloquear los mensajes siguientes.
 
 #### Aprende
@@ -396,6 +398,7 @@ return new DefaultErrorHandler(recoverer, new ____(1000L, 3));
 ### Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** configurar un productor idempotente y una transacción Kafka que evite publicar un evento duplicado si el productor reintenta tras un fallo de red, confirmando con un broker real que el duplicado nunca llega al topic.
 
 #### Aprende
@@ -610,6 +613,7 @@ config.put(ProducerConfig.____, true);
 ### Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min
 
 **Prerrequisito:** Tema 1 de este módulo.
+
 **Al terminar podrás:** reproducir un rebalanceo completo de un consumer group al reiniciar una instancia, y configurar static group membership para evitarlo en reinicios breves.
 
 #### Aprende
@@ -820,6 +824,7 @@ config.put(ConsumerConfig.____, "notificaciones-1");
 ### Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min
 
 **Prerrequisito:** Temas 1 a 4 de este módulo.
+
 **Al terminar podrás:** implementar el mismo flujo de consumo con Spring AMQP sobre RabbitMQ real, y explicar con evidencia en qué se diferencia su modelo de entrega del de Kafka.
 
 #### Aprende

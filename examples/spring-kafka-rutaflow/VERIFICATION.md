@@ -30,3 +30,11 @@ libros del disco externo durante este incremento.
 Fuentes: [manejo de errores de Spring Kafka](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html)
 y fuentes/test del propio laboratorio. Los siete casos se encuentran en
 `src/test/java/com/academia/rutaflow/KafkaFlowIntegrationTest.java`.
+
+## Verificación 2026-10-31 — destino Java 27
+
+Con el POM fijado en `release 27` (Spring Boot 4.1.1), `mvn -B clean verify` volvió a
+terminar con código 0: se compilaron 17 fuentes y la misma prueba de integración con Kafka
+embebido y H2 ejecutó las siete pruebas, sin fallos, errores ni omisiones. Los límites de la
+sección anterior siguen vigentes: no se ejecutaron Compose, PostgreSQL real, varios
+dispatchers, renovación de lease ni replay de DLT.
