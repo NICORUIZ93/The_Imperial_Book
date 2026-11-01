@@ -1,47 +1,42 @@
 # Módulo 4: Express/Fastify — routing y middleware
 
-
 ## Aprende construyendo
 
-### Tema 1: Middleware — orden de ejecución y next()
+Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados; no copies archivos prefabricados ni reutilices el código de otro tema. `npm init -y` crea el `package.json` de cada proyecto y `npm install` reconstruye las dependencias a partir de ese manifiesto.
 
-**Conceptos clave:** función middleware, cadena de ejecución, `next()`.
+### Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min
 
-Un middleware en Express es simplemente una función con la firma `(req, res, next)` que se ejecuta en el camino de cualquier petición entrante antes de que llegue al manejador de ruta final, con la capacidad de inspeccionar o modificar `req`/`res`, y de decidir si la petición continúa hacia el siguiente middleware de la cadena invocando `next()`, o si la petición se detiene ahí mismo (por ejemplo, respondiendo directamente con `res.status(401).end()` si detecta que el usuario no está autenticado, sin invocar `next()` en absoluto). `express.json()`, un middleware incluido con Express, resuelve automáticamente el parsing manual del body estudiado en el Módulo 3, exponiendo directamente `req.body` ya parseado a cualquier middleware o ruta que se ejecute después de él en la cadena.
+#### Aprende
 
-El orden en que se registran los middleware con `app.use()` determina exactamente el orden en que se ejecutan para cada petición entrante, una propiedad crítica de diseño: un middleware de autenticación debe registrarse antes que las rutas que protege (para que pueda rechazar la petición antes de que llegue a esas rutas), y `express.json()` debe registrarse antes que cualquier ruta que dependa de leer `req.body` ya parseado. Olvidar invocar `next()` dentro de un middleware personalizado es un error extremadamente común y con un síntoma característico: la petición se queda "colgada" indefinidamente sin ninguna respuesta, porque la cadena de ejecución nunca continúa hacia el siguiente middleware ni hacia el manejador de ruta final que efectivamente enviaría una respuesta.
+**Prerrequisitos:** Node.js LTS, npm, terminal y nociones básicas de HTTP y JavaScript. No necesitas archivos de otros temas.
 
-Un middleware de logging propio, escuchando el evento `finish` del objeto `res` (que se dispara cuando la respuesta terminó de enviarse) para calcular y registrar el tiempo total de procesamiento de cada petición, ilustra cómo un middleware puede envolver conceptualmente toda la ejecución posterior de la cadena sin bloquearla: invoca `next()` inmediatamente para dejar que el resto de la cadena continúe, pero registra su listener de `finish` antes de eso, capturando efectivamente el momento en que toda la cadena completa (incluyendo el manejador de ruta final) haya terminado de procesar la petición.
+**Al terminar podrás:** ordenar middleware de Express, usar `next()` para continuar o detener una cadena y diagnosticar una petición que queda sin respuesta.
 
-**Analogía:** el middleware es como una serie de puntos de control en una línea de ensamblaje, cada uno con la capacidad de inspeccionar, modificar, o incluso detener completamente el paso de un producto hacia la siguiente estación; si un punto de control olvida marcar explícitamente "aprobado, continúa" (`next()`), el producto queda detenido indefinidamente en ese punto, sin llegar jamás a las estaciones siguientes de la línea.
+**Por qué importa:** una API de entregas debe registrar solicitudes, interpretar JSON y rechazar accesos antes de ejecutar una operación protegida. Si el orden es incorrecto, una ruta puede recibir un body sin procesar o ejecutar un caso de uso que debía quedar bloqueado.
 
-**¿Por qué es importante?** El orden de registro de middleware determina directamente el comportamiento de la aplicación, y olvidar `next()` es la causa más común de peticiones "colgadas" sin respuesta en aplicaciones Express, un error de diagnóstico frecuente para quien aprende el framework.
+Un middleware de Express es una función con la firma `(req, res, next)` que se ejecuta en el camino de una petición. Puede inspeccionar o modificar `req` y `res`, llamar `next()` para entregar el control o terminar la respuesta, por ejemplo con `res.status(401).end()`, sin invocar `next()`.
 
-**Código del ejemplo:**
+El orden de registro con `app.use()` determina el orden de ejecución. `express.json()`, incluido con Express, procesa el body JSON y expone `req.body` a los middleware y rutas posteriores; por eso debe registrarse antes de las rutas que lo leen. Del mismo modo, una regla de autenticación debe aparecer antes de las rutas que protege.
+
+Olvidar `next()` sin enviar una respuesta interrumpe la cadena y deja la petición esperando. Llamar `next()` después de responder también es incorrecto: permite que otra capa intente responder una segunda vez.
+
+Un logger puede escuchar el evento `finish` de `res`, que se emite cuando la respuesta terminó de enviarse. El listener se registra antes de `next()` y observa el desenlace de toda la cadena sin impedir que continúe. No uses ese registro para imprimir secretos del body.
+
+**Conceptos clave:** función middleware, cadena de ejecución, `next()`, parsing de JSON y evento `finish`.
+
+**Analogía:** cada middleware es un punto de control en una línea de ensamblaje. Puede preparar el producto y marcar «continúa», o detenerlo por una regla. Si no hace ninguna de las dos cosas, el producto queda inmóvil en esa estación.
 
 ```js
 app.use(express.json());                    // 1: parsea el body
 app.use((req, res, next) => {                 // 2: logging propio
   const inicio = Date.now();
-  res.on("finish", () => console.log(`${req.method} ${req.url} - ${Date.now()-inicio}ms`));
-  next();                                      // sin esto, la request se cuelga
+  res.on("finish", () => console.log(`${req.method} ${req.url} - ${Date.now() - inicio}ms`));
+  next();                                     // sin esto, la petición se cuelga
 });
 app.get("/tareas", (req, res) => res.json(tareas)); // 3: manejador final
 ```
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás ordenar middleware de Express, usar `next()` correctamente y diagnosticar una petición detenida. **Prerrequisitos:** Node LTS, npm y una terminal. Este ejemplo independiente comienza desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Una API necesita registrar solicitudes, parsear JSON y, en ocasiones, detener la cadena por una regla de acceso. El orden importa: validar o leer `req.body` antes de que el middleware correspondiente exista produce resultados confusos.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Cada middleware es una estación de control. Puede preparar la solicitud y llamar `next()`, o terminar la respuesta si detecta un problema. El evento `finish` permite registrar qué pasó al final sin bloquear la estación siguiente.
-
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Desde una carpeta vacía crea el proyecto e instala Express:
 
@@ -53,7 +48,7 @@ npm install express
 mkdir src
 ```
 
-Añade `"type": "module"` a `package.json` y crea `src/server.js`:
+Añade `"type": "module"` al nivel raíz de `package.json` y crea manualmente `src/server.js`:
 
 ```js
 import express from "express";
@@ -83,13 +78,15 @@ app.get("/privado/mensaje", (_req, res) => res.json({ mensaje: "Acceso permitido
 app.listen(3004, "127.0.0.1", () => console.log("API en http://127.0.0.1:3004"));
 ```
 
-`express.json()` debe estar antes de `POST /eco`; el middleware de logging se ejecuta para cualquier ruta; el middleware `/privado` termina con `401` o llama `next`, nunca ambas cosas. Ejecuta:
+`express.json()` va antes de `POST /eco`; el logger se ejecuta para cualquier ruta; el middleware `/privado` responde `401` o llama `next()`, nunca ambas cosas.
+
+En una primera terminal ejecuta:
 
 ```bash
 node src/server.js
 ```
 
-En otra terminal prueba parsing y acceso protegido:
+En una segunda terminal prueba parsing y acceso protegido:
 
 ```bash
 curl -i -X POST http://127.0.0.1:3004/eco -H "Content-Type: application/json" -d '{"tema":"middleware"}'
@@ -99,41 +96,50 @@ curl -i http://127.0.0.1:3004/privado/mensaje -H "x-demo-token: aprender"
 
 **Resultado esperado:** el POST devuelve el objeto recibido; la primera solicitud privada devuelve `401`; la segunda devuelve `200`. La consola del servidor registra cada respuesta con método, ruta, estado y duración.
 
-**Fallo deliberado y diagnóstico:** comenta temporalmente `next()` dentro del logger y envía el POST. La petición queda esperando porque ningún middleware posterior responde. Detén `curl` con `Ctrl+C`, restaura `next()` y reinicia. El diagnóstico es una cadena de middleware interrumpida, no un fallo de Express.
+**Fallo deliberado y corrección:** comenta temporalmente `next()` dentro del logger y envía nuevamente el POST. La petición queda esperando porque ningún middleware posterior responde. Detén `curl` con `Ctrl+C`, restaura `next()`, reinicia el servidor y repite la solicitud hasta recuperar el `200`. El diagnóstico es una cadena interrumpida, no un fallo de Express.
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** agrega un middleware que incluya `x-request-id` en cada respuesta. Usa `res.set("x-request-id", ...)` y llama `next()`; comprueba la cabecera con `curl -i`. Regístralo antes de las rutas y verifica que también aparezca en el `401`.
 
-Agrega un middleware que incluya `x-request-id` en cada respuesta. **Pista:** usa `res.set("x-request-id", ...)` y llama `next()`; comprueba la cabecera con `curl -i`.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+**Ejercicio independiente:** crea un middleware que rechace `Content-Type` distinto a JSON solamente en `POST /eco`. Entrega una solicitud válida y otra con `text/plain`, y explica por qué no conviene aplicar esa regla a un `GET` sin body.
 
-Crea un middleware que rechace `Content-Type` distinto a JSON solamente en `POST /eco`. Entrega una solicitud válida y otra con `text/plain`, y explica por qué no conviene aplicar esa regla a un `GET` sin body.
+En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operativa-de-entregas)**, ordena correlación, autenticación, validación y manejador de errores. Prueba que una identidad rechazada no ejecuta el caso de uso y que cada petición recibe una sola respuesta.
 
-#### Paso 7 · Cierre y conexión
+**Checklist de salida.**
 
-Ya puedes leer y depurar una cadena de middleware. El siguiente tema dividirá rutas en routers independientes, también en un proyecto nuevo desde cero.
+- [ ] Creaste `package.json` y `src/server.js` manualmente en una carpeta nueva.
+- [ ] `express.json()` se ejecuta antes de la ruta que lee `req.body`.
+- [ ] El middleware privado continúa o responde, sin hacer ambas cosas.
+- [ ] Reprodujiste la petición detenida y la corregiste restaurando `next()`.
+- [ ] El logger registra el estado final sin revelar el contenido del body.
+- [ ] La cabecera `x-request-id` aparece en respuestas exitosas y rechazadas.
 
-**Errores comunes:** registrar `express.json` después de la ruta; olvidar `next`; llamar `next` después de responder; crear middleware global para una regla local; usar logging que imprime secretos del body.
+**Si falla.** Una petición que nunca termina suele indicar un middleware sin `next()` y sin respuesta; un intento de responder dos veces indica que llamaste `next()` después de enviar. Revisa primero el orden de registro y las ramas de cada middleware.
+
+**Errores comunes:** registrar `express.json()` después de la ruta; olvidar `next()`; llamar `next()` después de responder; convertir una regla local en global; imprimir secretos en los logs.
 
 **Fuentes oficiales:** [guía de middleware de Express](https://expressjs.com/en/guide/using-middleware.html), [`express.json`](https://expressjs.com/en/api.html#express.json) y [evento `finish` de Node](https://nodejs.org/api/http.html#event-finish).
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Ordena correlación, autenticación, validación y manejador de errores. Prueba que una identidad rechazada no ejecuta el caso de uso y que cada petición recibe una sola respuesta.
+### Tema 2: Routers anidados · Básico · 75 min
 
-### Tema 2: Routers anidados
+#### Aprende
 
-**Conceptos clave:** `express.Router()`, modularización de rutas, montaje con prefijo.
+**Prerrequisitos:** Node.js LTS, npm, imports ESM y rutas HTTP básicas. Este proyecto no reutiliza archivos de otros temas.
 
-`express.Router()` crea una instancia de router independiente que agrupa rutas relacionadas (por ejemplo, todas las rutas bajo `/tareas`) en un módulo separado y organizado, en vez de declarar todas las rutas de la aplicación completa directamente sobre el objeto `app` principal, una práctica que se vuelve rápidamente difícil de mantener a medida que una API crece más allá de un puñado de rutas triviales. Un router se comporta, en la mayoría de aspectos relevantes, como una instancia miniatura de la aplicación Express completa, soportando sus propios middleware específicos de ese grupo de rutas y sus propios manejadores para cada verbo HTTP relevante.
+**Al terminar podrás:** separar un grupo de rutas con `express.Router()`, montarlo bajo un prefijo y aplicar middleware únicamente a ese grupo.
 
-Montar un router en la aplicación principal con `app.use("/tareas", router)` establece un prefijo de ruta: todas las rutas definidas dentro de ese router (como `router.get("/")`, que dentro del router representa la ruta raíz de ese grupo) quedan efectivamente disponibles bajo el prefijo `/tareas` completo (`/tareas/` en este ejemplo), permitiendo reorganizar o mover un grupo completo de funcionalidad relacionada simplemente cambiando el prefijo de montaje en un único lugar, sin necesidad de modificar las rutas internas individuales del router mismo.
+**Por qué importa:** cuando una API suma usuarios, productos, pedidos y entregas, acumular todas las rutas en `app.js` oculta responsabilidades y aumenta los conflictos de mantenimiento. Un router por dominio permite cambiar un grupo sin alterar las rutas internas de los demás.
 
-Esta modularización mediante routers anidados escala naturalmente a aplicaciones con decenas de grupos de rutas relacionadas (usuarios, productos, pedidos, cada uno en su propio archivo con su propio router), facilitando que distintos miembros de un equipo trabajen simultáneamente en distintos routers sin conflictos de código, y facilitando también aplicar middleware específico a un grupo completo de rutas relacionadas (por ejemplo, un middleware de autenticación que solo aplica a las rutas de administración, montado únicamente en el router correspondiente) sin afectar accidentalmente a otras partes de la aplicación que no lo necesitan.
+`express.Router()` crea una instancia independiente que agrupa rutas relacionadas y admite sus propios middleware y manejadores por verbo. No crea otro servidor: sigue participando en el mismo ciclo de petición de la aplicación principal.
 
-**Analogía:** un router anidado es como un departamento independiente dentro de una organización más grande, con su propio conjunto de procedimientos internos específicos, pero accesible desde fuera a través de un punto de entrada único y consistente (el prefijo de montaje), permitiendo reorganizar la estructura interna del departamento sin afectar cómo el resto de la organización lo contacta desde fuera.
+Montar `app.use("/tareas", router)` añade un prefijo. Dentro del router, `router.get("/")` representa la raíz del grupo; desde fuera queda disponible bajo `/tareas`. Para reorganizar el grupo basta con cambiar el punto de montaje, sin repetir el prefijo en cada ruta interna.
 
-**¿Por qué es importante?** Los routers anidados son la forma estándar y escalable de organizar una API con múltiples grupos de rutas relacionadas, facilitando el trabajo en equipo y la aplicación selectiva de middleware a subconjuntos específicos de rutas.
+Esta separación facilita que un equipo trabaje en dominios distintos y que una regla, como autenticación de administración, se aplique solo al router correspondiente. Un router no debe importar el objeto `app`: recibir sus dependencias explícitamente mantiene la dirección de las dependencias comprensible.
 
-**Código del ejemplo:**
+**Conceptos clave:** `express.Router()`, modularización de rutas, montaje con prefijo y parámetros de ruta.
+
+**Analogía:** el `app` es un edificio y un `Router` es un departamento con procedimientos propios. El prefijo es su dirección pública y `router.get("/")` es su recepción; reorganizar el interior no cambia la dirección del edificio.
 
 ```js
 // routers/tareas.js
@@ -146,19 +152,7 @@ export default router;
 app.use("/tareas", router); // todas las rutas del router viven bajo /tareas
 ```
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás montar un router bajo un prefijo y mantener sus rutas en un archivo separado. **Prerrequisitos:** Node LTS, npm e imports ESM. Este ejemplo independiente inicia en una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Cuando una API suma productos, usuarios y pedidos, reunir todas las rutas en `app.js` impide encontrar responsabilidades. Un router organiza un grupo coherente y permite aplicar reglas específicas sin afectar rutas ajenas.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-El `app` es el edificio y un `Router` es un departamento. El prefijo de montaje es la dirección del departamento; dentro de él, `router.get("/")` describe su recepción. Separar archivo no crea una API nueva: sigue siendo el mismo servidor y el mismo ciclo de petición.
-
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Desde una carpeta vacía crea el proyecto e instala Express:
 
@@ -170,7 +164,7 @@ npm install express
 mkdir -p src/routers
 ```
 
-En PowerShell usa `New-Item -ItemType Directory -Force src/routers`. Añade `"type": "module"` a `package.json`. Crea `src/routers/tareas.js`:
+En PowerShell usa `New-Item -ItemType Directory -Force src/routers`. Añade `"type": "module"` a `package.json` y crea manualmente `src/routers/tareas.js`:
 
 ```js
 import { Router } from "express";
@@ -215,13 +209,15 @@ app.use((_req, res) => res.status(404).json({ error: "Ruta no encontrada" }));
 app.listen(3005, "127.0.0.1", () => console.log("API en http://127.0.0.1:3005"));
 ```
 
-`router.post("/")` se expone como `POST /api/tareas`; `req.params.id` existe porque la ruta define `:id`; el arreglo sigue siendo temporal, solo para aprender routing. Ejecuta:
+`router.post("/")` se expone como `POST /api/tareas`; `req.params.id` existe porque la ruta define `:id`. El arreglo es temporal y solo sirve para estudiar routing, no para guardar datos reales.
+
+Ejecuta en una terminal:
 
 ```bash
 node src/app.js
 ```
 
-En otra terminal crea y consulta:
+En otra terminal crea y consulta una tarea:
 
 ```bash
 curl -i -X POST http://127.0.0.1:3005/api/tareas -H "Content-Type: application/json" -d '{"titulo":"Separar routers"}'
@@ -230,46 +226,55 @@ curl -i http://127.0.0.1:3005/api/tareas/1
 
 **Resultado esperado:** el POST devuelve `201`; la consulta devuelve `200` con la misma tarea. La URL externa incluye `/api/tareas`, aunque dentro del router las rutas sean `"/"` y `"/:id"`.
 
-**Fallo deliberado y diagnóstico:** cambia temporalmente el import a `./routers/tarea.js`. Node reporta `ERR_MODULE_NOT_FOUND`, que identifica un nombre/ruta de archivo incorrecto. Restáuralo y prueba `GET /api/tareas/99`: el `404` ahora es una tarea inexistente, no un archivo ausente.
+**Fallo deliberado y corrección:** cambia temporalmente el import a `./routers/tarea.js`. Node reporta `ERR_MODULE_NOT_FOUND`, que identifica un nombre o ruta de archivo incorrecto. Restaura el import, reinicia y prueba `GET /api/tareas/99`: el `404` ahora corresponde a una tarea inexistente, no a un archivo ausente.
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** agrega `router.use()` que escriba `Tareas: METHOD PATH` en la consola. Regístralo antes de las rutas para que se ejecute en cada solicitud del router y comprueba que no registra solicitudes ajenas a `/api/tareas`.
 
-Agrega `router.use` que escriba `Tareas: METHOD PATH` en la consola. **Pista:** regístralo antes de las rutas para que se ejecute en cada solicitud del router, no en toda la aplicación.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+**Ejercicio independiente:** crea manualmente `src/routers/salud.js`, móntalo en `/api/salud` y responde `GET /` con estado `ok`. Entrega las pruebas de ambos routers y explica por qué ninguno debe importar el objeto `app` principal.
 
-Crea `src/routers/salud.js`, móntalo en `/api/salud` y responde `GET /` con estado `ok`. Entrega las pruebas de ambos routers y explica por qué no deben importar el objeto `app` principal.
+En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operativa-de-entregas)**, aplica un router por dominio y monta cada uno con un prefijo. Separa recursos como usuarios, pedidos o productos en archivos propios en vez de acumularlos en `app.js`; esta misma organización podrás reutilizar conceptualmente en la API productiva del track.
 
-#### Paso 7 · Cierre y conexión
+**Checklist de salida.**
 
-Ya puedes modularizar rutas sin perder el contrato HTTP. El siguiente tema añadirá validación declarativa y un único punto de manejo de errores en otro proyecto nuevo.
+- [ ] Escribiste el router y la aplicación desde cero en archivos separados.
+- [ ] Las rutas internas usan `"/"` y `"/:id"`, sin repetir `/api/tareas`.
+- [ ] `express.json()` se registra antes de montar el router.
+- [ ] El middleware de tareas no se ejecuta para rutas ajenas a ese grupo.
+- [ ] Distingues `ERR_MODULE_NOT_FOUND` de un `404` de recurso.
+- [ ] El router de salud funciona sin importar `app`.
 
-Este mismo patrón (un router por dominio, montado con un prefijo) es el que usarás en el proyecto integrador de este track (API productiva, Módulo 12) para separar recursos como `usuarios`, `pedidos` o `productos`, cada uno en su propio archivo, en vez de acumular todas las rutas en `app.js`.
+**Si falla.** Si todas las rutas del router devuelven el `404` general, comprueba el prefijo de montaje y las rutas relativas. Si `req.body` es `undefined`, revisa la posición de `express.json()` y la cabecera `Content-Type`.
 
-**Cuándo no usarlo:** para una API con solo un puñado de rutas (menos de 5-6), crear un router separado agrega un archivo y una indirección sin beneficio real; declarar las rutas directamente sobre `app` es más simple y suficiente hasta que la cantidad de rutas relacionadas justifique separarlas.
+**Cuándo no usarlo:** en una API con solo unas pocas rutas, un router por cada grupo puede añadir archivos e indirecciones sin beneficio. Declararlas directamente sobre `app` es suficiente hasta que un conjunto coherente de rutas justifique separarlo.
 
-**Errores comunes:** olvidar `express.json` antes del router; repetir el prefijo dentro de cada ruta; importar `app` dentro de un router; usar `404` igual para recurso y ruta sin distinguir mensajes; guardar datos reales en arrays.
+**Errores comunes:** repetir el prefijo dentro de cada ruta; importar `app` dentro de un router; usar el mismo mensaje para recurso inexistente y ruta desconocida; guardar datos reales en arrays.
 
 **Fuentes oficiales:** [Express Router](https://expressjs.com/en/guide/routing.html), [`express.Router`](https://expressjs.com/en/api.html#express.router) y [parámetros de ruta](https://expressjs.com/en/guide/routing.html#route-parameters).
 
-### Tema 3: Validación de entrada con Zod y manejo centralizado de errores
+### Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min
 
-**Conceptos clave:** esquemas de validación, `safeParse`, middleware de error de 4 parámetros.
+#### Aprende
 
-Validar la entrada de una API antes de procesarla es esencial para rechazar datos malformados con un mensaje de error claro, en vez de dejar que datos inválidos se propaguen hacia la lógica de negocio o la base de datos, donde podrían causar fallos más difíciles de diagnosticar o incluso corromper datos almacenados. Zod, una biblioteca de validación de esquemas ampliamente adoptada en el ecosistema Node moderno, permite declarar la forma esperada de los datos (`z.object({ titulo: z.string().min(1), prioridad: z.enum(["baja","alta"]) })`) y validar un objeto contra ese esquema con `schema.safeParse(datos)`, que devuelve un resultado estructurado indicando éxito (con los datos ya validados y tipados) o fallo (con una lista detallada de qué campos específicos no cumplieron la validación y por qué), permitiendo responder con un `400` que incluya esos detalles específicos, mucho más útil para el cliente que un mensaje de error genérico sin especificar exactamente qué estuvo mal.
+**Prerrequisitos:** Node.js LTS, npm, Express y JSON básicos. El ejemplo comienza en otra carpeta vacía y no depende de servidores anteriores.
 
-Express reconoce un middleware especial de manejo de errores por su firma específica de **cuatro** parámetros (`(err, req, res, next)`, en vez de los tres parámetros normales de un middleware regular), y lo invoca automáticamente cuando cualquier middleware o ruta anterior en la cadena invoca `next(error)` pasando un error explícitamente, o cuando una excepción síncrona no capturada ocurre dentro de un manejador de ruta. Centralizar el manejo de errores en un único middleware de este tipo, registrado al final de toda la cadena de middleware y rutas, evita repetir lógica de manejo de errores (registrar el error, decidir el código de estado apropiado, formatear una respuesta consistente) en cada ruta individual de la aplicación.
+**Al terminar podrás:** validar una entrada con Zod, devolver errores de cliente consistentes y enviar fallos inesperados a un único middleware de Express.
 
-Es importante notar que este manejo automático de errores de Express solo captura excepciones síncronas o errores pasados explícitamente a `next(error)`; errores lanzados dentro de código asíncrono (una Promesa rechazada dentro de un manejador de ruta `async`) requieren capturarse explícitamente con `try`/`catch` y pasarse manualmente a `next(error)` (o usar un envoltorio auxiliar que automatice esto), un detalle de manejo de errores asíncronos en Express que sorprende a quien no lo conoce de antemano, dado que Express fue diseñado originalmente en una era anterior a la adopción generalizada de `async`/`await` en el ecosistema Node.
+**Por qué importa:** una API de tareas o entregas no debe dejar que datos malformados lleguen a la lógica de negocio o a persistencia. Tampoco debe exponer stacks ni detalles internos al cliente: separar contrato, ejecución y formato de errores hace que cada fallo tenga una respuesta deliberada.
 
-**Analogía:** validar con Zod antes de procesar es como un control de calidad en la entrada de una fábrica que rechaza materiales que no cumplen la especificación, con una lista clara y específica de qué exactamente no cumplió, en vez de dejar pasar cualquier material y descubrir el problema mucho más tarde, en una etapa de producción donde el coste de corregirlo es considerablemente mayor.
+Zod declara la forma esperada de los datos. `schema.safeParse(datos)` devuelve un resultado estructurado: si la validación tiene éxito, ofrece los datos validados; si falla, contiene los campos y reglas que no se cumplieron. La ruta puede convertir ese resultado en un `400` específico en lugar de dejar que el dato avance.
 
-**¿Por qué es importante?** Validar con una biblioteca como Zod evita la fragilidad de revisar manualmente cada campo del body, y el manejo centralizado de errores evita duplicar lógica de manejo de errores en cada ruta individual de una API que crece con el tiempo.
+Express reconoce un middleware de errores por sus **cuatro parámetros** `(err, req, res, next)`. Se registra al final de middleware y rutas; recibe errores pasados mediante `next(error)` y centraliza registro, estado y representación pública. La ruta no necesita repetir esa serialización.
 
-**Código del ejemplo:**
+No des por sentado el tratamiento de promesas rechazadas sin comprobar la versión de Express. En este ejemplo los fallos de trabajo asíncrono se capturan explícitamente con `try`/`catch` y se pasan a `next(error)`, de modo que el contrato no depende de una suposición. Validar el esquema tampoco sustituye reglas de negocio ni autorización.
+
+**Conceptos clave:** esquemas de validación, `safeParse`, datos validados y middleware de error de cuatro parámetros.
+
+**Analogía:** Zod es el control de calidad de entrada: rechaza materiales fuera de especificación con una lista de defectos. El middleware final es la recepción de incidentes: registra el fallo interno y entrega al cliente un mensaje público sin exponer el interior de la fábrica.
 
 ```js
-const TareaSchema = z.object({ titulo: z.string().min(1), prioridad: z.enum(["baja","alta"]) });
+const TareaSchema = z.object({ titulo: z.string().min(1), prioridad: z.enum(["baja", "alta"]) });
 app.post("/tareas", (req, res) => {
   const resultado = TareaSchema.safeParse(req.body);
   if (!resultado.success) return res.status(400).json({ errores: resultado.error.issues });
@@ -282,21 +287,9 @@ app.use((err, req, res, next) => { // 4 parámetros: Express lo reconoce como er
 });
 ```
 
-#### Paso 1 · Objetivo y preparación
+#### Practica
 
-Al finalizar podrás validar una entrada con Zod, devolver errores de cliente consistentes y enviar fallos inesperados a un único middleware. **Prerrequisitos:** Node LTS, npm, Express y JSON básico; este ejemplo independiente empieza desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Una API de tareas debe rechazar datos inválidos antes de guardarlos y no puede exponer internamente cada excepción al cliente. El caso real separa tres responsabilidades: validar el contrato, ejecutar la ruta y formatear fallos inesperados en un lugar auditable.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Zod funciona como control de calidad en la puerta: `safeParse` no lanza al recibir datos inválidos, entrega un resultado que la ruta convierte en `400`. El middleware de cuatro parámetros es la recepción de incidentes: recibe errores ya inesperados y devuelve un mensaje público sin filtrar detalles internos.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea el proyecto e instala dependencias:
+Desde una carpeta vacía crea el proyecto e instala las dependencias:
 
 ```bash
 mkdir ejemplo-zod-errores
@@ -306,7 +299,7 @@ npm install express zod
 mkdir src
 ```
 
-Añade `"type": "module"` a `package.json` y crea `src/server.js`:
+Añade `"type": "module"` a `package.json` y crea manualmente `src/server.js`:
 
 ```js
 import express from "express";
@@ -351,7 +344,9 @@ app.use((err, _req, res, _next) => {
 app.listen(3006, "127.0.0.1", () => console.log("API en http://127.0.0.1:3006"));
 ```
 
-`safeParse` permite decidir el `400` sin `try/catch`; `resultado.data` solo existe si cumplió el esquema; `next(error)` salta al handler final, cuya firma de cuatro parámetros es significativa para Express. Ejecuta:
+`safeParse` permite decidir el `400` sin capturar una excepción; `resultado.data` solo se usa cuando el esquema se cumplió. `next(error)` salta al handler final, cuya firma de cuatro parámetros es significativa para Express.
+
+Ejecuta en una terminal:
 
 ```bash
 node src/server.js
@@ -365,63 +360,60 @@ curl -i -X POST http://127.0.0.1:3006/tareas -H "Content-Type: application/json"
 
 **Resultado esperado:** devuelve `201` con una tarea validada. La respuesta no incluye campos desconocidos porque el esquema define el contrato de entrada.
 
-**Fallo deliberado y diagnóstico:** envía `{"titulo":"x","prioridad":"urgente"}` con la misma cabecera. Debes obtener `400` con dos detalles: título corto y prioridad no permitida. Luego solicita `/fallo-controlado`: el cliente recibe `500` sin el mensaje interno, mientras la consola muestra `Demostración de fallo interno`.
+**Fallo deliberado y corrección:** envía `{"titulo":"x","prioridad":"urgente"}` con la misma cabecera. Debes obtener `400` con dos detalles: título corto y prioridad no permitida. Corrige el body con el ejemplo válido y recupera el `201`. Después solicita `/fallo-controlado`: el cliente recibe `500` sin el mensaje interno, mientras la consola muestra `Demostración de fallo interno`; no conviertas ese fallo de servidor en un `400`.
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** añade `fechaLimite: z.iso.date().optional()` al esquema. Prueba primero una fecha ISO válida (`2026-12-01`) y después `01/12/2026`; el segundo caso debe quedar en `400`, mientras omitir el campo debe seguir siendo válido.
 
-Añade `fechaLimite: z.iso.date().optional()`. **Pista:** prueba primero una fecha ISO válida (`2026-12-01`) y después `01/12/2026`; el segundo caso debe quedar en `400`.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+**Ejercicio independiente:** crea `PATCH /tareas/:id` usando un esquema parcial que no permita un body vacío. Entrega una actualización válida, un campo inválido y una tarea inexistente; explica la diferencia entre `400`, `404` y `500`.
 
-Crea `PATCH /tareas/:id` usando un esquema parcial que no permita un body vacío. Entrega una actualización válida, un campo inválido y una tarea inexistente; explica la diferencia entre `400`, `404` y `500`.
+En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operativa-de-entregas)**, valida identificador y evidencia antes de confirmar una entrega. Un error de esquema debe conservar detalles útiles del campo sin exponer stack ni transformarse en un error genérico del servidor.
 
-#### Paso 7 · Cierre y conexión
+**Checklist de salida.**
 
-Ya puedes convertir contratos de entrada en respuestas claras y centralizar fallos inesperados. El siguiente tema comparará Express con Fastify en dos proyectos nuevos, sin asumir que un benchmark aislado decide la arquitectura.
+- [ ] Instalaste las dependencias y escribiste `src/server.js` en un proyecto nuevo.
+- [ ] El body inválido produce `400` con detalles por campo.
+- [ ] Solo `resultado.data` llega a la creación de la tarea.
+- [ ] El middleware de errores tiene cuatro parámetros y está después de las rutas.
+- [ ] El `500` público no contiene stack ni mensaje interno.
+- [ ] La fecha opcional acepta ISO y rechaza el formato ambiguo.
 
-**Errores comunes:** usar `parse` sin capturar su excepción; devolver `500` para errores de entrada; enviar `err.stack` al cliente; registrar el handler de error antes de las rutas; creer que validar reemplaza reglas de negocio.
+**Si falla.** Un error de entrada no debe llegar al handler de `500`: revisa que uses `safeParse` y la rama `!resultado.success`. Si el handler no recibe `next(error)`, comprueba su firma y su posición al final de la cadena; captura explícitamente los rechazos de tu trabajo asíncrono.
+
+**Errores comunes:** usar `parse` sin capturar su excepción; devolver `500` para errores de entrada; enviar `err.stack` al cliente; registrar el handler antes de las rutas; creer que validar reemplaza reglas de negocio.
 
 **Fuentes oficiales:** [Zod: basic usage](https://zod.dev/basics), [manejo de errores en Express](https://expressjs.com/en/guide/error-handling.html), [estado `400`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/400) y [estado `500`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/500).
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Valida identificador y evidencia antes de confirmar una entrega. Un error de esquema debe conservar detalles útiles del campo sin exponer stack ni convertirse en un error genérico del servidor.
+### Tema 4: Express frente a Fastify · Intermedio · 75 min
 
-### Tema 4: Express frente a Fastify
+#### Aprende
 
-**Conceptos clave:** hooks, JSON Schema nativo, rendimiento comparativo.
+**Prerrequisitos:** Node.js LTS, npm, HTTP e imports ESM. Este tema usa dos proyectos nuevos y no necesita archivos de otros temas.
 
-Fastify es una alternativa a Express diseñada desde cero con el rendimiento y la validación de esquemas como prioridades centrales de su arquitectura, en vez de añadidas posteriormente mediante bibliotecas de terceros como en Express. Fastify usa "hooks" (`onRequest`, `preHandler`, entre otros) en vez del modelo de middleware lineal de Express, permitiendo un control más granular y explícito sobre en qué punto exacto del ciclo de vida de una petición se ejecuta cada pieza de lógica adicional, y valida y serializa datos usando JSON Schema de forma nativa e integrada directamente en la definición de cada ruta, en vez de requerir una biblioteca externa separada como Zod integrada manualmente.
+**Al terminar podrás:** crear el mismo endpoint con Express y Fastify, localizar dónde valida cada framework y elegir según contrato, validación, ecosistema y operación.
 
-Esta integración nativa de JSON Schema en Fastify no es solo una conveniencia sintáctica: Fastify usa el esquema declarado para generar automáticamente una función de serialización altamente optimizada para la respuesta de cada ruta específica, una optimización de rendimiento que contribuye directamente a que Fastify demuestre consistentemente mejor rendimiento bruto (peticiones por segundo) que Express en benchmarks comparativos, especialmente notable en aplicaciones con alto volumen de tráfico donde esa diferencia de rendimiento por petición se acumula significativamente a escala.
+**Por qué importa:** al iniciar una API de catálogo, elegir solo por popularidad o por una cifra aislada puede dejar al equipo con una ergonomía que no sabe mantener. Comparar el mismo contrato en ambos frameworks permite decidir con evidencia funcional y necesidades reales del producto.
 
-La elección entre Express y Fastify en la práctica depende de varios factores más allá del rendimiento bruto: Express tiene un ecosistema de middleware de terceros más extenso y maduro (acumulado durante más años de adopción), y su modelo mental es frecuentemente considerado más simple de aprender inicialmente; Fastify ofrece mejor rendimiento y una experiencia de validación más integrada nativamente, pero con un ecosistema de plugins algo menos extenso que el de Express. Para la mayoría de proyectos nuevos sin requisitos extremos de rendimiento, ambos frameworks son opciones perfectamente viables, y la decisión frecuentemente se reduce a la familiaridad del equipo o a preferencias de ergonomía específicas más que a una diferencia decisiva de capacidades.
+Express organiza gran parte del trabajo como una cadena lineal de middleware y permite integrar validación externa, como Zod. Su ecosistema acumulado de middleware y su modelo mental pueden ser ventajas para un equipo que ya los conoce.
 
-**Analogía:** Express es como una cocina tradicional bien equipada con utensilios genéricos ampliamente disponibles y bien conocidos por la mayoría de cocineros; Fastify es como una cocina diseñada específicamente para máxima eficiencia de producción, con equipamiento especializado integrado (JSON Schema nativo) que acelera tareas específicas y repetitivas, a cambio de un ecosistema algo menos extenso de accesorios de terceros disponibles.
+Fastify ofrece hooks como `onRequest` y `preHandler` para intervenir en etapas explícitas del ciclo de vida. Además integra JSON Schema en la definición de ruta para validar entradas y serializar respuestas. El esquema de respuesta también delimita qué campos se serializan; no añadas datos a la salida esperando que aparezcan si no forman parte de él.
 
-**¿Por qué es importante?** Conocer las diferencias arquitectónicas entre Express y Fastify (modelo de hooks frente a middleware lineal, JSON Schema nativo frente a validación externa) permite elegir con criterio informado según las prioridades específicas de un proyecto, en vez de adoptar por defecto la opción más popular sin considerar alternativas.
+La serialización generada a partir de schemas forma parte de la estrategia de rendimiento de Fastify, pero no convierte un ejemplo local en un benchmark ni garantiza un ganador universal. Para comparar rendimiento se necesita la misma carga, versión, configuración y medición. Para muchos proyectos ambos frameworks son viables: pesan también la familiaridad del equipo, los plugins necesarios, el tipado y la operación.
 
-**Diagrama:**
+**Conceptos clave:** middleware lineal, hooks, JSON Schema nativo, validación, serialización y comparación controlada.
 
+**Analogía:** Express es una cocina flexible a la que agregas herramientas mediante middleware. Fastify es una cocina con estaciones y especificaciones integradas: hooks para etapas precisas y schemas junto a cada receta. Ambos pueden entregar el mismo plato; difieren en cómo organizan el trabajo y qué garantías declaran cerca de la ruta.
+
+```text
+Express: middleware lineal (app.use), validación externa (Zod), ecosistema de middleware
+Fastify: hooks granulares (onRequest/preHandler), JSON Schema integrado,
+         serialización generada a partir del schema de respuesta
 ```
-Express: middleware lineal (app.use), validación externa (Zod), ecosistema más extenso
-Fastify: hooks granulares (onRequest/preHandler), JSON Schema nativo integrado,
-         mejor rendimiento bruto por la serialización optimizada generada del schema
-```
 
-#### Paso 1 · Objetivo y preparación
+#### Practica
 
-Al finalizar podrás crear el mismo endpoint con Express y Fastify, y elegir según contrato, validación y operación, no solo por popularidad. **Prerrequisitos:** Node LTS, npm y conceptos básicos de HTTP. Este ejemplo independiente usa dos proyectos nuevos.
-
-#### Paso 2 · Contexto y caso real
-
-Un equipo debe iniciar una API de catálogo. Express puede ser ideal si el equipo necesita middleware conocido; Fastify puede ayudar cuando quiere schemas de request/response integrados. La decisión debe partir de pruebas y necesidades del producto, no de un número de benchmark aislado.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Express es una cocina flexible: agregas herramientas mediante middleware. Fastify es una cocina con estaciones y especificaciones integradas: hooks para etapas precisas y JSON Schema para validar/serializar. Ambos pueden entregar el mismo plato; la diferencia es cómo organizan el trabajo y qué garantías declaran cerca de la ruta.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea dos proyectos nuevos, uno por framework:
+Desde una carpeta vacía crea dos proyectos, uno por framework:
 
 ```bash
 mkdir ejemplo-express-vs-fastify
@@ -435,9 +427,10 @@ cd ../fastify-api
 npm init -y
 npm install fastify
 mkdir src
+cd ..
 ```
 
-En ambos `package.json` añade `"type": "module"`. Crea `express-api/src/server.js`:
+En ambos `package.json` añade `"type": "module"`. Crea manualmente `express-api/src/server.js`:
 
 ```js
 import express from "express";
@@ -486,14 +479,19 @@ app.get("/productos/:id", {
 await app.listen({ port: 3011, host: "127.0.0.1" });
 ```
 
-Express valida manualmente dentro de la ruta. Fastify declara schema junto con la ruta y valida antes del handler; ambos deben devolver el mismo recurso válido. Arranca cada uno en una terminal distinta:
+Express valida manualmente dentro de la ruta. Fastify declara el schema junto con la ruta y valida antes del handler; ambos deben exponer el mismo recurso válido.
+
+Desde la raíz `ejemplo-express-vs-fastify`, arranca Express en una terminal y Fastify en otra:
 
 ```bash
 node express-api/src/server.js
+```
+
+```bash
 node fastify-api/src/server.js
 ```
 
-En otras terminales compara respuestas válidas:
+En una tercera terminal compara respuestas válidas:
 
 ```bash
 curl -i http://127.0.0.1:3010/productos/7
@@ -502,57 +500,69 @@ curl -i http://127.0.0.1:3011/productos/7
 
 **Resultado esperado:** ambos devuelven `200` con `{"id":7,"nombre":"Cuaderno"}`. Fastify además escribe logs estructurados; Express no lo hace hasta que agregas un logger.
 
-**Fallo deliberado y diagnóstico:** solicita `/productos/cero` a ambos servidores. Express devuelve su `400` manual; Fastify devuelve `400` al validar `params` antes del handler. No interpretes este experimento como benchmark: solo prueba que cada framework hace visible la validación en una capa diferente.
+**Fallo deliberado y corrección:** solicita `/productos/cero` a ambos servidores. Express devuelve su `400` manual; Fastify devuelve `400` al validar `params` antes del handler. Corrige el identificador usando `/productos/7` y recupera el mismo `200` en ambos. No interpretes el experimento como benchmark: solo muestra qué capa hace visible la validación.
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** agrega una marca de tiempo en Express con middleware que la ponga en `req`, y en Fastify con un hook `onRequest` que la ponga en `request`. No envíes la marca si no forma parte del schema de respuesta de Fastify; registra su existencia dentro del handler para comparar el punto de ejecución.
 
-Agrega una marca de tiempo: en Express con middleware que la ponga en `req`, y en Fastify con un hook `onRequest` que la ponga en `request`. **Pista:** no envíes la marca si no forma parte del schema de respuesta de Fastify.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+**Ejercicio independiente:** implementa `POST /productos` en ambos proyectos. En Fastify declara `body` y `response`; en Express usa la validación manual que consideres necesaria. Entrega pruebas válidas e inválidas y una decisión razonada sobre cuál mantendrías para un equipo concreto. La evidencia debe mostrar ambas salidas HTTP para el mismo caso válido y explicar qué capa valida cada framework.
 
-Implementa `POST /productos` en ambos proyectos. En Fastify declara `body` y `response`; en Express usa la validación manual que consideres necesaria. Entrega pruebas válidas e inválidas y una decisión razonada sobre cuál mantendrías para un equipo concreto.
+En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operativa-de-entregas)**, implementa el mismo contrato de consulta en el framework elegido y compruébalo por HTTP. Justifica la elección con plugins, tipado y necesidades observadas, manteniendo el dominio independiente del framework.
 
-La evidencia demuestra ambas salidas HTTP para el mismo caso válido y explica qué capa valida cada framework.
+**Checklist de salida.**
 
-#### Paso 7 · Cierre y conexión
+- [ ] Creaste manualmente dos `package.json` y dos servidores independientes.
+- [ ] El mismo identificador válido produce el mismo recurso en ambos frameworks.
+- [ ] El identificador inválido produce `400` y sabes qué capa lo genera.
+- [ ] El schema de Fastify declara `params` y la respuesta `200`.
+- [ ] La marca de tiempo usa middleware en Express y `onRequest` en Fastify.
+- [ ] Tu decisión no se basa en un benchmark aislado ni en popularidad.
 
-Ya puedes comparar los dos frameworks por sus contratos y ergonomía. El próximo módulo persistirá datos con una base real, en un nuevo ejemplo que no depende de estos servidores.
+**Si falla.** Si Fastify acepta una entrada que esperabas rechazar, comprueba que el schema esté asociado a esa ruta. Si un campo desaparece de su respuesta, revisa el schema de serialización. Si solo un servidor responde, confirma que cada proceso tenga su propia terminal y puerto.
 
-**Errores comunes:** comparar rendimiento sin misma carga/versión/configuración; usar Fastify sin schema y esperar validación; olvidar `express.json`; mezclar APIs de plugins de versiones incompatibles; elegir por moda sin considerar habilidades del equipo.
+**Errores comunes:** comparar rendimiento sin igualar carga, versión y configuración; usar Fastify sin schema y esperar validación; olvidar `express.json()`; mezclar APIs de plugins incompatibles; elegir por moda sin considerar al equipo.
 
 **Fuentes oficiales:** [Express API](https://expressjs.com/en/api.html), [Fastify: getting started](https://fastify.dev/docs/latest/Guides/Getting-Started/), [Fastify validation and serialization](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/) y [Fastify hooks](https://fastify.dev/docs/latest/Reference/Hooks/).
 
----
+### Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Implementa el mismo contrato de consulta en el framework elegido y compruébalo por HTTP. Justifica la elección con plugins, tipado y necesidades observadas, manteniendo el dominio independiente del framework.
+#### Aprende
 
-### Tema 5: WebSocket — comunicación en tiempo real bidireccional
+**Prerrequisitos:** Node.js LTS, npm, nociones de HTTP, eventos y temporizadores de JavaScript. No necesitas archivos ni servidores de otros temas.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás abrir un canal WebSocket por el que el servidor empuja datos al cliente sin que este los pida, y explicar cuándo WebSocket vence a HTTP y a polling. Prerrequisitos: Temas 1-4 de este módulo; nociones de HTTP (Módulo 3).
+**Al terminar podrás:** abrir un canal WebSocket por el que el servidor empuje datos sin una solicitud por mensaje, enviar datos en ambas direcciones y explicar cuándo WebSocket aporta frente a HTTP y polling.
 
-#### Paso 2 · Contexto y caso real
-En la API de entregas, el panel del operador debe ver la posición del repartidor **en vivo**. Con HTTP normal, el cliente tendría que preguntar "¿nueva posición?" cada segundo (polling), gastando recursos y llegando tarde. Con WebSocket, el servidor empuja cada nueva posición en el instante en que ocurre.
+**Por qué importa:** el panel de una operación de entregas necesita ver la posición del repartidor en vivo. Consultar «¿nueva posición?» cada pocos segundos crea peticiones repetidas y solo descubre cambios en la siguiente consulta; una conexión persistente permite que el servidor comunique cada posición cuando la genera.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-HTTP es petición→respuesta: el cliente pregunta, el servidor contesta, se cierra. **WebSocket** abre una conexión persistente y bidireccional: ambos lados pueden enviar mensajes en cualquier momento mientras la conexión viva. Se inicia con un "handshake" HTTP que luego se "actualiza" (upgrade) a WebSocket.
+HTTP sigue principalmente un intercambio petición-respuesta. **WebSocket** comienza con un handshake HTTP y una actualización (`upgrade`) a una conexión persistente y bidireccional: cliente y servidor pueden enviar mensajes mientras la conexión permanezca abierta. La conexión no elimina la necesidad de comprobar el contenido recibido ni de limpiar los recursos asociados al cerrar.
 
-**Analogía:** HTTP es como enviar cartas (una pregunta, una respuesta, cerrar sobre); WebSocket es como una llamada telefónica abierta donde cualquiera de los dos habla cuando quiere.
+**Conceptos clave:** conexión persistente bidireccional, handshake/upgrade, push del servidor y polling frente a WebSocket.
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** los archivos `server.js` y `cliente.js` dentro de una carpeta nueva, pega en ellos el código mostrado a continuación, y guárdalos antes de ejecutarlos.
+**Analogía:** HTTP se parece a enviar cartas: una pregunta y una respuesta por intercambio. WebSocket se parece a una llamada telefónica abierta: cualquiera de los dos puede hablar sin iniciar otra llamada, pero al colgar hay que terminar también las tareas asociadas.
 
-Crea el servidor con la librería `ws`:
+#### Practica
+
+Desde una carpeta vacía crea el proyecto e instala `ws`:
+
+```bash
+mkdir ejemplo-websocket-entregas
+cd ejemplo-websocket-entregas
+npm init -y
+npm pkg set type=module
+npm install ws
+```
+
+Crea manualmente `server.js`:
 
 ```js
-// server.js
 import { WebSocketServer } from "ws";
 
 const wss = new WebSocketServer({ port: 3001 });
 
 wss.on("connection", (socket) => {
   console.log("Repartidor conectado");
-  // El servidor EMPUJA una posición nueva cada 2 segundos, sin que el cliente la pida:
+  // El servidor EMPUJA una posición nueva cada 2 segundos, sin que el cliente la pida.
   let lat = 4.60;
   const timer = setInterval(() => {
     lat += 0.001;
@@ -563,126 +573,220 @@ wss.on("connection", (socket) => {
 console.log("WebSocket en ws://localhost:3001");
 ```
 
+Crea `cliente.js`:
+
 ```js
-// cliente.js
 import WebSocket from "ws";
+
 const socket = new WebSocket("ws://localhost:3001");
 socket.on("message", (data) => console.log("Posición recibida:", data.toString()));
 ```
 
-**Ejecuta el ejemplo** (monta el proyecto, instala `ws` y corre servidor y cliente):
+Usa **dos terminales**, ambas situadas en `ejemplo-websocket-entregas`. En la terminal 1 inicia el servidor y déjalo en primer plano:
 
 ```bash
-npm init -y && npm pkg set type=module && npm install ws
-node server.js &
+node server.js
+```
+
+En la terminal 2 inicia el cliente:
+
+```bash
 node cliente.js
 ```
 
-**Resultado esperado:** el cliente imprime una posición nueva cada 2 segundos (`Posición recibida: {"guia":"RF-4471","lat":4.601}`...) **sin haberla pedido**: el servidor la empuja. **Fallo deliberado:** intenta lograr lo mismo con un endpoint HTTP GET y un `setInterval` en el cliente que haga `fetch` cada 2 s (polling). Compara: el polling genera una petición nueva completa cada vez (con su sobrecarga) y nunca es verdaderamente instantáneo; diagnostica por qué para tiempo real WebSocket es superior, y por qué Socket.IO (que el proyecto usa) añade reconexión y salas sobre este mismo mecanismo.
+**Resultado esperado:** el cliente imprime una posición nueva cada dos segundos, por ejemplo `Posición recibida: {"guia":"RF-4471","lat":4.601}`, sin solicitar cada actualización. Al cerrar el cliente con `Ctrl+C`, el servidor limpia el intervalo de esa conexión.
 
-#### Paso 5 · Práctica guiada
-Haz que el cliente también envíe mensajes al servidor (por ejemplo, "confirmar entrega") y que el servidor responda. Pista: `socket.send(...)` funciona en ambas direcciones; escucha `message` en el servidor.
+**Fallo deliberado y corrección:** sustituye temporalmente la recepción persistente por un cliente que haga `fetch` a un endpoint HTTP cada dos segundos. Observa que cada consulta inicia un intercambio HTTP nuevo y solo recibe el estado disponible en ese momento; no es el canal push del ejemplo. Restaura `cliente.js` con la conexión WebSocket y verifica de nuevo que los mensajes llegan sin peticiones periódicas del cliente. Socket.IO añade capacidades como reconexión y salas sobre mecanismos de tiempo real; este ejemplo usa `ws` directamente para observar el canal base.
 
-#### Paso 6 · Práctica independiente
-Añade "salas": varios clientes conectados y el servidor empuja la posición solo a los que siguen esa guía concreta. Entrega la prueba con dos clientes y guías distintas.
+**Práctica guiada:** haz que el cliente envíe `confirmar entrega` cuando la conexión se abra y que el servidor responda ese mensaje. `socket.send(...)` funciona en ambas direcciones; añade un listener `message` en el servidor y conserva la limpieza del intervalo al cerrar.
 
-#### Paso 7 · Cierre
-Entrega el servidor empujando posiciones, el mensaje cliente→servidor y las salas. **¿Por qué es importante?** El tiempo real (posiciones GPS, chats, notificaciones, dashboards en vivo) es un requisito común y WebSocket es su base. El proyecto RutaFlow usa Socket.IO, que se apoya en WebSocket; entender el mecanismo crudo explica qué hace la librería por debajo. Fuentes: [MDN — WebSocket](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API) y [ws](https://github.com/websockets/ws).
-**Conceptos clave:** conexión persistente bidireccional, handshake/upgrade, push del servidor, polling vs WebSocket.
-**Cuándo no usarlo:** si los datos cambian rara vez o el cliente solo consulta de vez en cuando, HTTP normal es más simple y cacheable; WebSocket se justifica cuando hay actualizaciones frecuentes empujadas por el servidor.
+#### Aplica
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** expón la posición del repartidor por un canal en tiempo real y comprueba que el panel recibe actualizaciones sin hacer polling.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** asumir que un mensaje de WebSocket llegó completo u ordenado sin verificar realmente su contenido; cerrar el socket sin limpiar el `setInterval`/los listeners asociados, dejando temporizadores corriendo tras la desconexión.
-**Fuente oficial:** [documentación de Node.js](https://nodejs.org/docs/latest/api/).
-### Tema 6: Subida de archivos — multipart y validación segura
+**Ejercicio independiente:** añade suscripciones por guía: conecta varios clientes y haz que el servidor empuje una posición solo a quienes siguen esa guía concreta. Entrega la prueba con dos clientes y guías distintas, además del mensaje cliente→servidor de la práctica guiada.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás recibir la subida de un archivo (una foto de evidencia de entrega) con `multipart/form-data`, validando tipo y tamaño antes de guardarlo. Prerrequisitos: Temas 1-3 de este módulo (Express y middleware).
+En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operativa-de-entregas)**, expón la posición del repartidor por un canal en tiempo real y comprueba que el panel recibe actualizaciones sin hacer polling.
 
-#### Paso 2 · Contexto y caso real
-El repartidor sube una foto como prueba de entrega. Aceptar archivos sin validar es un riesgo real: un archivo gigante agota el disco, un tipo inesperado (un `.exe` renombrado) o una ruta manipulada compromete el servidor. Hay que recibir, validar y almacenar con cuidado.
+**Checklist de salida.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Los formularios con archivos usan la codificación `multipart/form-data` (distinta de JSON): el cuerpo se divide en partes, cada una con sus cabeceras. En Express se procesa con `multer`, que separa los campos de texto de los archivos y te deja validar antes de persistir.
+- [ ] Escribiste `server.js` y `cliente.js` desde cero en una carpeta nueva.
+- [ ] Ejecutaste servidor y cliente en dos terminales, sin procesos en segundo plano ocultos.
+- [ ] El servidor empuja posiciones sin una solicitud HTTP por actualización.
+- [ ] El cliente también envía un mensaje y recibe la respuesta del servidor.
+- [ ] Al cerrar cada socket se limpia su `setInterval`.
+- [ ] Dos clientes suscritos a guías distintas reciben solo sus actualizaciones.
 
-**Analogía:** recibir una subida sin validar es como aceptar cualquier paquete en recepción sin revisar remitente, tamaño ni contenido. `multer` + validación es el control de seguridad que pesa, escanea y rechaza lo que no cumple antes de dejarlo entrar al edificio.
+**Si falla.** Si el cliente no recibe nada, confirma que el servidor siga activo en la terminal 1, que el puerto coincida y que el intervalo no se haya limpiado antes de tiempo. Si los temporizadores continúan tras desconectar, revisa que `clearInterval(timer)` esté dentro del listener `close` de esa conexión.
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `server.js` dentro de una carpeta nueva y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Cuándo no usarlo:** si los datos cambian rara vez o el cliente solo consulta ocasionalmente, HTTP normal es más simple y cacheable. WebSocket se justifica cuando las actualizaciones frecuentes deben ser empujadas por el servidor.
+
+**Errores comunes:** dar por válido un mensaje sin verificar su contenido; cerrar el socket sin limpiar intervalos y listeners; confundir una demostración local con un sistema ya provisto de reconexión, autorización o entrega garantizada.
+
+**Fuentes oficiales:** [MDN — WebSocket](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API), [`ws`](https://github.com/websockets/ws) y [documentación de Node.js](https://nodejs.org/docs/latest/api/).
+
+### Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 75 min
+
+#### Aprende
+
+**Prerrequisitos:** Node.js LTS, npm, HTTP y middleware básico de Express. Este proyecto comienza en una carpeta vacía y no reutiliza archivos de otros temas.
+
+**Al terminar podrás:** recibir una foto de evidencia con `multipart/form-data`, limitar su tamaño, filtrar el MIME declarado, guardarla con un nombre generado por el servidor y explicar qué validaciones todavía hacen falta antes de producción.
+
+**Por qué importa:** una evidencia de entrega es también una entrada no confiable. Un archivo demasiado grande puede agotar recursos, un nombre manipulado puede alterar rutas y una extensión o cabecera MIME puede mentir. La frontera de validación está en el backend, no en el formulario.
+
+Los formularios con archivos usan `multipart/form-data`: el cuerpo se divide en partes con sus propias cabeceras. En Express, `multer` separa campos de texto y archivos. `limits.fileSize` restringe el tamaño y `fileFilter` permite rechazar tipos declarados antes de que la ruta use el archivo.
+
+`file.mimetype` procede de la información enviada por el cliente. Su allowlist es una comprobación preliminar, **no prueba que los bytes sean realmente una imagen JPEG o PNG**. La extensión tampoco lo demuestra. Un sistema de producción debe verificar el contenido con mecanismos adecuados, como comprobación de firmas binarias y decodificación segura, además de aplicar los demás controles de seguridad.
+
+Nunca uses directamente `file.originalname` como nombre de destino. Genera un identificador en el servidor y deriva la extensión de tu propia allowlist; así el nombre original no controla la ruta. Para archivos grandes o despliegues a escala, el disco local tampoco es el destino apropiado: utiliza almacenamiento de objetos y URLs prefirmadas según el diseño del sistema.
+
+**Conceptos clave:** `multipart/form-data`, `multer`, límite de tamaño, MIME declarado, nombre generado por el servidor y verificación de contenido pendiente.
+
+**Analogía:** recepción puede limitar el peso de un paquete y rechazar una etiqueta no admitida, pero la etiqueta no demuestra qué hay dentro. El nombre interno asignado por recepción evita que el remitente decida la ubicación; inspeccionar el contenido es un control adicional.
+
+#### Practica
+
+Desde una carpeta vacía crea el proyecto, la carpeta de destino e instala dependencias:
+
+```bash
+mkdir ejemplo-subida-segura
+cd ejemplo-subida-segura
+npm init -y
+npm pkg set type=module
+npm install express multer
+mkdir -p uploads
+```
+
+En PowerShell puedes usar `New-Item -ItemType Directory -Force uploads`. Crea manualmente `server.js`:
 
 ```js
-// server.js
+import { randomUUID } from "node:crypto";
 import express from "express";
 import multer from "multer";
 
 const app = express();
-// Límite de tamaño y filtro de tipo ANTES de guardar:
+const extensionesPermitidas = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+};
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: "uploads/",
-    filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+    filename: (_req, file, cb) => {
+      // El cliente no controla el nombre ni la ruta de destino.
+      cb(null, `${randomUUID()}${extensionesPermitidas[file.mimetype]}`);
+    },
   }),
-  limits: { fileSize: 2 * 1024 * 1024 },   // máximo 2 MB
+  limits: { fileSize: 2 * 1024 * 1024 }, // máximo 2 MB
   fileFilter: (_req, file, cb) => {
-    const permitido = ["image/jpeg", "image/png"].includes(file.mimetype);
-    cb(permitido ? null : new Error("Solo JPEG o PNG"), permitido);
+    // Es un filtro del MIME declarado, no una inspección del contenido real.
+    if (!extensionesPermitidas[file.mimetype]) {
+      return cb(new Error("Solo JPEG o PNG"));
+    }
+    cb(null, true);
   },
 });
 
 app.post("/entregas/:guia/evidencia", upload.single("foto"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "foto es obligatoria" });
   res.json({ guardado: req.file.filename, guia: req.params.guia });
+});
+
+app.use((err, _req, res, _next) => {
+  if (err instanceof multer.MulterError || err.message === "Solo JPEG o PNG") {
+    return res.status(400).json({ error: err.message });
+  }
+  console.error(err);
+  res.status(500).json({ error: "Error interno" });
 });
 
 app.listen(3000, () => console.log("API en http://localhost:3000"));
 ```
 
-**Ejecuta el ejemplo** (monta el proyecto, instala dependencias y prueba con curl):
+Crea con un editor de imágenes una fotografía JPEG pequeña llamada `una-foto.jpg` en la raíz del proyecto. En una primera terminal ejecuta:
 
 ```bash
-npm init -y && npm pkg set type=module && npm install express multer
-mkdir -p uploads && node server.js &
+node server.js
+```
+
+En una segunda terminal, desde la misma carpeta, envía la evidencia:
+
+```bash
 curl -F "foto=@una-foto.jpg" http://localhost:3000/entregas/RF-4471/evidencia
 ```
 
-**Resultado esperado:** devuelve `{"guardado":"...-una-foto.jpg","guia":"RF-4471"}` y el archivo aparece en `uploads/`. **Fallo deliberado:** sube un archivo de más de 2 MB o un `.txt` renombrado a `.jpg`; el `fileFilter`/`limits` lo rechaza antes de guardarlo. Diagnostica por qué validar tipo y tamaño en el servidor es imprescindible: el cliente puede mentir, así que la frontera de confianza es el backend, no el formulario.
+**Resultado esperado:** la respuesta contiene un nombre con UUID y extensión `.jpg`, junto con `"guia":"RF-4471"`. El archivo aparece en `uploads/` con ese nombre generado; el nombre original no forma parte de la ruta.
 
-#### Paso 5 · Práctica guiada
-Añade un manejador de errores que convierta el error de `multer` (archivo muy grande o tipo inválido) en una respuesta `400` con un mensaje claro, en vez de un `500` genérico. Pista: `multer` lanza `MulterError`; captúralo en un middleware de error.
+**Fallo deliberado y corrección:** crea un archivo de texto llamado `falso.txt` y envíalo:
 
-#### Paso 6 · Práctica independiente
-Guarda la referencia del archivo (nombre, tamaño, guía) en una estructura en memoria y expón `GET /entregas/:guia/evidencia` que devuelva la metadata. No guardes el binario en la base; guarda la ruta.
+```bash
+curl -F "foto=@falso.txt;type=text/plain" http://localhost:3000/entregas/RF-4471/evidencia
+```
 
-#### Paso 7 · Cierre
-Entrega la subida válida, el rechazo por tamaño/tipo y la metadata consultable. **¿Por qué es importante?** La subida de archivos (fotos, documentos, comprobantes) es un requisito casi universal, y es una superficie de ataque clásica. Hacerlo con validación de tipo/tamaño y nombres controlados es lo que separa una feature de una vulnerabilidad. Fuentes: [multer](https://github.com/expressjs/multer) y [OWASP — File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
-**Conceptos clave:** `multipart/form-data`, `multer`, límite de tamaño, filtro de tipo MIME, el servidor como frontera de validación.
-**Cuándo no usarlo:** para archivos grandes o de producción a escala, no los guardes en el disco del servidor de app: usa almacenamiento de objetos (S3/Floci, track Cloud) y URLs pre-firmadas; `multer` a disco es para aprender y para cargas pequeñas.
+El filtro devuelve `400` con `Solo JPEG o PNG`. Prueba también un archivo mayor de 2 MB: `multer` lo rechaza por `LIMIT_FILE_SIZE` y el handler lo convierte en `400`. Corrige la entrada usando una imagen JPEG o PNG real dentro del límite y recupera la respuesta exitosa. Estos rechazos comprueban MIME declarado y tamaño, no el contenido real: si fuerzas `type=image/jpeg` en un texto, el filtro MIME por sí solo puede aceptarlo; no presentes esa cabecera como verificación de imagen.
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** recibe la foto de evidencia de entrega validando tipo y tamaño, y guarda solo la referencia, dejando el binario en almacenamiento de objetos.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** confiar en la extensión del nombre de archivo en vez de validar `file.mimetype` real; omitir `limits.fileSize`, dejando que un archivo arbitrariamente grande agote disco o memoria antes de que `fileFilter` pueda rechazarlo.
-**Fuente oficial:** [documentación de Node.js](https://nodejs.org/docs/latest/api/).
+**Práctica guiada:** mejora el manejador de errores para distinguir `LIMIT_FILE_SIZE` del tipo declarado no permitido y devolver mensajes claros de `400`, sin exponer stack. Conserva el `500` genérico para errores realmente internos y prueba ambos rechazos.
+
+#### Aplica
+
+**Ejercicio independiente:** guarda la referencia del archivo —nombre generado, tamaño y guía— en una estructura en memoria y expón `GET /entregas/:guia/evidencia` que devuelva la metadata. No guardes el binario en esa estructura ni uses el nombre original como clave o ruta; conserva únicamente la referencia controlada.
+
+En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operativa-de-entregas)**, recibe la foto de evidencia validando tamaño y MIME declarado, genera el nombre en el servidor y guarda solo la referencia. Para la variante de producción, deja el binario en almacenamiento de objetos y añade verificación real del contenido antes de aceptarlo como imagen.
+
+**Checklist de salida.**
+
+- [ ] Creaste `server.js`, el manifiesto y `uploads/` en un proyecto independiente.
+- [ ] `limits.fileSize` rechaza archivos mayores de 2 MB con un `400` claro.
+- [ ] El filtro solo admite los MIME declarados JPEG y PNG.
+- [ ] Explicas por escrito por qué ese MIME no demuestra el contenido real.
+- [ ] El nombre guardado es un UUID con extensión de la allowlist, nunca `originalname`.
+- [ ] La consulta por guía devuelve metadata sin incluir el binario.
+
+**Si falla.** Un `LIMIT_FILE_SIZE` indica que el límite funcionó; no lo soluciones aumentando el límite sin criterio. Si una ruta contiene el nombre del cliente, corrige `filename` para usar únicamente el identificador generado. Si un texto etiquetado como imagen atraviesa `fileFilter`, el diagnóstico es que falta verificar los bytes, no que el MIME sea una prueba suficiente.
+
+**Cuándo no usarlo:** para archivos grandes o producción a escala, no guardes los binarios en el disco del servidor de aplicación. `multer` a disco sirve para este laboratorio y cargas pequeñas; almacenamiento de objetos y URLs prefirmadas requieren un diseño distinto.
+
+**Errores comunes:** confiar en extensión o MIME como prueba de contenido; omitir `limits.fileSize`; concatenar `originalname` a una ruta; guardar binarios en la base o en memoria cuando solo se necesita su referencia; omitir un handler que traduzca errores de subida.
+
+**Fuentes oficiales:** [`multer`](https://github.com/expressjs/multer), [OWASP — File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload) y [documentación de Node.js](https://nodejs.org/docs/latest/api/).
+
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** construir una API REST con Express que incluya middleware de logging, validación con Zod y manejo de errores centralizado, y repetir el ejercicio con Fastify para comparar.
+### Proyecto 4: API operativa de entregas
 
-**Requisitos previos:** Node.js instalado, Módulos 0-3 completados.
+Desde una carpeta vacía crea `api-operativa-entregas/` y escribe manualmente todos sus archivos. Este proyecto de cierre es independiente de los seis ejemplos: no copies sus servidores ni dependas de que sigan ejecutándose. Implementa aquí las variantes mínimas necesarias y documenta en tu propio README los comandos y resultados.
 
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear la API base con Express | `GET /tareas`, `POST /tareas` con `express.json()` | Verifica el flujo básico funcionando |
-| 2 | Escribir el middleware de logging | Ver Tema 1 | Registra método, ruta y tiempo de respuesta |
-| 3 | Organizar rutas en un router separado | Ver Tema 2 | Móntalo con `app.use("/tareas", router)` |
-| 4 | Agregar validación con Zod | Ver Tema 3 | Responde 400 con errores específicos si el body no cumple |
-| 5 | Implementar manejo centralizado de errores | Middleware de 4 parámetros | Captura errores de cualquier ruta |
-| 6 | Repetir con Fastify | Misma funcionalidad completa | Compara rendimiento, ergonomía de schemas y declaración de middleware |
+**Objetivo del laboratorio:** construir una API REST con Express que incluya middleware de logging, validación con Zod y manejo de errores centralizado, y repetir el mismo ejercicio con Fastify para comparar. Integra después los contratos de entrega planteados en el módulo sin mezclar el dominio con el framework.
 
-**Verificación:** el laboratorio se considera exitoso si la API Express responde correctamente en los tres escenarios (éxito, validación fallida, error interno), y si la versión Fastify replica la misma funcionalidad usando JSON Schema nativo en vez de Zod.
+**Requisitos previos:** Node.js LTS, npm y los fundamentos de Node y HTTP de los Módulos 0–3. No se reutilizan archivos de esos módulos.
 
-**Errores comunes y soluciones**
+**Construcción guiada del proyecto:**
 
-- **Registrar el middleware de manejo de errores antes que las rutas.** Debe registrarse al FINAL de la cadena, después de todas las rutas, para capturar correctamente errores de cualquiera de ellas.
-- **No capturar errores de rutas `async` con `try`/`catch`.** Express no captura automáticamente rechazos de Promesas en manejadores `async`; envuelve la lógica en `try`/`catch` y pasa el error a `next(error)` explícitamente.
-- **Olvidar que un router necesita su propio middleware si lo requiere.** Un middleware registrado en `app` antes de montar el router aplica a todas las rutas incluyendo el router; uno registrado solo en el router aplica únicamente a ese grupo específico.
+1. Crea la API base con Express, su `package.json`, `src/app.js` y un router propio. Implementa `GET /tareas` y `POST /tareas` con `express.json()` antes del router; verifica el flujo básico.
+2. Escribe un middleware de logging que registre método, ruta, estado y tiempo de respuesta usando `finish`, sin imprimir secretos del body.
+3. Organiza las rutas en `src/routers/tareas.js` y móntalo con `app.use("/tareas", router)`; conserva las rutas internas relativas al prefijo.
+4. Agrega validación con Zod en una frontera de entrada. Responde `400` con errores específicos cuando el body no cumpla el esquema.
+5. Implementa al final un middleware de cuatro parámetros para errores inesperados. Pasa los fallos con `next(error)` y captura explícitamente el trabajo asíncrono que uses.
+6. Crea un proyecto Fastify separado dentro del laboratorio y replica la misma funcionalidad con JSON Schema nativo en vez de Zod. Compara ergonomía de schemas y declaración de middleware/hooks; no declares una conclusión de rendimiento sin una medición controlada.
+7. Añade el contrato de consulta de una entrega en el framework elegido y un canal WebSocket que empuje posiciones a suscriptores de una guía. Prueba servidor y cliente en dos terminales y limpia los recursos al cerrar.
+8. Añade la subida de evidencia con límite de tamaño, filtro de MIME declarado y nombre generado por el servidor. Expón solo su metadata; documenta que la verificación real del contenido sigue siendo necesaria y que el almacenamiento de objetos sustituye al disco local en la variante de producción.
 
----
+**Verificación y criterios de aceptación observables:**
+
+- La API Express responde correctamente en tres escenarios: éxito, validación fallida y error interno.
+- La versión Fastify replica la misma funcionalidad con JSON Schema nativo y produce el mismo contrato para el caso válido.
+- Una identidad rechazada no ejecuta el caso de uso y cada petición recibe una sola respuesta.
+- Un recurso inexistente se distingue de una ruta desconocida y de un fallo de validación.
+- El panel WebSocket recibe actualizaciones de su guía sin polling y cada desconexión limpia su intervalo.
+- La subida rechaza tamaño excesivo y MIME declarado no permitido, nunca usa el nombre original como ruta y devuelve metadata consultable.
+- El README distingue las comprobaciones implementadas de las pendientes, especialmente inspección real del contenido y controles de producción.
+
+**Errores comunes y soluciones:**
+
+- **Handler de errores antes que las rutas:** debe registrarse al final para recibir los errores de la cadena.
+- **Rechazos asíncronos sin diagnóstico:** captura el trabajo con `try`/`catch` y pásalo a `next(error)` de forma explícita.
+- **Middleware aplicado en el alcance equivocado:** uno registrado en `app` antes del router afecta a todas esas rutas; uno registrado solo en el router queda limitado a ese grupo.
+- **MIME tratado como contenido verificado:** el filtro es preliminar; añade verificación de bytes antes de considerar segura una subida real.
+- **Procesos ocultos en segundo plano:** mantén servidores y clientes en terminales visibles para observar logs y cerrarlos deliberadamente.
+
+La ejecución de estos criterios en tu proyecto es la evidencia del módulo; una marca de finalización no sustituye las respuestas HTTP, las trazas ni la explicación de los límites de seguridad.

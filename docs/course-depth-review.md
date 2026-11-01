@@ -8,7 +8,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 |---|---:|---:|---|---|
 | foundations | 99 | 13 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 5 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 77 | 13 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| node | 77 | 7 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 95 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
@@ -914,83 +914,83 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 9 | [Tema 1: kotlin.test en commonTest](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 9 | [Tema 2: Fakes en vez de mocks](../web/public/content/kotlin-multiplatform/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | kotlin-multiplatform / 9 | [Tema 3: runTest para coroutines](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 0 | [Tema 1: Node no es "JavaScript en el servidor" sin más](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 0 | [Tema 2: Fases del Event Loop de Node](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 0 | [Tema 3: process, global y módulos core](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 0 | [Tema 4: Event-driven architecture y non-blocking I/O](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 1 | [Tema 1: package.json y semver](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 1 | [Tema 2: Lockfiles e instalación reproducible](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 1 | [Tema 3: Workspaces — monorepos con npm/pnpm](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 1 | [Tema 4: Scripts de ciclo de vida](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 1 | [Tema 5: Publicar y versionar un paquete npm (público o privado)](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 1 | [Tema 6: ESM y CommonJS en el mismo proyecto](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 10 | [Tema 1: Cabeceras seguras con helmet](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 10 | [Tema 2: Rate limiting](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 10 | [Tema 3: Inyección SQL y sanitización contra XSS](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 10 | [Tema 4: OWASP API Security Top 10 y auditoría de dependencias](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 10 | [Tema 5: CVE, CWE y npm audit en el pipeline](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 11 | [Tema 1: Dockerfile multi-stage para Node](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 11 | [Tema 2: Variables de entorno por ambiente y healthchecks](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 11 | [Tema 3: PM2, contenedores y zero-downtime deploys](../web/public/content/node/modulo-11.md) | ejemplo-breve-revisar-contexto |
-| node / 11 | [Tema 4: Nginx como reverse proxy y serverless](../web/public/content/node/modulo-11.md) | comprobar-script-test, ejemplo-breve-revisar-contexto |
-| node / 12 | [Tema 1: Arquitectura por capas](../web/public/content/node/modulo-12.md) | ejemplo-breve-revisar-contexto |
-| node / 12 | [Tema 2: Uniendo cada módulo del track](../web/public/content/node/modulo-12.md) | ejemplo-breve-revisar-contexto |
-| node / 12 | [Tema 3: Qué le falta a esta API para producción real](../web/public/content/node/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 12 | [Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript](../web/public/content/node/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 12 | [Tema 5: Posiciones espaciales y Socket.IO con orden recuperable](../web/public/content/node/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 12 | [Tema 6: Archivos y notificaciones push sin convertirlos en autorización](../web/public/content/node/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 13 | [Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera](../web/public/content/node/modulo-13.md) | comprobar-script-test |
-| node / 13 | [Tema 2: Un contrato HTTP es comportamiento, no solo documentación](../web/public/content/node/modulo-13.md) | comprobar-script-test |
-| node / 13 | [Tema 3: Reintentar sin duplicar el efecto](../web/public/content/node/modulo-13.md) | comprobar-script-test |
-| node / 13 | [Tema 4: Webhooks verificables y recuperación por reconciliación](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 13 | [Tema 5: OpenAPI como contrato ejecutable](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 1: TypeScript en Node.js](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 2: GraphQL avanzado y Federation](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 14 | [Tema 3: Microservicios, Kafka, RabbitMQ y sagas](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 4: Serverless multi-cloud](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 5: Docker productivo con Node](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 14 | [Tema 6: CI/CD y promoción de artefactos](../web/public/content/node/modulo-14.md) | comprobar-script-test |
-| node / 2 | [Tema 1: fs/promises frente a callbacks](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 2: Streams básicos: Readable, Writable y Transform](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 3: Backpressure: write() y el evento drain](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 2 | [Tema 4: pipeline() para componer streams de forma segura](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 3 | [Tema 1: El modelo request/response](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 3 | [Tema 2: Routing manual](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 3 | [Tema 3: Parsing de body y headers](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 3 | [Tema 4: Códigos de estado y content negotiation](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 3 | [Tema 5: Paginación por cursor y límites de entrada comprobables](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 4 | [Tema 1: Middleware — orden de ejecución y next()](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 4 | [Tema 2: Routers anidados](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 4 | [Tema 3: Validación de entrada con Zod y manejo centralizado de errores](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 4 | [Tema 4: Express frente a Fastify](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 4 | [Tema 5: WebSocket — comunicación en tiempo real bidireccional](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 4 | [Tema 6: Subida de archivos — multipart y validación segura](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 5 | [Tema 1: PostgreSQL desde Node con el driver puro](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 5 | [Tema 2: Prisma — schema, migraciones y queries tipadas](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 5 | [Tema 3: Pool de conexiones y transacciones](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 5 | [Tema 4: MongoDB con Mongoose y otras alternativas de ORM](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 6 | [Tema 1: Hashing de contraseñas](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 6 | [Tema 2: JWT — access y refresh tokens](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 6 | [Tema 3: Middleware de autenticación y control de roles](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 6 | [Tema 4: OAuth 2.0 y Passport.js](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 6 | [Tema 5: Sesiones, cookies seguras y protección CSRF](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 6 | [Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 7 | [Tema 1: Vitest y Supertest — pruebas de integración HTTP reales](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 7 | [Tema 2: Testcontainers — bases de datos de prueba reales y efímeras](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 7 | [Tema 3: Mocks de servicios externos y CI](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 7 | [Tema 4: Alternativas de testing y debugging](../web/public/content/node/modulo-7.md) | ejemplo-breve-revisar-contexto |
-| node / 7 | [Tema 5: node:test — test runner nativo sin dependencias](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 7 | [Tema 6: TDD práctico: rojo, verde y refactor con node:test](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 8 | [Tema 1: Worker Threads para trabajo CPU-bound](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 8 | [Tema 2: Cluster module y balanceo entre procesos](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 8 | [Tema 3: Colas de trabajo con BullMQ](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 8 | [Tema 4: PM2, memory leaks y heap snapshots](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 8 | [Tema 5: Redis para caché, idempotencia y Pub/Sub](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 9 | [Tema 1: Logging estructurado](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 9 | [Tema 2: Correlation ID por request](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 9 | [Tema 3: Excepciones no capturadas y graceful shutdown](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 9 | [Tema 4: REST, GraphQL y gRPC](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| node / 9 | [Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 0 | [Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 0 | [Tema 2: Fases del Event Loop de Node · Intermedio · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 0 | [Tema 3: process, global y módulos core · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 0 | [Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 1 | [Tema 1: package.json y semver · Básico · 50 min](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 1 | [Tema 2: Lockfiles e instalación reproducible · Básico · 50 min](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 1 | [Tema 3: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 1 | [Tema 4: Scripts de ciclo de vida · Intermedio · 50 min](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 1 | [Tema 5: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 1 | [Tema 6: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min](../web/public/content/node/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 10 | [Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 10 | [Tema 2: Rate limiting · Intermedio · 55 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 10 | [Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 10 | [Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min](../web/public/content/node/modulo-10.md) | comprobar-script-test |
+| node / 10 | [Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 11 | [Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 11 | [Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 11 | [Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 11 | [Tema 4: Nginx como reverse proxy y serverless · Avanzado · 85 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 12 | [Tema 1: Arquitectura por capas · Intermedio · 90 min](../web/public/content/node/modulo-12.md) | comprobar-script-test |
+| node / 12 | [Tema 2: Uniendo cada módulo del track · Avanzado · 180 min](../web/public/content/node/modulo-12.md) | comprobar-script-test |
+| node / 12 | [Tema 3: Qué le falta a esta API para producción real · Intermedio · 75 min](../web/public/content/node/modulo-12.md) | comprobar-script-test |
+| node / 12 | [Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min](../web/public/content/node/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 12 | [Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min](../web/public/content/node/modulo-12.md) | comprobar-script-test |
+| node / 12 | [Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min](../web/public/content/node/modulo-12.md) | comprobar-script-test |
+| node / 13 | [Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera · Intermedio · 90 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 13 | [Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 13 | [Tema 3: Reintentar sin duplicar el efecto · Avanzado · 120 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 13 | [Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 13 | [Tema 5: OpenAPI como contrato ejecutable · Avanzado · 100 min](../web/public/content/node/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 1: TypeScript en Node.js · Avanzado · 60 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 4: Serverless multi-cloud · Avanzado · 75 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 5: Docker productivo con Node · Avanzado · 90 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 14 | [Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min](../web/public/content/node/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 1: fs/promises frente a callbacks · Intermedio · 45 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 1: El modelo request/response · Básico · 60 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 2: Routing manual · Básico · 75 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 3: Parsing de body y headers · Intermedio · 75 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 4 | [Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 4 | [Tema 2: Routers anidados · Básico · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 4 | [Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 4 | [Tema 4: Express frente a Fastify · Intermedio · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 4 | [Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 4 | [Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 5 | [Tema 1: PostgreSQL desde Node con el driver puro · Básico · 90 min](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 5 | [Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 5 | [Tema 3: Pool de conexiones y transacciones · Intermedio · 90 min](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 5 | [Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min](../web/public/content/node/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 6 | [Tema 1: Hashing de contraseñas · Intermedio · 90 min](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 6 | [Tema 2: JWT — access y refresh tokens · Intermedio · 90 min](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 6 | [Tema 3: Middleware de autenticación y control de roles · Intermedio · 90 min](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 6 | [Tema 4: OAuth 2.0 y Passport.js · Intermedio · 75 min](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 6 | [Tema 5: Sesiones, cookies seguras y protección CSRF · Intermedio · 105 min](../web/public/content/node/modulo-6.md) | comprobar-script-test |
+| node / 6 | [Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min](../web/public/content/node/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 1: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 2: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 3: Mocks de servicios externos y CI · Intermedio · 50 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 4: Alternativas de testing y debugging · Intermedio · 45 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 8 | [Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 8 | [Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 8 | [Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 8 | [Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 8 | [Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 9 | [Tema 1: Logging estructurado · Intermedio · 45 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 9 | [Tema 2: Correlation ID por request · Intermedio · 45 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 9 | [Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 9 | [Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 9 | [Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 0 | [Tema 1: JSX es azúcar sintáctica sobre createElement](../web/public/content/react/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 0 | [Tema 2: Listas con key estable](../web/public/content/react/modulo-0.md) | comprobar-script-test |
 | react / 0 | [Tema 3: Composición sobre herencia, y Fragments](../web/public/content/react/modulo-0.md) | comprobar-script-test |

@@ -8,7 +8,7 @@ señales detectadas tampoco acredita corrección ni comprensión.
 |---|---:|
 | Temas analizados | 1141 |
 | Temas con alguna señal (requiere inspección) | 0 |
-| Módulos con apéndices heredados | 186/254 |
+| Módulos con apéndices heredados | 179/254 |
 
 ## Señales por tipo
 
@@ -19,9 +19,9 @@ señales detectadas tampoco acredita corrección ni comprensión.
 
 | Sección | Módulos |
 |---|---:|
-| ## Construcción guiada del capítulo | 43 |
+| ## Construcción guiada del capítulo | 41 |
 | ## Ruta de proyecto progresivo desde carpeta vacía | 12 |
-| **Errores comunes y soluciones** | 182 |
+| **Errores comunes y soluciones** | 173 |
 
 ## Temas con más señales
 
@@ -36,4 +36,4 @@ señales detectadas tampoco acredita corrección ni comprensión.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estas señales sin revisión.
 
-Huella del contenido: `90e975af9fec0a77b201e89ea1a26742f92d82d50e2f48f25804f69fd234243d`
+Huella del contenido: `6dfa8651193a4678f081668bc686de09e86b20357536d7301499666719c645f9`

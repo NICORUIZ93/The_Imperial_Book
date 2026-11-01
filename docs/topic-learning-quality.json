@@ -176,7 +176,7 @@
       "topics": 77,
       "explanation": 77,
       "code": 77,
-      "visual": 28,
+      "visual": 30,
       "filePath": 77,
       "runCommand": 77,
       "expectedResult": 77,
@@ -19753,7 +19753,7 @@
     "node": [
       {
         "module": 0,
-        "topic": "Tema 1: Node no es \"JavaScript en el servidor\" sin más",
+        "topic": "Tema 1: Node no es \"JavaScript en el servidor\" sin más · Básico · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19775,7 +19775,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Fases del Event Loop de Node",
+        "topic": "Tema 2: Fases del Event Loop de Node · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19797,7 +19797,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: process, global y módulos core",
+        "topic": "Tema 3: process, global y módulos core · Básico · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19819,7 +19819,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Event-driven architecture y non-blocking I/O",
+        "topic": "Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19841,7 +19841,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: package.json y semver",
+        "topic": "Tema 1: package.json y semver · Básico · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19863,7 +19863,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Lockfiles e instalación reproducible",
+        "topic": "Tema 2: Lockfiles e instalación reproducible · Básico · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19885,7 +19885,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Workspaces — monorepos con npm/pnpm",
+        "topic": "Tema 3: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19907,7 +19907,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 4: Scripts de ciclo de vida",
+        "topic": "Tema 4: Scripts de ciclo de vida · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19929,7 +19929,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 5: Publicar y versionar un paquete npm (público o privado)",
+        "topic": "Tema 5: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19951,7 +19951,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 6: ESM y CommonJS en el mismo proyecto",
+        "topic": "Tema 6: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19973,29 +19973,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 1: Cabeceras seguras con helmet",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 10,
-        "topic": "Tema 2: Rate limiting",
+        "topic": "Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20017,7 +19995,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 3: Inyección SQL y sanitización contra XSS",
+        "topic": "Tema 2: Rate limiting · Intermedio · 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20039,7 +20017,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 4: OWASP API Security Top 10 y auditoría de dependencias",
+        "topic": "Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20061,11 +20039,11 @@
       },
       {
         "module": 10,
-        "topic": "Tema 5: CVE, CWE y npm audit en el pipeline",
+        "topic": "Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -20075,15 +20053,15 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
-        "module": 11,
-        "topic": "Tema 1: Dockerfile multi-stage para Node",
+        "module": 10,
+        "topic": "Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20105,7 +20083,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Variables de entorno por ambiente y healthchecks",
+        "topic": "Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20127,7 +20105,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 3: PM2, contenedores y zero-downtime deploys",
+        "topic": "Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20149,11 +20127,11 @@
       },
       {
         "module": 11,
-        "topic": "Tema 4: Nginx como reverse proxy y serverless",
+        "topic": "Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min",
         "criteria": {
           "explanation": true,
           "code": true,
-          "visual": true,
+          "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
@@ -20163,15 +20141,15 @@
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
-        "module": 12,
-        "topic": "Tema 1: Arquitectura por capas",
+        "module": 11,
+        "topic": "Tema 4: Nginx como reverse proxy y serverless · Avanzado · 85 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20193,51 +20171,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Uniendo cada módulo del track",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 12,
-        "topic": "Tema 3: Qué le falta a esta API para producción real",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 12,
-        "topic": "Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript",
+        "topic": "Tema 1: Arquitectura por capas · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20259,7 +20193,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 5: Posiciones espaciales y Socket.IO con orden recuperable",
+        "topic": "Tema 2: Uniendo cada módulo del track · Avanzado · 180 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20281,7 +20215,73 @@
       },
       {
         "module": 12,
-        "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización",
+        "topic": "Tema 3: Qué le falta a esta API para producción real · Intermedio · 75 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20303,7 +20303,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera",
+        "topic": "Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20325,7 +20325,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 2: Un contrato HTTP es comportamiento, no solo documentación",
+        "topic": "Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20347,7 +20347,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 3: Reintentar sin duplicar el efecto",
+        "topic": "Tema 3: Reintentar sin duplicar el efecto · Avanzado · 120 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20369,7 +20369,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación",
+        "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20391,29 +20391,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 5: OpenAPI como contrato ejecutable",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 14,
-        "topic": "Tema 1: TypeScript en Node.js",
+        "topic": "Tema 5: OpenAPI como contrato ejecutable · Avanzado · 100 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20435,7 +20413,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: GraphQL avanzado y Federation",
+        "topic": "Tema 1: TypeScript en Node.js · Avanzado · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20457,7 +20435,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
+        "topic": "Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20479,7 +20457,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 4: Serverless multi-cloud",
+        "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20501,7 +20479,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 5: Docker productivo con Node",
+        "topic": "Tema 4: Serverless multi-cloud · Avanzado · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20523,7 +20501,29 @@
       },
       {
         "module": 14,
-        "topic": "Tema 6: CI/CD y promoción de artefactos",
+        "topic": "Tema 5: Docker productivo con Node · Avanzado · 90 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20545,7 +20545,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 1: fs/promises frente a callbacks",
+        "topic": "Tema 1: fs/promises frente a callbacks · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20567,7 +20567,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 2: Streams básicos: Readable, Writable y Transform",
+        "topic": "Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20589,7 +20589,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: Backpressure: write() y el evento drain",
+        "topic": "Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20611,7 +20611,29 @@
       },
       {
         "module": 2,
-        "topic": "Tema 4: pipeline() para componer streams de forma segura",
+        "topic": "Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 1: El modelo request/response · Básico · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20633,7 +20655,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 1: El modelo request/response",
+        "topic": "Tema 2: Routing manual · Básico · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20655,7 +20677,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 2: Routing manual",
+        "topic": "Tema 3: Parsing de body y headers · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20677,7 +20699,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 3: Parsing de body y headers",
+        "topic": "Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20699,29 +20721,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 4: Códigos de estado y content negotiation",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 3,
-        "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables",
+        "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20743,7 +20743,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 1: Middleware — orden de ejecución y next()",
+        "topic": "Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20765,7 +20765,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 2: Routers anidados",
+        "topic": "Tema 2: Routers anidados · Básico · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20787,7 +20787,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 3: Validación de entrada con Zod y manejo centralizado de errores",
+        "topic": "Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20809,7 +20809,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: Express frente a Fastify",
+        "topic": "Tema 4: Express frente a Fastify · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20831,7 +20831,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 5: WebSocket — comunicación en tiempo real bidireccional",
+        "topic": "Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20853,7 +20853,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 6: Subida de archivos — multipart y validación segura",
+        "topic": "Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20875,7 +20875,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 1: PostgreSQL desde Node con el driver puro",
+        "topic": "Tema 1: PostgreSQL desde Node con el driver puro · Básico · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20897,7 +20897,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 2: Prisma — schema, migraciones y queries tipadas",
+        "topic": "Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20919,7 +20919,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 3: Pool de conexiones y transacciones",
+        "topic": "Tema 3: Pool de conexiones y transacciones · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20941,7 +20941,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 4: MongoDB con Mongoose y otras alternativas de ORM",
+        "topic": "Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20963,7 +20963,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: Hashing de contraseñas",
+        "topic": "Tema 1: Hashing de contraseñas · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20985,7 +20985,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: JWT — access y refresh tokens",
+        "topic": "Tema 2: JWT — access y refresh tokens · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21007,7 +21007,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 3: Middleware de autenticación y control de roles",
+        "topic": "Tema 3: Middleware de autenticación y control de roles · Intermedio · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21029,7 +21029,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 4: OAuth 2.0 y Passport.js",
+        "topic": "Tema 4: OAuth 2.0 y Passport.js · Intermedio · 75 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21051,7 +21051,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 5: Sesiones, cookies seguras y protección CSRF",
+        "topic": "Tema 5: Sesiones, cookies seguras y protección CSRF · Intermedio · 105 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21073,7 +21073,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "topic": "Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21095,7 +21095,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: Vitest y Supertest — pruebas de integración HTTP reales",
+        "topic": "Tema 1: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21117,73 +21117,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 2: Testcontainers — bases de datos de prueba reales y efímeras",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 7,
-        "topic": "Tema 3: Mocks de servicios externos y CI",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 7,
-        "topic": "Tema 4: Alternativas de testing y debugging",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 7,
-        "topic": "Tema 5: node:test — test runner nativo sin dependencias",
+        "topic": "Tema 2: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21205,7 +21139,73 @@
       },
       {
         "module": 7,
-        "topic": "Tema 6: TDD práctico: rojo, verde y refactor con node:test",
+        "topic": "Tema 3: Mocks de servicios externos y CI · Intermedio · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 4: Alternativas de testing y debugging · Intermedio · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21227,7 +21227,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 1: Worker Threads para trabajo CPU-bound",
+        "topic": "Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21249,7 +21249,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 2: Cluster module y balanceo entre procesos",
+        "topic": "Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21271,7 +21271,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: Colas de trabajo con BullMQ",
+        "topic": "Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21293,7 +21293,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 4: PM2, memory leaks y heap snapshots",
+        "topic": "Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21315,7 +21315,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 5: Redis para caché, idempotencia y Pub/Sub",
+        "topic": "Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21337,7 +21337,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: Logging estructurado",
+        "topic": "Tema 1: Logging estructurado · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21359,7 +21359,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: Correlation ID por request",
+        "topic": "Tema 2: Correlation ID por request · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21381,51 +21381,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: Excepciones no capturadas y graceful shutdown",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 9,
-        "topic": "Tema 4: REST, GraphQL y gRPC",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": false,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 14,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 9,
-        "topic": "Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry",
+        "topic": "Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21440,6 +21396,50 @@
         },
         "classification": {
           "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

@@ -1306,39 +1306,30 @@
     },
     {
       "legacySections": [
-        "## Ruta de proyecto progresivo desde carpeta vacía",
-        "## Construcción guiada del capítulo",
-        "**Errores comunes y soluciones**"
+        "## Ruta de proyecto progresivo desde carpeta vacía"
       ],
       "module": 0,
       "track": "node"
     },
     {
       "legacySections": [
-        "## Construcción guiada del capítulo",
         "**Errores comunes y soluciones**"
       ],
       "module": 1,
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 10,
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 11,
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 12,
       "track": "node"
     },
@@ -1354,8 +1345,7 @@
     },
     {
       "legacySections": [
-        "## Construcción guiada del capítulo",
-        "**Errores comunes y soluciones**"
+        "## Construcción guiada del capítulo"
       ],
       "module": 2,
       "track": "node"
@@ -1366,9 +1356,7 @@
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 4,
       "track": "node"
     },
@@ -1387,23 +1375,17 @@
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 7,
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 8,
       "track": "node"
     },
     {
-      "legacySections": [
-        "**Errores comunes y soluciones**"
-      ],
+      "legacySections": [],
       "module": 9,
       "track": "node"
     },
@@ -1695,15 +1677,15 @@
     }
   ],
   "summary": {
-    "fingerprint": "90e975af9fec0a77b201e89ea1a26742f92d82d50e2f48f25804f69fd234243d",
+    "fingerprint": "6dfa8651193a4678f081668bc686de09e86b20357536d7301499666719c645f9",
     "issues": {},
     "legacySections": {
-      "## Construcción guiada del capítulo": 43,
+      "## Construcción guiada del capítulo": 41,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
-      "**Errores comunes y soluciones**": 182
+      "**Errores comunes y soluciones**": 173
     },
     "modules": 254,
-    "modulesWithLegacySections": 186,
+    "modulesWithLegacySections": 179,
     "topics": 1141,
     "topicsWithIssues": 0
   },
@@ -7934,541 +7916,541 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 138,
-        "topic": "Tema 1: Node no es \"JavaScript en el servidor\" sin más",
-        "words": 1392
+        "tailWords": 186,
+        "topic": "Tema 1: Node no es \"JavaScript en el servidor\" sin más · Básico · 75 min",
+        "words": 860
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 124,
-        "topic": "Tema 2: Fases del Event Loop de Node",
-        "words": 1336
+        "tailWords": 219,
+        "topic": "Tema 2: Fases del Event Loop de Node · Intermedio · 75 min",
+        "words": 822
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 190,
-        "topic": "Tema 3: process, global y módulos core",
-        "words": 1416
+        "tailWords": 168,
+        "topic": "Tema 3: process, global y módulos core · Básico · 75 min",
+        "words": 757
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 131,
-        "topic": "Tema 4: Event-driven architecture y non-blocking I/O",
-        "words": 1284
+        "tailWords": 152,
+        "topic": "Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min",
+        "words": 755
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 129,
-        "topic": "Tema 1: package.json y semver",
-        "words": 1122
+        "tailWords": 321,
+        "topic": "Tema 1: package.json y semver · Básico · 50 min",
+        "words": 1112
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 118,
-        "topic": "Tema 2: Lockfiles e instalación reproducible",
-        "words": 1115
-      },
-      {
-        "issues": [],
-        "module": 1,
-        "tailWords": 118,
-        "topic": "Tema 3: Workspaces — monorepos con npm/pnpm",
-        "words": 1181
-      },
-      {
-        "issues": [],
-        "module": 1,
-        "tailWords": 134,
-        "topic": "Tema 4: Scripts de ciclo de vida",
-        "words": 1049
-      },
-      {
-        "issues": [],
-        "module": 1,
-        "tailWords": 187,
-        "topic": "Tema 5: Publicar y versionar un paquete npm (público o privado)",
-        "words": 936
-      },
-      {
-        "issues": [],
-        "module": 1,
-        "tailWords": 180,
-        "topic": "Tema 6: ESM y CommonJS en el mismo proyecto",
-        "words": 887
-      },
-      {
-        "issues": [],
-        "module": 10,
-        "tailWords": 24,
-        "topic": "Tema 1: Cabeceras seguras con helmet",
-        "words": 888
-      },
-      {
-        "issues": [],
-        "module": 10,
-        "tailWords": 38,
-        "topic": "Tema 2: Rate limiting",
-        "words": 849
-      },
-      {
-        "issues": [],
-        "module": 10,
-        "tailWords": 35,
-        "topic": "Tema 3: Inyección SQL y sanitización contra XSS",
-        "words": 953
-      },
-      {
-        "issues": [],
-        "module": 10,
-        "tailWords": 27,
-        "topic": "Tema 4: OWASP API Security Top 10 y auditoría de dependencias",
-        "words": 932
-      },
-      {
-        "issues": [],
-        "module": 10,
-        "tailWords": 200,
-        "topic": "Tema 5: CVE, CWE y npm audit en el pipeline",
-        "words": 882
-      },
-      {
-        "issues": [],
-        "module": 11,
-        "tailWords": 32,
-        "topic": "Tema 1: Dockerfile multi-stage para Node",
-        "words": 901
-      },
-      {
-        "issues": [],
-        "module": 11,
-        "tailWords": 30,
-        "topic": "Tema 2: Variables de entorno por ambiente y healthchecks",
-        "words": 886
-      },
-      {
-        "issues": [],
-        "module": 11,
-        "tailWords": 30,
-        "topic": "Tema 3: PM2, contenedores y zero-downtime deploys",
-        "words": 832
-      },
-      {
-        "issues": [],
-        "module": 11,
-        "tailWords": 32,
-        "topic": "Tema 4: Nginx como reverse proxy y serverless",
-        "words": 937
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 29,
-        "topic": "Tema 1: Arquitectura por capas",
-        "words": 924
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 31,
-        "topic": "Tema 2: Uniendo cada módulo del track",
-        "words": 835
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 29,
-        "topic": "Tema 3: Qué le falta a esta API para producción real",
-        "words": 856
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 28,
-        "topic": "Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript",
-        "words": 827
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 29,
-        "topic": "Tema 5: Posiciones espaciales y Socket.IO con orden recuperable",
-        "words": 1001
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 33,
-        "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización",
-        "words": 844
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 123,
-        "topic": "Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera",
-        "words": 1050
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 106,
-        "topic": "Tema 2: Un contrato HTTP es comportamiento, no solo documentación",
-        "words": 966
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 106,
-        "topic": "Tema 3: Reintentar sin duplicar el efecto",
-        "words": 1062
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 112,
-        "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación",
-        "words": 955
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 31,
-        "topic": "Tema 5: OpenAPI como contrato ejecutable",
-        "words": 816
-      },
-      {
-        "issues": [],
-        "module": 14,
-        "tailWords": 310,
-        "topic": "Tema 1: TypeScript en Node.js",
-        "words": 778
-      },
-      {
-        "issues": [],
-        "module": 14,
         "tailWords": 307,
-        "topic": "Tema 2: GraphQL avanzado y Federation",
-        "words": 1179
+        "topic": "Tema 2: Lockfiles e instalación reproducible · Básico · 50 min",
+        "words": 982
       },
       {
         "issues": [],
-        "module": 14,
-        "tailWords": 272,
-        "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas",
-        "words": 703
+        "module": 1,
+        "tailWords": 290,
+        "topic": "Tema 3: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min",
+        "words": 1035
       },
       {
         "issues": [],
-        "module": 14,
-        "tailWords": 287,
-        "topic": "Tema 4: Serverless multi-cloud",
-        "words": 739
+        "module": 1,
+        "tailWords": 304,
+        "topic": "Tema 4: Scripts de ciclo de vida · Intermedio · 50 min",
+        "words": 963
       },
       {
         "issues": [],
-        "module": 14,
-        "tailWords": 281,
-        "topic": "Tema 5: Docker productivo con Node",
-        "words": 759
-      },
-      {
-        "issues": [],
-        "module": 14,
+        "module": 1,
         "tailWords": 340,
-        "topic": "Tema 6: CI/CD y promoción de artefactos",
-        "words": 798
+        "topic": "Tema 5: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min",
+        "words": 1227
       },
       {
         "issues": [],
-        "module": 2,
-        "tailWords": 129,
-        "topic": "Tema 1: fs/promises frente a callbacks",
-        "words": 1246
+        "module": 1,
+        "tailWords": 318,
+        "topic": "Tema 6: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min",
+        "words": 1151
       },
       {
         "issues": [],
-        "module": 2,
-        "tailWords": 211,
-        "topic": "Tema 2: Streams básicos: Readable, Writable y Transform",
-        "words": 1421
+        "module": 10,
+        "tailWords": 247,
+        "topic": "Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min",
+        "words": 854
       },
       {
         "issues": [],
-        "module": 2,
-        "tailWords": 182,
-        "topic": "Tema 3: Backpressure: write() y el evento drain",
-        "words": 1139
+        "module": 10,
+        "tailWords": 290,
+        "topic": "Tema 2: Rate limiting · Intermedio · 55 min",
+        "words": 1025
       },
       {
         "issues": [],
-        "module": 2,
-        "tailWords": 180,
-        "topic": "Tema 4: pipeline() para componer streams de forma segura",
-        "words": 1214
+        "module": 10,
+        "tailWords": 269,
+        "topic": "Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min",
+        "words": 1056
       },
       {
         "issues": [],
-        "module": 3,
-        "tailWords": 226,
-        "topic": "Tema 1: El modelo request/response",
-        "words": 1312
+        "module": 10,
+        "tailWords": 337,
+        "topic": "Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min",
+        "words": 1195
       },
       {
         "issues": [],
-        "module": 3,
-        "tailWords": 143,
-        "topic": "Tema 2: Routing manual",
-        "words": 1246
+        "module": 10,
+        "tailWords": 352,
+        "topic": "Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min",
+        "words": 1351
       },
       {
         "issues": [],
-        "module": 3,
-        "tailWords": 138,
-        "topic": "Tema 3: Parsing de body y headers",
-        "words": 1185
+        "module": 11,
+        "tailWords": 284,
+        "topic": "Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min",
+        "words": 939
       },
       {
         "issues": [],
-        "module": 3,
-        "tailWords": 211,
-        "topic": "Tema 4: Códigos de estado y content negotiation",
-        "words": 1355
+        "module": 11,
+        "tailWords": 383,
+        "topic": "Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min",
+        "words": 1170
       },
       {
         "issues": [],
-        "module": 3,
-        "tailWords": 73,
-        "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables",
-        "words": 581
+        "module": 11,
+        "tailWords": 323,
+        "topic": "Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min",
+        "words": 1125
       },
       {
         "issues": [],
-        "module": 4,
-        "tailWords": 127,
-        "topic": "Tema 1: Middleware — orden de ejecución y next()",
-        "words": 1173
+        "module": 11,
+        "tailWords": 490,
+        "topic": "Tema 4: Nginx como reverse proxy y serverless · Avanzado · 85 min",
+        "words": 1224
       },
       {
         "issues": [],
-        "module": 4,
-        "tailWords": 196,
-        "topic": "Tema 2: Routers anidados",
-        "words": 1183
+        "module": 12,
+        "tailWords": 215,
+        "topic": "Tema 1: Arquitectura por capas · Intermedio · 90 min",
+        "words": 1326
       },
       {
         "issues": [],
-        "module": 4,
-        "tailWords": 153,
-        "topic": "Tema 3: Validación de entrada con Zod y manejo centralizado de errores",
-        "words": 1293
+        "module": 12,
+        "tailWords": 360,
+        "topic": "Tema 2: Uniendo cada módulo del track · Avanzado · 180 min",
+        "words": 2017
       },
       {
         "issues": [],
-        "module": 4,
-        "tailWords": 145,
-        "topic": "Tema 4: Express frente a Fastify",
-        "words": 1204
+        "module": 12,
+        "tailWords": 198,
+        "topic": "Tema 3: Qué le falta a esta API para producción real · Intermedio · 75 min",
+        "words": 973
       },
       {
         "issues": [],
-        "module": 4,
-        "tailWords": 216,
-        "topic": "Tema 5: WebSocket — comunicación en tiempo real bidireccional",
-        "words": 729
+        "module": 12,
+        "tailWords": 218,
+        "topic": "Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min",
+        "words": 1126
       },
       {
         "issues": [],
-        "module": 4,
-        "tailWords": 230,
-        "topic": "Tema 6: Subida de archivos — multipart y validación segura",
-        "words": 753
+        "module": 12,
+        "tailWords": 340,
+        "topic": "Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min",
+        "words": 1953
       },
       {
         "issues": [],
-        "module": 5,
-        "tailWords": 226,
-        "topic": "Tema 1: PostgreSQL desde Node con el driver puro",
-        "words": 1333
+        "module": 12,
+        "tailWords": 321,
+        "topic": "Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min",
+        "words": 1791
       },
       {
         "issues": [],
-        "module": 5,
-        "tailWords": 157,
-        "topic": "Tema 2: Prisma — schema, migraciones y queries tipadas",
-        "words": 1452
+        "module": 13,
+        "tailWords": 289,
+        "topic": "Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera · Intermedio · 90 min",
+        "words": 1216
       },
       {
         "issues": [],
-        "module": 5,
-        "tailWords": 149,
-        "topic": "Tema 3: Pool de conexiones y transacciones",
-        "words": 1411
+        "module": 13,
+        "tailWords": 324,
+        "topic": "Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min",
+        "words": 1629
       },
       {
         "issues": [],
-        "module": 5,
-        "tailWords": 123,
-        "topic": "Tema 4: MongoDB con Mongoose y otras alternativas de ORM",
-        "words": 997
+        "module": 13,
+        "tailWords": 334,
+        "topic": "Tema 3: Reintentar sin duplicar el efecto · Avanzado · 120 min",
+        "words": 1978
       },
       {
         "issues": [],
-        "module": 6,
-        "tailWords": 45,
-        "topic": "Tema 1: Hashing de contraseñas",
-        "words": 1027
+        "module": 13,
+        "tailWords": 252,
+        "topic": "Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min",
+        "words": 1337
       },
       {
         "issues": [],
-        "module": 6,
-        "tailWords": 164,
-        "topic": "Tema 2: JWT — access y refresh tokens",
-        "words": 496
+        "module": 13,
+        "tailWords": 304,
+        "topic": "Tema 5: OpenAPI como contrato ejecutable · Avanzado · 100 min",
+        "words": 1654
       },
       {
         "issues": [],
-        "module": 6,
-        "tailWords": 36,
-        "topic": "Tema 3: Middleware de autenticación y control de roles",
-        "words": 977
+        "module": 14,
+        "tailWords": 376,
+        "topic": "Tema 1: TypeScript en Node.js · Avanzado · 60 min",
+        "words": 1066
       },
       {
         "issues": [],
-        "module": 6,
-        "tailWords": 34,
-        "topic": "Tema 4: OAuth 2.0 y Passport.js",
-        "words": 845
+        "module": 14,
+        "tailWords": 285,
+        "topic": "Tema 2: GraphQL avanzado y Federation · Avanzado · 105 min",
+        "words": 1361
       },
       {
         "issues": [],
-        "module": 6,
-        "tailWords": 35,
-        "topic": "Tema 5: Sesiones, cookies seguras y protección CSRF",
+        "module": 14,
+        "tailWords": 360,
+        "topic": "Tema 3: Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min",
+        "words": 1626
+      },
+      {
+        "issues": [],
+        "module": 14,
+        "tailWords": 293,
+        "topic": "Tema 4: Serverless multi-cloud · Avanzado · 75 min",
+        "words": 980
+      },
+      {
+        "issues": [],
+        "module": 14,
+        "tailWords": 324,
+        "topic": "Tema 5: Docker productivo con Node · Avanzado · 90 min",
         "words": 1186
       },
       {
         "issues": [],
-        "module": 6,
-        "tailWords": 212,
-        "topic": "Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "module": 14,
+        "tailWords": 332,
+        "topic": "Tema 6: CI/CD y promoción de artefactos · Avanzado · 105 min",
+        "words": 1627
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 335,
+        "topic": "Tema 1: fs/promises frente a callbacks · Intermedio · 45 min",
+        "words": 1271
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 419,
+        "topic": "Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min",
+        "words": 1178
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 314,
+        "topic": "Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min",
+        "words": 1021
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 427,
+        "topic": "Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min",
+        "words": 1153
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 157,
+        "topic": "Tema 1: El modelo request/response · Básico · 60 min",
+        "words": 613
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 166,
+        "topic": "Tema 2: Routing manual · Básico · 75 min",
+        "words": 743
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 161,
+        "topic": "Tema 3: Parsing de body y headers · Intermedio · 75 min",
+        "words": 688
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 172,
+        "topic": "Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min",
+        "words": 691
+      },
+      {
+        "issues": [],
+        "module": 3,
+        "tailWords": 125,
+        "topic": "Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min",
+        "words": 631
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 255,
+        "topic": "Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min",
+        "words": 1023
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 290,
+        "topic": "Tema 2: Routers anidados · Básico · 75 min",
+        "words": 996
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 273,
+        "topic": "Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min",
+        "words": 1073
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 291,
+        "topic": "Tema 4: Express frente a Fastify · Intermedio · 75 min",
+        "words": 1060
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 295,
+        "topic": "Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min",
+        "words": 854
+      },
+      {
+        "issues": [],
+        "module": 4,
+        "tailWords": 345,
+        "topic": "Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 75 min",
         "words": 1154
       },
       {
         "issues": [],
-        "module": 7,
-        "tailWords": 38,
-        "topic": "Tema 1: Vitest y Supertest — pruebas de integración HTTP reales",
-        "words": 865
+        "module": 5,
+        "tailWords": 345,
+        "topic": "Tema 1: PostgreSQL desde Node con el driver puro · Básico · 90 min",
+        "words": 1198
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 300,
+        "topic": "Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min",
+        "words": 1266
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 325,
+        "topic": "Tema 3: Pool de conexiones y transacciones · Intermedio · 90 min",
+        "words": 1330
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 292,
+        "topic": "Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min",
+        "words": 968
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 241,
+        "topic": "Tema 1: Hashing de contraseñas · Intermedio · 90 min",
+        "words": 1012
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 283,
+        "topic": "Tema 2: JWT — access y refresh tokens · Intermedio · 90 min",
+        "words": 963
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 228,
+        "topic": "Tema 3: Middleware de autenticación y control de roles · Intermedio · 90 min",
+        "words": 1197
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 323,
+        "topic": "Tema 4: OAuth 2.0 y Passport.js · Intermedio · 75 min",
+        "words": 971
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 335,
+        "topic": "Tema 5: Sesiones, cookies seguras y protección CSRF · Intermedio · 105 min",
+        "words": 1445
+      },
+      {
+        "issues": [],
+        "module": 6,
+        "tailWords": 317,
+        "topic": "Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min",
+        "words": 1309
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 35,
-        "topic": "Tema 2: Testcontainers — bases de datos de prueba reales y efímeras",
-        "words": 906
+        "tailWords": 157,
+        "topic": "Tema 1: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min",
+        "words": 811
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 31,
-        "topic": "Tema 3: Mocks de servicios externos y CI",
-        "words": 943
+        "tailWords": 244,
+        "topic": "Tema 2: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min",
+        "words": 918
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 33,
-        "topic": "Tema 4: Alternativas de testing y debugging",
-        "words": 886
+        "tailWords": 292,
+        "topic": "Tema 3: Mocks de servicios externos y CI · Intermedio · 50 min",
+        "words": 1050
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 427,
-        "topic": "Tema 5: node:test — test runner nativo sin dependencias",
-        "words": 876
+        "tailWords": 160,
+        "topic": "Tema 4: Alternativas de testing y debugging · Intermedio · 45 min",
+        "words": 773
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 187,
-        "topic": "Tema 6: TDD práctico: rojo, verde y refactor con node:test",
-        "words": 846
+        "tailWords": 247,
+        "topic": "Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min",
+        "words": 803
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 195,
+        "topic": "Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min",
+        "words": 1108
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 27,
-        "topic": "Tema 1: Worker Threads para trabajo CPU-bound",
-        "words": 878
+        "tailWords": 181,
+        "topic": "Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min",
+        "words": 903
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 37,
-        "topic": "Tema 2: Cluster module y balanceo entre procesos",
-        "words": 887
+        "tailWords": 160,
+        "topic": "Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min",
+        "words": 974
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 166,
-        "topic": "Tema 3: Colas de trabajo con BullMQ",
-        "words": 475
+        "tailWords": 179,
+        "topic": "Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min",
+        "words": 977
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 29,
-        "topic": "Tema 4: PM2, memory leaks y heap snapshots",
-        "words": 889
+        "tailWords": 198,
+        "topic": "Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min",
+        "words": 982
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 38,
-        "topic": "Tema 5: Redis para caché, idempotencia y Pub/Sub",
-        "words": 1009
+        "tailWords": 214,
+        "topic": "Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min",
+        "words": 1086
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 32,
-        "topic": "Tema 1: Logging estructurado",
-        "words": 766
+        "tailWords": 256,
+        "topic": "Tema 1: Logging estructurado · Intermedio · 45 min",
+        "words": 785
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 34,
-        "topic": "Tema 2: Correlation ID por request",
+        "tailWords": 271,
+        "topic": "Tema 2: Correlation ID por request · Intermedio · 45 min",
         "words": 869
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 31,
-        "topic": "Tema 3: Excepciones no capturadas y graceful shutdown",
-        "words": 931
+        "tailWords": 407,
+        "topic": "Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min",
+        "words": 1087
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 31,
-        "topic": "Tema 4: REST, GraphQL y gRPC",
-        "words": 840
+        "tailWords": 264,
+        "topic": "Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min",
+        "words": 988
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 32,
-        "topic": "Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry",
-        "words": 1014
+        "tailWords": 344,
+        "topic": "Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min",
+        "words": 1139
       }
     ],
     "react": [

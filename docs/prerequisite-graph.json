@@ -3114,7 +3114,7 @@
       "track": "node",
       "module": 0,
       "position": 1,
-      "title": "Node no es \"JavaScript en el servidor\" sin más",
+      "title": "Node no es \"JavaScript en el servidor\" sin más · Básico · 75 min",
       "file": "web/public/content/node/modulo-0.md",
       "requires": [
         "javascript:14:14"
@@ -3125,7 +3125,7 @@
       "track": "node",
       "module": 0,
       "position": 2,
-      "title": "Fases del Event Loop de Node",
+      "title": "Fases del Event Loop de Node · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-0.md",
       "requires": [
         "node:0:1"
@@ -3136,7 +3136,7 @@
       "track": "node",
       "module": 0,
       "position": 3,
-      "title": "process, global y módulos core",
+      "title": "process, global y módulos core · Básico · 75 min",
       "file": "web/public/content/node/modulo-0.md",
       "requires": [
         "node:0:2"
@@ -3147,7 +3147,7 @@
       "track": "node",
       "module": 0,
       "position": 4,
-      "title": "Event-driven architecture y non-blocking I/O",
+      "title": "Event-driven architecture y non-blocking I/O · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-0.md",
       "requires": [
         "node:0:3"
@@ -3158,7 +3158,7 @@
       "track": "node",
       "module": 1,
       "position": 1,
-      "title": "package.json y semver",
+      "title": "package.json y semver · Básico · 50 min",
       "file": "web/public/content/node/modulo-1.md",
       "requires": [
         "node:0:4"
@@ -3169,7 +3169,7 @@
       "track": "node",
       "module": 1,
       "position": 2,
-      "title": "Lockfiles e instalación reproducible",
+      "title": "Lockfiles e instalación reproducible · Básico · 50 min",
       "file": "web/public/content/node/modulo-1.md",
       "requires": [
         "node:1:1"
@@ -3180,7 +3180,7 @@
       "track": "node",
       "module": 1,
       "position": 3,
-      "title": "Workspaces — monorepos con npm/pnpm",
+      "title": "Workspaces — monorepos con npm/pnpm · Intermedio · 60 min",
       "file": "web/public/content/node/modulo-1.md",
       "requires": [
         "node:1:2"
@@ -3191,7 +3191,7 @@
       "track": "node",
       "module": 1,
       "position": 4,
-      "title": "Scripts de ciclo de vida",
+      "title": "Scripts de ciclo de vida · Intermedio · 50 min",
       "file": "web/public/content/node/modulo-1.md",
       "requires": [
         "node:1:3"
@@ -3202,7 +3202,7 @@
       "track": "node",
       "module": 1,
       "position": 5,
-      "title": "Publicar y versionar un paquete npm (público o privado)",
+      "title": "Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min",
       "file": "web/public/content/node/modulo-1.md",
       "requires": [
         "node:1:4"
@@ -3213,7 +3213,7 @@
       "track": "node",
       "module": 1,
       "position": 6,
-      "title": "ESM y CommonJS en el mismo proyecto",
+      "title": "ESM y CommonJS en el mismo proyecto · Intermedio · 60 min",
       "file": "web/public/content/node/modulo-1.md",
       "requires": [
         "node:1:5"
@@ -3224,7 +3224,7 @@
       "track": "node",
       "module": 2,
       "position": 1,
-      "title": "fs/promises frente a callbacks",
+      "title": "fs/promises frente a callbacks · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-2.md",
       "requires": [
         "node:1:6"
@@ -3235,7 +3235,7 @@
       "track": "node",
       "module": 2,
       "position": 2,
-      "title": "Streams básicos: Readable, Writable y Transform",
+      "title": "Streams básicos: Readable, Writable y Transform · Intermedio · 60 min",
       "file": "web/public/content/node/modulo-2.md",
       "requires": [
         "node:2:1"
@@ -3246,7 +3246,7 @@
       "track": "node",
       "module": 2,
       "position": 3,
-      "title": "Backpressure: write() y el evento drain",
+      "title": "Backpressure: write() y el evento drain · Avanzado · 55 min",
       "file": "web/public/content/node/modulo-2.md",
       "requires": [
         "node:2:2"
@@ -3257,7 +3257,7 @@
       "track": "node",
       "module": 2,
       "position": 4,
-      "title": "pipeline() para componer streams de forma segura",
+      "title": "pipeline() para componer streams de forma segura · Avanzado · 60 min",
       "file": "web/public/content/node/modulo-2.md",
       "requires": [
         "node:2:3"
@@ -3268,7 +3268,7 @@
       "track": "node",
       "module": 3,
       "position": 1,
-      "title": "El modelo request/response",
+      "title": "El modelo request/response · Básico · 60 min",
       "file": "web/public/content/node/modulo-3.md",
       "requires": [
         "node:2:4"
@@ -3279,7 +3279,7 @@
       "track": "node",
       "module": 3,
       "position": 2,
-      "title": "Routing manual",
+      "title": "Routing manual · Básico · 75 min",
       "file": "web/public/content/node/modulo-3.md",
       "requires": [
         "node:3:1"
@@ -3290,7 +3290,7 @@
       "track": "node",
       "module": 3,
       "position": 3,
-      "title": "Parsing de body y headers",
+      "title": "Parsing de body y headers · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-3.md",
       "requires": [
         "node:3:2"
@@ -3301,7 +3301,7 @@
       "track": "node",
       "module": 3,
       "position": 4,
-      "title": "Códigos de estado y content negotiation",
+      "title": "Códigos de estado y content negotiation · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-3.md",
       "requires": [
         "node:3:3"
@@ -3312,7 +3312,7 @@
       "track": "node",
       "module": 3,
       "position": 5,
-      "title": "Paginación por cursor y límites de entrada comprobables",
+      "title": "Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min",
       "file": "web/public/content/node/modulo-3.md",
       "requires": [
         "node:3:4"
@@ -3323,7 +3323,7 @@
       "track": "node",
       "module": 4,
       "position": 1,
-      "title": "Middleware — orden de ejecución y next()",
+      "title": "Middleware — orden de ejecución y next() · Básico · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
         "node:3:5"
@@ -3334,7 +3334,7 @@
       "track": "node",
       "module": 4,
       "position": 2,
-      "title": "Routers anidados",
+      "title": "Routers anidados · Básico · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
         "node:4:1"
@@ -3345,7 +3345,7 @@
       "track": "node",
       "module": 4,
       "position": 3,
-      "title": "Validación de entrada con Zod y manejo centralizado de errores",
+      "title": "Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
         "node:4:2"
@@ -3356,7 +3356,7 @@
       "track": "node",
       "module": 4,
       "position": 4,
-      "title": "Express frente a Fastify",
+      "title": "Express frente a Fastify · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
         "node:4:3"
@@ -3367,7 +3367,7 @@
       "track": "node",
       "module": 4,
       "position": 5,
-      "title": "WebSocket — comunicación en tiempo real bidireccional",
+      "title": "WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
         "node:4:4"
@@ -3378,7 +3378,7 @@
       "track": "node",
       "module": 4,
       "position": 6,
-      "title": "Subida de archivos — multipart y validación segura",
+      "title": "Subida de archivos — multipart y validación segura · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
         "node:4:5"
@@ -3389,7 +3389,7 @@
       "track": "node",
       "module": 5,
       "position": 1,
-      "title": "PostgreSQL desde Node con el driver puro",
+      "title": "PostgreSQL desde Node con el driver puro · Básico · 90 min",
       "file": "web/public/content/node/modulo-5.md",
       "requires": [
         "node:4:6"
@@ -3400,7 +3400,7 @@
       "track": "node",
       "module": 5,
       "position": 2,
-      "title": "Prisma — schema, migraciones y queries tipadas",
+      "title": "Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-5.md",
       "requires": [
         "node:5:1"
@@ -3411,7 +3411,7 @@
       "track": "node",
       "module": 5,
       "position": 3,
-      "title": "Pool de conexiones y transacciones",
+      "title": "Pool de conexiones y transacciones · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-5.md",
       "requires": [
         "node:5:2"
@@ -3422,7 +3422,7 @@
       "track": "node",
       "module": 5,
       "position": 4,
-      "title": "MongoDB con Mongoose y otras alternativas de ORM",
+      "title": "MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-5.md",
       "requires": [
         "node:5:3"
@@ -3433,7 +3433,7 @@
       "track": "node",
       "module": 6,
       "position": 1,
-      "title": "Hashing de contraseñas",
+      "title": "Hashing de contraseñas · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-6.md",
       "requires": [
         "node:5:4"
@@ -3444,7 +3444,7 @@
       "track": "node",
       "module": 6,
       "position": 2,
-      "title": "JWT — access y refresh tokens",
+      "title": "JWT — access y refresh tokens · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-6.md",
       "requires": [
         "node:6:1"
@@ -3455,7 +3455,7 @@
       "track": "node",
       "module": 6,
       "position": 3,
-      "title": "Middleware de autenticación y control de roles",
+      "title": "Middleware de autenticación y control de roles · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-6.md",
       "requires": [
         "node:6:2"
@@ -3466,7 +3466,7 @@
       "track": "node",
       "module": 6,
       "position": 4,
-      "title": "OAuth 2.0 y Passport.js",
+      "title": "OAuth 2.0 y Passport.js · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-6.md",
       "requires": [
         "node:6:3"
@@ -3477,7 +3477,7 @@
       "track": "node",
       "module": 6,
       "position": 5,
-      "title": "Sesiones, cookies seguras y protección CSRF",
+      "title": "Sesiones, cookies seguras y protección CSRF · Intermedio · 105 min",
       "file": "web/public/content/node/modulo-6.md",
       "requires": [
         "node:6:4"
@@ -3488,7 +3488,7 @@
       "track": "node",
       "module": 6,
       "position": 6,
-      "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+      "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min",
       "file": "web/public/content/node/modulo-6.md",
       "requires": [
         "node:6:5"
@@ -3499,7 +3499,7 @@
       "track": "node",
       "module": 7,
       "position": 1,
-      "title": "Vitest y Supertest — pruebas de integración HTTP reales",
+      "title": "Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
         "node:6:6"
@@ -3510,7 +3510,7 @@
       "track": "node",
       "module": 7,
       "position": 2,
-      "title": "Testcontainers — bases de datos de prueba reales y efímeras",
+      "title": "Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
         "node:7:1"
@@ -3521,7 +3521,7 @@
       "track": "node",
       "module": 7,
       "position": 3,
-      "title": "Mocks de servicios externos y CI",
+      "title": "Mocks de servicios externos y CI · Intermedio · 50 min",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
         "node:7:2"
@@ -3532,7 +3532,7 @@
       "track": "node",
       "module": 7,
       "position": 4,
-      "title": "Alternativas de testing y debugging",
+      "title": "Alternativas de testing y debugging · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
         "node:7:3"
@@ -3543,7 +3543,7 @@
       "track": "node",
       "module": 7,
       "position": 5,
-      "title": "node:test — test runner nativo sin dependencias",
+      "title": "node:test — test runner nativo sin dependencias · Intermedio · 40 min",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
         "node:7:4"
@@ -3554,7 +3554,7 @@
       "track": "node",
       "module": 7,
       "position": 6,
-      "title": "TDD práctico: rojo, verde y refactor con node:test",
+      "title": "TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min",
       "file": "web/public/content/node/modulo-7.md",
       "requires": [
         "node:7:5"
@@ -3565,7 +3565,7 @@
       "track": "node",
       "module": 8,
       "position": 1,
-      "title": "Worker Threads para trabajo CPU-bound",
+      "title": "Worker Threads para trabajo CPU-bound · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
         "node:7:6"
@@ -3576,7 +3576,7 @@
       "track": "node",
       "module": 8,
       "position": 2,
-      "title": "Cluster module y balanceo entre procesos",
+      "title": "Cluster module y balanceo entre procesos · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
         "node:8:1"
@@ -3587,7 +3587,7 @@
       "track": "node",
       "module": 8,
       "position": 3,
-      "title": "Colas de trabajo con BullMQ",
+      "title": "Colas de trabajo con BullMQ · Intermedio · 50 min",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
         "node:8:2"
@@ -3598,7 +3598,7 @@
       "track": "node",
       "module": 8,
       "position": 4,
-      "title": "PM2, memory leaks y heap snapshots",
+      "title": "PM2, memory leaks y heap snapshots · Intermedio · 50 min",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
         "node:8:3"
@@ -3609,7 +3609,7 @@
       "track": "node",
       "module": 8,
       "position": 5,
-      "title": "Redis para caché, idempotencia y Pub/Sub",
+      "title": "Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
         "node:8:4"
@@ -3620,7 +3620,7 @@
       "track": "node",
       "module": 9,
       "position": 1,
-      "title": "Logging estructurado",
+      "title": "Logging estructurado · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-9.md",
       "requires": [
         "node:8:5"
@@ -3631,7 +3631,7 @@
       "track": "node",
       "module": 9,
       "position": 2,
-      "title": "Correlation ID por request",
+      "title": "Correlation ID por request · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-9.md",
       "requires": [
         "node:9:1"
@@ -3642,7 +3642,7 @@
       "track": "node",
       "module": 9,
       "position": 3,
-      "title": "Excepciones no capturadas y graceful shutdown",
+      "title": "Excepciones no capturadas y graceful shutdown · Avanzado · 60 min",
       "file": "web/public/content/node/modulo-9.md",
       "requires": [
         "node:9:2"
@@ -3653,7 +3653,7 @@
       "track": "node",
       "module": 9,
       "position": 4,
-      "title": "REST, GraphQL y gRPC",
+      "title": "REST, GraphQL y gRPC · Intermedio · 55 min",
       "file": "web/public/content/node/modulo-9.md",
       "requires": [
         "node:9:3"
@@ -3664,7 +3664,7 @@
       "track": "node",
       "module": 9,
       "position": 5,
-      "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
+      "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min",
       "file": "web/public/content/node/modulo-9.md",
       "requires": [
         "node:9:4"
@@ -3675,7 +3675,7 @@
       "track": "node",
       "module": 10,
       "position": 1,
-      "title": "Cabeceras seguras con helmet",
+      "title": "Cabeceras seguras con helmet · Intermedio · 55 min",
       "file": "web/public/content/node/modulo-10.md",
       "requires": [
         "node:9:5"
@@ -3686,7 +3686,7 @@
       "track": "node",
       "module": 10,
       "position": 2,
-      "title": "Rate limiting",
+      "title": "Rate limiting · Intermedio · 55 min",
       "file": "web/public/content/node/modulo-10.md",
       "requires": [
         "node:10:1"
@@ -3697,7 +3697,7 @@
       "track": "node",
       "module": 10,
       "position": 3,
-      "title": "Inyección SQL y sanitización contra XSS",
+      "title": "Inyección SQL y sanitización contra XSS · Intermedio · 65 min",
       "file": "web/public/content/node/modulo-10.md",
       "requires": [
         "node:10:2"
@@ -3708,7 +3708,7 @@
       "track": "node",
       "module": 10,
       "position": 4,
-      "title": "OWASP API Security Top 10 y auditoría de dependencias",
+      "title": "OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min",
       "file": "web/public/content/node/modulo-10.md",
       "requires": [
         "node:10:3"
@@ -3719,7 +3719,7 @@
       "track": "node",
       "module": 10,
       "position": 5,
-      "title": "CVE, CWE y npm audit en el pipeline",
+      "title": "CVE, CWE y npm audit en el pipeline · Avanzado · 70 min",
       "file": "web/public/content/node/modulo-10.md",
       "requires": [
         "node:10:4"
@@ -3730,7 +3730,7 @@
       "track": "node",
       "module": 11,
       "position": 1,
-      "title": "Dockerfile multi-stage para Node",
+      "title": "Dockerfile multi-stage para Node · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-11.md",
       "requires": [
         "node:10:5"
@@ -3741,7 +3741,7 @@
       "track": "node",
       "module": 11,
       "position": 2,
-      "title": "Variables de entorno por ambiente y healthchecks",
+      "title": "Variables de entorno por ambiente y healthchecks · Intermedio · 70 min",
       "file": "web/public/content/node/modulo-11.md",
       "requires": [
         "node:11:1"
@@ -3752,7 +3752,7 @@
       "track": "node",
       "module": 11,
       "position": 3,
-      "title": "PM2, contenedores y zero-downtime deploys",
+      "title": "PM2, contenedores y zero-downtime deploys · Avanzado · 85 min",
       "file": "web/public/content/node/modulo-11.md",
       "requires": [
         "node:11:2"
@@ -3763,7 +3763,7 @@
       "track": "node",
       "module": 11,
       "position": 4,
-      "title": "Nginx como reverse proxy y serverless",
+      "title": "Nginx como reverse proxy y serverless · Avanzado · 85 min",
       "file": "web/public/content/node/modulo-11.md",
       "requires": [
         "node:11:3"
@@ -3774,7 +3774,7 @@
       "track": "node",
       "module": 12,
       "position": 1,
-      "title": "Arquitectura por capas",
+      "title": "Arquitectura por capas · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-12.md",
       "requires": [
         "node:11:4"
@@ -3785,7 +3785,7 @@
       "track": "node",
       "module": 12,
       "position": 2,
-      "title": "Uniendo cada módulo del track",
+      "title": "Uniendo cada módulo del track · Avanzado · 180 min",
       "file": "web/public/content/node/modulo-12.md",
       "requires": [
         "node:12:1"
@@ -3796,7 +3796,7 @@
       "track": "node",
       "module": 12,
       "position": 3,
-      "title": "Qué le falta a esta API para producción real",
+      "title": "Qué le falta a esta API para producción real · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-12.md",
       "requires": [
         "node:12:2"
@@ -3807,7 +3807,7 @@
       "track": "node",
       "module": 12,
       "position": 4,
-      "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript",
+      "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-12.md",
       "requires": [
         "node:12:3"
@@ -3818,7 +3818,7 @@
       "track": "node",
       "module": 12,
       "position": 5,
-      "title": "Posiciones espaciales y Socket.IO con orden recuperable",
+      "title": "Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min",
       "file": "web/public/content/node/modulo-12.md",
       "requires": [
         "node:12:4"
@@ -3829,7 +3829,7 @@
       "track": "node",
       "module": 12,
       "position": 6,
-      "title": "Archivos y notificaciones push sin convertirlos en autorización",
+      "title": "Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min",
       "file": "web/public/content/node/modulo-12.md",
       "requires": [
         "node:12:5"
@@ -3840,7 +3840,7 @@
       "track": "node",
       "module": 13,
       "position": 1,
-      "title": "Tipos estáticos dentro, datos desconocidos en la frontera",
+      "title": "Tipos estáticos dentro, datos desconocidos en la frontera · Intermedio · 90 min",
       "file": "web/public/content/node/modulo-13.md",
       "requires": [
         "node:12:6"
@@ -3851,7 +3851,7 @@
       "track": "node",
       "module": 13,
       "position": 2,
-      "title": "Un contrato HTTP es comportamiento, no solo documentación",
+      "title": "Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min",
       "file": "web/public/content/node/modulo-13.md",
       "requires": [
         "node:13:1"
@@ -3862,7 +3862,7 @@
       "track": "node",
       "module": 13,
       "position": 3,
-      "title": "Reintentar sin duplicar el efecto",
+      "title": "Reintentar sin duplicar el efecto · Avanzado · 120 min",
       "file": "web/public/content/node/modulo-13.md",
       "requires": [
         "node:13:2"
@@ -3873,7 +3873,7 @@
       "track": "node",
       "module": 13,
       "position": 4,
-      "title": "Webhooks verificables y recuperación por reconciliación",
+      "title": "Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min",
       "file": "web/public/content/node/modulo-13.md",
       "requires": [
         "node:13:3"
@@ -3884,7 +3884,7 @@
       "track": "node",
       "module": 13,
       "position": 5,
-      "title": "OpenAPI como contrato ejecutable",
+      "title": "OpenAPI como contrato ejecutable · Avanzado · 100 min",
       "file": "web/public/content/node/modulo-13.md",
       "requires": [
         "node:13:4"
@@ -3895,7 +3895,7 @@
       "track": "node",
       "module": 14,
       "position": 1,
-      "title": "TypeScript en Node.js",
+      "title": "TypeScript en Node.js · Avanzado · 60 min",
       "file": "web/public/content/node/modulo-14.md",
       "requires": [
         "node:13:5"
@@ -3906,7 +3906,7 @@
       "track": "node",
       "module": 14,
       "position": 2,
-      "title": "GraphQL avanzado y Federation",
+      "title": "GraphQL avanzado y Federation · Avanzado · 105 min",
       "file": "web/public/content/node/modulo-14.md",
       "requires": [
         "node:14:1"
@@ -3917,7 +3917,7 @@
       "track": "node",
       "module": 14,
       "position": 3,
-      "title": "Microservicios, Kafka, RabbitMQ y sagas",
+      "title": "Microservicios, Kafka, RabbitMQ y sagas · Avanzado · 105 min",
       "file": "web/public/content/node/modulo-14.md",
       "requires": [
         "node:14:2"
@@ -3928,7 +3928,7 @@
       "track": "node",
       "module": 14,
       "position": 4,
-      "title": "Serverless multi-cloud",
+      "title": "Serverless multi-cloud · Avanzado · 75 min",
       "file": "web/public/content/node/modulo-14.md",
       "requires": [
         "node:14:3"
@@ -3939,7 +3939,7 @@
       "track": "node",
       "module": 14,
       "position": 5,
-      "title": "Docker productivo con Node",
+      "title": "Docker productivo con Node · Avanzado · 90 min",
       "file": "web/public/content/node/modulo-14.md",
       "requires": [
         "node:14:4"
@@ -3950,7 +3950,7 @@
       "track": "node",
       "module": 14,
       "position": 6,
-      "title": "CI/CD y promoción de artefactos",
+      "title": "CI/CD y promoción de artefactos · Avanzado · 105 min",
       "file": "web/public/content/node/modulo-14.md",
       "requires": [
         "node:14:5"

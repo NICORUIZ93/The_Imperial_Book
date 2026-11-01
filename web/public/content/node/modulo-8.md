@@ -1,141 +1,158 @@
 # Módulo 8: Patrones asíncronos avanzados
 
-
 ## Aprende construyendo
 
-### Tema 1: Worker Threads para trabajo CPU-bound
+### Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Node.js LTS, módulos ES y manejo básico de la terminal.
 
-Al finalizar podrás mover un cálculo CPU-bound fuera del hilo principal. **Prerrequisitos:** Node LTS y módulos ES; ejemplo independiente desde una carpeta vacía.
+**Al terminar podrás:** ejecutar un cálculo intensivo en un Worker Thread, comprobar que un temporizador del hilo principal sigue respondiendo y limitar la cantidad de cálculos simultáneos.
 
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
-Una API que calcula rutas o genera un informe puede bloquear todas las solicitudes mientras procesa. Un Worker conserva receptivo el servidor.
+**Por qué importa:** un cálculo síncrono pesado monopoliza el hilo principal y retrasa timers, solicitudes HTTP y demás trabajo JavaScript. Un Worker Thread permite mover ese cómputo a otro hilo. No es una optimización para I/O: consultas de red o de base de datos ya usan las operaciones no bloqueantes de Node y no necesitan un Worker.
 
-#### Paso 3 · Teoría y analogía aplicada
+**Explicación específica:** cada Worker tiene su propia instancia de V8, su Event Loop y memoria aislada por defecto. El hilo principal entrega datos iniciales con `workerData` y se comunica después mediante `postMessage` y eventos `message`. Los valores se copian o transfieren; las variables globales no se comparten mágicamente. `SharedArrayBuffer` es un mecanismo explícito para casos avanzados, no el comportamiento predeterminado.
 
-El hilo principal coordina; un Worker ejecuta JavaScript en otro hilo con memoria aislada. Es como entregar una tarea pesada a otro especialista y recibir un resultado por mensajería, no compartir variables mágicamente.
+Crear Workers tiene coste y cada cálculo activo consume CPU. En un servidor se usa un pool acotado o un límite de concurrencia, no un Worker nuevo e ilimitado por petición. También se escuchan `message` y `error`, se valida la entrada y se termina o reutiliza cada Worker de forma deliberada.
 
-Ya separas I/O de CPU. El siguiente tema distribuirá procesos completos con `cluster` desde otra carpeta.
+**Analogía:** la oficina principal entrega un cálculo pesado a un especialista con un taller separado. Intercambian pedidos y resultados por mensajería; el especialista no puede modificar directamente los archivos de la oficina. Contratar más especialistas que puestos disponibles no acelera el trabajo y puede saturar el taller.
 
-**Errores comunes:** crear un Worker por petición sin límite; compartir estado como si fuera global; olvidar escuchar `error`; enviar objetos enormes; usar Worker para I/O simple.
+**Conceptos clave:**
 
-**Fuentes oficiales:** [Worker Threads](https://nodejs.org/api/worker_threads.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+- CPU-bound frente a I/O-bound: solo el primero justifica normalmente un Worker Thread.
+- `workerData`, `parentPort`, `postMessage` y aislamiento de memoria.
+- Concurrencia acotada, escucha de errores y finalización del Worker.
+- El hilo principal coordina; no debe esperar el resultado con un bucle bloqueante.
 
-**Conceptos clave:** hilo separado con su propia instancia de V8, `workerData`, paso de mensajes.
+#### Practica
 
-Un Worker Thread de Node ejecuta JavaScript en un hilo genuinamente separado, cada uno con su propia instancia completa de V8 (a diferencia de los Web Workers del navegador estudiados en el Módulo 10 del track de JavaScript, que comparten conceptualmente el mismo principio de aislamiento pero en un contexto distinto), permitiendo ejecutar cómputo intensivo de CPU (procesar una imagen grande, realizar cálculos matemáticos pesados, comprimir datos) sin bloquear el Event Loop del hilo principal, que permanece libre para seguir atendiendo otras peticiones concurrentes de la aplicación mientras el Worker procesa en paralelo.
-
-Crear un Worker (`new Worker("./procesar-imagen.js", { workerData: {...} })`) le pasa datos iniciales mediante `workerData`, y la comunicación posterior entre el hilo principal y el Worker ocurre mediante paso de mensajes asíncronos (`worker.postMessage()` para enviar, el evento `message` para recibir), exactamente el mismo modelo de comunicación que los Web Workers del navegador, reflejando que ambos comparten el mismo principio fundamental: sin memoria compartida por defecto entre hilos (salvo mediante `SharedArrayBuffer` para casos avanzados específicos que requieren compartir memoria explícitamente), cada hilo opera de forma aislada, comunicándose exclusivamente mediante mensajes serializables.
-
-Identificar correctamente qué trabajo es genuinamente CPU-bound (y por tanto candidato apropiado para un Worker Thread) frente a I/O-bound (que ya se beneficia del modelo no bloqueante nativo de Node sin necesitar ningún Worker adicional, como se estudió en el Módulo 0) es la decisión de diseño central: mover trabajo de I/O (como una consulta a base de datos) a un Worker Thread no aporta ningún beneficio real, porque ese trabajo ya no bloquea el hilo principal en absoluto gracias a libuv; los Worker Threads solo aportan valor real para cómputo síncrono y pesado que, de otro modo, monopolizaría el único hilo de JavaScript disponible durante toda su ejecución.
-
-**Analogía:** un Worker Thread es como contratar temporalmente a un especialista externo con su propio taller completo y separado para realizar una tarea de manufactura pesada específica, comunicándose con la oficina principal únicamente mediante pedidos y entregas formales (mensajes), sin que el especialista tenga acceso directo a los archivos internos de la oficina principal, y sin que su trabajo pesado interrumpa la atención normal a los clientes que la oficina principal sigue recibiendo mientras tanto.
-
-**¿Por qué es importante?** Los Worker Threads son la herramienta correcta y específica para cómputo pesado CPU-bound que, de otro modo, bloquearía perceptiblemente el Event Loop principal, sin aportar ningún beneficio para trabajo I/O-bound que Node ya maneja de forma no bloqueante de forma nativa.
-
-**Código del ejemplo:**
-
-```js
-import { Worker } from "node:worker_threads";
-const worker = new Worker("./procesar-imagen.js", { workerData: { ruta: "foto.png" } });
-worker.on("message", (resultado) => console.log("listo:", resultado));
-// El event loop principal NUNCA se bloquea; el trabajo pesado corre en otro hilo
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Mueve un cálculo pesado de asignación a un Worker y mantén consultas ligeras disponibles. Prueba fallo del Worker y plazo agotado con una respuesta controlada al cliente.
-
-#### Paso 4 · Demostración guiada desde cero
+Empieza en una carpeta vacía. No copies archivos de otros temas ni uses ejemplos del repositorio:
 
 ```bash
-mkdir ejemplo-worker
-cd ejemplo-worker
-npm init -y
+mkdir practica-worker
+cd practica-worker
 mkdir src
 ```
 
-Crea `src/calcular.js`:
+Crea manualmente `package.json`:
+
+```json
+{
+  "name": "practica-worker",
+  "private": true,
+  "type": "module"
+}
+```
+
+Crea `src/calcular.js` con este contenido:
 
 ```js
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
-function fibonacci(n) { return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2); }
-if (!isMainThread) parentPort.postMessage(fibonacci(workerData.n));
-else {
-  const worker = new Worker(new URL(import.meta.url), { workerData: { n: 35 } });
-  worker.on("message", (resultado) => console.log({ resultado }));
-  worker.on("error", (error) => console.error("Worker falló:", error.message));
+
+function fibonacci(n) {
+  if (!Number.isInteger(n) || n < 0 || n > 40) {
+    throw new RangeError("n debe ser un entero entre 0 y 40");
+  }
+  return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2);
 }
-```
 
-Ejecuta `node src/calcular.js`. **Resultado esperado:** `{ resultado: 9227465 }`. **Fallo deliberado y diagnóstico:** pasa `n: -1`; la función devuelve un valor inválido, demostrando que el Worker no reemplaza validación de entrada.
-
-#### Paso 5 · Práctica guiada
-
-Envía dos números al Worker y valida que sean enteros positivos. **Pista:** usa `workerData` como entrada inmutable.
-
-#### Paso 6 · Práctica independiente
-
-Mide un cálculo en el hilo principal y otro en Worker, entregando duración y capacidad de atender un timer durante el trabajo.
-
-#### Paso 7 · Cierre y conexión
-
-Ya movés un cálculo CPU-bound fuera del hilo principal y observás que un timer sigue respondiendo. El siguiente tema reparte solicitudes entre procesos, no entre hilos.
-
-### Tema 2: Cluster module y balanceo entre procesos
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás iniciar procesos Worker y repartir conexiones HTTP. **Prerrequisitos:** Node LTS y HTTP básico; ejemplo independiente desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Un servidor necesita aprovechar varios núcleos y aislar un fallo de proceso. `cluster` permite varios procesos escuchando el mismo puerto, con complejidad operativa adicional.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-El proceso primario coordina; cada worker tiene memoria y event loop propios. Es un equipo de ventanillas: una caída no comparte variables con las demás, y el balanceo debe observarse.
-
-Ya entiendes memoria aislada y balanceo básico. El siguiente tema usará una cola para desacoplar trabajos.
-
-**Errores comunes:** compartir estado en memoria; multiplicar workers sin medir; no cerrar conexiones; reiniciar fallos infinitamente; confundir cluster con threads.
-
-**Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
-
-**Conceptos clave:** un proceso por núcleo, memoria aislada, balanceo automático de conexiones.
-
-El módulo `cluster` permite bifurcar múltiples procesos Node completamente independientes (cada uno ejecutando una copia idéntica de la aplicación), típicamente uno por núcleo de CPU disponible (`os.availableParallelism()`), aprovechando así todos los núcleos del servidor, algo que un único proceso Node de un solo hilo no puede hacer por sí solo (recordando que el hilo único de JavaScript de un proceso Node individual, por diseño, solo puede aprovechar un núcleo de CPU a la vez para ejecutar código JavaScript, aunque libuv internamente use un pool de hilos para I/O). El proceso primario (`cluster.isPrimary`) bifurca los procesos trabajadores con `cluster.fork()`, y cada proceso trabajador ejecuta de forma independiente la aplicación completa (por ejemplo, arrancando su propia instancia del servidor Express).
-
-A diferencia de los Worker Threads del Tema 1, cada proceso de `cluster` tiene memoria completamente aislada del sistema operativo (son procesos genuinamente separados, no hilos dentro del mismo proceso), lo que significa que no pueden compartir estado en memoria directamente entre sí (una variable global en un proceso trabajador no es visible para otro proceso trabajador distinto): cualquier estado que necesite compartirse entre los procesos trabajadores del cluster (como una sesión de usuario, o una caché compartida) debe externalizarse hacia un almacén compartido accesible por todos, como Redis, en vez de asumir que el estado en memoria de un proceso trabajador es accesible desde otro.
-
-Node balancea automáticamente las conexiones entrantes entre los procesos trabajadores del cluster (típicamente mediante un algoritmo round-robin en la mayoría de sistemas operativos), permitiendo que una aplicación aproveche efectivamente todos los núcleos de CPU disponibles del servidor para atender tráfico concurrente, multiplicando la capacidad de throughput total del servidor de forma proporcional (aproximadamente) al número de núcleos disponibles, especialmente beneficioso quando la carga incluye trabajo de cómputo real además de I/O puro.
-
-**Analogía:** el cluster module es como abrir múltiples sucursales idénticas de la misma tienda, cada una con su propio personal y su propio inventario completamente independiente, con un sistema central que dirige automáticamente a cada cliente entrante hacia una sucursal disponible; a diferencia de un Worker Thread (como un especialista dentro de la misma sucursal), estas sucursales no comparten directamente su inventario interno entre sí, requiriendo un almacén central compartido si necesitan coordinar información entre ellas.
-
-**¿Por qué es importante?** El módulo cluster permite que una aplicación Node aproveche todos los núcleos de CPU de un servidor, multiplicando su capacidad de throughput, a costa de requerir externalizar cualquier estado compartido hacia un almacén accesible por todos los procesos, dado el aislamiento completo de memoria entre ellos.
-
-**Código del ejemplo:**
-
-```js
-import cluster from "node:cluster";
-import { availableParallelism } from "node:os";
-
-if (cluster.isPrimary) {
-  for (let i = 0; i < availableParallelism(); i++) cluster.fork(); // un proceso por núcleo
+if (!isMainThread) {
+  try {
+    parentPort.postMessage({ ok: true, valor: fibonacci(workerData.n) });
+  } catch (error) {
+    parentPort.postMessage({ ok: false, error: error.message });
+  }
 } else {
-  arrancarServidorExpress(); // cada worker corre su propia copia, con memoria AISLADA
+  const worker = new Worker(new URL(import.meta.url), {
+    workerData: { n: 35 },
+  });
+  const latido = setInterval(() => console.log("el hilo principal responde"), 40);
+
+  worker.once("message", async (resultado) => {
+    clearInterval(latido);
+    console.log(resultado);
+    await worker.terminate();
+  });
+  worker.once("error", async (error) => {
+    clearInterval(latido);
+    console.error("Worker falló:", error.message);
+    await worker.terminate();
+  });
 }
 ```
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Ejecuta dos procesos de API y verifica que no dependen de una sesión almacenada solo en memoria. Una petición atendida por otro proceso debe conservar autorización y estado consistente.
-
-#### Paso 4 · Demostración guiada desde cero
+Ejecuta:
 
 ```bash
-mkdir ejemplo-cluster
-cd ejemplo-cluster
-npm init -y
+node src/calcular.js
+```
+
+**Resultado esperado:** aparecen varios mensajes `el hilo principal responde` antes de `{ ok: true, valor: 9227465 }`. Los latidos no tienen un número exacto obligatorio; lo relevante es que continúan durante el cálculo.
+
+**Fallo deliberado y corrección:** cambia `workerData` a `{ n: -1 }` y ejecuta de nuevo. El resultado será `{ ok: false, error: "n debe ser un entero entre 0 y 40" }`: mover código a otro hilo no valida la entrada. Corrige el valor a `35` y añade en la rama principal una validación que rechace valores fuera de rango antes de construir el Worker; conserva también la validación interna como defensa.
+
+**Práctica guiada:** modifica únicamente `src/calcular.js` para recibir `{ a: 20, b: 25 }` en `workerData`, validar ambos enteros y devolver `fibonacci(a) + fibonacci(b)`. El resultado esperado es `81790`. Después cambia `b` por `2.5` y comprueba que el error identifica la entrada inválida; restaura los valores válidos.
+
+**Ejercicio independiente:** crea `src/servidor.js`, sin importar archivos de otros temas, con un servidor HTTP en `127.0.0.1:3000`. Debe aceptar `/calcular?n=35`, ejecutar Fibonacci en un Worker y responder también `/salud`. Implementa una cola interna y un semáforo que permita como máximo dos Workers activos; las demás peticiones deben esperar. Termina cada Worker en `finally` y devuelve un error HTTP controlado si `n` no es válido. Ejecuta varias peticiones de cálculo y una de salud en paralelo: `/salud` debe seguir respondiendo y el contador de Workers activos nunca debe superar dos.
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** mueve el cálculo pesado de asignación de rutas a un pool acotado de Workers. Mantén las consultas de disponibilidad fuera de ese pool porque son I/O. Define respuesta de error y plazo máximo para que un cálculo fallido no deje una petición pendiente.
+
+**Checklist de salida:**
+
+- [ ] Explicas por qué Fibonacci es CPU-bound y una consulta a PostgreSQL no se beneficia de un Worker Thread.
+- [ ] El cálculo devuelve `9227465` para `n = 35` y los timers principales siguen apareciendo.
+- [ ] Una entrada inválida produce un diagnóstico controlado, no una recursión sin límite.
+- [ ] El servidor independiente nunca tiene más de dos Workers activos y cierra los que termina.
+- [ ] Escuchas tanto el resultado como el evento `error`.
+
+**Errores comunes:** usar Workers para I/O simple; crear uno por petición sin límite; asumir memoria global compartida; enviar objetos enormes sin medir el coste de copia; omitir `error` o `terminate`.
+
+**Fuentes oficiales:** [Worker Threads](https://nodejs.org/api/worker_threads.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+
+### Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min
+
+**Prerrequisito:** Node.js LTS, HTTP básico y comprensión de procesos y puertos locales.
+
+**Al terminar podrás:** iniciar dos procesos con `cluster`, identificar qué PID atiende cada respuesta y demostrar que su estado en memoria no se comparte.
+
+#### Aprende
+
+**Por qué importa:** un solo proceso ejecuta JavaScript principal en un hilo y no aprovecha por sí solo todos los núcleos para ese código. `cluster` permite varios procesos de la misma aplicación escuchando un puerto común. Esto añade capacidad y aislamiento, pero también exige externalizar estado, controlar reinicios y medir el resultado.
+
+**Explicación específica:** el proceso primario usa `cluster.fork()` y cada worker ejecuta una copia independiente de la aplicación, con su propia memoria y Event Loop. Una variable global o una sesión guardada en un objeto no es visible en otro worker. Redis, una base de datos u otro almacén compartido son necesarios cuando el estado debe ser común.
+
+Node puede distribuir conexiones entre workers, pero no garantiza que cada petición alterne PID ni que el throughput crezca linealmente con el número de procesos. La carga, el número real de núcleos, I/O, el sistema operativo y la coordinación influyen. Empieza con pocos workers, mide y evita crear más procesos de los que la máquina puede sostener.
+
+**Analogía:** son varias sucursales con personal e inventario propios y un repartidor central de clientes. Si una sucursal anota algo en su libreta, las demás no lo ven; necesitan un registro central. Abrir el doble de sucursales no garantiza el doble de ventas si la calle, el repartidor o el almacén ya son el cuello de botella.
+
+**Conceptos clave:**
+
+- `cluster.isPrimary`, `cluster.fork()` y procesos con memoria aislada.
+- `os.availableParallelism()` como referencia, no como orden de usar todos los núcleos.
+- Balanceo de conexiones sin garantía de throughput lineal.
+- Estado compartido externo, cierre ordenado y reinicios acotados.
+
+#### Practica
+
+Empieza en una carpeta vacía y crea todos los archivos localmente:
+
+```bash
+mkdir practica-cluster
+cd practica-cluster
 mkdir src
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-cluster",
+  "private": true,
+  "type": "module"
+}
 ```
 
 Crea `src/server.js`:
@@ -144,324 +161,710 @@ Crea `src/server.js`:
 import cluster from "node:cluster";
 import http from "node:http";
 import os from "node:os";
+
+const cantidad = Math.min(2, os.availableParallelism());
+
 if (cluster.isPrimary) {
-  const cantidad = Math.min(2, os.availableParallelism());
+  console.log(`Primario ${process.pid}: iniciará ${cantidad} workers`);
+  cluster.on("online", (worker) => {
+    console.log(`Worker local listo: PID ${worker.process.pid}`);
+  });
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(`Worker ${worker.process.pid} terminó`, { code, signal });
+  });
   for (let i = 0; i < cantidad; i += 1) cluster.fork();
-  console.log(`Primary ${process.pid}: ${cantidad} workers`);
 } else {
-  http.createServer((_req, res) => res.end(`worker=${process.pid}\n`)).listen(3000);
+  let atendidas = 0;
+  const server = http.createServer((_req, res) => {
+    atendidas += 1;
+    res.setHeader("content-type", "application/json");
+    res.end(JSON.stringify({ pid: process.pid, atendidas }) + "\n");
+  });
+  server.listen(3000, "127.0.0.1");
+  process.on("SIGTERM", () => server.close(() => process.exit(0)));
 }
 ```
 
-Ejecuta `node src/server.js` y realiza varias peticiones con `curl`. **Resultado esperado:** responde más de un PID. **Fallo deliberado y diagnóstico:** mata un worker; el primario detecta su salida, pero las solicitudes en curso de ese proceso se pierden: necesitas supervisión y reintentos.
-
-#### Paso 5 · Práctica guiada
-
-Registra `cluster.on("exit")` y crea un reemplazo limitado. **Pista:** evita un bucle infinito si el código falla al iniciar.
-
-#### Paso 6 · Práctica independiente
-
-Compara una instancia y dos workers bajo carga ligera; entrega PIDs y latencia, sin afirmar que más procesos siempre es mejor.
-
-#### Paso 7 · Cierre y conexión
-
-Ya comprobás que las respuestas llegan desde más de un PID y que matar un worker pierde las solicitudes en curso. El siguiente tema saca el trabajo lento del request y lo encola para un worker dedicado.
-
-### Tema 3: Colas de trabajo con BullMQ
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás publicar y consumir un trabajo con reintento. **Prerrequisitos:** Node LTS, Docker y Redis; ejemplo independiente desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Generar una etiqueta o enviar una notificación no debe mantener abierta la petición HTTP. Una cola permite responder pronto y procesar después. **¿Por qué es importante?** Sin una cola, un pico de trabajo agota el proceso que atiende HTTP; con ella, el fallo se reintenta y se mide en lugar de perderse en una petición que ya respondió.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Productor publica, worker consume y Redis conserva el estado. Es una bandeja numerada: si un operador falla, el trabajo puede reintentarse sin duplicar el efecto.
-
-#### Paso 4 · Demostración guiada desde cero
+Ejecuta en una terminal:
 
 ```bash
-mkdir ejemplo-bullmq
-cd ejemplo-bullmq
-npm init -y
-npm install bullmq
+node src/server.js
+```
+
+En otra terminal, desde la misma carpeta, realiza varias peticiones:
+
+```bash
+for i in {1..8}; do curl -s http://127.0.0.1:3000/; done
+```
+
+**Resultado esperado:** cada respuesta incluye `pid` y un contador. Normalmente aparecerá más de un PID, aunque el balanceador no promete una secuencia exacta. El contador puede repetir valores entre PIDs: cada proceso tiene su propia variable `atendidas`.
+
+**Fallo deliberado y corrección:** interpreta inicialmente `atendidas` como total global y contrasta la suma esperada con las respuestas. El diagnóstico es memoria aislada, no pérdida aleatoria de peticiones. Corrige el diseño moviendo el contador a un almacén compartido si realmente debe ser global; no intentes sincronizarlo leyendo variables de otro proceso.
+
+**Práctica guiada:** en la rama primaria de `src/server.js`, sustituye el reinicio ausente por una política de máximo tres reemplazos por minuto. Guarda las marcas de tiempo de los reinicios, descarta las que tengan más de 60 segundos y solo ejecuta `cluster.fork()` si quedan menos de tres. Registra un error y no reinicies cuando se alcance el límite: un fallo permanente de arranque no debe crear un bucle infinito.
+
+Para probar una salida de forma acotada, usa exclusivamente uno de los PID que tu propio primario acaba de imprimir como `Worker local listo`:
+
+```bash
+kill -TERM PID_IMPRESO_POR_TU_PRIMARIO
+```
+
+Sustituye el texto por ese número, verifica que corresponde a esta práctica y no uses el PID del primario ni un PID de otro servicio. Observa el evento `exit` y el único reemplazo. Detén la práctica con `Ctrl+C` en su terminal.
+
+**Ejercicio independiente:** crea `src/carga.js` que envíe 100 peticiones con `fetch`, con concurrencia máxima de 10, y mida duración total y latencias. Modifica `src/server.js` para leer `WORKERS` con valores `1` o `2`, manteniendo siempre el límite de dos. Ejecuta por separado `WORKERS=1 node src/server.js` y `WORKERS=2 node src/server.js`, y lanza `node src/carga.js` contra cada configuración. Entrega una tabla con PIDs, duración y latencia; interpreta los datos sin afirmar que dos procesos deben duplicar el throughput.
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** ejecuta dos procesos de la API y alterna peticiones entre ellos. Comprueba que autorización, sesiones y estado de entregas no dependan de memoria local. Añade cierre ordenado y una política de reemplazo limitada antes de medir capacidad.
+
+**Checklist de salida:**
+
+- [ ] Las respuestas identifican el PID del proceso que las atendió.
+- [ ] Demuestras con `atendidas` que la memoria no se comparte entre workers.
+- [ ] El número de procesos está limitado y su beneficio se evalúa con mediciones.
+- [ ] Los reinicios tienen un límite verificable y no forman un bucle infinito.
+- [ ] Una terminación de prueba usa solo el PID local identificado en la salida del primario.
+
+**Errores comunes:** guardar sesiones solo en memoria; crear un proceso por núcleo sin medir; esperar throughput lineal; confundir procesos con threads; reiniciar indefinidamente; matar procesos sin verificar que pertenecen a la práctica.
+
+**Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
+
+### Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min
+
+**Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
+
+**Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
+
+#### Aprende
+
+**Por qué importa:** generar una etiqueta o enviar una notificación puede ser lento o fallar temporalmente. Encolar separa la respuesta HTTP del procesamiento, limita la concurrencia del consumidor y hace visibles los reintentos. Para una consulta rápida, en cambio, la cola añade latencia e infraestructura sin beneficio.
+
+**Explicación específica:** el productor añade jobs a una cola de BullMQ; Redis conserva su estado y un Worker los procesa. `attempts` acota los intentos y `backoff` separa los reintentos. `jobId` evita insertar dos jobs con el mismo identificador mientras ese job existe y se conserva. La concurrencia del Worker debe ser explícita y ajustada a CPU, memoria y límites del servicio dependiente.
+
+Un reintento puede repetir un efecto que ya ocurrió si la confirmación se perdió. Por eso el consumidor debe ser idempotente. Ni `jobId` ni una marca temporal en Redis vuelven durable por sí solos un correo enviado, un cobro o una escritura externa: la garantía debe apoyarse en una restricción única, un registro transaccional o el mecanismo idempotente del proveedor. Cierra `Worker`, `Queue` y eventos asociados al terminar.
+
+**Analogía:** es una bandeja numerada de trabajos. Si el operador pierde momentáneamente una herramienta, vuelve a intentar la misma orden después de esperar. El número evita dos fichas iguales en la bandeja, pero el almacén de destino todavía necesita impedir que se fabrique dos veces el mismo pedido.
+
+**Conceptos clave:**
+
+- Productor, cola, consumidor y estado en Redis.
+- `attempts`, backoff, `jobId` y concurrencia acotada.
+- Reintentos ante fallos transitorios e idempotencia del efecto.
+- Cierre ordenado y conservación de jobs para poder diagnosticar su estado.
+
+#### Practica
+
+Comienza en una carpeta vacía. Usa un contenedor propio y una versión fijada de Redis:
+
+```bash
+mkdir practica-bullmq
+cd practica-bullmq
 mkdir src
-docker run --name redis-academia -p 6379:6379 -d redis:7-alpine
+docker run --name redis-practica-bullmq -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
+```
+
+Crea manualmente `package.json`:
+
+```json
+{
+  "name": "practica-bullmq",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "bullmq": "^5.0.0"
+  }
+}
+```
+
+Instala la dependencia declarada:
+
+```bash
+npm install
 ```
 
 Crea `src/cola.js`:
 
 ```js
 import { Queue, Worker } from "bullmq";
+
 const connection = { host: "127.0.0.1", port: 6379 };
 const queue = new Queue("etiquetas", { connection });
-const worker = new Worker("etiquetas", async (job) => {
-  console.log("procesando", job.id, job.data.guia);
-}, { connection });
-await queue.add("generar", { guia: "RF-100" }, { attempts: 2 });
-await new Promise((resolve) => worker.on("completed", resolve));
-await worker.close(); await queue.close();
-console.log("trabajo completado");
+const efectosLocales = new Set();
+
+const worker = new Worker(
+  "etiquetas",
+  async (job) => {
+    console.log(`intento=${job.attemptsMade + 1} guia=${job.data.guia}`);
+    if (job.attemptsMade === 0) throw new Error("fallo transitorio simulado");
+    if (efectosLocales.has(job.data.guia)) return { duplicado: true };
+    efectosLocales.add(job.data.guia);
+    return { guia: job.data.guia };
+  },
+  { connection, concurrency: 2 },
+);
+
+worker.on("failed", (job, error) => {
+  console.log(`falló job=${job?.id}: ${error.message}`);
+});
+worker.on("error", (error) => console.error("worker_error", error.message));
+
+let timeout;
+const completado = new Promise((resolve, reject) => {
+  worker.once("completed", (job) => resolve(job.id));
+  timeout = setTimeout(() => reject(new Error("tiempo de espera agotado")), 10000);
+});
+
+try {
+  const opciones = {
+    jobId: "etiqueta-RF-100",
+    attempts: 3,
+    backoff: { type: "exponential", delay: 100 },
+  };
+  const original = await queue.add("generar", { guia: "RF-100" }, opciones);
+  const idCompletado = await completado;
+  const duplicado = await queue.add("generar", { guia: "RF-100" }, opciones);
+  console.log({ original: original.id, idCompletado, duplicado: duplicado.id });
+} finally {
+  clearTimeout(timeout);
+  await worker.close();
+  await queue.close();
+}
 ```
 
-Ejecuta `node src/cola.js`. **Resultado esperado:** procesamiento y completado. **Fallo deliberado y diagnóstico:** detén Redis antes de ejecutar; aparece un error de conexión, no una etiqueta “completada”. Elimina con `docker rm -f redis-academia`.
+Ejecuta:
 
-#### Paso 5 · Práctica guiada
+```bash
+node src/cola.js
+```
 
-Haz que el worker falle una vez y reintente. **Pista:** cuenta intentos por `job.attemptsMade`.
+**Resultado esperado:** el primer intento falla, BullMQ espera y reintenta; después aparece un evento de completado. Los tres identificadores impresos son `etiqueta-RF-100`, y el segundo `add` no inicia otro procesamiento.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado y corrección:** el primer intento ya es el fallo controlado. Si eliminaras `attempts` o intercalaras un `catch` vacío, el fallo quedaría perdido o sin diagnóstico. Conserva el lanzamiento del error, el límite de tres intentos, el backoff y el evento `failed`; esos elementos corrigen el fallo transitorio sin ocultarlo.
 
-Añade idempotencia por `jobId` y entrega evidencia de que publicar dos veces no duplica el efecto.
+**Práctica guiada:** cambia el procesador para que falle siempre con `Error("proveedor no disponible")`. Ejecuta y registra tres intentos fallidos, no un bucle infinito. Corrige después el procesador para fallar solo cuando `job.attemptsMade === 0`, como en el ejemplo inicial, y verifica nuevamente la finalización. Cierra el script en ambos casos mediante el bloque `finally`.
 
-#### Paso 7 · Cierre y conexión
+**Ejercicio independiente:** crea `src/productor.js` y `src/consumidor.js` desde cero. El productor debe aceptar una guía por argumento, publicar con `jobId` derivado de esa guía y cerrar su `Queue`. El consumidor debe usar concurrencia dos, tres intentos con backoff y cierre ante `SIGINT`/`SIGTERM`. Simula un proveedor que registra guías procesadas y demuestra que repetir la publicación no repite el efecto local. Después explica por qué ese `Set` no sobrevive a un reinicio y qué restricción única necesitaría el almacén real.
 
-Ya desacoplas solicitudes y trabajos lentos. El siguiente tema observará procesos y memoria.
+Al terminar toda la práctica, elimina únicamente el contenedor creado aquí:
 
-Encolar el trabajo lento en vez de ejecutarlo en el mismo request es el mismo patrón que necesitará el proyecto integrador (API productiva, Módulo 12) para tareas como enviar una notificación o generar un reporte: el endpoint responde de inmediato y un worker separado procesa el job a su propio ritmo.
+```bash
+docker rm -f redis-practica-bullmq
+```
 
-**Cuándo no usarlo:** para una operación que ya es rápida (una consulta simple a la base de datos), agregar una cola introduce latencia adicional (el viaje a Redis) y una pieza de infraestructura más para operar sin ningún beneficio real; resérvala para trabajo genuinamente lento o que deba sobrevivir a un reinicio del proceso que lo encoló.
+#### Aplica
 
-**Errores comunes:** no cerrar workers; repetir efectos sin idempotencia; usar Redis sin persistencia para datos críticos; ocultar fallos en un catch vacío.
+**Transferencia al proyecto integrador «API operativa de entregas»:** el endpoint de etiquetas debe responder con un identificador de trabajo y dejar la generación a un consumidor separado. Limita concurrencia y reintentos, registra el fallo definitivo y protege el efecto con una clave única durable en el sistema que lo ejecuta.
+
+**Checklist de salida:**
+
+- [ ] Redis usa una versión fijada y la conexión apunta a loopback.
+- [ ] El primer fallo se reintenta y el job termina en un intento posterior.
+- [ ] Publicar dos veces `etiqueta-RF-100` no crea dos procesamientos en la demostración.
+- [ ] Un fallo permanente se detiene después del número configurado de intentos.
+- [ ] `Worker` y `Queue` se cierran incluso cuando hay un error.
+- [ ] Distingues deduplicación del job de idempotencia durable del efecto externo.
+
+**Errores comunes:** no cerrar consumidores; concurrencia ilimitada; reintentos infinitos; ocultar errores en un `catch` vacío; confiar solo en Redis para un efecto externo crítico; eliminar jobs completados cuando el `jobId` aún se necesita para deduplicar.
 
 **Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
 
-### Tema 4: PM2, memory leaks y heap snapshots
+### Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
 
-Al finalizar podrás observar crecimiento de heap y obtener un snapshot. **Prerrequisitos:** Node LTS, Chrome DevTools opcional y una carpeta vacía.
+**Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
 
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
-Una API que retiene arrays por cada solicitud se degrada lentamente. Reiniciar el proceso oculta el síntoma; medir heap permite encontrar la referencia retenida.
+**Por qué importa:** una API puede degradarse durante horas porque conserva referencias de solicitudes ya terminadas. Reiniciar con PM2 recupera temporalmente el servicio, pero no elimina la causa. Medir y comparar snapshots permite localizar qué objetos permanecen vivos.
 
-#### Paso 3 · Teoría y analogía aplicada
+**Explicación específica:** el garbage collector libera objetos inalcanzables; una fuga aparece cuando una referencia viva mantiene objetos que ya no se necesitan. `process.memoryUsage()` ofrece señales distintas: RSS es memoria residente del proceso, `heapUsed` es memoria usada en el heap de V8 y `external` representa memoria externa asociada, por ejemplo a ciertos `Buffer`. RSS no equivale a heap, y `heapUsed` puede subir y bajar con el GC.
 
-El garbage collector libera objetos sin referencias. Una fuga conserva referencias vivas innecesarias, como guardar todas las cajas entregadas en una bodega “temporal”.
+`Buffer.alloc()` incrementa principalmente memoria externa para buffers grandes; no debe usarse como prueba simple de que `heapUsed` crece. Para estudiar el heap, retén objetos JavaScript. Un heap snapshot captura ese heap en un instante; comparar dos snapshots bajo una carga repetible ayuda a identificar clases y referencias que crecen. `--max-old-space-size` cambia un límite de V8, no corrige una fuga.
 
-Ya puedes observar una fuga en vez de reiniciar a ciegas. El siguiente tema usará Redis para caché e idempotencia.
+PM2 aporta arranque, logs y reinicio en despliegues sin orquestador. Un orquestador de contenedores puede asumir esas funciones. En ambos casos, un reinicio por memoria es una medida operativa, no un diagnóstico ni una reparación.
 
-**Errores comunes:** medir solo RSS; tomar snapshots en producción sin plan; cachear sin límite; confundir Buffer externo con heap; reiniciar sin corregir.
+**Analogía:** PM2 es un supervisor que vuelve a encender una máquina detenida. El snapshot es una fotografía del almacén: comparar dos fotos muestra qué cajas se acumulan. Ampliar el almacén o vaciarlo cada noche no explica por qué siguen llegando cajas que nadie retira.
 
-**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
+**Conceptos clave:**
 
-**Conceptos clave:** gestión de procesos, `--max-old-space-size`, snapshots de heap.
+- Referencias vivas, garbage collection y comparación de snapshots.
+- RSS, `heapUsed` y `external` como métricas diferentes.
+- Inspector ligado a `127.0.0.1`, nunca expuesto a toda la red durante la práctica.
+- PM2 como supervisor; `--max-old-space-size` como límite, no como corrección.
 
-PM2 es un gestor de procesos para aplicaciones Node que, en un modelo de despliegue previo a la adopción generalizada de contenedores y orquestadores, proporcionaba reinicio automático ante fallos, logs centralizados y su propia forma de clustering integrado directamente sobre un servidor. En un mundo con Docker y Kubernetes (estudiados en el track DevOps), muchas de estas responsabilidades las asume el propio orquestador (`restart: always` en Kubernetes reemplaza gran parte de lo que PM2 gestionaba antes directamente sobre el sistema operativo), aunque PM2 sigue siendo relevante en despliegues que no usan contenedores, o como herramienta de desarrollo local para gestionar múltiples procesos fácilmente.
+#### Practica
 
-`--max-old-space-size` es un flag de V8 (accesible mediante `node --max-old-space-size=4096 script.js`) que ajusta el límite de memoria asignado a la "generación vieja" del heap (el modelo de recolección generacional estudiado en el Módulo 5 del track de JavaScript), relevante para procesos Node que necesitan manejar volúmenes de datos considerables en memoria y que, sin este ajuste, podrían alcanzar el límite por defecto de V8 y fallar con un error de memoria agotada, incluso en un servidor con considerablemente más RAM física disponible de la que V8 usaría por defecto sin este ajuste explícito.
-
-Un heap snapshot captura el estado completo de la memoria del heap de un proceso Node en un momento específico, permitiendo inspeccionar exactamente qué objetos están ocupando memoria y, comparando dos snapshots tomados en momentos distintos durante la ejecución normal de la aplicación, identificar objetos que crecen de forma sostenida y sospechosa en cantidad entre ambos snapshots (una señal característica de una fuga de memoria, el mismo concepto de "referencias mantenidas innecesariamente vivas" estudiado en el Módulo 5 del track de JavaScript, ahora aplicado al diagnóstico específico de un proceso de servidor Node de larga duración). Herramientas como Chrome DevTools (conectadas vía `--inspect`, Módulo 7) permiten tomar y comparar heap snapshots directamente sobre un proceso Node en ejecución, sin necesidad de herramientas adicionales especializadas más allá de las ya disponibles en el navegador.
-
-**Analogía:** PM2 es como un supervisor de turno que reinicia automáticamente una máquina que se detiene inesperadamente; un heap snapshot es como una fotografía detallada del inventario completo de un almacén en un momento específico, y comparar dos fotografías tomadas en momentos distintos revela qué categorías de artículos se están acumulando sospechosamente sin ser retirados nunca, una señal de que algo en el proceso de gestión del almacén no está liberando correctamente el espacio que ya no necesita.
-
-**¿Por qué es importante?** Entender PM2 en contraste con las responsabilidades que asume un orquestador de contenedores, y saber usar heap snapshots para diagnosticar fugas de memoria reales en un proceso Node de larga duración, son habilidades operativas esenciales para mantener aplicaciones Node saludables en producción.
-
-**Prueba en terminal:**
+Empieza en una carpeta vacía:
 
 ```bash
-node --max-old-space-size=4096 servidor.js   # ajusta el límite de memoria de V8
-# Chrome DevTools (--inspect) → pestaña Memory → tomar snapshot A → esperar → snapshot B
-# comparar A vs B: ¿qué tipo de objeto creció sospechosamente entre ambos?
-```
-
----
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Obtén snapshots del servicio antes y después de una carga repetible. Localiza referencias retenidas de peticiones terminadas y demuestra con la misma carga que la corrección reduce el crecimiento.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-memory-leak
-cd ejemplo-memory-leak
-npm init -y
+mkdir practica-memoria
+cd practica-memoria
 mkdir src
 ```
 
-Crea `src/leak.js`:
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-memoria",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "pm2": "^5.4.3"
+  }
+}
+```
+
+Instala la dependencia de desarrollo:
+
+```bash
+npm install
+```
+
+Crea `src/leak.js` con objetos JavaScript, no con buffers como sustituto de una prueba de heap:
 
 ```js
 const retenidos = [];
+let solicitud = 0;
+
 setInterval(() => {
-  retenidos.push(Buffer.alloc(1024 * 100));
-  const { heapUsed } = process.memoryUsage();
-  console.log(`objetos=${retenidos.length} heap=${Math.round(heapUsed / 1024)}KB`);
-}, 100);
+  for (let i = 0; i < 100; i += 1) {
+    solicitud += 1;
+    retenidos.push({ solicitud, payload: "x".repeat(1024) });
+  }
+  const { rss, heapUsed, external } = process.memoryUsage();
+  const mb = (bytes) => Math.round(bytes / 1024 / 1024);
+  console.log({ objetos: retenidos.length, rssMB: mb(rss), heapUsedMB: mb(heapUsed), externalMB: mb(external) });
+}, 500);
 ```
 
-Ejecuta `node --inspect=0.0.0.0:9229 src/leak.js` y observa memoria. **Resultado esperado:** la cantidad retenida crece. **Fallo deliberado y diagnóstico:** comenta la referencia `retenidos`; el heap deja de crecer de la misma forma. Detén con `Ctrl+C`.
+Ejecuta el inspector únicamente en loopback:
 
-#### Paso 5 · Práctica guiada
+```bash
+node --inspect=127.0.0.1:9229 src/leak.js
+```
 
-Captura un snapshot con `node --heapsnapshot-signal=SIGUSR2` en macOS/Linux. **Pista:** realiza la captura solo en un proceso de prueba.
+Abre `chrome://inspect`, conecta el objetivo Node local y en **Memory** toma un snapshot A. Espera varios intervalos y toma otro B; compara los objetos retenidos. Detén el proceso con `Ctrl+C` en su terminal cuando termines.
 
-#### Paso 6 · Práctica independiente
+**Resultado esperado:** `objetos` crece sin límite y el segundo snapshot conserva muchas más instancias. `heapUsedMB` puede mostrar dientes de sierra por el GC, así que no exijas crecimiento monótono en cada línea. RSS, heap y external no tienen que coincidir.
 
-Reescribe el ejemplo con una caché de tamaño limitado y entrega una comparación antes/después.
+**Fallo deliberado y corrección:** la fuga deliberada es el arreglo global que conserva cada solicitud. Crea una copia corregida llamada `src/cache-limitada.js` con el mismo instrumento de métricas, pero después de cada inserción elimina las referencias más antiguas para que `retenidos.length` nunca supere 200. Ejecuta esa versión con inspector loopback y toma dos snapshots bajo el mismo ritmo: la cantidad retenida debe estabilizarse alrededor del límite, aunque las métricas sigan fluctuando.
 
-#### Paso 7 · Cierre y conexión
+**Práctica guiada:** en ambos archivos, etiqueta cada objeto con `solicitud` y localiza en DevTools qué arreglo lo retiene. Documenta el número de objetos y la comparación A/B antes y después de limitar la colección. No captures snapshots de un servicio productivo ni abras el inspector en `0.0.0.0`.
 
-Ya reproducís una retención creciente de memoria y la comparás con una caché de tamaño limitado. El siguiente tema usa Redis para cachear, deduplicar y publicar eventos entre procesos.
-
-### Tema 5: Redis para caché, idempotencia y Pub/Sub
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás guardar una respuesta temporal y rechazar un mensaje duplicado. **Prerrequisitos:** Node LTS, Docker y Redis; ejemplo desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Una consulta de tarifas repetida puede saturar un servicio externo; una orden duplicada puede cobrar dos veces. Caché e idempotencia resuelven problemas distintos.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-TTL expira datos; una clave idempotente registra que un comando ya fue procesado. Pub/Sub notifica en vivo pero no es una cola durable. Son notas con caducidad, recibos únicos y anuncios separados.
-
-Ya distingues caché, idempotencia y notificación. El siguiente módulo abordará observabilidad desde una carpeta nueva.
-
-**Errores comunes:** cachear sin TTL; usar `SET` sin NX para comandos únicos; confundir Pub/Sub con cola durable; no cerrar cliente; guardar secretos en URL.
-
-**Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/) y [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/).
-
-**Objetivo:** reducir lecturas repetidas de entregas, impedir comandos duplicados y comunicar cambios efímeros entre procesos con Redis.
-
-**¿Por qué es importante?** Redis mantiene datos en memoria y ofrece operaciones atómicas. Eso lo hace útil como caché y coordinador de claves de idempotencia, pero no convierte Pub/Sub en una cola durable: un suscriptor desconectado pierde los mensajes. Elegir correctamente cada uso evita datos obsoletos y falsas garantías de entrega.
-
-**Contexto:** miles de conductores consultan el mismo detalle de ruta, mientras la confirmación de una entrega puede repetirse por mala señal. La caché reduce carga sobre PostgreSQL; una clave atómica evita aplicar dos veces el mismo evento; Pub/Sub actualiza paneles en vivo cuando perder una notificación temporal es aceptable.
-
-**Analogía:** la caché es una pizarra con una copia temporal del horario. La base de datos sigue siendo el registro oficial. `SET NX` es un sello que solo puede colocarse una vez, y Pub/Sub es un anuncio por altavoz: quien no estaba presente no lo escucha.
-
-**Conceptos clave**
-
-- Cache-aside: consultar Redis, acudir a la base ante un fallo de caché y guardar con TTL.
-- Invalidación: después de modificar la fuente oficial, borrar la copia relacionada.
-- `SET key value NX EX seconds` combina exclusión y expiración de forma atómica.
-- Pub/Sub entrega a suscriptores conectados; Streams o una cola sirven para procesamiento recuperable.
-
-**Demostración guiada:** crea `demo-api/packages/api/src/infrastructure/redis-delivery-cache.js`.
+**Ejercicio independiente:** crea manualmente `ecosystem.config.cjs`:
 
 ```js
-import { createClient } from 'redis';
-
-export const redis = createClient({ url: process.env.REDIS_URL });
-redis.on('error', (error) => console.error({ error }, 'redis_error'));
-
-export async function findDeliveryCached(id, repository) {
-  const key = `delivery:${id}`;
-  const cached = await redis.get(key);
-  if (cached) return JSON.parse(cached);
-
-  const delivery = await repository.findById(id);
-  if (delivery) await redis.set(key, JSON.stringify(delivery), { EX: 60 });
-  return delivery;
-}
-
-export async function reserveCommand(commandId) {
-  const result = await redis.set(`command:${commandId}`, 'processing', {
-    NX: true,
-    EX: 300,
-  });
-  return result === 'OK';
-}
-
-export async function invalidateDelivery(id) {
-  await redis.del(`delivery:${id}`);
-  await redis.publish('delivery.changed', JSON.stringify({ id }));
-}
+module.exports = {
+  apps: [{ name: "memoria-academia", script: "src/cache-limitada.js", instances: 1 }],
+};
 ```
 
-Ejecuta desde `demo-api/packages/api`:
+Arranca y observa la versión corregida con:
 
 ```bash
-docker run --name demo-redis -p 6379:6379 redis:7-alpine
-npm install redis
-REDIS_URL='redis://localhost:6379' npm test -- redis-cache
+npx pm2 start ecosystem.config.cjs
+npx pm2 logs memoria-academia
 ```
 
-**Resultado esperado:** la primera consulta llama al repositorio y la segunda usa Redis; después de invalidar vuelve a consultar. Dos reservas con el mismo `commandId` producen `true` y `false`, nunca dos `true`.
-
-**Práctica guiada:** añade un contador al repositorio falso y verifica que dos lecturas consecutivas solo lo incrementan una vez. Actualiza la entrega, ejecuta `invalidateDelivery` y comprueba que la siguiente lectura refleja el nuevo estado.
-
-**Pista:** prueba comportamiento, no detalles internos: observa llamadas al repositorio, resultado retornado y expiración. Usa claves con prefijos estables.
-
-**Práctica independiente:** crea un suscriptor para `delivery.changed`, desconéctalo durante una publicación y documenta la pérdida. Repite el caso con Redis Streams y explica por qué el segundo puede recuperarse.
-
-**Errores comunes**
-
-1. Tratar Redis como única fuente de verdad sin estrategia de persistencia.
-2. Usar Pub/Sub para pagos o contabilidad: no conserva mensajes para consumidores ausentes.
-3. Crear claves sin TTL: acumulan memoria indefinidamente.
-4. Actualizar la base sin invalidar la caché: entrega información obsoleta.
-
-**Cierre:** aprendiste tres capacidades distintas de Redis y sus límites. El siguiente paso es medir si la caché realmente mejora latencia y observar el flujo completo con métricas y trazas. Recurso oficial: [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
-
----
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Distingue caché de lectura y registro de idempotencia de confirmaciones. Prueba expiración, caída de Redis y reintento; documenta dónde se conserva la garantía durable de no duplicar efectos.
-
-#### Paso 4 · Demostración guiada desde cero
+Comprueba con otra ejecución local que `node --max-old-space-size=256 src/leak.js` cambia el margen del heap pero no detiene el crecimiento de `objetos`. Finalmente añade a `src/cache-limitada.js` una medición separada con `Buffer.alloc(1024 * 1024)` y explica qué métrica externa cambia, sin presentarla como evidencia de fuga de `heapUsed`. Detén y elimina solo esta aplicación de PM2:
 
 ```bash
-mkdir ejemplo-redis
-cd ejemplo-redis
-npm init -y
-npm install redis
+npx pm2 stop memoria-academia
+npx pm2 delete memoria-academia
+```
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** aplica una carga repetible al servicio, captura snapshots antes y después y busca referencias de peticiones terminadas. Corrige la retención y repite exactamente la carga. Usa PM2 o el orquestador para disponibilidad, pero conserva la evidencia de memoria para resolver la causa.
+
+**Checklist de salida:**
+
+- [ ] El ejemplo de fuga retiene objetos JavaScript y muestra crecimiento entre snapshots.
+- [ ] La versión corregida limita las referencias a 200 bajo la misma carga.
+- [ ] Explicas RSS, `heapUsed` y `external` sin tratarlos como equivalentes.
+- [ ] `Buffer.alloc` se analiza como memoria externa, no como prueba simple de heap creciente.
+- [ ] El inspector está limitado a `127.0.0.1` y los procesos de prueba se detienen.
+- [ ] PM2 y `--max-old-space-size` no se presentan como correcciones de la fuga.
+
+**Errores comunes:** medir solo RSS; esperar que `heapUsed` suba en cada lectura; confundir memoria de buffers con heap; tomar snapshots en producción sin plan; exponer el inspector; usar cachés sin límite; reiniciar sin corregir referencias.
+
+**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
+
+### Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min
+
+**Prerrequisito:** Node.js LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
+
+**Al terminar podrás:** implementar una lectura cache-aside con TTL, comprobar una reserva atómica con `SET NX EX` y demostrar que Pub/Sub pierde mensajes cuando no hay suscriptores conectados.
+
+#### Aprende
+
+**Por qué importa:** una consulta repetida puede sobrecargar la fuente oficial y un comando repetido puede duplicar un efecto. Redis ayuda con caché temporal y coordinación atómica, pero cada patrón ofrece garantías distintas. Pub/Sub sirve para notificaciones en vivo, no como cola durable.
+
+**Explicación específica:** en cache-aside se consulta Redis, se acude a la fuente oficial ante un fallo de caché y se guarda la copia con TTL. Después de una escritura se invalida la entrada relacionada. La base de datos sigue siendo el registro oficial; una caída de Redis debe tener una política explícita.
+
+`SET clave valor NX EX segundos` combina en una operación atómica la creación solo si no existe y una expiración. Es útil para reservar un identificador y evitar ejecuciones concurrentes idénticas durante ese plazo. Sin embargo, esa marca no vuelve durable por sí sola un cobro, correo u otro efecto externo: el efecto necesita idempotencia durable en su sistema de destino o un diseño transaccional apropiado. La expiración también implica que una marca temporal no es un historial permanente.
+
+Pub/Sub entrega a los suscriptores conectados en ese momento. Si se desconecta el suscriptor, no recupera después los mensajes publicados. Para trabajo recuperable se requiere una cola, Redis Streams u otro mecanismo con persistencia y seguimiento de consumo.
+
+**Analogía:** la caché es una pizarra con una copia temporal del horario; el registro oficial está en otro lugar. `SET NX EX` es un sello temporal que solo se coloca una vez durante su vigencia. Pub/Sub es un anuncio por altavoz: quien no estaba presente no lo escucha después.
+
+**Conceptos clave:**
+
+- Cache-aside, TTL e invalidación después de modificar la fuente oficial.
+- Reserva atómica con `NX` y expiración con `EX`.
+- Idempotencia durable del efecto como responsabilidad adicional.
+- Pub/Sub efímero frente a colas o Streams recuperables.
+
+#### Practica
+
+Empieza en una carpeta vacía y crea un Redis local con versión fijada:
+
+```bash
+mkdir practica-redis
+cd practica-redis
 mkdir src
-docker run --name redis-demo -p 6379:6379 -d redis:7-alpine
+docker run --name redis-practica-patrones -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-redis",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "redis": "^4.7.0"
+  }
+}
+```
+
+Instala la dependencia:
+
+```bash
+npm install
 ```
 
 Crea `src/app.js`:
 
 ```js
 import { createClient } from "redis";
+
 const redis = createClient({ url: "redis://127.0.0.1:6379" });
+redis.on("error", (error) => console.error("redis_error", error.message));
 await redis.connect();
-await redis.set("tarifa:co", "12500", { EX: 30 });
-const primera = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
-const segunda = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
-console.log({ tarifa: await redis.get("tarifa:co"), primera, segunda });
-await redis.quit();
+
+const repository = {
+  calls: 0,
+  async findById(id) {
+    this.calls += 1;
+    return { id, tarifa: 12500 };
+  },
+};
+
+async function findDeliveryCached(id) {
+  const key = `delivery:${id}`;
+  const cached = await redis.get(key);
+  if (cached) return JSON.parse(cached);
+  const delivery = await repository.findById(id);
+  if (delivery) await redis.set(key, JSON.stringify(delivery), { EX: 30 });
+  return delivery;
+}
+
+try {
+  const primeraLectura = await findDeliveryCached("RF-100");
+  const segundaLectura = await findDeliveryCached("RF-100");
+  const primeraReserva = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
+  const segundaReserva = await redis.set("orden:RF-100", "procesada", { NX: true, EX: 3600 });
+  console.log({ primeraLectura, segundaLectura, llamadasAlRepositorio: repository.calls });
+  console.log({ primeraReserva, segundaReserva });
+} finally {
+  await redis.quit();
+}
 ```
 
-Ejecuta `node src/app.js`. **Resultado esperado:** primera operación `OK`, segunda `null`. **Fallo deliberado y diagnóstico:** elimina `NX: true`; ambas escrituras devuelven `OK`, demostrando el riesgo de duplicación. Detén con `docker rm -f redis-demo`.
+Ejecuta:
 
-#### Paso 5 · Práctica guiada
+```bash
+node src/app.js
+```
 
-Añade TTL de 2 segundos y comprueba que la tarifa desaparece. **Pista:** mide el valor antes y después de esperar.
+**Resultado esperado:** ambas lecturas contienen la tarifa, `llamadasAlRepositorio` es `1`, la primera reserva devuelve `OK` y la segunda `null`.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado y corrección:** elimina temporalmente `NX: true` de las dos reservas y ejecuta de nuevo. Ambas devuelven `OK`, por lo que la segunda sobrescribe la primera en lugar de rechazar el duplicado. Restaura `NX: true` en ambas llamadas y conserva `EX`; comprueba otra vez `OK` y `null`. Para un efecto externo, añade además una restricción única durable en el sistema destino.
 
-Publica un evento con Pub/Sub y documenta qué ocurre si el suscriptor está desconectado; no lo presentes como persistencia.
+**Práctica guiada:** cambia el TTL de `delivery:RF-100` a `EX: 2`. En `src/app.js`, lee la clave inmediatamente, espera con `await new Promise((resolve) => setTimeout(resolve, 2100))` y vuelve a leerla. El primer valor debe existir y el segundo ser `null`; la siguiente llamada a `findDeliveryCached` debe incrementar el repositorio. Después añade una función que borre `delivery:RF-100` con `del`, actualiza el valor del repositorio y verifica que la lectura posterior obtiene el estado nuevo.
 
-#### Paso 7 · Cierre y conexión
+**Ejercicio independiente:** crea `src/pubsub.js` desde cero:
 
-Ya comprobás que la segunda consulta sale de Redis, que dos reservas con el mismo `commandId` devuelven `true` y `false`, y que sin `NX` la duplicación reaparece. El laboratorio combina caché, cola y procesos en una API medible.
+```js
+import { createClient } from "redis";
+import { setTimeout as delay } from "node:timers/promises";
+
+const publisher = createClient({ url: "redis://127.0.0.1:6379" });
+const subscriber = publisher.duplicate();
+publisher.on("error", (error) => console.error("publisher_error", error.message));
+subscriber.on("error", (error) => console.error("subscriber_error", error.message));
+await Promise.all([publisher.connect(), subscriber.connect()]);
+
+const recibidos = [];
+await subscriber.subscribe("delivery.changed", (message) => recibidos.push(message));
+await publisher.publish("delivery.changed", "conectado");
+await delay(50);
+await subscriber.quit();
+const receptoresAusentes = await publisher.publish("delivery.changed", "desconectado");
+console.log({ recibidos, receptoresAusentes });
+await publisher.quit();
+```
+
+Ejecuta `node src/pubsub.js`. Debes recibir solo `conectado` y la segunda publicación debe informar cero receptores. Explica por qué reconectar no recuperaría `desconectado` y qué mecanismo durable elegirías para una confirmación contable.
+
+Al finalizar, elimina solo el contenedor de esta práctica:
+
+```bash
+docker rm -f redis-practica-patrones
+```
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** cachea lecturas de rutas con TTL e invalidación, reserva confirmaciones con una clave idempotente y publica cambios de panel por Pub/Sub solo cuando perder una actualización sea aceptable. Documenta la garantía durable contra efectos duplicados en la base o proveedor que realmente ejecuta el efecto.
+
+**Checklist de salida:**
+
+- [ ] Dos lecturas consecutivas producen una sola llamada al repositorio.
+- [ ] La entrada expira y la invalidación obliga a leer el estado actualizado.
+- [ ] Dos reservas con la misma clave devuelven `OK` y `null` al usar `NX EX`.
+- [ ] La prueba sin `NX` muestra el fallo y la corrección restaura el comportamiento atómico.
+- [ ] Pub/Sub no entrega al suscriptor desconectado y no se presenta como cola durable.
+- [ ] Los clientes se cierran y la idempotencia externa no depende únicamente de una marca temporal en Redis.
+
+**Errores comunes:** cachear sin TTL; no invalidar después de escribir; omitir `NX`; guardar secretos en URLs; no cerrar clientes; tratar Redis como única fuente de verdad sin estrategia adecuada; usar Pub/Sub para pagos o contabilidad.
+
+**Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/), [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/) y [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
 
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** mover trabajo CPU-bound a un Worker Thread, aprovechar múltiples núcleos con cluster, y desacoplar trabajo pesado con una cola BullMQ.
+Construye una API de asignación y etiquetas desde una carpeta vacía. El laboratorio no reutiliza archivos de los temas ni ejemplos del repositorio. Comprobarás CPU fuera del hilo principal, dos procesos con memoria aislada, concurrencia acotada y una cola con reintentos.
 
-**Requisitos previos:** Docker (para Redis), Módulos 0-7 completados.
+**Al terminar podrás:** mientras dos procesos atienden HTTP, una petición de cálculo se ejecuta en un Worker Thread sin impedir `/salud`; otra petición encola una etiqueta cuyo primer intento falla y cuyo segundo se completa.
 
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Identificar una tarea CPU-bound | Ej. procesar una imagen grande | Muévela a un `worker_thread` |
-| 2 | Verificar que el event loop principal no se bloquea | Petición concurrente mientras el worker procesa | Confirma que la API sigue respondiendo normalmente |
-| 3 | Configurar cluster | Ver Tema 2 | Un proceso por núcleo, verifica el balanceo de requests |
-| 4 | Levantar Redis y configurar BullMQ | `docker run redis`, `new Queue(...)` | Encola un job de "enviar email" |
-| 5 | Configurar reintentos con backoff | Ver Tema 3 | Simula un fallo del servicio de email y verifica los reintentos |
-| 6 | Medir la diferencia de latencia | Endpoint que encola vs uno que procesa síncronamente | Compara los tiempos de respuesta reales |
+**Prerrequisitos:** Node.js LTS, Docker y tres terminales.
 
-**Verificación:** el laboratorio se considera exitoso si el endpoint que usa la cola responde considerablemente más rápido que el equivalente síncrono, y si los reintentos con backoff se ejecutan correctamente ante un fallo simulado del servicio externo.
+### 1. Crea el proyecto y Redis
 
-**Errores comunes y soluciones**
+```bash
+mkdir laboratorio-despachos
+cd laboratorio-despachos
+mkdir src
+docker run --name redis-laboratorio-despachos -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
+```
 
-- **Mover trabajo I/O-bound (como una consulta a base de datos) a un Worker Thread.** Esto no aporta ningún beneficio real; Node ya maneja I/O de forma no bloqueante de forma nativa.
-- **Asumir que el estado en memoria se comparte entre procesos de cluster.** Cada proceso tiene memoria aislada; externaliza cualquier estado compartido hacia Redis u otro almacén accesible por todos.
-- **No limitar el número de reintentos en una cola de trabajo.** Sin un límite (`attempts`), un job que falla permanentemente podría reintentarse indefinidamente sin ningún beneficio real.
+Crea manualmente `package.json`:
 
----
+```json
+{
+  "name": "laboratorio-despachos",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "bullmq": "^5.0.0"
+  }
+}
+```
+
+Ejecuta `npm install`.
+
+### 2. Implementa el cálculo CPU-bound
+
+Crea `src/asignacion.js`:
+
+```js
+import { parentPort, workerData } from "node:worker_threads";
+
+let puntuacion = workerData.semilla;
+for (let i = 0; i < 8_000_000; i += 1) {
+  puntuacion = (puntuacion * 31 + i) % 1_000_000_007;
+}
+parentPort.postMessage({ guia: workerData.guia, puntuacion });
+```
+
+El bucle es carga CPU-bound deliberada; no contiene I/O.
+
+### 3. Implementa cluster, límite de Workers y productor
+
+Crea `src/api.js`:
+
+```js
+import cluster from "node:cluster";
+import http from "node:http";
+import os from "node:os";
+import { Worker } from "node:worker_threads";
+import { setTimeout as delay } from "node:timers/promises";
+import { Queue } from "bullmq";
+
+const cantidad = Math.min(2, os.availableParallelism());
+
+if (cluster.isPrimary) {
+  cluster.on("online", (worker) => console.log(`API PID ${worker.process.pid}`));
+  cluster.on("exit", (worker) => console.log(`Terminó API PID ${worker.process.pid}`));
+  for (let i = 0; i < cantidad; i += 1) cluster.fork();
+} else {
+  const cola = new Queue("laboratorio-etiquetas", {
+    connection: { host: "127.0.0.1", port: 6379 },
+  });
+  let activos = 0;
+  const esperando = [];
+
+  async function conCupo(tarea) {
+    if (activos >= 2) await new Promise((resolve) => esperando.push(resolve));
+    activos += 1;
+    try {
+      return await tarea();
+    } finally {
+      activos -= 1;
+      esperando.shift()?.();
+    }
+  }
+
+  async function asignar(guia) {
+    return conCupo(async () => {
+      const worker = new Worker(new URL("./asignacion.js", import.meta.url), {
+        workerData: { guia, semilla: 42 },
+      });
+      try {
+        return await new Promise((resolve, reject) => {
+          worker.once("message", resolve);
+          worker.once("error", reject);
+        });
+      } finally {
+        await worker.terminate();
+      }
+    });
+  }
+
+  function responder(res, status, cuerpo) {
+    res.writeHead(status, { "content-type": "application/json" });
+    res.end(JSON.stringify(cuerpo) + "\n");
+  }
+
+  const server = http.createServer(async (req, res) => {
+    const url = new URL(req.url, "http://127.0.0.1");
+    const guia = url.searchParams.get("guia") ?? "RF-100";
+    try {
+      if (url.pathname === "/salud") {
+        responder(res, 200, { ok: true, pid: process.pid, workersCpuActivos: activos });
+      } else if (url.pathname === "/asignar") {
+        responder(res, 200, { ...(await asignar(guia)), pid: process.pid });
+      } else if (url.pathname === "/etiqueta") {
+        const job = await cola.add("generar", { guia }, {
+          jobId: `laboratorio-${guia}`,
+          attempts: 3,
+          backoff: { type: "exponential", delay: 100 },
+        });
+        responder(res, 202, { encolado: job.id, pid: process.pid });
+      } else if (url.pathname === "/etiqueta-sincrona") {
+        await delay(300);
+        responder(res, 200, { generada: guia, pid: process.pid });
+      } else {
+        responder(res, 404, { error: "ruta no encontrada" });
+      }
+    } catch (error) {
+      responder(res, 500, { error: error.message });
+    }
+  });
+
+  server.listen(3000, "127.0.0.1", () => console.log(`Escuchando PID ${process.pid}`));
+  process.on("SIGTERM", async () => {
+    await cola.close();
+    server.close(() => process.exit(0));
+  });
+}
+```
+
+Hay como máximo dos Workers CPU activos por proceso; con dos procesos el máximo total es cuatro. Cada proceso tiene `activos` y `esperando` propios: cluster no comparte esa memoria.
+
+### 4. Implementa el consumidor con reintento y cierre
+
+Crea `src/trabajador-etiquetas.js`:
+
+```js
+import { Worker } from "bullmq";
+import { setTimeout as delay } from "node:timers/promises";
+
+const efectosLocales = new Set();
+const worker = new Worker(
+  "laboratorio-etiquetas",
+  async (job) => {
+    if (job.attemptsMade === 0) throw new Error("fallo deliberado del primer intento");
+    if (efectosLocales.has(job.data.guia)) return { duplicado: true };
+    await delay(300);
+    efectosLocales.add(job.data.guia);
+    return { etiqueta: job.data.guia };
+  },
+  { connection: { host: "127.0.0.1", port: 6379 }, concurrency: 2 },
+);
+
+worker.on("failed", (job, error) => console.log(`Falló ${job?.id}: ${error.message}`));
+worker.on("completed", (job) => console.log(`Completado ${job.id}`));
+worker.on("error", (error) => console.error(error.message));
+
+async function cerrar() {
+  await worker.close();
+  process.exit(0);
+}
+process.on("SIGINT", cerrar);
+process.on("SIGTERM", cerrar);
+```
+
+El `Set` solo evita duplicados dentro de esta ejecución. En producción, el efecto externo necesita una clave única durable; el reintento de BullMQ no la sustituye.
+
+### 5. Ejecuta y observa
+
+En la primera terminal, desde `laboratorio-despachos`:
+
+```bash
+node src/api.js
+```
+
+En la segunda terminal, desde la misma carpeta:
+
+```bash
+node src/trabajador-etiquetas.js
+```
+
+En la tercera terminal, lanza una petición de salud y otra de cálculo al mismo tiempo:
+
+```bash
+curl -s http://127.0.0.1:3000/salud &
+curl -s 'http://127.0.0.1:3000/asignar?guia=RF-200' &
+wait
+```
+
+**Resultado esperado:** `/salud` responde mientras se calcula la asignación. Repite varias peticiones y registra los PID; no exijas una alternancia exacta ni un aumento lineal de throughput.
+
+Compara una generación síncrona con el encolado:
+
+```bash
+time curl -s 'http://127.0.0.1:3000/etiqueta-sincrona?guia=RF-201'
+time curl -s 'http://127.0.0.1:3000/etiqueta?guia=RF-202'
+```
+
+**Resultado esperado:** la ruta síncrona espera sus 300 ms de trabajo; la ruta de cola responde después de registrar el job, sin esperar el procesamiento. En la segunda terminal, `laboratorio:RF-202` falla una vez y después se completa. Publica otra vez la misma guía y verifica que el `jobId` conservado evita un job nuevo. Mide tus propios tiempos en lugar de asumir una proporción fija.
+
+### 6. Verificación y cierre
+
+- [ ] `/salud` responde durante `/asignar`.
+- [ ] `workersCpuActivos` nunca supera dos en el proceso consultado.
+- [ ] Las respuestas muestran que los procesos de cluster tienen PID y contadores independientes.
+- [ ] `/etiqueta` responde antes de que el consumidor complete su trabajo.
+- [ ] El fallo deliberado produce un número limitado de reintentos y luego completa.
+- [ ] La duplicación por `jobId` no se confunde con idempotencia durable del efecto externo.
+- [ ] No se afirma que dos procesos dupliquen automáticamente el throughput.
+
+Detén el consumidor y la API con `Ctrl+C` en sus propias terminales. Elimina únicamente el contenedor creado por este laboratorio:
+
+```bash
+docker rm -f redis-laboratorio-despachos
+```

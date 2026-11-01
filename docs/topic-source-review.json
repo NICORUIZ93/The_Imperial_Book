@@ -3382,7 +3382,7 @@
         "https://docs.npmjs.com/cli/configuring-npm/package-lock-json"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 102,
+      "line": 137,
       "originalProseUrls": [
         "https://docs.npmjs.com/cli/commands/npm-ci",
         "https://docs.npmjs.com/cli/configuring-npm/package-lock-json"
@@ -3399,7 +3399,7 @@
         "https://docs.npmjs.com/cli/using-npm/workspaces"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 184,
+      "line": 246,
       "originalProseUrls": [
         "https://docs.npmjs.com/cli/configuring-npm/package-json#workspaces",
         "https://docs.npmjs.com/cli/using-npm/workspaces"
@@ -3417,7 +3417,7 @@
         "https://docs.npmjs.com/cli/using-npm/scripts"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 322,
+      "line": 389,
       "originalProseUrls": [
         "https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities",
         "https://docs.npmjs.com/cli/using-npm/config#ignore-scripts",
@@ -3435,9 +3435,9 @@
         "https://www.rfc-editor.org/rfc/rfc6585"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 106,
+      "line": 103,
       "originalProseUrls": [
-        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3000/publico",
         "https://express-rate-limit.mintlify.app/",
         "https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/",
         "https://www.rfc-editor.org/rfc/rfc6585"
@@ -3455,7 +3455,7 @@
         "https://owasp.org/www-community/attacks/xss/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 183,
+      "line": 201,
       "originalProseUrls": [
         "https://node-postgres.com/features/queries",
         "https://owasp.org/www-community/attacks/SQL_Injection",
@@ -3474,7 +3474,7 @@
         "https://sre.google/workbook/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 162,
+      "line": 685,
       "originalProseUrls": [
         "https://12factor.net/",
         "https://owasp.org/www-project-application-security-verification-standard/",
@@ -3488,14 +3488,16 @@
       "path": "web/public/content/node/modulo-12.md",
       "topic": "Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript",
       "providerCitations": [
+        "https://kafka.apache.org/documentation/",
         "https://martinfowler.com/articles/microservices.html",
         "https://www.typescriptlang.org/docs/handbook/intro.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 242,
+      "line": 849,
       "originalProseUrls": [
+        "https://kafka.apache.org/documentation/",
         "https://martinfowler.com/articles/microservices.html",
-        "https://www.enterpriseintegrationpatterns.com/",
+        "https://www.rabbitmq.com/docs/reliability",
         "https://www.typescriptlang.org/docs/handbook/intro.html"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -3510,7 +3512,7 @@
         "https://zod.dev/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 8,
+      "line": 9,
       "originalProseUrls": [
         "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables",
         "https://zod.dev/"
@@ -3527,7 +3529,7 @@
         "https://www.rfc-editor.org/rfc/rfc9457"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 123,
+      "line": 200,
       "originalProseUrls": [
         "https://swagger.io/specification/",
         "https://www.rfc-editor.org/rfc/rfc9457"
@@ -3544,7 +3546,7 @@
         "https://node-postgres.com/features/transactions"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 234,
+      "line": 500,
       "originalProseUrls": [
         "https://docs.stripe.com/idempotency",
         "https://node-postgres.com/features/transactions"
@@ -3558,14 +3560,18 @@
       "topic": "Tema 5: OpenAPI como contrato ejecutable",
       "providerCitations": [
         "https://nodejs.org/api/",
+        "https://nodejs.org/en/about/previous-releases",
+        "https://nodejs.org/en/blog/release/v26.0.0",
         "https://redocly.com/docs/cli/",
         "https://spec.openapis.org/oas/latest.html",
         "https://spec.openapis.org/oas/v3.1.0.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 493,
+      "line": 1090,
       "originalProseUrls": [
         "https://nodejs.org/api/",
+        "https://nodejs.org/en/about/previous-releases",
+        "https://nodejs.org/en/blog/release/v26.0.0",
         "https://redocly.com/docs/cli/",
         "https://spec.openapis.org/oas/latest.html",
         "https://spec.openapis.org/oas/v3.1.0.html"
@@ -3582,7 +3588,7 @@
         "https://www.apollographql.com/docs/federation/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 77,
+      "line": 158,
       "originalProseUrls": [
         "https://graphql.org/learn/federation/",
         "https://www.apollographql.com/docs/federation/"
@@ -3599,7 +3605,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 243,
+      "line": 437,
       "originalProseUrls": [
         "https://kafka.js.org/docs/getting-started",
         "https://microservices.io/patterns/data/saga.html"
@@ -3617,7 +3623,7 @@
         "https://expressjs.com/en/guide/routing.html#route-parameters"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 122,
+      "line": 124,
       "originalProseUrls": [
         "https://expressjs.com/en/api.html#express.router",
         "https://expressjs.com/en/guide/routing.html",
@@ -3657,7 +3663,7 @@
         "https://www.postgresql.org/docs/current/sql-syntax-lexical.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 6,
+      "line": 7,
       "originalProseUrls": [
         "https://hub.docker.com/_/postgres",
         "https://node-postgres.com/",
@@ -3678,7 +3684,7 @@
         "https://www.prisma.io/docs/prisma-orm/quickstart/sqlite"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 169,
+      "line": 176,
       "originalProseUrls": [
         "https://docs.prisma.io/docs/cli/migrate/dev",
         "https://docs.prisma.io/docs/orm/core-concepts/supported-databases/sqlite",
@@ -3699,7 +3705,7 @@
         "https://www.postgresql.org/docs/current/tutorial-transactions.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 324,
+      "line": 358,
       "originalProseUrls": [
         "https://node-postgres.com/features/pooling",
         "https://node-postgres.com/features/transactions",
@@ -3720,7 +3726,7 @@
         "https://www.mongodb.com/docs/manual/core/document/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 508,
+      "line": 544,
       "originalProseUrls": [
         "https://mongoosejs.com/docs/guide.html",
         "https://mongoosejs.com/docs/populate.html",
@@ -3738,7 +3744,7 @@
         "https://www.rfc-editor.org/rfc/rfc7519"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 95,
+      "line": 125,
       "originalProseUrls": [
         "https://github.com/panva/jose",
         "https://www.rfc-editor.org/rfc/rfc7519"
@@ -3756,7 +3762,7 @@
         "https://www.rfc-editor.org/rfc/rfc6750"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 155,
+      "line": 233,
       "originalProseUrls": [
         "https://expressjs.com/en/guide/using-middleware.html",
         "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
@@ -3775,7 +3781,7 @@
         "https://www.rfc-editor.org/rfc/rfc9700"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 253,
+      "line": 426,
       "originalProseUrls": [
         "https://www.rfc-editor.org/rfc/rfc6749",
         "https://www.rfc-editor.org/rfc/rfc7636",
@@ -3793,7 +3799,7 @@
         "https://www.rfc-editor.org/rfc/rfc6750"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 494,
+      "line": 761,
       "originalProseUrls": [
         "https://expressjs.com/en/guide/routing.html",
         "https://github.com/panva/jose",
@@ -3811,7 +3817,7 @@
         "https://vitest.dev/guide/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 6,
+      "line": 5,
       "originalProseUrls": [
         "https://expressjs.com/en/starter/hello-world.html",
         "https://github.com/ladjs/supertest",
@@ -3829,7 +3835,7 @@
         "https://vitest.dev/api/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 101,
+      "line": 135,
       "originalProseUrls": [
         "https://hub.docker.com/_/postgres",
         "https://node.testcontainers.org/",
@@ -3848,7 +3854,7 @@
         "https://vitest.dev/guide/mocking"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 190,
+      "line": 280,
       "originalProseUrls": [
         "https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs",
         "https://martinfowler.com/articles/mocksArentStubs.html",
@@ -3867,7 +3873,7 @@
         "https://redis.io/docs/latest/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 170,
+      "line": 232,
       "originalProseUrls": [
         "https://docs.bullmq.io/",
         "https://docs.bullmq.io/guide/retrying-failing-jobs",
@@ -3886,7 +3892,7 @@
         "https://redis.io/docs/latest/develop/pubsub/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 310,
+      "line": 495,
       "originalProseUrls": [
         "https://github.com/redis/node-redis",
         "https://redis.io/docs/latest/commands/set/",
@@ -3906,7 +3912,7 @@
         "https://spec.graphql.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 250,
+      "line": 411,
       "originalProseUrls": [
         "https://grpc.io/docs/what-is-grpc/",
         "https://httpwg.org/specs/",
@@ -3924,7 +3930,7 @@
         "https://prometheus.io/docs/concepts/data_model/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 328,
+      "line": 597,
       "originalProseUrls": [
         "https://github.com/siimon/prom-client",
         "https://opentelemetry.io/docs/languages/js/",
@@ -8137,6 +8143,15 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://kafka.apache.org/documentation/",
+      "status": 0,
+      "finalUrl": "https://kafka.apache.org/documentation/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://kafka.apache.org/documentation/#consumerconfigs",
       "status": 200,
       "finalUrl": "https://kafka.apache.org/documentation/#consumerconfigs",
@@ -8684,6 +8699,24 @@
       "title": null,
       "checkedAt": "2026-10-31T15:33:30.308954+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://nodejs.org/en/about/previous-releases",
+      "status": 0,
+      "finalUrl": "https://nodejs.org/en/about/previous-releases",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://nodejs.org/en/blog/release/v26.0.0",
+      "status": 0,
+      "finalUrl": "https://nodejs.org/en/blog/release/v26.0.0",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://nominatim.org/release-docs/latest/api/Search/",
@@ -10996,9 +11029,9 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 516,
+    "urlsChecked": 519,
     "urlsReachable": 506,
-    "urlsPending": 10
+    "urlsPending": 13
   },
   "corrections": [
     {

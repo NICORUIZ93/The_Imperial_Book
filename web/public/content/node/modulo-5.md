@@ -1,35 +1,40 @@
 # Módulo 5: Bases de datos — drivers y ORMs
 
-
 ## Aprende construyendo
 
-### Tema 1: PostgreSQL desde Node con el driver puro
+Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente los archivos fuente y de configuración indicados; no copies proyectos prefabricados ni reutilices archivos o bases de datos de otros temas. `npm init -y` crea el `package.json`, que después editas para declarar ESM. Las migraciones y el cliente de Prisma sí se generan con sus comandos, pero siempre a partir del schema que escribiste en este tema.
 
-**Conceptos clave:** consultas parametrizadas, driver `pg`, SQL directo.
+### Tema 1: PostgreSQL desde Node con el driver puro · Básico · 90 min
 
-Conectar directamente a PostgreSQL usando el driver `pg` (sin ningún ORM intermedio) expone la interacción más cercana posible al motor de base de datos real: se escriben consultas SQL directamente como strings, y el driver las ejecuta devolviendo los resultados en un formato estructurado de filas y columnas. Esta cercanía tiene ventajas concretas: control total sobre exactamente qué SQL se ejecuta (relevante para optimizar consultas complejas donde la abstracción de un ORM podría generar SQL subóptimo), y ausencia de cualquier capa adicional de traducción entre el modelo de objetos de la aplicación y las tablas relacionales de la base de datos.
+#### Aprende
 
-Es crítico usar siempre consultas parametrizadas (`pool.query("SELECT * FROM usuarios WHERE email = $1", [email])`, donde `$1` es un marcador de posición que el driver sustituye de forma segura) en vez de concatenar directamente valores de entrada del usuario dentro del string SQL, precisamente porque la concatenación directa abre la puerta a inyección SQL (un ataque donde un valor de entrada malicioso altera la estructura misma de la consulta SQL ejecutada, tema que se profundizará en el Módulo 10). El driver `pg` escapa automáticamente los valores pasados como parámetros, neutralizando este riesgo sin que el desarrollador necesite implementar manualmente ningún escape de caracteres especiales.
+**Prerrequisitos:** Node LTS, npm, JavaScript ESM básico y Docker Desktop o Docker Engine funcionando. Este proyecto no necesita archivos de otros temas.
 
-Trabajar con el driver puro es apropiado cuando se necesita control preciso sobre consultas complejas, cuando el equipo tiene fuerte experiencia en SQL, o en contextos de rendimiento extremadamente crítico donde cualquier overhead de abstracción de un ORM es indeseable; para la mayoría de aplicaciones con operaciones CRUD relativamente estándar, un ORM como Prisma (Tema 2) reduce considerablemente la cantidad de código repetitivo necesario, a cambio de renunciar a parte de ese control directo sobre el SQL exacto generado.
+**Al terminar podrás:** levantar PostgreSQL localmente, conectarlo con `pg`, ejecutar consultas parametrizadas y diagnosticar separadamente un valor buscado, un dato duplicado y un fallo de conexión.
 
-**Analogía:** usar el driver `pg` puro es como cocinar directamente con ingredientes crudos siguiendo tu propia receta exacta, con control total sobre cada paso; usar un ORM es como usar un robot de cocina programable que automatiza los pasos más comunes según instrucciones de alto nivel, a cambio de menos control directo sobre cada detalle específico del proceso.
+**Por qué importa:** una API de clientes debe buscar un correo sin permitir que el texto enviado por una persona cambie la estructura de SQL. Comprender el driver puro muestra qué ejecuta realmente la base y qué trabajo automatiza después un ORM; los parámetros siguen siendo la defensa fundamental contra inyección SQL en ambos caminos.
 
-**¿Por qué es importante?** Entender el driver puro y las consultas parametrizadas es la base indispensable para entender qué hace un ORM automáticamente por debajo, y las consultas parametrizadas son la defensa fundamental contra inyección SQL, sin importar si finalmente se usa un ORM o el driver directamente.
+**Conceptos clave:** consultas parametrizadas, driver `pg`, SQL directo y pool de conexiones.
 
-**Código del ejemplo:**
+Conectar directamente a PostgreSQL usando el driver `pg`, sin ningún ORM intermedio, expone la interacción más cercana al motor: escribes SQL como strings y el driver devuelve filas y columnas estructuradas. Esta cercanía da control total sobre el SQL ejecutado, útil para optimizar consultas complejas, y evita una capa adicional de traducción entre objetos de aplicación y tablas relacionales.
+
+Usa siempre consultas parametrizadas, como `pool.query("SELECT * FROM usuarios WHERE email = $1", [email])`. El marcador `$1` mantiene separados el SQL y el valor; concatenar entrada de usuario en el string permite que un valor malicioso altere la estructura de la consulta. El driver transmite los parámetros sin que tengas que implementar escapes manuales de caracteres especiales.
+
+El driver puro es apropiado cuando necesitas control preciso, el equipo domina SQL o quieres evitar abstracción en una consulta crítica. Para CRUD estándar, un ORM como Prisma reduce código repetitivo a cambio de ceder parte del control directo sobre el SQL generado.
+
+**Analogía:** usar `pg` es cocinar con ingredientes crudos y una receta exacta; un ORM es un robot que automatiza pasos comunes con instrucciones de alto nivel. SQL es la instrucción y cada parámetro ocupa una ranura separada: concatenar ambos equivale a permitir que alguien escriba sobre el formulario de la base.
+
+El patrón esencial es:
 
 ```js
 import pg from "pg";
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-// SEGURO: parámetros, el driver escapa automáticamente
+// SEGURO: el parámetro permanece separado del SQL.
 const { rows } = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-// PELIGROSO: concatenación directa, vulnerable a inyección SQL
+// PELIGROSO: interpolar email en el string cambiaría la estructura ejecutable.
 ```
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás levantar PostgreSQL localmente, conectarlo con `pg` y ejecutar una consulta parametrizada. **Prerrequisitos:** Node LTS, npm y Docker Desktop o Docker Engine funcionando. Este ejemplo independiente comienza desde una carpeta vacía.
+#### Practica
 
 Verifica Docker antes de crear archivos:
 
@@ -38,17 +43,7 @@ docker --version
 docker compose version
 ```
 
-`--version` es la bandera que confirma qué versión de Docker está instalada, sin arrancar ningún contenedor todavía. Si alguno falla, instala Docker Desktop en Windows/macOS o Docker Engine con el plugin Compose en Linux y vuelve a abrir la terminal. No continúes usando `sudo npm install`: los permisos de npm y Docker son problemas separados.
-
-#### Paso 2 · Contexto y caso real
-
-Una API de clientes necesita buscar un correo sin permitir que el texto enviado por un usuario cambie la estructura de SQL. Usarás una base local desechable para aprender conexión y parámetros sin depender de una cuenta externa.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-SQL es la instrucción y un parámetro es el valor colocado en una ranura separada. Concatenar ambos equivale a permitir que alguien escriba sobre el formulario de la base; `$1` mantiene la estructura de la consulta bajo control del programa y deja el valor al driver.
-
-#### Paso 4 · Demostración guiada desde cero
+Estas banderas confirman la instalación sin arrancar contenedores. Si alguna falla, instala Docker Desktop en Windows/macOS o Docker Engine con el plugin Compose en Linux y vuelve a abrir la terminal. No uses `sudo npm install`: los permisos de npm y Docker son problemas separados.
 
 Desde una carpeta vacía crea el proyecto e instala el driver:
 
@@ -60,7 +55,7 @@ npm install pg
 mkdir src sql
 ```
 
-Añade `"type": "module"` a `package.json`. Crea `compose.yaml`:
+Añade `"type": "module"` al nivel raíz de `package.json`. Crea manualmente `compose.yaml`:
 
 ```yaml
 services:
@@ -89,10 +84,17 @@ INSERT INTO clientes (email, nombre)
 VALUES ('ana@example.test', 'Ana');
 ```
 
-Crea `.env` —es local y no debe subirse a Git— con una sola línea:
+Crea `.env`, que es local y no debe subirse a Git:
 
 ```text
 DATABASE_URL=postgresql://academia:academia_local@127.0.0.1:5433/ejemplo_pg
+```
+
+Crea también `.gitignore`:
+
+```text
+.env
+node_modules/
 ```
 
 Crea `src/buscar-cliente.js`:
@@ -108,7 +110,7 @@ const pool = new pg.Pool({ connectionString });
 try {
   const email = process.argv[2] ?? "ana@example.test";
 
-  // $1 separa el SQL del valor; no concatena texto controlado por la persona usuaria.
+  // $1 separa el SQL del valor controlado por la persona usuaria.
   const { rows } = await pool.query(
     "SELECT id, email, nombre FROM clientes WHERE email = $1",
     [email],
@@ -116,7 +118,7 @@ try {
 
   console.log(rows[0] ?? "Cliente no encontrado");
 } finally {
-  // Cierra conexiones para que un script CLI termine de forma limpia.
+  // Cierra conexiones para que el script CLI termine limpiamente.
   await pool.end();
 }
 ```
@@ -131,114 +133,127 @@ node src/buscar-cliente.js
 
 En Windows PowerShell usa:
 
-```bash
+```powershell
 docker compose up -d
 $env:DATABASE_URL='postgresql://academia:academia_local@127.0.0.1:5433/ejemplo_pg'; node src/buscar-cliente.js
 ```
 
 **Resultado esperado:** Docker muestra el contenedor iniciado y el script imprime el objeto de Ana con `id`, `email` y `nombre`.
 
-**Fallo deliberado y diagnóstico:** ejecuta `node src/buscar-cliente.js "' OR '1'='1"` con la variable ya definida. El resultado correcto es `Cliente no encontrado`, no todos los clientes. El parámetro sigue siendo un valor. Si ves `ECONNREFUSED`, Docker/PostgreSQL no está listo: ejecuta `docker compose ps` y `docker compose logs postgres`, no cambies el SQL.
+**Fallo deliberado y corrección:** ejecuta `node src/buscar-cliente.js "' OR '1'='1"` con la variable ya definida. El resultado correcto es `Cliente no encontrado`, no todos los clientes: el parámetro sigue siendo un valor. No sustituyas la consulta por concatenación para “hacer que aparezca” un resultado; conserva `$1` y compara el comportamiento.
 
-Al terminar el laboratorio, detén y elimina el contenedor y volumen local:
+**Práctica guiada:** inserta un segundo cliente usando `INSERT ... VALUES ($1, $2) RETURNING id, email`. Usa `pool.query` con un arreglo de parámetros y prueba después buscar el correo insertado. Comprueba que el valor devuelto procede de la fila creada.
+
+Al terminar todos los ejercicios del tema, detén y elimina el contenedor y el volumen local:
 
 ```bash
 docker compose down -v
 ```
 
-#### Paso 5 · Práctica guiada
+#### Aplica
 
-Inserta un segundo cliente usando `INSERT ... VALUES ($1, $2) RETURNING id, email`. **Pista:** usa `pool.query` con arreglo de parámetros y prueba después buscar el correo insertado.
+**Ejercicio independiente:** crea `src/registrar-cliente.js` en este mismo proyecto. Valida que el email no esté vacío antes de insertarlo y maneja una violación de unicidad sin revelar SQL interno. Entrega una inserción válida y una duplicada, con sus salidas; conserva el código de error SQL de PostgreSQL solo en el log local.
 
-#### Paso 6 · Práctica independiente
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, cada endpoint que lea o escriba datos reales debe tratar la entrada del cliente como valor, nunca como código SQL. Usa parámetros posicionales `$1`, `$2` tanto al consultar como al registrar.
 
-Crea `src/registrar-cliente.js` que valide email no vacío antes de insertarlo y maneje una violación de unicidad sin revelar SQL interno. Entrega una inserción válida y una duplicada, con sus salidas y el código SQL de PostgreSQL solo en el log local.
+**Checklist de salida**
 
-#### Paso 7 · Cierre y conexión
+- [ ] Creaste el proyecto, el SQL y la configuración desde una carpeta vacía.
+- [ ] La búsqueda usa `$1` y un arreglo de parámetros, sin concatenar entrada.
+- [ ] La entrada que parece SQL devuelve `Cliente no encontrado`.
+- [ ] El script cierra el pool con `pool.end()` incluso cuando hay un error.
+- [ ] La inserción devuelve la fila creada y el duplicado tiene un diagnóstico controlado.
+- [ ] `.env` está excluido de Git y distingues el puerto del host `5433` del interno `5432`.
 
-Ya puedes iniciar una base local, abrir un pool y hacer consultas parametrizadas. El siguiente tema usará Prisma y migraciones en un proyecto nuevo; no reutilizará esta carpeta ni sus datos.
+**Si falla.** Si ves `ECONNREFUSED`, PostgreSQL todavía no está disponible o el puerto no corresponde: ejecuta `docker compose ps` y `docker compose logs postgres`; no cambies el SQL. Si esperas que `init.sql` vuelva a ejecutarse tras reiniciar, recrea el entorno con `docker compose down -v` y `docker compose up -d`: la inicialización no se repite sobre datos ya inicializados.
 
-Consultar con parámetros posicionales (`$1`, `$2`) en vez de concatenar SQL es exactamente el hábito que exige el proyecto integrador de este track (API productiva, Módulo 12), donde cada endpoint que lee o escribe datos reales debe tratar la entrada del cliente como valor, nunca como código SQL.
+**Cuándo no usarlo:** el driver puro obliga a mantener manualmente consultas y mapeo a objetos. Para muchas tablas y relaciones, Prisma reduce ese trabajo repetitivo a costa de una abstracción; conserva `pg` cuando necesites control total del SQL o tengas solo unas pocas consultas simples.
 
-**Cuándo no usarlo:** el driver `pg` puro obliga a escribir y mantener manualmente cada consulta SQL y su mapeo a objetos; para un esquema con muchas tablas y relaciones, un ORM tipado como Prisma (Tema 2) reduce ese trabajo repetitivo a costa de una capa de abstracción adicional — usa el driver puro cuando necesitas control total sobre el SQL exacto o solo tienes una o dos consultas simples.
+**Errores comunes:** concatenar entrada en SQL, olvidar `pool.end`, subir `.env`, confundir puertos y esperar que un reinicio ejecute nuevamente `init.sql` sin recrear el volumen.
 
-**Errores comunes:** concatenar entrada en SQL; olvidar `pool.end` en un script; subir `.env`; confundir puerto del host `5433` con puerto interno `5432`; reiniciar el contenedor esperando que vuelva a ejecutar `init.sql` sin recrear el volumen.
+**Fuentes oficiales:** [node-postgres](https://node-postgres.com/), [queries parametrizadas de `pg`](https://node-postgres.com/features/queries), [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres) y [PostgreSQL: sintaxis SQL](https://www.postgresql.org/docs/current/sql-syntax-lexical.html).
 
-**Fuentes oficiales:** [node-postgres](https://node-postgres.com/), [queries parametrizadas de `pg`](https://node-postgres.com/features/queries), [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres) y [PostgreSQL: SQL injection](https://www.postgresql.org/docs/current/sql-syntax-lexical.html).
+### Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min
 
-### Tema 2: Prisma — schema, migraciones y queries tipadas
+#### Aprende
+
+**Prerrequisitos:** Node LTS, npm, ESM y conceptos básicos de tablas, claves y relaciones. Este proyecto usa SQLite y no reutiliza la base, el contenedor ni los archivos del Tema 1.
+
+**Al terminar podrás:** declarar un modelo Prisma, crear y revisar una migración versionada, generar el cliente y consultar una base SQLite local mediante ese contrato.
+
+**Por qué importa:** un equipo necesita que el esquema viaje con el código y pueda reconstruirse en otra máquina. Si cada persona modifica tablas a mano, los ambientes divergen; las migraciones ordenadas y el cliente generado conectan el diseño de datos con cambios reproducibles y consultas verificables.
 
 **Conceptos clave:** `schema.prisma`, migraciones versionadas, cliente generado y tipado.
 
-#### Cómo leer `@id`, `@default`, `@relation` y `@@index`
+Prisma centraliza el modelo en `schema.prisma`: cada modelo describe campos, tipos y relaciones. A partir de ese contrato, Prisma genera migraciones SQL para crear o modificar tablas y un cliente JavaScript/TypeScript que refleja la estructura declarada.
 
-En el lenguaje de esquema de Prisma, `@` introduce un **atributo de campo**: modifica el contrato del campo escrito inmediatamente a su izquierda. `id Int @id @default(autoincrement())` declara que `id` forma la clave primaria y que su valor predeterminado lo genera la base de datos. `@relation(fields: [usuarioId], references: [id])` conecta el campo de relación de Prisma con la clave foránea escalar `usuarioId` y con la columna referenciada del otro modelo.
+En el lenguaje de schema, `@` introduce un **atributo de campo**. `id Int @id @default(autoincrement())` declara la clave primaria y un valor generado por la base. `@relation(fields: [usuarioId], references: [id])` conecta el campo de relación con la clave foránea escalar `usuarioId` y con la columna referenciada.
 
-`@@` introduce un **atributo de bloque** y afecta al modelo completo. Por ejemplo, `@@index([usuarioId, completada])` solicita un índice compuesto y `@@unique([transportadoraId, numeroGuia])` expresa una unicidad de negocio entre varios campos. No son decoradores de TypeScript ni código que Node ejecute: el motor de Prisma analiza el schema, la migración traduce esos contratos a SQL y el cliente generado refleja después el modelo resultante.
+`@@` introduce un **atributo de bloque** que afecta al modelo completo. `@@index([usuarioId, completada])` solicita un índice compuesto y `@@unique([transportadoraId, numeroGuia])` expresa una unicidad de negocio entre campos. No son decoradores de TypeScript ni código que Node ejecute: Prisma analiza el schema, la migración traduce sus contratos a SQL y el cliente refleja el modelo resultante.
 
-**Límite:** un atributo no sustituye el diseño de datos. Añadir índices a todas las columnas aumenta almacenamiento y coste de escritura; una relación sin una política explícita de borrado puede producir registros huérfanos o eliminaciones inesperadas. Antes de migrar, revisa el SQL generado y prueba tanto la inserción válida como la violación de clave o unicidad.
+`prisma migrate dev --name descripcion` genera una migración SQL versionada y la aplica a la base de desarrollo configurada. Los archivos de migración se versionan con el código para que otra persona aplique los mismos cambios en el mismo orden, en vez de alterar tablas manualmente.
 
-Prisma es un ORM moderno para Node y TypeScript que centraliza la definición del modelo de datos en un único archivo declarativo (`schema.prisma`), describiendo cada tabla como un modelo con sus campos, tipos y relaciones (`model Tarea { id Int @id @default(autoincrement()) titulo String usuario Usuario @relation(...) }`), a partir del cual Prisma genera automáticamente tanto las migraciones SQL necesarias para crear o modificar las tablas reales en la base de datos, como un cliente JavaScript/TypeScript completamente tipado que refleja exactamente esa estructura de datos declarada.
+El cliente expone métodos como `prisma.tarea.create({ data: {...} })` y `prisma.tarea.findMany({ where: {...}, include: { usuario: true } })`. En TypeScript, el compilador comprueba que los campos de `data` o `where` existan antes de ejecutar; con SQL crudo, un nombre de columna incorrecto suele descubrirse al recibir el error de la base.
 
-`prisma migrate dev --name descripcion` genera un archivo de migración SQL versionado (committeado al control de versiones junto con el resto del código) que captura exactamente qué cambios de esquema se aplicaron y en qué orden, y aplica esa migración inmediatamente contra la base de datos de desarrollo configurada. Este enfoque de migraciones versionadas resuelve un problema real de coordinación en equipo: cualquier colaborador que aplique las migraciones en el mismo orden reproducirá exactamente la misma estructura de base de datos, sin depender de que cada persona modifique manualmente y de forma no sincronizada la estructura de tablas de forma directa e independiente.
+**Analogía:** Prisma es un arquitecto que, desde un plano central, genera las órdenes de construcción —las migraciones— y un manual verificado del edificio terminado —el cliente tipado— para que ambos reflejen el mismo diseño.
 
-El cliente generado por Prisma expone métodos tipados como `prisma.tarea.create({data: {...}})` y `prisma.tarea.findMany({where: {...}, include: {usuario: true}})`, donde el propio compilador de TypeScript verifica en tiempo de compilación que los campos usados en `data` o `where` efectivamente existen en el modelo `Tarea` declarado en el schema, capturando errores de tipeo o de campos inexistentes antes de que el código siquiera se ejecute, una ventaja considerable de seguridad de tipos que el SQL crudo del Tema 1 no ofrece de forma nativa (donde un error de nombre de columna solo se descubre al ejecutar la consulta y recibir un error de la base de datos).
+**Límite:** un atributo no sustituye el diseño de datos. Indexar todas las columnas aumenta almacenamiento y coste de escritura; una relación sin política explícita de borrado puede producir registros huérfanos o eliminaciones inesperadas. Revisa el SQL y prueba tanto una inserción válida como una violación de clave o unicidad. En consultas muy complejas u optimización crítica puede ser necesario complementar el ORM con SQL crudo.
 
-**Analogía:** Prisma es como un arquitecto que, a partir de un único plano central del edificio (`schema.prisma`), genera automáticamente tanto las órdenes de construcción exactas para los contratistas (las migraciones SQL) como un manual de uso preciso y verificado del edificio terminado (el cliente tipado), garantizando que ambos siempre reflejen exactamente la misma estructura declarada en el plano original.
+La operación de aplicación conserva esta forma:
 
-**¿Por qué es importante?** Prisma reduce considerablemente el código repetitivo de acceso a datos y aporta seguridad de tipos verificada en tiempo de compilación, a cambio de una capa de abstracción que, en casos de consultas extremadamente complejas u optimización crítica, puede requerir recurrir a SQL crudo complementario.
-
-**Configuración del ejemplo:**
-
-```prisma
-model Tarea {
-  id         Int      @id @default(autoincrement())
-  titulo     String
-  completada Boolean  @default(false)
-  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId  Int
-}
-```
-```bash
-npx prisma migrate dev --name agregar_tareas
-```
 ```js
-const tarea = await prisma.tarea.create({ data: { titulo: "Aprender Prisma", usuarioId: 1 } });
+const tarea = await prisma.tarea.create({
+  data: { titulo: "Aprender Prisma", usuarioId: 1 },
+});
 ```
 
-#### Paso 1 · Objetivo y preparación
+#### Practica
 
-Al finalizar podrás declarar un modelo Prisma, crear una migración y consultar una base SQLite local con el cliente generado. **Prerrequisitos:** Node LTS y npm. Este ejemplo independiente comienza desde una carpeta vacía; SQLite evita requerir Docker para aprender el ciclo de migraciones.
-
-#### Paso 2 · Contexto y caso real
-
-Un equipo necesita que el esquema de datos viaje con el código y pueda reconstruirse en otra máquina. En lugar de crear tablas manualmente en cada ambiente, Prisma genera migraciones versionables a partir de un contrato declarativo.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-`schema.prisma` es el plano; una migración es la orden de construcción que queda registrada; el cliente generado es la interfaz que consulta el edificio construido. `@id` define identidad, `@default` genera valores, `@relation` conecta modelos y `@@index` acelera patrones de consulta, pero ningún atributo reemplaza validar reglas de negocio o revisar el SQL generado.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea el proyecto y las dependencias actuales de Prisma con SQLite:
+Desde una carpeta vacía crea el proyecto y sus dependencias:
 
 ```bash
 mkdir ejemplo-prisma-sqlite
 cd ejemplo-prisma-sqlite
 npm init -y
 npm install @prisma/client @prisma/adapter-better-sqlite3 dotenv
-npm install --save-dev prisma @types/better-sqlite3
-npx prisma init --datasource-provider sqlite --output ../generated/prisma
-mkdir src
+npm install --save-dev prisma @types/better-sqlite3 tsx
+mkdir src prisma
 ```
 
-`--datasource-provider` es la bandera que fija con qué motor de base de datos trabaja Prisma (aquí, `sqlite`), y `--output` es la bandera que fija dónde generar el cliente. El comando crea `.env`, `prisma/schema.prisma` y `prisma.config.ts`. En `.env`, conserva la URL local:
+Añade `"type": "module"` a `package.json`. No ejecutes un generador de proyecto: crea manualmente `.env`, `prisma.config.ts`, `prisma/schema.prisma`, `tsconfig.json` y los archivos de `src` que se indican. Prisma solo generará la migración y el cliente derivados de tu schema.
+
+Crea `.env`:
 
 ```text
 DATABASE_URL="file:./dev.db"
 ```
 
-Reemplaza `prisma/schema.prisma` por:
+Crea `.gitignore`:
+
+```text
+.env
+node_modules/
+generated/
+```
+
+Crea `prisma.config.ts` para que el CLI localice el schema, las migraciones y la URL:
+
+```ts
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+  },
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
+});
+```
+
+Crea `prisma/schema.prisma`:
 
 ```prisma
 generator client {
@@ -260,21 +275,35 @@ model Tarea {
 }
 ```
 
-`@id` identifica cada fila; `autoincrement()` deja el número al motor; `@default(false)` evita valores indefinidos; `@@index` declara un índice para búsquedas frecuentes por estado. Crea y aplica la migración, luego genera explícitamente el cliente:
+`@id` identifica cada fila; `autoincrement()` deja el número al motor; `@default(false)` evita valores indefinidos y `@@index` declara un índice para búsquedas por estado. Crea `tsconfig.json` para ejecutar el ejemplo TypeScript como ESM:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+Crea y aplica la migración; después genera explícitamente el cliente:
 
 ```bash
 npx prisma migrate dev --name crear_tareas
 npx prisma generate
 ```
 
-Crea `src/usar-prisma.js`:
+Crea `src/usar-prisma.ts`:
 
-```js
+```ts
 import "dotenv/config";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../generated/prisma/client";
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 try {
@@ -293,72 +322,74 @@ try {
 }
 ```
 
-El adapter conecta el cliente de Prisma 7 con SQLite; `findMany` consulta el modelo, no una tabla escrita como string; `$disconnect` libera recursos al terminar el script. Ejecuta:
+El adapter conecta el cliente de Prisma 7 con SQLite; `findMany` consulta el modelo, no una tabla escrita como string; `$disconnect` libera recursos. `tsx` ejecuta el archivo TypeScript y el cliente generado sin convertir el ejemplo a otro framework. Ejecuta:
 
 ```bash
-node src/usar-prisma.js
+npx tsx src/usar-prisma.ts
 ```
 
-**Resultado esperado:** se crea `prisma/dev.db`, aparece una carpeta `prisma/migrations` con SQL versionado y la consola muestra la tarea creada dentro de `pendientes`.
+**Resultado esperado:** se crea `prisma/dev.db`, aparece `prisma/migrations` con SQL versionado y la consola muestra la tarea creada dentro de `pendientes`.
 
-**Fallo deliberado y diagnóstico:** cambia temporalmente `titulo` por `tituloInexistente` en `data` y ejecuta. El cliente generado informa que el campo no existe. El diagnóstico demuestra que el contrato del schema y el cliente están sincronizados; restaura el campo. Después borra manualmente `prisma/dev.db` y ejecuta el script: el error indica que debes aplicar las migraciones, no crear tablas a mano.
+**Fallo deliberado y corrección:** cambia temporalmente `titulo` por `tituloInexistente` en `data` y ejecuta. El cliente informa que el campo no existe: schema y cliente están sincronizados. Restaura el campo. Después detén el script, borra manualmente `prisma/dev.db` y vuelve a ejecutar: el error indica que faltan las tablas. Recupera el estado aplicando las migraciones con `npx prisma migrate dev`; no crees tablas a mano.
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** añade `prioridad String @default("media")` al modelo y ejecuta `npx prisma migrate dev --name agregar_prioridad`; después ejecuta `npx prisma generate`. Inspecciona el SQL generado antes de volver al script y crea una tarea que use la prioridad predeterminada.
 
-Añade `prioridad String @default("media")` al modelo y ejecuta otra migración con un nombre descriptivo. **Pista:** usa `npx prisma migrate dev --name agregar_prioridad` y luego `npx prisma generate`; inspecciona el SQL antes de ejecutar el script.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+**Ejercicio independiente:** crea un modelo `Etiqueta` y una relación muchos-a-muchos con `Tarea`. Inserta una tarea con etiqueta en una sola operación y entrega la salida de una consulta que incluya las etiquetas. Explica qué atributo describe cada lado de la relación y qué migración produjo el cambio.
 
-Crea un modelo `Etiqueta` y una relación muchos-a-muchos con `Tarea`. Inserta una tarea con etiqueta en una sola operación y entrega la salida de una consulta que incluya las etiquetas. Explica qué atributo describe cada lado de la relación y qué migración produjo ese cambio.
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, modela entregas y eventos con migraciones versionadas. Aplica la migración a una base local de prueba que ya contenga guías y verifica que conserva los datos existentes y las restricciones de unicidad.
 
-#### Paso 7 · Cierre y conexión
+**Checklist de salida**
 
-Ya puedes distinguir schema, migración y cliente generado. El siguiente tema estudiará pools y transacciones en un ejemplo nuevo; no reutilizará esta base SQLite ni asumirá que una transacción elimina todas las condiciones de carrera por sí sola.
+- [ ] Escribiste manualmente schema, configuración y programa en un proyecto nuevo.
+- [ ] Distingues `@id`, `@default`, `@relation`, `@@index` y `@@unique`.
+- [ ] La migración quedó en `prisma/migrations` y su SQL fue revisado.
+- [ ] Regeneraste el cliente después de cambiar el schema.
+- [ ] El programa crea y consulta tareas mediante el cliente y cierra con `$disconnect`.
+- [ ] El ejercicio de etiquetas demuestra la relación mediante una consulta con `include`.
 
-**Errores comunes:** editar la base manualmente sin migración; olvidar `prisma generate` después de cambios en Prisma 7; subir `.env` si contiene secretos; usar `migrate dev` en producción; añadir índices sin medir la consulta que los necesita.
+**Si falla.** Si el campo no existe, compara `data` con el schema y restaura el nombre correcto. Si falta una tabla después de borrar la base, aplica las migraciones; si el cliente no refleja un campo recién añadido, ejecuta `npx prisma generate`. No uses `migrate dev` como comando de despliegue en producción ni edites la base para ocultar una migración pendiente.
+
+**Errores comunes:** editar la base sin migración, olvidar `prisma generate` después de cambios en Prisma 7, subir `.env` con secretos, usar `migrate dev` en producción y añadir índices sin medir la consulta que los necesita.
 
 **Fuentes oficiales:** [quickstart Prisma con SQLite](https://www.prisma.io/docs/prisma-orm/quickstart/sqlite), [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate), [`migrate dev`](https://docs.prisma.io/docs/cli/migrate/dev) y [SQLite connector](https://docs.prisma.io/docs/orm/core-concepts/supported-databases/sqlite).
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Modela entregas y eventos con migraciones versionadas. Aplica la migración a una base de prueba anterior y verifica que conserva guías existentes y restricciones de unicidad.
+### Tema 3: Pool de conexiones y transacciones · Intermedio · 90 min
 
-### Tema 3: Pool de conexiones y transacciones
+#### Aprende
 
-**Conceptos clave:** reutilización de conexiones, atomicidad, `$transaction`.
+**Prerrequisitos:** Node LTS, npm, Docker, consultas parametrizadas y SQL básico. El proyecto comienza en una carpeta vacía y no usa la base de los temas anteriores.
 
-Abrir una nueva conexión de red hacia PostgreSQL para cada petición HTTP individual es costoso (el proceso de establecer una conexión de base de datos, incluyendo autenticación, tiene una latencia no despreciable) y no escala: un servidor con suficiente tráfico concurrente rápidamente agotaría el número máximo de conexiones simultáneas que PostgreSQL permite, un límite configurado explícitamente en el propio servidor de base de datos por razones de estabilidad y de gestión de recursos del servidor. Un pool de conexiones mantiene un número fijo y limitado de conexiones ya establecidas y reutilizables, entregando una conexión disponible del pool a cada consulta entrante y devolviéndola al pool (en vez de cerrarla) una vez que la consulta termina, amortizando el coste de establecer conexiones entre muchas peticiones sucesivas.
+**Al terminar podrás:** limitar y liberar conexiones de un pool, ejecutar varias escrituras en una transacción y combinar atomicidad con una actualización condicional que proteja el stock.
 
-Tanto el driver `pg` puro como Prisma gestionan un pool de conexiones automáticamente por debajo, sin que el desarrollador necesite implementar manualmente la lógica de gestión del pool; sin embargo, entender que existe y que tiene un límite configurable de tamaño es relevante para dimensionar correctamente una aplicación bajo carga real (un pool demasiado pequeño para el volumen de tráfico real crea un cuello de botella donde las peticiones esperan a que se libere una conexión disponible del pool).
+**Por qué importa:** una tienda debe descontar inventario y registrar el pedido como una sola decisión. Un pool evita agotar PostgreSQL con conexiones nuevas por petición; una transacción evita cambios parciales, mientras que el predicado `stock >= $1` impide descontar un valor que otra operación ya modificó.
 
-Una transacción agrupa múltiples operaciones de base de datos en una unidad atómica: o todas las operaciones dentro de la transacción se aplican exitosamente, o ninguna se aplica en absoluto (si cualquier paso falla, todo se revierte automáticamente), previniendo estados inconsistentes de datos. El ejemplo clásico es descontar stock de un producto al crear un pedido: sin una transacción, dos peticiones concurrentes podrían ambas leer el mismo stock disponible antes de que ninguna lo actualice, resultando en que ambas descuenten stock exitosamente aunque el stock combinado descontado exceda lo realmente disponible, una condición de carrera con consecuencias reales de negocio. `prisma.$transaction(async (tx) => {...})` agrupa las operaciones internas (usando `tx` en vez de `prisma` directamente para cada operación dentro del bloque) de forma que, si cualquier paso lanza un error (por ejemplo, verificando explícitamente que el stock disponible es suficiente antes de descontarlo), toda la transacción completa se revierte automáticamente, evitando el estado inconsistente.
+**Conceptos clave:** reutilización de conexiones, atomicidad, aislamiento, actualización condicional y `$transaction`.
 
-**Analogía:** un pool de conexiones es como una flota compartida de vehículos de una empresa: en vez de que cada empleado compre y mantenga su propio vehículo (abrir una conexión nueva cada vez), todos comparten un número fijo de vehículos disponibles, tomando uno prestado cuando lo necesitan y devolviéndolo al finalizar. Una transacción es como una operación bancaria de transferencia entre dos cuentas: o el dinero sale de una cuenta Y entra en la otra completamente, o la operación entera se cancela sin ningún cambio parcial, nunca dejando el dinero "a medio camino" entre ambas cuentas.
+Abrir una conexión de red para cada petición HTTP añade el coste de establecimiento y autenticación, y puede agotar el máximo de conexiones que PostgreSQL permite para preservar estabilidad. Un pool mantiene un número limitado de conexiones establecidas, presta una disponible y la reutiliza al terminar en vez de cerrarla.
 
-**¿Por qué es importante?** El pool de conexiones es indispensable para que una aplicación escale bajo tráfico real sin agotar los límites de conexión de la base de datos; las transacciones son la herramienta correcta y necesaria para prevenir condiciones de carrera al modificar datos compartidos concurrentemente.
+Tanto `pg` como Prisma gestionan pools sin que implementes esa lógica desde cero. Aun así, el tamaño importa: un pool pequeño puede hacer esperar peticiones y uno grande no garantiza más rendimiento, porque desplaza la presión al servidor de base de datos.
 
-**Código del ejemplo:**
+Una transacción agrupa operaciones en una unidad atómica: si un paso falla, se revierten los cambios de esa transacción. **Atomicidad no significa que desaparezcan todas las condiciones de carrera.** Dos transacciones pueden leer el mismo stock antes de que ninguna actualice; para ese caso hacen falta una estrategia de concurrencia, como una actualización condicional, bloqueos o un nivel de aislamiento apropiado. La transacción sigue siendo necesaria para confirmar o revertir juntos el descuento y el pedido.
+
+Este patrón de Prisma agrupa escrituras, pero la lectura seguida de una actualización basada en el valor leído **no basta por sí sola** para proteger stock concurrente:
 
 ```js
 await prisma.$transaction(async (tx) => {
   const producto = await tx.producto.findUnique({ where: { id } });
-  if (producto.stock < 1) throw new Error("Sin stock"); // revierte TODO si falla
+  if (producto.stock < 1) throw new Error("Sin stock");
+  // Si otra operación cambia stock después de findUnique, este valor puede estar obsoleto.
   await tx.producto.update({ where: { id }, data: { stock: producto.stock - 1 } });
   await tx.pedido.create({ data: { productoId: id } });
 });
 ```
 
-#### Paso 1 · Objetivo y preparación
+Dentro de `$transaction` debes usar `tx`, no el cliente global, para que todas las operaciones pertenezcan a la misma transacción. La demostración de este tema usa `pg` y traslada la comprobación de stock al predicado atómico del `UPDATE`; así la base decide si el descuento todavía es válido.
 
-Al finalizar podrás usar un pool de PostgreSQL y ejecutar una transacción que confirme o revierta varios cambios juntos. **Prerrequisitos:** Node LTS, npm y Docker funcionando. Este ejemplo independiente comienza desde una carpeta vacía.
+**Analogía:** un pool es una flota compartida de vehículos que se toman prestados y se devuelven. Una transacción es una transferencia entre cuentas: o se completan ambos movimientos o no queda dinero “a medio camino”. Esa atomicidad no impide por sí sola que dos personas intenten comprar la última unidad; la regla de disponibilidad debe aplicarse también al momento de actualizar.
 
-#### Paso 2 · Contexto y caso real
-
-Una tienda debe descontar inventario y registrar pedido como una sola decisión. Si crea el pedido y falla al descontar el stock, sus datos contradicen la realidad. El pool reutiliza conexiones; la transacción conserva consistencia de la operación completa.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Un pool es una pequeña flota de conexiones: se toman prestadas y se devuelven al terminar. Una transacción es una transferencia bancaria: `BEGIN` abre la operación, `COMMIT` la confirma y `ROLLBACK` deshace todo si una regla falla. Una transacción no reemplaza el diseño de concurrencia: en este caso el `UPDATE ... WHERE stock > 0` protege el descuento directamente en SQL.
-
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Desde una carpeta vacía crea el proyecto e instala el driver:
 
@@ -370,7 +401,7 @@ npm install pg
 mkdir src sql
 ```
 
-Añade `"type": "module"` a `package.json`. Crea `compose.yaml`:
+Añade `"type": "module"` a `package.json`. Crea manualmente `compose.yaml`:
 
 ```yaml
 services:
@@ -415,7 +446,7 @@ const pool = new pg.Pool({
 });
 
 async function crearPedido(productoId, cantidad) {
-  const cliente = await pool.connect(); // Reservamos una misma conexión para toda la transacción.
+  const cliente = await pool.connect(); // Una misma conexión para toda la transacción.
 
   try {
     await cliente.query("BEGIN");
@@ -466,20 +497,22 @@ node src/crear-pedido.js
 
 En Windows PowerShell:
 
-```bash
+```powershell
 docker compose up -d
 $env:DATABASE_URL='postgresql://academia:academia_local@127.0.0.1:5434/tienda'; node src/crear-pedido.js
 ```
 
 **Resultado esperado:** se crea un pedido con `id: 1` y el producto queda con stock `0`. `cliente.release()` devuelve la conexión al pool y `pool.end()` permite cerrar el script.
 
-**Fallo deliberado y diagnóstico:** ejecuta el script una segunda vez sin recrear la base. El `UPDATE` no devuelve filas porque el stock ya es `0`; el código ejecuta `ROLLBACK` y no crea un segundo pedido. Compruébalo con:
+**Fallo deliberado y corrección:** ejecuta el script una segunda vez sin recrear la base. El `UPDATE` no devuelve filas porque el stock ya es `0`; el código ejecuta `ROLLBACK` y no crea un segundo pedido. Compruébalo con:
 
 ```bash
 docker compose exec postgres psql -U academia -d tienda -c "SELECT stock FROM productos; SELECT count(*) AS pedidos FROM pedidos;"
 ```
 
-La salida debe mostrar stock `0` y un único pedido. No “soluciones” el fallo aumentando stock en el código: es una regla de negocio que la base y la transacción protegen.
+La salida debe mostrar stock `0` y un único pedido. No aumentes stock en el código para ocultar el rechazo: la restricción de negocio y el predicado SQL están funcionando. Conserva ese `UPDATE`; cambiarlo por una lectura seguida de escritura eliminaría la protección ante cambios concurrentes.
+
+**Práctica guiada:** intenta pedir cantidad `2` con stock inicial `1`. Recrea el volumen, cambia solo el argumento de `crearPedido` y ejecuta una vez. Verifica que no exista ningún pedido y que el stock siga siendo `1`; restaura después el argumento `1` si continuarás experimentando.
 
 Al finalizar, elimina el entorno local:
 
@@ -487,39 +520,50 @@ Al finalizar, elimina el entorno local:
 docker compose down -v
 ```
 
-#### Paso 5 · Práctica guiada
+#### Aplica
 
-Intenta pedir cantidad `2` con stock inicial `1`. **Pista:** recrea el volumen, ejecuta una sola vez con cantidad 2 y verifica que no exista ningún pedido; cambia solo el argumento de `crearPedido`.
+**Ejercicio independiente:** agrega una tabla `movimientos_inventario` e inserta un movimiento dentro de la misma transacción. En la base local desechable, provoca un `CHECK` inválido en el movimiento y entrega la prueba de que ni stock, ni pedido, ni movimiento quedaron modificados. Corrige el dato y demuestra después que las tres escrituras se confirman juntas.
 
-#### Paso 6 · Práctica independiente
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, confirma la entrega y registra su evento dentro de una transacción. Provoca un fallo determinista entre ambas escrituras en el entorno local, verifica el rollback completo y comprueba que la conexión vuelve al pool. No presentes esa prueba de atomicidad como evidencia de ausencia de condiciones de carrera.
 
-Agrega una tabla `movimientos_inventario` e inserta un movimiento dentro de la misma transacción. Provoca un `CHECK` inválido en el movimiento y entrega la prueba de que ni stock, ni pedido, ni movimiento quedaron modificados.
+**Checklist de salida**
 
-#### Paso 7 · Cierre y conexión
+- [ ] El pool tiene un límite explícito y cierras sus recursos al terminar.
+- [ ] Todos los pasos de la transacción usan el mismo cliente reservado.
+- [ ] `cliente.release()` está en `finally` y se ejecuta tanto al confirmar como al fallar.
+- [ ] El `UPDATE` comprueba stock en SQL en vez de confiar solo en una lectura previa.
+- [ ] El segundo pedido se rechaza sin cambiar stock ni insertar otra fila.
+- [ ] El fallo del movimiento demuestra rollback de todas las escrituras.
 
-Ya puedes elegir un pool con liberación explícita y diseñar una operación atómica. El siguiente tema comparará MongoDB y Mongoose en un ejemplo nuevo, con un modelo de documentos separado del modelo relacional.
+**Si falla.** Si una parte de la transacción usa `pool.query` y otra `cliente.query`, puede terminar en conexiones distintas: ejecuta todos los pasos con el mismo `cliente`. Si el script no termina, revisa `release` y `pool.end`; si el stock no cambia y no hay pedido, inspecciona `rowCount` antes de intentar otro `COMMIT`.
 
-**Errores comunes:** usar `pool.query` para cada paso de una transacción y terminar en conexiones distintas; olvidar `release`; llamar `COMMIT` después de un error; confiar solo en una lectura previa de stock; confundir pool grande con mayor rendimiento garantizado.
+**Errores comunes:** usar conexiones distintas dentro de una transacción, olvidar `release`, llamar `COMMIT` después de un error, confiar solo en una lectura previa de stock, afirmar que atomicidad equivale a aislamiento total y confundir un pool grande con rendimiento garantizado.
 
 **Fuentes oficiales:** [node-postgres pools](https://node-postgres.com/features/pooling), [node-postgres transactions](https://node-postgres.com/features/transactions), [PostgreSQL transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html) y [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html).
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Confirma entrega y registra evento dentro de una transacción. Provoca un fallo entre ambas escrituras y verifica rollback completo, además de liberación de la conexión al pool.
+### Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min
 
-### Tema 4: MongoDB con Mongoose y otras alternativas de ORM
+#### Aprende
 
-**Conceptos clave:** documentos frente a tablas relacionales, Schemas de Mongoose, population.
+**Prerrequisitos:** Node LTS, npm, Docker Desktop o Docker Engine, objetos JavaScript y promesas. El proyecto comienza en una carpeta vacía y no comparte archivos ni servicios con los otros temas.
 
-MongoDB, una base de datos orientada a documentos (en contraste con el modelo relacional de tablas de PostgreSQL), almacena datos como documentos JSON flexibles en vez de filas con un esquema rígido predefinido de columnas. Mongoose es la biblioteca predominante para trabajar con MongoDB desde Node, permitiendo definir Schemas que, a diferencia de la flexibilidad nativa de MongoDB, imponen una estructura y validación consistente sobre los documentos de una colección desde el lado de la aplicación, junto con Models (la representación de una colección específica con su Schema aplicado) que exponen métodos similares en espíritu a los de Prisma para crear, consultar y actualizar documentos.
+**Al terminar podrás:** levantar una base MongoDB local, validar documentos con Mongoose, resolver una referencia con `populate` y justificar cuándo referenciar, anidar o conservar un modelo relacional.
 
-"Population" en Mongoose resuelve el equivalente a una relación entre tablas en el mundo de documentos: cuando un documento almacena solo la referencia (id) a otro documento relacionado (en vez de anidarlo completo), `population` reemplaza automáticamente esa referencia por el documento completo correspondiente al consultar, de forma similar en espíritu al `include` de Prisma visto en el Tema 2, aunque con consideraciones de rendimiento distintas propias del modelo de documentos de MongoDB frente al modelo relacional.
+**Por qué importa:** un catálogo de paquetes puede tener atributos opcionales según el tipo de envío, mientras auditoría y pagos suelen requerir relaciones estrictas. Elegir documentos o tablas según datos y consultas evita adoptar MongoDB por moda o sustituir integridad relacional por conveniencia.
 
-Sequelize y TypeORM son alternativas de ORM para bases de datos relacionales que preceden a Prisma en adopción histórica, ambas con un enfoque más tradicional basado en clases de modelo (más cercano al patrón Active Record de otros ecosistemas) en vez del enfoque de schema declarativo centralizado y generación de cliente que caracteriza a Prisma. La elección entre estas alternativas, en la práctica actual de proyectos nuevos, favorece considerablemente a Prisma por su experiencia de desarrollo con tipos verificados y su tooling de migraciones, aunque proyectos legados existentes con Sequelize o TypeORM ya establecidos raramente justifican una migración completa solo para adoptar la alternativa más reciente.
+**Conceptos clave:** documentos frente a tablas relacionales, Schemas de Mongoose, modelos, validación y population.
 
-**Analogía:** una base de datos relacional (PostgreSQL) es como un archivador con formularios idénticos y estructurados para cada categoría de información, donde cada campo tiene un lugar fijo predefinido; una base de datos de documentos (MongoDB) es como una colección de notas individuales, cada una potencialmente con una estructura ligeramente distinta, agrupadas por tema pero sin exigir uniformidad estricta entre ellas salvo que se imponga explícitamente (como hace un Schema de Mongoose).
+MongoDB es una base orientada a documentos: almacena documentos BSON, representados habitualmente con sintaxis similar a JSON, agrupados en colecciones en vez de filas con columnas relacionales. Mongoose permite definir Schemas que imponen estructura y validación desde la aplicación, y Models que representan colecciones y exponen métodos para crear, consultar y actualizar documentos.
 
-**¿Por qué es importante?** Elegir entre un modelo relacional y uno de documentos depende de la naturaleza de los datos y las consultas de la aplicación; conocer Mongoose y las alternativas de ORM relacional amplía el panorama de herramientas disponibles más allá de Prisma para tomar esa decisión con criterio informado.
+La flexibilidad del documento no elimina la necesidad de reglas de calidad. `required`, `trim`, `lowercase` y `enum` expresan contratos de aplicación; además, una propiedad `unique` de Mongoose crea un índice y no debe tratarse como un validador síncrono.
 
-**Código del ejemplo:**
+“Population” resuelve referencias entre documentos. Cuando un documento guarda el identificador de otro, `populate` lo sustituye por el documento relacionado al consultar, en espíritu similar al `include` de Prisma, pero con otra consulta y consideraciones de rendimiento propias. No equivale automáticamente a un join barato.
+
+Sequelize y TypeORM son alternativas relacionales anteriores a Prisma en adopción histórica, con enfoques más tradicionales basados en modelos y clases, cercanos a Active Record, frente al schema central y cliente generado de Prisma. En proyectos nuevos puede favorecerse Prisma por sus tipos y migraciones; un sistema estable con Sequelize o TypeORM raramente justifica una migración completa solo por adoptar la alternativa más reciente.
+
+**Analogía:** PostgreSQL es un archivador con formularios idénticos y campos predefinidos; MongoDB es una colección de notas agrupadas por tema cuya estructura puede variar. Un Schema de Mongoose vuelve explícitas las reglas que esas notas deben cumplir.
+
+El patrón de referencia y consulta es:
 
 ```js
 const tareaSchema = new mongoose.Schema({
@@ -527,24 +571,12 @@ const tareaSchema = new mongoose.Schema({
   usuario: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario" },
 });
 const Tarea = mongoose.model("Tarea", tareaSchema);
-const tareas = await Tarea.find().populate("usuario"); // reemplaza la referencia por el documento completo
+const tareas = await Tarea.find().populate("usuario");
 ```
 
-#### Paso 1 · Objetivo y preparación
+#### Practica
 
-Al finalizar podrás levantar una colección MongoDB local, validar documentos con Mongoose y decidir cuándo referenciar o anidar datos. **Prerrequisitos:** Node LTS y Docker Desktop; este ejemplo comienza en una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Un catálogo de paquetes puede tener atributos opcionales que cambian por tipo de envío, mientras que auditoría y pagos suelen requerir relaciones estrictas. Comparar documento flexible y tabla relacional evita elegir MongoDB solo por moda.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-MongoDB guarda documentos agrupados en colecciones; Mongoose añade un esquema, validadores y modelos en la aplicación. `populate` resuelve referencias con otra consulta: es cómodo, pero no equivale automáticamente a un join barato. La analogía de notas flexibles solo es útil si aun así defines reglas de calidad.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea el ejemplo y levanta una base local:
+Desde una carpeta vacía crea el ejemplo y levanta una base local desechable:
 
 ```bash
 mkdir ejemplo-mongoose
@@ -555,7 +587,7 @@ mkdir src
 docker run --name mongo-academia -p 27017:27017 -d mongo:7
 ```
 
-Añade `"type": "module"` y crea `src/app.js`:
+Añade `"type": "module"` a `package.json` y crea manualmente `src/app.js`:
 
 ```js
 import mongoose from "mongoose";
@@ -577,7 +609,7 @@ try {
 }
 ```
 
-`required` valida presencia, `trim` normaliza espacios, `lowercase` normaliza el email y `lean()` devuelve un objeto simple para lectura. Desde la raíz ejecuta:
+`required` valida presencia, `trim` normaliza espacios, `lowercase` normaliza el email y `lean()` devuelve un objeto simple para lectura. `deleteMany({})` solo limpia la colección de esta base local de práctica. Desde la raíz ejecuta:
 
 ```bash
 node src/app.js
@@ -585,49 +617,59 @@ node src/app.js
 
 **Resultado esperado:** imprime el identificador generado y `email: 'ana@ejemplo.test'`.
 
-**Fallo deliberado y diagnóstico:** cambia el email por una cadena vacía. Mongoose lanza un `ValidationError` antes de guardar; el diagnóstico es una regla de documento incumplida. Detén el contenedor al terminar con `docker rm -f mongo-academia`.
+**Fallo deliberado y corrección:** cambia el email por una cadena vacía y ejecuta. Mongoose lanza un `ValidationError` antes de guardar porque el documento incumple una regla. Restaura `ANA@ejemplo.test`, verifica nuevamente la normalización y conserva el contenedor para las prácticas siguientes.
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** añade `tipo` con valores `estandar` o `fragil` mediante un `enum`. Prueba primero un valor permitido y después `urgente`; conserva el mensaje de validación y restaura un valor válido antes de continuar.
 
-Añade `tipo` con valores `estandar` o `fragil` mediante un `enum`. **Pista:** intenta primero un valor permitido y después `urgente`; conserva el mensaje de validación.
+Al terminar todos los ejercicios, detén y elimina el contenedor local:
 
-#### Paso 6 · Práctica independiente
+```bash
+docker rm -f mongo-academia
+```
 
-Crea `Direccion` y referencia su `_id` desde `Cliente`; consulta con `.populate("direccion")`. Entrega el documento antes y después de poblarlo, y explica el coste de una consulta adicional.
+#### Aplica
 
-#### Paso 7 · Cierre y conexión
+**Ejercicio independiente:** crea un modelo `Direccion` y referencia su `_id` desde `Cliente`; consulta con `.populate("direccion")`. Entrega el documento antes y después de poblarlo y explica el coste de la consulta adicional. Compara esa solución con anidar la dirección según las consultas que necesita el catálogo.
 
-Ya puedes crear documentos validados y razonar sobre referencias. El siguiente módulo expondrá persistencia detrás de una API, empezando también desde una carpeta nueva.
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, compara el modelo documental de evidencia con sus consultas reales. Explica qué reglas de consistencia necesitarías si dos procesos actualizaran el mismo documento antes de sustituir una base relacional; no uses una ejecución concurrente sin controles como demostración de seguridad.
 
-**Errores comunes:** confiar en `unique` como validador síncrono; abrir una conexión por documento; olvidar `disconnect`; usar `populate` sin medir; guardar secretos de conexión en el código.
+**Checklist de salida**
+
+- [ ] Creaste el proyecto y el schema desde cero, sin archivos de otros temas.
+- [ ] El documento válido normaliza email y espacios como declara el schema.
+- [ ] El email vacío produce `ValidationError` y corregiste el dato.
+- [ ] El `enum` acepta los dos valores definidos y rechaza `urgente`.
+- [ ] El ejercicio muestra la referencia antes y después de `populate`.
+- [ ] Cerraste Mongoose y eliminaste el contenedor local al terminar.
+
+**Si falla.** Si la conexión es rechazada, comprueba que `mongo-academia` siga activo y que el puerto local sea `27017`. Si un valor permitido también falla, revisa que el `enum` y el dato tengan exactamente los mismos strings. Si `populate` devuelve `null`, verifica que el `_id` referenciado exista y que `ref` nombre el modelo correcto; no lo confundas con un fallo de validación.
+
+**Errores comunes:** confiar en `unique` como validador síncrono, abrir una conexión por documento, olvidar `disconnect`, usar `populate` sin medir, guardar secretos de conexión en el código y confundir flexibilidad con ausencia de diseño.
 
 **Fuentes oficiales:** [Mongoose schemas](https://mongoosejs.com/docs/guide.html), [validación](https://mongoosejs.com/docs/validation.html), [`populate`](https://mongoosejs.com/docs/populate.html) y [MongoDB documentos](https://www.mongodb.com/docs/manual/core/document/).
 
----
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Compara el modelo documental de evidencia con sus consultas reales. Prueba una actualización concurrente y explica cómo se conserva la consistencia requerida antes de sustituir una base relacional por conveniencia.
-
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** conectar una API Express a PostgreSQL usando Prisma, con migraciones versionadas, y demostrar la necesidad de transacciones ante una condición de carrera real.
+**Objetivo del laboratorio:** construir el cierre del **proyecto integrador «API operativa de entregas»** conectando una API Express a PostgreSQL mediante Prisma, con migraciones versionadas y una prueba local determinista de atomicidad. El ejercicio no busca provocar condiciones de carrera reales ni demostrar que una transacción las elimina por sí sola.
 
-**Requisitos previos:** Docker instalado, Módulos 0-4 completados.
+**Requisitos previos:** Docker instalado y Módulos 0–4 completados. Comienza desde una carpeta vacía llamada `lab-api-entregas`, ejecuta `npm init -y` y escribe manualmente `compose.yaml`, `prisma/schema.prisma`, `prisma.config.ts`, `.env`, `.gitignore` y los archivos de `src`. No copies el proyecto de ningún tema ni reutilices sus contenedores, volúmenes o migraciones; instala en este proyecto las dependencias que declares en su `package.json`.
 
-| Paso | Acción | Comando/Código | Explicación |
+| Paso | Acción | Comando/Código | Resultado observable |
 |---|---|---|---|
-| 1 | Levantar PostgreSQL en Docker | `docker run -d -e POSTGRES_PASSWORD=... postgres` | Conecta con el driver `pg` puro y ejecuta `SELECT 1` |
-| 2 | Instalar Prisma y definir un modelo | Ver Tema 2 | `npx prisma migrate dev` para crear la tabla |
-| 3 | Usar el cliente generado desde Express | Crear, listar, actualizar tareas | Conecta con las rutas del Módulo 4 |
-| 4 | Provocar una condición de carrera intencional | Dos requests simultáneas descontando el mismo stock | Sin transacción, observa el stock final incorrecto |
-| 5 | Corregir con `$transaction` | Ver Tema 3 | Verifica que el stock final ahora es correcto |
-| 6 | Comparar la misma consulta en tres formas | SQL crudo, driver `pg`, Prisma | Compara legibilidad y seguridad de tipos |
+| 1 | Levantar PostgreSQL local | `docker compose up -d` con credenciales solo de laboratorio en tu propio `compose.yaml`; conecta con `pg` y ejecuta `SELECT 1` | Una consulta mínima confirma conectividad antes de crear la API. |
+| 2 | Definir y migrar el modelo | Escribe los modelos `Tarea`, `Producto` y `Pedido`; ejecuta `npx prisma migrate dev --name iniciar_laboratorio` y `npx prisma generate` | La migración queda versionada y crea tablas y restricciones. |
+| 3 | Usar el cliente desde Express | Implementa manualmente rutas para crear, listar y actualizar tareas con el cliente generado | Las rutas responden desde esta API nueva, sin importar rutas del Módulo 4. |
+| 4 | Reproducir un cambio parcial sin concurrencia | En un script local, descuenta stock y después inserta un pedido con `cantidad = 0` que viole su `CHECK`, todavía sin transacción | El descuento queda aplicado aunque el pedido falla; una sola ejecución basta, sin requests simultáneas. |
+| 5 | Corregir la atomicidad | Restaura los datos locales, agrupa ambas escrituras con `$transaction`, usa `tx` y conserva un `UPDATE ... WHERE stock >= cantidad` parametrizado | Al repetir el mismo fallo, stock y pedidos vuelven al estado inicial; con datos válidos, ambos cambios se confirman. |
+| 6 | Comparar una misma consulta | Implementa una lectura equivalente con SQL crudo, driver `pg` y Prisma | Compara legibilidad, control del SQL y seguridad de tipos sin concatenar valores en ninguna variante. |
 
-**Verificación:** el laboratorio se considera exitoso si la condición de carrera del paso 4 se reproduce de forma medible sin transacción, y si la corrección del paso 5 elimina completamente el estado inconsistente, verificado con múltiples ejecuciones concurrentes reales.
+**Verificación:** conserva las salidas de `SELECT 1`, las migraciones, las respuestas CRUD y los estados antes y después del fallo. El paso 4 debe mostrar el cambio parcial y el paso 5 el rollback completo en esta base local desechable. La actualización condicional documenta la regla de stock, pero esta práctica de atomicidad no certifica aislamiento ni ausencia de condiciones de carrera bajo carga concurrente.
 
 **Errores comunes y soluciones**
 
 - **Concatenar directamente valores de entrada en SQL crudo.** Usa siempre consultas parametrizadas (`$1`, `$2`), nunca concatenación directa de strings de entrada del usuario.
-- **Olvidar committear los archivos de migración generados por Prisma.** Las migraciones deben versionarse junto con el código para que el equipo completo reproduzca la misma estructura de base de datos.
-- **Modificar datos compartidos sin transacción cuando hay concurrencia real.** Si dos operaciones pueden competir por el mismo recurso, envuélvelas en una transacción explícita.
+- **Olvidar versionar los archivos de migración generados por Prisma.** Las migraciones deben acompañar al código para que el equipo reproduzca la misma estructura de base de datos.
+- **Confiar solo en una transacción para modificar datos compartidos.** La transacción aporta atomicidad; para concurrencia, diseña además actualizaciones condicionales, bloqueos o aislamiento según la operación y pruébalos en un entorno controlado.
+- **Reutilizar datos de otro laboratorio.** Usa el contenedor y volumen propios de este proyecto y elimina el entorno local al terminar con `docker compose down -v`.
 
----
+La evidencia de cierre son los archivos creados, las migraciones, las respuestas y las trazas de rollback; una marca de finalización no sustituye esa comprobación.

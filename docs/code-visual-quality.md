@@ -2,7 +2,7 @@
 
 Mide únicamente contenido dentro de cada tema. Las guías transversales no cuentan como código editorial ni como fuente oficial del tema.
 
-Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-01 conserva los 378 temas originalmente sin reconocimiento y los resultados HTTP de 516 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
+Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-01 conserva los 378 temas originalmente sin reconocimiento y los resultados HTTP de 519 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
 
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -10,7 +10,7 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | cloud | 156 | 156 | 124 | 80 | 4 | 18 | 0 | 150 | 156 | 156 |
 | devops | 129 | 129 | 83 | 82 | 2 | 40 | 0 | 129 | 128 | 129 |
 | javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 88 |
-| node | 77 | 77 | 43 | 24 | 0 | 12 | 0 | 77 | 77 | 77 |
+| node | 77 | 77 | 23 | 26 | 0 | 0 | 0 | 77 | 77 | 77 |
 | angular | 71 | 71 | 69 | 30 | 0 | 20 | 0 | 71 | 70 | 71 |
 | react | 58 | 58 | 42 | 37 | 0 | 9 | 0 | 58 | 58 | 58 |
 | java | 95 | 95 | 55 | 35 | 3 | 0 | 0 | 95 | 95 | 95 |
@@ -20,7 +20,7 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | ios | 56 | 56 | 40 | 34 | 0 | 16 | 0 | 55 | 56 | 56 |
 | flutter | 63 | 63 | 48 | 51 | 0 | 14 | 0 | 63 | 63 | 63 |
 | rutaflow | 29 | 29 | 27 | 26 | 0 | 0 | 0 | 28 | 27 | 29 |
-| **Total** | **1141** | **1141** | **887** | **640** | **19** | **208** | **0** | **1130** | **1134** | **1140** |
+| **Total** | **1141** | **1141** | **867** | **642** | **19** | **196** | **0** | **1130** | **1134** | **1140** |
 
 ## Regla editorial
 

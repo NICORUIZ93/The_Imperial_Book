@@ -1,7 +1,7 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
 export const NODE_MODULES: CourseModule[] = [
-  m(0, 'El runtime de Node: V8, libuv y el Event Loop', 'Runtime de Node', 'Fundamentos', '2 h', '#3c873a',
+  m(0, 'El runtime de Node: V8, libuv y el Event Loop', 'Runtime de Node', 'Fundamentos', '5 h', '#3c873a',
     'Node no es "JavaScript en el servidor" sin más: es un runtime con I/O no bloqueante construido sobre libuv.',
     ['Diferencias entre el Event Loop del navegador y el de Node', 'Fases del Event Loop (timers, poll, check)', 'process, global y módulos core', 'npx y la CLI de Node', 'Módulos core: os, buffer, crypto, util, child_process y cluster', 'Event-driven architecture y non-blocking I/O'],
     [
@@ -14,7 +14,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué setImmediate y setTimeout(fn, 0) no siempre se ejecutan en el mismo orden?', '¿Qué hace que Node pueda manejar miles de conexiones con un solo hilo?', '¿Qué diferencia hay entre el Event Loop del navegador y el de Node?'],
     ['Node.js'],
     'Script que demuestra el orden de ejecución entre setImmediate, setTimeout y process.nextTick.'),
-  m(1, 'Módulos, npm/pnpm y gestión de dependencias', 'npm/pnpm', 'Fundamentos', '1 h 30 min', '#3c873a',
+  m(1, 'Módulos, npm/pnpm y gestión de dependencias', 'npm/pnpm', 'Fundamentos', '5 h 30 min', '#3c873a',
     'Gestiona dependencias de forma reproducible y entiende qué instala realmente cada comando.',
     ['package.json y semver', 'Lockfiles y instalación reproducible', 'Workspaces (monorepo) con npm/pnpm', 'Scripts de ciclo de vida (postinstall, etc.)'],
     [
@@ -28,7 +28,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Qué problema real resuelve un lockfile (package-lock.json)?', '¿Por qué npm ci es más seguro que npm install en un pipeline de CI?', '¿Cuándo te conviene un monorepo con workspaces frente a paquetes separados?'],
     ['npm', 'pnpm'],
     'Monorepo con dos paquetes propios enlazados vía workspaces.'),
-  m(2, 'Sistema de archivos y streams', 'FS y streams', 'Fundamentos', '2 h 30 min', '#3c873a',
+  m(2, 'Sistema de archivos y streams', 'FS y streams', 'Fundamentos', '3 h 40 min', '#3c873a',
     'Procesa archivos grandes sin cargarlos completos en memoria: el patrón que usa Node por dentro para todo.',
     ['fs/promises vs callbacks', 'Streams básicos: Readable, Writable y Transform', 'Backpressure: write() y el evento drain', 'pipeline() para componer streams de forma segura', 'Separar líneas correctamente entre chunks con un Transform propio', 'Medir pausas y memoria bajo backpressure'],
     [
@@ -42,7 +42,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué cargar un archivo completo en memoria no escala para archivos grandes?', '¿Qué es backpressure y por qué pipeline() lo maneja mejor que pipe() encadenado a mano?', '¿Cuándo usarías fs/promises en vez de streams?'],
     ['Node.js streams'],
     'Script que transforma un archivo CSV grande a JSON usando streams, sin cargarlo completo en RAM.'),
-  m(3, 'Servidores HTTP nativos', 'HTTP nativo', 'Aplicación', '2 h', '#3c873a',
+  m(3, 'Servidores HTTP nativos', 'HTTP nativo', 'Aplicación', '5 h 45 min', '#3c873a',
     'Antes de Express, entiende qué hace un framework por debajo construyendo un servidor con el módulo http puro.',
     [
       'Paginación por cursor y límites de entrada comprobables','Modelo request/response', 'Routing manual', 'Parsing de body y headers', 'Códigos de estado y content negotiation'],
@@ -57,7 +57,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Qué hace exactamente Express que tú tuviste que escribir a mano aquí?', '¿Por qué el body de un POST llega como stream y no como objeto ya parseado?', '¿Qué decide el código de estado HTTP correcto para cada situación?'],
     ['Node.js http'],
     'Servidor HTTP nativo con 3 rutas y manejo de errores, sin frameworks.'),
-  m(4, 'Express/Fastify: routing y middleware', 'Express/Fastify', 'Aplicación', '3 h', '#3c873a',
+  m(4, 'Express/Fastify: routing y middleware', 'Express/Fastify', 'Aplicación', '7 h 30 min', '#3c873a',
     'El patrón middleware es la base de casi todos los frameworks web de Node.',
     ['Middleware: orden de ejecución y next()', 'Routers anidados', 'Manejo centralizado de errores', 'Validación de entrada (zod/joi)', 'express-validator como alternativa', 'Diferencias clave Express vs Fastify: hooks y JSON Schema nativo', 'WebSocket: tiempo real bidireccional', 'Subida de archivos: multipart y validación segura'],
     [
@@ -71,7 +71,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué el orden en que declaras middleware en Express importa tanto?', '¿Qué pasa si olvidas llamar next() dentro de un middleware?', '¿Qué ventaja real ofrece validar con zod en vez de revisar el body a mano?'],
     ['Express', 'Fastify'],
     'API REST con middleware de logging, validación y manejo de errores centralizado.'),
-  m(5, 'Bases de datos: drivers y ORMs', 'Bases de datos', 'Aplicación', '3 h', '#3c873a',
+  m(5, 'Bases de datos: drivers y ORMs', 'Bases de datos', 'Aplicación', '5 h 45 min', '#3c873a',
     'Conecta tu API a una base real y aprende cuándo un ORM ayuda y cuándo estorba.',
     ['PostgreSQL/MongoDB desde Node', 'Prisma: schema, migraciones y queries tipadas', 'Pool de conexiones', 'Transacciones', 'Mongoose: Schemas, Models y population', 'Sequelize y TypeORM como alternativas a Prisma'],
     [
@@ -85,7 +85,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Cuándo un ORM como Prisma te ahorra tiempo y cuándo te estorba?', '¿Por qué necesitas un pool de conexiones en vez de abrir una conexión por request?', '¿Qué problema resuelve una transacción que un query individual no resuelve?'],
     ['Prisma', 'PostgreSQL'],
     'API con persistencia real en PostgreSQL usando Prisma y migraciones versionadas.'),
-  m(6, 'Autenticación y autorización', 'Auth', 'Integración', '2 h 30 min', '#3c873a',
+  m(6, 'Autenticación y autorización', 'Auth', 'Integración', '9 h 15 min', '#3c873a',
     'Implementa login seguro sin reinventar criptografía desde cero.',
     ['Hashing de contraseñas (bcrypt/argon2)', 'JWT: access y refresh tokens', 'Sesiones vs tokens', 'OAuth 2.0 con un proveedor externo', 'Passport.js y sus estrategias de autenticación', 'Cookies seguras, sesiones y protección CSRF', 'Flujo de login completo: de /api/auth/login a una ruta protegida'],
     [
@@ -99,7 +99,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué nunca debes guardar contraseñas en texto plano, ni siquiera cifradas (en vez de hasheadas)?', '¿Qué diferencia hay entre un access token y un refresh token?', '¿Por qué NO deberías construir tu propio algoritmo de hashing de contraseñas?'],
     ['JWT', 'OAuth2'],
     'API protegida con JWT, refresh tokens y rutas con control de roles.'),
-  m(7, 'Testing e integración continua', 'Testing', 'Integración', '2 h 30 min', '#3c873a',
+  m(7, 'Testing e integración continua', 'Testing', 'Integración', '5 h', '#3c873a',
     'Prueba endpoints HTTP reales, no solo funciones aisladas.',
     ['Vitest + Supertest', 'Bases de datos de prueba (Testcontainers)', 'Mocks de servicios externos', 'Pipeline de CI para una API Node', 'Jest, Mocha, Chai y Sinon como alternativas', 'Debugging con --inspect y Chrome DevTools'],
     [
@@ -113,7 +113,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué un test de integración con base real da más confianza que uno con mocks de la base?', '¿Qué ventaja tiene Testcontainers sobre apuntar a una base de datos compartida de "test"?', '¿Qué deberías mockear siempre en un test, sin excepción?'],
     ['Vitest', 'Supertest'],
     'Suite de pruebas de integración que levanta la API contra una base de datos real en Docker.'),
-  m(8, 'Patrones asíncronos avanzados', 'Async avanzado', 'Experto', '3 h', '#3c873a',
+  m(8, 'Patrones asíncronos avanzados', 'Async avanzado', 'Experto', '4 h', '#3c873a',
     'Cuando una sola instancia de Node no alcanza: workers, clustering y colas de trabajo.',
     ['Worker threads para CPU-bound', 'Cluster module y balanceo entre procesos', 'Colas de trabajo con BullMQ + Redis', 'Procesamiento en background', 'pm2 en modo cluster y --max-old-space-size', 'Heap snapshots y detección de memory leaks', 'Redis: cache-aside, idempotencia y Pub/Sub'],
     [
@@ -127,7 +127,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Cuándo un worker_thread es la herramienta correcta y cuándo es una cola de trabajo?', '¿Qué gana tu API al mover trabajo pesado fuera del request-response?', '¿Por qué cluster no comparte memoria entre procesos como sí lo hace un worker_thread?'],
     ['BullMQ', 'Redis'],
     'Cola de procesamiento en background (envío de emails) con reintentos y backoff.'),
-  m(9, 'Observabilidad y manejo de errores en producción', 'Observabilidad', 'Experto', '2 h 30 min', '#3c873a',
+  m(9, 'Observabilidad y manejo de errores en producción', 'Observabilidad', 'Experto', '4 h 40 min', '#3c873a',
     'Diagnostica un proceso Node en producción sin adivinar.',
     ['Logging estructurado (pino/winston)', 'Correlation ID por request', 'Manejo de excepciones no capturadas', 'Health checks y graceful shutdown', 'process.on("unhandledRejection") y manejo de promesas sin catch', 'Diseño de APIs: REST vs GraphQL (Apollo Server) vs gRPC', 'Métricas Prometheus y trazas distribuidas con OpenTelemetry'],
     [
@@ -141,7 +141,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué el correlation ID es esencial para diagnosticar un error en producción?', '¿Qué diferencia hay entre un error capturado y uno no capturado, en términos de qué debes hacer?', '¿Por qué importa el apagado ordenado (graceful shutdown) en un sistema con tráfico real?'],
     ['Pino'],
     'API con logging estructurado, correlation ID y apagado controlado (graceful shutdown).'),
-  m(10, 'Seguridad en Node', 'Seguridad', 'Experto', '2 h', '#3c873a',
+  m(10, 'Seguridad en Node', 'Seguridad', 'Experto', '5 h 10 min', '#3c873a',
     'Los errores de seguridad más comunes en APIs Node y cómo evitarlos sistemáticamente.',
     ['OWASP API Security Top 10', 'helmet y cabeceras seguras', 'Rate limiting', 'Validación y sanitización de entrada'],
     [
@@ -155,7 +155,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué concatenar strings para construir SQL es peligroso incluso si "nunca vas a tener atacantes"?', '¿Qué problema real resuelve el rate limiting más allá de "verse profesional"?', '¿Qué cabeceras agrega helmet y por qué cada una importa?'],
     ['Helmet'],
     'API con rate limiting, cabeceras seguras y validación estricta de entrada.'),
-  m(11, 'Despliegue y contenedores', 'Despliegue', 'Experto', '2 h', '#3c873a',
+  m(11, 'Despliegue y contenedores', 'Despliegue', 'Experto', '5 h 15 min', '#3c873a',
     'Empaqueta y despliega tu API Node de forma reproducible (conecta directo con el track DevOps).',
     ['Dockerfile para Node (multi-stage)', 'Variables de entorno por ambiente', 'PM2 vs contenedores para gestión de procesos', 'Zero-downtime deploys', 'Nginx como reverse proxy y balanceador', 'Serverless: AWS Lambda, Vercel y Azure Functions'],
     [
@@ -169,7 +169,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué una imagen Docker multi-stage es más segura y liviana que una de una sola etapa?', '¿Qué ventaja da un healthcheck a nivel de Docker/Kubernetes?', '¿Qué necesitas para lograr un despliegue sin downtime?'],
     ['Docker'],
     'Imagen Docker de producción de la API, optimizada y sin dependencias de desarrollo.'),
-  m(12, 'Proyecto integrador: API productiva', 'Proyecto final', 'Experto', '6 h', '#3c873a',
+  m(12, 'Proyecto integrador: API productiva', 'Proyecto final', 'Experto', '12 h', '#3c873a',
     'Une todo lo aprendido en una API lista para producción real.',
     ['Arquitectura por capas', 'Autenticación, persistencia y testing integrados', 'Observabilidad básica', 'Contenedor listo para desplegar', 'Posiciones geoespaciales con PostGIS (Postgres) y eventos en tiempo real con Socket.IO', 'Carga de archivos con rutas seguras y notificaciones push (Firebase Admin) desacopladas de la autorización', 'Qué sigue: microservicios, message queues (Kafka/RabbitMQ) y TypeScript con ts-node/tsx'],
     [
@@ -183,7 +183,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Qué decisiones de arquitectura tomaste y por qué, en vez de copiar un boilerplate?', '¿Qué parte del proyecto te hizo reconsiderar una decisión de diseño anterior?', '¿Qué le falta a esta API para considerarla lista para tráfico real de producción?'],
     ['Express', 'Prisma', 'Docker'],
     'API REST con auth, base de datos real, tests de integración y Dockerfile de producción.'),
-  m(13, 'TypeScript, contratos e integraciones confiables', 'Contratos y resiliencia', 'Experto', '7 h', '#3c873a',
+  m(13, 'TypeScript, contratos e integraciones confiables', 'Contratos y resiliencia', 'Experto', '8 h 20 min', '#3c873a',
     'Evoluciona la API productiva hacia un servicio con tipos estrictos, contratos HTTP verificables y efectos seguros frente a reintentos, caídas y entregas duplicadas.',
     [
       'TypeScript strict, tipos de dominio, Result y fronteras de datos',
@@ -205,7 +205,7 @@ export const NODE_MODULES: CourseModule[] = [
     ],
     ['TypeScript', 'OpenAPI', 'Zod', 'PostgreSQL', 'Vitest'],
     'API tipada y contract-first con idempotencia transaccional, outbox, webhooks firmados, pruebas de duplicación y procedimiento de reconciliación.'),
-  m(14, 'Node.js Master: GraphQL, eventos y entrega', 'Node Master', 'Experto', '10 h', '#3c873a',
+  m(14, 'Node.js Master: GraphQL, eventos y entrega', 'Node Master', 'Experto', '9 h', '#3c873a',
     'Entrega servicios Node tipados en serverless y contenedores, con GraphQL federado, eventos, sagas y CI/CD verificable.',
     ['TypeScript nativo, tsx y configuración', 'GraphQL, DataLoader, directives y Federation', 'Kafka/RabbitMQ, SAGA y event-driven', 'AWS Lambda/Azure Functions/GCP Functions', 'Docker multi-stage, Alpine y PM2', 'GitHub Actions/Jenkins y despliegue'],
     ['Valida tipos en runtime', 'Evita N+1', 'Orquesta una saga', 'Mide cold start', 'Endurece imagen', 'Promueve artefacto inmutable'],

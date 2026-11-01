@@ -21,7 +21,7 @@
     },
     {
       "id": "node",
-      "baseline": "Node.js 24 LTS; Node.js 26 Current",
+      "baseline": "Node.js 24 LTS; Node.js 26 LTS",
       "content": "web/public/content/node/modulo-13.md",
       "requiredTerms": [
         "Node.js 24 LTS",

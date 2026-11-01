@@ -1,458 +1,766 @@
 # Módulo 10: Seguridad en Node
 
-
 ## Aprende construyendo
 
-### Tema 1: Cabeceras seguras con helmet
+### Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Node LTS, npm, fundamentos de Express y uso básico de `curl`. No necesitas archivos de otros temas.
 
-Al finalizar podrás aplicar cabeceras HTTP defensivas y comprobarlas con `curl`. **Prerrequisitos:** Node LTS, Express y terminal; ejemplo independiente desde una carpeta vacía.
+**Al terminar podrás:** configurar Helmet en una aplicación Express, identificar las cabeceras observadas en una respuesta y explicar qué riesgos mitigan sin presentarlas como sustituto de otros controles.
 
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
-Un navegador puede interpretar una respuesta de manera peligrosa si faltan restricciones. Una API pública necesita reducir superficie antes de implementar reglas de negocio.
+Las cabeceras HTTP comunican políticas al navegador. Helmet reúne middleware que configura varias de ellas con valores defensivos: `X-Content-Type-Options: nosniff` evita que el navegador reinterprete el tipo declarado, Content Security Policy (CSP) restringe fuentes de contenido y `Strict-Transport-Security` (HSTS) indica que futuras visitas a un sitio deben usar HTTPS.
 
-#### Paso 3 · Teoría y analogía aplicada
+**Por qué importa:** una configuración consistente reduce categorías de ataques del lado del navegador y evita que cada ruta dependa de decisiones manuales dispersas. Estas cabeceras no validan entradas, no implementan autenticación o autorización, no parametrizan consultas y no detienen por sí solas el abuso de una API.
 
-Helmet agrupa middleware que establece políticas como CSP, HSTS y `X-Content-Type-Options`. Son señales para el navegador, no un sustituto de autorización; funcionan como barandillas en una carretera.
+CSP debe corresponder a los recursos que la aplicación realmente utiliza. Copiar una política permisiva anula parte de su valor; copiar una demasiado restrictiva puede bloquear recursos legítimos. Conviene observar primero el comportamiento y ajustar directivas con evidencia. HSTS se evalúa en un despliegue con HTTPS real y en un navegador: una petición HTTP local con `curl` no demuestra el comportamiento de downgrade ni la persistencia de la política. Antes de usar `includeSubDomains` o `preload`, hay que comprobar que todos los subdominios afectados soportan HTTPS.
 
-Ya verificas cabeceras desde el cliente. El siguiente tema limitará abuso por IP y usuario.
+**Analogía:** Helmet instala un juego de barandillas y señales en un edificio. Ayudan a prevenir accidentes, pero no comprueban la identidad de quien entra ni deciden qué habitaciones puede visitar; esas funciones necesitan controles propios.
 
-**Errores comunes:** copiar CSP sin probar; activar HSTS local sin HTTPS; creer que Helmet valida entradas; ocultar cabeceras de diagnóstico.
+**Conceptos clave:** cabeceras defensivas, CSP, `nosniff`, HSTS, HTTPS y defensa en profundidad.
+
+#### Practica
+
+**Desde cero:** crea una carpeta vacía para un proyecto nuevo. npm generará su manifiesto y lockfile; crea manualmente los archivos fuente indicados, sin copiar ejemplos del repositorio:
+
+```bash
+mkdir practica-cabeceras
+cd practica-cabeceras
+npm init -y
+npm install express helmet
+npm pkg set type=module scripts.start="node src/server.js"
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+import helmet from "helmet";
+
+const app = express();
+app.use(helmet());
+
+app.get("/", (_req, res) => {
+  res.json({ estado: "disponible" });
+});
+
+app.listen(3000, () => {
+  console.log("API de cabeceras en http://127.0.0.1:3000");
+});
+```
+
+En una terminal ejecuta `npm start` y, en otra, inspecciona la respuesta:
+
+```bash
+curl -i http://127.0.0.1:3000/
+```
+
+**Resultado esperado:** la respuesta es `200` e incluye cabeceras configuradas por Helmet, entre ellas `Content-Security-Policy` y `X-Content-Type-Options`. Los nombres pueden aparecer en minúsculas porque las cabeceras HTTP no distinguen mayúsculas; el conjunto exacto puede variar según la versión instalada.
+
+**Fallo deliberado:** detén el servidor, comenta temporalmente `app.use(helmet());`, vuelve a arrancar y repite la petición. **Diagnóstico y corrección:** las cabeceras aportadas por Helmet desaparecen, aunque Express siga respondiendo; esto demuestra una regresión de configuración, no un fallo de Express. Restaura la línea y comprueba de nuevo las cabeceras.
+
+**Práctica guiada.** Sustituye la llamada anterior por una CSP explícita para una respuesta que no necesita scripts:
+
+```js
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'none'"],
+      objectSrc: ["'none'"]
+    }
+  }
+}));
+```
+
+Repite `curl -i`. **Pista:** busca `script-src 'none'` y `object-src 'none'` dentro de CSP; no actives ni desactives directivas sin relacionarlas con el contenido servido.
+
+**Si falla.** Si no aparecen las cabeceras nuevas, confirma que reiniciaste el proceso editado y que la petición llega al puerto 3000. Si una página real deja de cargar recursos tras aplicar CSP, revisa la consola del navegador y corrige directivas concretas en lugar de desactivar toda la política.
+
+#### Aplica
+
+Crea `cabeceras.md` y registra tres cabeceras observadas, el riesgo que mitiga cada una y un control que sigue siendo necesario. Como ejercicio independiente, añade `frameAncestors: ["'none'"]` a las directivas, reinicia y verifica que CSP contiene `frame-ancestors 'none'`; explica en el archivo por qué esa defensa contra *framing* no sustituye la autorización de la API.
+
+**Checklist de salida.**
+
+- [ ] El proyecto se creó en `practica-cabeceras` sin reutilizar archivos de otro tema.
+- [ ] `src/server.js` aplica Helmet antes de las rutas.
+- [ ] La respuesta inspeccionada contiene CSP y `X-Content-Type-Options`.
+- [ ] La comparación sin Helmet y su restauración muestran una diferencia observable en las cabeceras.
+- [ ] La CSP configurada contiene `script-src 'none'`, `object-src 'none'` y `frame-ancestors 'none'`.
+- [ ] `cabeceras.md` distingue mitigación del navegador, autenticación, autorización y validación, y reserva la comprobación de HSTS para HTTPS real.
+
+**Errores comunes:** copiar una CSP sin comprobar recursos; afirmar que Helmet vuelve segura toda la aplicación; usar cabeceras como sustituto de controles de negocio; dar por verificado HSTS con una petición HTTP a localhost; ocultar cabeceras de diagnóstico sin justificar el cambio.
 
 **Fuentes oficiales:** [Helmet](https://helmetjs.github.io/), [MDN HTTP headers](https://developer.mozilla.org/es/docs/Web/HTTP/Headers) y [OWASP Secure Headers](https://owasp.org/www-project-secure-headers/).
 
-**Conceptos clave:** cabeceras HTTP de seguridad, mitigación de ataques comunes del navegador.
-
-`helmet`, un middleware de Express (y también disponible para Fastify), establece automáticamente un conjunto de cabeceras HTTP que mitigan categorías conocidas de ataques del lado del navegador, con una única línea de configuración (`app.use(helmet())`) en vez de requerir que cada desarrollador configure manualmente cada cabecera individual conociendo exactamente su propósito específico. Entre las cabeceras que establece: `X-Content-Type-Options: nosniff` previene que el navegador intente adivinar el tipo de contenido de una respuesta de forma distinta a la declarada explícitamente en `Content-Type`, mitigando ciertos ataques que dependen de esa ambigüedad de interpretación; `Strict-Transport-Security` indica al navegador que solo debe comunicarse con el sitio mediante HTTPS en futuras visitas, incluso si el usuario intenta acceder explícitamente mediante HTTP, previniendo ataques de downgrade de protocolo.
-
-Verificar con `curl -I` (que solicita solo las cabeceras de la respuesta, sin el cuerpo completo) qué cabeceras añade `helmet` a una aplicación específica es un ejercicio práctico revelador: cada cabecera añadida corresponde a una mitigación específica y bien documentada de un vector de ataque conocido, y entender el propósito individual de cada una (en vez de simplemente confiar ciegamente en que "helmet hace que la app sea segura") es importante para poder configurar excepciones puntuales cuando una cabecera específica interfiere con un requisito legítimo de la aplicación (por ejemplo, ajustar la Content Security Policy si la aplicación necesita cargar recursos de un dominio externo específico).
-
-Adoptar `helmet` (o el equivalente para el framework elegido) desde el inicio de cualquier API de producción es una práctica de bajo costo y alto beneficio: la configuración por defecto cubre las mitigaciones más comunes y ampliamente aplicables sin requerir ningún conocimiento profundo previo de seguridad web por parte de cada desarrollador individual del equipo, delegando esa experiencia acumulada de la comunidad de seguridad hacia una biblioteca mantenida y actualizada colectivamente.
-
-**Diagrama:**
-
-```mermaid
-graph LR
-    A["Solicitud del navegador"]
-    B["Express sin helmet<br/>sin cabeceras defensivas"]
-    C["Express + helmet()<br/>cabeceras CSP, HSTS, etc."]
-    D["Navegador interpreta<br/>riesgo alto"]
-    E["Navegador cumple<br/>restricciones"]
-    
-    A -->|sin protección| B
-    A -->|protección aplicada| C
-    B --> D
-    C --> E
-    
-    style D fill:#ffebee
-    style E fill:#e8f5e9
-```
-
-**Analogía:** `helmet` es como instalar automáticamente un conjunto estándar de cerraduras de seguridad probadas y recomendadas por expertos en un edificio nuevo, en vez de que cada propietario individual tenga que investigar y decidir por su cuenta, desde cero, qué tipo específico de cerradura instalar en cada puerta.
-
-**¿Por qué es importante?** `helmet` mitiga con una única línea de configuración una categoría amplia de vulnerabilidades conocidas del lado del navegador, delegando experiencia de seguridad acumulada de la comunidad hacia una configuración por defecto sensata y ampliamente probada.
-
-**Cuándo:** aplicar `helmet()` en toda app de producción con Express; no conviene en desarrollo local sin HTTPS (HSTS es problemático en localhost).
-
-* Proyecto: en el proyecto integrador RutaFlow, aplica `helmet()` a la API y comprueba con `curl -I` que aparecen las cabeceras de seguridad.
-
-**Código del ejemplo:**
-
-```js
-import helmet from "helmet";
-app.use(helmet()); // agrega X-Content-Type-Options, Strict-Transport-Security, etc.
-// verificar: curl -I http://localhost:3000/tareas
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Implementa `src/audit-notes.md` para registrar la dependencia afectada, severidad, versión corregida y decisión del equipo.
-
-```bash
-mkdir ejemplo-helmet
-cd ejemplo-helmet
-npm init -y
-npm install express helmet
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import express from "express";
-import helmet from "helmet";
-const app = express();
-app.use(helmet());
-app.get("/", (_req, res) => res.json({ ok: true }));
-app.listen(3000, () => console.log("seguro en 3000"));
-```
-
-Ejecuta `node src/server.js` y `curl -I http://127.0.0.1:3000`. **Resultado esperado:** aparecen `x-content-type-options`, `content-security-policy` y otras cabeceras. **Fallo deliberado y diagnóstico:** elimina `helmet()` y compara; la ausencia demuestra una regresión observable, no un error de Express.
-
-#### Paso 5 · Práctica guiada
-
-Configura una CSP mínima para una respuesta sin scripts. **Pista:** prueba primero en modo reporte para no bloquear contenido legítimo.
-
-#### Paso 6 · Práctica independiente
-
-Documenta qué cabeceras aplican a navegador y cuáles no protegen una llamada server-to-server.
-
-#### Paso 7 · Cierre y conexión
-
-Ya comparás la respuesta con y sin `helmet()` y comprobás que las cabeceras desaparecen juntas. El siguiente tema limita cuántas solicitudes acepta una ruta.
-
-### Tema 2: Rate limiting
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás rechazar solicitudes excesivas con un límite explícito. **Prerrequisitos:** Node LTS, Express y npm; ejemplo independiente desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Login, búsqueda y recuperación de contraseña son objetivos de abuso. Un límite reduce fuerza bruta, aunque no reemplaza autenticación ni protección distribuida.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Una ventana fija cuenta solicitudes por intervalo; token bucket permite ráfagas controladas. Es el torniquete de una estación: deja pasar un flujo y frena la saturación.
-
-Ya proteges una superficie concreta y conoces sus límites distribuidos. El siguiente tema tratará inyección y XSS.
-
-**Errores comunes:** confiar en IP detrás de proxy sin configurarlo; bloquear usuarios legítimos; no informar `Retry-After`; limitar solo en frontend; usar memoria local en clúster.
-
-**Fuentes oficiales:** [express-rate-limit](https://express-rate-limit.mintlify.app/), [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) y [OWASP API4](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/).
-
-**Conceptos clave:** límite de peticiones por ventana de tiempo, prevención de abuso y fuerza bruta.
-
-Sin ningún límite en la tasa de peticiones que un cliente puede realizar, un solo cliente (deliberadamente malicioso, o simplemente un bug de un cliente legítimo que reintenta sin control) puede saturar una API con volumen excesivo de peticiones, degradando el servicio para todos los demás usuarios legítimos, o realizar ataques de fuerza bruta contra un endpoint de login (probando sistemáticamente miles de combinaciones de contraseña por segundo contra la misma cuenta) sin ninguna fricción que lo dificulte. `express-rate-limit` (u otras bibliotecas equivalentes) limita el número de peticiones aceptadas desde una misma IP (u otro identificador de cliente) dentro de una ventana de tiempo configurable, respondiendo con `429` (Too Many Requests) una vez que ese límite se excede dentro de la ventana.
-
-Configurar el límite apropiado (`{windowMs: 60_000, max: 100}`, por ejemplo, 100 peticiones por minuto) requiere equilibrar la protección real contra abuso con no penalizar injustamente a usuarios legítimos con patrones de uso normales pero de volumen relativamente alto; límites más estrictos son apropiados específicamente para endpoints sensibles como login (donde incluso un puñado de intentos fallidos en poco tiempo es sospechoso de un ataque de fuerza bruta) frente a límites más generosos para endpoints de consulta general de uso normal y esperado con mayor frecuencia legítima.
-
-Rate limiting no es solo una medida "para verse profesional": resuelve un problema real y concreto de disponibilidad del servicio (protegiendo contra saturación, ya sea maliciosa o accidental) y de seguridad específica (dificultando significativamente ataques de fuerza bruta contra credenciales, que dependen fundamentalmente de poder probar un volumen muy alto de intentos en poco tiempo; limitar ese volumen posible reduce directamente la viabilidad práctica de ese tipo de ataque, sin necesidad de ninguna otra medida adicional específica contra fuerza bruta).
-
-**Analogía:** rate limiting es como un torniquete de entrada que permite pasar solo un número limitado de personas por minuto, evitando tanto que una multitud descontrolada sature un espacio con capacidad limitada, como que alguien intente probar sistemáticamente y a alta velocidad miles de credenciales falsas contra un único punto de control de seguridad en poco tiempo.
-
-**¿Por qué es importante?** Rate limiting protege tanto la disponibilidad del servicio ante saturación (maliciosa o accidental) como la seguridad de endpoints sensibles como login, dificultando significativamente ataques de fuerza bruta al limitar el volumen posible de intentos en un período de tiempo dado.
-
-**Código del ejemplo:**
-
-```js
-import rateLimit from "express-rate-limit";
-app.use(rateLimit({ windowMs: 60_000, max: 100 })); // máx 100 requests/minuto por IP
-// tras excederlo: respuesta 429 Too Many Requests
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Limita intentos de consulta o autenticación según la política definida. Prueba el umbral y su recuperación temporal; el rechazo debe ser explícito y no bloquear indiscriminadamente usuarios detrás de una misma red.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-rate-limit
-cd ejemplo-rate-limit
-npm init -y
-npm install express express-rate-limit
-mkdir src
-```
-
-Crea `src/server.js`:
-
-```js
-import express from "express";
-import rateLimit from "express-rate-limit";
-const app = express();
-app.use(rateLimit({ windowMs: 60_000, limit: 3, standardHeaders: true, legacyHeaders: false }));
-app.get("/", (_req, res) => res.send("ok"));
-app.listen(3000, () => console.log("limite 3/min"));
-```
-
-Ejecuta el servidor y cuatro veces `curl -i http://127.0.0.1:3000`. **Resultado esperado:** las primeras tres son 200 y la cuarta 429. **Fallo deliberado y diagnóstico:** elimina el middleware; todas pasan, demostrando una ruta sin límite.
-
-#### Paso 5 · Práctica guiada
-
-Aplica un límite más estricto solo a `/login`. **Pista:** usa un router o middleware por ruta, no un número global para todos los recursos.
-
-#### Paso 6 · Práctica independiente
-
-Compara memoria local con un store Redis para dos procesos y documenta por qué un límite local no es global.
-
-#### Paso 7 · Cierre y conexión
-
-Ya ves las tres primeras solicitudes en 200 y la cuarta en 429, y sabés por qué un límite local no es global entre procesos. El siguiente tema mueve la defensa al dato: parámetros SQL y salida HTML.
-
-### Tema 3: Inyección SQL y sanitización contra XSS
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás parametrizar una consulta y escapar texto HTML. **Prerrequisitos:** Node LTS, SQL básico y navegador; ejemplo independiente desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Una búsqueda con texto del usuario puede alterar una consulta o ejecutar markup. Validar formato y parametrizar son controles diferentes.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-Los parámetros separan datos de instrucciones, como escribir un valor en un formulario en vez de pegarlo en las órdenes. Escapar HTML convierte símbolos peligrosos en texto visible.
-
-Ya distingues parametrización, validación y escape. El siguiente tema reunirá controles en una auditoría OWASP.
-
-**Errores comunes:** usar blacklist SQL; escapar para SQL en vez de parametrizar; confiar en validación frontend; insertar HTML sin escape; loggear payloads sensibles.
-
-**Fuentes oficiales:** [node-postgres queries](https://node-postgres.com/features/queries), [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection) y [OWASP XSS](https://owasp.org/www-community/attacks/xss/).
-
-**Conceptos clave:** consultas parametrizadas, escape automático, sanitización de HTML.
-
-La inyección SQL, mencionada ya en el Módulo 5 al estudiar el driver `pg`, ocurre cuando un valor de entrada del usuario se concatena directamente dentro de un string SQL sin ningún escape (`` `SELECT * FROM usuarios WHERE email = '${email}'` ``), permitiendo que un atacante que controla el valor de `email` inyecte fragmentos de SQL adicionales que alteran completamente la estructura y el significado de la consulta original ejecutada (por ejemplo, incluyendo una condición que siempre es verdadera, devolviendo todos los usuarios de la tabla en vez de uno específico, o peor, ejecutando comandos SQL destructivos adicionales). La solución, ya estudiada, es usar siempre consultas parametrizadas (`pool.query("... WHERE email = $1", [email])`), donde el driver escapa automáticamente el valor, neutralizando cualquier intento de inyección sin requerir ningún esfuerzo manual adicional del desarrollador en cada consulta individual.
-
-Este mismo principio de "nunca concatenar directamente entrada no confiable" se extiende, con un mecanismo distinto pero un espíritu equivalente, al problema de XSS almacenado (Cross-Site Scripting): si contenido generado por un usuario (por ejemplo, un comentario en un formulario) se almacena y posteriormente se renderiza directamente como HTML en otra aplicación (típicamente un frontend, estudiado en los tracks de Angular y React) sin ningún escape o sanitización, un usuario malicioso podría incluir en su comentario un fragmento `<script>` que se ejecutaría en el navegador de cualquier otro usuario que visualice ese comentario después, potencialmente robando sus credenciales de sesión o realizando acciones no autorizadas en su nombre.
-
-Escapar o sanitizar contenido generado por usuarios antes de renderizarlo como HTML (usando `textContent` en vez de `innerHTML` del lado del navegador, como se estudió en el Módulo 8 del track de JavaScript, o bibliotecas de sanitización específicas del lado del servidor si el contenido debe permitir cierto HTML controlado, como negritas o enlaces en un editor de texto enriquecido) es la defensa fundamental contra este vector. Auditar el flujo completo de cualquier dato que un usuario pueda controlar, desde su entrada inicial hasta cualquier punto donde eventualmente se renderiza o se usa en una consulta, identificando cada punto donde ese dato cruza un límite de confianza (de entrada de usuario hacia SQL, o de almacenamiento hacia renderizado HTML), es la disciplina sistemática que previene tanto inyección SQL como XSS de forma consistente.
-
-**Analogía:** tanto la inyección SQL como el XSS son variantes del mismo problema fundamental: tratar datos de entrada no confiable como si fueran instrucciones confiables a ejecutar directamente, en vez de tratarlos siempre como datos puros a manejar con cuidado. Es como recibir una nota de un desconocido y, en vez de simplemente leer su contenido como texto, seguir literalmente cualquier instrucción que contenga como si viniera de una fuente autorizada y confiable.
-
-**¿Por qué es importante?** Concatenar directamente entrada de usuario en SQL o renderizarla sin escape como HTML son las dos formas más comunes y con mayor impacto potencial de comprometer una aplicación, y ambas se previenen sistemáticamente con la misma disciplina: nunca tratar entrada no confiable como instrucciones ejecutables directas.
-
-**Código del ejemplo:**
-
-```js
-// PELIGROSO: concatenación directa (inyección SQL)
-const query = `SELECT * FROM usuarios WHERE email = '${email}'`;
-// SEGURO: parámetros, el driver escapa automáticamente
-const { rows } = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-
-// XSS: nunca renderizar contenido de usuario como HTML sin sanitizar/escapar
-```
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Parametriza la búsqueda de guías y trata observaciones como datos no confiables. Prueba caracteres especiales e instrucciones aparentes: deben almacenarse o rechazarse según el contrato, sin convertirse en SQL o HTML ejecutable.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-inyeccion
-cd ejemplo-inyeccion
-npm init -y
-npm install pg escape-html
-mkdir src
-```
-
-Crea `src/seguro.js`:
-
-```js
-import escapeHtml from "escape-html";
-export function consultaSegura(texto) {
-  const sql = "SELECT id FROM paquetes WHERE codigo = $1";
-  const params = [texto];
-  return { sql, params, html: escapeHtml(texto) };
-}
-console.log(consultaSegura("RF-1' OR '1'='1"));
-```
-
-Ejecuta `node src/seguro.js`. **Resultado esperado:** la cadena queda en `params` y el HTML muestra entidades escapadas. **Fallo deliberado y diagnóstico:** concatena el valor en `sql`; la salida muestra cómo los datos pasan a ser instrucciones, una vulnerabilidad, no una consulta válida.
-
-#### Paso 5 · Práctica guiada
-
-Valida que `codigo` cumpla `/^RF-\d+$/`. **Pista:** rechaza antes de llegar a la base, pero conserva parámetros incluso tras validar.
-
-#### Paso 6 · Práctica independiente
-
-Añade una prueba que intente `<img src=x onerror=alert(1)>` y entrega el texto escapado y la entrada rechazada.
-
-#### Paso 7 · Cierre y conexión
-
-Ya comprobás que el valor permanece en `params` y que el HTML se escapa, mientras la concatenación convierte el dato en instrucción. El siguiente tema recorre el Top 10 de OWASP API y audita dependencias.
-
-### Tema 4: OWASP API Security Top 10 y auditoría de dependencias
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás ejecutar una auditoría de dependencias y priorizar un riesgo API. **Prerrequisitos:** Node LTS, npm y lectura básica de reportes; ejemplo independiente desde una carpeta vacía.
-
-#### Paso 2 · Contexto y caso real
-
-Una API puede estar vulnerable aunque su código propio parezca correcto: dependencia transitoria, autorización por objeto o consumo sin límite también son riesgos.
-
-#### Paso 3 · Teoría y analogía aplicada
-
-OWASP es una lista de clases de fallos, no un certificado. `npm audit` detecta avisos conocidos, pero no reemplaza threat modeling. Es una inspección de extintores, no una garantía de que el edificio sea seguro.
-
-Ya conviertes un reporte técnico en decisiones priorizadas. El siguiente módulo tratará despliegue y contenedores.
-
-**Errores comunes:** ejecutar `npm audit fix --force` sin revisar; ignorar severidad; confundir dependencia dev con runtime; cerrar avisos sin evidencia; publicar el reporte con secretos.
-
-**Fuentes oficiales:** [npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [OWASP API Security Top 10](https://owasp.org/API-Security/) y [Node security](https://nodejs.org/en/learn/getting-started/security-best-practices).
-
-**Conceptos clave:** marco de referencia de vulnerabilidades comunes de APIs, `npm audit`.
-
-El OWASP API Security Top 10 es un marco de referencia ampliamente reconocido y mantenido por la comunidad de seguridad, que documenta las diez categorías de vulnerabilidades más comunes y de mayor impacto específicamente en APIs (distinto del OWASP Top 10 general, más orientado a aplicaciones web tradicionales), incluyendo categorías como autorización a nivel de objeto rota (un usuario puede acceder a datos de otro usuario simplemente cambiando un id en la URL, sin verificación adecuada de que el recurso solicitado realmente pertenece a quien lo solicita) y exposición excesiva de datos (una respuesta de API que incluye más campos de los que el cliente específico necesita, exponiendo información sensible innecesariamente).
-
-Revisar los ítems más relevantes de este marco de referencia para una API específica y documentar explícitamente cómo cada uno se mitiga (o identificar honestamente cuáles aún no están mitigados) es un ejercicio de auditoría de seguridad estructurado y sistemático, considerablemente más riguroso que simplemente "pensar en seguridad" de forma no estructurada; el marco proporciona una checklist concreta y bien fundamentada (con el mismo espíritu de la checklist de producción estudiada en el Módulo 12 del track DevOps) que reduce la probabilidad de pasar por alto una categoría completa de vulnerabilidad simplemente por no haberla considerado explícitamente.
-
-`npm audit` escanea automáticamente las dependencias instaladas de un proyecto contra una base de datos de vulnerabilidades conocidas, reportando cuáles de los paquetes usados (incluyendo dependencias transitivas profundamente anidadas que el desarrollador nunca instaló directamente ni quizás siquiera conoce que existen) tienen vulnerabilidades documentadas, con una clasificación de severidad; `npm audit fix` intenta aplicar automáticamente actualizaciones que resuelven las vulnerabilidades encontradas sin requerir cambios manuales, aunque algunas vulnerabilidades requieren una actualización de versión mayor que podría introducir cambios incompatibles, requiriendo entonces una decisión manual e informada sobre cómo proceder, en vez de una corrección puramente automática.
-
-**Analogía:** el OWASP API Security Top 10 es como una checklist de inspección de seguridad estandarizada y ampliamente reconocida para un edificio, cubriendo sistemáticamente las categorías de riesgo más comunes documentadas por la experiencia colectiva de la industria; `npm audit` es como un servicio de verificación automática que revisa cada componente comprado de proveedores externos contra una base de datos de defectos conocidos reportados, alertando específicamente sobre cuáles de esos componentes instalados tienen problemas documentados.
-
-**¿Por qué es importante?** El OWASP API Security Top 10 proporciona un marco sistemático y bien fundamentado para auditar la seguridad de una API, reduciendo la probabilidad de omitir categorías completas de riesgo; `npm audit` extiende esa vigilancia hacia las dependencias de terceros, una superficie de riesgo frecuentemente invisible sin una herramienta que la audite activamente.
-
-**Prueba en terminal:**
-
-```bash
-npm audit          # lista vulnerabilidades conocidas en las dependencias instaladas
-npm audit fix       # aplica actualizaciones automáticas seguras cuando es posible
-```
+**Transferencia al proyecto integrador «API operativa de entregas»:** aplica Helmet antes de los routers y documenta las directivas que requieren los clientes reales. Verifica las cabeceras en cada entorno; evalúa HSTS únicamente donde exista HTTPS correctamente configurado.
 
 ---
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** Revisa una operación sensible frente a autorización por recurso y consumo de recursos. Añade una prueba negativa con otra identidad y registra la política de actualización de dependencias que protege ese endpoint.
+### Tema 2: Rate limiting · Intermedio · 55 min
 
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `audit.json` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+**Prerrequisito:** Node LTS, npm, middleware de Express y lectura de códigos de estado HTTP. El proyecto es independiente del tema anterior.
+
+**Al terminar podrás:** aplicar un límite por ruta, producir un `429` con una prueba local acotada y justificar una configuración de proxy y almacenamiento para varias instancias.
+
+#### Aprende
+
+Un límite de tasa restringe cuántas solicitudes acepta una ruta para una clave durante una ventana de tiempo. Una ventana fija reinicia el contador al terminar cada intervalo; otras estrategias, como *token bucket*, permiten ráfagas delimitadas. `express-rate-limit` cuenta peticiones y responde `429 Too Many Requests` cuando se supera el umbral configurado.
+
+**Por qué importa:** el control añade fricción a fuerza bruta y a clientes que reintentan sin medida, y ayuda a proteger recursos. No reemplaza autenticación, bloqueo de cuentas con criterio, validación, límites de tamaño ni protección de infraestructura. Un umbral adecuado para acceso puede ser demasiado restrictivo para consultas legítimas.
+
+La clave predeterminada suele basarse en IP. Varias personas pueden compartir una IP por NAT y un atacante puede distribuir origen, de modo que IP no equivale a identidad. Si la aplicación está detrás de un proxy, Express solo debe confiar en cabeceras de reenvío de proxies conocidos: configura `trust proxy` con la topología exacta. Confiar en cualquier proxy puede permitir valores de IP falsificados; no confiar en el proxy real puede agrupar a todos los clientes bajo una misma dirección.
+
+El almacenamiento en memoria pertenece a un solo proceso. Dos instancias mantienen contadores distintos, por lo que el límite global efectivo cambia con el número y la distribución de instancias. Para una política compartida se necesita un *store* común, como Redis, configurado según la biblioteca y con decisiones sobre disponibilidad, latencia, claves y expiración. Esto no elimina la necesidad de límites en el balanceador o proveedor cuando corresponda.
+
+**Analogía:** un torniquete cuenta accesos durante un intervalo. Si cada entrada cuenta por separado, nadie controla el total del edificio; un registro compartido corrige esa visión, pero tampoco comprueba por sí solo la identidad de cada visitante.
+
+**Conceptos clave:** ventana fija, `429`, `Retry-After`, clave por cliente, proxy confiable y store distribuido.
+
+#### Practica
+
+**Desde cero:** crea otro proyecto vacío y sus archivos manualmente:
 
 ```bash
-mkdir ejemplo-auditoria-api
-cd ejemplo-auditoria-api
+mkdir practica-limite
+cd practica-limite
+npm init -y
+npm install express express-rate-limit
+npm pkg set type=module scripts.start="node src/server.js"
+mkdir src
+```
+
+Crea `src/server.js`:
+
+```js
+import express from "express";
+import rateLimit from "express-rate-limit";
+
+const app = express();
+const limiteAcceso = rateLimit({
+  windowMs: 30_000,
+  limit: 3,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+app.post("/acceso", limiteAcceso, (_req, res) => {
+  res.sendStatus(204);
+});
+
+app.get("/publico", (_req, res) => {
+  res.json({ estado: "sin limite de esta ruta" });
+});
+
+app.listen(3000, () => {
+  console.log("API con limite en http://127.0.0.1:3000");
+});
+```
+
+La ruta `/acceso` solo permite observar el middleware; no implementa autenticación real. Ejecuta `npm start` y realiza **únicamente cuatro solicitudes locales** dentro de la misma ventana de 30 segundos:
+
+```bash
+curl -i -X POST http://127.0.0.1:3000/acceso
+curl -i -X POST http://127.0.0.1:3000/acceso
+curl -i -X POST http://127.0.0.1:3000/acceso
+curl -i -X POST http://127.0.0.1:3000/acceso
+```
+
+**Resultado esperado:** las tres primeras solicitudes responden `204` y la cuarta, `429`; la respuesta de rechazo incluye información de reintento según la configuración y versión. Tras esperar a que termine la ventana, una nueva solicitud vuelve a ser aceptada. Esta es una comprobación funcional acotada, no una prueba de carga ni un ejercicio de denegación de servicio.
+
+**Fallo deliberado:** retira temporalmente `limiteAcceso` de la definición de `/acceso` y repite las cuatro peticiones. **Diagnóstico y corrección:** las cuatro alcanzan la ruta porque ya no existe el contador en esa cadena de middleware. Restaura `limiteAcceso` antes de `(_req, res)` y repite la comprobación.
+
+**Práctica guiada.** Mientras `/acceso` está rechazando solicitudes, ejecuta una sola petición a `http://127.0.0.1:3000/publico`. **Resultado esperado:** continúa respondiendo `200`, porque el límite se aplicó a una ruta y no globalmente. **Pista:** la posición del middleware determina su alcance.
+
+**Si falla.** Si la cuarta petición todavía responde `204`, comprueba que todas llegaron dentro de la misma ventana y que reiniciaste el servidor tras editar. Si aparece un aviso relacionado con IP o `X-Forwarded-For`, revisa la topología y `trust proxy`; no lo silencies aceptando cabeceras de cualquier cliente.
+
+#### Aplica
+
+Crea `politica-limites.md`. Documenta por separado una política para `/acceso` y otra para búsquedas, la clave elegida, el efecto de usuarios detrás de NAT, el número de proxies confiables y qué ocurre con dos procesos que usan memoria local. Como ejercicio independiente, añade un limitador propio de cinco solicitudes por minuto a una nueva ruta `/busqueda`, sin cambiar `/acceso`, y verifica una respuesta correcta y sus cabeceras de límite. Explica qué store compartido elegirías para dos instancias y qué decisión tomarías si ese store no estuviera disponible.
+
+**Checklist de salida.**
+
+- [ ] `/acceso` admite tres solicitudes locales y rechaza la cuarta dentro de la ventana.
+- [ ] El contador se recupera después de la ventana sin reiniciar manualmente contadores.
+- [ ] `/publico` permanece fuera del limitador de `/acceso`.
+- [ ] `/busqueda` tiene un límite independiente y cabeceras de tasa observables.
+- [ ] `politica-limites.md` explica NAT, configuración de proxy confiable y contadores por proceso.
+- [ ] La propuesta para varias instancias incluye un store compartido y no presenta la prueba local como prueba de carga.
+
+**Errores comunes:** aplicar un único umbral a todas las rutas; confundir IP con usuario; confiar en cabeceras de proxy sin control; usar memoria local como si fuera un contador global; omitir información de reintento; hacer ráfagas masivas para una comprobación que solo necesita unas pocas solicitudes.
+
+**Fuentes oficiales:** [express-rate-limit](https://express-rate-limit.mintlify.app/), [RFC 6585](https://www.rfc-editor.org/rfc/rfc6585) y [OWASP API4](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** define límites diferentes para autenticación y consultas costosas. Registra la clave, ventana, proxy confiable y store de cada entorno, y prueba el umbral con el mínimo número de solicitudes que permita comprobar aceptación, rechazo y recuperación.
+
+---
+
+### Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min
+
+**Prerrequisito:** Node LTS, npm, SQL básico y distinción entre texto y HTML. No necesitas una base de datos ni archivos de otros temas para la práctica.
+
+**Al terminar podrás:** construir una llamada `pg` con SQL y valores separados, validar un identificador sin sustituir los parámetros y seleccionar una defensa de salida acorde al contexto HTML.
+
+#### Aprende
+
+La inyección SQL aparece cuando datos no confiables cambian la estructura de una instrucción. En `node-postgres`, una consulta parametrizada mantiene el texto SQL con marcadores como `$1` y entrega los valores en un array aparte. El driver y la base tratan esos valores como datos, no como nuevas instrucciones. Validar que un código tenga el formato esperado reduce entradas inválidas, pero no reemplaza el parámetro. Los nombres de tablas o columnas no se parametrizan como valores: si deben variar, se seleccionan mediante una lista permitida.
+
+**Por qué importa:** separar datos y código evita que caracteres de una búsqueda alteren la consulta. No es necesario crear un string SQL vulnerable ni ejecutar un ataque para comprender o comprobar el contrato seguro: basta con verificar qué texto y qué array recibe `pool.query` y mantener esa separación en todas las consultas.
+
+Cross-Site Scripting (XSS) es un problema distinto: un dato alcanza un intérprete del navegador en un contexto ejecutable. Para insertar texto en HTML, `textContent` evita crear markup; cuando una respuesta HTML se construye en servidor, un escape como `escape-html` codifica caracteres para el **contexto de texto HTML**. El escape depende del contexto de salida: atributos, URL, JavaScript y CSS tienen reglas diferentes y no quedan protegidos universalmente por una sola función.
+
+Sanitizar HTML significa analizar y filtrar markup para conservar solamente elementos y atributos permitidos; no es un sinónimo universal de escapar. Solo corresponde cuando el requisito admite HTML enriquecido y debe hacerse con una biblioteca mantenida y una política explícita. Escapar en todos los almacenamientos tampoco es una regla general: conserva el dato según el contrato y aplica la defensa adecuada en cada salida, evitando doble escape.
+
+**Analogía:** una consulta parametrizada entrega una nota en un sobre separado del formulario de órdenes; el destinatario lee el valor sin convertirlo en una orden nueva. En HTML, además importa dónde se coloca la nota: una vitrina de texto, una dirección y un panel de comandos exigen protecciones distintas.
+
+**Conceptos clave:** consultas parametrizadas, datos frente a código, validación de entrada, escape contextual, sanitización de HTML y XSS almacenado.
+
+#### Practica
+
+**Desde cero:** crea un proyecto nuevo. El pool simulado permite observar la llamada sin instalar PostgreSQL ni ejecutar SQL:
+
+```bash
+mkdir practica-datos-salida
+cd practica-datos-salida
+npm init -y
+npm install pg escape-html
+npm pkg set type=module scripts.start="node src/main.js"
+mkdir src
+```
+
+Crea `src/consultas.js`:
+
+```js
+export async function buscarPorCodigo(pool, codigo) {
+  if (typeof codigo !== "string" || !/^RF-\d+$/.test(codigo)) {
+    throw new Error("El codigo debe tener el formato RF-<numero>");
+  }
+
+  return pool.query(
+    "SELECT id, codigo FROM paquetes WHERE codigo = $1",
+    [codigo]
+  );
+}
+```
+
+Crea `src/salida.js`:
+
+```js
+import escapeHtml from "escape-html";
+
+export function paraTextoHtml(texto) {
+  return escapeHtml(texto);
+}
+```
+
+Crea `src/main.js`:
+
+```js
+import { buscarPorCodigo } from "./consultas.js";
+import { paraTextoHtml } from "./salida.js";
+
+const poolDePrueba = {
+  async query(text, values) {
+    console.log(JSON.stringify({ text, values }));
+    return { rows: [] };
+  }
+};
+
+await buscarPorCodigo(poolDePrueba, "RF-42");
+console.log(paraTextoHtml('<img src=x onerror="alert(1)">'));
+
+try {
+  await buscarPorCodigo(poolDePrueba, "RF-x");
+} catch (error) {
+  console.log(`Entrada rechazada: ${error.message}`);
+}
+```
+
+Ejecuta `npm start`.
+
+**Resultado esperado:** el registro de la consulta muestra `$1` dentro de `text` y `RF-42` únicamente dentro de `values`. La salida HTML contiene entidades como `&lt;` y `&gt;`, no un elemento `img` literal. `RF-x` se rechaza antes de una segunda llamada al pool.
+
+**Fallo deliberado:** cambia temporalmente el cuerpo de `paraTextoHtml` por `return texto;` y ejecuta de nuevo. **Diagnóstico y corrección:** ahora la salida conserva el markup literal, por lo que ya no existe la codificación requerida para ese contexto. Restaura `return escapeHtml(texto);`. La demostración inspecciona texto; no necesita ejecutar script en un navegador.
+
+**Práctica guiada.** Modifica `src/main.js` para recorrer `["RF-1", "RF-12", "rf-1", "RF-x"]`, registrar si cada valor se acepta y contar las llamadas al pool. **Pista:** conserva el parámetro incluso para valores válidos; la expresión regular solo decide qué entradas pertenecen al contrato. Se esperan dos aceptados y dos rechazados.
+
+**Si falla.** Si `pg` no aparece en el código ejecutado, recuerda que el pool simulado reproduce únicamente la firma de `query`; la función `buscarPorCodigo` está preparada para recibir un pool real. Si aparecen entidades dobles al integrar con una plantilla, comprueba si el motor ya escapa ese contexto antes de añadir otra codificación.
+
+#### Aplica
+
+Crea `contextos-salida.md` con una tabla para texto HTML, atributo, URL y JavaScript. Para cada uno indica el mecanismo apropiado, qué no debe reutilizarse de otro contexto y si una lista permitida es necesaria. Como ejercicio independiente, añade a `src/main.js` la observación `RF-42 <prioritaria> & revisar`, verifica su representación como texto HTML y explica por qué ese resultado no sería una sanitización universal para cualquier destino.
+
+**Checklist de salida.**
+
+- [ ] La consulta contiene `$1` y el código viaja en un array separado.
+- [ ] La validación acepta `RF-1` y `RF-12`, y rechaza `rf-1` y `RF-x` antes de consultar.
+- [ ] Ninguna demostración requiere concatenar un string SQL vulnerable ni ejecutar un exploit.
+- [ ] El fallo sin escape produce markup literal y la corrección vuelve a generar entidades.
+- [ ] La observación independiente representa `<` y `&` como texto en el contexto elegido.
+- [ ] `contextos-salida.md` diferencia escape contextual y sanitización de HTML permitido.
+
+**Errores comunes:** usar listas negras SQL como defensa principal; sustituir parámetros por escape manual; retirar parámetros porque ya existe validación; usar escape de texto HTML en URL, JavaScript o CSS; llamar sanitización a cualquier escape; escapar repetidamente sin conocer el motor de plantillas.
+
+**Fuentes oficiales:** [node-postgres queries](https://node-postgres.com/features/queries), [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection) y [OWASP XSS](https://owasp.org/www-community/attacks/xss/).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** parametriza la búsqueda de guías y conserva las observaciones como datos no confiables. Revisa cada destino de salida antes de elegir `textContent`, escape contextual o sanitización; añade casos con caracteres especiales sin convertirlos en demostraciones de explotación.
+
+---
+
+### Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min
+
+**Prerrequisito:** Node LTS, npm, pruebas básicas con `node:test` y lectura de `package.json`. El ejercicio no reutiliza proyectos anteriores.
+
+**Al terminar podrás:** construir una matriz de riesgos con evidencia, comprobar una denegación de autorización por objeto e interpretar un reporte actual de `npm audit` sin convertirlo en una garantía de seguridad.
+
+#### Aprende
+
+OWASP API Security Top 10 agrupa categorías de riesgo como autorización rota a nivel de objeto (BOLA), exposición o modificación indebida de propiedades, consumo irrestricto de recursos y SSRF. Es un marco para formular preguntas y reunir evidencia, no una certificación ni una lista que se completa por marcar títulos.
+
+**Por qué importa:** una revisión estructurada evita limitar la seguridad a sintaxis o dependencias. Para BOLA, la evidencia útil incluye una prueba negativa con otra identidad; para exposición de datos, los campos reales de una respuesta; para consumo de recursos, límites medidos. Cada afirmación debe señalar alcance y prueba.
+
+`npm audit` compara el árbol descrito por el proyecto con avisos conocidos disponibles en ese momento. Puede reportar dependencias directas o transitivas y clasificar severidad, pero no demuestra alcanzabilidad, ausencia de vulnerabilidades ni seguridad de la lógica propia. La base de avisos y el árbol cambian, por lo que dos ejecuciones en fechas distintas pueden producir resultados diferentes. `npm audit fix` propone actualizaciones compatibles dentro de los rangos cuando puede; las decisiones con cambios mayores exigen revisión y pruebas. No uses `npm audit fix --force` como corrección automática.
+
+**Analogía:** OWASP es el índice de una inspección y `npm audit`, una comprobación de piezas con avisos publicados. El índice ayuda a no olvidar zonas; la revisión de piezas no prueba que el edificio entero sea seguro ni que una pieza afectada sea alcanzable en su instalación concreta.
+
+**Conceptos clave:** BOLA, propiedades de objetos, consumo de recursos, SSRF, dependencias transitivas, severidad, alcanzabilidad y evidencia.
+
+#### Practica
+
+**Desde cero:** crea un proyecto independiente con una dependencia que auditar y una prueba de autorización mínima:
+
+```bash
+mkdir practica-owasp-auditoria
+cd practica-owasp-auditoria
 npm init -y
 npm install express
-npm audit --json > audit.json
+npm pkg set type=module scripts.test="node --test"
+mkdir src test
 ```
 
-`--json` es la bandera que hace que `npm audit` imprima el reporte en formato estructurado en vez de texto legible, apropiado para redirigir a un archivo o procesar con otro programa.
+Crea `src/autorizacion.js`:
 
-Crea `audit-notes.md` para registrar dependencia afectada, severidad, versión corregida y decisión del equipo. Ese archivo es la evidencia que acompaña al código de la auditoría.
-
-Abre `audit.json` y ejecuta `npm audit`. **Resultado esperado:** un reporte con vulnerabilidades o el mensaje de árbol limpio; ambos son resultados válidos que debes interpretar. **Fallo deliberado y diagnóstico:** instala una versión vulnerable conocida en un proyecto temporal; `npm audit` marca severidad y dependencia transitiva. No ejecutes exploits.
-
-#### Paso 5 · Práctica guiada
-
-Clasifica un aviso como producción o desarrollo y decide si actualizar, reemplazar o aceptar temporalmente. **Pista:** revisa ruta de dependencia y versión corregida.
-
-#### Paso 6 · Práctica independiente
-
-Construye una matriz con autenticación, autorización por objeto, consumo de recursos y SSRF; entrega amenaza, evidencia y mitigación.
-
-#### Paso 7 · Cierre y conexión
-
-Ya interpretás un reporte de `npm audit` como señal que exige lectura, no como veredicto automático. El siguiente tema conecta CVE, CWE y severidad dentro del pipeline.
-
-### Tema 5: CVE, CWE y npm audit en el pipeline
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás leer un reporte de `npm audit`, distinguir CVE, CWE y avisos GHSA, clasificar hallazgos por severidad y hacer fallar un pipeline cuando superan un umbral. Prerrequisitos: Tema 4 de este módulo y Módulo 7, Tema 3 (CI).
-
-#### Paso 2 · Contexto y caso real
-Una dependencia vieja de RutaFlow (lodash 4.17.20) tenía vulnerabilidades conocidas de inyección de código y contaminación de prototipos. Nadie lo notó porque el pipeline no revisaba dependencias. Es un caso real: la mayoría de las brechas en aplicaciones Node entran por paquetes de terceros, no por el código propio.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Un **CVE** identifica una vulnerabilidad concreta en un producto concreto (CVE-AAAA-NNNN). Un **CWE** clasifica el **tipo de debilidad** (CWE-94: inyección de código; CWE-1321: contaminación de prototipos; CWE-1333: regex ineficiente). GitHub publica avisos **GHSA** que enlazan ambos. **OWASP Top 10** agrupa los riesgos más frecuentes y cada categoría se mapea a varios CWE. `npm audit` compara tu árbol de dependencias con la base de avisos y **sale con código 1** si encuentra algo.
-
-**Analogía:** el CWE es el tipo de falla ("cerradura que se abre con una tarjeta"); el CVE es el aviso de que el modelo X de esa marca tiene esa falla.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    D[lockfile] --> A[npm audit --json]
-    B[(avisos GHSA)] --> A
-    A --> R[auditar.js]
-    R --> T[tabla CWE]
-    R --> X{high o critical}
-    X -- "sí" --> F[exit 1]
-    X -- "no" --> G[exit 0]
+```js
+export function puedeConsultar(actor, entrega) {
+  return Boolean(
+    actor && entrega && actor.id === entrega.propietarioId
+  );
+}
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+Crea `test/autorizacion.test.js`:
+
+```js
+import test from "node:test";
+import assert from "node:assert/strict";
+import { puedeConsultar } from "../src/autorizacion.js";
+
+const entrega = { id: "E-1", propietarioId: "cliente-1" };
+
+test("permite al propietario", () => {
+  assert.equal(puedeConsultar({ id: "cliente-1" }, entrega), true);
+});
+
+test("deniega a otra identidad", () => {
+  assert.equal(puedeConsultar({ id: "cliente-2" }, entrega), false);
+});
+
+test("deniega cuando falta el actor", () => {
+  assert.equal(puedeConsultar(null, entrega), false);
+});
+```
+
+Ejecuta `npm test`. **Resultado esperado:** pasan las tres pruebas, incluida la negativa que evita autorizar solo por conocer un identificador de recurso.
+
+**Fallo deliberado:** sustituye temporalmente el cuerpo de `puedeConsultar` por `return true;`. **Diagnóstico y corrección:** la prueba de otra identidad falla porque desapareció la comparación de propiedad; restaura la función y vuelve a ejecutar las pruebas. El fallo útil es la autorización incorrecta detectada, no una explotación externa.
+
+Crea `matriz-owasp.md` con este punto de partida y complétalo con evidencia del ejercicio:
+
+```md
+# Revisión OWASP de una API de entregas
+
+| Categoría | Pregunta concreta | Evidencia | Control o pendiente |
+| --- | --- | --- | --- |
+| API1 BOLA | ¿Otra identidad puede consultar E-1? | Prueba negativa de propietario | Comparar actor y propietario en cada consulta |
+| API3 Propiedades de objeto | ¿La respuesta incluye campos internos? | Enumerar campos de una respuesta real | Definir un DTO de salida |
+| API4 Consumo de recursos | ¿Existen límites de tasa, tamaño y tiempo? | Registrar configuración y prueba acotada | Completar límites ausentes |
+| API7 SSRF | ¿El servidor obtiene URL aportadas por clientes? | Revisar llamadas salientes | Lista permitida y controles de red si aplica |
+```
+
+Ahora obtiene el estado actual de dependencias:
 
 ```bash
-mkdir auditoria && cd auditoria && npm init -y && npm install lodash@4.17.20
+npm audit
+npm audit --json > audit.json
+codigo=$?
+printf 'npm audit terminó con código %s\n' "$codigo"
+```
+
+Un código distinto de cero puede acompañar a un reporte con hallazgos; conserva el JSON y lee también `stderr` si el comando no produjo un reporte válido. Crea `audit-notes.md` con dependencia, ruta directa o transitiva, entorno de producción o desarrollo, severidad, aviso, versión corregida disponible y decisión. Si hay avisos, usa `npm ls <paquete>` para entender la ruta. Si no los hay, registra únicamente que esta ejecución no mostró avisos conocidos, no que el proyecto carece de CVE.
+
+**Resultado esperado:** `matriz-owasp.md` vincula riesgos con comprobaciones y `audit-notes.md` refleja el reporte obtenido hoy. No se fija un número de hallazgos ni una tabla de versiones como salida obligatoria.
+
+**Práctica guiada.** Si `npm audit` propone una actualización compatible, revisa primero la ruta y el cambio; después ejecuta `npm audit fix`, `npm ls express`, `npm test` y otra auditoría. Documenta qué cambió y qué permanece. Si no propone cambios, registra ese resultado. **Pista:** no fuerces una versión mayor para hacer desaparecer un aviso.
+
+**Si falla.** Si la redirección deja un archivo vacío o JSON con un error, no lo interpretes como un árbol limpio. Repite `npm audit` sin redirección, revisa red, registro y lockfile, y conserva el código de salida junto al diagnóstico.
+
+#### Aplica
+
+Añade a `test/autorizacion.test.js` una prueba independiente que llame a `puedeConsultar({ id: "cliente-1" }, null)` y exija `false`. Después crea `src/entrega-view.js` para definir un DTO de salida con lista permitida:
+
+```js
+export function vistaEntrega(entrega) {
+  return { id: entrega.id, codigo: entrega.codigo };
+}
+```
+
+Crea `test/entrega-view.test.js`:
+
+```js
+import test from "node:test";
+import assert from "node:assert/strict";
+import { vistaEntrega } from "../src/entrega-view.js";
+
+test("el DTO no publica campos internos", () => {
+  const vista = vistaEntrega({ id: "E-1", codigo: "RF-42", notaInterna: "secreto" });
+  assert.deepEqual(vista, { id: "E-1", codigo: "RF-42" });
+  assert.equal("notaInterna" in vista, false);
+});
+```
+
+Ejecuta `npm test` y actualiza la matriz con ambas evidencias. Después elige un aviso real del reporte, si existe, y justifica actualizar, sustituir o aceptar temporalmente con fecha de revisión; si no existe, documenta qué señal haría necesaria una nueva revisión.
+
+**Checklist de salida.**
+
+- [ ] Las pruebas permiten al propietario y niegan otra identidad, actor ausente y entrega inexistente.
+- [ ] El fallo `return true` fue detectado por una prueba negativa y corregido.
+- [ ] El DTO de salida no expone `notaInterna` y tiene una prueba.
+- [ ] La matriz relaciona BOLA, propiedades, consumo y SSRF con evidencia o pendientes concretos.
+- [ ] `audit-notes.md` registra el resultado real sin fijar recuentos ni prometer ausencia de CVE.
+- [ ] Cualquier actualización se revisó con pruebas y sin `npm audit fix --force`.
+
+**Errores comunes:** tratar OWASP como certificado; probar solo el acceso permitido; confundir severidad con alcanzabilidad; ignorar si una dependencia es de desarrollo o runtime; aceptar cambios mayores automáticamente; publicar reportes con información sensible.
+
+**Fuentes oficiales:** [npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [OWASP API Security Top 10](https://owasp.org/API-Security/) y [Node security](https://nodejs.org/en/learn/getting-started/security-best-practices).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** revisa autorización por recurso, campos de respuesta, consumo y llamadas salientes. Conserva pruebas negativas y una decisión fechada por aviso de dependencia; separa los pendientes de lógica propia de los avisos del árbol npm.
+
+---
+
+### Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min
+
+**Prerrequisito:** Node LTS, npm, lectura del Tema 4 y fundamentos de integración continua. Se creará otro proyecto desde cero.
+
+**Al terminar podrás:** distinguir CVE, CWE y GHSA, procesar de forma robusta el JSON de `npm audit`, interpretar sus códigos de salida y aplicar un umbral explícito en un pipeline.
+
+#### Aprende
+
+Un **CVE** identifica una vulnerabilidad concreta en un producto o versión. Un **CWE** clasifica un tipo de debilidad, como inyección de código o contaminación de prototipos. Un aviso **GHSA** procede de GitHub Advisory Database y puede enlazar CVE y CWE. Una misma debilidad CWE puede aparecer en muchos productos; un CVE no es una categoría general.
+
+**Por qué importa:** estos identificadores permiten rastrear y priorizar hallazgos sin confundir clase de fallo, aviso e instancia afectada. En CI también importa distinguir tres situaciones: el auditor terminó sin hallazgos conocidos, terminó con hallazgos o no pudo producir un reporte confiable. Solo la primera no muestra avisos en esa ejecución; ninguna garantiza cobertura de seguridad total.
+
+`npm audit --json` puede escribir un reporte válido y terminar con código `1` cuando existen hallazgos. Por eso un wrapper no debe lanzar antes de leer `stdout`. Un programa robusto usa `spawnSync`, comprueba errores de ejecución y estado, valida que haya JSON, captura errores de parseo, reconoce un objeto `error` del reporte y no presupone que `vulnerabilities`, `via`, `cwe` o `url` existan siempre. Después separa el código de salida de npm de la decisión del pipeline: esta última depende del umbral configurado.
+
+Los avisos cambian con el tiempo. Un lockfile fija versiones instaladas, no una lista eterna de advisories. No se deben fijar tablas de salida como requisito, garantizar que una versión siempre tendrá ciertos CVE ni afirmar que una ejecución sin avisos elimina todos los riesgos.
+
+**Analogía:** CWE es el tipo de defecto de una cerradura; CVE identifica el lote afectado y GHSA es una ficha que relaciona la información. El código de salida del inspector indica cómo terminó esa revisión, mientras la política del edificio decide qué hallazgos impiden abrirlo.
+
+**Conceptos clave:** CVE, CWE, GHSA, lockfile, `spawnSync`, parseo defensivo, código de salida y umbral en CI.
+
+#### Practica
+
+**Desde cero:** crea un proyecto aislado. La versión antigua de lodash conserva el caso histórico de estudio, pero no fija los avisos que devolverá la base actual:
+
+```bash
+mkdir auditoria-pipeline
+cd auditoria-pipeline
+npm init -y
+npm install lodash@4.17.20
 ```
 
 Crea `auditar.js`:
 
-```javascript
-// Resume el reporte de npm audit por CWE y falla el pipeline si hay severidad alta o crítica
-const { spawnSync } = require('node:child_process');
+```js
+const { spawnSync } = require("node:child_process");
 
-const UMBRAL = ['high', 'critical'];
-// spawnSync no lanza excepción cuando npm audit sale con código 1 (hay hallazgos)
-const resultado = spawnSync('npm', ['audit', '--json'], { encoding: 'utf8' });
-const reporte = JSON.parse(resultado.stdout);
+const NIVELES = ["low", "moderate", "high", "critical"];
+const minimo = process.env.AUDIT_MIN_SEVERITY ?? "high";
 
+if (!NIVELES.includes(minimo)) {
+  console.error(`Umbral inválido: ${minimo}`);
+  process.exit(2);
+}
+
+const UMBRAL = NIVELES.slice(NIVELES.indexOf(minimo));
+const ejecutable = process.platform === "win32" ? "npm.cmd" : "npm";
+const resultado = spawnSync(ejecutable, ["audit", "--json"], {
+  encoding: "utf8",
+  maxBuffer: 10 * 1024 * 1024
+});
+
+if (resultado.error) {
+  console.error(`No se pudo ejecutar npm audit: ${resultado.error.message}`);
+  process.exit(2);
+}
+
+if (resultado.status === null || ![0, 1].includes(resultado.status)) {
+  console.error(`npm audit terminó con estado ${resultado.status}`);
+  console.error(resultado.stderr || "Sin detalle adicional");
+  process.exit(2);
+}
+
+const salida = resultado.stdout?.trim();
+if (!salida) {
+  console.error("npm audit no devolvió JSON");
+  console.error(resultado.stderr || "Sin detalle adicional");
+  process.exit(2);
+}
+
+let reporte;
+try {
+  reporte = JSON.parse(salida);
+} catch (error) {
+  console.error(`JSON inválido de npm audit: ${error.message}`);
+  process.exit(2);
+}
+
+if (!reporte || typeof reporte !== "object" || Array.isArray(reporte)) {
+  console.error("El reporte no es un objeto JSON");
+  process.exit(2);
+}
+
+if (reporte.error) {
+  console.error(`npm audit reportó un error: ${reporte.error.summary ?? "sin resumen"}`);
+  process.exit(2);
+}
+
+const lista = reporte.vulnerabilities ?? {};
+if (typeof lista !== "object" || Array.isArray(lista)) {
+  console.error("vulnerabilities no tiene la forma esperada");
+  process.exit(2);
+}
+
+const entradas = Object.entries(lista);
 const filas = [];
-for (const [paquete, info] of Object.entries(reporte.vulnerabilities)) {
-  for (const aviso of info.via.filter((v) => typeof v === 'object')) {
-    filas.push({ paquete, severidad: aviso.severity, cwe: aviso.cwe.join(', '), aviso: aviso.url.split('/').pop() });
+
+for (const [paquete, info] of entradas) {
+  const via = Array.isArray(info?.via) ? info.via : [];
+  for (const aviso of via) {
+    if (!aviso || typeof aviso !== "object") continue;
+    filas.push({
+      paquete,
+      severidad: aviso.severity ?? info?.severity ?? "desconocida",
+      cwe: Array.isArray(aviso.cwe) ? aviso.cwe.join(", ") : "no indicado",
+      aviso: typeof aviso.url === "string"
+        ? aviso.url.split("/").pop()
+        : String(aviso.source ?? "sin identificador")
+    });
   }
 }
-console.table(filas);
 
-const graves = filas.filter((f) => UMBRAL.includes(f.severidad));
-console.log(`Hallazgos: ${filas.length}, graves: ${graves.length}`);
+console.table(filas);
+const graves = entradas
+  .filter(([, info]) => UMBRAL.includes(info?.severity))
+  .map(([paquete]) => paquete);
+
+console.log(`Estado de npm audit: ${resultado.status}`);
+console.log(`Umbral del pipeline: ${minimo}`);
+console.log(`Paquetes en o sobre el umbral: ${graves.join(", ") || "ninguno"}`);
 process.exitCode = graves.length > 0 ? 1 : 0;
 ```
 
-**Ejecuta el ejemplo:**
+Ejecuta el wrapper y captura su propio código antes de lanzar otro comando:
 
 ```bash
-node auditar.js; echo "código de salida: $?"
+node auditar.js
+codigo=$?
+printf 'código del pipeline local: %s\n' "$codigo"
 ```
 
-**Resultado esperado:**
+**Resultado esperado:** el script muestra los avisos objetos disponibles, tolera entradas `via` que sean strings y elige su salida según `AUDIT_MIN_SEVERITY`. Con el valor predeterminado `high`, devuelve `1` si alguna vulnerabilidad del reporte tiene severidad alta o crítica y `0` si los hallazgos válidos quedan por debajo. Un error de ejecución, JSON inválido o reporte de error devuelve `2`. Las filas y severidades concretas dependen del reporte actual.
 
-```text
-┌─────────┬──────────┬────────────┬─────────────────────┬───────────────────────┐
-│ (index) │ paquete  │ severidad  │ cwe                 │ aviso                 │
-├─────────┼──────────┼────────────┼─────────────────────┼───────────────────────┤
-│ 0       │ 'lodash' │ 'high'     │ 'CWE-77, CWE-94'    │ 'GHSA-35jh-r3h4-6jhm' │
-│ 1       │ 'lodash' │ 'moderate' │ 'CWE-400, CWE-1333' │ 'GHSA-29mw-wpgm-hmr9' │
-│ 2       │ 'lodash' │ 'high'     │ 'CWE-94'            │ 'GHSA-r5fr-rjxr-66jc' │
-│ 3       │ 'lodash' │ 'moderate' │ 'CWE-1321'          │ 'GHSA-f23m-r3pf-42rh' │
-│ 4       │ 'lodash' │ 'moderate' │ 'CWE-1321'          │ 'GHSA-xxjr-mmjv-4gpg' │
-└─────────┴──────────┴────────────┴─────────────────────┴───────────────────────┘
-Hallazgos: 5, graves: 2
-código de salida: 1
+**Fallo deliberado:** sustituye temporalmente la ejecución por `execSync("npm audit --json")`. **Diagnóstico y corrección:** si npm termina con estado distinto de cero, `execSync` puede lanzar antes de que el programa lea el JSON; el wrapper confunde hallazgos con fallo de ejecución. Restaura `spawnSync` y sus comprobaciones para separar ambos casos.
+
+**Práctica guiada.** Guarda el estado inicial con `npm ls lodash` y ejecuta el wrapper con `AUDIT_MIN_SEVERITY=critical node auditar.js`. Después revisa la propuesta de `npm audit`, ejecuta `npm audit fix` solo si el cambio es aceptable y repite `npm ls lodash` y el wrapper. Registra en `auditoria-local.md` versiones, estados y avisos antes y después. **Pista:** una actualización puede modificar el reporte, pero no se exige que elimine todos los avisos ni se usa `--force`.
+
+**Si falla.** Distingue `1` (decisión de bloqueo con un reporte procesado) de `2` (auditoría no confiable o configuración inválida). Si el parseo falla, conserva `stdout` y `stderr` para diagnosticar; no conviertas automáticamente el problema en éxito ni uses una salida vacía como sinónimo de ausencia de avisos.
+
+#### Aplica
+
+Como ejercicio independiente, crea `.github/workflows/auditoria.yml` en este mismo proyecto, sin importar un workflow prefabricado:
+
+```yaml
+name: auditoria-dependencias
+on: push
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    env:
+      AUDIT_MIN_SEVERITY: ${{ github.ref == 'refs/heads/main' && 'high' || 'critical' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node auditar.js
 ```
 
-Los avisos cambian con el tiempo: al repetirlo quizá veas más o menos filas, pero la versión 4.17.20 siempre tendrá hallazgos. El código de salida 1 es lo que detiene el pipeline.
+El umbral es `high` al publicar en `main` y `critical` en otras ramas. Crea `politica-auditoria.md` y justifica esa diferencia, cómo se revisan las excepciones y por qué un estado correcto no acredita seguridad completa. Añade el tratamiento de una rama con nombre distinto y explica qué umbral recibe según la expresión.
 
-**Fallo deliberado:** Cambia `spawnSync` por `execSync("npm audit --json")`, como se ve en muchos tutoriales. El script se cae con `Error: Command failed: npm audit --json` antes de imprimir nada: `npm audit` sale con código 1 cuando hay hallazgos y `execSync` convierte eso en una excepción. Por eso hay que leer el código de salida, no tratarlo como error del script.
+**Checklist de salida.**
 
-#### Paso 5 · Práctica guiada
-Ejecuta `npm audit fix`, vuelve a correr `auditar.js` y documenta qué versión de lodash quedó y si el código de salida cambió. **Pista:** revisa `package.json` y `npm ls lodash` antes y después; si queda algún aviso, lee si se corrige con una versión *major*.
+- [ ] El documento de política distingue CVE, CWE y GHSA con un aviso real o una explicación de su ausencia.
+- [ ] `auditar.js` comprueba error de proceso, estado, salida vacía, JSON, forma del reporte y `reporte.error`.
+- [ ] El wrapper no confunde el estado `1` de npm con una imposibilidad de leer el reporte.
+- [ ] Los estados `0`, `1` y `2` del script tienen significados diferentes y comprobables.
+- [ ] El workflow aplica `high` en `main` y `critical` en otras ramas mediante `AUDIT_MIN_SEVERITY`.
+- [ ] La práctica no fija recuentos de avisos, no usa `audit fix --force` y no promete cobertura total.
 
-#### Paso 6 · Práctica independiente
-Agrega `auditar.js` como paso de GitHub Actions y haz que solo bloquee con severidad `critical` en ramas de funcionalidad y con `high` en `main`. Justifica el umbral.
+**Errores comunes:** confundir CVE con CWE; usar `execSync` sin capturar su salida ante estado `1`; parsear `stdout` sin validar; tratar cualquier estado como ausencia de hallazgos; basar el bloqueo solo en filas de advisories y no en la severidad del paquete; aplicar el mismo umbral sin política; aceptar excepciones sin fecha de revisión.
 
-#### Paso 7 · Cierre
-**¿Por qué es importante?** porque la cadena de suministro es hoy una de las principales vías de ataque, y saber leer CVE y CWE te permite priorizar en vez de ignorar cientos de avisos.
-**Fuente oficial:** [npm Docs: npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [MITRE CWE](https://cwe.mitre.org/), [Node.js Security Best Practices](https://nodejs.org/en/learn/getting-started/security-best-practices).
-**Conceptos clave:** CVE, CWE, GHSA, OWASP Top 10, severidad, `npm audit`, código de salida, umbral en CI.
-**Cuándo no usarlo:** no trates cada aviso como urgente: evalúa si el código vulnerable se usa realmente (alcanzabilidad) y documenta las excepciones aceptadas con fecha de revisión.
+**Fuentes oficiales:** [npm Docs: npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit), [MITRE CWE](https://cwe.mitre.org/) y [Node.js Security Best Practices](https://nodejs.org/en/learn/getting-started/security-best-practices).
 
-**Transferencia al proyecto integrador «API operativa de entregas»:** agrega la auditoría de dependencias al pipeline de la API con un umbral documentado.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** usar `execSync('npm audit --json')` en vez de `spawnSync`, dejando que el código de salida 1 se convierta en una excepción no capturada antes de poder leer el reporte; tratar todas las severidades por igual sin fijar un umbral documentado por rama.
+**Transferencia al proyecto integrador «API operativa de entregas»:** incorpora el wrapper al pipeline con un umbral documentado, conserva el reporte como artefacto sin secretos y define revisión humana para alcanzabilidad, cambios de versión y excepciones. Un pipeline verde representa únicamente el resultado de ese control en esa ejecución.
+
+---
 
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** asegurar la API construida en módulos anteriores con cabeceras seguras, rate limiting, prevención de inyección SQL/XSS y una auditoría estructurada según OWASP.
+Construye una API pequeña desde una carpeta vacía para integrar cabeceras, límite por ruta, parámetros SQL, salida HTML y auditoría. Es un proyecto nuevo: no copies archivos de los temas ni uses sus carpetas.
 
-**Requisitos previos:** Módulos 0-9 completados.
+**Al terminar podrás:** entregar una API local y evidencias que permitan comprobar cinco respuestas concretas, una regresión corregida y una decisión de dependencias sin declarar seguridad total.
 
-| Paso | Acción | Comando/Código | Explicación |
-|---|---|---|---|
-| 1 | Instalar y verificar helmet | `app.use(helmet())`, `curl -I` | Verifica las cabeceras agregadas |
-| 2 | Implementar rate limiting | Ver Tema 2 | Verifica que tras N requests responde 429 |
-| 3 | Provocar y corregir una inyección SQL | Endpoint con concatenación directa, luego con parámetros | Verifica el ataque y su corrección |
-| 4 | Sanitizar un campo de texto libre | Antes de renderizarlo en otra parte como HTML | Previene XSS almacenado |
-| 5 | Revisar el OWASP API Security Top 10 | Documenta los 3 ítems más relevantes para tu API | Explica cómo cada uno se mitiga |
-| 6 | Auditar dependencias | `npm audit`, corrige lo crítico encontrado | Verifica el reporte antes y después |
+```bash
+mkdir laboratorio-seguridad-node
+cd laboratorio-seguridad-node
+npm init -y
+npm install express helmet express-rate-limit escape-html
+npm pkg set type=module scripts.start="node src/server.js"
+mkdir src
+```
 
-**Verificación:** el laboratorio se considera exitoso si el ataque de inyección SQL provocado deliberadamente en el paso 3 efectivamente altera el resultado antes de la corrección, y ya no lo hace después de aplicar consultas parametrizadas; y si `npm audit` no reporta ninguna vulnerabilidad crítica sin resolver al finalizar.
+Crea `src/app.js`:
 
-**Errores comunes y soluciones**
+```js
+import express from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import escapeHtml from "escape-html";
 
-- **Confiar en que "nunca voy a tener atacantes reales" para justificar concatenación directa de SQL.** Esta suposición es incorrecta incluso para proyectos pequeños; usa siempre consultas parametrizadas por disciplina, no solo cuando "hace falta".
-- **Configurar rate limiting con un límite tan estricto que afecta a usuarios legítimos normales.** Ajusta el límite según el patrón de uso real esperado, con límites más estrictos específicamente en endpoints sensibles como login.
-- **Ignorar vulnerabilidades reportadas por `npm audit` por considerarlas "de bajo riesgo".** Revisa la severidad real reportada y prioriza las críticas y altas de forma consistente.
+export function crearApp(pool) {
+  const app = express();
+  app.use(helmet());
 
----
+  const limiteAcceso = rateLimit({
+    windowMs: 60_000,
+    limit: 3,
+    standardHeaders: true,
+    legacyHeaders: false
+  });
+
+  app.get("/", (_req, res) => {
+    res.json({ estado: "disponible" });
+  });
+
+  app.post("/acceso", limiteAcceso, (_req, res) => {
+    res.sendStatus(204);
+  });
+
+  app.get("/paquetes/:codigo", async (req, res, next) => {
+    if (!/^RF-\d+$/.test(req.params.codigo)) {
+      return res.status(400).json({ error: "Codigo invalido" });
+    }
+
+    try {
+      const resultado = await pool.query(
+        "SELECT id, codigo FROM paquetes WHERE codigo = $1",
+        [req.params.codigo]
+      );
+      return res.json({ paquete: resultado.rows[0] ?? null });
+    } catch (error) {
+      return next(error);
+    }
+  });
+
+  app.get("/observacion", (req, res) => {
+    const texto = String(req.query.texto ?? "");
+    res.type("html").send(`<p>${escapeHtml(texto)}</p>`);
+  });
+
+  app.use((error, _req, res, _next) => {
+    console.error(error.message);
+    res.status(500).json({ error: "Error interno" });
+  });
+
+  return app;
+}
+```
+
+Crea `src/server.js`. El pool de demostración evita exigir PostgreSQL y hace visible el contrato que después debe cumplir un pool `pg` real:
+
+```js
+import { crearApp } from "./app.js";
+
+const poolDePrueba = {
+  async query(text, values) {
+    console.log(JSON.stringify({ text, values }));
+    return { rows: [{ id: 1, codigo: values[0] }] };
+  }
+};
+
+crearApp(poolDePrueba).listen(3000, () => {
+  console.log("Laboratorio en http://127.0.0.1:3000");
+});
+```
+
+Ejecuta `npm start` y reúne las siguientes evidencias con peticiones locales individuales:
+
+```bash
+curl -i http://127.0.0.1:3000/
+curl -i http://127.0.0.1:3000/paquetes/RF-42
+curl -i http://127.0.0.1:3000/paquetes/RF-x
+curl -i --get --data-urlencode 'texto=<img src=x onerror=alert(1)>' http://127.0.0.1:3000/observacion
+curl -i -X POST http://127.0.0.1:3000/acceso
+curl -i -X POST http://127.0.0.1:3000/acceso
+curl -i -X POST http://127.0.0.1:3000/acceso
+curl -i -X POST http://127.0.0.1:3000/acceso
+```
+
+**Resultados esperados:**
+
+- `/` responde `200` con cabeceras de Helmet; su presencia no sustituye las demás comprobaciones.
+- `/paquetes/RF-42` responde con el paquete y el registro del servidor conserva `$1` en el SQL y `RF-42` en `values`.
+- `/paquetes/RF-x` responde `400` y no produce una llamada al pool.
+- `/observacion` devuelve entidades HTML en lugar de un elemento `img` literal; la defensa mostrada corresponde al contexto de texto HTML.
+- Las tres primeras peticiones a `/acceso` dentro de un minuto responden `204` y la cuarta, `429`. No aumentes el volumen: es solo una prueba funcional local.
+
+**Regresión deliberada y corrección:** cambia únicamente `${escapeHtml(texto)}` por `${texto}` en `src/app.js`, reinicia y repite la petición de observación. La aparición de markup literal identifica la regresión. Restaura `${escapeHtml(texto)}` y verifica de nuevo; no concatenes SQL vulnerable ni ejecutes un exploit para completar el laboratorio.
+
+Crea `evidencia-seguridad.md` con las respuestas anteriores, una explicación de proxy y store distribuido para desplegar dos instancias, y una sección OWASP con BOLA, exposición de propiedades, consumo de recursos y SSRF. Ejecuta finalmente:
+
+```bash
+npm audit
+npm audit --json > audit.json
+codigo=$?
+printf 'código de npm audit: %s\n' "$codigo"
+```
+
+Añade a `evidencia-seguridad.md` los avisos realmente obtenidos, distinguiendo CVE, CWE y GHSA cuando esos datos estén presentes. Registra severidad, ruta de dependencia y decisión; define el umbral que usará el pipeline. No fijes un número esperado de avisos, no uses `npm audit fix --force` y no interpretes un reporte sin hallazgos como ausencia garantizada de vulnerabilidades.
+
+**Checklist del laboratorio.**
+
+- [ ] Todos los archivos fuente se crearon manualmente en `laboratorio-seguridad-node` y el proyecto no depende de ejemplos anteriores.
+- [ ] Las cinco rutas o grupos de comprobación producen los estados y cuerpos descritos.
+- [ ] La evidencia SQL muestra estructura y valores separados sin construir una consulta vulnerable.
+- [ ] La regresión HTML es visible, se corrige y se vuelve a comprobar.
+- [ ] La propuesta de dos instancias configura proxy confiable y store compartido.
+- [ ] La sección OWASP relaciona riesgos con evidencias o pendientes y la auditoría conserva el resultado y código reales.
+
+**Estado de verificación:** ejecución de ejemplos y laboratorio pendiente; revisión pedagógica humana pendiente. Los resultados descritos son esperados y no se presentan como ejecuciones realizadas ni como certificación de seguridad o aprendizaje.
