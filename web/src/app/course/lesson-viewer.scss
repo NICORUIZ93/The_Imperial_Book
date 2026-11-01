@@ -1,531 +1,452 @@
 @use '../../styles/tokens' as *;
 
-// Sistema tipográfico "libro técnico": serif de lectura para prosa y
-// títulos, sans para etiquetas/UI/eyebrows, mono para código, claves y datos.
-$serif:var(--font-serif); // el modo libro reemplaza --font-serif por --font-reading
-$display:var(--font-display);
-$sans-ui:var(--font-sans);
+// ── Lector de capítulo ────────────────────────────────────────────────────
+// Una sola lengua visual para el capítulo completo y el modo libro: hoja de
+// papel, prosa a bandera, títulos negros, filetes de tinta y listados en caja
+// gris de filete punteado. Nada de tarjetas redondeadas, píldoras, degradados
+// ni sombras de aplicación.
 
-:host { display:block; padding:38px 32px 96px; }
+:host { display:block; padding:32px clamp(18px,3vw,44px) 72px; }
 
 .reading-progress { position:fixed; top:$th; left:$sw; right:0; z-index:19; height:2px; background:transparent; }
 .reading-progress span { display:block; height:100%; background:var(--accent); transition:width .12s linear; }
 
-.lesson-layout { display:grid; grid-template-columns:minmax(0,820px); justify-content:center; max-width:1066px; margin:0 auto; }
-.lesson { min-width:0; }
-
-// Cabecera de capítulo: sin lomo de color, sin sombra pronunciada, sin
-// degradado — un bloque plano delimitado por un borde fino, como el inicio
-// de un capítulo en un manual técnico.
-.lesson-hero { position:relative; margin-bottom:40px; padding:0 0 22px; border-bottom:1px solid $bd; }
-.lesson-eyebrow { display:flex; align-items:center; gap:8px; margin-bottom:14px; color:var(--accent); font:700 11px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
-.lesson-eyebrow lucide-icon { width:15px; height:15px; }
-.lesson h1 { position:relative; max-width:680px; margin:0 0 12px; color:$ink; font:600 clamp(28px,3.8vw,38px)/1.18 #{$serif}; letter-spacing:-.01em; text-wrap:balance; }
-.lesson-description { max-width:62ch; margin:0; color:$i3; font:400 17px/1.6 #{$serif}; font-style:italic; }
-.lesson-meta { display:flex; flex-wrap:wrap; align-items:center; gap:9px 18px; margin-top:18px; color:$mu; font:600 12px/1.2 var(--font-sans); }
-.lesson-meta span { display:flex; align-items:center; gap:6px; }
-.lesson-meta lucide-icon { width:15px; height:15px; }
-.chapter-topic-strip { margin-top:24px; padding:15px 0 0; border-top:1px solid $bd; }
-.chapter-topic-strip-heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:10px; }
-.chapter-topic-strip-heading span { color:$ink; font:700 10px/1.2 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
-.chapter-topic-strip-heading small { color:$mu; font:500 11px var(--font-sans); }
-.chapter-topic-strip-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:7px; }
-.chapter-topic-strip-list a { min-width:0; display:flex; align-items:flex-start; gap:8px; padding:10px 11px; border:1px solid $bd; border-radius:9px; color:$i3; background:$wh; text-decoration:none; font:600 11px/1.4 var(--font-sans); }
-.chapter-topic-strip-list a:hover { border-color:var(--accent); color:var(--accent); }
-.chapter-topic-strip-list a.current { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
-.chapter-topic-strip-list a.done { color:$mu; }
-.chapter-topic-strip-list a span { flex:0 0 auto; color:var(--accent); font:700 10px var(--font-mono); }
-// Hilo conductor del proyecto: no un panel con fondo de color, sino una
-// sección abierta delimitada arriba y abajo por un filete, como el resumen
-// de proyecto al margen de un capítulo. El dato (%) manda; la barra es fina.
-.project-progress-card { margin:0 0 40px; padding:22px 0; border-top:1px solid $bd; border-bottom:1px solid $bd; background:transparent; }
-.project-progress-heading { display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
-.project-progress-heading small { color:var(--accent); font:800 9.5px/1.2 var(--font-sans); letter-spacing:.09em; text-transform:uppercase; }
-.project-progress-heading h2 { margin:5px 0 0; color:$ink; font:600 21px/1.25 #{$serif}; letter-spacing:-.01em; }
-.project-progress-heading > strong { color:var(--accent); font:600 26px/1 #{$serif}; letter-spacing:-.02em; }
-.project-progress-card > p { max-width:680px; margin:9px 0 15px; color:$mu; font:400 13px/1.6 #{$serif}; font-style:italic; }
-.project-progress-bar { height:6px; overflow:hidden; border-radius:99px; background:$bd; }
-.project-progress-bar span { display:block; height:100%; border-radius:inherit; background:var(--accent); transition:width .25s ease; }
-.project-milestones { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:16px 0 0; padding:0; list-style:none; }
-.project-milestones li { display:grid; grid-template-columns:22px minmax(0,1fr); gap:7px; align-items:start; color:$mu; font:600 10px/1.35 var(--font-sans); }
-.project-milestones li span { width:22px; height:22px; display:grid; place-items:center; border:1px solid $bd2; border-radius:50%; color:$mu; font:800 10px var(--font-sans); }
-.project-milestones li.current span, .project-milestones li.reached span { border-color:var(--accent); color:#fff; background:var(--accent); }
-.project-milestones li.current small { color:var(--accent); font-weight:800; }
-.project-current-step { margin-bottom:0 !important; padding-top:12px; border-top:1px solid $bd; }
-
-// Escala "de cero a master" y mapa del capítulo se retiraron del lector: el
-// nivel ya viaja en el eyebrow del capítulo y el orden de lectura vive en el
-// índice del curso y en la tira de temas.
-.focus-toggle { min-height:36px; margin-left:auto; padding:0 12px; border:1px solid $bd2; border-radius:999px; color:$i3; background:transparent; font:700 11px/1 var(--font-sans); transition:background .18s ease,color .18s ease,border-color .18s ease; }
-.focus-toggle:hover, .focus-toggle[aria-pressed='true'] { border-color:var(--accent); color:var(--accent); background:color-mix(in srgb,var(--accent) 9%,transparent); }
-.focus-mode { grid-template-columns:minmax(0,780px); justify-content:center; max-width:780px; }
-.focus-mode .lesson-hero { margin-bottom:34px; }
-
-.floci-overview { margin:-18px 0 52px; overflow:hidden; border:1px solid $bd; border-radius:14px; background:$wh; box-shadow:$shm; }
-.floci-overview-intro { padding:42px; color:color-mix(in srgb,#{$wh} 88%,transparent); background:linear-gradient(160deg,color-mix(in srgb,#{$ink} 92%,black) 0%,#{$ink} 65%); }
-.floci-overview-intro > span { display:block; margin-bottom:12px; color:color-mix(in srgb,var(--accent) 55%,white); font:800 10px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
-.floci-overview-intro h2 { max-width:650px; margin:0 0 14px; color:#{$wh}; font:600 clamp(28px,4vw,42px)/1.12 #{$serif}; letter-spacing:-.01em; }
-.floci-overview-intro p { max-width:680px; margin:0; color:color-mix(in srgb,#{$wh} 74%,transparent); font:400 15px/1.7 var(--font-sans); }
-.floci-overview-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:25px; }
-.floci-overview-actions a { min-height:42px; display:inline-flex; align-items:center; padding:0 16px; border-radius:8px; color:#{$wh}; background:var(--accent); font:800 12px var(--font-sans); text-decoration:none; }
-.floci-overview-actions a.secondary { border:1px solid rgba(255,255,255,.25); color:#{$wh}; background:rgba(255,255,255,.08); }
-.floci-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); margin:0; border-bottom:1px solid $bd; }
-.floci-metrics div { min-width:0; padding:22px; border-right:1px solid $bd; }
-.floci-metrics div:last-child { border-right:0; }
-.floci-metrics dt { color:$ink; font:800 22px/1 var(--font-sans); letter-spacing:-.04em; }
-.floci-metrics dd { margin:8px 0 0; color:$i3; font:700 10px/1.4 var(--font-sans); }
-.floci-metrics small { display:block; margin-top:3px; color:$mu; font-weight:500; }
-.floci-capabilities { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; background:$bd; }
-.floci-capabilities article { padding:26px; background:$wh; }
-.floci-capabilities lucide-icon { width:22px; color:var(--accent); }
-.floci-capabilities h3 { margin:13px 0 7px; color:$ink; font:750 15px/1.3 var(--font-sans); }
-.floci-capabilities p { margin:0; color:$mu; font:400 12.5px/1.6 var(--font-sans); }
-.floci-real-engines { display:grid; grid-template-columns:1.15fr .85fr; gap:28px; padding:32px; border-top:1px solid $bd; background:$bg2; }
-.floci-real-engines > div > small { color:$p; font:800 9px var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
-.floci-real-engines h3 { margin:7px 0 10px; color:$ink; font:750 20px/1.25 var(--font-sans); letter-spacing:-.02em; }
-.floci-real-engines p { margin:0; color:$mu; font:400 12.5px/1.65 var(--font-sans); }
-.floci-real-engines ul { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
-.floci-real-engines li { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid $bd; border-radius:10px; background:$wh; }
-.floci-real-engines li lucide-icon { width:17px; color:var(--accent); }
-.floci-real-engines li span { display:grid; gap:2px; }
-.floci-real-engines li strong { color:$ink; font:750 11px var(--font-sans); }
-.floci-real-engines li small { color:$mu; font:500 9px var(--font-sans); }
-.floci-study-loop { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); margin:0; padding:0; border-top:1px solid $bd; list-style:none; }
-.floci-study-loop li { display:grid; align-content:start; gap:5px; padding:20px 15px; border-right:1px solid $bd; }
-.floci-study-loop li:last-child { border-right:0; }
-.floci-study-loop span { width:23px; height:23px; display:grid; place-items:center; border-radius:50%; color:#fff; background:var(--accent); font:800 9px var(--font-sans); }
-.floci-study-loop strong { margin-top:4px; color:$ink; font:750 11px var(--font-sans); }
-.floci-study-loop small { color:$mu; font:500 9px/1.45 var(--font-sans); }
-
-.build-method { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:12px 0 24px; padding:0; list-style:none; }
-.build-method li { display:flex; align-items:center; gap:9px; min-width:0; padding:10px 11px; border:1px solid $bd; border-radius:12px; background:$wh; }
-.build-method li > span { display:grid; flex:0 0 25px; width:25px; height:25px; place-items:center; border-radius:50%; color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,transparent); font:800 11px var(--font-sans); }
-.build-method div { display:flex; min-width:0; flex-direction:column; }
-.build-method strong { color:$ink; font:750 11px var(--font-sans); }
-.build-method small { overflow:hidden; color:$mu; font:500 9.5px var(--font-sans); text-overflow:ellipsis; white-space:nowrap; }
-
-
-.lesson-panel { margin:0 0 36px; }
-.lesson-markdown ::ng-deep .lesson-section { animation:section-in .28s ease both; }
-@keyframes section-in { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:none; } }
-.lesson-skeleton { min-height:320px; display:grid; place-items:center; color:$mu; }
-.lesson-error { padding:24px; border:1px solid color-mix(in srgb,var(--error) 35%,transparent); border-radius:16px; background:var(--error-soft); color:var(--text); }
-.lesson-error strong { display:block; margin-bottom:6px; font-size:17px; }
-.lesson-error p { color:var(--text-secondary); }
-.lesson-error button { min-height:44px; padding:0 16px; border:0; border-radius:10px; color:#fff; background:var(--error); font-weight:700; }
-.lesson-markdown { color:$i3; font:400 17px/1.75 #{$serif}; }
-.lesson-markdown ::ng-deep :first-child { margin-top:0; }
-.lesson-markdown ::ng-deep h2 { margin:64px 0 22px; padding-bottom:12px; border-bottom:1px solid $bd; color:$ink; font:600 27px/1.28 #{$serif}; letter-spacing:-.01em; scroll-margin-top:90px; }
-.lesson-markdown ::ng-deep h2:first-child { margin-top:0; }
-.lesson-markdown ::ng-deep h3 { margin:48px 0 18px; color:$ink; font:600 24px/1.32 #{$serif}; scroll-margin-top:90px; }
-.lesson-markdown ::ng-deep h3.topic-heading { position:relative; display:block; padding:0 0 18px; margin-bottom:28px; border:0; border-bottom:1px solid $bd; background:none; border-radius:0; overflow:visible; }
-.lesson-markdown ::ng-deep h3.topic-heading .topic-toggle { position:absolute; right:0; top:2px; }
-.lesson-markdown ::ng-deep .section-number { display:block; margin-bottom:6px; color:var(--accent-hover); font:700 13px/1 var(--font-mono); letter-spacing:.02em; }
-.lesson-markdown ::ng-deep h4 { margin:28px 0 10px; color:$ink; font:700 16px/1.35 var(--font-sans); }
-.lesson-markdown ::ng-deep p { margin:0 0 17px; }
-.lesson-markdown ::ng-deep ul,
-.lesson-markdown ::ng-deep ol { margin:0 0 23px; padding-left:26px; }
-.lesson-markdown ::ng-deep li { margin:8px 0; padding-left:4px; }
-.lesson-markdown ::ng-deep li::marker { color:var(--accent); font-weight:700; }
-.lesson-markdown ::ng-deep strong { color:$ink; font-weight:700; }
-.lesson-markdown ::ng-deep a { color:$p; text-decoration-thickness:1px; text-underline-offset:3px; }
-.lesson-markdown ::ng-deep blockquote { margin:26px 0; padding:18px 22px; border-left:4px solid var(--accent); background:$pl; border-radius:0 12px 12px 0; }
-
-// Definición: caja formal con relleno del acento — se distingue de las demás
-// por ser la única con fondo de color, como el recuadro de definición de un
-// libro de texto.
-.lesson-markdown ::ng-deep .definition-callout { margin:26px 0; padding:18px 22px; border-left:3px solid var(--accent); border-radius:0 10px 10px 0; background:var(--accent-soft); }
-.lesson-markdown ::ng-deep .definition-callout > strong:first-child { color:var(--accent-hover); }
-
-// Un solo lenguaje visual para las tres marginalias (Analogía, Importancia,
-// Casos de uso): borde izquierdo + etiqueta, sin glifos decorativos. "¿Por
-// qué es importante?" usa el acento cálido secundario; el resto, el acento
-// principal — dos tonos en total, no un semáforo de colores.
-.lesson-markdown ::ng-deep .learning-callout { margin:26px 0; padding:16px 20px; border:1px solid $bd; border-left:3px solid var(--accent); border-radius:0 10px 10px 0; background:$wh; }
-.lesson-markdown ::ng-deep .importance-callout { border-left-color:var(--warning); background:var(--warning-soft); }
-
-// Glosario de la sección: "Conceptos clave: A, B, C" — encabezado plano y
-// términos en línea, sin chips ni íconos decorativos.
-.lesson-markdown ::ng-deep .key-terms { margin:0 0 26px; padding:14px 0; border-top:1px solid $bd; border-bottom:1px solid $bd; }
-.lesson-markdown ::ng-deep .key-terms-heading { margin-bottom:8px; color:var(--accent); font:800 10px/1.2 var(--font-sans); letter-spacing:.07em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .key-terms-chips { display:block; color:$i3; font:500 13px/1.6 var(--font-sans); }
-.lesson-markdown ::ng-deep .term-chip { display:inline; color:$ink; font-weight:650; }
-.lesson-markdown ::ng-deep .term-chip:not(:last-child)::after { content:', '; color:$i3; font-weight:400; }
-
-// Ficha de la sesión: agrupa los "Paso N · Título" de un Tema en un único
-// checklist compacto (número + etiqueta arriba, cuerpo abajo) — no una
-// escalera de círculos numerados intercalada en la lectura.
-.lesson-markdown ::ng-deep .session-card { margin:0 0 40px; border:1px solid $bd; border-radius:10px; overflow:hidden; background:$wh; box-shadow:$sh; }
-.lesson-markdown ::ng-deep .session-card-head { display:flex; align-items:center; justify-content:space-between; padding:11px 18px; border-bottom:1px solid $bd; background:$bg2; }
-.lesson-markdown ::ng-deep .session-card-head span { color:$i3; font:700 10px var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .session-card-head small { color:$mu; font:600 10.5px var(--font-mono); }
-.lesson-markdown ::ng-deep .session-steps { display:grid; margin:0; padding:6px 18px 2px; list-style:none; }
-.lesson-markdown ::ng-deep .session-steps li { padding:12px 0; border-top:1px solid $bd; }
-.lesson-markdown ::ng-deep .session-steps li:first-child { border-top:0; }
-.lesson-markdown ::ng-deep .step-head { display:flex; align-items:baseline; gap:9px; margin-bottom:4px; }
-.lesson-markdown ::ng-deep .step-head b { color:var(--accent-hover); font:700 11px var(--font-mono); }
-.lesson-markdown ::ng-deep .step-head em { font-style:normal; color:$ink; font:700 11.5px/1.3 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .step-body { padding-left:29px; color:$i3; font:400 14.5px/1.6 var(--font-sans); }
-.lesson-markdown ::ng-deep .step-body p { margin:0 0 8px; }
-.lesson-markdown ::ng-deep .step-body p:last-child { margin-bottom:0; }
-.lesson-markdown ::ng-deep .step-body .code-example { margin:12px 0; }
-
-.lesson-markdown ::ng-deep .topic-card { margin:0; scroll-margin-top:92px; }
-.lesson-markdown ::ng-deep .topic-card:not(.expanded) > .topic-heading { margin-bottom:8px; }
-.lesson-markdown ::ng-deep .topic-body { display:none; padding-bottom:36px; border-bottom:1px solid $bd; }
-.lesson-markdown ::ng-deep .topic-card.expanded > .topic-body { display:block; animation:section-in .2s ease both; }
-.lesson-markdown ::ng-deep .topic-card:last-child > .topic-body { border-bottom:0; }
-.lesson-markdown ::ng-deep .topic-toggle { min-height:auto; display:inline-flex; align-items:center; gap:5px; padding:4px 0; border:0; border-radius:0; color:var(--accent-hover); background:transparent; font:700 10.5px/1 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .topic-toggle:hover { color:var(--accent); }
-.lesson-markdown ::ng-deep .topic-toggle span:last-child { font-size:14px; transition:transform .18s ease; }
-.lesson-markdown ::ng-deep .topic-toggle[aria-expanded='true'] span:last-child { transform:rotate(180deg); }
-.lesson-markdown ::ng-deep .topic-troubleshooting { margin:24px 0 4px; overflow:hidden; border:1px solid $bd; border-radius:12px; background:$bg2; font-family:var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-troubleshooting summary { position:relative; min-height:44px; display:flex; align-items:center; padding:11px 40px 11px 14px; color:$ink; font:750 12px var(--font-sans); cursor:pointer; }
-.lesson-markdown ::ng-deep .topic-troubleshooting summary::after { content:'⌄'; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:$mu; font-size:14px; }
-.lesson-markdown ::ng-deep .topic-troubleshooting { position:relative; }
-.lesson-markdown ::ng-deep .topic-troubleshooting[open] summary::after { transform:translateY(-50%) rotate(180deg); }
-.lesson-markdown ::ng-deep .topic-troubleshooting ol { margin:0; padding:2px 34px 10px; color:$i3; font:500 11.5px/1.55 var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-troubleshooting p { margin:0; padding:11px 14px; border-top:1px solid $bd; color:$mu; font:550 11px/1.5 var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-step-navigation { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:12px; margin:30px -24px 0; padding:16px 24px; border-top:1px solid $bd; font-family:var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-step-navigation > strong,
-.lesson-markdown ::ng-deep .topic-step-center strong { color:$mu; font:700 10px/1.3 var(--font-sans); letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; }
-.lesson-markdown ::ng-deep .topic-step-center { display:flex; flex-direction:column; align-items:center; gap:6px; }
-.lesson-markdown ::ng-deep .topic-complete { min-height:32px; padding:5px 11px; border:1px solid $bd2; border-radius:999px; color:$i3; background:$wh; font:700 10.5px/1.2 var(--font-sans); white-space:nowrap; cursor:pointer; }
-.lesson-markdown ::ng-deep .topic-complete:hover { border-color:var(--accent); color:var(--accent); }
-.lesson-markdown ::ng-deep .topic-complete.done { border-color:color-mix(in srgb,var(--accent) 35%,#{$bd}); color:var(--accent); background:color-mix(in srgb,var(--accent) 8%,#{$wh}); }
-.lesson-markdown ::ng-deep .topic-step-navigation .topic-practice-link { min-height:0; padding:0; border:0; align-items:center; gap:0; color:$mu; background:transparent; font:600 10.5px/1.3 var(--font-sans); text-align:center; text-decoration:underline; text-underline-offset:3px; }
-.lesson-markdown ::ng-deep .topic-step-navigation .topic-practice-link:hover { color:var(--accent); background:transparent; }
-.lesson-markdown ::ng-deep .topic-step-navigation a { min-height:48px; display:flex; flex-direction:column; justify-content:center; gap:3px; padding:8px 11px; border:1px solid transparent; border-radius:10px; color:$i3; text-decoration:none; }
-.lesson-markdown ::ng-deep .topic-step-navigation a:last-child { align-items:flex-end; text-align:right; }
-.lesson-markdown ::ng-deep .topic-step-navigation a span { color:var(--accent); font:750 11px/1.2 var(--font-sans); }
-.lesson-markdown ::ng-deep .topic-step-navigation a small { max-width:240px; overflow:hidden; color:$i3; font:650 11px/1.35 var(--font-sans); text-overflow:ellipsis; white-space:nowrap; }
-.lesson-markdown ::ng-deep .topic-step-navigation a:hover { border-color:color-mix(in srgb,var(--accent) 28%,#{$bd}); background:color-mix(in srgb,var(--accent) 5%,#{$wh}); }
-.lesson-markdown ::ng-deep .technical-term { position:relative; display:inline-block; border-bottom:1px dotted var(--accent); cursor:help; }
-.lesson-markdown ::ng-deep .technical-term::after { content:attr(data-definition); position:absolute; z-index:8; left:50%; bottom:calc(100% + 9px); width:min(300px,75vw); padding:11px 13px; border:1px solid $bd2; border-radius:10px; background:$ink; color:$wh; box-shadow:$shm; font:500 11.5px/1.5 var(--font-sans); opacity:0; pointer-events:none; transform:translate(-50%,5px); transition:opacity .16s ease,transform .16s ease; }
-.lesson-markdown ::ng-deep .technical-term:hover::after,
-.lesson-markdown ::ng-deep .technical-term:focus-visible::after { opacity:1; transform:translate(-50%,0); }
-.lesson-markdown ::ng-deep .technical-term:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
-.lesson-markdown ::ng-deep .verifiable-exercise { margin:28px 0; padding:20px; border:1px solid color-mix(in srgb,var(--accent) 28%,#{$bd}); border-radius:16px; background:color-mix(in srgb,var(--accent) 5%,#{$wh}); font-family:var(--font-sans); }
-.lesson-markdown ::ng-deep .verifiable-exercise h4 { margin:0 0 12px; color:$ink; font-size:16px; }
-.lesson-markdown ::ng-deep .exercise-controls { display:grid; gap:8px; margin-top:16px; }
-.lesson-markdown ::ng-deep .exercise-controls label { color:$ink; font:700 12px/1.3 var(--font-sans); }
-.lesson-markdown ::ng-deep .exercise-controls > div { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; }
-.lesson-markdown ::ng-deep .exercise-controls input { min-height:44px; padding:0 13px; border:1px solid $bd2; border-radius:10px; color:$ink; background:$wh; font:500 14px/1 var(--font-sans); }
-.lesson-markdown ::ng-deep .exercise-controls input:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 35%,transparent); border-color:var(--accent); }
-.lesson-markdown ::ng-deep .exercise-controls button { min-height:44px; padding:0 17px; border:0; border-radius:10px; color:white; background:var(--accent); font:750 12px/1 var(--font-sans); }
-.lesson-markdown ::ng-deep .exercise-controls button:disabled { opacity:.62; cursor:default; }
-.lesson-markdown ::ng-deep .exercise-feedback { margin:0; color:$mu; font:600 12px/1.5 var(--font-sans); }
-.lesson-markdown ::ng-deep .exercise-feedback.correct { color:$g; }
-.lesson-markdown ::ng-deep .exercise-feedback.incorrect { color:var(--error); }
-.lesson-markdown ::ng-deep .learning-contract { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; margin:0 0 26px; overflow:hidden; border:1px solid $bd; border-radius:12px; background:$bd; }
-.lesson-markdown ::ng-deep .learning-contract div { display:grid; align-content:start; gap:5px; padding:13px; background:$bg2; }
-.lesson-markdown ::ng-deep .learning-contract small { color:$p; font:800 9px var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .learning-contract strong { color:$ink; font:650 11px/1.5 var(--font-sans); }
-.lesson-markdown ::ng-deep .section-guide { display:flex; gap:10px; align-items:baseline; margin:-6px 0 24px; padding:11px 14px; border-left:3px solid var(--accent); border-radius:0 10px 10px 0; background:color-mix(in srgb,var(--accent) 7%,transparent); }
-.lesson-markdown ::ng-deep .section-guide strong { flex:0 0 auto; color:var(--accent); font:750 11px var(--font-sans); text-transform:uppercase; letter-spacing:.045em; }
-.lesson-markdown ::ng-deep .section-guide span { color:$mu; font:500 12px/1.55 var(--font-sans); }
-.lesson-markdown ::ng-deep .target-demo { display:grid; gap:4px; margin:0 0 26px; padding:16px 18px; border:1px solid color-mix(in srgb,var(--accent) 24%,#{$bd}); border-radius:13px; background:$wh; box-shadow:$sh; }
-.lesson-markdown ::ng-deep .target-demo small { color:$mu; font:700 10px var(--font-sans); text-transform:uppercase; letter-spacing:.06em; }
-.lesson-markdown ::ng-deep .target-demo strong { color:$ink; font:700 14px/1.5 var(--font-sans); }
-.lesson-markdown ::ng-deep .concept-flow { margin:26px 0; padding:16px; border:1px solid $bd; border-radius:12px; background:$bg2; }
-.lesson-markdown ::ng-deep .concept-flow figcaption { margin-bottom:12px; color:$mu; font:800 10px var(--font-sans); text-transform:uppercase; letter-spacing:.08em; }
-.lesson-markdown ::ng-deep .concept-flow > div { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:center; }
-.lesson-markdown ::ng-deep .concept-flow span { min-height:72px; display:flex; flex-direction:column; justify-content:center; padding:10px; border:1px solid $bd; border-radius:9px; background:$wh; color:$ink; font:600 12px/1.4 var(--font-sans); text-align:center; }
-.lesson-markdown ::ng-deep .concept-flow small { margin-bottom:5px; color:$p; font:800 9px var(--font-sans); text-transform:uppercase; letter-spacing:.06em; }
-.lesson-markdown ::ng-deep .concept-flow b { color:$p; font:700 17px var(--font-sans); }
-
-/* Estilo libro universitario: notas al margen (Stewart Calculus), preguntas
-   Checkpoint intercaladas y Problema resuelto con razonamiento (Halliday/Resnick). */
-.lesson-markdown ::ng-deep .margin-note { float:right; clear:right; width:196px; margin:6px -238px 18px 26px; padding:13px 15px; border-left:3px solid var(--accent); border-radius:0 10px 10px 0; background:$bg2; color:$i3; font:500 12px/1.55 var(--font-sans); }
-.lesson-markdown ::ng-deep .margin-note strong:first-child { color:var(--accent); font-weight:800; }
-@media (max-width:1440px) {
-  .lesson-markdown ::ng-deep .margin-note { float:none; width:auto; margin:16px 0; border-radius:10px; }
+.lesson-layout { display:grid; grid-template-columns:minmax(0,780px); justify-content:center; max-width:1030px; margin:0 auto; }
+.lesson {
+  min-width:0; padding:34px clamp(22px,4.4vw,60px);
+  border:1px solid $bd; border-radius:0; background:$wh; box-shadow:none; color:$ink;
 }
 
-.lesson-markdown ::ng-deep .checkpoint { clear:both; margin:26px 0; padding:20px 22px; border:1px dashed color-mix(in srgb,var(--accent) 45%,#{$bd}); border-radius:14px; background:color-mix(in srgb,var(--accent) 5%,#{$wh}); }
-.lesson-markdown ::ng-deep .checkpoint h4 { display:flex; align-items:center; gap:8px; margin:0 0 10px; color:var(--accent); font:800 12px var(--font-sans); letter-spacing:.04em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .checkpoint h4::before { content:'?'; display:inline-flex; width:20px; height:20px; flex:0 0 auto; align-items:center; justify-content:center; border-radius:50%; color:#fff; background:var(--accent); font:800 11px/1 var(--font-sans); }
-.lesson-markdown ::ng-deep .checkpoint-reveal { min-height:36px; margin-top:2px; padding:0 14px; border:1px solid var(--accent); border-radius:999px; color:var(--accent); background:transparent; font:750 11px var(--font-sans); }
-.lesson-markdown ::ng-deep .checkpoint-reveal:hover { background:color-mix(in srgb,var(--accent) 10%,transparent); }
-.lesson-markdown ::ng-deep .checkpoint-answer { margin-top:12px !important; padding-top:12px; border-top:1px solid color-mix(in srgb,var(--accent) 25%,#{$bd}); }
+// Apertura del capítulo: rótulo, título y entrada, separados por filetes.
+.lesson-hero { margin:0 0 30px; padding:0 0 22px; border-bottom:1px solid $bd; }
+.lesson-eyebrow { display:flex; align-items:center; gap:8px; margin-bottom:14px; color:$mu; font:600 10.5px/1.5 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.lesson-eyebrow lucide-icon { width:14px; height:14px; }
+.lesson h1 { max-width:680px; margin:0 0 12px; color:$ink; font:700 clamp(28px,3.2vw,38px)/1.2 var(--font-sans); letter-spacing:-.02em; text-wrap:balance; }
+.lesson-description { max-width:66ch; margin:0; color:$i3; font:italic 400 16px/1.7 var(--font-reading); }
+.lesson-meta { display:flex; flex-wrap:wrap; align-items:center; gap:9px 18px; margin-top:16px; color:$mu; font:400 11.5px/1.4 var(--font-sans); }
+.lesson-meta span { display:flex; align-items:center; gap:6px; }
+.lesson-meta lucide-icon { width:14px; height:14px; }
+.lesson-meta a { color:$ink; text-decoration:underline; text-decoration-color:$bd2; text-underline-offset:2px; }
 
-.lesson-markdown ::ng-deep .sample-problem { clear:both; margin:30px 0; overflow:hidden; border:1px solid $bd; border-radius:16px; background:$wh; box-shadow:$sh; }
-.lesson-markdown ::ng-deep .sample-problem h4 { margin:0; padding:14px 20px; border-bottom:1px solid $bd; background:$bg2; color:$ink; font:750 13px var(--font-sans); }
-.lesson-markdown ::ng-deep .sample-problem > p { margin:16px 20px; }
-.lesson-markdown ::ng-deep .sample-problem-reasoning { margin:16px 20px; padding:15px 17px; border-left:3px solid var(--accent); border-radius:0 10px 10px 0; background:color-mix(in srgb,var(--accent) 6%,#{$bg2}); }
+// Temas del capítulo: índice tipográfico con números y página, no tarjetas.
+.chapter-topic-strip { margin-top:26px; padding-top:16px; border-top:1px solid $bd; }
+.chapter-topic-strip-heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:2px; }
+.chapter-topic-strip-heading span { color:$ink; font:700 11px/1.3 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.chapter-topic-strip-heading small { color:$mu; font:400 10.5px var(--font-sans); }
+.chapter-topic-strip-list { display:block; }
+.chapter-topic-strip-list a { min-width:0; display:flex; align-items:baseline; gap:14px; padding:9px 0; border:0; border-bottom:1px solid $bd; border-radius:0; color:$i3; background:transparent; text-decoration:none; font:400 14.5px/1.45 var(--font-reading); }
+.chapter-topic-strip-list a:hover { color:var(--accent); }
+.chapter-topic-strip-list a.current { color:$ink; font-weight:600; }
+.chapter-topic-strip-list a.done { color:$i3; }
+.chapter-topic-strip-list a span { flex:0 0 2.2em; color:$mu; font:400 11px/1.4 var(--font-mono); }
+
+// Hilo conductor del proyecto: sección abierta entre filetes; el dato manda.
+.project-progress-card { margin:0 0 32px; padding:18px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:transparent; }
+.project-progress-heading { display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
+.project-progress-heading small { color:$mu; font:700 11px/1.2 var(--font-sans); letter-spacing:0; }
+.project-progress-heading h2 { margin:5px 0 0; color:$ink; font:700 20px/1.25 var(--font-sans); letter-spacing:-.01em; }
+.project-progress-heading > strong { color:$ink; font:700 24px/1 var(--font-sans); letter-spacing:-.02em; }
+.project-progress-card > p { max-width:680px; margin:8px 0 14px; color:$i3; font:italic 400 14px/1.65 var(--font-reading); }
+.project-progress-bar { height:2px; overflow:hidden; border-radius:0; background:$bd; }
+.project-progress-bar span { display:block; height:100%; border-radius:0; background:$ink; transition:width .25s ease; }
+.project-milestones { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:14px 0 0; padding:0; list-style:none; }
+.project-milestones li { display:grid; grid-template-columns:22px minmax(0,1fr); gap:7px; align-items:start; color:$mu; font:400 10.5px/1.35 var(--font-sans); }
+.project-milestones li span { width:22px; height:22px; display:grid; place-items:center; border:1px solid $bd2; border-radius:0; color:$mu; font:400 10px var(--font-mono); }
+.project-milestones li.current span, .project-milestones li.reached span { border-color:$ink; color:$wh; background:$ink; }
+.project-milestones li.current small { color:$ink; font-weight:700; }
+.project-current-step { margin-bottom:0 !important; padding-top:12px; border-top:1px solid $bd; }
+
+.focus-toggle { min-height:34px; margin-left:auto; padding:0 10px; border:1px solid $bd2; border-radius:0; color:$i3; background:transparent; font:600 11px/1 var(--font-sans); transition:border-color .18s ease,color .18s ease; }
+.focus-toggle:hover, .focus-toggle[aria-pressed='true'] { border-color:$ink; color:$ink; background:transparent; }
+.focus-mode { grid-template-columns:minmax(0,780px); justify-content:center; max-width:780px; }
+.focus-mode .lesson-hero { margin-bottom:32px; }
+
+// Apertura Cloud: misma tinta, filetes en lugar de paneles.
+.floci-overview { margin:0 0 42px; overflow:visible; border:0; border-radius:0; background:none; box-shadow:none; }
+.floci-overview-intro { padding:0 0 22px; border-bottom:1px solid $bd; color:$ink; background:none; }
+.floci-overview-intro > span { display:block; margin-bottom:12px; color:$mu; font:700 10.5px/1.2 var(--font-sans); letter-spacing:.1em; text-transform:uppercase; }
+.floci-overview-intro h2 { max-width:650px; margin:0 0 14px; color:$ink; font:700 clamp(26px,3.4vw,34px)/1.18 var(--font-sans); letter-spacing:-.02em; }
+.floci-overview-intro p { max-width:680px; margin:0; color:$i3; font:400 15.5px/1.7 var(--font-reading); }
+.floci-overview-actions { display:flex; flex-wrap:wrap; gap:18px; margin-top:22px; }
+.floci-overview-actions a { min-height:0; display:inline-flex; align-items:center; padding:0; border:0; border-radius:0; color:$ink; background:none; font:700 12px var(--font-sans); text-decoration:underline; text-underline-offset:3px; }
+.floci-overview-actions a.secondary { color:$mu; background:none; }
+.floci-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); margin:0; border-bottom:1px solid $bd; }
+.floci-metrics div { min-width:0; padding:16px 12px 16px 0; border-right:0; }
+.floci-metrics dt { color:$ink; font:700 22px/1 var(--font-sans); letter-spacing:-.02em; }
+.floci-metrics dd { margin:8px 0 0; color:$i3; font:600 10.5px/1.4 var(--font-sans); }
+.floci-metrics small { display:block; margin-top:3px; color:$mu; font-weight:400; }
+.floci-capabilities { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24px; border-bottom:1px solid $bd; background:none; }
+.floci-capabilities article { padding:18px 0; background:none; }
+.floci-capabilities lucide-icon { display:none; }
+.floci-capabilities h3 { margin:0 0 6px; color:$ink; font:700 15px/1.3 var(--font-sans); }
+.floci-capabilities p { margin:0; color:$i3; font:400 14px/1.65 var(--font-reading); }
+.floci-real-engines { display:grid; grid-template-columns:1.15fr .85fr; gap:28px; padding:22px 0; border-top:1px solid $bd; background:none; }
+.floci-real-engines > div > small { color:$mu; font:700 10.5px var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.floci-real-engines h3 { margin:7px 0 10px; color:$ink; font:700 19px/1.3 var(--font-sans); letter-spacing:-.01em; }
+.floci-real-engines p { margin:0; color:$i3; font:400 14px/1.65 var(--font-reading); }
+.floci-real-engines ul { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+.floci-real-engines li { display:flex; align-items:center; gap:10px; padding:8px 0; border:0; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.floci-real-engines li lucide-icon { display:none; }
+.floci-real-engines li span { display:grid; gap:2px; }
+.floci-real-engines li strong { color:$ink; font:600 12px var(--font-sans); }
+.floci-real-engines li small { color:$mu; font:400 11px var(--font-sans); }
+.floci-study-loop { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); margin:0; padding:0; border-top:1px solid $bd; border-bottom:1px solid $bd; list-style:none; }
+.floci-study-loop li { display:grid; align-content:start; gap:5px; padding:16px 12px 16px 0; border-right:0; }
+.floci-study-loop span { width:22px; height:22px; display:grid; place-items:center; border:1px solid $bd2; border-radius:0; color:$ink; background:none; font:400 10px var(--font-mono); }
+.floci-study-loop strong { margin-top:4px; color:$ink; font:700 11.5px var(--font-sans); }
+.floci-study-loop small { color:$mu; font:400 10.5px/1.45 var(--font-sans); }
+
+.build-method { display:grid; grid-template-columns:repeat(5,1fr); gap:0 20px; margin:12px 0 24px; padding:0; list-style:none; }
+.build-method li { display:flex; align-items:center; gap:9px; min-width:0; padding:8px 0; border:0; border-radius:0; background:none; }
+.build-method li > span { display:grid; flex:0 0 25px; width:25px; height:25px; place-items:center; border-radius:0; color:$mu; background:none; font:400 12px var(--font-mono); }
+.build-method div { display:flex; min-width:0; flex-direction:column; }
+.build-method strong { color:$ink; font:600 11.5px var(--font-sans); }
+.build-method small { overflow:hidden; color:$mu; font:400 10px var(--font-sans); text-overflow:ellipsis; white-space:nowrap; }
+
+.lesson-panel { margin:0 0 32px; }
+.lesson-markdown ::ng-deep .lesson-section { animation:section-in .28s ease both; }
+@keyframes section-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.lesson-skeleton { min-height:320px; display:grid; place-items:center; color:$mu; }
+.lesson-error { padding:20px 0; border:0; border-top:1px solid $ink; border-bottom:1px solid $bd; border-radius:0; background:none; color:$ink; }
+.lesson-error strong { display:block; margin-bottom:6px; font-size:16px; }
+.lesson-error p { color:$i3; }
+.lesson-error button { min-height:40px; padding:0 12px; border:1px solid $ink; border-radius:0; color:$ink; background:$wh; font-weight:700; }
+.lesson-markdown { color:$ink; font:400 17px/1.75 var(--font-reading); }
+.lesson-markdown ::ng-deep :where(p, ul, ol, pre, blockquote, table):first-child { margin-top:0; }
+.lesson-markdown ::ng-deep h2 { margin:52px 0 16px; padding:0; border:0; color:$ink; font:700 24px/1.3 var(--font-sans); letter-spacing:.01em; text-transform:uppercase; scroll-margin-top:90px; }
+.lesson-markdown ::ng-deep h3 { margin:38px 0 16px; color:$ink; font:700 20px/1.38 var(--font-sans); letter-spacing:-.01em; scroll-margin-top:90px; }
+.lesson-markdown ::ng-deep h3.topic-heading { position:relative; display:block; margin:0 0 24px; padding:0 110px 16px 0; border:0; border-bottom:1px solid $bd; background:none; border-radius:0; overflow:visible; }
+.lesson-markdown ::ng-deep h3.topic-heading .topic-toggle { position:absolute; right:0; top:4px; }
+.lesson-markdown ::ng-deep .section-number { display:block; margin-bottom:6px; color:$mu; font:400 12px/1 var(--font-mono); letter-spacing:0; }
+.lesson-markdown ::ng-deep h4 { margin:30px 0 10px; color:$ink; font:700 15px/1.4 var(--font-sans); letter-spacing:.02em; text-transform:uppercase; }
+.lesson-markdown ::ng-deep h4.book-subsection::before { content:var(--subsection-label) "."; margin-right:.7em; color:$mu; font:400 14px/1 var(--font-sans); letter-spacing:0; }
+.lesson-markdown ::ng-deep p { margin:0 0 16px; text-align:left; hyphens:none; }
+.lesson-markdown ::ng-deep ul,
+.lesson-markdown ::ng-deep ol { margin:0 0 20px; padding-left:24px; }
+.lesson-markdown ::ng-deep li { margin:5px 0; padding-left:0; }
+.lesson-markdown ::ng-deep li::marker { color:$ink; font-weight:400; }
+.lesson-markdown ::ng-deep strong { color:$ink; font-weight:700; }
+.lesson-markdown ::ng-deep a { color:$p; text-decoration-thickness:1px; text-underline-offset:3px; }
+.lesson-markdown ::ng-deep blockquote { margin:22px 0; padding:0 2.2em; border:0; background:none; font-style:italic; }
+
+// Marginalias: entradilla en negrita y texto en cursiva, sin recuadros.
+.lesson-markdown ::ng-deep .definition-callout,
+.lesson-markdown ::ng-deep .learning-callout { margin:22px 0 22px 2.2em; padding:0; border:0; border-radius:0; background:none; font:400 16.5px/1.72 var(--font-reading); font-style:italic; }
+.lesson-markdown ::ng-deep .definition-callout > strong:first-child,
+.lesson-markdown ::ng-deep .learning-callout > strong:first-child { display:inline; margin-right:.35em; color:$ink; font:700 1em/1.4 var(--font-reading); font-style:normal; letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .importance-callout { border:0; background:none; }
+
+.lesson-markdown ::ng-deep .key-terms { margin:0 0 22px; padding:10px 0; border-top:1px solid $bd; border-bottom:1px solid $bd; }
+.lesson-markdown ::ng-deep .key-terms-heading { margin-bottom:6px; color:$ink; font:700 12px/1.3 var(--font-sans); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .key-terms-chips { display:block; color:$i3; font:400 15px/1.6 var(--font-reading); }
+.lesson-markdown ::ng-deep .term-chip { display:inline; color:$ink; font-weight:600; }
+.lesson-markdown ::ng-deep .term-chip:not(:last-child)::after { content:', '; color:$i3; font-weight:400; }
+
+// Pasos de la sesión: secciones numeradas del libro, sin ficha ni cabecera.
+.lesson-markdown ::ng-deep .session-card { margin:0 0 32px; border:0; border-radius:0; overflow:visible; background:none; box-shadow:none; }
+.lesson-markdown ::ng-deep .session-card-head { display:none; }
+.lesson-markdown ::ng-deep .session-steps { display:block; margin:0; padding:0; list-style:none; }
+.lesson-markdown ::ng-deep .session-steps li { padding:0 0 26px; border:0; }
+.lesson-markdown ::ng-deep .step-head { display:grid; grid-template-columns:2.6em minmax(0,1fr); align-items:baseline; gap:0; margin:26px 0 10px; }
+.lesson-markdown ::ng-deep .step-head b { color:$mu; font:400 13px/1.35 var(--font-mono); }
+.lesson-markdown ::ng-deep .step-head em { font-style:normal; color:$ink; font:700 18px/1.32 var(--font-sans); letter-spacing:-.01em; text-transform:none; }
+.lesson-markdown ::ng-deep .step-body { padding-left:2.6em; color:$ink; font:400 16.5px/1.72 var(--font-reading); }
+.lesson-markdown ::ng-deep .step-body p { margin:0 0 14px; }
+.lesson-markdown ::ng-deep .step-body p:last-child { margin-bottom:0; }
+.lesson-markdown ::ng-deep .step-body .code-example { margin:16px 0 20px; }
+
+// Temas plegables: la portada del tema y TODO su cuerpo.
+.lesson-markdown ::ng-deep .topic-card { margin:0; scroll-margin-top:92px; }
+.lesson-markdown ::ng-deep .topic-card:not(.expanded) > .topic-heading { margin-bottom:8px; padding-bottom:14px; }
+.lesson-markdown ::ng-deep .topic-body { display:none; padding-bottom:30px; border-bottom:1px solid $bd; }
+.lesson-markdown ::ng-deep .topic-card.expanded > .topic-body { display:block; animation:section-in .2s ease both; }
+.lesson-markdown ::ng-deep .topic-card:last-child > .topic-body { border-bottom:0; }
+.lesson-markdown ::ng-deep .topic-toggle { min-height:auto; display:inline-flex; align-items:center; gap:5px; padding:4px 0; border:0; border-radius:0; color:$mu; background:transparent; font:400 11px/1 var(--font-sans); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .topic-toggle:hover { color:var(--accent); }
+.lesson-markdown ::ng-deep .topic-toggle span:last-child { font-size:13px; transition:transform .18s ease; }
+.lesson-markdown ::ng-deep .topic-toggle[aria-expanded='true'] span:last-child { transform:rotate(180deg); }
+
+// Fallos y siguientes pasos: plegados con filete, sin caja redondeada.
+.lesson-markdown ::ng-deep .topic-troubleshooting { position:relative; margin:22px 0 4px; overflow:visible; border:0; border-top:1px solid $bd; border-radius:0; background:none; font-family:var(--font-sans); }
+.lesson-markdown ::ng-deep .topic-troubleshooting summary { position:relative; min-height:40px; display:flex; align-items:center; padding:10px 26px 10px 0; color:$ink; font:700 13px/1.4 var(--font-sans); cursor:pointer; list-style:none; }
+.lesson-markdown ::ng-deep .topic-troubleshooting summary::-webkit-details-marker { display:none; }
+.lesson-markdown ::ng-deep .topic-troubleshooting summary::after { content:'⌄'; position:absolute; right:0; top:50%; transform:translateY(-50%); color:$mu; font-size:14px; }
+.lesson-markdown ::ng-deep .topic-troubleshooting[open] summary::after { transform:translateY(-50%) rotate(180deg); }
+.lesson-markdown ::ng-deep .topic-troubleshooting ol { margin:0; padding:0 0 10px 1.4em; color:$i3; font:400 14px/1.65 var(--font-reading); }
+.lesson-markdown ::ng-deep .topic-troubleshooting p { margin:0; padding:10px 0; border-top:1px solid $bd; color:$mu; font:italic 400 13.5px/1.6 var(--font-reading); }
+.lesson-markdown ::ng-deep .topic-step-navigation { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:12px; margin:26px 0 0; padding:12px 0 0; border-top:1px solid $bd; font-family:var(--font-sans); }
+.lesson-markdown ::ng-deep .topic-step-navigation > strong,
+.lesson-markdown ::ng-deep .topic-step-center strong { color:$mu; font:400 10.5px/1.3 var(--font-sans); letter-spacing:0; text-transform:none; white-space:nowrap; }
+.lesson-markdown ::ng-deep .topic-step-center { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.lesson-markdown ::ng-deep .topic-complete { min-height:30px; padding:4px 9px; border:1px solid $bd2; border-radius:0; color:$i3; background:$wh; font:600 10.5px/1.2 var(--font-sans); white-space:nowrap; cursor:pointer; }
+.lesson-markdown ::ng-deep .topic-complete:hover { border-color:$ink; color:$ink; }
+.lesson-markdown ::ng-deep .topic-complete.done { border-color:$ink; color:$ink; background:transparent; }
+.lesson-markdown ::ng-deep .topic-step-navigation .topic-practice-link { min-height:0; padding:0; border:0; align-items:center; gap:0; color:$mu; background:transparent; font:400 10.5px/1.3 var(--font-sans); text-align:center; text-decoration:underline; text-underline-offset:3px; }
+.lesson-markdown ::ng-deep .topic-step-navigation .topic-practice-link:hover { color:var(--accent); background:transparent; }
+.lesson-markdown ::ng-deep .topic-step-navigation a { min-height:44px; display:flex; flex-direction:column; justify-content:center; gap:2px; padding:6px 0; border:0; border-radius:0; color:$i3; text-decoration:none; }
+.lesson-markdown ::ng-deep .topic-step-navigation a:last-child { align-items:flex-end; text-align:right; }
+.lesson-markdown ::ng-deep .topic-step-navigation a span { color:$mu; font:400 10.5px/1.2 var(--font-sans); }
+.lesson-markdown ::ng-deep .topic-step-navigation a small { max-width:240px; overflow:hidden; color:$ink; font:600 11.5px/1.35 var(--font-sans); text-overflow:ellipsis; white-space:nowrap; }
+.lesson-markdown ::ng-deep .topic-step-navigation a:hover { border:0; background:none; color:var(--accent); }
+.lesson-markdown ::ng-deep .technical-term { position:relative; display:inline-block; border-bottom:1px dotted $bd2; cursor:help; }
+.lesson-markdown ::ng-deep .technical-term::after { content:attr(data-definition); position:absolute; z-index:8; left:50%; bottom:calc(100% + 9px); width:min(300px,75vw); padding:10px 12px; border:1px solid $bd2; border-radius:0; background:$ink; color:$wh; box-shadow:none; font:400 11.5px/1.5 var(--font-sans); opacity:0; pointer-events:none; transform:translate(-50%,5px); transition:opacity .16s ease,transform .16s ease; }
+.lesson-markdown ::ng-deep .technical-term:hover::after,
+.lesson-markdown ::ng-deep .technical-term:focus-visible::after { opacity:1; transform:translate(-50%,0); }
+.lesson-markdown ::ng-deep .technical-term:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+
+.lesson-markdown ::ng-deep .verifiable-exercise { margin:26px 0; padding:16px 0; border:0; border-top:1px solid $ink; border-bottom:1px solid $bd; border-radius:0; background:none; font-family:var(--font-sans); }
+.lesson-markdown ::ng-deep .verifiable-exercise h4 { margin:0 0 12px; color:$ink; font:700 14px/1.35 var(--font-sans); }
+.lesson-markdown ::ng-deep .exercise-controls { display:grid; gap:8px; margin-top:14px; }
+.lesson-markdown ::ng-deep .exercise-controls label { color:$ink; font:700 12px/1.3 var(--font-sans); }
+.lesson-markdown ::ng-deep .exercise-controls > div { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; }
+.lesson-markdown ::ng-deep .exercise-controls input { min-height:40px; padding:0 0 4px; border:0; border-bottom:1px solid $ink; border-radius:0; color:$ink; background:none; font:400 15px/1.4 var(--font-reading); }
+.lesson-markdown ::ng-deep .exercise-controls input:focus-visible { outline:none; border-bottom-width:2px; }
+.lesson-markdown ::ng-deep .exercise-controls button { min-height:40px; padding:0 12px; border:1px solid $ink; border-radius:0; color:$ink; background:none; font:700 11.5px/1 var(--font-sans); }
+.lesson-markdown ::ng-deep .exercise-controls button:disabled { opacity:.55; cursor:default; }
+.lesson-markdown ::ng-deep .exercise-feedback { margin:0; color:$mu; font:italic 400 12.5px/1.5 var(--font-reading); }
+.lesson-markdown ::ng-deep .exercise-feedback.correct { color:$g; }
+.lesson-markdown ::ng-deep .exercise-feedback.incorrect { color:var(--error); }
+
+.lesson-markdown ::ng-deep .learning-contract { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 28px; margin:0 0 22px; overflow:visible; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-markdown ::ng-deep .learning-contract div { display:grid; align-content:start; gap:5px; padding:13px 0; background:none; }
+.lesson-markdown ::ng-deep .learning-contract small { color:$mu; font:700 11px var(--font-sans); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .learning-contract strong { color:$ink; font:400 14px/1.55 var(--font-reading); }
+.lesson-markdown ::ng-deep .section-guide { display:block; margin:0 0 20px; padding:0 2.2em; border:0; border-radius:0; background:none; }
+.lesson-markdown ::ng-deep .section-guide strong { display:inline; margin-right:6px; color:$ink; font:700 1em var(--font-reading); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .section-guide span { color:$i3; font:italic 400 15px/1.65 var(--font-reading); }
+.lesson-markdown ::ng-deep .target-demo { display:block; margin:0 0 22px; padding:12px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; box-shadow:none; }
+.lesson-markdown ::ng-deep .target-demo small { color:$mu; font:700 11px var(--font-sans); text-transform:none; letter-spacing:0; }
+.lesson-markdown ::ng-deep .target-demo strong { color:$ink; font:400 15px/1.5 var(--font-reading); }
+.lesson-markdown ::ng-deep .concept-flow { margin:24px 0; padding:14px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-markdown ::ng-deep .concept-flow figcaption { margin-bottom:12px; color:$mu; font:700 10.5px var(--font-sans); text-transform:none; letter-spacing:0; }
+.lesson-markdown ::ng-deep .concept-flow > div { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:center; }
+.lesson-markdown ::ng-deep .concept-flow span { min-height:64px; display:flex; flex-direction:column; justify-content:center; padding:10px; border:1px solid $bd; border-radius:0; background:none; color:$ink; font:500 12px/1.4 var(--font-sans); text-align:center; }
+.lesson-markdown ::ng-deep .concept-flow small { margin-bottom:5px; color:$mu; font:700 9.5px var(--font-sans); text-transform:none; letter-spacing:0; }
+.lesson-markdown ::ng-deep .concept-flow b { color:$mu; font:400 16px var(--font-sans); }
+
+// Notas al margen y checkpoint: marginalia impresa.
+.lesson-markdown ::ng-deep .margin-note { float:right; clear:right; width:196px; margin:6px -238px 18px 26px; padding:0; border:0; border-radius:0; background:none; color:$i3; font:italic 400 14px/1.6 var(--font-reading); }
+.lesson-markdown ::ng-deep .margin-note strong:first-child { color:$ink; font:700 1em var(--font-reading); font-style:normal; }
+@media (max-width:1440px) { .lesson-markdown ::ng-deep .margin-note { float:none; width:auto; margin:16px 2.4em; } }
+
+.lesson-markdown ::ng-deep .checkpoint { clear:both; margin:24px 0; padding:14px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
+.lesson-markdown ::ng-deep .checkpoint h4 { display:block; margin:0 0 10px; color:$ink; font:700 14px/1.35 var(--font-sans); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .checkpoint h4::before { display:none; }
+.lesson-markdown ::ng-deep .checkpoint-reveal { min-height:30px; margin-top:2px; padding:0; border:0; border-radius:0; color:$p; background:transparent; font:700 11.5px var(--font-sans); text-decoration:underline; text-underline-offset:3px; }
+.lesson-markdown ::ng-deep .checkpoint-reveal:hover { background:none; }
+.lesson-markdown ::ng-deep .checkpoint-answer { margin-top:12px !important; padding-top:12px; border-top:1px solid $bd; }
+
+.lesson-markdown ::ng-deep .sample-problem { clear:both; margin:26px 0; overflow:visible; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-markdown ::ng-deep .sample-problem h4 { margin:0; padding:10px 0; border:0; border-top:1px solid $ink; border-bottom:1px solid $bd; background:none; color:$ink; font:700 14px var(--font-sans); text-transform:none; letter-spacing:0; }
+.lesson-markdown ::ng-deep .sample-problem > p { margin:14px 0; }
+.lesson-markdown ::ng-deep .sample-problem-reasoning { margin:16px 0; padding:0 2.2em; border:0; border-radius:0; background:none; font-style:italic; }
 .lesson-markdown ::ng-deep .sample-problem-reasoning p:first-child { margin-bottom:8px; }
-.lesson-markdown ::ng-deep .sample-problem-reasoning p:first-child strong:first-child { color:var(--accent); font:800 10px var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .sample-problem-answer { margin:0 20px 20px !important; padding:13px 15px; border-radius:10px; background:$pl; color:$ph; font-weight:700; }
+.lesson-markdown ::ng-deep .sample-problem-reasoning p:first-child strong:first-child { color:$ink; font:700 1em var(--font-reading); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .sample-problem-answer { margin:0 0 20px !important; padding:0 2.2em; border-radius:0; background:none; color:$ink; font-weight:700; }
 
-.lesson-markdown ::ng-deep code { font-family:var(--font-mono); font-size:.86em; }
-.lesson-markdown ::ng-deep :not(pre) > code { padding:2px 6px; border:1px solid $bd; border-radius:5px; background:$bg2; color:$ph; }
-.lesson-markdown ::ng-deep .code-example { margin:32px 0; overflow:hidden; border-radius:10px; background:var(--bg-instrument); box-shadow:var(--shadow-md); }
-.lesson-markdown ::ng-deep .code-example-bar { min-height:40px; display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:10px; align-items:center; padding:0 14px; border-bottom:1px solid rgba(255,255,255,.09); color:#8fa2a5; background:transparent; font:650 10px/1 var(--font-sans); }
-.lesson-markdown ::ng-deep .code-example-label { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#d7deef; font-family:var(--font-mono); }
-.lesson-markdown ::ng-deep .code-example-language { padding:4px 7px; border:1px solid rgba(255,255,255,.08); border-radius:999px; color:#aebce0; background:rgba(255,255,255,.04); text-transform:uppercase; letter-spacing:.06em; }
-.lesson-markdown ::ng-deep .code-example-bar button { min-height:28px; border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:5px 10px; color:#d7deef; background:rgba(255,255,255,.07); font:650 10px/1 var(--font-sans); }
-.lesson-markdown ::ng-deep .code-example-bar button:hover { border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.13); color:white; }
-.lesson-markdown ::ng-deep .code-example[data-language='bash'],
-.lesson-markdown ::ng-deep .code-example[data-language='sh'],
-.lesson-markdown ::ng-deep .code-example[data-language='shell'] { border-color:rgba(40,200,64,.25); }
-.lesson-markdown ::ng-deep .code-example[data-language='bash'] .code-example-language,
-.lesson-markdown ::ng-deep .code-example[data-language='sh'] .code-example-language,
-.lesson-markdown ::ng-deep .code-example[data-language='shell'] .code-example-language { color:#73dc8a; }
-.lesson-markdown ::ng-deep pre { margin:0; padding:20px 22px 23px; overflow:auto; color:var(--code-text); background:var(--bg-instrument); font:13px/1.75 var(--font-mono); tab-size:2; }
-.lesson-markdown ::ng-deep .code-line { display:grid; grid-template-columns:3.1em minmax(0,1fr); min-width:max-content; }
-.lesson-markdown ::ng-deep .code-line-number { padding-right:1.2em; color:color-mix(in srgb,var(--code-text) 38%,transparent); user-select:none; text-align:right; }
+// Código: caja gris de filete punteado con pie de listado, como el manual.
+.lesson-markdown ::ng-deep code { font-family:var(--font-mono); font-size:.9em; }
+.lesson-markdown ::ng-deep :not(pre) > code { padding:0; border:0; border-radius:0; background:none; color:$ink; font-weight:600; }
+.lesson-markdown ::ng-deep .code-example { margin:22px 0 26px; overflow:visible; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-markdown ::ng-deep .code-example-bar { min-height:0; display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; gap:12px; align-items:baseline; padding:0 2px 7px; border:0; color:$mu; background:none; font:400 11.5px/1.3 var(--font-sans); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .code-example-number { color:$ink; font:700 11.5px/1.3 var(--font-sans); letter-spacing:0; white-space:nowrap; }
+.lesson-markdown ::ng-deep .code-example-label { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:$i3; font-family:var(--font-sans); font-weight:400; font-size:11.5px; }
+.lesson-markdown ::ng-deep .code-example-language { display:none; }
+.lesson-markdown ::ng-deep .code-example-bar button { min-height:22px; padding:0; border:0; border-radius:0; color:$mu; background:none; font:400 11px/1.2 var(--font-sans); text-decoration:underline; text-decoration-color:$bd2; text-underline-offset:2px; }
+.lesson-markdown ::ng-deep .code-example-bar button:hover { color:var(--accent); background:none; }
+.lesson-markdown ::ng-deep .code-example > pre,
+.lesson-markdown ::ng-deep .code-example pre { margin:0; padding:16px 18px; overflow:auto; border:1px dotted $bd2; border-radius:0; color:var(--code-text); background:var(--code-bg); font:400 13.4px/1.66 var(--font-mono); tab-size:2; }
+.lesson-markdown ::ng-deep .code-line { display:grid; grid-template-columns:minmax(0,1fr); min-width:max-content; }
+.lesson-markdown ::ng-deep .code-line-number { display:none; }
 .lesson-markdown ::ng-deep .code-line-text { min-width:0; }
 .lesson-markdown ::ng-deep .code-example.wrap-lines pre { white-space:pre-wrap; overflow-wrap:anywhere; }
 .lesson-markdown ::ng-deep .code-example pre:focus-visible,
-.lesson-markdown ::ng-deep .visual-diagram pre:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 55%,white); outline-offset:-4px; }
+.lesson-markdown ::ng-deep .visual-diagram pre:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 
+// Figuras: sin marco de aplicación; pie centrado en cursiva.
 .lesson-markdown ::ng-deep .visual-diagram,
-.lesson-markdown ::ng-deep .archify-visual { margin:34px 0; overflow:hidden; border:1px solid color-mix(in srgb,var(--accent) 22%,#{$bd}); border-radius:18px; background:$wh; box-shadow:$shm; }
+.lesson-markdown ::ng-deep .archify-visual { margin:28px 0; overflow:visible; border:0; border-radius:0; background:none; box-shadow:none; }
 .lesson-markdown ::ng-deep .visual-diagram figcaption,
-.lesson-markdown ::ng-deep .archify-visual figcaption { display:flex; align-items:flex-start; gap:12px; padding:16px 18px; border-bottom:1px solid $bd; background:color-mix(in srgb,var(--accent) 5%,#{$bg2}); font-family:var(--font-sans); }
+.lesson-markdown ::ng-deep .archify-visual figcaption { display:block; padding:10px 0 0; border:0; background:none; text-align:center; font-family:var(--font-sans); }
 .lesson-markdown ::ng-deep .visual-diagram figcaption > span,
-.lesson-markdown ::ng-deep .archify-visual figcaption > span { flex:0 0 32px; width:32px; height:32px; display:grid; place-items:center; border-radius:9px; color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,transparent); font-size:18px; }
-.lesson-markdown ::ng-deep .visual-diagram figcaption div,
-.lesson-markdown ::ng-deep .archify-visual figcaption div { min-width:0; }
+.lesson-markdown ::ng-deep .archify-visual figcaption > span { display:none; }
 .lesson-markdown ::ng-deep .visual-diagram figcaption small,
-.lesson-markdown ::ng-deep .archify-visual figcaption small { display:block; color:var(--accent); font:800 9px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.lesson-markdown ::ng-deep .archify-visual figcaption small { display:block; color:$mu; font:700 11px/1.3 var(--font-sans); letter-spacing:0; text-transform:none; }
 .lesson-markdown ::ng-deep .visual-diagram figcaption strong,
-.lesson-markdown ::ng-deep .archify-visual figcaption strong { display:block; margin-top:3px; color:$ink; font:750 13px/1.35 var(--font-sans); }
+.lesson-markdown ::ng-deep .archify-visual figcaption strong { display:block; margin-top:2px; color:$ink; font:italic 400 14px/1.45 var(--font-reading); }
 .lesson-markdown ::ng-deep .visual-diagram figcaption p,
-.lesson-markdown ::ng-deep .archify-visual figcaption p { margin:4px 0 0; color:$mu; font:500 11px/1.45 var(--font-sans); }
+.lesson-markdown ::ng-deep .archify-visual figcaption p { margin:2px 0 0; color:$i3; font:italic 400 13.5px/1.5 var(--font-reading); }
 .lesson-markdown ::ng-deep .archify-visual figcaption a { color:inherit; text-decoration:none; }
 .lesson-markdown ::ng-deep .archify-visual figcaption a:hover { text-decoration:underline; text-underline-offset:3px; }
-.lesson-markdown ::ng-deep .archify-visual-frame { display:block; width:100%; height:780px; border:0; background:$wh; }
-.lesson-markdown ::ng-deep pre.mermaid { min-width:100%; min-height:88px; margin:0; padding:20px 18px; display:flex; justify-content:center; align-items:center; overflow:auto; border:0; border-radius:0; color:$i3; background:linear-gradient(145deg,$wh,$bg2); box-shadow:none; font:500 11px/1.45 var(--font-sans); white-space:pre-wrap; }
+.lesson-markdown ::ng-deep .archify-visual-frame { display:block; width:100%; height:780px; border:1px solid $bd; background:$wh; }
+.lesson-markdown ::ng-deep pre.mermaid { min-width:100%; min-height:88px; margin:0; padding:16px 0; display:flex; justify-content:center; align-items:center; overflow:auto; border:0; border-radius:0; color:$i3; background:none; box-shadow:none; font:400 11px/1.45 var(--font-sans); white-space:pre-wrap; }
 .lesson-markdown ::ng-deep pre.mermaid svg { display:block; width:min(100%,680px); min-width:0; max-width:680px; max-height:360px; height:auto; }
 .lesson-markdown ::ng-deep pre.mermaid svg text { font-family:var(--font-sans) !important; font-size:12px !important; }
-.lesson-markdown ::ng-deep .diagram-zoom-open { margin-left:auto; flex:0 0 auto; align-self:center; min-height:32px; padding:7px 13px; border:1px solid color-mix(in srgb,var(--accent) 38%,#{$bd}); border-radius:999px; color:var(--accent); background:$wh; font:750 10px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; cursor:zoom-in; }
-.lesson-markdown ::ng-deep .diagram-zoom-open:hover { background:color-mix(in srgb,var(--accent) 9%,$wh); }
-.lesson-markdown ::ng-deep .diagram-zoom-open:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 55%,white); outline-offset:2px; }
+.lesson-markdown ::ng-deep .diagram-zoom-open { margin-left:auto; flex:0 0 auto; align-self:center; min-height:28px; padding:5px 0; border:0; border-radius:0; color:$mu; background:none; font:400 10.5px/1 var(--font-sans); letter-spacing:0; text-transform:none; text-decoration:underline; text-underline-offset:3px; cursor:zoom-in; }
+.lesson-markdown ::ng-deep .diagram-zoom-open:hover { color:var(--accent); background:none; }
+.lesson-markdown ::ng-deep .diagram-zoom-open:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 
-// La vista ampliada no reemplaza la figura: mueve el mismo SVG al diálogo para
-// no duplicar ids de Mermaid y lo devuelve a su <pre> al cerrar.
-.diagram-dialog { width:min(94vw,1440px); height:min(90vh,900px); max-width:none; max-height:none; padding:0; overflow:hidden; border:1px solid color-mix(in srgb,var(--accent) 30%,#{$bd}); border-radius:16px; background:$wh; color:$ink; box-shadow:$sh; }
+// Vista ampliada: la misma página, a mayor tamaño.
+.diagram-dialog { width:min(94vw,1440px); height:min(90vh,900px); max-width:none; max-height:none; padding:0; overflow:hidden; border:1px solid $bd2; border-radius:0; background:$wh; color:$ink; box-shadow:none; }
 .diagram-dialog[open] { display:flex; flex-direction:column; }
-.diagram-dialog::backdrop { background:rgba(10,17,28,.64); }
-.diagram-dialog-bar { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid $bd; background:color-mix(in srgb,var(--accent) 5%,#{$bg2}); }
+.diagram-dialog::backdrop { background:rgba(20,19,17,.66); }
+.diagram-dialog-bar { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid $ink; background:$wh; }
 .diagram-dialog-heading { flex:1 1 240px; min-width:0; }
-.diagram-dialog-heading small { display:block; color:var(--accent); font:800 9px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
-.diagram-dialog-heading h2 { margin:3px 0 0; color:$ink; font:750 14px/1.35 var(--font-sans); }
+.diagram-dialog-heading small { display:block; color:$mu; font:600 10px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.diagram-dialog-heading h2 { margin:3px 0 0; color:$ink; font:700 14px/1.35 var(--font-sans); }
 .diagram-dialog-controls { display:flex; align-items:center; gap:6px; margin-left:auto; }
-.diagram-dialog-controls button { min-width:38px; min-height:38px; padding:0 10px; border:1px solid $bd; border-radius:9px; color:$ink; background:$wh; font:700 15px/1 var(--font-sans); cursor:pointer; }
-.diagram-dialog-controls button:hover { border-color:color-mix(in srgb,var(--accent) 40%,#{$bd}); background:color-mix(in srgb,var(--accent) 7%,$wh); }
-.diagram-dialog-controls button:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 55%,white); outline-offset:2px; }
-.diagram-dialog-zoom { min-width:52px; color:$mu; font:650 11px/1 var(--font-sans); text-align:center; }
-.diagram-dialog-controls .diagram-dialog-close { color:var(--accent); font-size:10px; letter-spacing:.06em; text-transform:uppercase; }
-.diagram-dialog-body { flex:1; min-height:0; padding:20px; overflow:auto; background:linear-gradient(145deg,$wh,$bg2); }
+.diagram-dialog-controls button { min-width:36px; min-height:36px; padding:0 9px; border:1px solid $bd; border-radius:0; color:$ink; background:$wh; font:700 14px/1 var(--font-sans); cursor:pointer; }
+.diagram-dialog-controls button:hover { border-color:$ink; background:$wh; }
+.diagram-dialog-controls button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.diagram-dialog-zoom { min-width:52px; color:$mu; font:400 11px/1 var(--font-sans); text-align:center; }
+.diagram-dialog-controls .diagram-dialog-close { color:$ink; font-size:10.5px; letter-spacing:0; text-transform:none; text-decoration:underline; text-underline-offset:3px; }
+.diagram-dialog-body { flex:1; min-height:0; padding:20px; overflow:auto; background:$wh; }
 .diagram-dialog-body ::ng-deep svg { display:block; margin:0 auto; max-width:none !important; max-height:none !important; }
 .diagram-dialog-body ::ng-deep svg text { font-family:var(--font-sans) !important; font-size:12px !important; }
-@media (max-width:560px){ .diagram-dialog { width:100vw; height:100dvh; border:0; border-radius:0; } .diagram-dialog-body { padding:12px; } }
-.lesson-markdown ::ng-deep .anatomy-figure { margin:34px 0; overflow:hidden; border:1px solid color-mix(in srgb,var(--accent) 22%,#{$bd}); border-radius:18px; background:$ink; box-shadow:$shm; }
-.lesson-markdown ::ng-deep .anatomy-figure-frame { display:block; width:100%; height:720px; border:0; background:$ink; }
-@media (max-width:560px){ .lesson-markdown ::ng-deep .anatomy-figure { margin:28px -2px; border-radius:14px; } .lesson-markdown ::ng-deep .anatomy-figure-frame { height:560px; } }
+@media (max-width:560px){ .diagram-dialog { width:100vw; height:100dvh; border:0; } .diagram-dialog-body { padding:12px; } }
 
-.lesson-markdown ::ng-deep figure:not(.visual-diagram) { margin:32px 0; }
-.lesson-markdown ::ng-deep img { display:block; max-width:100%; height:auto; margin-inline:auto; border-radius:14px; box-shadow:$sh; }
-.lesson-markdown ::ng-deep figure:not(.visual-diagram) figcaption { margin-top:10px; color:$mu; font:500 12px/1.5 var(--font-sans); text-align:center; }
+.lesson-markdown ::ng-deep .anatomy-figure { margin:28px 0; overflow:visible; border:0; border-radius:0; background:none; box-shadow:none; }
+.lesson-markdown ::ng-deep .anatomy-figure-frame { display:block; width:100%; height:720px; border:1px solid $bd; background:$ink; }
+@media (max-width:560px){ .lesson-markdown ::ng-deep .anatomy-figure { margin:24px 0; } .lesson-markdown ::ng-deep .anatomy-figure-frame { height:560px; } }
 
-.lesson-markdown ::ng-deep table { width:100%; margin:28px 0; border-spacing:0; border-collapse:separate; display:block; overflow:auto; border:1px solid $bd; border-radius:12px; background:$wh; font:400 13px/1.55 var(--font-sans); }
-.lesson-markdown ::ng-deep th { background:$bg2; color:$ink; font-weight:700; }
+.lesson-markdown ::ng-deep figure:not(.visual-diagram) { margin:28px 0; }
+.lesson-markdown ::ng-deep img { display:block; max-width:100%; height:auto; margin-inline:auto; border-radius:0; box-shadow:none; }
+.lesson-markdown ::ng-deep figure:not(.visual-diagram) figcaption { margin-top:8px; color:$mu; font:italic 400 13px/1.5 var(--font-reading); text-align:center; }
+
+// Tablas: filetes finos, sin caja redondeada.
+.lesson-markdown ::ng-deep table { width:100%; margin:24px 0; border-spacing:0; border-collapse:collapse; display:block; overflow:auto; border:0; border-top:1.5px solid $ink; border-bottom:1.5px solid $ink; border-radius:0; background:none; font:400 13.5px/1.6 var(--font-sans); }
+.lesson-markdown ::ng-deep th { background:none; color:$ink; font-weight:700; border-bottom:1px solid $ink; }
 .lesson-markdown ::ng-deep th,
-.lesson-markdown ::ng-deep td { padding:11px 13px; border-right:1px solid $bd; border-bottom:1px solid $bd; text-align:left; vertical-align:top; }
+.lesson-markdown ::ng-deep td { padding:8px 10px 8px 0; border-right:0; border-bottom:1px solid $bd; text-align:left; vertical-align:top; }
 .lesson-markdown ::ng-deep tr:last-child td { border-bottom:0; }
 
+// Preparación del proyecto: apartado del libro, no tarjeta.
 .structured-lesson { display:grid; gap:16px; }
-// "Prepara el proyecto": no una tarjeta crema con sub-tarjetas flotantes, sino
-// un apartado del libro — un filete arriba/abajo, cabecera con número de paso
-// y columnas separadas por aire. El código es la única superficie con fondo,
-// porque es lo que el lector copia. Todo lo demás descansa sobre el papel.
-.project-bootstrap { margin:0 0 40px; border:0; border-top:2px solid $ink; border-bottom:1px solid $bd; border-radius:0; background:transparent; box-shadow:none; overflow:visible; }
-.project-bootstrap > summary { min-height:auto; display:grid; grid-template-columns:36px minmax(0,1fr); gap:14px; align-items:center; padding:16px 0; cursor:pointer; list-style:none; }
+.project-bootstrap { margin:0 0 32px; border:0; border-top:2px solid $ink; border-bottom:1px solid $bd; border-radius:0; background:transparent; box-shadow:none; overflow:visible; }
+.project-bootstrap > summary { min-height:auto; display:grid; grid-template-columns:36px minmax(0,1fr); gap:14px; align-items:center; padding:14px 0; cursor:pointer; list-style:none; }
 .project-bootstrap > summary::-webkit-details-marker { display:none; }
-.project-bootstrap > summary > span { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; color:var(--accent); background:transparent; border:1px solid color-mix(in srgb,var(--accent) 40%,#{$bd}); }
+.project-bootstrap > summary > span { width:36px; height:36px; display:grid; place-items:center; border-radius:0; color:$ink; background:transparent; border:1px solid $bd2; }
 .project-bootstrap > summary lucide-icon { width:18px; }
 .project-bootstrap > summary small,.project-bootstrap > summary strong,.project-bootstrap > summary p { display:block; }
-.project-bootstrap > summary small { color:var(--accent); font:800 9.5px var(--font-sans); letter-spacing:.09em; text-transform:uppercase; }
-.project-bootstrap > summary strong { margin-top:4px; color:$ink; font:600 19px/1.25 #{$serif}; letter-spacing:-.01em; }
-.project-bootstrap > summary p { margin:3px 0 0; color:$mu; font:400 13px/1.5 #{$serif}; font-style:italic; }
-.project-bootstrap-body { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 36px; padding:6px 0 22px; border-top:1px solid $bd; }
-.project-bootstrap-body section { min-width:0; margin-top:22px; padding:0; border:0; border-radius:0; background:transparent; }
-.project-bootstrap-body h3 { margin:0 0 11px; padding-bottom:7px; border-bottom:1px solid $bd; color:$ink; font:700 12px/1.3 var(--font-sans); letter-spacing:.02em; }
-.project-bootstrap-body ul { margin:0; padding-left:17px; color:$i3; font:400 14px/1.6 #{$serif}; }
-.project-bootstrap-body ul li::marker { color:var(--accent); }
-.project-bootstrap-body pre { margin:0; padding:15px 16px; overflow:auto; border-radius:8px; color:var(--code-text); background:var(--bg-instrument); font:12px/1.7 var(--font-mono); }
-.project-bootstrap-body p { margin:11px 0 0; color:$i3; font:400 14px/1.6 #{$serif}; }
-.project-bootstrap-body .file-tree { padding-left:0; color:$mu; font:12px/1.7 var(--font-mono); list-style:none; }
+.project-bootstrap > summary small { color:$mu; font:700 10.5px var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
+.project-bootstrap > summary strong { margin-top:4px; color:$ink; font:700 19px/1.25 var(--font-sans); letter-spacing:-.01em; }
+.project-bootstrap > summary p { margin:3px 0 0; color:$i3; font:italic 400 13.5px/1.55 var(--font-reading); }
+.project-bootstrap-body { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 36px; padding:6px 0 20px; border-top:1px solid $bd; }
+.project-bootstrap-body section { min-width:0; margin-top:20px; padding:0; border:0; border-radius:0; background:transparent; }
+.project-bootstrap-body h3 { margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid $bd; color:$ink; font:700 12px/1.3 var(--font-sans); letter-spacing:0; }
+.project-bootstrap-body ul { margin:0; padding-left:17px; color:$i3; font:400 14px/1.6 var(--font-reading); }
+.project-bootstrap-body ul li::marker { color:$ink; }
+.project-bootstrap-body pre { margin:0; padding:14px 16px; overflow:auto; border:1px dotted $bd2; border-radius:0; color:var(--code-text); background:var(--code-bg); font:400 12.5px/1.65 var(--font-mono); }
+.project-bootstrap-body p { margin:10px 0 0; color:$i3; font:400 14px/1.6 var(--font-reading); }
+.project-bootstrap-body .file-tree { padding-left:0; color:$mu; font:400 12px/1.7 var(--font-mono); list-style:none; }
 .project-bootstrap-body .file-tree li::before { content:'├─ '; color:$mu; }
-.project-bootstrap-body .bootstrap-recovery { border:0; border-left:3px solid var(--accent); padding-left:16px; background:transparent; }
-.bootstrap-deliverable { grid-column:1/-1; margin:22px 0 0 !important; padding:14px 0 0; border-top:1px solid $bd; border-radius:0; color:$i3 !important; background:transparent; font:400 14px/1.6 #{$serif} !important; }
-.bootstrap-deliverable strong { color:var(--accent); }
+.project-bootstrap-body .bootstrap-recovery { border:0; border-left:2px solid $ink; padding-left:14px; background:transparent; }
+.bootstrap-deliverable { grid-column:1/-1; margin:20px 0 0 !important; padding:12px 0 0; border-top:1px solid $bd; border-radius:0; color:$i3 !important; background:transparent; font:400 14px/1.6 var(--font-reading) !important; }
+.bootstrap-deliverable strong { color:$ink; }
 .concept-chips { display:flex; flex-wrap:wrap; gap:8px; }
-.concept-chips span { padding:7px 10px; border-radius:99px; background:$pl; color:$ph; font:700 12px var(--font-sans); }
-.lesson-deliverable { padding:15px 17px; border-radius:10px; background:$pl; }
+.concept-chips span { padding:4px 8px; border:1px solid $bd; border-radius:0; background:none; color:$ink; font:500 12px var(--font-sans); }
+.lesson-deliverable { padding:12px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; }
 
-.project-definition-of-done { margin-top:14px; padding-top:14px; border-top:1px solid $bd; }
-.project-definition-of-done h3 { margin:0 0 8px; color:$ink; font:750 12px var(--font-sans); text-transform:uppercase; letter-spacing:.05em; }
-.project-definition-of-done ul { margin:0; padding-left:20px; color:$i3; font:500 12px/1.55 var(--font-sans); }
+.project-definition-of-done { margin-top:14px; padding-top:12px; border-top:1px solid $bd; }
+.project-definition-of-done h3 { margin:0 0 8px; color:$ink; font:700 12px var(--font-sans); text-transform:uppercase; letter-spacing:0; }
+.project-definition-of-done ul { margin:0; padding-left:18px; color:$i3; font:400 13px/1.6 var(--font-reading); }
 
-.lesson-footer { margin-top:58px; padding-top:26px; border-top:1px solid $bd; display:flex; flex-direction:column; gap:22px; }
-.complete-toggle { align-self:flex-start; display:flex; align-items:center; gap:9px; padding:10px 15px; border:1px solid $bd2; border-radius:9px; background:$wh; color:$i3; font:700 13px var(--font-sans); }
-.complete-toggle lucide-icon { width:17px; }
-.complete-toggle.done { border-color:$g; background:$gl; color:$g; }
-.lesson-nav { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.lesson-nav button { min-height:62px; display:flex; align-items:center; gap:9px; padding:12px 16px; border:1px solid $bd; border-radius:12px; background:$wh; color:$i3; font:700 13px/1.35 var(--font-sans); text-align:left; }
-.lesson-nav button:hover { border-color:var(--accent); color:$p; box-shadow:$sh; transform:translateY(-1px); }
+// Pie del capítulo: acciones como enlaces de libro.
+.lesson-footer { margin-top:48px; padding-top:22px; border-top:1px solid $bd; display:flex; flex-direction:column; gap:20px; }
+.complete-toggle { align-self:flex-start; display:flex; align-items:center; gap:9px; padding:0; border:0; border-radius:0; background:none; color:$i3; font:600 12px var(--font-sans); }
+.complete-toggle lucide-icon { width:16px; }
+.complete-toggle.done { color:$ink; background:none; }
+.lesson-nav { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.lesson-nav button { min-height:0; display:flex; align-items:center; gap:8px; padding:0; border:0; border-radius:0; background:none; color:$i3; font:600 12.5px/1.35 var(--font-sans); text-align:left; }
+.lesson-nav button:hover { color:var(--accent); box-shadow:none; transform:none; }
 .lesson-nav button.next { justify-content:flex-end; text-align:right; grid-column:2; }
-.lesson-nav lucide-icon { width:17px; flex-shrink:0; }
-.lesson-shortcuts { margin:0; color:$mu; font:500 11px/1.5 var(--font-sans); }
-.lesson-shortcuts kbd { padding:1px 5px; border:1px solid $bd2; border-radius:4px; background:$wh; color:$i3; font:700 10px var(--font-mono); }
-.lesson-missing { padding:70px 24px; text-align:center; color:$mu; }
+.lesson-nav lucide-icon { width:16px; flex-shrink:0; }
+.lesson-shortcuts { margin:0; color:$mu; font:400 11px/1.5 var(--font-sans); }
+.lesson-shortcuts kbd { padding:1px 5px; border:1px solid $bd2; border-radius:0; background:none; color:$i3; font:400 10px var(--font-mono); }
+.lesson-missing { padding:60px 24px; text-align:center; color:$mu; }
 .lesson-missing a { color:$p; font-weight:700; }
 
-@media (max-width:860px) { .reading-progress { left:0; } }
+// Guía del curso y profundización: plegados con filete.
+.course-guide { margin-top:20px; padding:12px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; border-radius:0; background:none; font-size:13px; line-height:1.7; }
+.course-guide summary { cursor:pointer; min-height:28px; font-weight:700; }
+.course-guide summary span { display:inline-block; margin-left:8px; font-size:11px; font-weight:400; color:$mu; }
+.course-guide p { color:$mu; margin:10px 0 0; }
+.course-guide ul { color:$mu; padding-left:18px; }
+.project-progress-card > summary { cursor:pointer; min-height:28px; font:600 13px/1.6 var(--font-sans); }
+.project-progress-card > summary span { color:$mu; font-weight:400; font-size:11px; margin-left:8px; }
+.project-progress-card[open] > summary { margin-bottom:18px; }
+
+.lesson-markdown ::ng-deep .project-deep-dive { position:relative; margin:22px 0 4px; border:0; border-top:1px solid $bd; border-radius:0; background:none; font-family:var(--font-sans); }
+.lesson-markdown ::ng-deep .project-deep-dive summary { position:relative; display:grid; gap:2px; padding:11px 28px 11px 0; cursor:pointer; list-style:none; }
+.lesson-markdown ::ng-deep .project-deep-dive summary::-webkit-details-marker { display:none; }
+.lesson-markdown ::ng-deep .project-deep-dive summary::after { content:'⌄'; position:absolute; right:0; top:50%; transform:translateY(-50%); color:$mu; font-size:14px; }
+.lesson-markdown ::ng-deep .project-deep-dive[open] summary::after { transform:translateY(-50%) rotate(180deg); }
+.lesson-markdown ::ng-deep .project-deep-dive summary span { color:$mu; font:700 11px/1.2 var(--font-sans); letter-spacing:0; text-transform:none; }
+.lesson-markdown ::ng-deep .project-deep-dive summary strong { color:$ink; font:400 13px/1.4 var(--font-reading); }
+.lesson-markdown ::ng-deep .project-deep-dive summary:hover strong { color:var(--accent); }
+.lesson-markdown ::ng-deep .project-deep-dive-body { padding:4px 0 14px; border-top:0; font:400 15px/1.7 var(--font-reading); }
+.lesson-markdown ::ng-deep .project-deep-dive-body > h4 { margin:14px 0 8px; color:$ink; font:700 13.5px/1.4 var(--font-sans); }
+
+.topic-focus-banner { display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; justify-content:space-between; margin:0 0 24px; padding:8px 0; border:0; border-top:1px solid $bd; border-bottom:1px solid $bd; background:none; color:$i3; font:400 12.5px/1.5 var(--font-sans); }
+.topic-focus-banner a { color:$ink; font-weight:600; }
+.lesson-markdown ::ng-deep .topic-focus-link { display:inline-block; margin-top:8px; color:$mu; font:400 11px/1.2 var(--font-sans); letter-spacing:0; text-transform:none; text-decoration:underline; text-underline-offset:3px; }
+.lesson-markdown ::ng-deep .topic-focus-link:hover { color:var(--accent); }
+
+@media (max-width:860px) { .reading-progress { left:0; top:72px; } }
+
 @media (max-width:640px) {
-  :host { padding:22px 15px 64px; }
-  .lesson-hero { margin:0 -2px 34px; padding:27px 23px 25px; border-radius:16px; }
-  .lesson h1 { font-size:31px; }
-  .lesson-description { font-size:16px; line-height:1.65; }
-  .chapter-topic-strip-list { display:flex; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:4px; }
-  .chapter-topic-strip-list a { flex:0 0 190px; scroll-snap-align:start; min-height:62px; }
-  .level-progress li:not(.current) { display:none; }
-  .floci-overview { margin:-8px 0 38px; border-radius:17px; }
-  .floci-overview-intro { padding:28px 22px; }
+  :host { padding:18px 10px 56px; }
+  .lesson { padding:24px 18px; border-radius:0; }
+  .lesson h1 { font-size:27px; }
+  .lesson-description { font-size:15px; line-height:1.7; }
+  .chapter-topic-strip-list { display:block; overflow:visible; }
+  .chapter-topic-strip-list a { padding:10px 0; border-bottom:1px solid $bd; border-right:0; }
+  .floci-overview { margin:0 0 34px; }
   .floci-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .floci-metrics div:nth-child(2) { border-right:0; }
-  .floci-metrics div:nth-child(-n+2) { border-bottom:1px solid $bd; }
   .floci-capabilities { grid-template-columns:1fr; }
-  .floci-real-engines { grid-template-columns:1fr; padding:24px 20px; }
-  .floci-study-loop { display:flex; overflow-x:auto; scroll-snap-type:x proximity; }
-  .floci-study-loop li { flex:0 0 145px; scroll-snap-align:start; }
-  .build-method { display:flex; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x proximity; }
-  .build-method li { flex:0 0 142px; scroll-snap-align:start; }
+  .floci-real-engines { grid-template-columns:1fr; }
+  .floci-study-loop { display:block; }
+  .floci-study-loop li { padding:14px 0; border-bottom:1px solid $bd; }
+  .floci-study-loop li:last-child { border-bottom:0; }
+  .build-method { display:grid; grid-template-columns:1fr; gap:0; }
   .lesson-markdown { font-size:16px; line-height:1.78; }
-  .lesson-markdown ::ng-deep h2 { margin-top:50px; font-size:24px; }
-  .lesson-markdown ::ng-deep h3 { margin-top:38px; font-size:20px; }
-  .lesson-markdown ::ng-deep h3.topic-heading { padding:16px 17px 16px 21px; }
-  .lesson-markdown ::ng-deep .topic-card { margin:14px -2px; padding:0 16px; border-radius:15px; }
-  .lesson-markdown ::ng-deep .topic-card > .topic-heading { margin:0 -16px 20px; }
-  .lesson-markdown ::ng-deep .topic-card:not(.expanded) > .topic-heading { margin-bottom:0; }
-  .lesson-markdown ::ng-deep .topic-body { padding-bottom:18px; }
-  .lesson-markdown ::ng-deep .topic-step-navigation { grid-template-columns:1fr 1fr; margin:26px -16px 0; padding:14px 16px; }
+  .lesson-markdown ::ng-deep h2 { margin-top:42px; font-size:20px; }
+  .lesson-markdown ::ng-deep h3 { margin-top:32px; font-size:18px; }
+  .lesson-markdown ::ng-deep h3.topic-heading { padding:0 0 14px; }
+  .lesson-markdown ::ng-deep h3.topic-heading .topic-toggle { top:0; }
+  .lesson-markdown ::ng-deep .topic-body { padding-bottom:20px; }
+  .lesson-markdown ::ng-deep .topic-step-navigation { grid-template-columns:1fr 1fr; }
   .lesson-markdown ::ng-deep .topic-step-navigation > strong,
   .lesson-markdown ::ng-deep .topic-step-center { grid-column:1/-1; grid-row:1; text-align:center; }
   .lesson-markdown ::ng-deep .topic-step-navigation .topic-prev,
   .lesson-markdown ::ng-deep .topic-step-navigation .topic-prev-slot { grid-column:1; grid-row:2; }
   .lesson-markdown ::ng-deep .topic-step-navigation .topic-next,
   .lesson-markdown ::ng-deep .topic-step-navigation .topic-next-slot { grid-column:2; grid-row:2; }
-  .lesson-markdown ::ng-deep .topic-step-navigation a { grid-row:2; }
   .lesson-markdown ::ng-deep .topic-step-navigation a small { max-width:132px; }
-  .lesson-markdown ::ng-deep .section-guide { align-items:flex-start; flex-direction:column; gap:4px; }
+  .lesson-markdown ::ng-deep .section-guide { padding:0; }
+  .lesson-markdown ::ng-deep .definition-callout,
+  .lesson-markdown ::ng-deep .learning-callout,
+  .lesson-markdown ::ng-deep .margin-note,
+  .lesson-markdown ::ng-deep .sample-problem-reasoning,
+  .lesson-markdown ::ng-deep .sample-problem-answer { margin-inline:0; padding-inline:0; }
   .lesson-markdown ::ng-deep .learning-contract { grid-template-columns:1fr; }
   .lesson-markdown ::ng-deep .concept-flow > div { grid-template-columns:1fr; }
   .lesson-markdown ::ng-deep .concept-flow b { transform:rotate(90deg); text-align:center; }
-  .lesson-markdown ::ng-deep .learning-callout { padding:18px; }
-  .lesson-markdown ::ng-deep .learning-callout::before { display:none; }
-  .lesson-markdown ::ng-deep pre { padding:17px; font-size:12px; }
-  .lesson-markdown ::ng-deep .code-example { margin:26px -2px; border-radius:14px; }
-  .lesson-markdown ::ng-deep .code-example-bar { grid-template-columns:minmax(0,1fr) auto auto auto; gap:7px; }
-  .lesson-markdown ::ng-deep .code-example-bar .code-example-language { display:none; }
-  .lesson-markdown ::ng-deep .code-example-bar button { min-height:34px; padding-inline:8px; }
-  .lesson-markdown ::ng-deep .visual-diagram,
-  .lesson-markdown ::ng-deep .archify-visual { margin:28px -2px; border-radius:14px; }
+  .lesson-markdown ::ng-deep .step-head { grid-template-columns:2.2em minmax(0,1fr); }
+  .lesson-markdown ::ng-deep .step-body { padding-left:0; }
+  .lesson-markdown ::ng-deep .code-example-bar { grid-template-columns:auto minmax(0,1fr) auto auto; gap:8px; }
+  .lesson-markdown ::ng-deep .code-example pre { padding:14px; font-size:12.5px; }
   .lesson-markdown ::ng-deep .visual-diagram figcaption,
-  .lesson-markdown ::ng-deep .archify-visual figcaption { padding:14px; }
+  .lesson-markdown ::ng-deep .archify-visual figcaption { padding:10px 0 0; }
   .lesson-markdown ::ng-deep .archify-visual-frame { height:620px; }
-  .lesson-markdown ::ng-deep pre.mermaid { justify-content:flex-start; padding:22px 16px; }
+  .lesson-markdown ::ng-deep pre.mermaid { justify-content:flex-start; }
   .lesson-nav { grid-template-columns:1fr; }
-  .project-bootstrap-body { grid-template-columns:1fr; }
-  .lesson-markdown ::ng-deep .sample-problem-reasoning { margin:14px 15px; }
   .lesson-nav button, .lesson-nav button.next { grid-column:1; width:100%; justify-content:center; text-align:center; }
-}
-
-@media (max-width: 620px) {
-  .project-progress-card { padding:17px; }
-  .project-milestones { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .project-bootstrap-body { grid-template-columns:1fr; }
 }
 
 @media (prefers-reduced-motion:reduce) {
   .reading-progress span,
   .lesson-markdown ::ng-deep .lesson-section,
   .lesson-markdown ::ng-deep .topic-card.expanded > .topic-body { animation:none; transition:none; }
-  .lesson-nav button:hover { transform:none; }
 }
-
-
-// Lector de academia: ancho de lectura estable y jerarquía sin mayúsculas forzadas.
-:host { padding:32px clamp(18px,3vw,44px) 72px; }
-.lesson-layout { grid-template-columns:minmax(0,780px); justify-content:center; max-width:1030px; }
-.lesson { background:$wh; padding:32px clamp(20px,3vw,44px); border:1px solid $bd; border-radius:16px; box-shadow:none; }
-.lesson-hero { margin-bottom:28px; }
-.lesson-eyebrow { font-size:11px; line-height:1.6; text-transform:none; letter-spacing:0; color:$mu; }
-.lesson h1 { font:600 clamp(27px,3vw,38px)/1.23 var(--font-sans); letter-spacing:-1px; text-transform:none; }
-.lesson-description { font:400 15px/1.8 var(--font-sans); color:$mu; }
-.lesson-meta { font-size:11px; line-height:1.6; }
-.focus-toggle { min-height:44px; font-size:12px; border-radius:8px; }
-.project-progress-card { padding:18px; border:1px solid $bd; border-radius:12px; background:$bg; margin-bottom:24px; }
-.project-progress-heading h2 { font-size:19px; }
-.project-progress-card > p { font-style:normal; font-size:13px; }
-.project-bootstrap { border-radius:12px; margin-bottom:24px; }
-.project-bootstrap > summary { min-height:56px; }
-.lesson-markdown { font:400 16px/1.85 var(--font-sans); color:$ink; }
-.lesson-markdown ::ng-deep p { text-align:left; hyphens:none; }
-.lesson-markdown ::ng-deep h2 { font:500 25px/1.35 var(--font-sans); letter-spacing:-.5px; }
-.lesson-markdown ::ng-deep h3.topic-heading { margin:28px 0 20px; padding:0 110px 18px 0; border-bottom:1px solid $bd; font:500 23px/1.4 var(--font-sans); letter-spacing:-.5px; }
-.lesson-markdown ::ng-deep .section-number { font:500 11px var(--font-mono); margin-bottom:8px; color:var(--accent); }
-.lesson-markdown ::ng-deep .topic-toggle { min-height:44px; font-size:11px; text-transform:none; letter-spacing:0; }
-.lesson-markdown ::ng-deep .session-card { border:0; background:transparent; box-shadow:none; margin:0 0 24px; }
-.lesson-markdown ::ng-deep .session-card-head { display:none; }
-.lesson-markdown ::ng-deep .session-steps { padding:0; }
-.lesson-markdown ::ng-deep .session-steps li { padding:18px 0; border-top:1px solid $bd; }
-.lesson-markdown ::ng-deep .step-head em { font:500 18px/1.4 var(--font-sans); text-transform:none; letter-spacing:-.3px; }
-.lesson-markdown ::ng-deep .step-head b { font-size:10px; }
-.lesson-markdown ::ng-deep .step-body { padding-left:0; font:400 16px/1.85 var(--font-sans); }
-.lesson-markdown ::ng-deep .step-body p { margin:12px 0 18px; }
-.lesson-markdown ::ng-deep .code-example { border:1px solid $bd; border-radius:10px; overflow:hidden; box-shadow:none; margin:22px 0; background:var(--bg-instrument); }
-.lesson-markdown ::ng-deep .code-example-bar { border-bottom:1px solid $bd; background:$bg; min-height:46px; padding:6px 10px; color:$mu; }
-.lesson-markdown ::ng-deep .code-example-label { color:$ink; font-weight:650; }
-.lesson-markdown ::ng-deep .code-example-language { border-color:$bd2; color:$mu; background:$wh; }
-.lesson-markdown ::ng-deep .code-example-bar button { min-height:36px; border:1px solid $bd2; border-radius:6px; color:$i3; background:$wh; font-size:11px; }
-.lesson-markdown ::ng-deep .code-example-bar button:hover { border-color:var(--accent); color:var(--accent); background:$wh; }
-.lesson-markdown ::ng-deep pre { font:400 12.5px/1.9 var(--font-mono); background:var(--bg-instrument); color:var(--code-text); }
-.lesson-markdown ::ng-deep :not(pre)>code { background:$bg2; color:$ink; padding:2px 5px; border-radius:4px; font-size:.85em; }
-.lesson-markdown ::ng-deep table { font-size:13px; border-radius:8px; }
-.lesson-nav button { border-radius:10px; }
-.focus-mode { grid-template-columns:minmax(0,780px); max-width:780px; }
-@media(max-width:1250px) { .lesson-layout { grid-template-columns:minmax(0,1fr); max-width:800px; } }
-@media(max-width:620px) { :host { padding:18px 10px 48px; } .lesson { padding:24px 18px; border-radius:12px; } .lesson h1 { font-size:27px; letter-spacing:-.7px; } .lesson-description { font-size:14px; } .lesson-markdown,.lesson-markdown ::ng-deep .step-body { font-size:15px; line-height:1.8; } .lesson-markdown ::ng-deep h3.topic-heading { font-size:21px; padding-right:0; padding-top:44px; } .lesson-markdown ::ng-deep .topic-toggle { top:0; right:0; } .lesson-markdown ::ng-deep .code-example-bar button { min-height:44px; } .project-milestones { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-.reading-progress { top:72px; left:270px; }
-.course-guide { margin-top:20px; padding:14px 18px; border:1px solid $bd; border-radius:10px; background:$bg; font-size:13px; line-height:1.8; }
-.course-guide summary { cursor:pointer; min-height:28px; font-weight:500; }
-.course-guide summary span { display:inline-block; margin-left:8px; font-size:11px; font-weight:400; color:$mu; }
-.course-guide p { color:$mu; margin:12px 0 0; }
-.course-guide ul { color:$mu; padding-left:20px; }
-@media(max-width:860px) { .reading-progress { left:0; } }
-.project-progress-card > summary { cursor:pointer; min-height:28px; font:500 13px/1.6 var(--font-sans); }
-.project-progress-card > summary span { color:$mu; font-weight:400; font-size:11px; margin-left:8px; }
-.project-progress-card[open] > summary { margin-bottom:18px; }
-
-// Profundización del tema: lectura complementaria plegada para que el cierre
-// del tema no se alargue con un bloque de proyecto en cada capítulo.
-.lesson-markdown ::ng-deep .project-deep-dive { position:relative; margin:24px 0 4px; border:1px solid $bd; border-radius:10px; background:$bg2; font-family:var(--font-sans); }
-.lesson-markdown ::ng-deep .project-deep-dive summary { position:relative; display:grid; gap:2px; padding:12px 40px 12px 14px; cursor:pointer; list-style:none; }
-.lesson-markdown ::ng-deep .project-deep-dive summary::-webkit-details-marker { display:none; }
-.lesson-markdown ::ng-deep .project-deep-dive summary::after { content:'⌄'; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:$mu; font-size:14px; }
-.lesson-markdown ::ng-deep .project-deep-dive[open] summary::after { transform:translateY(-50%) rotate(180deg); }
-.lesson-markdown ::ng-deep .project-deep-dive summary span { color:var(--accent); font:800 9.5px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; }
-.lesson-markdown ::ng-deep .project-deep-dive summary strong { color:$ink; font:650 12.5px/1.4 var(--font-sans); }
-.lesson-markdown ::ng-deep .project-deep-dive summary:hover strong { color:var(--accent-hover); }
-.lesson-markdown ::ng-deep .project-deep-dive-body { padding:4px 16px 16px; border-top:1px solid $bd; font:400 15px/1.7 var(--font-sans); }
-.lesson-markdown ::ng-deep .project-deep-dive-body > h4 { margin:16px 0 8px; color:$ink; font:700 14px/1.4 var(--font-sans); }
-
-.topic-focus-banner { display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; justify-content:space-between; margin:0 0 26px; padding:10px 14px; border:1px solid $bd; border-left:3px solid var(--accent); border-radius:0 8px 8px 0; background:$wh; color:$i3; font:500 13px/1.5 var(--font-sans); }
-.topic-focus-banner a { color:var(--accent); font-weight:700; }
-
-.lesson-markdown ::ng-deep .topic-focus-link { display:inline-block; margin-top:10px; color:var(--accent); font:600 11px/1.2 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
-.lesson-markdown ::ng-deep .topic-focus-link:hover { text-decoration:underline; }
-

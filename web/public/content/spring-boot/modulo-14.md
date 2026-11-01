@@ -5,19 +5,15 @@
 
 Cada tema construye una pieza real del backend de un sistema de entregas (`gestion-entregas`) y la verifica sin sustituir infraestructura por descripciones: MySQL real vía Testcontainers para datos espaciales, Hibernate Spatial con tipos JTS reales, JWT real con ownership verificado, STOMP real (el protocolo que Spring efectivamente implementa de forma nativa) y detección real de MIME para archivos subidos.
 
-### Tema 1: CRUD API y contratos
+### Tema 1: CRUD API y contratos · Experto · 2 h 15 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 13 de este track (idempotencia con restricción única).
 
-Al finalizar podrás implementar un endpoint `DELETE` que representa cancelación de negocio (no eliminación física) protegido por `Idempotency-Key`, y confirmarlo con un test real que distingue ambos conceptos.
+**Al terminar podrás:** implementar un endpoint `DELETE` que representa cancelación de negocio (no eliminación física) protegido por `Idempotency-Key`, y confirmarlo con un test real que distingue ambos conceptos.
 
-**Conocimiento previo:** Módulo 13 de este track (idempotencia con restricción única).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Crear, consultar, asignar, actualizar y cancelar envíos son casos de uso diferentes, no un controlador genérico que expone entidades. Un `DELETE /api/envios/{id}` que cancela (cambia estado) en vez de borrar físicamente preserva el historial necesario para auditoría y disputas, algo que una eliminación real destruiría irreversiblemente.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** DTO explícito, DELETE como cancelación de negocio, Idempotency-Key.
 
@@ -36,7 +32,7 @@ sequenceDiagram
   A-->>C: 200 con el envío cancelado
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía y crea `src/main/java/io/academia/entregas/`:
 
@@ -146,16 +142,14 @@ class CrudContratoTest {
 
 **Fallo deliberado:** cambia `envio.cancelar()` por `repository.delete(envio)` en el controller y ejecuta de nuevo el test. FALLA en `assertThatFilaSiguePresente` porque `repository.findById(id)` ahora devuelve vacío — diagnostica confirmando que un `DELETE` HTTP mal implementado como eliminación física destruye el historial de auditoría que el contrato de negocio requería preservar. Restaura `cancelar()` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega un endpoint `PATCH /api/envios/{id}/asignar` y un test que confirme la transición de estado explícita `CREADO → ASIGNADO`.
 2. Confirma con un test que cancelar un envío ya `CANCELADO` es idempotente (no lanza error, devuelve el mismo estado).
 3. Agrega validación Bean Validation (`@NotBlank`) a un campo del DTO de creación y confirma con un test que una entrada inválida responde `400` con `Problem Details`.
-4. Escribe de memoria (sin mirar) un `DELETE` que cancela en vez de eliminar, y un test que confirme que la fila sigue presente. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `DELETE` que cancela en vez de eliminar, y un test que confirme que la fila sigue presente. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `repository.findById(id).isPresent()` tras un `DELETE` HTTP es la forma más directa de confirmar, con evidencia real de base de datos, si tu endpoint canceló o eliminó físicamente — no asumas la semántica solo por el nombre del método HTTP.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método que cambia el estado sin eliminar la fila:
 
@@ -168,9 +162,17 @@ ResponseEntity<Envio> cancelar(@PathVariable Long id) {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint `DELETE` que cancela en vez de eliminar, y un test que confirme que la fila persiste. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint `DELETE` que cancela en vez de eliminar, y un test que confirme que la fila persiste. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `DELETE /api/envios/{id}` cambia el estado y la fila sigue en la base de datos.
+- [ ] Repetir la petición con la misma `Idempotency-Key` no duplica el efecto.
+- [ ] Cancelar un envío ya cancelado devuelve el mismo estado sin error.
+- [ ] `PATCH /api/envios/{id}/asignar` confirma la transición `CREADO → ASIGNADO`.
+- [ ] Una entrada inválida responde `400` con Problem Details.
+
+**Si falla.** Si la fila desaparece, el endpoint está borrando en vez de cambiar el estado. Si la segunda cancelación falla, la transición no es idempotente: devuelve el estado actual en lugar de lanzar. Si no aparece Problem Details, revisa el manejador de errores de validación.
 
 Ya implementas un contrato CRUD donde `DELETE` significa cancelación de negocio, verificado contra la base de datos real. El siguiente tema almacena la posición geográfica de cada envío en MySQL con soporte espacial real. Fuentes oficiales: [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/).
 
@@ -180,19 +182,15 @@ Ya implementas un contrato CRUD donde `DELETE` significa cancelación de negocio
 
 El contrato CRUD que diseñes aquí sigue el mismo criterio de claridad que exige el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-### Tema 2: MySQL y datos espaciales
+### Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Tema 1 de este módulo; Módulo 6 de este track (Testcontainers).
 
-Al finalizar podrás ejecutar `ST_Distance_Sphere` real contra un MySQL 8 real (Testcontainers) para calcular la distancia entre dos coordenadas geográficas, y confirmar con `EXPLAIN` que un índice `SPATIAL` se usa realmente.
+**Al terminar podrás:** ejecutar `ST_Distance_Sphere` real contra un MySQL 8 real (Testcontainers) para calcular la distancia entre dos coordenadas geográficas, y confirmar con `EXPLAIN` que un índice `SPATIAL` se usa realmente.
 
-**Conocimiento previo:** Tema 1 de este módulo; Módulo 6 de este track (Testcontainers).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Filtrar conductores cercanos a una entrega requiere calcular distancias geográficas de forma eficiente; sin un índice espacial, cada consulta de cercanía escanearía la tabla completa, algo inviable con miles de posiciones activas simultáneas.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** `POINT` con SRID 4326, índice `SPATIAL`, `ST_Distance_Sphere`.
 
@@ -209,7 +207,7 @@ MySQL 8 almacena `POINT` con SRID 4326 (el sistema de referencia estándar de co
 └──────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir gestion-espacial && cd gestion-espacial && curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,mysql -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/test/java/io/academia/entregas/espacial/DistanciaEspacialTest.java`:
 
@@ -287,16 +285,14 @@ class DistanciaEspacialTest {
 
 **Fallo deliberado:** invierte el orden en `POINT(-74.08, 4.61)` a `POINT(4.61, -74.08)` (latitud primero, el error común de quien asume el orden "natural") y ejecuta de nuevo `stDistanceSphereCalculaLaDistanciaRealEntreDosCoordenadas`. El resultado de `ST_Distance_Sphere` ya no está entre 230km y 250km (con coordenadas inválidas o una distancia absurda) — diagnostica confirmando por qué la teoría insiste explícitamente en que WKT exige longitud antes que latitud: el error es silencioso (MySQL no rechaza el INSERT), y solo se manifiesta como un cálculo de distancia incorrecto. Restaura el orden correcto antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Inserta una tercera coordenada (por ejemplo, Cali) y confirma con un test que la distancia Bogotá-Cali es distinta a Bogotá-Medellín, verificando ambos cálculos numéricamente.
-2. Ejecuta `EXPLAIN` sobre la misma consulta pero SIN el índice `SPATIAL` (crea una segunda tabla idéntica sin el índice) y confirma que la columna `key` es `NULL` en ese caso, contrastando con el Paso 4.
+2. Ejecuta `EXPLAIN` sobre la misma consulta pero SIN el índice `SPATIAL` (crea una segunda tabla idéntica sin el índice) y confirma que la columna `key` es `NULL` en ese caso, contrastando con la demostración guiada.
 3. Documenta, en un comentario, por qué `ST_Distance_Sphere` es apropiado para un filtro inicial de cercanía pero NO para calcular una ruta real (que debe considerar calles, sentido único, tráfico).
-4. Escribe de memoria (sin mirar) el orden correcto de `POINT(longitud, latitud)` en WKT, y un test `ST_Distance_Sphere` que confirme una distancia real conocida. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) el orden correcto de `POINT(longitud, latitud)` en WKT, y un test `ST_Distance_Sphere` que confirme una distancia real conocida. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** el resultado de `EXPLAIN` en MySQL incluye una columna `key` con el nombre del índice efectivamente usado, o `NULL` si no se usó ninguno — leer esa columna directamente (no adivinar por el tiempo de ejecución) es la forma correcta de confirmar el uso real de un índice.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con la función real de MySQL que calcula la distancia esférica entre dos puntos:
 
@@ -304,9 +300,17 @@ class DistanciaEspacialTest {
 SELECT ____(punto_a, punto_b) AS metros;
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una tabla con `POINT SRID 4326` e índice `SPATIAL`, y un test `ST_Distance_Sphere` contra Testcontainers MySQL. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una tabla con `POINT SRID 4326` e índice `SPATIAL`, y un test `ST_Distance_Sphere` contra Testcontainers MySQL. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `ST_Distance_Sphere` devuelve distancias distintas para pares de coordenadas distintos.
+- [ ] `EXPLAIN` muestra el índice `SPATIAL` en la columna `key`.
+- [ ] Sin el índice, la misma consulta deja `key` en `NULL`.
+- [ ] El orden `POINT(longitud, latitud)` está escrito y verificado con un test.
+- [ ] Puedes explicar por qué la distancia esférica no sustituye una ruta real.
+
+**Si falla.** Si la distancia sale invertida, recuerda que `POINT` recibe longitud antes que latitud. Si `EXPLAIN` no usa el índice, comprueba que la columna es `POINT SRID 4326` y que el índice `SPATIAL` existe en la tabla consultada.
 
 Ya calculas distancias geográficas reales contra MySQL 8 con soporte espacial, confirmando con `EXPLAIN` que el índice `SPATIAL` efectivamente se usa. El siguiente tema mapea este mismo `POINT` a un tipo Java real vía Hibernate Spatial. Fuentes oficiales: [MySQL — Spatial Data Types](https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html).
 
@@ -316,19 +320,15 @@ Ya calculas distancias geográficas reales contra MySQL 8 con soporte espacial, 
 
 Los datos espaciales de este tema son un ejemplo de requisito de dominio específico, similar a los que podría enfrentar el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-### Tema 3: JPA e Hibernate Spatial
+### Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Tema 2 de este módulo; Módulo 3 de este track (JPA y `@Version`).
 
-Al finalizar podrás mapear una columna `POINT` de MySQL a un tipo `org.locationtech.jts.geom.Point` real vía Hibernate Spatial, y confirmar con un test que las coordenadas persisten y se leen sin pérdida de precisión, junto con bloqueo optimista real ante una actualización concurrente.
+**Al terminar podrás:** mapear una columna `POINT` de MySQL a un tipo `org.locationtech.jts.geom.Point` real vía Hibernate Spatial, y confirmar con un test que las coordenadas persisten y se leen sin pérdida de precisión, junto con bloqueo optimista real ante una actualización concurrente.
 
-**Conocimiento previo:** Tema 2 de este módulo; Módulo 3 de este track (JPA y `@Version`).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** JPA modela agregados y Hibernate traduce persistencia, pero no reemplaza entender SQL: Hibernate Spatial integra `Geometry`/`Point` como un tipo Java de primera clase, permitiendo que el código de dominio trabaje con coordenadas tipadas en vez de strings WKT crudos, mientras las migraciones Flyway siguen gestionando SRID, constraints e índices explícitamente.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** `Geometry`/`Point` de Hibernate Spatial, `@Version` para bloqueo optimista.
 
@@ -344,7 +344,7 @@ flowchart LR
   M -->|lectura| J
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `gestion-espacial` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir gestion-hibernate-spatial && cd gestion-hibernate-spatial && curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,mysql -d javaVersion=25 -o app.zip && unzip app.zip` y agrega `org.hibernate.orm:hibernate-spatial` al `pom.xml`), crea `src/main/java/io/academia/entregas/espacial/PosicionConductor.java`:
 
@@ -457,16 +457,14 @@ class PosicionConductorTest {
 
 **Fallo deliberado:** quita el campo `@Version` de `PosicionConductor` y ejecuta de nuevo `unaActualizacionConcurrenteSobreVersionObsoletaLanzaExcepcionRealDeBloqueoOptimista`. El test FALLA porque `repository.saveAndFlush(copiaB)` ya NO lanza ninguna excepción — la segunda actualización simplemente sobrescribe silenciosamente los cambios de la primera (la actualización de `copiaA` se pierde sin ningún aviso) — diagnostica confirmando que `@Version` es lo único que convierte una condición de carrera silenciosa en un error explícito y manejable. Restaura `@Version` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un segundo test que confirme que, tras el `ObjectOptimisticLockingFailureException` del Paso 4, releer la entidad (`repository.findById(...)`) devuelve la versión actualizada por `copiaA`, no un estado corrupto.
+1. Agrega un segundo test que confirme que, tras el `ObjectOptimisticLockingFailureException` de la demostración guiada, releer la entidad (`repository.findById(...)`) devuelve la versión actualizada por `copiaA`, no un estado corrupto.
 2. Documenta, en un comentario, la diferencia entre el bloqueo optimista (`@Version`, detecta el conflicto DESPUÉS) y un bloqueo pesimista (`SELECT ... FOR UPDATE`, previene el conflicto ANTES) para este mismo caso de uso.
 3. Escribe un test que confirme N+1 real: una consulta que carga 10 `PosicionConductor` y accede a `.getUbicacion()` de cada uno dispara consultas adicionales, contrastando con una proyección que evita ese costo.
-4. Escribe de memoria (sin mirar) una entidad con un campo `Point` de Hibernate Spatial y `@Version`, y un test que confirme el conflicto optimista real. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) una entidad con un campo `Point` de Hibernate Spatial y `@Version`, y un test que confirme el conflicto optimista real. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `GeometryFactory` con un `PrecisionModel` y el SRID correcto (4326) es la forma oficial de JTS para construir objetos `Point` en Java antes de persistirlos — construir un `Point` sin especificar el SRID correcto puede producir un desajuste silencioso con la columna `POINT SRID 4326` de la base.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con la anotación que activa el bloqueo optimista sobre la entidad:
 
@@ -475,9 +473,17 @@ class PosicionConductorTest {
 private Long version;
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una entidad con un campo `Point` de Hibernate Spatial y `@Version`, y un test que confirme `ObjectOptimisticLockingFailureException` real ante una actualización concurrente. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una entidad con un campo `Point` de Hibernate Spatial y `@Version`, y un test que confirme `ObjectOptimisticLockingFailureException` real ante una actualización concurrente. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] El `Point` persiste y se relee sin pérdida de precisión.
+- [ ] El `SRID 4326` coincide entre la columna y el objeto JTS.
+- [ ] Una actualización concurrente lanza `ObjectOptimisticLockingFailureException`.
+- [ ] Tras el conflicto, releer la entidad devuelve la versión actualizada.
+- [ ] Distingues bloqueo optimista (detecta después) de pesimista (previene antes).
+
+**Si falla.** Si el `Point` no persiste, revisa el dialecto espacial y el SRID de la columna. Si no hay conflicto, falta `@Version` o las transacciones no se solapan: fuerza el solape leyendo y escribiendo en ambas antes del commit.
 
 Ya mapeas coordenadas espaciales a tipos Java reales con Hibernate Spatial, y confirmas bloqueo optimista real ante actualizaciones concurrentes. El siguiente tema protege estos endpoints con JWT real y verificación de propiedad del recurso. Fuentes oficiales: [Hibernate Spatial](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial).
 
@@ -487,19 +493,15 @@ Ya mapeas coordenadas espaciales a tipos Java reales con Hibernate Spatial, y co
 
 Mapear tipos espaciales con Hibernate Spatial es la misma disciplina de mapeo objeto-relacional que usa el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-### Tema 4: JWT Bearer y autorización por roles
+### Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 4 de este track (JWT); Módulo 10 Tema 4 (OAuth2/Keycloak).
 
-Al finalizar podrás confirmar, con un token JWT real firmado y verificado, que `ROLE_DRIVER` permite acciones de conductor pero NO reemplaza la verificación de que la jornada pertenece a esa identidad específica.
+**Al terminar podrás:** confirmar, con un token JWT real firmado y verificado, que `ROLE_DRIVER` permite acciones de conductor pero NO reemplaza la verificación de que la jornada pertenece a esa identidad específica.
 
-**Conocimiento previo:** Módulo 4 de este track (JWT); Módulo 10 Tema 4 (OAuth2/Keycloak).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Spring Security valida `Authorization: Bearer` mediante resource server y firma asimétrica o simétrica real, nunca criptografía casera. `ROLE_DRIVER` permite el conjunto de acciones de conductor, pero un conductor autenticado con ese rol no debería poder modificar la jornada de OTRO conductor solo por tener el rol correcto.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** resource server, `ROLE_DRIVER`, verificación de propiedad (ownership).
 
@@ -518,7 +520,7 @@ flowchart LR
   O -->|sí| OK[200 autorizado]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir gestion-jwt-ownership && cd gestion-jwt-ownership && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,security -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/entregas/jornada/JornadaController.java`:
 
@@ -601,16 +603,14 @@ class OwnershipTest {
 
 **Fallo deliberado:** quita la comprobación `if (!auth.getName().equals(duenio))` del controller (dejando solo `@PreAuthorize("hasRole('DRIVER')")`) y ejecuta de nuevo `unConductorConRolCorrectoPeroSinPropiedadRecibe403`. El test FALLA porque `conductor-B` ahora recibe `200` — diagnostica confirmando la vulnerabilidad real de acceso horizontal: cualquier conductor autenticado podría modificar la jornada de cualquier otro conductor con solo tener el rol correcto, exactamente el riesgo que la teoría advierte. Restaura la comprobación antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Reemplaza el `Map` estático por una consulta real a un repositorio (`JpaRepository`) y confirma con un `@DataJpaTest` que la búsqueda del dueño real funciona contra una base de datos real.
 2. Agrega un tercer test con un usuario SIN `ROLE_DRIVER` (por ejemplo `roles = "ADMIN"`) y confirma que recibe `403` por `@PreAuthorize`, antes incluso de llegar a la comprobación de propiedad.
-3. Extrae la comprobación de propiedad a un método reutilizable `@PreAuthorize("hasRole('DRIVER') and @jornadaAuthz.esDuenio(#jornadaId, authentication)")` usando un bean de autorización personalizado, y confirma con un test que el comportamiento es idéntico al Paso 4.
-4. Escribe de memoria (sin mirar) un endpoint con `@PreAuthorize("hasRole('DRIVER')")` más una comprobación de propiedad manual, y dos tests `@WithMockUser` que confirmen 200 y 403. Compara después contra el patrón del Paso 4.
+3. Extrae la comprobación de propiedad a un método reutilizable `@PreAuthorize("hasRole('DRIVER') and @jornadaAuthz.esDuenio(#jornadaId, authentication)")` usando un bean de autorización personalizado, y confirma con un test que el comportamiento es idéntico al de la demostración guiada.
+4. Escribe de memoria (sin mirar) un endpoint con `@PreAuthorize("hasRole('DRIVER')")` más una comprobación de propiedad manual, y dos tests `@WithMockUser` que confirmen 200 y 403. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `@WithMockUser(username = "...", roles = "DRIVER")` es una alternativa más simple que `jwt()` cuando no necesitas simular claims específicos del token, solo un usuario autenticado con un nombre y roles determinados — ambas son formas oficiales de `spring-security-test`.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método de `Authentication` que devuelve la identidad del usuario autenticado:
 
@@ -620,9 +620,17 @@ if (!auth.____().equals(duenio)) {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint protegido por rol MÁS verificación de propiedad, y dos tests que confirmen que el rol correcto sin la propiedad correcta recibe 403. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un endpoint protegido por rol MÁS verificación de propiedad, y dos tests que confirmen que el rol correcto sin la propiedad correcta recibe 403. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Un token con `ROLE_DRIVER` accede a sus propias jornadas.
+- [ ] El mismo rol recibe `403` al tocar la jornada de otro conductor.
+- [ ] Un usuario sin `ROLE_DRIVER` recibe `403` antes de la comprobación de propiedad.
+- [ ] La propiedad se compara contra la identidad autenticada, no contra un campo del cuerpo.
+- [ ] Existen tests para el caso permitido y para el `403`.
+
+**Si falla.** Si el dueño recibe `403`, compara la identidad de `Authentication` con el dueño real y no con el `id` enviado. Si el intruso recibe `200`, `hasRole` está sustituyendo la comprobación de propiedad en vez de complementarla.
 
 Ya demuestras en código la distinción entre autorización por rol y verificación de propiedad del recurso, confirmando que confundirlas produce una vulnerabilidad real de acceso horizontal. El siguiente tema conecta actualizaciones de posición en tiempo real vía STOMP, el protocolo que Spring implementa de forma nativa. Fuentes oficiales: [Spring Security — Method Security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html).
 
@@ -632,21 +640,17 @@ Ya demuestras en código la distinción entre autorización por rol y verificaci
 
 La autorización por roles con JWT Bearer de este tema es la que protegerá los endpoints sensibles del proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-### Tema 5: Tiempo real con STOMP
+### Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min
 
 Este laboratorio conserva la variante nativa de Spring con STOMP. Para seguir el temario original de Socket.IO junto al cliente Flutter, utiliza el gateway compatible de [RutaFlow 5](/curso/rutaflow/5). STOMP y Socket.IO no son intercambiables aunque ambos puedan transportar datos sobre WebSocket. Para identidad mediante Keycloak/OIDC consulta también [Spring Boot 10](/curso/spring-boot/10); un ID de envío recibido del cliente no sustituye autorización por recurso.
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 0 de este track (arranque básico de Spring Boot).
 
-Al finalizar podrás conectar un cliente STOMP real (`WebSocketStompClient`, el cliente de test oficial de Spring) contra un servidor embebido, y confirmar que un mensaje publicado en un topic llega realmente al suscriptor, con secuencia y deduplicación.
+**Al terminar podrás:** conectar un cliente STOMP real (`WebSocketStompClient`, el cliente de test oficial de Spring) contra un servidor embebido, y confirmar que un mensaje publicado en un topic llega realmente al suscriptor, con secuencia y deduplicación.
 
-**Conocimiento previo:** Módulo 0 de este track (arranque básico de Spring Boot).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Spring soporta WebSocket/STOMP de forma nativa; Socket.IO es un protocolo distinto que requeriría un servidor compatible o un gateway adicional fuera del ecosistema Spring. Para notificar la posición de un conductor en tiempo real a la app del cliente, STOMP sobre WebSocket es la opción que Spring implementa directamente y se puede probar de extremo a extremo sin infraestructura adicional.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** STOMP sobre WebSocket, topic, secuencia, deduplicación.
 
@@ -666,7 +670,7 @@ sequenceDiagram
   B->>S: MESSAGE posición (sequence=1)
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir gestion-stomp && cd gestion-stomp && curl -fsSL https://start.spring.io/starter.zip -d dependencies=websocket -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/entregas/tiemporeal/`:
 
@@ -773,16 +777,14 @@ class StompTiempoRealTest {
 
 **Fallo deliberado:** cambia la suscripción del test de `/topic/entregas/1` a `/topic/entregas/2` (un topic distinto al que se publica) y ejecuta de nuevo el test. FALLA con un `TimeoutException` real en `recibido.get(3, TimeUnit.SECONDS)` — diagnostica confirmando que el broker STOMP enruta estrictamente por el nombre exacto del topic: una suscripción a un topic distinto simplemente nunca recibe el mensaje, sin ningún error explícito, silenciosamente. Restaura el topic correcto antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Publica dos eventos con `sequence` 1 y 2 en sucesión, y confirma con el test que el suscriptor los recibe en el orden correcto.
 2. Documenta, en un comentario, por qué STOMP sobre WebSocket usado aquí es una alternativa nativa de Spring a Socket.IO, y qué tendría que agregarse (un servidor Socket.IO compatible o un gateway) si el requisito fuera interoperar específicamente con clientes Socket.IO existentes.
 3. Agrega un segundo suscriptor a un topic distinto (`/topic/entregas/2`) y confirma con un test que cada suscriptor solo recibe los mensajes de SU topic, no los del otro.
-4. Escribe de memoria (sin mirar) una configuración `@EnableWebSocketMessageBroker` mínima, y un test `WebSocketStompClient` que confirme un mensaje recibido de extremo a extremo. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) una configuración `@EnableWebSocketMessageBroker` mínima, y un test `WebSocketStompClient` que confirme un mensaje recibido de extremo a extremo. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `CompletableFuture<T>` es una forma limpia de puentear el mundo asíncrono de STOMP (el mensaje llega en un callback, en un thread distinto) con el mundo síncrono de un test JUnit: `.get(timeout, unidad)` bloquea el test hasta que el mensaje real llega o expira el timeout.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el prefijo de destino que el broker simple de Spring enruta a los suscriptores:
 
@@ -790,9 +792,17 @@ class StompTiempoRealTest {
 registry.enableSimpleBroker("____");
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración STOMP mínima y un test `WebSocketStompClient` que confirme un mensaje real recibido por un suscriptor. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una configuración STOMP mínima y un test `WebSocketStompClient` que confirme un mensaje real recibido por un suscriptor. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Un `WebSocketStompClient` real recibe el mensaje publicado.
+- [ ] Dos eventos con `sequence` 1 y 2 llegan en orden.
+- [ ] Dos suscriptores reciben solo los mensajes de su topic.
+- [ ] El consumidor deduplica por `sequence`.
+- [ ] Puedes explicar por qué STOMP y Socket.IO no son intercambiables.
+
+**Si falla.** Si el mensaje no llega, revisa el prefijo del broker y la ruta suscrita. Si llega desordenado o duplicado, el consumidor no deduplica por `sequence`. Si el test se cuelga, el `CompletableFuture` no recibe el callback: conecta el cliente antes de publicar.
 
 Ya conectas un cliente STOMP real contra un servidor embebido y confirmas de extremo a extremo que un mensaje publicado llega al suscriptor correcto. El siguiente y último tema de este módulo valida archivos subidos por contenido real, no solo por extensión declarada. Fuentes oficiales: [Spring — WebSocket STOMP](https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html).
 
@@ -802,19 +812,15 @@ Ya conectas un cliente STOMP real contra un servidor embebido y confirmas de ext
 
 STOMP sobre WebSocket es la opción que evaluarás si el proyecto integrador de este track (microservicio productivo, Módulo 12) necesita notificaciones en tiempo real.
 
-### Tema 6: Archivos y notificaciones push
+### Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 13 de este track (transactional outbox).
 
-Al finalizar podrás rechazar, con detección REAL del tipo de contenido (no la extensión declarada por el cliente), un archivo cuyo contenido no coincide con el tipo MIME que afirma ser.
+**Al terminar podrás:** rechazar, con detección REAL del tipo de contenido (no la extensión declarada por el cliente), un archivo cuyo contenido no coincide con el tipo MIME que afirma ser.
 
-**Conocimiento previo:** Módulo 13 de este track (transactional outbox).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** La base almacena metadatos y hash; las fotografías viven en almacenamiento de objetos con claves no predecibles y URLs firmadas. Confiar en la extensión del archivo (`.jpg`) o en el `Content-Type` declarado por el cliente para decidir si un archivo es realmente una imagen es una vulnerabilidad conocida: un atacante puede subir cualquier contenido con una extensión falsa.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** detección real de MIME, outbox para notificaciones tras commit.
 
@@ -831,7 +837,7 @@ Se valida el MIME real inspeccionando los primeros bytes del archivo (los "magic
 └──────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `gestion-entregas` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir gestion-archivos && cd gestion-archivos && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/entregas/archivos/ValidadorMime.java`:
 
@@ -897,16 +903,14 @@ class ValidadorMimeTest {
 
 **Fallo deliberado:** reemplaza la validación por `nombreArchivo.endsWith(".jpg")` (confiando solo en la extensión del nombre, el patrón inseguro común) y documenta el resultado: un archivo de texto plano renombrado a `malware.jpg` pasaría esta validación exitosamente, porque el nombre "miente" de forma consistente con lo que la validación insegura verifica — diagnostica confirmando por qué la teoría insiste en inspeccionar bytes reales: la extensión del archivo es un dato controlado enteramente por quien lo sube, no una propiedad verificable del contenido. Restaura la validación por magic number antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega una validación de tamaño máximo (por ejemplo, 5MB) y un test que confirme el rechazo de un archivo que excede ese límite, independientemente de si el contenido es un JPEG válido.
 2. Agrega un segundo formato válido (PNG, con magic number `89 50 4E 47`) y confirma con un test que ambos formatos válidos son aceptados mientras un tercero no reconocido es rechazado.
 3. Documenta en un comentario, usando `TransactionSynchronizationManager.registerSynchronization`, la diferencia entre publicar una notificación push DENTRO de la transacción (arriesgado: podría anunciar algo que luego se revierte) y DESPUÉS del commit (seguro).
-4. Escribe de memoria (sin mirar) un validador que inspeccione el magic number real de un archivo, y un test que confirme el rechazo de contenido disfrazado. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un validador que inspeccione el magic number real de un archivo, y un test que confirme el rechazo de contenido disfrazado. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `java.net.URLConnection.guessContentTypeFromStream(...)` es una utilidad real del propio JDK que inspecciona los primeros bytes del stream para adivinar el tipo de contenido — no requiere ninguna librería externa para esta validación básica, aunque para validación más robusta en producción conviene usar Apache Tika.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método real del JDK que detecta el tipo de contenido inspeccionando los bytes del stream:
 
@@ -914,9 +918,17 @@ class ValidadorMimeTest {
 String tipoDetectado = java.net.URLConnection.____(in);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un validador de MIME real por magic number, y un test que confirme el rechazo de contenido disfrazado con una extensión falsa. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un validador de MIME real por magic number, y un test que confirme el rechazo de contenido disfrazado con una extensión falsa. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Un archivo con extensión `.jpg` y contenido no JPEG se rechaza.
+- [ ] Un JPEG y un PNG válidos se aceptan y un tercer formato se rechaza.
+- [ ] Un archivo que supera el tamaño máximo se rechaza.
+- [ ] La notificación push se publica después del commit, no dentro.
+- [ ] El almacenamiento usa claves no predecibles y URLs firmadas.
+
+**Si falla.** Si el archivo disfrazado pasa, la validación mira la extensión o el `Content-Type` y no los bytes. Si la notificación anuncia algo revertido, se publica dentro de la transacción: muévela a `afterCommit`.
 
 Ya validas archivos por su contenido real, no por la extensión declarada, y conectas notificaciones push al commit real de una transacción mediante `TransactionSynchronizationManager`. Este era el último tema del módulo; el siguiente módulo del track continúa con garantías de consistencia distribuida sobre este mismo backend. Fuentes oficiales: [Spring — Transaction Synchronization](https://docs.spring.io/spring-framework/reference/data-access/transaction/programmatic.html) y [OWASP — Unrestricted File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
 

@@ -21,8 +21,8 @@ $bd2: var(--border-strong); // border darker
 $bg:  var(--bg);            // page background
 $bg2: var(--bg-subtle);     // subtle bg
 $wh:  var(--bg-elevated);
-$sw:  240px;   // sidebar width
-$th:  58px;    // topbar height
+$sw:  269px;   // sidebar width + 1px rule
+$th:  62px;    // topbar height
 $rr:  8px;     // radius card
 $rs:  6px;     // radius small
 $rl:  12px;    // radius large

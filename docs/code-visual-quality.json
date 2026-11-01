@@ -1398,14 +1398,14 @@
     {
       "track": "spring-boot",
       "module": 16,
-      "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
+      "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 16,
-      "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
+      "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
       "missingCode": false,
       "missingComments": true
     },

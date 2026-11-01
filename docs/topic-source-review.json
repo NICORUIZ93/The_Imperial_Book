@@ -5218,7 +5218,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 183,
+      "line": 185,
       "originalProseUrls": [
         "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
         "https://start.spring.io/starter.zip"
@@ -5235,7 +5235,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 319,
+      "line": 323,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial",
         "https://start.spring.io/starter.zip"
@@ -5266,7 +5266,7 @@
         "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 124,
+      "line": 126,
       "originalProseUrls": [
         "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/"
       ],
@@ -5281,7 +5281,7 @@
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 252,
+      "line": 256,
       "originalProseUrls": [
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
@@ -5297,7 +5297,7 @@
         "https://resilience4j.readme.io/docs/ratelimiter"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 395,
+      "line": 401,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/bulkhead",
         "https://resilience4j.readme.io/docs/ratelimiter"
@@ -5313,7 +5313,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 548,
+      "line": 556,
       "originalProseUrls": [
         "https://microservices.io/patterns/data/saga.html"
       ],
@@ -5328,7 +5328,7 @@
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 723,
+      "line": 733,
       "originalProseUrls": [
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
@@ -5343,7 +5343,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 894,
+      "line": 906,
       "originalProseUrls": [
         "https://microservices.io/patterns/data/saga.html"
       ],

@@ -1691,7 +1691,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "f791d3038c3c79ae00097d9b0879331cefea2e5b60ba4d6678127ce12e90e11b",
+    "fingerprint": "39ff776bb13276ffca000da1debb3cc1521ab72f596bcd5e32cc8b75f7b65153",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9203,163 +9203,163 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 97,
-        "topic": "Tema 1: Arquitectura del microservicio integrador",
-        "words": 1405
+        "tailWords": 282,
+        "topic": "Tema 1: Arquitectura del microservicio integrador · Experto · 3 h",
+        "words": 1485
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 155,
-        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad",
-        "words": 1395
+        "tailWords": 323,
+        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
+        "words": 1464
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 134,
-        "topic": "Tema 3: Cierre del track y próximos pasos",
-        "words": 985
+        "tailWords": 304,
+        "topic": "Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min",
+        "words": 1064
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 148,
-        "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
-        "words": 1124
+        "tailWords": 331,
+        "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min",
+        "words": 1202
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 163,
-        "topic": "Tema 2: Recuperación implica duplicación segura",
-        "words": 1363
+        "tailWords": 353,
+        "topic": "Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min",
+        "words": 1442
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 171,
-        "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes",
-        "words": 1157
+        "tailWords": 358,
+        "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
+        "words": 1239
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 213,
-        "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
-        "words": 1204
+        "tailWords": 358,
+        "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
+        "words": 1254
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 130,
-        "topic": "Tema 1: CRUD API y contratos",
-        "words": 1069
+        "tailWords": 316,
+        "topic": "Tema 1: CRUD API y contratos · Experto · 2 h 15 min",
+        "words": 1149
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 146,
-        "topic": "Tema 2: MySQL y datos espaciales",
-        "words": 1178
+        "tailWords": 305,
+        "topic": "Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min",
+        "words": 1246
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 124,
-        "topic": "Tema 3: JPA e Hibernate Spatial",
-        "words": 1237
+        "tailWords": 278,
+        "topic": "Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min",
+        "words": 1300
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 159,
-        "topic": "Tema 4: JWT Bearer y autorización por roles",
-        "words": 1150
+        "tailWords": 332,
+        "topic": "Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min",
+        "words": 1224
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 146,
-        "topic": "Tema 5: Tiempo real con STOMP",
-        "words": 1290
+        "tailWords": 299,
+        "topic": "Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min",
+        "words": 1353
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 169,
-        "topic": "Tema 6: Archivos y notificaciones push",
-        "words": 1135
+        "tailWords": 335,
+        "topic": "Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min",
+        "words": 1200
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 136,
-        "topic": "Tema 1: Backpressure real en WebFlux con reactor-test",
-        "words": 919
+        "tailWords": 316,
+        "topic": "Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min",
+        "words": 1002
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 143,
-        "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
-        "words": 940
+        "tailWords": 298,
+        "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min",
+        "words": 1002
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 130,
-        "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
-        "words": 1080
+        "tailWords": 293,
+        "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min",
+        "words": 1148
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 143,
-        "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
-        "words": 1091
+        "tailWords": 315,
+        "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min",
+        "words": 1163
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 139,
-        "topic": "Tema 5: Saga con compensación real",
-        "words": 1116
+        "tailWords": 310,
+        "topic": "Tema 5: Saga con compensación real · Experto · 2 h 10 min",
+        "words": 1184
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 192,
-        "topic": "Tema 6: Event Sourcing con replay real",
-        "words": 1201
+        "tailWords": 354,
+        "topic": "Tema 6: Event Sourcing con replay real · Experto · 2 h",
+        "words": 1269
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 67,
-        "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
-        "words": 757
+        "tailWords": 221,
+        "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
+        "words": 843
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 135,
-        "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
-        "words": 1015
+        "tailWords": 312,
+        "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
+        "words": 1085
       },
       {
         "issues": [],
         "module": 16,
-        "tailWords": 127,
-        "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
-        "words": 768
+        "tailWords": 275,
+        "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
+        "words": 843
       },
       {
         "issues": [],
         "module": 16,
-        "tailWords": 124,
-        "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
-        "words": 803
+        "tailWords": 294,
+        "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
+        "words": 887
       },
       {
         "issues": [],

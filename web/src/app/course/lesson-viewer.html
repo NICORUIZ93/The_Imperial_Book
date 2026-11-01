@@ -91,7 +91,7 @@
       </section>
 
       <header class="book-topic-head" *ngIf="bookActive() && bookPageKind() === 'topic' && bookPageTopic() as topic">
-        <span class="book-topic-kicker">Tema {{ topic.index + 1 }} de {{ bookTopicCount() }} · § {{ m.id }}.{{ topic.index + 1 }}</span>
+        <span class="book-topic-kicker">§ {{ m.id }}.{{ topic.index + 1 }}</span>
         <h2>{{ topic.title }}</h2>
         <p class="book-topic-meta" *ngIf="topic.level || topic.duration">
           <span *ngIf="topic.level">{{ topic.level }}</span>

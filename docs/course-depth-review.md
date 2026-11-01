@@ -1095,29 +1095,29 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 11 | [Tema 1: Fat JAR vs capas de Docker · Intermedio · 45 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 11 | [Tema 2: GraalVM native image · Avanzado · 45 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 11 | [Tema 3: Health checks para Kubernetes · Intermedio · 40 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 12 | [Tema 1: Arquitectura del microservicio integrador](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 12 | [Tema 2: Integrando seguridad, persistencia y observabilidad](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 12 | [Tema 3: Cierre del track y próximos pasos](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 1: `@Transactional` funciona en una frontera, no como encantamiento](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 2: Recuperación implica duplicación segura](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 3: Contratos ejecutables protegen despliegues independientes](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 13 | [Tema 4: Observabilidad sirve a un objetivo y a una decisión](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 1: CRUD API y contratos](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 2: MySQL y datos espaciales](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 3: JPA e Hibernate Spatial](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 4: JWT Bearer y autorización por roles](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 5: Tiempo real con STOMP](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 14 | [Tema 6: Archivos y notificaciones push](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 1: Backpressure real en WebFlux con reactor-test](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 2: Contenedores Testcontainers reutilizados entre clases](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 3: Arquitectura hexagonal verificada con ArchUnit](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 4: Bulkhead y RateLimiter de Resilience4j](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 5: Saga con compensación real](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 6: Event Sourcing con replay real](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 15 | [Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida](../web/public/content/spring-boot/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
+| spring-boot / 12 | [Tema 1: Arquitectura del microservicio integrador · Experto · 3 h](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 12 | [Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 12 | [Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 13 | [Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 13 | [Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 13 | [Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 13 | [Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min](../web/public/content/spring-boot/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 1: CRUD API y contratos · Experto · 2 h 15 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 14 | [Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min](../web/public/content/spring-boot/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 5: Saga con compensación real · Experto · 2 h 10 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 6: Event Sourcing con replay real · Experto · 2 h](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 15 | [Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 16 | [Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min](../web/public/content/spring-boot/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
 | spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |

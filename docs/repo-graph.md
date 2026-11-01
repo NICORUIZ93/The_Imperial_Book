@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-01 03:05 UTC
+Generated: 2026-11-01 04:26 UTC
 Root: `Academia_Floci`
-Indexed files: 989
-Import edges: 57
+Indexed files: 991
+Import edges: 60
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,7 +15,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 60 files
+- `angular-app`: 62 files
 - `automation-script`: 41 files
 - `course-content`: 262 files
 - `documentation`: 66 files
@@ -29,7 +29,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.py`: 167
 - `.json`: 75
 - `.java`: 73
-- `.ts`: 66
+- `.ts`: 68
 - `.js`: 54
 - `.html`: 44
 - `.rs`: 25
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (83 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, bookReading, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1755 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1777 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -117,7 +117,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/rutaflow.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/spring-boot.track.ts`
 - `web/src/app/course-module.model.spec.ts` -> `web/src/app/course-module.model.ts`
+- `web/src/app/course/book-mode.service.spec.ts` -> `web/src/app/course/book-mode.service.ts`
+- `web/src/app/course/course-shell.ts` -> `web/src/app/course/book-mode.service.ts`
 - `web/src/app/course/course-shell.ts` -> `web/src/app/course/lesson-index.ts`
+- `web/src/app/course/lesson-viewer.ts` -> `web/src/app/course/book-mode.service.ts`
 - `web/src/app/learning-activities.spec.ts` -> `web/src/app/learning-activities.ts`
 - `web/src/app/progress.service.spec.ts` -> `web/src/app/progress.service.ts`
 - `web/src/app/progress.service.ts` -> `web/src/app/course-data.ts`
@@ -135,20 +138,20 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/javascript-master/src/main.ts`: in=0, out=5
 - `examples/javascript-master/src/demo.ts`: in=0, out=5
 - `web/src/app/command-palette.ts`: in=1, out=3
+- `web/src/app/course/book-mode.service.ts`: in=3, out=0
 - `web/src/app/app.ts`: in=2, out=1
+- `web/src/app/course/course-shell.ts`: in=1, out=2
 - `web/src/app/course-module.model.ts`: in=2, out=0
 - `web/src/app/catalog/course-catalog.ts`: in=2, out=0
 - `examples/rutaflow-material/socketio/gateway.mjs`: in=2, out=0
 - `examples/javascript-master/src/ui/delivery-button.ts`: in=2, out=0
 - `examples/javascript-master/src/domain/delivery-status.ts`: in=2, out=0
 - `web/src/app/progress.service.ts`: in=1, out=1
-- `web/src/app/course/course-shell.ts`: in=1, out=1
+- `web/src/app/course/lesson-viewer.ts`: in=1, out=1
 - `web/src/app/app.config.ts`: in=1, out=1
 - `web/src/main.ts`: in=0, out=2
 - `web/src/app/project-bootstrap.spec.ts`: in=0, out=2
 - `web/src/app/tracks/spring-boot.track.ts`: in=1, out=0
-- `web/src/app/tracks/rutaflow.track.ts`: in=1, out=0
-- `web/src/app/tracks/react.track.ts`: in=1, out=0
 
 ## Files By Area
 
@@ -161,19 +164,19 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.spec.ts` (326 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
-- `web/src/app/catalog/course-catalog.scss` (133 lines)
+- `web/src/app/catalog/course-catalog.scss` (243 lines)
 - `web/src/app/catalog/course-catalog.ts` (158 lines) - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks; imports: @angular/common, @angular/core, @angular/router, lucide-angular, ../course-data, ../track-guides, ../command-palette.service, ../icon-registry
 - `web/src/app/command-palette.html` (29 lines) - symbols: palette-title, palette-results
-- `web/src/app/command-palette.scss` (31 lines)
+- `web/src/app/command-palette.scss` (38 lines)
 - `web/src/app/command-palette.service.ts` (11 lines) - symbols: CommandPaletteService, isOpen; imports: @angular/core
-- `web/src/app/command-palette.ts` (129 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
+- `web/src/app/command-palette.ts` (130 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (40 lines) - symbols: ContentService; imports: @angular/core, marked
 - `web/src/app/course-data.ts` (887 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
 - `web/src/app/course-module.model.spec.ts` (14 lines) - imports: ./course-module.model
 - `web/src/app/course-module.model.ts` (37 lines) - symbols: CourseModule, Track
-- `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
-- `web/src/app/course/course-shell.scss` (87 lines)
-- ... 42 more files
+- `web/src/app/course/book-mode.service.spec.ts` (35 lines) - imports: ./book-mode.service
+- `web/src/app/course/book-mode.service.ts` (38 lines) - symbols: BookModeService, enabled; imports: @angular/core
+- ... 44 more files
 
 ### automation-script
 

@@ -11,7 +11,7 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 |---|---|---|
 | 0 · Sincronización | Cerrada | Corte del cierre: 252 módulos, 1131 temas; `validate.sh` en verde |
 | 1 · Infraestructura | Cerrada | Registro de migración, validador por módulo y auditorías adaptadas |
-| 2 · Piloto Spring Boot | En curso | M0–M11 migrados: 48/91 temas y 12 proyectos de cierre |
+| 2 · Piloto Spring Boot | En curso | M0–M16 migrados: 71/91 temas y 14 laboratorios de cierre |
 | 3 · Java + Node.js | En curso | Java: Módulos 21–22 nuevos en formato nuevo (10 temas); M0–M20 y Node pendientes |
 | 4 · JavaScript + Angular + React | No iniciada | Depende del piloto |
 | 5 · Cloud + DevOps | No iniciada | Depende del piloto |
@@ -19,9 +19,54 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 | 7 · Fundamentos + RutaFlow | No iniciada | Depende del piloto |
 | 8 · Huecos curriculares | No iniciada | Requiere fases 2–7 cerradas |
 
-El piloto migró sus doce primeros módulos sin perder temas ni fragmentos. El
+El piloto migró sus diecisiete primeros módulos sin perder temas ni fragmentos. El
 resto del contenido sigue en siete pasos; `docs/seven-step-methodology.md`
 declara ambos estados y `docs/migration-status.json` es la fuente de verdad.
+
+## Contrato de correspondencia: siete pasos → Aprende/Practica/Aplica
+
+Decisión del 2026-10-31: el formato canónico de todo el sitio es
+Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M16 y Java M21–M22. Los
+siete pasos no se borran: cada uno tiene un destino y su texto se mueve, se
+conserva y se completa.
+
+| Paso legacy | Destino en el formato canónico |
+|---|---|
+| 1 · Objetivo y preparación | `**Prerrequisito:**` y `**Al terminar podrás:**` al inicio del tema |
+| 2 · Contexto y caso real | `#### Aprende`, párrafo inicial «¿Por qué es importante?» |
+| 3 · Teoría con analogía | `#### Aprende`: conceptos clave, explicación y analogía |
+| 4 · Demostración guiada desde cero | `#### Practica`: demo paso a paso con archivos, comandos y salida esperada |
+| 5 · Práctica guiada — repetición progresiva | `#### Practica`: repetición con pista y comparación contra el patrón |
+| 6 · Práctica independiente | `#### Aplica`: reto abierto |
+| 7 · Cierre | `#### Aplica`: siguiente paso, errores comunes, límites o cuándo no usarlo, fuente oficial y transferencia al proyecto |
+
+El piloto Spring Boot M0–M16 sirve de referencia para cada fila; ningún paso
+queda sin destino. El formato canónico exige además contenido que el texto
+legacy puede no tener y que se redacta durante la migración, nunca se genera:
+
+- Título `### Tema N: … · [Nivel] · [Duración]`; el validador rechaza otro formato.
+- `**Checklist de salida.**` con al menos cuatro ítems verificables dentro de `Aplica`.
+- `**Si falla.**` con el diagnóstico del fallo reproducido en el tema.
+- Proyecto de cierre del módulo cuando el módulo ya lo trae; la migración no
+  inventa uno nuevo.
+
+Reglas para no perder contenido:
+
+1. Ningún párrafo del paso legacy se descarta. Si no encaja en su sección, se
+   conserva al final de `Aplica` con su etiqueta original.
+2. `#### Paso N` solo desaparece cuando su texto ya vive en la sección destino.
+3. El objetivo se redacta como resultado observable en segunda persona
+   («Al terminar podrás…»); no se deduce del título ni se copia del temario.
+4. Si un tema no trae checklist o «Si falla», se redactan a partir de lo que el
+   propio tema ya pide; no se añaden pasos, ejercicios ni afirmaciones nuevas.
+5. `docs/migration-status.json` marca un módulo solo después de que el validador
+   y `validate.sh` pasan.
+
+Verificación: `python3 scripts/validate_migration.py` (secciones, título, sin
+pasos residuales, checklist mínimo) y `python3 scripts/audit_seven_step_methodology.py --check`
+(un tema migrado deja de contar como legacy); el número de temas del track no
+puede bajar. En modo libro, ambos formatos deben leerse como la misma página:
+objetivo y prerrequisito al inicio, tres secciones y cierre con fuentes.
 
 ## Cifras corregidas
 

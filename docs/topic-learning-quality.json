@@ -228,11 +228,11 @@
       "filePath": 91,
       "runCommand": 91,
       "expectedResult": 91,
-      "practice": 91,
+      "practice": 78,
       "project": 91,
       "modelMental": 91,
       "limitsDecision": 91,
-      "practicable": 91,
+      "practicable": 78,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -23741,7 +23741,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 1: Arquitectura del microservicio integrador",
+        "topic": "Tema 1: Arquitectura del microservicio integrador · Experto · 3 h",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23749,21 +23749,21 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 14,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
         "module": 12,
-        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad",
+        "topic": "Tema 2: Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23771,21 +23771,21 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 14,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
         "module": 12,
-        "topic": "Tema 3: Cierre del track y próximos pasos",
+        "topic": "Tema 3: Cierre del track y próximos pasos · Experto · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23807,7 +23807,51 @@
       },
       {
         "module": 13,
-        "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
+        "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": false,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": false,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23829,51 +23873,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 2: Recuperación implica duplicación segura",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 13,
-        "topic": "Tema 3: Contratos ejecutables protegen despliegues independientes",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 13,
-        "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión",
+        "topic": "Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23895,7 +23895,73 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: CRUD API y contratos",
+        "topic": "Tema 1: CRUD API y contratos · Experto · 2 h 15 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": false,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 2: MySQL y datos espaciales · Experto · 1 h 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": false,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 3: JPA e Hibernate Spatial · Experto · 2 h 15 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": false,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 4: JWT Bearer y autorización por roles · Experto · 1 h 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23917,7 +23983,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: MySQL y datos espaciales",
+        "topic": "Tema 5: Tiempo real con STOMP · Experto · 2 h 15 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23939,7 +24005,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: JPA e Hibernate Spatial",
+        "topic": "Tema 6: Archivos y notificaciones push · Experto · 1 h 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23947,21 +24013,21 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 14,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
-        "module": 14,
-        "topic": "Tema 4: JWT Bearer y autorización por roles",
+        "module": 15,
+        "topic": "Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23969,21 +24035,21 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 14,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
-        "module": 14,
-        "topic": "Tema 5: Tiempo real con STOMP",
+        "module": 15,
+        "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23991,21 +24057,21 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 16,
-          "practicable": true,
+          "rubricScore": 14,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
-        "module": 14,
-        "topic": "Tema 6: Archivos y notificaciones push",
+        "module": 15,
+        "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24027,7 +24093,29 @@
       },
       {
         "module": 15,
-        "topic": "Tema 1: Backpressure real en WebFlux con reactor-test",
+        "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": false,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 5: Saga con compensación real · Experto · 2 h 10 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24049,7 +24137,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 2: Contenedores Testcontainers reutilizados entre clases",
+        "topic": "Tema 6: Event Sourcing con replay real · Experto · 2 h",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24071,95 +24159,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 3: Arquitectura hexagonal verificada con ArchUnit",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 15,
-        "topic": "Tema 4: Bulkhead y RateLimiter de Resilience4j",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 15,
-        "topic": "Tema 5: Saga con compensación real",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 15,
-        "topic": "Tema 6: Event Sourcing con replay real",
-        "criteria": {
-          "explanation": true,
-          "code": true,
-          "visual": true,
-          "filePath": true,
-          "runCommand": true,
-          "expectedResult": true,
-          "practice": true,
-          "project": true,
-          "modelMental": true,
-          "limitsDecision": true
-        },
-        "classification": {
-          "rubricScore": 16,
-          "practicable": true,
-          "genericScaffold": false,
-          "repeatedDemo": false
-        }
-      },
-      {
-        "module": 15,
-        "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+        "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24181,7 +24181,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework",
+        "topic": "Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24203,7 +24203,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida",
+        "topic": "Tema 1: Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24211,21 +24211,21 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
       },
       {
         "module": 16,
-        "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso",
+        "topic": "Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24233,14 +24233,14 @@
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": true,
+          "practice": false,
           "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 14,
-          "practicable": true,
+          "rubricScore": 12,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }

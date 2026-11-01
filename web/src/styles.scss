@@ -1,75 +1,76 @@
-// Identidad de academia: superficies claras, tinta azul y tipografía de lectura.
+// Identidad de academia: página impresa. Papel cálido, tinta negra y un único
+// acento óxido para lo que hay que mirar. Nada de azul de aplicación.
 :root,
 :root[data-theme='light'] {
-  --bg: #f4f7fb;               /* mesa: gris cálido muy claro detrás de la página */
-  --bg-elevated: #ffffff;      /* la página */
-  --bg-subtle: #edf2f8;        /* recuadros y código */
-  --bg-instrument: #edf2f8;    /* bloques de código: papel, no terminal negra */
-  --text: #17253b;             /* tinta */
-  --text-secondary: #52627a;
-  --text-faint: #64748b;       /* cabeceras corridas y números de página */
-  --accent: #315bcc;           /* rojo de las ilustraciones del libro */
-  --accent-hover: #2345a0;
-  --accent-soft: rgba(49, 91, 204, .08);
-  --accent-2: #315bcc;
-  --success: #2f8a57;
-  --success-soft: rgba(47, 138, 87, .10);
-  --warning: #b7791f;
-  --warning-soft: rgba(183, 121, 31, .10);
-  --error: #c53030;
-  --error-soft: rgba(197, 48, 48, .08);
-  --border: #dce4ee;
-  --border-strong: #c1cedd;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 6px 18px rgba(0,0,0,.06);
-  --shadow-lg: 0 18px 44px rgba(0,0,0,.08);
-  --glow: 0 0 0 1px rgba(214,59,59,.25);
-  --transition: .2s ease;
-  --code-bg: #edf2f8;
-  --code-text: #17253b;
-  --grad: #315bcc;             /* sin degradados: tinta plana */
-  --font-display: 'Fira Sans', system-ui, sans-serif;
-  --font-serif: 'Fira Sans', system-ui, sans-serif;  /* titulares */
-  --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;     /* cuerpo/UI */
-  --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace; /* código */
-  /* Prosa del modo libro: una serif de lectura del sistema, sin descargas. */
-  --font-reading: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-}
-
-// Tema oscuro = "lectura nocturna": la misma página, en papel gris carbón.
-:root[data-theme='dark'] {
-  --bg: #0c1525;
-  --bg-elevated: #121f32;
-  --bg-subtle: #192940;
-  --bg-instrument: #192940;
-  --text: #e6edf8;
-  --text-secondary: #b5c3d8;
-  --text-faint: #9bacbf;
-  --accent: #91b3ff;
-  --accent-hover: #b3cbff;
-  --accent-soft: rgba(145, 179, 255, .12);
-  --accent-2: #91b3ff;
-  --success: #5cc48a;
-  --success-soft: rgba(92, 196, 138, .12);
-  --warning: #e0a84f;
-  --warning-soft: rgba(224, 168, 79, .12);
-  --error: #ff7a7a;
-  --error-soft: rgba(255, 122, 122, .12);
-  --border: #293a52;
-  --border-strong: #425975;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
-  --shadow-md: 0 8px 22px rgba(0,0,0,.45);
-  --shadow-lg: 0 18px 44px rgba(0,0,0,.55);
-  --glow: 0 0 0 1px rgba(240,100,100,.35);
-  --transition: .2s ease;
-  --code-bg: #192940;
-  --code-text: #e2ebf8;
-  --grad: #91b3ff;
-  --font-display: 'Fira Sans', system-ui, sans-serif;
-  --font-serif: 'Fira Sans', system-ui, sans-serif;
+  --bg: #e7e4dd;               /* mesa: gris papel detrás de la hoja */
+  --bg-elevated: #fbfaf6;      /* la hoja */
+  --bg-subtle: #f1efe9;        /* filetes y recuadros */
+  --bg-instrument: #ececec;    /* listados de código, como en el libro */
+  --text: #1a1a1a;             /* tinta */
+  --text-secondary: #4d4a45;
+  --text-faint: #726d64;       /* cabeceras corridas y folios */
+  --accent: #8f2f2a;           /* óxido de las ilustraciones del libro */
+  --accent-hover: #6d211d;
+  --accent-soft: rgba(143, 47, 42, .07);
+  --accent-2: #8f2f2a;
+  --success: #2f6b45;
+  --success-soft: rgba(47, 107, 69, .08);
+  --warning: #8a5a12;
+  --warning-soft: rgba(138, 90, 18, .08);
+  --error: #a12222;
+  --error-soft: rgba(161, 34, 34, .07);
+  --border: #d8d3c8;
+  --border-strong: #b5ae9f;
+  --shadow-sm: 0 1px 0 rgba(26, 26, 26, .04);
+  --shadow-md: 0 0 0 1px rgba(26, 26, 26, .04);
+  --shadow-lg: 0 24px 48px -34px rgba(26, 26, 26, .38);
+  --glow: 0 0 0 1px rgba(143, 47, 42, .22);
+  --transition: .18s ease;
+  --code-bg: #ececec;
+  --code-text: #1a1a1a;
+  --grad: #8f2f2a;
+  --font-display: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
   --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace;
-  --font-reading: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  /* El libro de Marcombo compone el cuerpo en sans, no en serif. */
+  --font-reading: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+// Tema oscuro = "lectura nocturna": la misma página, en papel carbón.
+:root[data-theme='dark'] {
+  --bg: #141311;
+  --bg-elevated: #1d1c19;
+  --bg-subtle: #262420;
+  --bg-instrument: #2b2925;
+  --text: #ece8df;
+  --text-secondary: #bdb7ab;
+  --text-faint: #968f83;
+  --accent: #d99a95;
+  --accent-hover: #e9b3af;
+  --accent-soft: rgba(217, 154, 149, .10);
+  --accent-2: #d99a95;
+  --success: #7fbd97;
+  --success-soft: rgba(127, 189, 151, .10);
+  --warning: #d6ab6a;
+  --warning-soft: rgba(214, 171, 106, .10);
+  --error: #e59494;
+  --error-soft: rgba(229, 148, 148, .10);
+  --border: #3b3833;
+  --border-strong: #5a554d;
+  --shadow-sm: 0 1px 0 rgba(0, 0, 0, .35);
+  --shadow-md: 0 0 0 1px rgba(0, 0, 0, .3);
+  --shadow-lg: 0 28px 54px -34px rgba(0, 0, 0, .7);
+  --glow: 0 0 0 1px rgba(217, 154, 149, .28);
+  --transition: .18s ease;
+  --code-bg: #2b2925;
+  --code-text: #ece8df;
+  --grad: #d99a95;
+  --font-display: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace;
+  --font-reading: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 :root {
@@ -82,28 +83,31 @@
 :root[data-theme='dark'] { color-scheme: dark; }
 
 * { box-sizing: border-box; min-width: 0; }
-html { scroll-behavior: auto; overflow-x: hidden; }
+html { scroll-behavior: auto; overflow-x: clip; }
 body {
   margin: 0;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   color: var(--text);
   background: var(--bg);
+  font-size: 16px;
+  line-height: 1.65;
   transition: background var(--transition), color var(--transition);
 }
 
-// Titulares condensados como en el libro; el cuerpo hereda Fira Sans.
+// Titulares: sans negra, como las aperturas del manual. Sin condensar ni colorear.
 h1, h2, h3, h4, .serif {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: 0;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--text);
 }
 code, kbd, samp, pre, .mono { font-family: var(--font-mono); }
 
 button, input, textarea { font: inherit; letter-spacing: 0; }
 button { cursor: pointer; }
 button, a, input, summary, textarea { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent); outline-offset: 3px; }
+:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }
@@ -115,7 +119,7 @@ p, li, td, th, blockquote, figcaption {
 img, video, svg { max-width: 100%; height: auto; display: block; }
 .skip-link {
   position: fixed; z-index: 1000; top: 12px; left: 12px; padding: 10px 14px;
-  border-radius: 10px; color: #fff; background: var(--accent); font-weight: 700;
+  border-radius: 0; color: var(--bg-elevated); background: var(--text); font-weight: 700;
   transform: translateY(-160%); transition: transform var(--transition);
 }
 .skip-link:focus { transform: translateY(0); }

@@ -7,19 +7,15 @@ Anotar un método con `@Transactional`, publicar en Kafka y exponer Actuator no 
 
 Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercita bajo condiciones adversas: self-invocation real detectada con `TransactionSynchronizationManager`, una carrera real de dos threads contra una restricción única de base de datos, un contrato verificado con `MockMvc` contra el JSON real de la API, y `TestObservationRegistry` (la utilidad oficial de test de Micrometer Observation) confirmando tags de baja cardinalidad reales.
 
-### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento
+### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 3 de este track (JPA y transacciones básicas).
 
-Al finalizar podrás demostrar, con un test real (no una afirmación teórica), que una llamada `this.metodoInterno()` no atraviesa el proxy de Spring y por lo tanto `@Transactional` no aplica en ese caso, y sabrás corregirlo separando el caso de uso en un bean con límite coherente.
+**Al terminar podrás:** demostrar, con un test real (no una afirmación teórica), que una llamada `this.metodoInterno()` no atraviesa el proxy de Spring y por lo tanto `@Transactional` no aplica en ese caso, y sabrás corregirlo separando el caso de uso en un bean con límite coherente.
 
-**Conocimiento previo:** Módulo 3 de este track (JPA y transacciones básicas).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** En una plataforma de entregas, un fallo de base, red o consumidor puede ocurrir después de una escritura; una anotación `@Transactional` presente en el código puede no existir en runtime por self-invocation, una excepción capturada, o un método fuera del proxy — el fallo aparece como datos parcialmente comprometidos, no como un error obvio en el momento de escribir el código.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** proxy AOP, `TransactionInterceptor`, self-invocation, `REQUIRED`, `REQUIRES_NEW`, rollback rule.
 
@@ -38,7 +34,7 @@ flowchart LR
   M -.->|this.metodoInterno| I[NO cruza el proxy]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía y crea `src/main/java/io/academia/consistencia/`:
 
@@ -118,16 +114,14 @@ class SelfInvocationTest {
 
 **Fallo deliberado:** cambia `transaccionActivaViaSelfInvocation()` para llamar `metodoInternoAnotado()` como si fuera seguro para una operación de negocio real (por ejemplo, envolviendo un `repository.save(...)` dentro del método interno, asumiendo que `@Transactional` protege ese guardado). Con dos guardados dentro de `metodoInternoAnotado()` y una excepción entre ambos, ningún rollback ocurre — el primer `save` permanece comprometido en la base — porque, como el test ya demostró, no hay ninguna transacción real activa que revertir. Restaura la versión original antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega un tercer método `@Transactional(propagation = Propagation.REQUIRES_NEW)` y un test que confirme, con dos transacciones anidadas instrumentadas, que la interior usa una conexión distinta a la exterior.
 2. Simula una excepción checked dentro de un método `@Transactional` sin `rollbackFor` explícito, y confirma con un test que el commit ocurre igualmente (el comportamiento por defecto de Spring, contraintuitivo para quien viene de otros lenguajes).
 3. Agrega `@Transactional(rollbackFor = Exception.class)` a ese mismo método y confirma con un test que ahora sí revierte ante la misma excepción checked.
-4. Escribe de memoria (sin mirar) un servicio con self-invocation y un test `TransactionSynchronizationManager` que confirme la ausencia de transacción real. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un servicio con self-invocation y un test `TransactionSynchronizationManager` que confirme la ausencia de transacción real. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `TransactionSynchronizationManager.isActualTransactionActive()` es la forma más directa y real de responder "¿hay una transacción de verdad en este punto del código?" sin inspeccionar logs ni adivinar por el comportamiento observado — úsala como herramienta de diagnóstico, no solo en tests.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con la clase real de Spring que confirma si hay una transacción activa en el thread actual:
 
@@ -135,9 +129,17 @@ class SelfInvocationTest {
 boolean activa = ____.isActualTransactionActive();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un método público que llama internamente a un método `@Transactional` vía `this.`, y un test que confirme que la transacción NO está activa en ese caso. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un método público que llama internamente a un método `@Transactional` vía `this.`, y un test que confirme que la transacción NO está activa en ese caso. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Un test confirma con `TransactionSynchronizationManager.isActualTransactionActive()` que la self-invocation no abre transacción.
+- [ ] El caso de uso corregido vive en otro bean y el test confirma la transacción activa.
+- [ ] Una excepción checked sin `rollbackFor` deja el commit, reproducido con un test.
+- [ ] Con `rollbackFor = Exception.class` la misma excepción revierte.
+- [ ] Puedes explicar por qué el proxy no intercepta `this.metodoInterno()`.
+
+**Si falla.** Si el test detecta transacción en la self-invocation, comprueba que el servicio se inyecta como proxy y no se instancia con `new`. Si la excepción checked no revierte, añade `rollbackFor`: Spring solo revierte por defecto ante excepciones no comprobadas.
 
 Ya demuestras con un valor booleano real, no una afirmación teórica, que `@Transactional` depende de atravesar el proxy de Spring. El siguiente tema aborda qué hacer cuando un cliente repite una operación tras un timeout ambiguo. Fuentes oficiales: [Spring — Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html).
 
@@ -147,19 +149,15 @@ Ya demuestras con un valor booleano real, no una afirmación teórica, que `@Tra
 
 Entender los límites de `@Transactional` es esencial antes de escalar el proyecto integrador de este track (microservicio productivo, Módulo 12) a múltiples servicios con transacciones distribuidas.
 
-### Tema 2: Recuperación implica duplicación segura
+### Tema 2: Recuperación implica duplicación segura · Experto · 2 h 35 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Tema 1 de este módulo; Módulo 3 de este track (JPA).
 
-Al finalizar podrás demostrar, con dos threads reales compitiendo por la misma clave de idempotencia contra una restricción única de base de datos, que solo uno de los dos gana la carrera — la garantía real que evita procesar dos veces la misma operación tras un reintento.
+**Al terminar podrás:** demostrar, con dos threads reales compitiendo por la misma clave de idempotencia contra una restricción única de base de datos, que solo uno de los dos gana la carrera — la garantía real que evita procesar dos veces la misma operación tras un reintento.
 
-**Conocimiento previo:** Tema 1 de este módulo; Módulo 3 de este track (JPA).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Un timeout después del commit deja el resultado ambiguo desde la perspectiva del cliente: el cliente repite la petición, y el servidor debe reconocer que es la misma intención, no una segunda operación distinta. Reintentar mejora la disponibilidad, pero sin una identidad de operación explícita, multiplica los efectos.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** idempotency key, restricción única, transactional outbox, at-least-once.
 
@@ -180,7 +178,7 @@ sequenceDiagram
   DB-->>T2: DataIntegrityViolationException
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `demo-consistencia` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-idempotencia && cd demo-idempotencia && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,data-jpa,h2 -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/consistencia/idempotencia/`:
 
@@ -303,16 +301,14 @@ class RaceIdempotenciaTest {
 
 **Fallo deliberado:** reemplaza `registros.saveAndFlush(...)` dentro de un `try/catch` por un `find` previo (`if (registros.findByClaveIsPresent(claveCompartida)) return false; else registros.save(...)`) sin restricción única real respaldándolo, y ejecuta de nuevo el test con más iteraciones (por ejemplo 20 threads en vez de 2). El test FALLA intermitentemente: ambos threads pueden pasar el `find` antes de que cualquiera de los dos inserte, procesando el "pedido" dos veces — diagnostica confirmando por qué la teoría insiste en que un `find` previo no basta: sin la restricción única forzando la decisión atómicamente en la base de datos, la ventana de carrera entre el `find` y el `save` permite que ambos threads "ganen". Restaura la versión con restricción única antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Aumenta la competencia a 20 threads con la misma clave y confirma que la suma de resultados `true` es exactamente 1, sin importar cuántos threads compitan.
 2. Ejecuta 20 threads con 20 claves DISTINTAS y confirma que los 20 resultan en `true` (ninguna carrera real cuando las claves no coinciden).
 3. Agrega un campo `resultado` a `RegistroIdempotencia` para almacenar el resultado de la primera ejecución exitosa, y confirma con un test que un reintento posterior (tras que la clave ya exista) devuelve ese resultado guardado en vez de simplemente `false`.
-4. Escribe de memoria (sin mirar) un `PedidoService` con una restricción única de idempotencia, y un test con `ExecutorService` de dos threads que confirme la carrera real. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `PedidoService` con una restricción única de idempotencia, y un test con `ExecutorService` de dos threads que confirme la carrera real. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `pool.invokeAll(...)` bloquea hasta que AMBAS tareas terminan, y cada `Future.get()` propaga cualquier excepción real que ocurrió dentro del thread — una forma directa de coordinar y verificar el resultado de una carrera real entre threads sin necesitar sincronización manual adicional en el test.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con la excepción real que Spring Data lanza cuando una restricción única de base de datos rechaza un insert duplicado:
 
@@ -325,9 +321,17 @@ try {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con idempotencia respaldada por restricción única, y un test con dos threads reales que confirme que exactamente uno gana la carrera. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con idempotencia respaldada por restricción única, y un test con dos threads reales que confirme que exactamente uno gana la carrera. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Dos threads con la misma clave producen exactamente un resultado exitoso.
+- [ ] Veinte threads con veinte claves distintas producen veinte éxitos.
+- [ ] La garantía la impone una restricción única de base de datos, no un `find` previo.
+- [ ] Un reintento con la clave ya registrada devuelve el resultado guardado.
+- [ ] El duplicado se captura como la excepción real que lanza Spring Data.
+
+**Si falla.** Si ambos threads ganan, falta la restricción única o la transacción no se confirma antes del segundo insert. Si el reintento devuelve `false` sin el resultado, guarda el resultado en el registro de idempotencia dentro de la misma transacción que la clave.
 
 Ya demuestras con una carrera real entre threads que una restricción única de base de datos, no un `find` previo, es lo que garantiza idempotencia bajo concurrencia genuina. El siguiente tema protege el contrato HTTP que consumidores externos dependen de que no cambie sin previo aviso. Fuentes oficiales: [Spring Data — Optimistic and Pessimistic Locking](https://docs.spring.io/spring-data/jpa/reference/jpa/locking.html).
 
@@ -337,19 +341,15 @@ Ya demuestras con una carrera real entre threads que una restricción única de 
 
 La duplicación segura (idempotencia) de este tema es la que protegerá al proyecto integrador de este track (microservicio productivo, Módulo 12) de reintentos duplicados.
 
-### Tema 3: Contratos ejecutables protegen despliegues independientes
+### Tema 3: Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 2 de este track (controllers y DTOs).
 
-Al finalizar podrás verificar, con `MockMvc` contra el JSON real producido por un endpoint, que la API cumple el contrato exacto que un consumidor externo espera, y demostrar en código qué tipo de cambio (status, campo, enum) rompe ese contrato de forma silenciosa.
+**Al terminar podrás:** verificar, con `MockMvc` contra el JSON real producido por un endpoint, que la API cumple el contrato exacto que un consumidor externo espera, y demostrar en código qué tipo de cambio (status, campo, enum) rompe ese contrato de forma silenciosa.
 
-**Conocimiento previo:** Módulo 2 de este track (controllers y DTOs).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Tests internos verdes no ejecutan código de consumidores desplegados por otros equipos, ni de dispositivos móviles que no se actualizan al mismo tiempo que el backend. Un cambio que parece inocuo desde dentro del servicio (renombrar un campo, agregar un valor a un enum) puede romper silenciosamente a un consumidor que no puede desplegarse en sincronía.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** contract test, backward compatibility, additive change, Problem Details.
 
@@ -367,7 +367,7 @@ OpenAPI documenta request, response, seguridad y errores, usando DTOs públicos 
 └──────────────────────┘   └───────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `demo-consistencia` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `mkdir demo-contratos && cd demo-contratos && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersion=25 -o app.zip && unzip app.zip`), crea `src/main/java/io/academia/consistencia/api/PedidoController.java`:
 
@@ -435,16 +435,14 @@ class ContratoPedidoTest {
 
 **Fallo deliberado:** cambia el enum `Estado` para renombrar `ACCEPTED` a `CONFIRMED` (un cambio que "suena" equivalente desde dentro del servicio) y ejecuta de nuevo el test. FALLA con `AssertionError` real: `$.status` esperaba `"ACCEPTED"` pero recibió `"CONFIRMED"` — diagnostica confirmando que un consumidor externo con un `switch` exhaustivo sobre el valor textual `"ACCEPTED"` se rompería silenciosamente en producción con este cambio, algo que ningún test interno del servicio (que solo verifica su propia lógica) detectaría sin este contrato explícito. Restaura `ACCEPTED` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega un campo opcional nuevo (`estimatedDelivery`) al `PedidoResponse` y confirma con un test que el contrato existente (`id`, `status`) sigue pasando sin modificación — un cambio aditivo real y verificado, no solo asumido seguro.
 2. Agrega un tercer valor al enum `Estado` (`PENDING`) y documenta, en un comentario del test, qué tipo de consumidor específico (uno con `switch` exhaustivo en Java, TypeScript o Kotlin) se rompería al recibir ese valor nuevo sin haберse actualizado primero.
 3. Escribe un test de contrato para el caso de error (`400 Bad Request` con `Problem Details`) cuando el body de la petición es inválido.
-4. Escribe de memoria (sin mirar) un test `MockMvc` que verifique el `status` HTTP exacto y el valor exacto de un campo enum en la respuesta JSON. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un test `MockMvc` que verifique el `status` HTTP exacto y el valor exacto de un campo enum en la respuesta JSON. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `jsonPath("$.status").value("ACCEPTED")` verifica el VALOR TEXTUAL exacto del JSON producido, no el nombre de la constante Java del enum — si `@JsonProperty` o una estrategia de serialización personalizada transforma ese valor, el contrato debe verificar el texto que realmente viaja por la red, no el nombre interno de la constante.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el matcher de MockMvc que verifica el valor exacto de un campo JSON en la respuesta:
 
@@ -453,9 +451,17 @@ mockMvc.perform(post("/api/orders")...)
     .andExpect(____("$.status").value("ACCEPTED"));
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `PedidoController` con un enum de estado, y un test `MockMvc` que verifique el contrato exacto de status HTTP y valor de enum. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `PedidoController` con un enum de estado, y un test `MockMvc` que verifique el contrato exacto de status HTTP y valor de enum. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `MockMvc` verifica el status HTTP exacto y el valor textual del enum en el JSON.
+- [ ] Un campo opcional nuevo no rompe el contrato existente, comprobado con el mismo test.
+- [ ] Un valor nuevo de enum queda documentado con el consumidor que se rompería.
+- [ ] El caso `400` con Problem Details tiene su propio test.
+- [ ] Puedes decir qué cambios son aditivos y cuáles rompen a un consumidor desplegado.
+
+**Si falla.** Si `jsonPath` no encuentra el campo, revisa la ruta `$...` y la serialización (`@JsonProperty`). Si el contrato pasa pero el cliente real falla, el test está mirando el objeto Java y no el JSON que viaja por la red.
 
 Ya verificas contratos HTTP contra el JSON real producido por la API, demostrando en código qué cambios rompen silenciosamente a consumidores externos. El siguiente y último tema conecta trazas, métricas y logs para responder preguntas operativas reales durante un incidente. Fuentes oficiales: [Spring Cloud Contract](https://docs.spring.io/spring-cloud-contract/reference/) y [RFC 7807 — Problem Details](https://www.rfc-editor.org/rfc/rfc7807).
 
@@ -465,19 +471,15 @@ Ya verificas contratos HTTP contra el JSON real producido por la API, demostrand
 
 Los contratos ejecutables de este tema son los que permitirán desplegar el proyecto integrador de este track (microservicio productivo, Módulo 12) de forma independiente de sus consumidores.
 
-### Tema 4: Observabilidad sirve a un objetivo y a una decisión
+### Tema 4: Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 7 de este track (Actuator y Micrometer).
 
-Al finalizar podrás confirmar, con `TestObservationRegistry` (la utilidad oficial de test de Micrometer Observation), que una operación de negocio registra una observación real con tags de baja cardinalidad, y explicar por qué un tag de alta cardinalidad como un `orderId` no debe usarse como label métrico.
+**Al terminar podrás:** confirmar, con `TestObservationRegistry` (la utilidad oficial de test de Micrometer Observation), que una operación de negocio registra una observación real con tags de baja cardinalidad, y explicar por qué un tag de alta cardinalidad como un `orderId` no debe usarse como label métrico.
 
-**Conocimiento previo:** Módulo 7 de este track (Actuator y Micrometer).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Logs aislados no reconstruyen una operación que atraviesa HTTP, base de datos y Kafka; y retries sin un presupuesto de tiempo definido convierten una lentitud puntual en una saturación total del sistema. La observabilidad debe responder preguntas operativas concretas, no simplemente "llenar la cabina de luces".
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** Observation, baja cardinalidad, SLI/SLO, error budget.
 
@@ -494,7 +496,7 @@ flowchart LR
   C --> D[TestObservationRegistry confirma name + tags reales]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Continuando en `demo-consistencia` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `mkdir demo-observabilidad && cd demo-observabilidad && curl -fsSL https://start.spring.io/starter.zip -d dependencies=web,actuator -d javaVersion=25 -o app.zip && unzip app.zip`), agrega `io.micrometer:micrometer-observation-test` al `pom.xml` (la dependencia oficial de test de Micrometer) y crea `src/main/java/io/academia/consistencia/observabilidad/`:
 
@@ -568,16 +570,14 @@ class ObservabilidadTest {
 
 **Fallo deliberado:** cambia `lowCardinalityKeyValue("channel", canal)` por `lowCardinalityKeyValue("orderId", "PED-" + System.nanoTime())` (agregando un identificador único como tag) y documenta el resultado: el test de contrato de cardinalidad seguiría "pasando" técnicamente (el valor se registra), pero en un sistema de métricas real (Prometheus, por ejemplo) cada `orderId` distinto crearía una serie temporal nueva, y con miles de pedidos por día el sistema de métricas se degradaría o directamente rechazaría la cardinalidad — diagnostica confirmando por qué la disciplina de baja cardinalidad no es estilística: es un límite técnico real del sistema de métricas subyacente, aunque el propio test de `TestObservationRegistry` no lo capture directamente (esa protección adicional requiere un límite de cardinalidad configurado en el `MeterRegistry` de producción). Restaura `channel` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega un segundo tag de baja cardinalidad (`result`, con valores `success`/`failure`) a `PedidoObservadoService.crear(...)`, y confirma con un test que ambos casos (éxito y una excepción simulada) registran el tag correcto.
 2. Documenta, en un comentario, la diferencia entre un `correlationId` de negocio (que puede acompañar una traza) y un trace/span ID real generado por OpenTelemetry — el primero no reemplaza al segundo.
 3. Escribe una definición de SLI en una frase para tu propio dominio (por ejemplo, "proporción de confirmaciones de entrega procesadas en menos de 500ms") y documenta qué tag de baja cardinalidad (`result`) permitiría calcular ese SLI a partir de las observaciones instrumentadas.
-4. Escribe de memoria (sin mirar) un servicio instrumentado con `Observation` y un test `TestObservationRegistry` que confirme el nombre y un tag de baja cardinalidad. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un servicio instrumentado con `Observation` y un test `TestObservationRegistry` que confirme el nombre y un tag de baja cardinalidad. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo(...)` es la API oficial y fluida de aserciones de Micrometer para observaciones — encadenar `.that().hasLowCardinalityKeyValue(...)` es la forma idiomática de verificar tags específicos sin inspeccionar manualmente la estructura interna del registro.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método que agrega un tag de baja cardinalidad a una observación:
 
@@ -587,9 +587,17 @@ Observation.createNotStarted("order.create", registry)
     .observe(() -> ...);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio instrumentado con `Observation` y un tag de baja cardinalidad, y un test `TestObservationRegistry` que lo confirme. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio instrumentado con `Observation` y un tag de baja cardinalidad, y un test `TestObservationRegistry` que lo confirme. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `TestObservationRegistry` encuentra la observación por su nombre.
+- [ ] La observación lleva tags de baja cardinalidad (`channel`, `result`).
+- [ ] Ningún identificador único (`orderId`, `shipmentId`) se usa como tag.
+- [ ] El SLI definido se puede calcular con los tags registrados.
+- [ ] Éxito y fallo registran el valor correcto del tag `result`.
+
+**Si falla.** Si la observación no aparece, comprueba que el servicio y el test comparten el mismo `ObservationRegistry`. Si falta el tag, añádelo con `lowCardinalityKeyValue` antes de `observe(...)`.
 
 Ya confirmas con la utilidad oficial de test de Micrometer que una operación de negocio registra observaciones reales con tags de baja cardinalidad, y explicas por qué un identificador único como tag degradaría un sistema de métricas real. Este era el último tema del módulo; el siguiente paso es el laboratorio práctico que integra las cuatro garantías en un proyecto propio bajo fallos reales. Fuentes oficiales: [Micrometer — Observation](https://docs.micrometer.io/micrometer/reference/observation.html) y [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/).
 

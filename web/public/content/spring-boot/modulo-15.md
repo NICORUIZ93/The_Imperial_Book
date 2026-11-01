@@ -3,21 +3,17 @@
 
 ## Aprende construyendo
 
-Este módulo cierra el nivel "master" del track con seis técnicas avanzadas, cada una verificada con una herramienta real y oficial del ecosistema, sin sustituir infraestructura por descripción: `reactor-test` para backpressure real, el patrón oficial de Testcontainers para contenedores reutilizados, ArchUnit para congelar reglas arquitectónicas, Resilience4j Bulkhead/RateLimiter, un orquestador de saga con compensación real, y un event store con replay real.
+Este módulo cierra el nivel "master" del track con ocho técnicas avanzadas, cada una verificada con una herramienta real y oficial del ecosistema, sin sustituir infraestructura por descripción: `reactor-test` para backpressure real, el patrón oficial de Testcontainers para contenedores reutilizados, ArchUnit para congelar reglas arquitectónicas, Resilience4j Bulkhead/RateLimiter, un orquestador de saga con compensación real, un event store con replay real, la recuperación de una compensación que falla sin duplicar su efecto, y la separación entre dominio, caso de uso, puerto y adaptador sin acoplar el dominio a Spring.
 
-### Tema 1: Backpressure real en WebFlux con reactor-test
+### Tema 1: Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 9 de este track (Mono, Flux, StepVerifier).
 
-Al finalizar podrás demostrar, con `StepVerifier` y una demanda inicial controlada, que un `Flux` respeta el backpressure real de Reactive Streams: solo emite exactamente lo que el suscriptor solicitó, ni un elemento más.
+**Al terminar podrás:** demostrar, con `StepVerifier` y una demanda inicial controlada, que un `Flux` respeta el backpressure real de Reactive Streams: solo emite exactamente lo que el suscriptor solicitó, ni un elemento más.
 
-**Conocimiento previo:** Módulo 9 de este track (Mono, Flux, StepVerifier).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Netty (el servidor sobre el que corre WebFlux) usa un pequeño número de threads de event loop; sin backpressure real, un productor rápido podría saturar la memoria de un consumidor lento acumulando elementos sin control. Reactive Streams resuelve esto con demanda explícita: el consumidor pide cuántos elementos quiere, no al revés.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** demanda explícita (`request(n)`), `doOnRequest`, demanda ilimitada por defecto.
 
@@ -37,7 +33,7 @@ sequenceDiagram
   F-->>S: elemento 4...10
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía y crea `src/test/java/io/academia/master/backpressure/BackpressureRealTest.java`:
 
@@ -90,16 +86,14 @@ class BackpressureRealTest {
 
 **Fallo deliberado:** cambia `StepVerifier.create(flux, 0)` por `StepVerifier.create(flux)` (sin demanda inicial explícita, el valor por defecto) y ejecuta de nuevo. La aserción `containsExactly(3L, 7L)` FALLA, porque ahora `demandasSolicitadas` contiene una única entrada `Long.MAX_VALUE` — diagnostica confirmando que el `StepVerifier` por defecto (como la mayoría de consumidores reales) solicita demanda ilimitada de inmediato, anulando cualquier control de backpressure. Restaura la demanda inicial `0` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Cambia la demanda inicial a `1` y solicita de a un elemento por vez (`thenRequest(1)` repetido 10 veces), confirmando que `demandasSolicitadas` contiene diez entradas de `1L`.
 2. Agrega un `.limitRate(4)` al Flux y documenta, con un test, cómo cambia el patrón de solicitudes de demanda registradas por `doOnRequest`.
 3. Simula un consumidor lento con `.delayElements(Duration.ofMillis(50))` y confirma con `StepVerifier` (usando su reloj virtual) que el tiempo total respeta ese retraso por elemento.
-4. Escribe de memoria (sin mirar) un `Flux` con `doOnRequest`, y un `StepVerifier` con demanda inicial `0` que confirme el backpressure real. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `Flux` con `doOnRequest`, y un `StepVerifier` con demanda inicial `0` que confirme el backpressure real. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `StepVerifier.create(publisher, initialRequest)` es la sobrecarga oficial de `reactor-test` que permite arrancar con una demanda inicial distinta de la ilimitada por defecto — imprescindible para probar backpressure real en vez de el camino feliz sin restricciones.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método de `StepVerifier` que solicita una cantidad específica de elementos:
 
@@ -109,9 +103,17 @@ StepVerifier.create(flux, 0)
     .expectNext(1, 2, 3)
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Flux` con `doOnRequest` y un test que confirme, con demanda inicial `0`, que el backpressure real limita lo emitido. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Flux` con `doOnRequest` y un test que confirme, con demanda inicial `0`, que el backpressure real limita lo emitido. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `StepVerifier` arranca con demanda `0` y el `Flux` no emite nada hasta `thenRequest`.
+- [ ] `doOnRequest` registra exactamente las solicitudes reales (`3` y `7`).
+- [ ] Una demanda inicial por defecto produce una única solicitud `Long.MAX_VALUE`, y el test lo demuestra.
+- [ ] El consumidor lento con `delayElements` se verifica con el reloj virtual de `StepVerifier`.
+- [ ] `limitRate(4)` cambia el patrón de solicitudes y queda documentado con un test.
+
+**Si falla.** Si el `Flux` emite antes de `thenRequest`, la demanda inicial no es `0`. Si `demandasSolicitadas` contiene `Long.MAX_VALUE`, el `StepVerifier` se creó sin demanda explícita. Si `delayElements` tarda el tiempo real del test, el reloj virtual no está en uso.
 
 Ya demuestras con `reactor-test` que el backpressure de Reactive Streams es un mecanismo real de demanda explícita, no una descripción abstracta. El siguiente tema acelera la suite de tests reutilizando contenedores de Testcontainers entre clases. Fuentes oficiales: [Project Reactor — Testing](https://projectreactor.io/docs/core/release/reference/testing.html).
 
@@ -121,19 +123,15 @@ Ya demuestras con `reactor-test` que el backpressure de Reactive Streams es un m
 
 Verificar backpressure con `reactor-test` es la prueba que confirmaría que el proyecto integrador de este track (microservicio productivo, Módulo 12), si usa WebFlux, no colapsa bajo carga.
 
-### Tema 2: Contenedores Testcontainers reutilizados entre clases
+### Tema 2: Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 6 de este track (Testcontainers básico).
 
-Al finalizar podrás aplicar el patrón oficial de "singleton container" de Testcontainers para que dos clases de test distintas reutilicen el MISMO contenedor real, confirmado comparando el `containerId` real entre ambas.
+**Al terminar podrás:** aplicar el patrón oficial de "singleton container" de Testcontainers para que dos clases de test distintas reutilicen el MISMO contenedor real, confirmado comparando el `containerId` real entre ambas.
 
-**Conocimiento previo:** Módulo 6 de este track (Testcontainers básico).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Sin reutilización, cada clase de test con `@Testcontainers` arranca y detiene su propio contenedor, y una suite con decenas de clases puede pasar minutos solo levantando y bajando bases de datos idénticas repetidamente, ralentizando el ciclo de feedback de CI.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** singleton container, `getContainerId()`, contenedor compartido entre clases.
 
@@ -150,7 +148,7 @@ El patrón oficial de "singleton container" de Testcontainers arranca un único 
 └──────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía y crea `src/test/java/io/academia/master/singleton/ContenedorCompartido.java`:
 
@@ -220,16 +218,14 @@ public class SegundaClaseTest extends ContenedorCompartido {
 
 **Fallo deliberado:** quita el bloque `static { POSTGRES.start(); }` (dejando que cada clase dependa de un arranque implícito que no ocurre de forma compartida) y ejecuta de nuevo. Los tests fallan con errores de conexión reales (el contenedor nunca arrancó) — diagnostica confirmando que el patrón singleton container depende explícitamente de un arranque estático único y deliberado, no de la gestión automática por clase que `@Testcontainers`/`@Container` normalmente proveen. Restaura el bloque `static` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega una tercera clase de test que extienda `ContenedorCompartido` y confirma que también comparte el mismo `containerId`.
 2. Documenta, en un comentario, por qué este patrón requiere que las clases NO usen `@Testcontainers`/`@Container` (que gestionarían el ciclo de vida automáticamente por clase, entrando en conflicto con el arranque manual compartido).
 3. Mide con `System.currentTimeMillis()` el tiempo total de ejecutar las dos clases con el contenedor compartido, comparado con una versión donde cada clase usa su propio `@Container` independiente, y documenta la diferencia real observada.
-4. Escribe de memoria (sin mirar) una clase base `ContenedorCompartido` con arranque estático único, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) una clase base `ContenedorCompartido` con arranque estático único, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `getContainerId()` devuelve el ID real y único que Docker asignó al contenedor en ejecución — es la forma más directa de confirmar con evidencia, no solo con inferencia por velocidad, si dos referencias apuntan al mismo contenedor físico o a instancias distintas.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método real de Testcontainers que devuelve el identificador único del contenedor en ejecución:
 
@@ -237,9 +233,17 @@ public class SegundaClaseTest extends ContenedorCompartido {
 String id = POSTGRES.____();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase base con un contenedor compartido arrancado estáticamente, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una clase base con un contenedor compartido arrancado estáticamente, y dos clases de test que confirmen el mismo `containerId`. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Dos clases de test obtienen el mismo `getContainerId()`.
+- [ ] El contenedor se arranca una sola vez en un bloque `static`.
+- [ ] Ninguna subclase usa `@Testcontainers`/`@Container`.
+- [ ] Quitar el arranque estático produce errores de conexión, no un falso verde.
+- [ ] Una tercera clase comparte el mismo contenedor.
+
+**Si falla.** Si cada clase ve un ID distinto, el contenedor se crea por clase. Si falla la conexión, falta el arranque estático. Si el test dura lo mismo con y sin el patrón, la medición no está comparando lo que crees.
 
 Ya aplicas el patrón oficial de contenedor compartido de Testcontainers, confirmado con evidencia real del `containerId`, para acelerar una suite de tests con múltiples clases. El siguiente tema congela reglas arquitectónicas de un diseño hexagonal con una herramienta que las verifica automáticamente. Fuentes oficiales: [Testcontainers — Manual Container Lifecycle Control](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/).
 
@@ -249,19 +253,15 @@ Ya aplicas el patrón oficial de contenedor compartido de Testcontainers, confir
 
 Reutilizar contenedores Testcontainers entre clases es la optimización que mantendría rápida la suite de pruebas del proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-### Tema 3: Arquitectura hexagonal verificada con ArchUnit
+### Tema 3: Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 10 Tema 6 de este track (DDD y contextos delimitados).
 
-Al finalizar podrás escribir una regla de ArchUnit (la librería oficial de test de arquitectura para Java) que falla automáticamente si el paquete de dominio depende de infraestructura, congelando la regla hexagonal como código verificable, no como una convención de equipo no forzada.
+**Al terminar podrás:** escribir una regla de ArchUnit (la librería oficial de test de arquitectura para Java) que falla automáticamente si el paquete de dominio depende de infraestructura, congelando la regla hexagonal como código verificable, no como una convención de equipo no forzada.
 
-**Conocimiento previo:** Módulo 10 Tema 6 de este track (DDD y contextos delimitados).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Una arquitectura hexagonal (puertos y adaptadores) mantiene el dominio independiente de detalles de infraestructura (framework, base de datos concreta) SOLO si esa regla se respeta consistentemente; sin verificación automatizada, un import accidental de una clase JPA dentro del paquete de dominio pasa desapercibido en una revisión de código apurada.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** puerto (interfaz), adaptador (implementación), regla arquitectónica como test.
 
@@ -278,7 +278,7 @@ flowchart LR
   I -.->|PROHIBIDO: domain -> infrastructure| D
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía, agrega `com.tngtech.archunit:archunit-junit5` al `pom.xml` (la librería oficial de ArchUnit), y crea `src/main/java/io/academia/master/hexagonal/domain/Pedido.java`:
 
@@ -362,16 +362,14 @@ class ReglaHexagonalTest {
 
 **Fallo deliberado:** modifica `Pedido.java` (en `domain`) para que importe y use `JpaPedidoRepository` directamente (por ejemplo, agregando un campo `private JpaPedidoRepository repo;`) y ejecuta de nuevo el test. FALLA con un mensaje real y específico de ArchUnit: `Architecture Violation ... Pedido does not satisfy: ... because Pedido.class depends on JpaPedidoRepository` — diagnostica confirmando que ArchUnit atrapa la violación en el momento exacto en que ocurre, en el build, en vez de descubrirse meses después en una revisión de código o, peor, nunca. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega una segunda regla que confirme que las clases en `infrastructure` SÍ pueden depender de `domain` (la dirección permitida), usando `classes().that().resideInAPackage("..infrastructure..").should().dependOnClassesThat().resideInAPackage("..domain..").orShould()...` según corresponda.
 2. Agrega una regla de nomenclatura (`classes().that().resideInAPackage("..infrastructure..").should().haveSimpleNameEndingWith("Repository").orShould()...`) y confirma que se cumple sobre el código existente.
 3. Documenta, en un comentario, la diferencia entre una violación arquitectónica detectada por ArchUnit (en el build) y la misma violación detectada solo en una revisión de código manual (mucho más tarde, si es que se detecta).
-4. Escribe de memoria (sin mirar) una regla ArchUnit que prohíba una dependencia entre dos paquetes, y confirma con un test que se cumple sobre tu propio código. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) una regla ArchUnit que prohíba una dependencia entre dos paquetes, y confirma con un test que se cumple sobre tu propio código. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `new ClassFileImporter().importPackages(...)` analiza el BYTECODE COMPILADO, no el texto fuente — esto significa que ArchUnit detecta dependencias reales incluso a través de generación de código o reflexión indirecta que un simple `grep` sobre el código fuente podría pasar por alto.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método de ArchUnit que expresa "ninguna clase debería depender de":
 
@@ -380,9 +378,17 @@ ArchRule regla = noClasses().that().resideInAPackage("..domain..")
     .should().____().resideInAPackage("..infrastructure..");
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una regla ArchUnit que prohíba que el dominio dependa de la infraestructura, y un test que la ejecute. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una regla ArchUnit que prohíba que el dominio dependa de la infraestructura, y un test que la ejecute. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] ArchUnit analiza el bytecode compilado de todo el paquete.
+- [ ] `noClasses().that().resideInAPackage("..domain..")` no depende de `..infrastructure..`.
+- [ ] Un import de infraestructura dentro del dominio hace fallar el build con el mensaje de ArchUnit.
+- [ ] La dirección permitida (infraestructura → dominio) también está expresada.
+- [ ] La regla corre en cada build, no solo en una revisión manual.
+
+**Si falla.** Si la regla pasa pese al import, el paquete importado no coincide con el patrón. Si falla por clases de terceros, restringe el import con `importPackages`. Si el mensaje no nombra la clase, revisa el `ClassFileImporter`.
 
 Ya congelas una regla arquitectónica hexagonal como un test ejecutable con ArchUnit, atrapando violaciones en el build en vez de en una revisión manual. El siguiente tema protege llamadas entre servicios con Bulkhead y RateLimiter de Resilience4j, complementando el CircuitBreaker ya visto. Fuentes oficiales: [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
@@ -392,19 +398,15 @@ Ya congelas una regla arquitectónica hexagonal como un test ejecutable con Arch
 
 Verificar la arquitectura hexagonal con ArchUnit es lo que protegería los límites de capas del proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-### Tema 4: Bulkhead y RateLimiter de Resilience4j
+### Tema 4: Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 10 Tema 3 de este track (CircuitBreaker de Resilience4j).
 
-Al finalizar podrás confirmar, con llamadas concurrentes reales, que un `Bulkhead` limita el número de llamadas simultáneas hacia una dependencia, y que un `RateLimiter` limita la tasa de llamadas por período de tiempo, complementando el `CircuitBreaker` ya visto en el Módulo 10.
+**Al terminar podrás:** confirmar, con llamadas concurrentes reales, que un `Bulkhead` limita el número de llamadas simultáneas hacia una dependencia, y que un `RateLimiter` limita la tasa de llamadas por período de tiempo, complementando el `CircuitBreaker` ya visto en el Módulo 10.
 
-**Conocimiento previo:** Módulo 10 Tema 3 de este track (CircuitBreaker de Resilience4j).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Un `CircuitBreaker` reacciona a fallos ya ocurridos; un `Bulkhead` PREVIENE que una única dependencia lenta consuma todos los threads/recursos disponibles, aislando su impacto; un `RateLimiter` protege a la dependencia misma de recibir más tráfico del que puede soportar, independientemente de si está fallando o no.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** Bulkhead (aislamiento de recursos), RateLimiter (límite de tasa).
 
@@ -421,7 +423,7 @@ Un `Bulkhead` limita cuántas llamadas concurrentes pueden ejecutarse simultáne
 └──────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía, agrega `io.github.resilience4j:resilience4j-bulkhead` y `io.github.resilience4j:resilience4j-ratelimiter` al `pom.xml`, y crea `src/test/java/io/academia/master/resilience/BulkheadRateLimiterTest.java`:
 
@@ -512,16 +514,14 @@ class BulkheadRateLimiterTest {
 
 **Fallo deliberado:** cambia `maxConcurrentCalls(2)` a `maxConcurrentCalls(10)` y ejecuta de nuevo `elBulkheadRechazaLlamadasQueSuperanElMaximoConcurrenteReal`. El test FALLA porque la tercera llamada ya NO se rechaza (`rechazadas.get()` queda en `0`) — diagnostica confirmando que el límite de concurrencia del Bulkhead es exactamente el parámetro configurado, y que dimensionarlo incorrectamente (demasiado alto) elimina la protección real que debía ofrecer. Restaura `maxConcurrentCalls(2)` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Reduce `limitForPeriod` a 1 y confirma con un test que solo la primera llamada de cada ventana de tiempo se acepta.
 2. Configura un `timeoutDuration` distinto de cero en el `RateLimiter` y confirma con un test que una llamada esperando ese timeout SÍ puede obtener un permiso si se libera uno durante la espera.
 3. Combina `Bulkhead.decorateSupplier` con `CircuitBreaker.decorateSupplier` (Módulo 10) en una única cadena de decoradores, y documenta el orden de aplicación recomendado.
-4. Escribe de memoria (sin mirar) un `BulkheadConfig` con un límite de concurrencia, y un test con `CountDownLatch` que confirme el rechazo real de una llamada que excede ese límite. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `BulkheadConfig` con un límite de concurrencia, y un test con `CountDownLatch` que confirme el rechazo real de una llamada que excede ese límite. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `CountDownLatch` es la herramienta correcta para coordinar temporalmente threads reales en un test de concurrencia — sin ella, un test de Bulkhead podría fallar intermitentemente por condiciones de carrera en el timing, en vez de confirmar de forma determinista que las llamadas concurrentes efectivamente ocupan el bulkhead antes de intentar la que debe rechazarse.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con la excepción real que Resilience4j lanza cuando un Bulkhead está lleno:
 
@@ -533,9 +533,17 @@ try {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Bulkhead` con límite de concurrencia y un `RateLimiter` con límite por ventana, cada uno con un test que confirme el rechazo real. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `Bulkhead` con límite de concurrencia y un `RateLimiter` con límite por ventana, cada uno con un test que confirme el rechazo real. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `maxConcurrentCalls(2)` rechaza la tercera llamada concurrente con `BulkheadFullException`.
+- [ ] `CountDownLatch` confirma que las dos primeras llamadas ocupan el bulkhead antes de la tercera.
+- [ ] `limitForPeriod(2)` acepta dos permisos y rechaza el tercero en la ventana.
+- [ ] Un `timeoutDuration` distinto de cero permite esperar un permiso.
+- [ ] Subir el límite del bulkhead hace fallar el test, confirmando que el parámetro manda.
+
+**Si falla.** Si la tercera llamada no se rechaza, el límite es demasiado alto o las llamadas no son concurrentes. Si el `RateLimiter` acepta más permisos, revisa `limitRefreshPeriod`. Si el test es intermitente, falta coordinación con latches.
 
 Ya proteges llamadas concurrentes con Bulkhead (aislamiento de recursos) y RateLimiter (límite de tasa), complementando el CircuitBreaker del Módulo 10 con un conjunto completo de primitivas de resiliencia. El siguiente tema orquesta una saga real con pasos compensables. Fuentes oficiales: [Resilience4j — Bulkhead](https://resilience4j.readme.io/docs/bulkhead) y [Resilience4j — RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
 
@@ -545,19 +553,15 @@ Ya proteges llamadas concurrentes con Bulkhead (aislamiento de recursos) y RateL
 
 Bulkhead y RateLimiter son los mecanismos que protegerían al proyecto integrador de este track (microservicio productivo, Módulo 12) de saturación por un solo cliente o dependencia.
 
-### Tema 5: Saga con compensación real
+### Tema 5: Saga con compensación real · Experto · 2 h 10 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 13 de este track (transacciones distribuidas e idempotencia).
 
-Al finalizar podrás ejecutar un orquestador de saga real que, ante el fallo de un paso intermedio, ejecuta las compensaciones de los pasos ya completados en orden inverso, confirmado con una lista real de acciones ejecutadas.
+**Al terminar podrás:** ejecutar un orquestador de saga real que, ante el fallo de un paso intermedio, ejecuta las compensaciones de los pasos ya completados en orden inverso, confirmado con una lista real de acciones ejecutadas.
 
-**Conocimiento previo:** Módulo 13 de este track (transacciones distribuidas e idempotencia).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Crear un pedido puede requerir reservar inventario, cobrar el pago y confirmar el envío como tres pasos independientes en distintos servicios; si el cobro de pago falla después de reservar inventario, ese inventario reservado debe liberarse explícitamente — ninguna transacción distribuida automática hace esto por ti.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** paso con compensación, orquestación secuencial, reversión en orden inverso.
 
@@ -576,7 +580,7 @@ sequenceDiagram
   O->>O: compensar reservarInventario -> liberarInventario()
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía y crea `src/main/java/io/academia/master/saga/PasoSaga.java`:
 
@@ -690,16 +694,14 @@ class SagaCompensacionTest {
 
 **Fallo deliberado:** agrega un CUARTO paso `pasoQueSiempreTieneExito("etiquetarPaquete")` ANTES de `cobrarPago` en la lista, y actualiza la aserción esperando (incorrectamente) que la compensación aparezca en el MISMO orden de ejecución (`etiquetarPaquete` antes que `reservarInventario`) en vez del orden inverso real. El test FALLA porque `Collections.reverse(aCompensar)` efectivamente invierte el orden — diagnostica confirmando por qué la compensación debe ser estrictamente inversa: si `etiquetarPaquete` reservó un recurso físico DESPUÉS de que `reservarInventario` reservara uno lógico, deshacer en el orden incorrecto podría intentar liberar un recurso que depende de otro que ya fue liberado. Corrige la aserción al orden inverso real antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega un cuarto paso exitoso y confirma que, si el fallo ocurre en el TERCER paso, se compensan los dos primeros en orden inverso (segundo, luego primero).
 2. Confirma con un test que si TODOS los pasos tienen éxito, ninguna compensación se ejecuta y el log solo contiene entradas `EJECUTADO`.
 3. Agrega manejo de una excepción DURANTE una compensación (una compensación que también falla) y documenta, en un comentario, por qué las sagas reales necesitan reintentos o alertas manuales para este caso límite.
-4. Escribe de memoria (sin mirar) un `OrquestadorSaga` que compense en orden inverso ante un fallo, y un test que confirme el log completo. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `OrquestadorSaga` que compense en orden inverso ante un fallo, y un test que confirme el log completo. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** `Collections.reverse(lista)` invierte una lista EN EL LUGAR (modifica la lista original) — usa una copia (`new ArrayList<>(completados)`) antes de invertir si necesitas preservar el orden original de `completados` para otro propósito en el mismo método.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método que invierte el orden de la lista de pasos completados antes de compensar:
 
@@ -708,9 +710,17 @@ List<PasoSaga> aCompensar = new ArrayList<>(completados);
 Collections.____(aCompensar);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un orquestador de saga con compensación en orden inverso, y un test que confirme el log de ejecución completo ante un fallo intermedio. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un orquestador de saga con compensación en orden inverso, y un test que confirme el log de ejecución completo ante un fallo intermedio. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] El orquestador ejecuta los pasos en orden y se detiene en el fallo.
+- [ ] Solo se compensan los pasos completados.
+- [ ] La compensación ocurre en orden inverso.
+- [ ] El log real contiene `EJECUTADO`, `FALLO` y `COMPENSADO` en la secuencia esperada.
+- [ ] Un fallo en el tercer paso compensa el segundo y luego el primero.
+
+**Si falla.** Si se compensa un paso no ejecutado, se añadió a `completados` antes de confirmar el éxito. Si el orden no es inverso, falta `Collections.reverse`. Si la aserción falla por el log, imprime el log completo antes de ajustar.
 
 Ya orquestas una saga real con compensación en orden inverso, confirmada con un log de ejecución concreto, no solo descrita en prosa. El siguiente y último tema de este módulo reconstruye el estado de un agregado reproduciendo su historial completo de eventos. Fuentes oficiales: [microservices.io — Saga Pattern](https://microservices.io/patterns/data/saga.html).
 
@@ -720,19 +730,15 @@ Ya orquestas una saga real con compensación en orden inverso, confirmada con un
 
 Una Saga con compensación real es el patrón que necesitaría el proyecto integrador de este track (microservicio productivo, Módulo 12) si coordina transacciones a través de varios servicios.
 
-### Tema 6: Event Sourcing con replay real
+### Tema 6: Event Sourcing con replay real · Experto · 2 h
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 13 de este track (transactional outbox).
 
-Al finalizar podrás reconstruir el estado completo de un agregado reproduciendo (replay) una lista real de eventos de dominio, confirmando que el estado reconstruido coincide exactamente con el esperado tras aplicar cada evento en orden.
+**Al terminar podrás:** reconstruir el estado completo de un agregado reproduciendo (replay) una lista real de eventos de dominio, confirmando que el estado reconstruido coincide exactamente con el esperado tras aplicar cada evento en orden.
 
-**Conocimiento previo:** Módulo 13 de este track (transactional outbox).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** En vez de almacenar solo el estado actual de un pedido (que pierde el historial de cómo llegó a ese estado), Event Sourcing almacena la secuencia completa de eventos que ocurrieron; el estado actual se DERIVA reproduciendo esos eventos, nunca se almacena directamente como la fuente de verdad.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** evento de dominio inmutable, replay, estado derivado.
 
@@ -750,7 +756,7 @@ flowchart LR
   R --> S[Estado actual DERIVADO]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Parte de una carpeta vacía y crea `src/main/java/io/academia/master/eventsourcing/EventoPedido.java`:
 
@@ -851,16 +857,14 @@ class ReplayTest {
 
 **Fallo deliberado:** en la lista de eventos del primer test, invierte el orden colocando `PedidoCancelado` ANTES que `PedidoConfirmado` y ejecuta de nuevo. El test FALLA (o produce un estado final distinto al esperado: `CONFIRMADO` en vez de `CANCELADO`, porque el evento aplicado en último lugar es el que determina el estado final) — diagnostica confirmando que el orden de los eventos en el replay es tan significativo como su contenido: el mismo conjunto de eventos en un orden distinto reconstruye un estado distinto, exactamente como en la realidad del negocio (confirmar antes de cancelar no es lo mismo que cancelar antes de confirmar). Restaura el orden correcto antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
-
 1. Agrega un cuarto tipo de evento (`PedidoReabierto`) y confirma con un test que el `switch` exhaustivo (gracias a `sealed interface`) obliga al compilador a manejar el caso nuevo, evitando un caso olvidado silenciosamente.
 2. Escribe un test que confirme que reconstruir con una lista de eventos VACÍA devuelve el estado inicial `INEXISTENTE`, sin lanzar ninguna excepción.
 3. Documenta, en un comentario, la diferencia entre Event Sourcing (los eventos SON el estado, reconstruido por replay) y el transactional outbox del Módulo 13 (los eventos NOTIFICAN un cambio que ya se persistió convencionalmente en otra forma).
-4. Escribe de memoria (sin mirar) un `sealed interface` de eventos y una función de replay que reconstruya el estado aplicando cada evento en orden. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `sealed interface` de eventos y una función de replay que reconstruya el estado aplicando cada evento en orden. Compara después contra el patrón de la demostración guiada.
 
 **Pista:** un `sealed interface` con un `switch` sin rama `default` obliga al compilador de Java a verificar que TODOS los casos posibles están manejados — agregar un nuevo tipo de evento sin actualizar la función `aplicar(...)` produce un error de COMPILACIÓN, no un bug silencioso descubierto en producción.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 **Completa el código:** rellena el espacio con el método estático que reconstruye el estado reproduciendo una lista de eventos:
 
@@ -868,9 +872,17 @@ class ReplayTest {
 EstadoPedido estadoFinal = EstadoPedido.____(eventos);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `sealed interface` de eventos de dominio y una función de replay que los reduzca a un estado final. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `sealed interface` de eventos de dominio y una función de replay que los reduzca a un estado final. Compara después contra el patrón de la demostración guiada.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Tres eventos en orden reconstruyen `CANCELADO` con el motivo correcto.
+- [ ] Un historial parcial deja el estado donde termina el historial.
+- [ ] Una lista vacía produce `INEXISTENTE` sin excepción.
+- [ ] Invertir dos eventos produce un estado distinto, demostrando que el orden importa.
+- [ ] Añadir un evento al `sealed interface` obliga a actualizar el `switch` exhaustivo.
+
+**Si falla.** Si el estado final es anterior al esperado, revisa el orden de la lista. Si el `switch` compila con un caso sin manejar, la interfaz no es `sealed`. Si `id` queda nulo, el evento de creación no se aplicó primero.
 
 Ya reconstruyes el estado de un agregado reproduciendo su historial completo de eventos, confirmando que el orden y el contenido de esos eventos determinan exactamente el resultado. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html).
 
@@ -891,20 +903,22 @@ Ya reconstruyes el estado de un agregado reproduciendo su historial completo de 
 
 ## Aplicación del material de referencia
 
-### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás recuperar una compensación después de un fallo y un reinicio sin aplicar dos veces su efecto. **Prerrequisitos:** saga del tema anterior, transacciones locales, idempotencia y SQLite/Python 3. Es un ejemplo independiente desde carpeta vacía: aísla el participante antes de conectarlo a Kafka u otro coordinador.
+**Prerrequisito:** saga del tema anterior, transacciones locales, idempotencia y SQLite/Python 3.
 
-#### Paso 2 · Contexto y caso real
+**Al terminar podrás:** recuperar una compensación después de un fallo y un reinicio sin aplicar dos veces su efecto. Es un ejemplo independiente desde carpeta vacía: aísla el participante antes de conectarlo a Kafka u otro coordinador.
+
+#### Aprende
+
 Reservaste inventario y el pago fue rechazado. La liberación de inventario también puede fallar. **¿Por qué es importante?** Devolver «saga terminada» tras capturar la primera excepción oculta trabajo todavía pendiente. El proyecto integrador necesita un estado observable y una acción de recuperación.
 
-#### Paso 3 · Teoría, modelo mental y analogía
 Compensar es ejecutar una nueva acción de negocio; no retrocede el tiempo. Se necesita una identidad de operación estable para que un reintento no libere dos veces. En este participante local, el efecto y su marca se guardan en una transacción de SQLite. Un coordinador distribuido además debe persistir qué pidió, qué recibió y qué sigue pendiente.
 
 **Analogía:** devolver un paquete requiere registrar que la devolución ocurrió, no solo enviar una orden y olvidarla. El límite es que múltiples bases y un broker no comparten la transacción SQLite de este ejercicio. No se demuestra atomicidad entre Kafka y una base de datos.
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
+
 ```bash
 cp -R examples/rutaflow-material/sagas ejemplo-compensacion
 cd ejemplo-compensacion
@@ -975,29 +989,36 @@ if __name__=='__main__':unittest.main()
 
 **Resultado esperado:** una prueba correcta; al ejecutar el programa por primera vez aparece compensación pendiente y stock final 10. Explica cada bloque: el identificador `liberar-42` conserva la operación, el fallo mantiene PENDIENTE, el reinicio abre el mismo archivo y el segundo intento comprueba HECHA antes de repetir el efecto. La prueba utiliza una base temporal y verifica la cantidad final, no solo una lista de mensajes.
 
-#### Paso 5 · Práctica guiada
 **Fallo deliberado:** elimina la salida temprana cuando el estado es HECHA. Repite la prueba: el stock sube otra vez y falla la expectativa 10. **Pista:** reintentar requiere reconocer el mismo comando; no generes un ID nuevo por cada intento.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 Añade contador de intentos, próximo instante permitido y estado de revisión manual tras un límite. Después diseña outbox/inbox para notificar la compensación confirmada sin perder el evento ni duplicar su efecto. No uses un sleep ilimitado dentro de una transacción.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Un fallo deja la compensación en `PENDIENTE`, no marcada como hecha.
+- [ ] Tras reiniciar, el mismo identificador `liberar-42` reconoce la operación.
+- [ ] Reintentar dos veces aplica el efecto una sola vez: stock final 10.
+- [ ] La prueba usa una base temporal y verifica la cantidad, no solo los mensajes.
+- [ ] Existe un límite de intentos y un estado de revisión manual.
+
+**Si falla.** Si el stock sube dos veces, falta la salida temprana cuando el estado es `HECHA`. Si el estado queda `HECHA` sin efecto, la marca se guarda fuera de la transacción del efecto. Si cada reintento usa un ID nuevo, el comando no es reconocible y la deduplicación no puede funcionar.
+
 El siguiente paso es probar dos participantes y reentrega real de mensajes. **Errores comunes:** confundir compensación con rollback global, marcar HECHA antes del efecto y reintentar sin observabilidad ni límite. **Límites y decisión de uso:** esta muestra serial no prueba concurrencia entre múltiples consumidores; una variante concurrente necesita bloqueo o transición condicional y pruebas de carreras.
 
 **Fuente oficial:** [patrón Saga](https://microservices.io/patterns/data/saga.html).
 
-### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
+### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 3 (persistencia), Módulo 10
+Tema 7 (contextos delimitados e invariantes) y Java 21 o superior.
 
-Al finalizar podrás separar una regla de negocio en entidad, caso de uso, puerto y
+**Al terminar podrás:** separar una regla de negocio en entidad, caso de uso, puerto y
 adaptador, y explicar dónde entra Spring Boot, JPA y H2 sin convertirlos
-en el centro del dominio. **Prerrequisitos:** Módulo 3 (persistencia), Módulo 10
-Tema 7 (contextos delimitados e invariantes) y Java 21 o superior. El ejemplo
-independiente se compila con `javac`; no necesita levantar Spring para demostrar
-la dirección de dependencias.
+en el centro del dominio. El ejemplo independiente se compila con `javac`; no
+necesita levantar Spring para demostrar la dirección de dependencias.
 
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 La captura de referencia anuncia cinco incrementos: entidades DDD táctico,
 casos de uso/interactors y boundaries, adaptadores de interfaz, frameworks y
@@ -1011,8 +1032,6 @@ JPA mezcla HTTP, transacción y negocio. Puede funcionar en una demo y volverse
 difícil de probar o migrar cuando cambia la base de datos. Clean Architecture
 no significa multiplicar carpetas: significa que el dominio no importa
 frameworks y que la dirección de dependencias apunta hacia la regla.
-
-#### Paso 3 · Teoría, modelo mental y analogía
 
 Usa cuatro anillos prácticos:
 
@@ -1043,7 +1062,7 @@ flowchart TD
     SB -.->|"inyecta"| A
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
 Desde una carpeta vacía crea `Main.java` y `test.sh` con el contenido completo de abajo:
 
@@ -1123,8 +1142,6 @@ adaptador de prueba. En una aplicación Spring, un `@RestController` convertirí
 HTTP en la entrada del caso de uso y un adaptador JPA implementaría el puerto,
 pero ninguna de esas clases aparece en el dominio.
 
-#### Paso 5 · Práctica guiada
-
 **Fallo deliberado:** importa una anotación de Spring en `Shipment` o cambia el
 caso de uso para recibir `EntityManager`. Compila de nuevo y explica qué
 dependencia cruzó el límite. Después cambia el repositorio en memoria por un
@@ -1134,7 +1151,7 @@ adaptador falso que registre llamadas sin modificar `CreateShipment`.
 que lo implementa. Si para probar la regla necesitas levantar H2, la frontera
 está demasiado adentro.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 1. Añade una transición `CANCELLED` que solo pueda ocurrir desde `CREATED`.
 2. Escribe un test puro que falle al cancelar dos veces.
@@ -1144,7 +1161,15 @@ está demasiado adentro.
    permanecer intacta. En el proyecto integrador, documenta esa frontera en
    `docs/arquitectura.md` e indica qué paquetes pueden importar Spring.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] `ShipmentId` y `Shipment` validan sus invariantes sin importar Spring ni JPA.
+- [ ] `CreateShipment` depende de `ShipmentRepository`, no de una implementación.
+- [ ] Un adaptador falso registra llamadas sin modificar el caso de uso.
+- [ ] `CANCELLED` solo ocurre desde `CREATED` y cancelar dos veces falla en un test puro.
+- [ ] `docs/arquitectura.md` documenta qué paquetes pueden importar Spring.
+
+**Si falla.** Si `Shipment` necesita Spring para compilar, una anotación cruzó la frontera. Si el test del caso de uso necesita H2, la frontera está demasiado adentro. Si cancelar dos veces no falla, la transición no valida el estado de origen.
 
 Registra la dirección de dependencias, el test de la transición inválida y una
 tabla que

@@ -4489,7 +4489,7 @@
       "track": "spring-boot",
       "module": 12,
       "position": 1,
-      "title": "Arquitectura del microservicio integrador",
+      "title": "Arquitectura del microservicio integrador · Experto · 3 h",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "requires": [
         "spring-boot:11:3"
@@ -4500,7 +4500,7 @@
       "track": "spring-boot",
       "module": 12,
       "position": 2,
-      "title": "Integrando seguridad, persistencia y observabilidad",
+      "title": "Integrando seguridad, persistencia y observabilidad · Experto · 2 h 40 min",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "requires": [
         "spring-boot:12:1"
@@ -4511,7 +4511,7 @@
       "track": "spring-boot",
       "module": 12,
       "position": 3,
-      "title": "Cierre del track y próximos pasos",
+      "title": "Cierre del track y próximos pasos · Experto · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "requires": [
         "spring-boot:12:2"
@@ -4522,7 +4522,7 @@
       "track": "spring-boot",
       "module": 13,
       "position": 1,
-      "title": "`@Transactional` funciona en una frontera, no como encantamiento",
+      "title": "`@Transactional` funciona en una frontera, no como encantamiento · Experto · 1 h 55 min",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "requires": [
         "spring-boot:12:3"
@@ -4533,7 +4533,7 @@
       "track": "spring-boot",
       "module": 13,
       "position": 2,
-      "title": "Recuperación implica duplicación segura",
+      "title": "Recuperación implica duplicación segura · Experto · 2 h 35 min",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "requires": [
         "spring-boot:13:1"
@@ -4544,7 +4544,7 @@
       "track": "spring-boot",
       "module": 13,
       "position": 3,
-      "title": "Contratos ejecutables protegen despliegues independientes",
+      "title": "Contratos ejecutables protegen despliegues independientes · Experto · 1 h 45 min",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "requires": [
         "spring-boot:13:2"
@@ -4555,7 +4555,7 @@
       "track": "spring-boot",
       "module": 13,
       "position": 4,
-      "title": "Observabilidad sirve a un objetivo y a una decisión",
+      "title": "Observabilidad sirve a un objetivo y a una decisión · Experto · 1 h 45 min",
       "file": "web/public/content/spring-boot/modulo-13.md",
       "requires": [
         "spring-boot:13:3"
@@ -4566,7 +4566,7 @@
       "track": "spring-boot",
       "module": 14,
       "position": 1,
-      "title": "CRUD API y contratos",
+      "title": "CRUD API y contratos · Experto · 2 h 15 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
         "spring-boot:13:4"
@@ -4577,7 +4577,7 @@
       "track": "spring-boot",
       "module": 14,
       "position": 2,
-      "title": "MySQL y datos espaciales",
+      "title": "MySQL y datos espaciales · Experto · 1 h 45 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
         "spring-boot:14:1"
@@ -4588,7 +4588,7 @@
       "track": "spring-boot",
       "module": 14,
       "position": 3,
-      "title": "JPA e Hibernate Spatial",
+      "title": "JPA e Hibernate Spatial · Experto · 2 h 15 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
         "spring-boot:14:2"
@@ -4599,7 +4599,7 @@
       "track": "spring-boot",
       "module": 14,
       "position": 4,
-      "title": "JWT Bearer y autorización por roles",
+      "title": "JWT Bearer y autorización por roles · Experto · 1 h 55 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
         "spring-boot:14:3"
@@ -4610,7 +4610,7 @@
       "track": "spring-boot",
       "module": 14,
       "position": 5,
-      "title": "Tiempo real con STOMP",
+      "title": "Tiempo real con STOMP · Experto · 2 h 15 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
         "spring-boot:14:4"
@@ -4621,7 +4621,7 @@
       "track": "spring-boot",
       "module": 14,
       "position": 6,
-      "title": "Archivos y notificaciones push",
+      "title": "Archivos y notificaciones push · Experto · 1 h 35 min",
       "file": "web/public/content/spring-boot/modulo-14.md",
       "requires": [
         "spring-boot:14:5"
@@ -4632,7 +4632,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 1,
-      "title": "Backpressure real en WebFlux con reactor-test",
+      "title": "Backpressure real en WebFlux con reactor-test · Experto · 1 h 30 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:14:6"
@@ -4643,7 +4643,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 2,
-      "title": "Contenedores Testcontainers reutilizados entre clases",
+      "title": "Contenedores Testcontainers reutilizados entre clases · Experto · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:1"
@@ -4654,7 +4654,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 3,
-      "title": "Arquitectura hexagonal verificada con ArchUnit",
+      "title": "Arquitectura hexagonal verificada con ArchUnit · Experto · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:2"
@@ -4665,7 +4665,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 4,
-      "title": "Bulkhead y RateLimiter de Resilience4j",
+      "title": "Bulkhead y RateLimiter de Resilience4j · Experto · 1 h 55 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:3"
@@ -4676,7 +4676,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 5,
-      "title": "Saga con compensación real",
+      "title": "Saga con compensación real · Experto · 2 h 10 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:4"
@@ -4687,7 +4687,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 6,
-      "title": "Event Sourcing con replay real",
+      "title": "Event Sourcing con replay real · Experto · 2 h",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:5"
@@ -4698,7 +4698,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 7,
-      "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
+      "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:6"
@@ -4709,7 +4709,7 @@
       "track": "spring-boot",
       "module": 15,
       "position": 8,
-      "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
+      "title": "Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-15.md",
       "requires": [
         "spring-boot:15:7"
@@ -4720,7 +4720,7 @@
       "track": "spring-boot",
       "module": 16,
       "position": 1,
-      "title": "Relaciones, lado propietario y ciclo de vida",
+      "title": "Relaciones, lado propietario y ciclo de vida · Avanzado · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-16.md",
       "requires": [
         "spring-boot:15:8"
@@ -4731,7 +4731,7 @@
       "track": "spring-boot",
       "module": 16,
       "position": 2,
-      "title": "LAZY, EAGER, N+1 y consultas de caso de uso",
+      "title": "LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-16.md",
       "requires": [
         "spring-boot:16:1"

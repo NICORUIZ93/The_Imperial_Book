@@ -757,8 +757,28 @@ export class LessonViewerComponent implements OnDestroy {
     this.buildSessionCards(container);
     this.collapseProjectDeepDives(container);
     this.groupTopics(container);
+    this.numberSubsections(container, chapterNumber);
     this.enhanceTextbookBlocks(container);
     this.annotateTechnicalTerms(container);
+  }
+
+  /**
+   * Numeración impresa de las subsecciones (Aprende/Practica/Aplica) sin tocar
+   * el Markdown: capítulo, tema y orden alimentan los contadores CSS. Los
+   * encabezados que ya traen su número ("Paso 1 · …") se dejan como están.
+   */
+  private numberSubsections(container: HTMLElement, chapter: number): void {
+    container.querySelectorAll<HTMLElement>('.topic-card').forEach((card, index) => {
+      card.style.setProperty('--chapter', String(chapter));
+      card.style.setProperty('--topic', String(index + 1));
+      let subsection = 0;
+      card.querySelectorAll<HTMLHeadingElement>(':scope > .topic-body > h4').forEach(heading => {
+        if (/^Paso\s+\d+/i.test(heading.textContent?.trim() ?? '')) return;
+        subsection += 1;
+        heading.classList.add('book-subsection');
+        heading.style.setProperty('--subsection-label', JSON.stringify(`${chapter}.${index + 1}.${subsection}`));
+      });
+    });
   }
 
   private decorateCodeLines(pre: HTMLElement): void {
@@ -1224,7 +1244,9 @@ export class LessonViewerComponent implements OnDestroy {
         duration,
         objective: objective?.text ?? '',
         objectiveLabel: objective?.label ?? '',
-        summary: this.captureTopicSummary(card),
+        // El formato Aprende/Practica/Aplica no tiene Paso 7; el objetivo ya
+        // escrito es el texto del autor que describe el resultado del tema.
+        summary: this.captureTopicSummary(card) || objective?.text || '',
       };
     }));
 

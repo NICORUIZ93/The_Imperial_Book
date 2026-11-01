@@ -1,56 +1,55 @@
 @use '../../styles/tokens' as *;
 
+// Índice del curso dentro del libro: secciones, módulos numerados y filetes.
 :host { display:block; }
-.topic-search { display:block; padding:0 4px 14px; }
-.topic-search span { display:block; margin:0 4px 6px; color:$mu; font-size:10px; font-weight:800; letter-spacing:.45px; text-transform:uppercase; }
+.topic-search { display:block; padding:0 6px 18px; }
+.topic-search span { display:block; margin:0 0 7px; color:$mu; font:400 9.5px/1.3 $sans; letter-spacing:.14em; text-transform:uppercase; }
 .topic-search input {
-  width:100%; border:1px solid $bd; border-radius:$rs; padding:8px 9px; background:$bg2; color:$ink;
-  font:500 12px var(--font-sans); outline:none;
+  width:100%; padding:7px 0 6px; border:0; border-bottom:1px solid $bd2; border-radius:0;
+  background:transparent; color:$ink; font:400 12.5px $sans; outline:none;
 }
-.topic-search input:focus { border-color:$p; box-shadow:0 0 0 3px $pl; }
-.topic-search-empty { margin:0 4px 14px; color:$mu; font-size:12px; line-height:1.45; }
-.lesson-index-group { margin-bottom:14px; }
+.topic-search input:focus { border-bottom-color:$ink; box-shadow:none; }
+.topic-search input::placeholder { color:$mu; }
+.topic-search-empty { margin:0 6px 14px; color:$mu; font:400 12px/1.5 $sans; }
+
+.lesson-index-group { margin-bottom:10px; }
+.lesson-index-group + .lesson-index-group { margin-top:22px; }
 .lesson-index-level {
-  display:block; padding:0 12px 6px; font-size:10px; font-weight:800; letter-spacing:.6px;
-  text-transform:uppercase; color:$mul;
+  display:block; padding:10px 6px 7px; border-bottom:1px solid $ink;
+  color:$mu; font:400 9.5px/1.3 $sans; letter-spacing:.15em; text-transform:uppercase;
 }
 .lesson-index-item {
-  display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:$rs;
-  text-decoration:none; color:$i3; font-size:13px; line-height:1.3;
+  display:flex; align-items:baseline; gap:9px; padding:8px 6px;
+  border-left:2px solid transparent; border-radius:0;
+  color:$i3; font:400 12.5px/1.5 $sans; text-decoration:none;
 }
-.lesson-index-item:hover { background:$bg2; }
-.lesson-index-item.active { background:$pl; color:$ph; font-weight:600; }
+.lesson-index-item:hover { color:$ink; }
+.lesson-index-item.active { border-left-color:$ink; color:$ink; background:transparent; font-weight:600; }
 .lesson-index-item.done .lesson-index-title { color:$i3; }
-.lesson-index-item.current .lesson-index-title { color:$ph; font-weight:600; }
+.lesson-index-item.current .lesson-index-title { color:$ink; font-weight:600; }
 .lesson-index-title { min-width:0; flex:1; }
-.topic-count { min-width:22px; padding:2px 5px; border-radius:999px; background:$bg2; color:$mu; font-size:10px; text-align:center; }
-.lesson-index-number { min-width:30px; padding:2px 6px; border-radius:6px; background:$bg2; color:$mu; font-size:10px; font-weight:700; text-align:center; letter-spacing:.3px; }
-.topic-number { color:$mu; font-weight:700; font-variant-numeric:tabular-nums; }
-.module-entry { margin-bottom:2px; }
-.module-topics { margin:2px 8px 10px 28px; }
+.topic-count { min-width:20px; padding:0; border-radius:0; background:transparent; color:$mu; font:400 10.5px $mono; text-align:right; }
+.lesson-index-number { min-width:22px; padding:0; border-radius:0; background:transparent; color:$mu; font:400 10.5px $mono; text-align:left; }
+.topic-number { color:$mu; font:400 10px $mono; }
+.module-entry { margin-bottom:0; }
+.module-topics { margin:2px 6px 10px 34px; }
 .module-topics a {
-  display:block; padding:6px 7px 6px 11px; border-left:1px solid $bd; color:$i3; font-size:11px;
-  line-height:1.35; text-decoration:none;
+  display:block; padding:6px 0 6px 12px; border-left:1px solid $bd;
+  color:$i3; font:400 11.5px/1.45 $sans; text-decoration:none;
 }
-.module-topics a:hover { border-left-color:$p; color:$ph; background:$pl; }
+.module-topics a:hover { border-left-color:$ink; color:$ink; background:transparent; }
 
-// Estado del módulo: 🟢 completado · 🔵 actual · ⚪ pendiente
-.status-dot {
-  width:9px; height:9px; border-radius:50%; flex-shrink:0;
-  background:$bd2; border:1px solid transparent;
-}
-.status-dot.done { background:$g; }
-.status-dot.current { background:$p; box-shadow:0 0 0 3px $pl; }
-.status-dot.pending { background:$bd2; }
+// Estado del módulo como marca impresa, no semáforo.
+.status-dot { width:6px; height:6px; flex-shrink:0; border-radius:0; background:$bd2; border:0; }
+.status-dot.done { background:$ink; }
+.status-dot.current { background:var(--accent); box-shadow:none; }
+.status-dot.pending { background:transparent; border:1px solid $bd2; }
 
 .sr-only {
   position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
   clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
-.topic-search span { font-size:10px; font-weight:500; }
-.topic-search input { min-height:44px; font-size:12px; border-radius:8px; }
-.lesson-index-level { font-size:10px; font-weight:500; margin-top:22px; letter-spacing:.08em; }
-.lesson-index-item { padding:12px 10px; border-radius:8px; font-size:12px; line-height:1.55; min-height:48px; }
-.lesson-index-number { min-width:24px; background:transparent; font:10px var(--font-mono); padding:0; }
-.module-topics { margin-left:24px; }
-.module-topics a { font-size:11px; line-height:1.65; padding:10px 12px; min-height:44px; }
+@media (max-width:860px) {
+  .lesson-index-item { padding:10px 6px; min-height:44px; }
+  .module-topics a { padding:9px 0 9px 12px; }
+}

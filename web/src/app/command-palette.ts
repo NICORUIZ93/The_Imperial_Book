@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injector, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Search, X } from 'lucide-angular';
@@ -33,6 +33,7 @@ export class CommandPaletteComponent {
   private previousFocus: HTMLElement | null = null;
 
   private readonly topicIndex = inject(TopicIndexService);
+  private readonly injector = inject(Injector);
   private readonly index = computed<SearchEntry[]>(() => TRACKS.flatMap(track => {
     const modules = track.modules.map(module => ({
       label: module.title,
@@ -77,7 +78,7 @@ export class CommandPaletteComponent {
       this.paletteService.toggle();
       this.query.set('');
       this.activeIndex.set(0);
-      if (this.paletteService.isOpen()) afterNextRender(() => this.paletteInput()?.nativeElement.focus());
+      if (this.paletteService.isOpen()) afterNextRender(() => this.paletteInput()?.nativeElement.focus(), { injector: this.injector });
     } else if (this.paletteService.isOpen() && event.key === 'ArrowDown' && this.results().length) {
       event.preventDefault();
       this.activeIndex.update(index => (index + 1) % this.results().length);
