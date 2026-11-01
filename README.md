@@ -209,8 +209,8 @@ estructural detectada por heurísticas, no calidad ni ejecución: el corte
 versionado registra 1141/1141 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 1058/1141 con sus marcadores de
-siete pasos: los 20 módulos migrados a Aprende/Practica/Aplica, entre ellos los
+auditoría independiente de metodología registra 1054/1141 con sus marcadores de
+siete pasos: los 22 módulos migrados a Aprende/Practica/Aplica, entre ellos los
 Módulos 21–22 de Java, ya no usan esos marcadores. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en

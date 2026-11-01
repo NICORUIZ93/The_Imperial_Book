@@ -1691,7 +1691,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "435dc958cb4802ea19d30121fda06ae8a21b3bbb5a7ca490753f173d0ecc3955",
+    "fingerprint": "37350aae0acbcf4b9c574752f0ea1f55f621dada47eb831766dfb207b1f4cb91",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9378,30 +9378,30 @@
       {
         "issues": [],
         "module": 18,
-        "tailWords": 121,
-        "topic": "Tema 1: SecurityFilterChain y autorización",
-        "words": 785
+        "tailWords": 296,
+        "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
+        "words": 893
       },
       {
         "issues": [],
         "module": 18,
-        "tailWords": 111,
-        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
-        "words": 707
+        "tailWords": 322,
+        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
+        "words": 856
       },
       {
         "issues": [],
         "module": 19,
-        "tailWords": 135,
-        "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
-        "words": 985
+        "tailWords": 351,
+        "topic": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
+        "words": 1129
       },
       {
         "issues": [],
         "module": 19,
-        "tailWords": 144,
-        "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
-        "words": 804
+        "tailWords": 329,
+        "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
+        "words": 936
       },
       {
         "issues": [],

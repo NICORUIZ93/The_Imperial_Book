@@ -1120,10 +1120,10 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 16 | [Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-16.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
 | spring-boot / 17 | [Tema 1: DataSource, JdbcTemplate y DAO · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 18 | [Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP](../web/public/content/spring-boot/modulo-18.md) | ejemplo-breve-revisar-contexto |
-| spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing](../web/public/content/spring-boot/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
+| spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 18 | [Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-18.md) | ejemplo-breve-revisar-contexto |
+| spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-19.md) | clase-java-no-visible |
 | spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 30 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 25 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 30 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |

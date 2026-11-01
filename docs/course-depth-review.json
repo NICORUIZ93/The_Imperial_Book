@@ -13481,7 +13481,7 @@
     {
       "track": "spring-boot",
       "module": 18,
-      "title": "Tema 1: SecurityFilterChain y autorización",
+      "title": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
       "file": "web/public/content/spring-boot/modulo-18.md",
       "line": 14,
       "signals": [],
@@ -13493,9 +13493,9 @@
     {
       "track": "spring-boot",
       "module": 18,
-      "title": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
+      "title": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-18.md",
-      "line": 101,
+      "line": 116,
       "signals": [
         "ejemplo-breve-revisar-contexto"
       ],
@@ -13507,7 +13507,7 @@
     {
       "track": "spring-boot",
       "module": 19,
-      "title": "Tema 1: Job, Step, Tasklet y chunk processing",
+      "title": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-19.md",
       "line": 14,
       "signals": [],
@@ -13519,9 +13519,9 @@
     {
       "track": "spring-boot",
       "module": 19,
-      "title": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
+      "title": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-19.md",
-      "line": 125,
+      "line": 138,
       "signals": [
         "clase-java-no-visible"
       ],

@@ -918,7 +918,7 @@
     },
     {
       "path": "docs/migration-status.json",
-      "lines": 117,
+      "lines": 119,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -11955,7 +11955,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-18.md",
-      "lines": 161,
+      "lines": 189,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11963,20 +11963,19 @@
         "# M\u00f3dulo 18: Autenticaci\u00f3n y backend seguro con Spring Security",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: SecurityFilterChain y autorizaci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP"
+        "### Tema 1: SecurityFilterChain y autorizaci\u00f3n \u00b7 Avanzado \u00b7 1 h 30 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP \u00b7 Avanzado \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-19.md",
-      "lines": 191,
+      "lines": 217,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11984,15 +11983,14 @@
         "# M\u00f3dulo 19: Spring Batch \u2014 jobs, chunks y procesamiento masivo",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Job, Step, Tasklet y chunk processing",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Construye el writer y el step",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "### Tema 1: Job, Step, Tasklet y chunk processing \u00b7 Avanzado \u00b7 1 h 40 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Reinicio, JobParameters, retry, skip y listeners \u00b7 Avanzado \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica"
       ]
     },
     {

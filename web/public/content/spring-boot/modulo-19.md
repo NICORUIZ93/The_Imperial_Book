@@ -11,30 +11,33 @@ Construirás un job que importa pedidos desde CSV, valida y transforma cada fila
 
 Compara los límites de transacción y el consumo de memoria con más de un chunk. No confundas `skip` con una salida silenciosa: cada fila excluida necesita causa y evidencia.
 
-### Tema 1: Job, Step, Tasklet y chunk processing
+### Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Módulo 18 de este track, JDK 27+ y Maven.
 
-Al finalizar podrás distinguir un `Job`, un `Step`, un `Tasklet` y un step orientado a chunks, y ejecutar un job reproducible. Genera un proyecto Spring Boot desde Initializr con `batch`, `jdbc` y `h2`; JDK 27+ y Maven.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**Al terminar podrás:** distinguir un `Job`, un `Step`, un `Tasklet` y un step orientado a chunks, y ejecutar un job reproducible.
+
+#### Aprende
 
 Cada noche se importa un archivo de pedidos. Cargarlo completo en una lista puede agotar memoria; detenerse al primer error obliga a rehacer manualmente el lote entero.
 
 **¿Por qué es importante?** Un procesamiento por chunks acota memoria y hace que el punto de confirmación pueda observarse y recuperarse.
 
-#### Paso 3 · Teoría y modelo mental
-
 Un `Job` coordina la ejecución; sus `Step`s separan fases. Un `Tasklet` sirve para una tarea acotada (por ejemplo, marcar inicio de importación). El modelo chunk lee elementos, los procesa y escribe un bloque dentro de límites transaccionales: cada chunk confirmado queda persistido.
 
 `ItemReader` obtiene registros; `ItemProcessor` transforma o filtra; `ItemWriter` escribe un chunk. `JobRepository` mantiene metadatos de instancias y ejecuciones. `JobParameters` identifican una ejecución lógica y deben incluir parámetros estables como fecha de archivo, no una hora aleatoria que impida reanudar.
+
 **Analogía:** un `Job` es la receta completa de un menú; cada `Step` es un plato de esa receta. Un `Tasklet` es un paso que se hace de una sola vez (encender el horno); el *chunk processing* es una cadena de montaje que toma ingredientes de a lotes, los cocina y los emplata en grupos, en vez de uno por uno.
-#### Paso 4 · Demostración guiada
+
+#### Practica
+
+Genera un proyecto Spring Boot desde Initializr con `batch`, `jdbc` y `h2`.
+
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/main/java/academia/batch/ImportJobConfig.java` con el contenido de este tema.
+
 ```bash
 curl -fsSL https://start.spring.io/starter.zip -o ejemplo.zip && unzip -o ejemplo.zip -d ejemplo
 ```
-
 
 Incluye `src/main/resources/pedidos.csv` con:
 
@@ -52,7 +55,6 @@ curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersio
 ./mvnw test
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
-
 
 Crea `PedidoImportado` como record y `src/main/java/academia/batch/ImportJobConfig.java`. Configura `schema.sql` con una tabla destino `pedido_importado(referencia varchar(40) primary key, importe decimal(12,2) not null)`. Declara estos beans de reader y processor; el archivo se inyecta por parámetro del job:
 
@@ -81,9 +83,7 @@ ItemProcessor<PedidoImportado, PedidoImportado> processor() {
 
 Un processor que retorna `null` filtra intencionalmente el elemento; registra el conteo filtrado en listener, no lo confundas con una escritura.
 
-#### Construye el writer y el step
-
-Para este primer laboratorio, `JdbcPedidoWriter` implementa `ItemWriter<PedidoImportado>` y recorre el `Chunk<? extends PedidoImportado>` llamando a `JdbcTemplate.update("insert into pedido_importado(referencia, importe) values (?, ?)", pedido.referencia(), pedido.importe())`. El step ejecuta el writer dentro de la transacción del chunk, así que el tamaño del chunk define el grupo de escrituras que se confirma junto.
+**Construye el writer y el step.** Para este primer laboratorio, `JdbcPedidoWriter` implementa `ItemWriter<PedidoImportado>` y recorre el `Chunk<? extends PedidoImportado>` llamando a `JdbcTemplate.update("insert into pedido_importado(referencia, importe) values (?, ?)", pedido.referencia(), pedido.importe())`. El step ejecuta el writer dentro de la transacción del chunk, así que el tamaño del chunk define el grupo de escrituras que se confirma junto.
 
 El núcleo del step en Spring Batch moderno usa builder inyectado:
 
@@ -108,41 +108,56 @@ Define `Job` con `new JobBuilder("importPedidos", jobRepository).start(importarP
 
 **Resultado esperado:** `RF-1001` y `RF-1003` se guardan en `pedido_importado`; el registro con importe cero se filtra. **Fallo deliberado:** usa `chunk(1, ...)` y compara commits/logs con `chunk(2, ...)`; provoca además un error de parseo y observa qué chunk se revierte. Un error en el writer debe revertir las escrituras de ese chunk.
 
-#### Paso 5 · Práctica guiada
-
 Implementa dos steps: validar archivo y luego importar. Compara `Tasklet` para registrar el resumen final con un step chunk para procesar cada fila. Añade un reader JDBC paginado (`JdbcPagingItemReader`) para leer desde una tabla sin materializar todos los resultados.
+
 **Pista:** cambia temporalmente el `chunkSize` de 2 a un valor mayor que el total de filas válidas y vuelve a correr el test; si el número de confirmaciones en el log baja a una sola, confirmas que es el tamaño del chunk —y no el `Tasklet`— lo que define cuántas filas se confirman juntas en cada transacción.
-#### Paso 6 · Práctica independiente
+
+#### Aplica
 
 Construye importación de tarifas de RutaFlow con `FlatFileItemReader`, processor que normalice códigos y writer persistente con `JdbcBatchItemWriter`. Agrega conteos leídos, filtrados, escritos y fallidos. Verifica que la memoria usada no crece linealmente con el total de filas.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] El job `importPedidos` lee `pedidos.csv` con `FlatFileItemReader` y salta la cabecera.
+- [ ] `RF-1001` y `RF-1003` quedan en `pedido_importado` y el importe cero se filtra con el processor.
+- [ ] El step usa `chunk(2, transactionManager)` y el writer escribe dentro de la transacción del chunk.
+- [ ] Un error en el writer revierte las escrituras de ese chunk.
+- [ ] El reader paginado (`JdbcPagingItemReader`) no materializa toda la tabla.
+- [ ] Un `Tasklet` registra el resumen final sin procesar filas.
+
+**Si falla.** Si aparecen menos filas escritas que leídas, el processor filtró registros: registra el conteo filtrado en el listener antes de buscar un error de escritura. Si un error de parseo no revierte el chunk, comprueba que el writer corre dentro de la transacción del step y que no hay autocommit en la conexión. Si el lector paginado carga toda la tabla, revisa el tamaño de página y que la consulta se resuelva contra la base de datos. Si con `chunk(1, ...)` aumentan commits y costo, el tamaño del chunk es la causa: vuelve al valor que agrupa las filas esperadas.
 
 Entrega job, archivo fixture, test del step y conteos del lote como incremento del proyecto integrador de RutaFlow. **Cuándo no usarlo:** no elijas Batch para una petición HTTP inmediata y pequeña; una cola/eventos o una operación síncrona pueden ser más apropiadas.
+
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
 **Errores comunes:** usar `chunk(1, ...)` en producción pensando que así se evitan problemas, cuando en realidad multiplica el número de transacciones y el costo por fila, y confundir un `ItemProcessor` que retorna `null` (filtra el registro) con una fila que falló: sin un listener que cuente los filtrados, el reporte de "filas escritas" no explica por qué hay menos que las leídas.
+
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).
-### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
-#### Paso 1 · Objetivo y preparación
+### Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min
 
-Al finalizar podrás reanudar un job fallido desde su estado guardado, distinguir errores recuperables de registros inválidos y auditar el resultado del lote.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**Prerrequisito:** Tema 1 de este módulo; continúa con su job y su archivo de pedidos.
+
+**Al terminar podrás:** reanudar un job fallido desde su estado guardado, distinguir errores recuperables de registros inválidos y auditar el resultado del lote.
+
+#### Aprende
 
 El job procesó 80 000 filas cuando el sistema perdió conectividad. Reiniciar desde cero puede duplicar efectos; saltar silenciosamente cualquier error hace que la conciliación sea imposible.
 
 **¿Por qué es importante?** Un lote reanudable evita repetir todo el trabajo y permite conciliar resultados cuando un proceso falla a mitad de camino.
 
-#### Paso 3 · Teoría y modelo mental
-
 Una instancia de job se identifica por nombre y parámetros de identificación; sus ejecuciones registran estado y contexto. La reanudación requiere que reader/writer y efectos externos sean compatibles con reinicio. `skip` aplica a datos no recuperables dentro de un límite y debe registrar la fila; `retry` aplica a fallos transitorios con límite/backoff. No clasifiques toda excepción como retryable.
 
 El listener observa inicio/fin para métricas, pero no reemplaza transacciones ni manejo de errores. Un efecto externo debe tener idempotencia para no duplicarse si el job reinicia después de enviarlo.
-**Analogía:** reiniciar un batch es como retomar una serie donde la dejaste, no desde el capítulo uno: los `JobParameters` son el marcador que recuerda dónde ibas. `retry` es volver a intentar una escena que salió mal; `skip` es saltarse un fotograma dañado para no frenar toda la reproducción; y los `listeners` son las notas al margen que registran qué pasó en cada tramo.
-#### Paso 4 · Demostración guiada
-**Crea** el archivo `src/main/java/academia/batch/ImportJobConfig.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
+**Analogía:** reiniciar un batch es como retomar una serie donde la dejaste, no desde el capítulo uno: los `JobParameters` son el marcador que recuerda dónde ibas. `retry` es volver a intentar una escena que salió mal; `skip` es saltarse un fotograma dañado para no frenar toda la reproducción; y los `listeners` son las notas al margen que registran qué pasó en cada tramo.
+
+#### Practica
+
+Continúa en la carpeta del Tema 1 y abre `src/main/java/academia/batch/ImportJobConfig.java`.
+
+**Crea** el archivo `src/main/java/academia/batch/ImportJobConfig.java` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 En `src/main/java/academia/batch/ImportJobConfig.java`, limita el retry a fallos transitorios y el skip a errores de parseo que el negocio permita excluir:
 
@@ -169,22 +184,33 @@ curl -fsSL https://start.spring.io/starter.zip -d dependencies=web -d javaVersio
 ```
 Equivalencias Maven/Gradle en el Módulo 1.
 
-
 Ejecuta el job con `JobParameters` que incluyan `inputFile=pedidos.csv` y `runDate=2026-10-13`; configura el test para forzar una falla tras el primer chunk y volver a lanzar **la misma instancia lógica**. Ejecuta `./mvnw test -Dtest=ImportJobRestartTest`.
 
 **Resultado esperado:** el primer chunk confirmado no se duplica, el job completa al reanudarse y el listener reporta filas omitidas explícitamente. **Fallo deliberado:** genera un `run.id` nuevo para el segundo intento; observarás una nueva instancia que vuelve a iniciar el archivo. Compara con el reinicio de la misma instancia y explica la diferencia.
 
-#### Paso 5 · Práctica guiada
-
 Añade retry acotado para un error temporal de base y skip para una fila con campo inválido; registra referencia y causa sin almacenar datos sensibles. Falla una escritura después de un efecto externo y demuestra por qué un envío de email o evento necesita outbox/idempotencia.
+
 **Pista:** simula el efecto externo (marca como "enviado" un email o publica un evento) y luego fuerza que la escritura del chunk falle justo después; al reanudar el job, si el email se reenvía o el evento se publica otra vez, ese es el caso exacto que necesita outbox o una clave de idempotencia en el efecto externo, no solo una transacción de base de datos.
-#### Paso 6 · Práctica independiente
+
+#### Aplica
 
 Diseña un plan para un lote de un millón de filas: chunk size, paginación, restart, deduplicación, archivo de errores y métricas. Como extensión, particiona por rangos disjuntos y programa el job con un scheduler; verifica que dos workers no reclamen el mismo rango.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
+
+- [ ] Ambos lanzamientos usan la misma instancia lógica, con `inputFile` y `runDate` estables.
+- [ ] El primer chunk confirmado no se duplica tras el reinicio.
+- [ ] `retry` se limita a `TransientDataAccessException` con `retryLimit(3)`.
+- [ ] `skip` se limita a `FlatFileParseException` con `skipLimit(5)` y registra referencia y causa.
+- [ ] El listener reporta filas omitidas y filtradas por separado.
+- [ ] Un efecto externo usa outbox o clave de idempotencia para no repetirse al reanudar.
+
+**Si falla.** Si el reinicio vuelve a procesar el archivo desde cero, se generó una instancia nueva: reutiliza los mismos `JobParameters` de identificación. Si las filas confirmadas aparecen duplicadas, revisa la clave natural y la deduplicación del writer. Si una pérdida de conectividad se marca como `skip`, clasifícala como `retry`: `skip` es para datos no recuperables. Si el email o el evento se repite al reanudar, el efecto externo necesita outbox o idempotencia.
 
 Entrega test de fallo y reinicio, parámetros exactos, conteos y política documentada de retry/skip para el proyecto integrador de RutaFlow: el lote de liquidación debe poder reanudarse sin duplicar pagos. **Cuándo no usarlo:** no llames `skip` a errores de infraestructura ni configures retry infinito; no ejecutes jobs simultáneos con parámetros que colisionan.
+
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
 **Errores comunes:** generar un `run.id` o parámetro distinto en cada reintento pensando que "empezar limpio" es más seguro, cuando en realidad eso crea una nueva instancia de job que vuelve a procesar el archivo desde cero, y marcar con `skip` errores de infraestructura (como una pérdida de conectividad) que en realidad necesitan `retry`, descartando filas que sí eran recuperables.
+
 **Fuente oficial:** [documentación de Spring Boot](https://docs.spring.io/spring-boot/index.html).

@@ -249,22 +249,22 @@
     },
     "spring-boot": {
       "topics": 91,
-      "objective": 18,
+      "objective": 14,
       "prerequisites": 91,
-      "context": 18,
-      "theoryAnalogy": 18,
-      "guidedDemo": 18,
+      "context": 14,
+      "theoryAnalogy": 14,
+      "guidedDemo": 14,
       "codeExplanation": 91,
       "execution": 91,
       "expectedResult": 91,
       "deliberateFailure": 91,
-      "guidedPractice": 18,
-      "independentPractice": 18,
-      "closure": 18,
+      "guidedPractice": 14,
+      "independentPractice": 14,
+      "closure": 14,
       "commonErrors": 91,
       "resources": 91,
       "standaloneExample": 90,
-      "complete": 18
+      "complete": 14
     }
   },
   "topics": {
@@ -27597,102 +27597,102 @@
       },
       {
         "module": 18,
-        "topic": "Tema 1: SecurityFilterChain y autorización",
+        "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 18,
-        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
+        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 19,
-        "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
+        "topic": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 19,
-        "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
+        "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {

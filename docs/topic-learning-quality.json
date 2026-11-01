@@ -24291,7 +24291,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 1: SecurityFilterChain y autorización",
+        "topic": "Tema 1: SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24313,7 +24313,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
+        "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24335,7 +24335,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 1: Job, Step, Tasklet y chunk processing",
+        "topic": "Tema 1: Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24357,7 +24357,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners",
+        "topic": "Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,

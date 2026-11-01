@@ -4764,7 +4764,7 @@
       "track": "spring-boot",
       "module": 18,
       "position": 1,
-      "title": "SecurityFilterChain y autorización",
+      "title": "SecurityFilterChain y autorización · Avanzado · 1 h 30 min",
       "file": "web/public/content/spring-boot/modulo-18.md",
       "requires": [
         "spring-boot:17:2"
@@ -4775,7 +4775,7 @@
       "track": "spring-boot",
       "module": 18,
       "position": 2,
-      "title": "DTO validation, CORS, JWT/OIDC y clientes HTTP",
+      "title": "DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-18.md",
       "requires": [
         "spring-boot:18:1"
@@ -4786,7 +4786,7 @@
       "track": "spring-boot",
       "module": 19,
       "position": 1,
-      "title": "Job, Step, Tasklet y chunk processing",
+      "title": "Job, Step, Tasklet y chunk processing · Avanzado · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-19.md",
       "requires": [
         "spring-boot:18:2"
@@ -4797,7 +4797,7 @@
       "track": "spring-boot",
       "module": 19,
       "position": 2,
-      "title": "Reinicio, JobParameters, retry, skip y listeners",
+      "title": "Reinicio, JobParameters, retry, skip y listeners · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-19.md",
       "requires": [
         "spring-boot:19:1"
