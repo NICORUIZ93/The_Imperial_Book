@@ -2,22 +2,22 @@
   "summary": {
     "android": {
       "topics": 73,
-      "objective": 73,
+      "objective": 72,
       "prerequisites": 73,
-      "context": 73,
-      "theoryAnalogy": 73,
-      "guidedDemo": 73,
+      "context": 72,
+      "theoryAnalogy": 72,
+      "guidedDemo": 72,
       "codeExplanation": 73,
       "execution": 73,
       "expectedResult": 73,
       "deliberateFailure": 73,
-      "guidedPractice": 73,
-      "independentPractice": 73,
-      "closure": 73,
+      "guidedPractice": 72,
+      "independentPractice": 72,
+      "closure": 72,
       "commonErrors": 73,
       "resources": 73,
       "standaloneExample": 73,
-      "complete": 73
+      "complete": 72
     },
     "angular": {
       "topics": 71,
@@ -97,22 +97,22 @@
     },
     "foundations": {
       "topics": 99,
-      "objective": 99,
+      "objective": 98,
       "prerequisites": 99,
-      "context": 99,
-      "theoryAnalogy": 99,
-      "guidedDemo": 99,
+      "context": 98,
+      "theoryAnalogy": 98,
+      "guidedDemo": 98,
       "codeExplanation": 99,
       "execution": 99,
       "expectedResult": 99,
       "deliberateFailure": 99,
-      "guidedPractice": 99,
-      "independentPractice": 99,
-      "closure": 99,
+      "guidedPractice": 98,
+      "independentPractice": 98,
+      "closure": 98,
       "commonErrors": 99,
       "resources": 99,
       "standaloneExample": 99,
-      "complete": 99
+      "complete": 98
     },
     "ios": {
       "topics": 56,
@@ -154,22 +154,22 @@
     },
     "javascript": {
       "topics": 88,
-      "objective": 88,
+      "objective": 87,
       "prerequisites": 88,
-      "context": 88,
-      "theoryAnalogy": 88,
-      "guidedDemo": 88,
+      "context": 87,
+      "theoryAnalogy": 87,
+      "guidedDemo": 87,
       "codeExplanation": 88,
       "execution": 88,
       "expectedResult": 88,
       "deliberateFailure": 88,
-      "guidedPractice": 88,
-      "independentPractice": 88,
-      "closure": 88,
+      "guidedPractice": 87,
+      "independentPractice": 87,
+      "closure": 87,
       "commonErrors": 88,
       "resources": 88,
       "standaloneExample": 88,
-      "complete": 88
+      "complete": 87
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -823,25 +823,25 @@
         "module": 14,
         "topic": "Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
@@ -12583,25 +12583,25 @@
         "module": 0,
         "topic": "Tema 1: Del hardware al programa en ejecución",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
@@ -20764,25 +20764,25 @@
         "module": 8,
         "topic": "Tema 1: Selección y manipulación del DOM",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {

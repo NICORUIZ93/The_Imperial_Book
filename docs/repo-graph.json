@@ -91,7 +91,7 @@
     },
     {
       "path": "README.md",
-      "lines": 367,
+      "lines": 369,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -661,7 +661,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13987,
+      "lines": 13991,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6800,7 +6800,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 574,
+      "lines": 615,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -6985,7 +6985,7 @@
     },
     {
       "path": "web/public/content/android/modulo-14.md",
-      "lines": 813,
+      "lines": 808,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -6993,15 +6993,15 @@
         "# M\u00f3dulo 14: Compose Master \u2014 pruebas, accesibilidad y animaci\u00f3n",
         "## Aprende construyendo",
         "### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible",
+        "#### Por qu\u00e9 una captura visual no basta",
+        "#### Monta el composable y observa la primera aserci\u00f3n",
+        "#### Comprueba dos acciones consecutivas",
+        "#### Elige entre una prueba de UI y una prueba pura",
+        "#### Lleva la comprobaci\u00f3n a una pantalla real",
+        "### Tema 2: Finders, assertions y actions navegan el \u00e1rbol sem\u00e1ntico",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Finders, assertions y actions navegan el \u00e1rbol sem\u00e1ntico",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda"
       ]
     },
     {
@@ -9209,7 +9209,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-0.md",
-      "lines": 319,
+      "lines": 313,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9219,13 +9219,13 @@
         "### Instala y comprueba",
         "## Aprende construyendo",
         "### Tema 1: Del hardware al programa en ejecuci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### El primer resultado que puedes repetir",
+        "#### Crea y ejecuta `saludo.py`",
         "# Muestra un mensaje en la terminal.",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Cambia el resultado y diagnostica un fallo",
+        "#### Transfiere lo aprendido y conserva evidencia",
+        "### Tema 2: Archivos, carpetas y rutas sin perderse",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
@@ -10175,7 +10175,7 @@
     },
     {
       "path": "web/public/content/java/modulo-22.md",
-      "lines": 1082,
+      "lines": 1090,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10616,7 +10616,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-8.md",
-      "lines": 736,
+      "lines": 751,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10624,15 +10624,15 @@
         "# M\u00f3dulo 8: El DOM y eventos del navegador",
         "## Aprende construyendo",
         "### Tema 1: Selecci\u00f3n y manipulaci\u00f3n del DOM",
+        "#### De datos a una vista segura",
+        "#### Construye una lista que puedas ejecutar y verificar",
+        "#### Cambia la presentaci\u00f3n sin interpretar HTML externo",
+        "#### Comprueba el estado vac\u00edo y una segunda actualizaci\u00f3n",
+        "#### Decide qu\u00e9 parte seguir\u00e1 siendo manual",
+        "### Tema 2: Delegaci\u00f3n de eventos",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Delegaci\u00f3n de eventos",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda"
       ]
     },
     {

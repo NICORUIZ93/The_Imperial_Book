@@ -200,7 +200,7 @@
         "https://docs.python.org/3/using/cmdline.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 101,
+      "line": 95,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/terminal/basics",
         "https://docs.python.org/3/using/cmdline.html"
@@ -216,7 +216,7 @@
         "https://docs.python.org/3/using/cmdline.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 158,
+      "line": 152,
       "originalProseUrls": [
         "https://docs.python.org/3/using/cmdline.html"
       ],
@@ -232,7 +232,7 @@
         "https://docs.python.org/3/tutorial/inputoutput.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 215,
+      "line": 209,
       "originalProseUrls": [
         "https://docs.python.org/3/library/functions.html",
         "https://docs.python.org/3/tutorial/inputoutput.html"
@@ -248,7 +248,7 @@
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 283,
+      "line": 277,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],

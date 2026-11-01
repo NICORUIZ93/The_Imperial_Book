@@ -95,22 +95,23 @@ async function inspectPage(browser, baseUrl, target) {
     const hasCode = !!card.querySelector('pre:not(.mermaid)');
     const mermaidBlocks = card.querySelectorAll('pre.mermaid').length;
     const mermaidRendered = card.querySelectorAll('pre.mermaid svg').length;
-    const hasPrompts = !!card.querySelector('.topic-learning-prompts');
-    const promptTextareasEmpty = Array.from(card.querySelectorAll('.topic-learning-prompts textarea')).some(ta => !ta.value || ta.value.trim().length < 20);
+    const progressControl = card.querySelector('button.topic-complete[data-topic-complete]');
+    const progressControlHasState = progressControl?.getAttribute('aria-pressed') === 'true'
+      || progressControl?.getAttribute('aria-pressed') === 'false';
     const internalLinks = Array.from(card.querySelectorAll('a[href]'))
       .map(a => a.getAttribute('href'))
       .filter(href => href && !href.startsWith('http') && !href.startsWith('#'));
-    return { title, hasCode, mermaidBlocks, mermaidRendered, hasPrompts, promptTextareasEmpty, internalLinks };
+    return { title, hasCode, mermaidBlocks, mermaidRendered, hasProgressControl: !!progressControl, progressControlHasState, internalLinks };
   }));
 
   for (const topic of topics) {
     if (topic.mermaidBlocks > 0 && topic.mermaidRendered < topic.mermaidBlocks) {
       findings.push({ severity: 'error', segment: 'renderizado-diagrama', topic: topic.title, message: `${topic.mermaidBlocks - topic.mermaidRendered} de ${topic.mermaidBlocks} diagrama(s) mermaid no renderizó como <svg>` });
     }
-    if (!topic.hasPrompts) {
-      findings.push({ severity: 'warning', segment: 'prompts-estudio', topic: topic.title, message: 'No se encontró el bloque .topic-learning-prompts generado por lesson-viewer.ts' });
-    } else if (topic.promptTextareasEmpty) {
-      findings.push({ severity: 'warning', segment: 'prompts-estudio', topic: topic.title, message: 'Algún textarea de prompt quedó vacío o con menos de 20 caracteres' });
+    if (!topic.hasProgressControl) {
+      findings.push({ severity: 'warning', segment: 'progreso-tema', topic: topic.title, message: 'No se encontró el control actual para marcar el tema como leído' });
+    } else if (!topic.progressControlHasState) {
+      findings.push({ severity: 'warning', segment: 'progreso-tema', topic: topic.title, message: 'El control de progreso no expone aria-pressed como estado booleano' });
     }
   }
 

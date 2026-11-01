@@ -9,11 +9,11 @@ El proyecto es el modelo de pedidos de RutaFlow: líneas, estados y claves de b�
 ### Tema 1: El contrato de equals y hashCode · Básico · 35 min
 
 **Prerrequisito:** Módulo 2 (`HashSet` y `HashMap`) y Módulo 1 (sobreescritura).
-**Al terminar podrás:** implementar `equals` y `hashCode` que cumplan las cinco reglas del contrato, demostrar con un `HashSet` real qué ocurre cuando solo se implementa una de las dos, y decidir cuándo un `record` resuelve el problema sin escribirlos.
+**Al terminar podrás:** implementar `equals` y `hashCode` que cumplan las cinco reglas del contrato, demostrar con un `HashSet` real qué ocurre cuando ambos métodos usan campos incompatibles, y decidir cuándo un `record` resuelve el problema sin escribirlos.
 
 #### Aprende
 
-**¿Por qué es importante?** `HashSet`, `HashMap`, `ConcurrentHashMap` y casi toda biblioteca de colecciones localizan un objeto en dos pasos: primero calculan su `hashCode` para elegir un cubo, después usan `equals` para distinguirlo de otros objetos del mismo cubo. Si dos objetos son iguales pero declaran códigos distintos, caen en cubos distintos y la colección los trata como extraños. El resultado no es una excepción: es una deduplicación silenciosa que no deduplica y un `get` que devuelve `null` sobre una entrada que existe.
+**¿Por qué es importante?** `HashSet`, `HashMap`, `ConcurrentHashMap` y casi toda biblioteca de colecciones localizan un objeto en dos pasos: primero calculan su `hashCode` para elegir un cubo, después usan `equals` para distinguirlo de otros objetos del mismo cubo. Si dos objetos son iguales pero declaran códigos distintos, pueden caer en cubos distintos y la colección no los compara. El resultado no es necesariamente una excepción: es una deduplicación silenciosa que no deduplica y un `get` que devuelve `null` sobre una entrada que existe.
 
 **Conceptos clave:** identidad, igualdad lógica, contrato de `Object`, cubo de hash, consistencia, `record`.
 
@@ -50,6 +50,8 @@ mkdir -p src/io/academia/modelo
 // src/io/academia/modelo/RotoPunto.java
 package io.academia.modelo;
 
+import java.util.Objects;
+
 public final class RotoPunto {
     private final int x;
     private final int y;
@@ -67,7 +69,13 @@ public final class RotoPunto {
         if (!(otro instanceof RotoPunto p)) {
             return false;
         }
-        return x == p.x && y == p.y;
+        return x == p.x;
+    }
+
+    @Override
+    public int hashCode() {
+        // El fallo deliberado: y participa en el hash, pero no en equals.
+        return Objects.hash(x, y);
     }
 
     @Override
@@ -126,14 +134,14 @@ import java.util.Set;
 public class Demo {
     public static void main(String[] args) {
         RotoPunto a = new RotoPunto(2, 3);
-        RotoPunto b = new RotoPunto(2, 3);
+        RotoPunto b = new RotoPunto(2, 4);
         System.out.println("roto equals = " + a.equals(b));
         System.out.println("roto hash iguales = " + (a.hashCode() == b.hashCode()));
 
         Set<RotoPunto> rotos = new HashSet<>();
         rotos.add(a);
         rotos.add(b);
-        System.out.println("roto contains = " + rotos.contains(new RotoPunto(2, 3)));
+        System.out.println("roto contains = " + rotos.contains(new RotoPunto(2, 5)));
         System.out.println("roto size = " + rotos.size());
 
         Set<Punto> puntos = new HashSet<>();
@@ -150,7 +158,7 @@ javac -d out $(find src -name '*.java')
 java -cp out Demo
 ```
 
-**Resultado esperado:** la clase sin `hashCode` declara iguales a dos puntos y aun así los guarda dos veces, mientras que la clase completa los fusiona:
+**Resultado esperado:** `RotoPunto` declara iguales dos valores con la misma coordenada `x`, pero produce hashes distintos porque incluye `y`. El `HashSet` los guarda dos veces; en cambio, `Punto` usa los mismos campos en ambos métodos:
 
 ```text
 roto equals = true
@@ -161,9 +169,9 @@ bien contains = true
 bien size = 1
 ```
 
-**Explicación línea por línea:** `equals` compara por valor y devuelve `true`, pero `hashCode` sigue siendo el de `Object`, que deriva de la identidad de la instancia; por eso `hash iguales = false`. `HashSet.add` calcula el hash de `b`, lo busca en un cubo distinto al de `a` y ni siquiera llama a `equals`: guarda las dos entradas (`size = 2`). `contains(new RotoPunto(2, 3))` crea un tercer objeto con otro hash de identidad y busca en un cubo vacío, así que devuelve `false` aunque haya dos puntos iguales dentro. `Punto`, con `Objects.hash(x, y)`, produce el mismo código para los mismos valores, cae en el mismo cubo, `equals` confirma la igualdad y el segundo `add` no inserta nada.
+**Explicación línea por línea:** `RotoPunto.equals` ignora `y`, pero `hashCode` sí la incluye. Por eso `(2, 3)` y `(2, 4)` son iguales según `equals` y tienen hashes distintos, una violación reproducible del contrato. `HashSet.add` busca cada valor en un cubo diferente y no compara los dos objetos; `contains(new RotoPunto(2, 5))` también busca otro hash y devuelve `false`, aunque según `equals` ese punto es igual a los anteriores. `Punto`, con `Objects.hash(x, y)`, usa los mismos campos en ambos métodos: las dos instancias iguales comparten cubo y la segunda no se inserta.
 
-**Fallo deliberado:** `RotoPunto` es el fallo y no necesita ningún cambio para reproducirse. Quitar `hashCode` de `Punto` produce exactamente las cuatro primeras líneas de la salida; añadirlo devuelve las dos últimas. El diagnóstico es directo: cuando `contains` falla pero la iteración del `HashSet` muestra el objeto, el problema está en `hashCode`, no en `equals`.
+**Fallo deliberado:** `RotoPunto` ya contiene la inconsistencia. Cambia `equals` para comparar también `y` y cambia la consulta a `new RotoPunto(2, 3)`. Recompila y ejecuta: el par `(2, 3)` se encuentra, mientras `(2, 4)` sigue siendo distinto. Restaura el ejemplo para observar el contrato violado. En una aplicación real, no infieras un hash incorrecto solo porque una búsqueda falló: primero comprueba qué campos usa cada método.
 
 **Ejercicios.**
 

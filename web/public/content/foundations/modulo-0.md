@@ -29,17 +29,13 @@ Si aparece «comando no encontrado» o «no se reconoce», cierra y vuelve a abr
 
 ### Tema 1: Del hardware al programa en ejecución
 
-#### Paso 1 · Objetivo y preparación
+#### El primer resultado que puedes repetir
 
 Al finalizar podrás guardar `saludo.py`, ejecutarlo dos veces y explicar qué diferencia hay entre el archivo y su ejecución. **Prerrequisitos:** Python responde con su versión y tienes abierta una carpeta vacía en VS Code. Si entraste directamente, sigue la preparación anterior.
-
-#### Paso 2 · Contexto y caso real
 
 **¿Por qué es importante?** Poder ejecutar un cambio pequeño te permite comprobar que estás trabajando sobre el archivo correcto.
 
 El primer paso de cualquier herramienta, incluido nuestro proyecto integrador de gestor de tareas, es conseguir que el computador ejecute una instrucción que escribiste. Vamos a mostrar un mensaje; después añadiremos entrada de datos. Cada cambio tendrá un resultado visible.
-
-#### Paso 3 · Teoría, modelo mental y analogía
 
 Un **programa** es un conjunto de instrucciones. Aquí lo guardarás en un archivo de texto terminado en `.py`. Python es el **intérprete**: lee esas instrucciones y las ejecuta. `print` es una función de Python que muestra un valor en la terminal.
 
@@ -47,7 +43,7 @@ Un **programa** es un conjunto de instrucciones. Aquí lo guardarás en un archi
 
 El sistema operativo coordina la ejecución. La CPU realiza operaciones, la RAM mantiene datos del trabajo activo y el almacenamiento conserva el archivo guardado. Llamamos **proceso** al programa mientras se ejecuta. Por ahora basta con distinguir el archivo que queda guardado de la ejecución que empieza y termina; estudiarás memoria y persistencia más adelante.
 
-#### Paso 4 · Demostración guiada desde cero
+#### Crea y ejecuta `saludo.py`
 
 Si todavía no tienes carpeta de trabajo, puedes crearla desde la terminal con `mkdir primera-sesion` y entrar con `cd primera-sesion`; abre esa carpeta en VS Code. Si ya la creaste en la preparación, no la crees de nuevo.
 
@@ -80,17 +76,15 @@ Hola, mundo
 
 El comando termina y vuelve a aparecer el indicador de la terminal. Ejecuta otra vez: aparece una nueva línea con el mismo mensaje. No se crea otro archivo; se vuelve a ejecutar el que ya guardaste.
 
-#### Paso 5 · Práctica guiada
+#### Cambia el resultado y diagnostica un fallo
 
 Antes de tocar el código, predice qué aparecerá si cambias `Hola, mundo` por `Mi primera práctica funciona`. **Pista:** cambia solo el contenido entre comillas; guarda y repite el mismo comando. Debe aparecer el mensaje nuevo.
 
 **Fallo deliberado:** ejecuta `python3 saludo-inexistente.py` (`py saludo-inexistente.py` en Windows). El error indica que no puede abrir ese archivo. Comprueba el nombre en el explorador: existe `saludo.py`, no el nombre pedido. Corrige el argumento del comando y ejecútalo otra vez. No reinstales Python: ya arrancó y te informó del archivo que falta.
 
-#### Paso 6 · Práctica independiente
+#### Transfiere lo aprendido y conserva evidencia
 
 Crea `presentacion.py` en la misma carpeta, sin copiar el archivo completo anterior. Debe mostrar dos líneas: tu nombre y `Estoy aprendiendo a ejecutar programas`. Usa dos llamadas a `print`; ejecuta `python3 presentacion.py` o `py presentacion.py`. **Resultado esperado:** las dos líneas aparecen en ese orden. Cambiar este archivo no debe cambiar la salida de `saludo.py`.
-
-#### Paso 7 · Cierre
 
 Crea `README.md` en `primera-sesion`. Registra el sistema operativo, el comando que funcionó, la salida de ambos programas y el error de nombre con su corrección.
 

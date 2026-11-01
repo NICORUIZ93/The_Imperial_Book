@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6dfa8651193a4678f081668bc686de09e86b20357536d7301499666719c645f9",
+    "fingerprint": "2449277bdbdf761fdae5b573c6d487929a1f4551c7a12963777a357871def6a9",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -1848,9 +1848,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 193,
+        "tailWords": 0,
         "topic": "Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible",
-        "words": 1188
+        "words": 1211
       },
       {
         "issues": [],
@@ -5148,9 +5148,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 123,
+        "tailWords": 0,
         "topic": "Tema 1: Del hardware al programa en ejecución",
-        "words": 752
+        "words": 741
       },
       {
         "issues": [],
@@ -6673,7 +6673,7 @@
         "module": 22,
         "tailWords": 376,
         "topic": "Tema 1: El contrato de equals y hashCode · Básico · 35 min",
-        "words": 1595
+        "words": 1614
       },
       {
         "issues": [],
@@ -7443,9 +7443,9 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 198,
+        "tailWords": 0,
         "topic": "Tema 1: Selección y manipulación del DOM",
-        "words": 1175
+        "words": 1220
       },
       {
         "issues": [],

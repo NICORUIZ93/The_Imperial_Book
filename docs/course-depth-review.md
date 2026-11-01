@@ -7,13 +7,13 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
 | foundations | 99 | 13 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
-| javascript | 88 | 5 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
+| javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 77 | 7 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 95 | 11 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| android | 73 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
+| android | 73 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 4 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
@@ -50,7 +50,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | android / 13 | [Tema 3: Offline-first necesita un protocolo de cambios](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 4: La calidad se opera por dispositivo y versión](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| android / 14 | [Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 14 | [Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible](../web/public/content/android/modulo-14.md) | demostracion-no-delimitada |
 | android / 14 | [Tema 2: Finders, assertions y actions navegan el árbol semántico](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 14 | [Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 14 | [Tema 4: AccessibilityService y TalkBack consumen el árbol semántico en producción](../web/public/content/android/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
@@ -520,7 +520,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 9 | [Tema 1: Unit tests y widget tests](../web/public/content/flutter/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 9 | [Tema 2: Mocking con mocktail](../web/public/content/flutter/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 9 | [Tema 3: Integration tests](../web/public/content/flutter/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| foundations / 0 | [Tema 1: Del hardware al programa en ejecución](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
+| foundations / 0 | [Tema 1: Del hardware al programa en ejecución](../web/public/content/foundations/modulo-0.md) | demostracion-no-delimitada |
 | foundations / 0 | [Tema 2: Archivos, carpetas y rutas sin perderse](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 0 | [Tema 3: Cómo leer un comando antes de ejecutarlo](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 0 | [Tema 4: Primer programa, primer error y primera evidencia](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
@@ -847,7 +847,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | javascript / 7 | [Tema 4: package.json — exports, type y scripts](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 5: import() dinámico e import.meta](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 6: Webpack, Rollup y Babel/SWC](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| javascript / 8 | [Tema 1: Selección y manipulación del DOM](../web/public/content/javascript/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| javascript / 8 | [Tema 1: Selección y manipulación del DOM](../web/public/content/javascript/modulo-8.md) | demostracion-no-delimitada |
 | javascript / 8 | [Tema 2: Delegación de eventos](../web/public/content/javascript/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 8 | [Tema 3: Formularios y validación nativa](../web/public/content/javascript/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 8 | [Tema 4: Web APIs — localStorage e IntersectionObserver](../web/public/content/javascript/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |

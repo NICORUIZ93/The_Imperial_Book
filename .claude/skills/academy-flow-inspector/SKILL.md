@@ -5,10 +5,11 @@ description: Inspecciona The Imperial Book (la app Angular en web/) como lo har�
 
 # Academia Flow Inspector
 
-Esta skill es para un proyecto concreto: The_Imperial_Book, una academia de 14 rutas / 245 módulos /
-1100 temas servida por una sola app Angular (`web/`). El contenido real vive en Markdown
-(`web/public/content/<track>/modulo-N.md`); la app lo renderiza con `marked` y `lesson-viewer.ts`
-le añade estructura por tema (`.topic-card`, callouts, prompts de estudio, etc.).
+Esta skill es para un proyecto concreto: The_Imperial_Book, una academia servida por una sola app
+Angular (`web/`). Consulta los índices generados para conocer el número vigente de rutas, módulos
+y temas. El contenido real vive en Markdown (`web/public/content/<track>/modulo-N.md`); la app lo
+renderiza con `marked` y `lesson-viewer.ts` le añade estructura por tema (`.topic-card`, callouts,
+navegación y controles de progreso).
 
 El objetivo es responder dos preguntas que los validadores existentes **no** responden:
 
@@ -19,15 +20,15 @@ El objetivo es responder dos preguntas que los validadores existentes **no** res
    siente coherente para alguien que llega por primera vez, o hay saltos/inconsistencias que solo
    se notan mirando la página real?
 
-**No vuelvas a inventar lo que ya existe.** `scripts/audit_topic_learning_quality.py` y
-`scripts/audit_seven_step_methodology.py` ya evalúan, sobre el Markdown, los 9 criterios
-editoriales de `docs/editorial-contract.md` (explicación, código, ruta de archivo, comando
-ejecutable, resultado esperado, práctica, proyecto, modelo mental, límites) para los 1100 temas.
-Si un tema no tiene ejemplo o explicación, esos scripts ya lo saben -- correrlos es más rápido y
-más fiable que leer markdown a mano. Esta skill empieza por ahí y se concentra en la capa que
-esos scripts no pueden ver porque nunca abren un navegador: renderizado real y flujo de
-navegación. Ver `references/criteria-mapping.md` para la tabla completa de qué corresponde a cada
-capa.
+**No vuelvas a inventar lo que ya existe.** `scripts/audit_topic_learning_quality.py` mide, sobre
+todo el Markdown, 9 criterios editoriales de `docs/editorial-contract.md` (explicación, código,
+ruta de archivo, comando ejecutable, resultado esperado, práctica, proyecto, modelo mental y
+límites). `scripts/audit_seven_step_methodology.py` mide otros 16 marcadores del formato legacy
+de siete pasos; una ausencia no demuestra que falte contenido en un tema que usa otra estructura.
+Si un tema no tiene ejemplo o explicación detectables, consulta esos reportes antes de releerlo a
+mano. Esta skill se concentra también en la capa que los scripts no pueden ver porque nunca abren
+un navegador: renderizado real y flujo de navegación. Ver `references/criteria-mapping.md` para la
+tabla completa de qué corresponde a cada capa.
 
 ## Flujo de trabajo
 
@@ -39,8 +40,9 @@ python3 scripts/audit_seven_step_methodology.py --check
 ```
 
 Lee `docs/topic-learning-quality.json` y `docs/seven-step-methodology.json`: ya traen, por tema,
-qué criterio falta. Si el usuario preguntó "¿todos los temas tienen ejemplo y explicación?", la
-respuesta a esa pregunta específica sale de aquí, no de abrir el navegador 1100 veces.
+qué marcador se detectó o falta. Si el usuario preguntó "¿todos los temas tienen ejemplo y
+explicación?", empieza por el reporte editorial y no confundas una ausencia del formato legacy con
+una ausencia real de contenido.
 
 ### 2. Decide el alcance con el usuario
 
@@ -67,11 +69,12 @@ PLAYWRIGHT_CHANNEL=chrome node .claude/skills/academy-flow-inspector/scripts/swe
 
 Omite `--tracks` para barrer las 14 rutas. El script visita cada página `/curso/<track>/<modulo>`,
 y por cada `.topic-card` revisa: que el conteo de temas coincida con `topic-index.json`, que los
-diagramas `pre.mermaid` hayan producido un `<svg>` real, que exista el bloque de prompts de
-estudio generado por `lesson-viewer.ts`, que no haya excepciones de consola/JS, y que los enlaces
-internos de cada tema no devuelvan error. Escribe un JSON con un hallazgo por fila (severidad,
-segmento de flujo, tema, mensaje) -- no un simple pase/falla. Usa `--concurrency` para ajustar
-velocidad si la máquina lo permite.
+diagramas `pre.mermaid` hayan producido un `<svg>` real, que exista el control actual
+`button.topic-complete[data-topic-complete]` con `aria-pressed` booleano, que no haya excepciones
+de consola/JS y que los enlaces internos de cada tema no devuelvan error. El control de progreso
+no acredita comprensión ni sustituye la práctica. Escribe un JSON con un hallazgo por fila
+(severidad, segmento de flujo, tema, mensaje) -- no un simple pase/falla. Usa `--concurrency` para
+ajustar velocidad si la máquina lo permite.
 
 Lee el reporte generado. Trata cada hallazgo como una pista a confirmar, no como una afirmación
 final: un falso positivo ocasional (por ejemplo una carrera de red en una sola página) es más

@@ -5,17 +5,13 @@
 
 ### Tema 1: Selección y manipulación del DOM
 
-#### Paso 1 · Objetivo y preparación
+#### De datos a una vista segura
 
 Al finalizar podrás traducir una colección de entregas a elementos DOM seguros, separar datos de presentación y actualizar una lista con `DocumentFragment`. Construirás la primera vista operativa del proyecto sin depender de un framework.
 
 **Conocimiento previo:** arrays, funciones, objetos, ESM, HTML y proyecto Vite del módulo anterior. Abre las herramientas del navegador y localiza las pestañas Elements y Console antes de comenzar.
 
-#### Paso 2 · Contexto y caso real
-
 La API entrega objetos; el operador necesita una lista legible y segura. En este incremento del proyecto, una función recibirá el nodo destino y los datos, creará cada elemento sin interpretar contenido externo como HTML y reemplazará el resultado anterior de manera controlada.
-
-#### Paso 3 · Teoría, modelo mental y analogía
 
 **Conceptos clave:** DOM como árbol de nodos, `querySelector`, creación dinámica de elementos.
 
@@ -23,7 +19,7 @@ El DOM (Document Object Model) es la representación en forma de árbol de nodos
 
 Crear elementos dinámicamente sigue un patrón consistente: `document.createElement(tag)` crea un nuevo elemento desconectado del árbol del documento; se configuran sus propiedades (`textContent`, atributos, clases); y finalmente se inserta en su posición deseada del árbol con métodos como `appendChild`, `prepend`, o el más moderno y flexible `insertAdjacentElement`. Es importante usar `textContent` en vez de `innerHTML` cuando se inserta texto proveniente de datos (especialmente si esos datos provienen de una fuente no completamente confiable, como la entrada de un usuario), porque `innerHTML` interpreta el string como HTML, abriendo la puerta a un ataque de XSS (Cross-Site Scripting, que se estudiará en el Módulo 10) si el string contiene marcado malicioso; `textContent` siempre trata el valor como texto plano literal, sin ningún riesgo de interpretación como HTML ejecutable.
 
-Insertar elementos uno por uno dentro de un bucle, cada uno con su propia llamada a `appendChild`, provoca múltiples "reflows" (recálculos del layout de la página) si se hace de forma ingenua directamente sobre un elemento ya insertado en el documento visible; una técnica de optimización común es construir la estructura completa en un `DocumentFragment` (un contenedor ligero que vive fuera del árbol visible del documento) y añadir todos los elementos hijos a ese fragmento primero, insertando finalmente el fragmento completo de una sola vez en el documento real, provocando un único reflow en vez de uno por cada elemento insertado individualmente.
+Un `DocumentFragment` (un contenedor ligero fuera del árbol visible del documento) permite construir un conjunto de nodos antes de conectarlo al elemento de destino. Esto puede reducir mutaciones del árbol conectado, pero no garantiza por sí solo un único reflow ni una mejora perceptible: los navegadores agrupan trabajo de renderizado y el resultado depende del caso. Úsalo aquí para preparar la lista y reemplazar su contenido de una vez; mide antes de atribuirle una mejora de rendimiento.
 
 Dominar la manipulación directa del DOM, aunque frameworks como Angular o React (estudiados en sus tracks correspondientes) automatizan gran parte de este trabajo mediante mecanismos de renderizado declarativo, sigue siendo relevante: entender qué ocurre realmente "por debajo" de esos frameworks facilita diagnosticar problemas de rendimiento y entender por qué ciertos patrones de esos frameworks (como las claves en listas renderizadas) existen precisamente para optimizar estas mismas operaciones de bajo nivel sobre el DOM real.
 
@@ -31,21 +27,38 @@ Dominar la manipulación directa del DOM, aunque frameworks como Angular o React
 
 **¿Por qué es importante?** Entender la manipulación directa del DOM es la base indispensable para comprender qué automatizan realmente los frameworks de UI, y sigue siendo directamente relevante para cualquier optimización de rendimiento de bajo nivel en aplicaciones reales.
 
-#### Paso 4 · Demostración guiada desde cero
+#### Construye una lista que puedas ejecutar y verificar
 
-Desde una carpeta vacía crea `ejemplo-dom`, ejecuta `npm init -y`, crea `src` y `index.html`:
+Desde una carpeta vacía crea `ejemplo-dom`, inicializa npm, instala Vite y prepara las rutas que usarás:
 
 ```bash
 mkdir ejemplo-dom
 cd ejemplo-dom
 npm init -y
-mkdir src
+npm install --save-dev vite
+npm pkg set type=module scripts.dev="vite"
+mkdir -p src/ui
 touch index.html
 ```
 
-Añade `<ul id="guias" aria-live="polite"></ul>` dentro de `academia-web/index.html`.
+Crea `index.html` con el punto de montaje y el módulo de entrada:
 
-Después crea `academia-web/src/ui/render-guias.js`:
+```html
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregas</title>
+  </head>
+  <body>
+    <ul id="guias" aria-live="polite"></ul>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+Después crea `src/ui/render-guias.js`:
 
 ```js
 export function renderGuias(lista, guias) {
@@ -68,7 +81,7 @@ export function renderGuias(lista, guias) {
 }
 ```
 
-Actualiza `academia-web/src/main.js`:
+Ahora crea `src/main.js`:
 
 ```js
 import { renderGuias } from "./ui/render-guias.js";
@@ -90,19 +103,21 @@ Ejecuta:
 npm run dev
 ```
 
+Abre la URL que Vite imprime en la terminal (por defecto `http://localhost:5173`).
+
 **Resultado esperado:** aparecen tres filas; la tercera muestra literalmente `<img ...>` y no ejecuta código. En Elements se observan nodos `li` creados dentro de `ul#guias`.
 
 **Fallo deliberado:** cambia el id HTML a `guias-pendientes` sin actualizar JavaScript. El guard clause lanza `No existe #guias en index.html`; usa el selector del mensaje para encontrar la discrepancia y restaura un contrato único.
 
-#### Paso 5 · Práctica guiada
+#### Cambia la presentación sin interpretar HTML externo
 
 Añade peso y ciudad usando elementos `span` con clases específicas. **Pista:** crea nodos con `createElement` y asigna datos con `textContent`; no formes una cadena HTML con información de la entrega.
 
-#### Paso 6 · Práctica independiente
+#### Comprueba el estado vacío y una segunda actualización
 
 Implementa estado vacío (“No hay entregas para mostrar”), actualiza la misma lista dos veces y verifica que no se duplican filas. Escribe una prueba DOM que confirme cantidad de `li` y contenido literal de un número malicioso.
 
-#### Paso 7 · Cierre
+#### Decide qué parte seguirá siendo manual
 
 Ya puedes convertir datos en una vista segura y predecible. El siguiente tema añadirá interacción a filas actuales y futuras mediante un único listener delegado.
 

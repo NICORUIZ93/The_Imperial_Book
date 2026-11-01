@@ -28,6 +28,8 @@ ni demuestra por sí sola que un ejemplo se ejecutó.
 - [Prompts de formación profesional disponibles en cada tema](docs/PROMPTS-FORMACION.md)
 - [Skills de visuales y revisión del estudio desde cero](docs/SKILLS-VISUALES-Y-ESTUDIO.md)
 - [Metodología de aprendizaje](docs/METODOLOGIA-DE-APRENDIZAJE.md)
+- [Contrato editorial y de interfaz para la experiencia de estudio](docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md)
+- [Prototipo editorial de seis contextos y evidencia pendiente](docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md)
 - [Matriz curricular](docs/MATRIZ-CURRICULAR.md)
 - [Fuentes oficiales y versiones revisadas](docs/official-sources.json)
 - [Estándar de código, Clean Code y SOLID](docs/ESTANDAR-DE-CODIGO.md)

@@ -27,7 +27,7 @@ const OUTBOX = { x: 85, y: -46, w: 65, d: 38, r: 2 };
 const LEDGER_OUT = { x: 85, y: 8, w: 65, d: 36, r: 2 };
 const SLIP = { x: 106, y: -33, w: 24, d: 14, r: 1 };
 const QUEUE = { x: 96, y: -84, w: 48, d: 24, r: 2 };
-const RAIL = { x: 112, y: -96, w: 12, d: 90 };
+const RAIL = { x: 112, y: -96, w: 12, d: 90, r: 0 };
 const SHUTTLE_Y = -26;
 const QUEUE_Y = -72;
 

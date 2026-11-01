@@ -7,17 +7,13 @@ Una pantalla Compose que "se ve bien" en el emulador puede seguir rota para quie
 
 ### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible
 
-#### Paso 1 · Objetivo y preparación
+#### Por qué una captura visual no basta
 
 Al finalizar podrás escribir una prueba de Compose que monta un composable real y verifica su estado sin depender de captura visual manual, y explicar qué garantiza `ComposeTestRule` que una revisión manual no garantiza.
 
 **Conocimiento previo:** testing con `runTest` y fakes (Módulo 9 de este track); estado y recomposición (Módulo 2).
 
-#### Paso 2 · Contexto y caso real
-
 **¿Por qué es importante?** Una revisión manual en el emulador confirma que la pantalla "se ve bien" hoy, con los datos de hoy; no confirma que seguirá correcta cuando otra persona cambie el composable el mes próximo. `ComposeTestRule` monta el árbol de Compose real y permite verificarlo con aserciones repetibles en CI.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** `ComposeTestRule`, host de prueba, sincronización de recomposición, árbol semántico.
 
@@ -35,13 +31,12 @@ flowchart LR
   D --> E[finder + assertion]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Monta el composable y observa la primera aserción
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores, o créala desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez), crea `app/src/androidTest/kotlin/com/academia/android/ContadorTest.kt`:
+Este ejercicio requiere un proyecto Android Gradle con Compose, como `academia-android` de los módulos anteriores. Crear una carpeta con `mkdir` no genera el wrapper ni la configuración de Gradle; si no tienes ese proyecto, créalo primero en Android Studio con la plantilla **Empty Activity** y Compose habilitado. Desde la raíz del proyecto, crea `app/src/androidTest/kotlin/com/academia/android/ContadorTest.kt`:
 
 ```bash
-mkdir -p academia-android/app/src/androidTest/kotlin/com/academia/android
-cd academia-android
+mkdir -p app/src/androidTest/kotlin/com/academia/android
 ```
 
 Crea `app/src/main/kotlin/com/academia/android/ContadorDePrueba.kt`; este componente es distinto de la comparación remember/rememberSaveable del Módulo 2:
@@ -120,15 +115,15 @@ Para la alternativa JVM, COPIA el test a `app/src/test/kotlin/com/academia/andro
 
 **Fallo deliberado:** cambia `compose.onNodeWithText("Contador: 1").assertExists()` por `compose.onNodeWithText("Contador: 2").assertExists()` (un valor que la app nunca alcanza tras un solo click) y vuelve a ejecutar. La prueba FALLA con un error real de `ComposeTestRule`: `Failed to assert the following: (exists) Reason: Expected exactly '1' node but could not find any node that satisfies: (Text = 'Contador: 2')` — diagnostica confirmando que `ComposeTestRule` ya espera automáticamente la estabilidad del árbol antes de fallar: el error no es un falso negativo por sincronización, sino la aserción reportando fielmente que ese estado nunca ocurrió. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada
+#### Comprueba dos acciones consecutivas
 
 Agrega una segunda acción encadenada al test real (dos `performClick()` seguidos sin leer el árbol entre ellos) y confirma que la aserción final sigue produciendo el valor correcto acumulado (`Contador: 2`) porque `ComposeTestRule` sincroniza automáticamente antes de la aserción, sin importar cuántas recomposiciones pendientes haya acumulado. **Pista:** no necesitas ningún `waitForIdle()` manual entre los dos `performClick()`; la sincronización ocurre antes de la siguiente aserción.
 
-#### Paso 6 · Práctica independiente
+#### Elige entre una prueba de UI y una prueba pura
 
 Documenta en una frase qué diferencia hay entre una prueba que usa `Thread.sleep()` para "esperar a que la UI se actualice" y una que usa la sincronización automática de `ComposeTestRule`, relacionándolo con qué pasa si la máquina de CI es más lenta de lo esperado.
 
-#### Paso 7 · Cierre
+#### Lleva la comprobación a una pantalla real
 
 Ya montas un composable real en un host de prueba, disparas una acción y verificas el árbol semántico solo después de que la sincronización automática garantiza estabilidad. El siguiente tema profundiza en los finders, assertions y actions específicos que navegan y modifican ese árbol. Fuente oficial: [Android Developers — Test your Compose layout](https://developer.android.com/develop/ui/compose/testing).
 

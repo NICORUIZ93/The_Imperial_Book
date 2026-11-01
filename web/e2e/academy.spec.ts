@@ -70,6 +70,47 @@ test('diagramas: el módulo final de Angular no genera geometría SVG inválida'
   await expect(page.locator('.lesson-error')).toHaveCount(0);
 });
 
+test('figuras anatómicas: no generan geometría SVG inválida', async ({ page }) => {
+  const consoleErrors: string[] = [];
+  page.on('console', message => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  const figures = [
+    '/content/figures/event-loop-dispatcher/figure.html',
+    '/content/figures/event-loop-dispatcher/figure-light.html',
+    '/content/figures/outbox-transaccional/figure.html',
+    '/content/figures/outbox-transaccional/figure-light.html',
+  ];
+
+  for (const figure of figures) {
+    consoleErrors.length = 0;
+    await page.goto(figure);
+    await expect(page.locator('.iso-stage')).toBeVisible();
+    await expect(page.locator('path[d*="NaN"], path[d*="undefined"], path[d*="Infinity"]')).toHaveCount(0);
+    expect(consoleErrors, figure).toEqual([]);
+  }
+});
+
+test('prototipo: los seis contextos muestran contenido y progreso navegable', async ({ page }) => {
+  const contexts = [
+    { track: 'foundations', module: 0, heading: 'El primer resultado que puedes repetir' },
+    { track: 'javascript', module: 8, heading: 'De datos a una vista segura' },
+    { track: 'java', module: 22, heading: 'El contrato de equals y hashCode' },
+    { track: 'node', module: 12, heading: 'Arquitectura por capas' },
+    { track: 'android', module: 14, heading: 'Por qué una captura visual no basta' },
+    { track: 'spring-boot', module: 22, heading: 'Hexagonal: puertos' },
+  ];
+
+  for (const context of contexts) {
+    await page.goto(`/curso/${context.track}/${context.module}`);
+    const topic = page.locator('.topic-card').first();
+    await expect(topic).toContainText(context.heading);
+    await expect(topic.locator('pre:not(.mermaid)').first()).toBeVisible();
+    await expect(topic.locator('button.topic-complete[data-topic-complete]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(topic.locator('.topic-step-navigation')).toBeVisible();
+  }
+});
+
 test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async ({ page }) => {
   const chapters = [
     { track: 'android', module: 17, diagrams: 5 },

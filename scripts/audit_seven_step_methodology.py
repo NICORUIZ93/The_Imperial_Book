@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mide la metodología editorial de siete pasos en cada tema visible."""
+"""Mide marcadores del formato legacy de siete pasos en cada tema visible."""
 
 from __future__ import annotations
 
@@ -123,9 +123,9 @@ def render_markdown(data: dict) -> str:
     lines = [
         "# Auditoría de metodología universal por tema",
         "",
-        "Un tema completo hace visibles los siete pasos solicitados y sus apoyos profesionales según 16 marcadores heurísticos. Este reporte no confunde una mención curricular con una lección terminada. El resultado no demuestra calidad, aprendizaje ni ejecución de los ejemplos; la auditoría de criterios editoriales es independiente y usa otra rúbrica.",
+        "Un tema completo hace visibles los siete pasos y sus apoyos profesionales según 16 marcadores heurísticos. Este reporte detecta el formato legacy; otros formatos no se consideran incompletos por no usar encabezados de siete pasos. El resultado no demuestra calidad, aprendizaje ni ejecución de los ejemplos; la auditoría de criterios editoriales es independiente y usa otra rúbrica.",
         "",
-        "El contenido actual sigue en siete pasos. La migración incremental al formato Aprende/Practica/Aplica se registra en [migration-status.json](./migration-status.json) y se planifica en [migration-plan.md](./migration-plan.md); este auditor mide los temas aún legacy y no acredita la migración.",
+        "La academia combina el formato legacy de siete pasos con Aprende/Practica/Aplica y estructuras narrativas. Este detector busca los marcadores del primer formato; una ausencia indica que no se detectaron esos marcadores, no que el tema carezca de explicación o práctica. La migración se registra en [migration-status.json](./migration-status.json).",
         "",
         "| Track | Temas | " + " | ".join(labels) + " | Completos |",
         "|---|---:|" + "---:|" * (len(keys) + 1),
@@ -139,7 +139,7 @@ def render_markdown(data: dict) -> str:
         "- **Demostración** exige código comentado, archivo concreto, ejecución y salida observable.",
         "- **Fallo deliberado** exige provocar un error y explicar su diagnóstico; mencionar errores no basta.",
         "- **Ejemplo independiente** exige iniciar el tema en una carpeta vacía o proyecto nuevo; ninguna lección depende de un proyecto acumulativo.",
-        "- Los temas incompletos permanecen como deuda editorial hasta ser reescritos específicamente.",
+        "- Un marcador ausente es una señal para revisar el tema en el formato que realmente utiliza; no prueba por sí solo que falte aprendizaje o práctica.",
         "- Cada campo es una detección textual de marcadores; una revisión humana sigue siendo necesaria para confirmar que el paso enseña realmente el concepto.",
         "",
     ])
