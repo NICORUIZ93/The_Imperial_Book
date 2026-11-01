@@ -1,7 +1,7 @@
 # Módulo 7: Combine y programación reactiva
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -76,7 +76,7 @@ $texto
     .sink { valor in buscar(valor) }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, publica la posición del conductor y verifica el subscriber.
 
 ### Tema 2: Operadores: debounce y combineLatest
@@ -136,7 +136,7 @@ Publishers.CombineLatest($filtro, $orden)
     .sink { filtro, orden in actualizarLista(filtro, orden) }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, aplica debounce a la búsqueda y combina posición y filtro.
 
 **Límites y decisión de uso:** Debounce retrasa emisiones y puede ser inapropiado para acciones que deben ejecutarse inmediatamente. combineLatest necesita valores de sus fuentes; define estados iniciales y prueba ausencia de datos para no dejar la pantalla esperando sin explicación.
@@ -170,6 +170,9 @@ Resultado esperado: la búsqueda en vivo usa Combine porque nunca "termina" mien
 Pista: reescribí `confirmarEntrega` como un `Publisher` con `Future` en vez de una función `async` — ese es el fallo deliberado de elegir la herramienta equivocada: ahora necesitás gestionar un `AnyCancellable` y un `.store(in:)` para una operación que de por sí termina una sola vez, agregando complejidad de gestión de vida que `async`/`await` nunca necesitó.
 #### Paso 6 · Práctica independiente
 Identificá, en la app de RutaFlow, una tercera operación real que SÍ necesitaría Combine por ser un flujo continuo (pista: las actualizaciones de ubicación GPS del conductor, que llegan repetidamente mientras la app está abierta) y justificá por qué no encajaría bien como una única función `async`.
+
+**Proyecto integrador:** en el proyecto creado desde una carpeta vacía para este tema, construye `CentroOperacionesViewModel.swift` con dos operaciones independientes: búsqueda de guías mediante `$textoBusqueda.debounce` y confirmación de entrega mediante una función `async throws`. Crea un fake local en `ServicioOperacionesFalso.swift` que emita dos cambios de ubicación y devuelva una única confirmación. Desde `CentroOperacionesView.swift`, escribe dos guías, cambia el filtro y confirma una entrega: la búsqueda debe reaccionar a cada filtro usando la suscripción retenida, mientras la confirmación debe terminar con un solo resultado sin crear ningún `AnyCancellable` adicional.
+
 #### Paso 7 · Cierre
 Entregá la clasificación correcta del Paso 4, la complejidad innecesaria de forzar Combine del Paso 5, y la tercera operación identificada del Paso 6; explicá por qué algunas APIs de Apple (Core Location, NotificationCenter) siguen exponiendo Combine aunque tu propio código prefiera `async`/`await`. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
 **¿Por qué es importante?** Porque forzar Combine sobre una operación puntual (como `confirmarEntrega`) agrega gestión de `AnyCancellable` que `async`/`await` nunca necesitó, mientras que un flujo continuo real sí requiere las herramientas de Combine.
@@ -198,7 +201,7 @@ flowchart TD
     A -->|Resultado único| C["async/await\n(confirmarEntrega)"]
 ```
 
-En el proyecto integrador RutaFlow, `confirmarEntrega` vive en `examples/rutaflow/ios/DetalleEntregaView.swift` y la búsqueda con debounce en `examples/rutaflow/ios/ContentView.swift`.
+En tu propio proyecto RutaFlow, escribe `confirmarEntrega` en `DetalleEntregaView.swift` y la búsqueda con debounce en `BuscadorEnviosViewModel.swift`; crea cada archivo con **File ▸ New ▸ File ▸ Swift File** y asígnalo al target de la app.
 
 ---
 
@@ -226,5 +229,5 @@ En el proyecto integrador RutaFlow, `confirmarEntrega` vive en `examples/rutaflo
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, compara la misma carga con Combine y async/await y elige una.

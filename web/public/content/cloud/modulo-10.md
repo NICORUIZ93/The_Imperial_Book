@@ -89,10 +89,10 @@ flowchart TD
     B -->|cifra| C["Datos reales (volumen grande, cifrado localmente con la clave de datos)"]
 ```
 
-En el proyecto integrador RutaFlow, el `Policies: - DynamoDBWritePolicy` de `ConfirmarEntregaFn`
-en `examples/rutaflow/cloud/template.yaml` es exactamente la pieza que, de necesitar esta clave
-KMS, declararía además un `KMSDecryptPolicy` explícito — mínimo privilegio significa que el rol
-nunca hereda `kms:Decrypt` por defecto solo por existir.
+En el proyecto integrador RutaFlow, cuando escribas `Policies: - DynamoDBWritePolicy` para
+`ConfirmarEntregaFn` en tu propio `template.yaml`, esa es exactamente la pieza que, de necesitar
+esta clave KMS, debería complementar con un `KMSDecryptPolicy` explícito — mínimo privilegio
+significa que el rol nunca hereda `kms:Decrypt` por defecto solo por existir.
 
 #### Paso 4 · Demostración guiada
 ```bash

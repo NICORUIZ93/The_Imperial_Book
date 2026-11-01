@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-01 07:43 UTC
+Generated: 2026-11-01 09:47 UTC
 Root: `Academia_Floci`
 Indexed files: 991
 Import edges: 60
@@ -205,7 +205,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/ATRIBUCION.md` (39 lines) - headings: # Atribucion y licencia, ## Fuentes consultadas para la ampliacion de DevOps
 - `web/public/content/LICENCIA-CONTENIDO.md` (44 lines) - headings: # Licencia del contenido original, ## Exclusiones y avisos, ## Inventario de recursos de terceros de la aplicación
 - `web/public/content/LICENSE-FLOCI.txt` (21 lines)
-- `web/public/content/android/modulo-0.md` (648 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
+- `web/public/content/android/modulo-0.md` (663 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
 - `web/public/content/android/modulo-1.md` (343 lines) - headings: # Módulo 1: Ciclo de vida: Activities y ViewModel, ## Aprende construyendo, ### Tema 1: Ciclo de vida de una Activity, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-10.md` (408 lines) - headings: # Módulo 10: Performance, Material 3 y accesibilidad, ## Aprende construyendo, ### Tema 1: Detectar y corregir recomposición innecesaria, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-11.md` (343 lines) - headings: # Módulo 11: Publicación en Google Play, ## Aprende construyendo, ### Tema 1: Firma de la app, #### Paso 1 · Objetivo y preparación
@@ -284,10 +284,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2712 lines)
-- `docs/code-visual-quality.json` (1883 lines)
-- `docs/course-depth-review.json` (14030 lines)
+- `docs/code-visual-quality.json` (1953 lines)
+- `docs/course-depth-review.json` (14000 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (819 lines)
-- `docs/lesson-substance.json` (9724 lines)
+- `docs/lesson-substance.json` (9728 lines)
 - ... 46 more files

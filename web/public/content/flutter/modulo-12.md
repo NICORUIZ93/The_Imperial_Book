@@ -220,7 +220,7 @@ flowchart LR
     C --> E["Compose (Android/KMP)"]
 ```
 
-En el proyecto integrador RutaFlow, esta retrospectiva se escribe comparando `lib/features/deliveries/presentation/delivery_list_screen.dart` (Flutter) contra el equivalente en `examples/rutaflow/ios/ContentView.swift` (SwiftUI) u otro track completado.
+En el proyecto integrador RutaFlow, escribe esta retrospectiva comparando tu archivo `lib/features/deliveries/presentation/delivery_list_screen.dart` (Flutter) contra una pantalla equivalente que hayas creado en `iosApp/ContentView.swift` (SwiftUI) u otro track completado.
 
 ---
 

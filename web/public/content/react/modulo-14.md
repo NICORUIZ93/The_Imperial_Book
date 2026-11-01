@@ -43,15 +43,41 @@ graph TD
 ```
 
 #### Paso 4 · Demostración guiada
-Desde la raíz del repositorio crea una copia independiente del proyecto Next.js con Node 24 LTS:
+Parte de una carpeta vacía y crea tu propio proyecto Next.js con Node 24 LTS:
 ```bash
-cp -R examples/react-streaming ejemplo-react-streaming
+npx create-next-app@latest ejemplo-react-streaming --ts --app --no-src-dir --use-npm --yes
 cd ejemplo-react-streaming
-npm ci
-npm run build
-npm start
 ```
-Están incluidos `app/layout.tsx`, `app/envios/data.ts` (fixtures ficticios con retardos de 50/1200 ms), `ListaEnvios.tsx` e `HistorialEnvio.tsx`. El lockfile fija las dependencias. Inspecciona `app/envios/page.tsx`:
+Conserva el `app/layout.tsx` generado y crea `app/envios/data.ts` con datos ficticios y retardos controlados:
+```ts
+export type Envio = { id: string; guia: string; estado: string };
+const esperar = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export async function obtenerEnvios(empty = false): Promise<Envio[]> {
+  await esperar(50);
+  return empty ? [] : [{ id: 'e-1', guia: 'RF-4471', estado: 'En ruta' }];
+}
+export async function obtenerHistorial(envioId: string): Promise<string[]> {
+  await esperar(1200);
+  return [`${envioId}: Recogido`, `${envioId}: En tránsito`];
+}
+```
+Crea `app/envios/ListaEnvios.tsx`:
+```tsx
+import type { Envio } from './data';
+export function ListaEnvios({ envios }: { envios: Envio[] }) {
+  return <ul>{envios.map(envio =>
+    <li key={envio.id}>{envio.guia}: {envio.estado}</li>)}</ul>;
+}
+```
+Crea `app/envios/HistorialEnvio.tsx` como Server Component asíncrono:
+```tsx
+import { obtenerHistorial } from './data';
+export async function HistorialEnvio({ envioId }: { envioId: string }) {
+  const eventos = await obtenerHistorial(envioId);
+  return <ol>{eventos.map(evento => <li key={evento}>{evento}</li>)}</ol>;
+}
+```
+Crea `app/envios/page.tsx` con este contenido:
 ```tsx
 import { Suspense } from 'react';
 import { obtenerEnvios } from './data';
@@ -68,6 +94,11 @@ export default async function EnviosPage({ searchParams }: { searchParams: Promi
     </Suspense>
   </main>;
 }
+```
+Compila y arranca el servidor de producción:
+```bash
+npm run build
+npm start
 ```
 Abre `/envios` y `/envios?empty=1`. **Resultado esperado:** la lista aparece antes del historial y el caso vacío no accede a `envios[0]`. Para observar los fragmentos sin el buffering visual del navegador, usa `curl --no-buffer http://127.0.0.1:3000/envios` y busca el fallback antes de `Recogido`. Una conexión o proxy puede agrupar fragmentos; mide llegada del contenido, no solo el primer byte.
 

@@ -45,10 +45,9 @@ flowchart LR
     Q --> W["Worker asíncrono\nlog: shipmentId=env-4471"]
 ```
 
-En el proyecto integrador RutaFlow, este mismo `shipmentId` es el campo que
-`examples/rutaflow/cloud/template.yaml` ya expone como clave primaria de `ShipmentEvents` — no
-conviene inventar un UUID genérico como correlation ID cuando el dominio ya te da uno natural y
-más útil para buscar directamente en la tabla.
+En el proyecto integrador RutaFlow, este mismo `shipmentId` es el campo que definiste como clave
+de partición de `ShipmentEvents` en el Módulo 4 — no conviene inventar un UUID genérico como
+correlation ID cuando el dominio ya te da uno natural y más útil para buscar directamente en la tabla.
 
 **Límites y decisión de uso:** Un identificador de correlación relaciona eventos, pero no asegura que todos se hayan registrado ni reemplaza una traza completa. Define retención y acceso a logs y evita incluir datos privados solo para facilitar búsquedas.
 

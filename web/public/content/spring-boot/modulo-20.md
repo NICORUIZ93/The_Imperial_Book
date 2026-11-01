@@ -627,14 +627,14 @@ ChatClient construye mensajes para un ChatModel sustituible. Una herramienta es 
 
 #### Practica
 
-```bash
-cp -R examples/rutaflow-material/spring-ai ejemplo-spring-ai
-cd ejemplo-spring-ai
-mvn test -Dtest=ChatToolsTest
-```
-También puedes crear manualmente los archivos siguientes en una carpeta vacía. En ese caso, las rutas parten de esa carpeta: coloca el contenido de `spring-ai/pom.xml` en `pom.xml` y conserva `src/test/java/academia/ChatToolsTest.java`.
+Parte de una carpeta vacía y crea manualmente el proyecto Maven y su estructura de pruebas:
 
-Crea `spring-ai/pom.xml` con este contenido completo:
+```bash
+mkdir -p ejemplo-spring-ai/src/test/java/academia
+cd ejemplo-spring-ai
+```
+
+Crea `pom.xml` con este contenido completo:
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
   <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.0.9</version><relativePath/></parent>
@@ -645,7 +645,7 @@ Crea `spring-ai/pom.xml` con este contenido completo:
 </project>
 ```
 
-Crea `spring-ai/src/test/java/academia/ChatToolsTest.java` con este contenido completo:
+Crea `src/test/java/academia/ChatToolsTest.java` con este contenido completo:
 ```java
 package academia;
 import org.junit.jupiter.api.Test;
@@ -682,6 +682,12 @@ class ChatToolsTest {
         assertThrows(RuntimeException.class, () -> callbacks[0].call("{\"envioId\":\"ENV-ajeno\"}"));
     }
 }
+```
+
+Ejecuta las dos pruebas desde `ejemplo-spring-ai`:
+
+```bash
+mvn test -Dtest=ChatToolsTest
 ```
 
 **Resultado esperado:** dos pruebas correctas. Explica cada bloque: el modelo controlado comprueba que recibió ENV-42, ChatClient adapta la respuesta, @Tool expone una operación de lectura y el callback real rechaza ENV-ajeno. No se ha probado que un modelo real elija correctamente la herramienta: eso exige un proveedor, modelo y evaluación adicionales.
@@ -728,16 +734,26 @@ Un flujo RAG ingiere documentos, los divide con una política de tamaño/solapam
 
 #### Practica
 
+Parte de una carpeta vacía y crea manualmente otro proyecto Maven, sin reutilizar archivos ya preparados:
+
 ```bash
-cp -R examples/rutaflow-material/spring-ai ejemplo-rag
+mkdir -p ejemplo-rag/src/test/java/academia
 cd ejemplo-rag
-mvn test -Dtest=RagScopeTest
 ```
-Para un ejemplo independiente copia `examples/rutaflow-material/spring-ai` a una carpeta vacía y usa su pom completo.
 
-Crea el archivo siguiente bajo `src/test/java/academia/` del proyecto que contiene el pom del tema anterior:
+Crea `pom.xml` con este contenido completo:
 
-Crea `spring-ai/src/test/java/academia/RagScopeTest.java` con este contenido completo:
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.0.9</version><relativePath/></parent>
+  <groupId>academia</groupId><artifactId>spring-rag-lab</artifactId><version>1</version>
+  <properties><java.version>27</java.version></properties>
+  <dependencyManagement><dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-bom</artifactId><version>2.0.2</version><type>pom</type><scope>import</scope></dependency></dependencies></dependencyManagement>
+  <dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-client-chat</artifactId></dependency><dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency></dependencies>
+</project>
+```
+
+Crea `src/test/java/academia/RagScopeTest.java` con este contenido completo:
 ```java
 package academia;
 import org.junit.jupiter.api.Test;
@@ -770,6 +786,12 @@ class RagScopeTest {
         assertTrue(recuperar("A", "factura", List.of(new Document("GPS", Map.of("empresa", "A")))).isEmpty());
     }
 }
+```
+
+Ejecuta las pruebas desde `ejemplo-rag`:
+
+```bash
+mvn test -Dtest=RagScopeTest
 ```
 
 **Resultado esperado:** dos pruebas correctas. Explica cada bloque: Document conserva texto y metadatos, el tenant autorizado es una entrada confiable del servidor, se filtra antes de seleccionar contexto y se limita el número de resultados. El segundo test comprueba ausencia de evidencia; en la aplicación ese caso debe producir una respuesta explícita de insuficiencia, no inventar documentos.

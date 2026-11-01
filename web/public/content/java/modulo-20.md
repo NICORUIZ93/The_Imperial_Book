@@ -2,34 +2,26 @@
 
 ## Aprende construyendo
 
-Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error real, no para describirlo.
+Cada tema parte de una carpeta vacía y se compila con `javac` para observar el comportamiento y los errores reales. Crearás manualmente todos los archivos, sin depender de proyectos prefabricados ni código de otros temas.
 
-### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier
+### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min
 
-#### Paso 1 · Objetivo y preparación
+#### Aprende
 
-Al finalizar vas a elegir la interfaz funcional correcta para cada intención —decidir, transformar, notificar o proveer— y a compilar un ejemplo que use las cuatro sin envolver lambdas a mano.
+**Prerrequisitos:** JDK 27 o superior, lambdas básicas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version`.
 
-**Conocimiento previo:** Java 27 o superior, lambdas y `javac`/`java` en el `PATH`. Comprueba `java -version` y `javac -version`.
+**Al terminar podrás:** elegir la interfaz funcional adecuada para decidir, transformar, notificar o proveer; compilar un programa con las cuatro y corregir una lambda cuya aridad no coincide con su interfaz.
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** En un caso real, el equipo de RutaFlow necesita aplicar reglas distintas por cliente: unas deciden si un envío requiere revisión, otras transforman la guía para imprimirla, otras registran la decisión y otras proveen la fecha del turno. Si cada regla se modela con la interfaz equivocada, el código compila pero obliga a envolver lambdas y a repetir `if` por todas partes.
-
-Elegir la forma correcta convierte una regla de negocio en un valor que se pasa, se compone y se prueba por separado. Ese es el primer paso para que el proyecto integrador no acumule lógica en un método de mil líneas.
-
-#### Paso 3 · Teoría, modelo mental y analogía
+**Por qué importa:** RutaFlow aplica reglas por cliente: decidir si un envío requiere revisión, transformar una guía, registrar una decisión y proveer el turno. La forma correcta convierte cada regla en un valor que se pasa y se prueba por separado, en lugar de acumular condicionales sin nombres.
 
 `java.util.function` define cuatro formas base:
 
-- `Predicate<T>`: recibe un valor y decide (`boolean`). Es un portero.
-- `Function<T, R>`: recibe un valor y devuelve otro. Es un traductor.
-- `Consumer<T>`: recibe un valor y no devuelve nada; produce un efecto. Es un notificador.
-- `Supplier<T>`: no recibe nada y devuelve un valor. Es un proveedor.
+- `Predicate<T>` recibe un valor y decide un `boolean`.
+- `Function<T, R>` recibe un valor y devuelve otro.
+- `Consumer<T>` recibe un valor y produce un efecto sin devolver resultado.
+- `Supplier<T>` no recibe argumentos y provee un valor.
 
-**Analogía:** en una bodega, el portero decide si un paquete entra (`Predicate`), el traductor reetiqueta el paquete en otro idioma (`Function`), el notificador avisa al sistema (`Consumer`) y el proveedor entrega el turno del día (`Supplier`). La analogía deja de servir si conviertes la interfaz en el modelo del negocio: `Predicate<Envio>` describe una decisión, no un envío.
-
-**Diagrama:**
+**Analogía:** en una bodega, el portero decide si entra un paquete, el traductor lo reetiqueta, el notificador avisa y el proveedor entrega el turno. La interfaz describe comportamiento, no reemplaza el modelo de dominio.
 
 ```mermaid
 flowchart LR
@@ -39,16 +31,15 @@ flowchart LR
     S["Supplier&lt;String&gt;<br/>provee"] --> C
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
 Desde una carpeta vacía:
 
 ```bash
-mkdir java-funcional && cd java-funcional
+mkdir java-funcional-formas
+cd java-funcional-formas
 mkdir src
 ```
 
-Crea `src/Formas.java` con este contenido completo:
+Crea manualmente `src/Formas.java`:
 
 ```java
 import java.util.List;
@@ -61,13 +52,9 @@ public final class Formas {
     record Envio(String guia, String destino, double pesoKg) {}
 
     public static void main(String[] args) {
-        // Predicate: decide si el envío requiere revisión.
         Predicate<Envio> requiereRevision = envio -> envio.pesoKg() > 20;
-        // Function: transforma el envío en la línea que se imprime.
         Function<Envio, String> etiqueta = envio -> envio.guia() + " -> " + envio.destino();
-        // Consumer: produce un efecto, no devuelve valor.
         Consumer<String> registrar = linea -> System.out.println("[log] " + linea);
-        // Supplier: entrega un valor cuando se le pide.
         Supplier<String> turno = () -> "Turno AM";
 
         List<Envio> envios = List.of(
@@ -91,106 +78,114 @@ javac -d out src/Formas.java
 java -cp out Formas
 ```
 
-**Resultado esperado:** una sola línea, `[log] Turno AM | ENV-2 -> Medellín`. El envío de 5,5 kg no entra al bloque porque `requiereRevision` devuelve `false`.
+**Resultado esperado:**
 
-**Fallo deliberado:** cambia la `Function` por una lambda de dos parámetros:
+```text
+[log] Turno AM | ENV-2 -> Medellín
+```
+
+El envío de 5,5 kg no supera el predicado.
+
+**Fallo deliberado y corrección:** sustituye la función de etiqueta por:
 
 ```java
 Function<Envio, String> etiqueta = (guia, destino) -> guia;
 ```
 
-Al compilar, `javac` responde:
+`javac` informa `incompatible types: incompatible parameter types in lambda expression`. `Function` declara un parámetro y la lambda tiene dos. Restaura `envio -> envio.guia() + " -> " + envio.destino()`, recompila y verifica la línea esperada.
 
-```text
-Formas.java:12: error: incompatible types: incompatible parameter types in lambda expression
+#### Practica
+
+**Práctica guiada:** crea `src/ReglasBasicas.java` con un `Predicate<String>` que valide un correo normalizado, una `Function<String, String>` que haga `trim().toLowerCase()`, un `Consumer<String>` que registre y un `Supplier<LocalDate>` que provea la fecha. Aplica primero la función y después el predicado.
+
+```bash
+javac -d out src/ReglasBasicas.java
+java -cp out ReglasBasicas
 ```
 
-El diagnóstico es que `Function` declara un único parámetro. El compilador no está fallando por la sintaxis de la lambda, sino por su aridad: la interfaz fija la forma. Corrige la lambda a un parámetro y vuelve a compilar.
+**Resultado esperado:** `  ANA@ACADEMIA.COM  ` se normaliza, se acepta y se registra una sola vez junto a la fecha ISO; una entrada sin `@` se rechaza sin registro.
 
-**Conceptos clave:** interfaz funcional, aridad, `apply`, `test`, `accept`, `get`.
+**Ejercicio independiente:** crea `src/ReglasEnvio.java` con un `Predicate<Envio>` para peso, una `Function<Envio, String>` para etiqueta, un `Consumer<String>` para auditoría y un `Supplier<String>` para turno. Procesa tres envíos y encapsula las cuatro reglas en un `record PoliticaEnvio` con componentes funcionales.
 
-#### Paso 5 · Práctica guiada
+```bash
+javac -d out src/ReglasEnvio.java
+java -cp out ReglasEnvio
+```
 
-**Pista:** cambia `Predicate<Envio>` por `Function<Envio, Boolean>` y observa el error: `boolean cannot be dereferenced` o un fallo al llamar `test`. La interfaz correcta se elige por la pregunta que responde, no por el tipo que devuelve.
+**Resultado esperado:** solo los envíos que cumplen el predicado generan etiqueta y auditoría; puedes cambiar el umbral sustituyendo el `Predicate` sin modificar el recorrido.
 
-**Resultado esperado:** documentas el error de compilación y explicas en una frase por qué `Predicate` expresa mejor la decisión.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+Construye las reglas de revisión del **[Proyecto integrador: motor funcional de asignación](#proyecto-20-motor-de-reglas-funcional)** con las cuatro interfaces, de modo que cada comportamiento pueda ejecutarse de forma aislada.
 
-Crea `src/Reglas.java` con un `Predicate<String>` que valide un correo, una `Function<String, String>` que lo normalice, un `Consumer<String>` que registre el resultado y un `Supplier<LocalDate>` que devuelva la fecha de hoy. Ejecuta con `-cp out Reglas`.
+**Checklist de salida**
 
-**Resultado esperado:** el correo normalizado se registra una sola vez y la fecha aparece en el formato ISO.
+- [ ] Creaste manualmente el proyecto en una carpeta vacía.
+- [ ] Cada interfaz se eligió por intención y no solo por tipo de retorno.
+- [ ] `test`, `apply`, `accept` y `get` aparecen en una ejecución correcta.
+- [ ] Una lambda de aridad incorrecta se diagnosticó y corrigió.
+- [ ] Los efectos están en `Consumer`, no escondidos en transformaciones.
+- [ ] Puedes explicar cuándo una clase con nombre es mejor que una función anónima.
 
-#### Paso 7 · Cierre
+**Límites y decisión de uso:** si una regla necesita estado propio, más parámetros de los que expresa la interfaz o vocabulario de dominio, una clase comunica mejor.
 
-Siguiente paso: componer estas formas sin anidar lambdas.
+**Fuentes oficiales:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [lambdas en el tutorial de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
 
-**Errores comunes:** usar `Function` cuando la intención es decidir; olvidar que `Consumer` no devuelve nada; crear un `Supplier` que en realidad depende de un parámetro; asumir que una lambda con dos parámetros encaja en una interfaz de uno.
+### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min
 
-**Límites y decisión de uso:** estas interfaces sirven para pasar comportamiento, no para modelar entidades. Si una regla necesita estado propio o más de dos parámetros, una clase con nombre comunica mejor la intención. En el proyecto integrador, las reglas de revisión se prueban por separado precisamente porque son `Predicate`, no métodos privados.
+#### Aprende
 
-**Fuente oficial:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [lambdas en el tutorial de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
+**Prerrequisitos:** lambdas y las cuatro interfaces funcionales básicas. El proyecto es independiente y no reutiliza archivos del tema anterior.
 
-### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas
+**Al terminar podrás:** encadenar reglas con `and`, `or`, `negate`, `andThen` y `compose`, y demostrar con una entrada concreta cómo cambiar el orden altera el resultado.
 
-#### Paso 1 · Objetivo y preparación
+**Por qué importa:** si RutaFlow valida antes de normalizar, un correo correcto con espacios se rechaza. El orden de composición es parte de la regla de negocio y debe quedar visible.
 
-Al finalizar vas a encadenar reglas con `and`, `or`, `negate`, `andThen` y `compose`, y a explicar por qué el orden de composición cambia el resultado.
+`Predicate` ofrece `and`, `or` y `negate`; `Function` ofrece `andThen` y `compose`. `f.andThen(g)` aplica `f` y luego `g`; `g.compose(f)` aplica primero `f` y después `g`. Ambas composiciones pueden expresar el mismo orden, pero se leen en direcciones distintas.
 
-**Conocimiento previo:** Tema 1 de este módulo; `javac` funcionando.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** El proyecto integrador valida correos que llegan de un formulario. Si se valida antes de normalizar, un correo correcto con espacios alrededor se rechaza; si se normaliza antes de validar, pasa. El error no está en la regla sino en el orden en que se compone.
-
-Componer con las interfaces de Java hace visible ese orden en una sola expresión, en lugar de esconderlo en una sucesión de `if` que nadie revisa.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-`Predicate` ofrece `and`, `or` y `negate`; `Function` ofrece `andThen` y `compose`. La diferencia es el sentido de la lectura: `f.andThen(g)` aplica `f` y luego `g`; `g.compose(f)` aplica `f` y luego `g`. Son equivalentes, pero una se lee de izquierda a derecha y la otra de derecha a izquierda.
-
-**Analogía:** es una cadena de montaje. `andThen` añade una estación al final; `compose` declara que la estación actual va después de otra. El límite es que la cadena no valida la semántica: si el orden es incorrecto, compila y produce el resultado equivocado.
-
-#### Paso 4 · Demostración guiada desde cero
+**Analogía:** es una cadena de montaje. `andThen` añade una estación al final; `compose` declara qué estación va antes. La cadena compila aunque el orden elegido sea semánticamente incorrecto.
 
 Desde una carpeta vacía:
 
 ```bash
-mkdir java-composicion && cd java-composicion
+mkdir java-funcional-composicion
+cd java-funcional-composicion
 mkdir src
 ```
 
-Crea `src/Composicion.java`:
+Crea manualmente `src/Composicion.java`:
 
 ```java
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public final class Composicion {
-    // Decide si el texto ya normalizado parece un correo.
     static final Predicate<String> correo = texto ->
-        texto.contains("@") && texto.indexOf('@') > 0 && texto.indexOf('@') < texto.length() - 1;
+        texto.contains("@") && texto.indexOf('@') > 0
+            && texto.indexOf('@') < texto.length() - 1;
 
     public static void main(String[] args) {
-        // Function: normaliza antes de validar.
         Function<String, String> normalizar = texto -> texto.trim().toLowerCase();
-
-        // andThen: primero normaliza, luego decide.
         Function<String, Boolean> validar = normalizar.andThen(correo::test);
 
         String entrada = "  ANA@ACADEMIA.COM  ";
         System.out.println("normalizado: " + validar.apply(entrada));
 
-        // Predicate: combina reglas con and / or / negate.
         Predicate<String> noVacio = texto -> !texto.isBlank();
         Predicate<String> conArroba = texto -> texto.contains("@");
         Predicate<String> sospechoso = noVacio.and(conArroba).negate();
 
         System.out.println("sospechoso: " + sospechoso.test(entrada));
         System.out.println("sospechoso vacío: " + sospechoso.test("   "));
+
+        Function<String, String> conMinusculas = String::toLowerCase;
+        Function<String, String> sinEspacios = String::trim;
+        System.out.println("compose: " + conMinusculas.compose(sinEspacios).apply(entrada));
     }
 }
 ```
+
+Compila y ejecuta:
 
 ```bash
 javac -d out src/Composicion.java
@@ -203,53 +198,61 @@ java -cp out Composicion
 normalizado: true
 sospechoso: false
 sospechoso vacío: true
+compose: ana@academia.com
 ```
 
-**Fallo deliberado:** invierte el orden. Crea `Function<String, Boolean> sinNormalizar = correo::test;` y evalúa `sinNormalizar.apply("  ANA@ACADEMIA.COM  ")`. Obtienes `false`: la regla es correcta, pero recibe el texto crudo. El diagnóstico es que `correo::test` no normaliza; la composición `andThen` es la que aporta el orden. Corrige usando `normalizar.andThen(correo::test)`.
+**Fallo deliberado y corrección:** añade `Function<String, Boolean> sinNormalizar = correo::test;` y evalúa `sinNormalizar.apply("  ANA@ACADEMIA.COM  ")`. Obtienes `false`: el predicado recibe texto crudo. Elimina esa variante y conserva `normalizar.andThen(correo::test)`; la ejecución vuelve a `normalizado: true`.
 
-**Conceptos clave:** `andThen`, `compose`, `and`, `or`, `negate`, orden de evaluación.
+#### Practica
 
-#### Paso 5 · Práctica guiada
+**Práctica guiada:** crea `src/Dominios.java` con un predicado `terminaEnCom` combinado mediante `correo.and(texto -> texto.endsWith(".com"))`. Añade una versión equivalente con `compose` para normalizar antes de validar y prueba `.com`, `.org`, espacios y mayúsculas.
 
-**Pista:** añade una regla `terminaEnCom` con `correo.and(texto -> texto.endsWith(".com"))` y comprueba con `"ana@academia.com"` y `"ana@academia.org"`.
+```bash
+javac -d out src/Dominios.java
+java -cp out Dominios
+```
 
-**Resultado esperado:** el primer texto pasa y el segundo no; puedes señalar qué regla lo rechazó.
+**Resultado esperado:** ` ANA@ACADEMIA.COM ` pasa tras normalizar; `ana@academia.org` no pasa; puedes señalar qué predicado produjo cada rechazo.
 
-#### Paso 6 · Práctica independiente
+**Ejercicio independiente:** crea `src/ReglasEnvio.java` con un `record Envio` y tres `Predicate<Envio>` para peso, destino y estado. Después crea una `Function<Envio, List<String>>` que devuelva todos los motivos de rechazo, no solo un `boolean`. Incluye un envío válido, uno con un fallo y otro con tres.
 
-Crea `src/ReglasEnvio.java` con tres `Predicate<Envio>` (peso, destino y estado) y una función que devuelva el motivo del rechazo en lugar de un `boolean`. Ejecuta con `java -cp out ReglasEnvio`.
+```bash
+javac -d out src/ReglasEnvio.java
+java -cp out ReglasEnvio
+```
 
-**Resultado esperado:** cada envío rechazado muestra el motivo, y un envío válido no produce ningún mensaje.
+**Resultado esperado:** el válido produce una lista vacía; los demás muestran todos sus motivos en orden estable, sin detenerse en el primero.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Siguiente paso: aplicar composición a colecciones con Streams.
+En el **[Proyecto integrador: validación ordenada de solicitudes](#proyecto-20-motor-de-reglas-funcional)**, normaliza antes de validar y usa motivos explícitos cuando el usuario necesite entender un rechazo.
 
-**Errores comunes:** confundir `andThen` con `compose`; validar antes de normalizar; encadenar `or` donde la regla pedía `and`; usar `negate` para esconder una condición que debería tener nombre propio.
+**Checklist de salida**
 
-**Límites y decisión de uso:** componer es útil cuando las reglas son independientes y se combinan; si dependen entre sí o necesitan explicar el motivo del rechazo, un tipo de resultado (`Resultado`) comunica más que un `boolean` compuesto. En el proyecto integrador, la validación que debe informar al usuario usa motivos, no solo `Predicate`.
+- [ ] El ejemplo se escribió completo en un proyecto nuevo.
+- [ ] `andThen` y `compose` producen el orden previsto.
+- [ ] `and`, `or` y `negate` se prueban con entradas límite.
+- [ ] El correo con espacios demuestra el fallo de validar antes de normalizar.
+- [ ] Los motivos de rechazo no se pierden detrás de un único `boolean`.
+- [ ] Evitas cadenas compuestas cuyas reglas no tengan nombres comprensibles.
 
-**Fuente oficial:** [Predicate](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html) y [Function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html).
+**Límites y decisión de uso:** componer funciona bien con reglas independientes. Si dependen entre sí o deben explicar el resultado, un tipo `Resultado` comunica mejor que una cadena de predicados.
 
-### Tema 3: Streams como composición: pereza, orden y efectos que se esconden
+**Fuentes oficiales:** [Predicate](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html) y [Function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html).
 
-#### Paso 1 · Objetivo y preparación
+### Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min
 
-Al finalizar vas a explicar por qué un Stream no ejecuta nada hasta la operación terminal, a depurar un pipeline con `peek` sin confundirlo con un `for`, y a diagnosticar el error de reutilizar un Stream consumido.
+#### Aprende
 
-**Conocimiento previo:** Temas 1 y 2; `javac` y `java` funcionando.
+**Prerrequisitos:** colecciones, lambdas y composición básica de funciones; no necesitas archivos de otros temas.
 
-#### Paso 2 · Contexto y caso real
+**Al terminar podrás:** demostrar que un Stream no ejecuta su pipeline hasta una operación terminal, depurar con `peek`, diagnosticar el consumo doble y calcular agregados sin esconder efectos.
 
-**¿Por qué es importante?** En el proyecto integrador, un informe procesa miles de envíos. Si el pipeline se ejecuta dos veces o se mezclan efectos dentro de `map`, el informe puede duplicar registros o tardar el doble sin que nadie lo note. La pereza de Streams es una ventaja solo si se entiende: el trabajo ocurre en la operación terminal, no donde se declara.
+**Por qué importa:** un informe de miles de envíos puede duplicar registros o trabajo si se reutiliza un Stream o se mezclan efectos dentro de `map`. La pereza es útil solo cuando sabes dónde ocurre el trabajo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+Un Stream describe trabajo; no es una colección. `filter`, `map` y `peek` son perezosas. `count`, `collect`, `forEach` y `reduce` son terminales y disparan el recorrido. Un Stream se consume una sola vez. `peek` sirve para observar durante depuración, no para implementar lógica de negocio.
 
-Un `Stream` es una descripción de trabajo, no una colección. `filter`, `map` y `peek` son perezosas; `count`, `collect`, `forEach` y `reduce` son terminales y disparan el recorrido. Un Stream se consume una sola vez.
-
-**Analogía:** es una receta escrita frente a una comida cocinada. Escribir la receta no cocina nada; el primer plato que se sirve dispara el trabajo. El límite es que, a diferencia de una receta, el Stream no se puede volver a cocinar: si lo intentas, la API lanza una excepción.
-
-**Diagrama:**
+**Analogía:** es una receta escrita frente a una comida cocinada. Declarar la receta no cocina nada; servir el plato dispara el trabajo. A diferencia de la receta, un Stream consumido no puede cocinarse otra vez.
 
 ```mermaid
 flowchart LR
@@ -259,16 +262,15 @@ flowchart LR
     D --> E["count (terminal)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
 Desde una carpeta vacía:
 
 ```bash
-mkdir java-streams && cd java-streams
+mkdir java-streams-pereza
+cd java-streams-pereza
 mkdir src
 ```
 
-Crea `src/Pereza.java`:
+Crea manualmente `src/Pereza.java`:
 
 ```java
 import java.util.List;
@@ -295,6 +297,8 @@ public final class Pereza {
 }
 ```
 
+Compila y ejecuta:
+
 ```bash
 javac -d out src/Pereza.java
 java -cp out Pereza
@@ -308,72 +312,99 @@ filtrado ENV-2
 pesados=1
 ```
 
-La línea «filtrado» aparece después del mensaje, no antes: el `peek` no se ejecutó al declarar el pipeline.
+La línea de `peek` aparece después del aviso porque el trabajo ocurre en `count`.
 
-**Fallo deliberado:** reutiliza el Stream consumido:
+**Fallo deliberado y corrección:** sustituye el cálculo por:
 
 ```java
 long primero = pesados.count();
 long segundo = pesados.count();
 ```
 
-Al ejecutar, la JVM responde:
+La JVM lanza `IllegalStateException: stream has already been operated upon or closed`. La primera operación terminal consumió el Stream. Corrige conservando un único `long total = pesados.count();`; si necesitas otro recorrido, crea un Stream nuevo desde la lista o materializa una colección deliberadamente.
 
-```text
-Exception in thread "main" java.lang.IllegalStateException: stream has already been operated upon or closed
+#### Practica
+
+**Práctica guiada:** crea `src/PerezaGuia.java` con un pipeline que haga `filter`, luego `.map(Envio::guia)` y después `peek`. Termina con `toList()` e imprime la lista; observa que `peek` recibe `String`, no `Envio`.
+
+```bash
+javac -d out src/PerezaGuia.java
+java -cp out PerezaGuia
 ```
 
-El diagnóstico es que `count` es terminal y cierra el Stream. No es un problema de `count`: es que un Stream no es una colección reutilizable. Corrige guardando el resultado en una variable o creando un Stream nuevo desde la lista.
+**Resultado esperado:** la depuración muestra `ENV-2`, el resultado es `[ENV-2]` y ninguna línea de `peek` aparece antes de la operación terminal.
 
-**Conceptos clave:** operación perezosa, operación terminal, consumo único, `peek` para depurar.
+**Ejercicio independiente:** crea `src/Informe.java` que calcule en una sola pasada el peso total de todos los envíos y cuántos superan 20 kg. Usa `Collectors.teeing` con `summingDouble` y `filtering(..., counting())`, o un acumulador propio; no crees dos Streams para el mismo cálculo.
 
-#### Paso 5 · Práctica guiada
+```bash
+javac -d out src/Informe.java
+java -cp out Informe
+```
 
-**Pista:** añade `.map(Envio::guia)` antes de `peek` y observa que `peek` ya recibe un `String`; el pipeline cambia de tipo en cada estación.
+**Resultado esperado:** para 5,5, 32 y 18 kg imprime `pesoTotal=55.5` y `pesados=1`; el código contiene una sola operación de recorrido sobre la lista.
 
-**Resultado esperado:** el mensaje de depuración muestra solo la guía, y el `count` sigue siendo 1.
+#### Aplica
 
-#### Paso 6 · Práctica independiente
+Completa el informe del **[Proyecto integrador: agregación de envíos sin doble recorrido](#proyecto-20-motor-de-reglas-funcional)**. Usa Streams para transformar y agregar; conserva un `for` para efectos ordenados como notificaciones.
 
-Crea `src/Informe.java` que calcule el peso total de los envíos con `mapToDouble` y `sum`, y que cuente cuántos superan 20 kg sin recorrer la lista dos veces. Ejecuta con `java -cp out Informe`.
+**Checklist de salida**
 
-**Resultado esperado:** el programa imprime el total y el conteo en una sola pasada, y puedes explicar dónde ocurrió el trabajo.
+- [ ] El proyecto fue creado manualmente desde una carpeta vacía.
+- [ ] La salida demuestra que el filtro se ejecuta en la terminal.
+- [ ] `peek` se usa para observar y no para cambiar estado del negocio.
+- [ ] El consumo doble se reconoce por `IllegalStateException` y se corrige.
+- [ ] El informe calcula total y conteo con una sola pasada.
+- [ ] Puedes justificar cuándo un `for` es más claro que un Stream.
 
-#### Paso 7 · Cierre
+**Límites y decisión de uso:** un `for` suele ser más claro con índices, `break`, `continue` o efectos ordenados. No uses `parallelStream` sin medir ni escondas efectos en `map`.
 
-Siguiente paso: decidir cuándo Streams no conviene.
-
-**Errores comunes:** creer que `filter` ejecuta el trabajo al declararlo; usar `peek` para lógica de negocio; reutilizar un Stream; usar `parallelStream` sin medir; esconder efectos en `map`.
-
-**Límites y decisión de uso:** un `for` es más claro cuando hay índices, `break`, `continue` o efectos que deben ocurrir en orden; Streams brillan cuando la operación es una transformación o agregación sin efectos. En el proyecto integrador, el cálculo de totales usa Streams y el envío de notificaciones usa un `for`, porque el efecto importa.
-
-**Fuente oficial:** [Stream](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html) y [procesamiento de datos con Streams](https://docs.oracle.com/javase/tutorial/collections/streams/index.html).
+**Fuentes oficiales:** [Stream](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html) y [procesamiento de datos con Streams](https://docs.oracle.com/javase/tutorial/collections/streams/index.html).
 
 ## Laboratorio práctico
 
-**Entregable:** el motor de reglas del proyecto integrador, compuesto con las cuatro interfaces funcionales y con un informe de envíos que no recorra la lista dos veces.
+### Proyecto 20: motor de reglas funcional
 
-**Criterio de aceptación (se ejecuta, no se opina):**
+Desde una carpeta vacía crea `motor-reglas-funcional/` y su directorio `src/`. Escribe manualmente `Formas.java`, `Composicion.java`, `Pereza.java` e `Informe.java` con las reglas del proyecto integrador; no copies fuentes de los temas ni de la academia.
+
+**Entregable:** un motor compuesto con `Predicate`, `Function`, `Consumer` y `Supplier`, normalización previa a validación y un informe que calcule peso total y número de envíos pesados en una sola pasada.
+
+**Criterio de aceptación observable:**
 
 1. `javac -d out src/*.java` termina con código 0.
 2. `java -cp out Formas` imprime exactamente `[log] Turno AM | ENV-2 -> Medellín`.
-3. `java -cp out Pereza` imprime el aviso de pereza **antes** de la línea `filtrado ENV-2`.
-4. Un correo con espacios se acepta solo si se normaliza antes de validar.
-5. El informe calcula total y conteo en una sola pasada; el código no contiene dos `stream()` sobre la misma lista para el mismo cálculo.
+3. `java -cp out Pereza` imprime el aviso de pereza antes de `filtrado ENV-2`.
+4. Un correo con espacios se acepta solo cuando se normaliza antes de validar.
+5. El informe imprime `pesoTotal=55.5` y `pesados=1` sin crear dos Streams para el mismo cálculo.
 
-**Checkpoint:** guarda este verificador junto a tus fuentes y ejecútalo antes de entregar:
+Crea manualmente `verificar.sh` junto a `src/`:
 
 ```bash
-cat > verificar.sh <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 javac -d out src/*.java
 salida=$(java -cp out Formas)
-[ "$salida" = "[log] Turno AM | ENV-2 -> Medellín" ] || { echo "FALLA: Formas imprimió: $salida"; exit 1; }
-java -cp out Pereza | head -1 | grep -q "antes de la operación terminal" || { echo "FALLA: el pipeline no es perezoso"; exit 1; }
+[ "$salida" = "[log] Turno AM | ENV-2 -> Medellín" ] || {
+  echo "FALLA: Formas imprimió: $salida"
+  exit 1
+}
+salida_pereza=$(java -cp out Pereza)
+primera=${salida_pereza%%$'\n'*}
+[[ "$primera" == *"antes de la operación terminal"* ]] || {
+  echo "FALLA: el pipeline no demuestra pereza"
+  exit 1
+}
+salida_informe=$(java -cp out Informe)
+[[ "$salida_informe" == *"pesoTotal=55.5"* && "$salida_informe" == *"pesados=1"* ]] || {
+  echo "FALLA: informe incorrecto: $salida_informe"
+  exit 1
+}
 echo "Checkpoint OK"
-SCRIPT
+```
+
+Ejecuta tu verificador:
+
+```bash
 bash verificar.sh
 ```
 
-**Resultado esperado:** `Checkpoint OK`. Si falla, el mensaje dice qué criterio no se cumplió; no hay que adivinar.
+**Resultado esperado:** `Checkpoint OK`. Si falla, corrige el archivo propio señalado por el mensaje y vuelve a ejecutar; el cierre no depende de archivos ocultos ni de servicios externos.

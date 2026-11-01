@@ -57,7 +57,7 @@ iOS SwiftUI -> wrapper Swift --/        |
 cancelación/lifecycle deben cruzar en ambas direcciones
 ```
 
-`TaskClient` vive en `shared/src/commonMain/kotlin/com/academia/kmp/TaskClient.kt`, y es exactamente la frontera que el proyecto integrador RutaFlow aplica en `SyncEngine` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`): `Outbox` y `DeliveryApi` son interfaces mínimas, no las implementaciones completas de Ktor o SQLDelight.
+Crea `TaskClient` en `shared/src/commonMain/kotlin/com/academia/kmp/TaskClient.kt` y aplica la misma frontera a tu `SyncEngine` de RutaFlow, en `shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt`: `Outbox` y `DeliveryApi` deben ser interfaces mínimas, no las implementaciones completas de Ktor o SQLDelight.
 
 ```mermaid
 flowchart LR
@@ -103,6 +103,8 @@ Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo ú
 #### Paso 7 · Cierre
 Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
 **¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
+
+**Proyecto integrador:** define una facade `EnvioClient` para RutaFlow que exponga solo estados de dominio y mantenga Ktor, SQLDelight y las implementaciones fuera de la API consumida por Swift.
 
 ### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos
 
@@ -247,7 +249,7 @@ flowchart TD
     Check -->|difiere sin aprobar| Falla[CI falla explicito]
 ```
 
-El proyecto integrador RutaFlow ilustra el mismo riesgo sin `abiValidation`: si `SyncEngine` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) cambiara el orden de los parámetros de `drain()` sin que ningún check lo detecte, un consumidor Android que todavía no recompiló contra la nueva versión podría enlazar en runtime contra una firma distinta a la que espera. **Cuándo no conviene** activar `abiValidation` desde el primer commit: en un módulo compartido que todavía no tiene ningún consumidor externo publicado (solo se consume por fuente, dentro del mismo build), el dump de API es puro overhead de mantenimiento sin ningún consumidor al que proteger — conviene activarlo recién cuando el artefacto se publica como dependencia binaria real, no antes.
+Tu proyecto RutaFlow ilustra el mismo riesgo sin `abiValidation`: si el `SyncEngine` que creas en `shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt` cambiara el orden de los parámetros de `drain()` sin que ningún check lo detecte, un consumidor Android que todavía no recompiló contra la nueva versión podría enlazar en runtime contra una firma distinta a la que espera. **Cuándo no conviene** activar `abiValidation` desde el primer commit: en un módulo compartido que todavía no tiene ningún consumidor externo publicado (solo se consume por fuente, dentro del mismo build), el dump de API es puro overhead de mantenimiento sin ningún consumidor al que proteger — conviene activarlo recién cuando el artefacto se publica como dependencia binaria real, no antes.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** crea una **carpeta vacía** con un módulo Kotlin Multiplatform mínimo y su configuración de ABI; el dump queda dentro de esa misma carpeta.
@@ -300,6 +302,8 @@ Corregí el Paso 5 restaurando `abiValidation()`, generando el dump inicial apro
 
 #### Paso 7 · Cierre
 Entregá la validación binaria activada del Paso 4, el cambio de API no detectado del Paso 5, y el `checkKotlinAbi` integrado a CI del Paso 6; explicá por qué un `check` en verde sin validación de ABI no es evidencia de compatibilidad binaria real. Siguiente paso: preparate para diagnosticar un fallo compartido que se manifiesta distinto en cada plataforma. Errores comunes: confiar en el número de versión semántica sin validar ABI automáticamente, tratar un `check` verde como garantía de compatibilidad conductual (no solo binaria), y no ejecutar consumidores reales de Android e iOS contra el artefacto publicado antes de confirmar un release. Límites y decisión de uso: el dump cubre la superficie binaria, no los datos ya persistidos ni los mensajes en vuelo; las migraciones de esquema y serialización se verifican aparte. Fuentes oficiales: https://kotlinlang.org/docs/jvm-api-guidelines-backward-compatibility.html y https://kotlinlang.org/docs/gradle-binary-compatibility-validation.html.
+
+**Proyecto integrador:** genera y aprueba el dump ABI de `EnvioClient`, añade `checkKotlinAbi` al pipeline de RutaFlow y demuestra que un parámetro nuevo sin default bloquea la publicación.
 
 ### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas
 

@@ -644,24 +644,25 @@ Implementa el mismo ejemplo con `get_it` y compara cómo se reemplaza la depende
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** olvidar pasar `overrides` al crear el `ProviderContainer` (o al `ProviderScope` en un widget test) y asumir que alcanza con declarar `RepositorioEnviosFalso` — sin la lista `overrides`, el contenedor sigue construyendo `RepositorioEnviosHttp` a través del proveedor original, y la prueba termina llamando a la implementación real que debía evitar.
 
-## Referencia: RutaFlow Flutter
+## Aplicación guiada: RutaFlow Flutter
 
-**App completa que demuestra Temas 2-4 de este módulo:**
-
-Ver `examples/flutter_rutaflow/lib/features/deliveries/domain/delivery_providers.dart`:
-- Riverpod providers para estado compartido (Tema 2)
-- StateNotifier para operaciones de actualización
-- Diferencia entre `ref.watch()` y `ref.read()`
-- Invalidación de providers para sincronización
-
-Ver `examples/flutter_rutaflow/lib/features/deliveries/presentation/delivery_list_screen.dart`:
-- ConsumerWidget para integración con Riverpod
-- Manejo de AsyncValue (loading/error/data)
-- Uso correcto de Keys en listas
-
-**Ejecutar localmente:**
+**Construye una app propia que demuestre los Temas 2-4.** Parte de una carpeta vacía:
 ```bash
-cd examples/flutter_rutaflow
+flutter create rutaflow_flutter
+cd rutaflow_flutter
+flutter pub add flutter_riverpod
+```
+
+Crea manualmente `lib/features/deliveries/domain/delivery_providers.dart` con los proveedores de los Temas 2-4:
+- Riverpod providers para estado compartido.
+- StateNotifier para operaciones de actualización.
+- Uso deliberado de `ref.watch()` y `ref.read()`.
+- Invalidación de providers para sincronización.
+
+Crea `lib/features/deliveries/presentation/delivery_list_screen.dart` con un `ConsumerWidget`, el manejo de `AsyncValue` (loading/error/data) y `ValueKey` por identificador de entrega. En `lib/main.dart`, envuelve esa pantalla con `ProviderScope` y úsala como `home` del `MaterialApp`.
+
+**Ejecuta tu app:**
+```bash
 flutter pub get
 flutter run
 ```

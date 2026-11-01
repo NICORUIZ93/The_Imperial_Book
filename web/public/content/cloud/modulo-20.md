@@ -97,8 +97,8 @@ flowchart LR
 
 En el proyecto integrador RutaFlow, la regla de revisión humana por baja confianza del Paso 6
 viviría en la misma función que escribe en la tabla `facturas` (Módulo 13) — una extensión
-natural de `ConfirmarEntregaFn` o una Lambda hermana, siguiendo el patrón de
-`examples/rutaflow/cloud/template.yaml`, nunca insertando directo sin ese chequeo.
+natural de `ConfirmarEntregaFn` o una Lambda hermana que declares en tu propia `template.yaml`,
+nunca insertando directo sin ese chequeo.
 
 #### Paso 4 · Demostración guiada
 ```bash

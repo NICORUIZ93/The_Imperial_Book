@@ -89,17 +89,119 @@ El equipo de Pedidos y el equipo de Conductores mantienen cada uno su propio ser
 Apollo Federation permite que cada subgrafo declare una entidad con una clave (`@key`) y que OTRO subgrafo extienda esa entidad agregando campos propios, sin acceso directo a la base de datos del otro; un gateway compone ambos esquemas en un supergrafo único, resolviendo cada campo contra el subgrafo que lo declaró. La analogía: dos oficinas distintas que comparten únicamente un número de legajo común, cada una completando su propia parte del expediente sin acceso a los archivos internos de la otra.
 
 #### Paso 4 · Demostración guiada desde cero
-**Monta** el laboratorio completo en una carpeta nueva y revisá `server.mjs`, que orquesta los subgrafos `src/conductores/index.js` y `src/pedidos/index.js` junto con el gateway, antes de ejecutarlo.
-
-Desde la raíz del repositorio prepara una copia independiente del laboratorio completo:
+**Monta** el laboratorio completo en una carpeta vacía:
 ```bash
-cp -R examples/node-federation ejemplo-federation
-cd ejemplo-federation
-npm ci
+mkdir ejemplo-federation && cd ejemplo-federation
+```
+Crea `package.json`:
+```json
+{
+  "name": "ejemplo-federation",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node server.mjs", "test": "node --test federation.test.mjs" },
+  "dependencies": {
+    "@apollo/gateway": "^2.11.3",
+    "@apollo/server": "^4.12.2",
+    "@apollo/subgraph": "^2.11.3",
+    "graphql": "^16.11.0",
+    "graphql-tag": "^2.12.6"
+  }
+}
+```
+
+Crea `server.mjs`, que define y orquesta ambos subgrafos junto con el gateway:
+```js
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import { ApolloGateway, IntrospectAndCompose } from '@apollo/gateway';
+import { buildSubgraphSchema } from '@apollo/subgraph';
+import gql from 'graphql-tag';
+
+const conductores = [{ id: 'c-1', nombre: 'Ana' }];
+const pedidos = [{ id: 'p-1', conductorId: 'c-1' }];
+
+export async function startFederation({ conductorPort = 4001, pedidoPort = 4002, gatewayPort = 4000 } = {}) {
+  const conductoresServer = new ApolloServer({
+    schema: buildSubgraphSchema({
+      typeDefs: gql`#graphql
+        type Query { conductor(id: ID!): Conductor }
+        type Conductor @key(fields: "id") { id: ID!, nombre: String! }
+      `,
+      resolvers: {
+        Query: { conductor: (_, { id }) => conductores.find(c => c.id === id) ?? null },
+        Conductor: { __resolveReference: ({ id }) => conductores.find(c => c.id === id) },
+      },
+    }),
+  });
+  const { url: conductoresUrl } = await startStandaloneServer(conductoresServer, { listen: { port: conductorPort } });
+
+  const pedidosServer = new ApolloServer({
+    schema: buildSubgraphSchema({
+      typeDefs: gql`#graphql
+        type Query { pedido(id: ID!): Pedido }
+        type Pedido { id: ID!, conductor: Conductor }
+        type Conductor @key(fields: "id") { id: ID! @external, pedidosActivos: Int! }
+      `,
+      resolvers: {
+        Query: { pedido: (_, { id }) => pedidos.find(p => p.id === id) ?? null },
+        Pedido: { conductor: pedido => ({ __typename: 'Conductor', id: pedido.conductorId }) },
+        Conductor: { pedidosActivos: ({ id }) => pedidos.filter(p => p.conductorId === id).length },
+      },
+    }),
+  });
+  const { url: pedidosUrl } = await startStandaloneServer(pedidosServer, { listen: { port: pedidoPort } });
+
+  const gateway = new ApolloGateway({
+    supergraphSdl: new IntrospectAndCompose({ subgraphs: [
+      { name: 'conductores', url: conductoresUrl },
+      { name: 'pedidos', url: pedidosUrl },
+    ] }),
+  });
+  const gatewayServer = new ApolloServer({ gateway });
+  const { url } = await startStandaloneServer(gatewayServer, { listen: { port: gatewayPort } });
+  return {
+    url,
+    close: async () => Promise.all([
+      gatewayServer.stop(), pedidosServer.stop(), conductoresServer.stop(),
+    ]),
+  };
+}
+
+if (process.argv[1]?.endsWith('server.mjs')) {
+  const federation = await startFederation();
+  console.log(`Gateway: ${federation.url}`);
+  process.once('SIGINT', async () => { await federation.close(); });
+}
+```
+
+Crea `federation.test.mjs` con una prueba de extremo a extremo que usa puertos efímeros:
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { startFederation } from './server.mjs';
+
+test('el gateway resuelve el conductor y sus pedidos activos', async t => {
+  const federation = await startFederation({ conductorPort: 0, pedidoPort: 0, gatewayPort: 0 });
+  t.after(() => federation.close());
+  const response = await fetch(federation.url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: '{ pedido(id: "p-1") { conductor { nombre pedidosActivos } } }' }),
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual((await response.json()).data,
+    { pedido: { conductor: { nombre: 'Ana', pedidosActivos: 1 } } });
+});
+```
+
+Instala, prueba y arranca desde esa misma carpeta:
+```bash
+npm install
 npm test
 npm start
 ```
-`server.mjs` crea dos subgrafos en 4001/4002 y el gateway en 4000. Conductores implementa `Conductor.__resolveReference`; Pedidos implementa `Query.pedido` y `pedidosActivos`. Ambos se unen por ID, no por acceso a tablas ajenas. El lockfile fija Apollo Server, Gateway, Subgraph y GraphQL.
+`server.mjs` crea dos subgrafos en 4001/4002 y el gateway en 4000. Conductores implementa `Conductor.__resolveReference`; Pedidos implementa `Query.pedido` y `pedidosActivos`. Ambos se unen por ID, no por acceso a tablas ajenas. El lockfile creado por `npm install` fija las versiones resueltas.
 
 Desde otra terminal consulta el gateway:
 ```bash
@@ -134,7 +236,7 @@ flowchart LR
   G --> M["Respuesta combinada"]
 ```
 
-Levantá ambos subgrafos con `node src/conductores/index.js` y `node src/pedidos/index.js`, y el gateway con `npx rover dev`. Esta misma composición es la que usarás para el proyecto propio que integre Pedidos y Conductores como servicios independientes; **cuándo no usarlo:** para un dominio chico con un único equipo y una sola base de datos, Federation agrega infraestructura (gateway, registro de esquemas) sin ningún beneficio frente a un esquema GraphQL monolítico simple.
+Levantá ambos subgrafos y el gateway con `npm start`; `server.mjs` expone Conductores en el puerto 4001, Pedidos en 4002 y la puerta de enlace en 4000. Esta misma composición es la que usarás para el proyecto propio que integre Pedidos y Conductores como servicios independientes; **cuándo no usarlo:** para un dominio chico con un único equipo y una sola base de datos, Federation agrega infraestructura (gateway, registro de esquemas) sin ningún beneficio frente a un esquema GraphQL monolítico simple.
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Divide Conductores y Pedidos en subgrafos Federation propios, cada uno con su propio despliegue, y compón el supergrafo que el panel del operador consulta como si fuera un único servicio.
 

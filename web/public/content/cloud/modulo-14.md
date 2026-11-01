@@ -147,11 +147,11 @@ flowchart LR
     C["EKS"] --> C1["contenedores, Kubernetes estándar, portable multi-nube"]
 ```
 
-En el proyecto integrador RutaFlow, esta decisión ya está tomada en código:
-`ConfirmarEntregaFn` en `examples/rutaflow/cloud/template.yaml` es `AWS::Serverless::Function`
-(Lambda) precisamente porque responde a un solo evento `DeliveryCommand` en milisegundos; un
-planificador de rutas que procesa toda una zona en un solo lote nunca debería declararse ahí
-como función, sino como tarea ECS o EKS separada.
+En el proyecto integrador RutaFlow, esta decisión se expresa en tu propia infraestructura:
+declara `ConfirmarEntregaFn` como `AWS::Serverless::Function` (Lambda) en `template.yaml`
+precisamente porque responde a un solo evento `DeliveryCommand` en milisegundos; un planificador
+de rutas que procesa toda una zona en un solo lote nunca debería declararse ahí como función,
+sino como tarea ECS o EKS separada.
 
 ---
 

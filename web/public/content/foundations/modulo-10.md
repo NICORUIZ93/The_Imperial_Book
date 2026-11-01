@@ -94,7 +94,7 @@ sequenceDiagram
     C->>S: reintentar op-42
 ```
 
-El mismo problema de identidad de comando aparece en `examples/rutaflow/node/confirm-delivery.ts` (ya citado en el Módulo 7): el chequeo de `commandId` ya procesado existe precisamente para que un reintento tras un timeout de red nunca se confunda con un comando nuevo, igual que el `operation_id` de Python de este Tema.
+El mismo problema de identidad de comando aparece en el contrato `confirmDelivery` del Módulo 7: el chequeo de `commandId` ya procesado existe precisamente para que un reintento tras un timeout de red nunca se confunda con un comando nuevo, igual que el `operation_id` de Python de este Tema.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.py` con el contenido de este tema.
@@ -250,10 +250,10 @@ Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturació
 ### Tema 3: Mensajes que se procesan con efectos exactamente una vez
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a confirmar, ejecutando el código real de RutaFlow, que `confirmDelivery` ya logra el efecto "exactamente una vez" aunque el comando llegue duplicado. Prerrequisitos: Node.js instalado.
+Al finalizar vas a implementar y ejecutar `confirmDelivery` para comprobar que logra el efecto "exactamente una vez" aunque el comando llegue duplicado. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos.
 
 #### Paso 2 · Contexto y caso real
-Si la app del conductor reintenta "confirmar entrega" por una mala conexión (Tema 1), el mismo `commandId` puede llegarle al backend dos o tres veces — `examples/rutaflow/node/confirm-delivery.ts` ya resuelve esto, pero nunca lo comprobamos ejecutándolo de verdad.
+Si la app del conductor reintenta "confirmar entrega" por una mala conexión (Tema 1), el mismo `commandId` puede llegarle al backend dos o tres veces. En la práctica escribirás una implementación mínima que resuelve la deduplicación y la ejecutarás con reintentos reales.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un broker es una bandeja numerada; la deduplicación por `commandId` hace que repetir el mismo número nunca produzca un segundo efecto, solo devuelve el recibo que ya existía.
@@ -331,38 +331,75 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Asigna un identificador a cada comando de completar tarea y registra los ya procesados. Envía el mismo comando dos veces y comprueba un solo cambio durable, incluso al reiniciar el consumidor.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.py` con el contenido de este tema.
+#### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea manualmente `confirm-delivery.ts` y `reintentos.ts`:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo-mensajes && cd ejemplo-mensajes
 ```
 
+Archivo `confirm-delivery.ts`:
+
 ```typescript
-import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from "./confirm-delivery";
+export type DeliveryCommand = Readonly<{
+  commandId: string;
+  shipmentId: string;
+  occurredAt: string;
+  recipientPin: string;
+}>;
+
+export interface DeliveryRepository {
+  findCommandResult(commandId: string): Promise<DeliveryResult | null>;
+  confirm(command: DeliveryCommand): Promise<DeliveryResult>;
+}
+
+export type DeliveryResult = Readonly<{ shipmentId: string; status: 'delivered' }>;
+
+export async function confirmDelivery(
+  command: DeliveryCommand,
+  repository: DeliveryRepository,
+): Promise<DeliveryResult> {
+  if (!command.commandId || !command.shipmentId) throw new TypeError('command identifiers are required');
+  if (!/^\d{6}$/.test(command.recipientPin)) throw new TypeError('recipientPin must contain six digits');
+  const previousResult = await repository.findCommandResult(command.commandId);
+  if (previousResult) return previousResult;
+  return repository.confirm(command);
+}
+```
+
+Archivo `reintentos.ts`:
+
+```typescript
+import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from './confirm-delivery.ts';
 
 const resultados = new Map<string, DeliveryResult>();
+let confirmaciones = 0;
 const repo: DeliveryRepository = {
   async findCommandResult(commandId) { return resultados.get(commandId) ?? null; },
   async confirm(command) {
-    const result = { shipmentId: command.shipmentId, status: "delivered" as const };
+    confirmaciones += 1;
+    const result = { shipmentId: command.shipmentId, status: 'delivered' as const };
     resultados.set(command.commandId, result);
     return result;
   },
 };
 
-const comando = { commandId: "cmd-1", shipmentId: "env-4471", occurredAt: "2026-10-05", recipientPin: "837201" };
+const comando = {
+  commandId: 'cmd-1', shipmentId: 'env-4471',
+  occurredAt: '2026-10-05', recipientPin: '837201',
+};
 console.log(await confirmDelivery(comando, repo));
 console.log(await confirmDelivery(comando, repo)); // mismo commandId, reenviado
+console.log('confirmaciones reales:', confirmaciones);
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+Ejecuta el programa:
 
 ```bash
-python3 ejemplo.py
+node reintentos.ts
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: ambas líneas imprimen el mismo resultado, pero `repo.confirm()` solo se ejecuta una vez — la segunda llamada a `confirmDelivery` lo detecta con `findCommandResult` y devuelve el resultado ya guardado, sin volver a "confirmar" nada.
+Resultado esperado: ambas líneas imprimen el mismo resultado y la última es `confirmaciones reales: 1`. La segunda llamada a `confirmDelivery` detecta el comando con `findCommandResult` y devuelve el resultado ya guardado, sin volver a confirmar nada.
 
 #### Paso 5 · Práctica guiada
 Pista: cambiá el segundo comando para que use `commandId: "cmd-2"` (distinto) pero el mismo `shipmentId` — ese es el fallo deliberado: como el `commandId` es nuevo, `confirmDelivery` lo trata como un comando genuino y vuelve a llamar `repo.confirm()`, confirmando el mismo envío una segunda vez; la deduplicación protege por `commandId`, no por `shipmentId`.
@@ -686,14 +723,13 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-```bash
-cp -R examples/rutaflow-material/capacity ejemplo-capacidad
-cd ejemplo-capacidad
-node medir.mjs
-```
-Si creas los archivos manualmente, guarda `medir.mjs` en una carpeta vacía:
+Parte de una carpeta vacía y crea manualmente `medir.mjs`:
 
-Crea `capacity/medir.mjs` con este contenido completo:
+```bash
+mkdir ejemplo-capacidad && cd ejemplo-capacidad
+```
+
+Archivo `medir.mjs`:
 ```javascript
 import { createServer } from 'node:http';
 import { performance } from 'node:perf_hooks';
@@ -725,6 +761,12 @@ try {
 } finally {
   await new Promise(resolve => server.close(resolve));
 }
+```
+
+Ejecuta el archivo desde la carpeta vacía donde lo creaste:
+
+```bash
+node medir.mjs
 ```
 
 **Resultado esperado:** dos líneas JSON con concurrencia 1 y 4; cada una registra 12 peticiones, p95 y throughput. Los valores exactos varían. Explica cada bloque: el servidor introduce una espera, los workers comparten un contador, se mide hasta consumir el cuerpo y finally cierra el recurso. Verificar 12 respuestas correctas evita presentar errores rápidos como rendimiento.

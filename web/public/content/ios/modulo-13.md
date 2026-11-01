@@ -3,7 +3,7 @@
 Una app no termina cuando compila ni cuando pasa revisión. En producción recibe enlaces manipulados, pierde conectividad a mitad de una escritura, conserva versiones antiguas y maneja datos en dispositivos que pueden extraviarse. Este módulo convierte el proyecto final en un sistema operable: explicita amenazas, protege datos, sincroniza sin duplicar efectos y aprende de fallos reales.
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -157,7 +157,7 @@ flowchart TD
     style D fill:#ffcccc
 ```
 
-En el proyecto integrador RutaFlow, `guardarToken` vive en `examples/ios-lab/Sources/RutaFlowLab/SesionVault.swift`. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
+En tu propio proyecto RutaFlow, crea `SesionVault.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí `guardarToken` con sus imports de `Foundation` y `Security`. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
 
 #### Paso 4 · Demostración guiada
 ```swift
@@ -188,6 +188,8 @@ Resultado esperado: el token queda en Keychain con `kSecAttrAccessibleWhenUnlock
 Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .utf8) ?? "")")` justo después de `SecItemAdd` "para depurar" — ese es el fallo deliberado: ahora el token completo del conductor queda en los logs del sistema en texto plano, exactamente la copia secundaria sin control que vuelve inútil haber usado Keychain para el almacén principal.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que registre solo que "la sesión se guardó" (sin el valor), más una función `cerrarSesion(conductorID:)` que borre el token de Keychain con `SecItemDelete`.
+
+**Proyecto integrador:** en el proyecto que comenzaste desde una carpeta vacía para este tema, completa `SesionVault.swift` con guardar, leer y borrar, y crea `SesionConductorView.swift` para iniciar y cerrar una sesión de muestra con el token ficticio `token-prueba-no-real`. Añade `RutaFlowAppTests/SesionVaultTests.swift`: tras guardar debe recuperarse ese valor, tras `cerrarSesion` la lectura debe ser `nil` y el log capturado solo debe contener «sesión guardada», nunca el token. Cambia de `conductor-A` a `conductor-B` y verifica que cerrar la primera cuenta no deja su credencial visible para la segunda.
 
 #### Paso 7 · Cierre
 Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
@@ -260,7 +262,7 @@ sequenceDiagram
     API-->>Outbox: reconoce el id, no duplica el efecto
 ```
 
-En el proyecto integrador RutaFlow, La implementación de laboratorio EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion` vive en `examples/ios-lab/Sources/RutaFlowLab/MotorSincronizacion.swift`.
+En tu propio proyecto RutaFlow, crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, asígnalo al target de la app y escribe allí la implementación EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion`, incluyendo el almacén y las funciones que el fragmento del Paso 4 invoca.
 
 #### Paso 4 · Demostración guiada
 ```swift
@@ -295,6 +297,8 @@ Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendie
 Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
+
+**Proyecto integrador:** en el proyecto vacío de este tema, separa `ConfirmacionPendiente.swift`, `MotorSincronizacion.swift` y `ServidorConfirmacionesFalso.swift`. Haz que el servidor falso registre los IDs recibidos y simule «aplicó la confirmación, pero perdió la respuesta» en el primer envío. En `RutaFlowAppTests/OutboxTests.swift`, reintenta esa misma operación y verifica que ambos envíos llevan el mismo UUID pero el servidor contabiliza un solo efecto; añade un segundo caso que compruebe que el backoff queda dentro del intervalo elegido y que cancelar antes del próximo intento evita otra llamada.
 
 #### Paso 7 · Cierre
 Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
@@ -353,18 +357,25 @@ flowchart TD
     D -->|No| F["Sano, seguir desplegando"]
 ```
 
-En el proyecto integrador RutaFlow, `sincronizacionMedida` vive en `examples/ios-lab/Sources/RutaFlowLab/MotorSincronizacion.swift`.
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. En el grupo de la app crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona únicamente el target `RutaFlowApp` y escribe manualmente tanto el motor mínimo como la instrumentación del Paso 4. Esta práctica no reutiliza el archivo del Tema 3 ni necesita ningún archivo externo.
 
 #### Paso 4 · Demostración guiada
 ```swift
 import OSLog
 
+actor MotorSincronizacion {
+    func vaciar() async {
+        // Envía aquí las confirmaciones pendientes de esta práctica.
+    }
+}
+
+let motorSincronizacion = MotorSincronizacion()
 let puntos = OSSignposter(subsystem: "com.rutaflow.conductor", category: "sync")
 
 func sincronizacionMedida() async throws {
     let estado = puntos.beginInterval("outbox-drain")
     defer { puntos.endInterval("outbox-drain", estado) }
-    try await motorSincronizacion.vaciar()
+    await motorSincronizacion.vaciar()
 }
 ```
 
@@ -380,6 +391,8 @@ Resultado esperado: grabando una sesión de Instruments con la plantilla "os_sig
 Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
+
+**Proyecto integrador:** en el proyecto independiente creado desde cero en este tema, implementa 20 sincronizaciones locales en `MotorSincronizacion.swift`, con 18 éxitos y 2 fallos controlados, y delimita cada lote con el signpost de `SincronizacionMedida.swift`. Graba el intervalo `outbox-drain` en Instruments y calcula la tasa resultante (90%). Escribe `RunbookSincronizacion.md` con el umbral «menos de 95% durante una hora», la evidencia que debes adjuntar y la acción de desactivar la sincronización automática mediante un flag antes de investigar; repite con 20 éxitos y registra por qué ese segundo lote no abre incidente.
 
 #### Paso 7 · Cierre
 Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.

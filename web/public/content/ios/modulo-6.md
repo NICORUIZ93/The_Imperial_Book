@@ -1,7 +1,7 @@
 # Módulo 6: Persistencia con SwiftData
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -84,7 +84,7 @@ class Tarea {
 }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y los modelos de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, guarda la cola de entregas con @Model y ModelContainer.
 
 ### Tema 2: @Query y operaciones de escritura
@@ -155,7 +155,7 @@ try? context.save()
 SwiftData datos cambian → @Query re-evalúa automáticamente → la vista se actualiza sola
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y los modelos de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, lista y actualiza las entregas pendientes con @Query.
 
 **Límites y decisión de uso:** Una consulta reactiva actualiza la vista, pero no define resolución de conflictos ni convierte varias escrituras en una operación de negocio indivisible. Prueba persistencia, restricciones y errores de guardado fuera del caso feliz.
@@ -195,7 +195,7 @@ flowchart TD
     B -->|No, requerido sin default| D["Falla: SwiftData no puede\ninferir el valor para datos existentes"]
 ```
 
-En el proyecto integrador RutaFlow, `EnvioLocal` vive en `examples/ios-lab/Sources/RutaFlowLab/EnvioLocal.swift`.
+En tu propio proyecto RutaFlow, crea `EnvioLocal.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí el modelo `@Model` del Paso 4.
 
 ---
 
@@ -226,6 +226,8 @@ Pista: cambiá `fotoPath` de opcional a requerido (`var fotoPath: String` sin `?
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `fotoPath` opcional, y documentá en qué escenario este mismo proyecto preferiría Core Data directo en vez de SwiftData (pista: si necesitaras una migración con lógica de transformación de datos muy específica que SwiftData todavía no expone).
 
+**Proyecto integrador:** usa el proyecto que iniciaste vacío en este tema para ensayar una actualización real sin borrar el contenedor. En `EnvioLocal.swift`, conserva primero la versión con `guia`, `pin` y `sincronizado`; desde `ContentView.swift`, inserta `RF-7001`, guarda y cierra la app. Después agrega `fotoPath: String?`, vuelve a ejecutar y asigna una ruta local a ese mismo registro. En `PruebaMigracion.md`, anota el antes y el después: la segunda apertura debe conservar la guía y el PIN, aceptar inicialmente `fotoPath == nil` y mostrar la nueva ruta tras guardar; no uses un proyecto de otro tema ni reinicies los datos para obtener el resultado.
+
 #### Paso 7 · Cierre
 Entregá la migración liviana del Paso 4, el campo requerido que rompe datos existentes del Paso 5, y el escenario de Core Data del Paso 6; explicá por qué un campo opcional es casi siempre más seguro que uno requerido al evolucionar un modelo con datos reales ya guardados. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 **Implicación práctica:** Un campo opcional permite una migración liviana que preserva los datos ya guardados en el dispositivo, mientras que un campo requerido sin valor por defecto rompe la lectura de los registros existentes.
@@ -253,5 +255,5 @@ Entregá la migración liviana del Paso 4, el campo requerido que rompe datos ex
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y los modelos de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, migra el esquema de entregas y documenta la decisión frente a Core Data.

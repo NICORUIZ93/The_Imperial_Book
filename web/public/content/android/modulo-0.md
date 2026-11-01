@@ -118,12 +118,27 @@ Ya ubicas con confianza dónde vive el código, los recursos y la configuración
 
 **Escenario real:** El proyecto integrador RutaFlow (entregas en tiempo real) necesita capturar ubicación, manejar permisos, y ejecutar trabajo en background. La estructura que aprendiste en este tema es exactamente cómo RutaFlow organiza su código.
 
-**Tu tarea:** Inspecciona `examples/rutaflow/android/LocationPolicy.kt` en el repositorio The_Imperial_Book. Este archivo muestra cómo la política de muestreo de ubicación (basada en batería y actividad) vive en el módulo `:core` de RutaFlow, separada de la UI y la integración de Android.
+**Tu tarea:** parte de una carpeta vacía y crea con Android Studio un proyecto llamado `LocationPolicyLab` usando la plantilla Empty Activity. Añade un módulo Android Library llamado `:core` y crea manualmente `core/src/main/java/com/rutaflow/core/LocationPolicy.kt`. La política de muestreo de ubicación (basada en batería y actividad) vivirá en `:core`, separada de la UI y de la integración con sensores:
 
-```bash
-cd The_Imperial_Book
-cat examples/rutaflow/android/LocationPolicy.kt
+```kotlin
+package com.rutaflow.core
+
+enum class RouteActivity { STILL, WALKING, DRIVING }
+
+data class LocationPolicy(val intervalMs: Long, val minDistanceMeters: Float)
+
+fun locationPolicy(activity: RouteActivity, batteryPercent: Int): LocationPolicy {
+    require(batteryPercent in 0..100) { "La batería debe estar entre 0 y 100" }
+    return when {
+        batteryPercent < 20 -> LocationPolicy(intervalMs = 120_000, minDistanceMeters = 100f)
+        activity == RouteActivity.DRIVING -> LocationPolicy(5_000, 10f)
+        activity == RouteActivity.WALKING -> LocationPolicy(15_000, 25f)
+        else -> LocationPolicy(60_000, 50f)
+    }
+}
 ```
+
+Ejecuta `./gradlew :core:assembleDebug` desde la carpeta `LocationPolicyLab`. Después añade en `core/src/test/java/com/rutaflow/core/LocationPolicyTest.kt` pruebas JUnit para batería baja, conducción y un porcentaje inválido; verifica los intervalos y distancias con `./gradlew :core:testDebugUnitTest`.
 
 **Decisiones de diseño observables:**
 1. Definición clara de `data class LocationPolicy` — no es solo un mapa, es una clase tipada con responsabilidad única (política de GPS).
@@ -382,7 +397,7 @@ flowchart TD
 - Cambios en `:core` requieren recompilación de `:location-service` y `:app`, pero cambios en `:app` solo afectan su propia compilación.
 - Un equipo puede mantener `:location-service` sin coordinarse constantemente con UI.
 
-En el repositorio The_Imperial_Book verás esta estructura ejemplificada en `examples/rutaflow/android/LocationPolicy.kt` (pertenece a `:core`). El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
+La estructura queda ejemplificada en el `LocationPolicy.kt` que acabas de crear dentro de `:core`. El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
 
 ### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla
 

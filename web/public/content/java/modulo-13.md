@@ -1,30 +1,20 @@
 # Módulo 13: Proyecto integrador
 
-
 ## Aprende construyendo
 
-### Tema 1: Arquitectura por capas del proyecto integrador
+### Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás ensamblar la estructura por capas (`dominio/`, `servicio/`, `infraestructura/`) del proyecto integrador, confirmando que el dominio no depende de ningún detalle de infraestructura. Prerrequisitos: JDK 27, Maven, Docker y un editor.
+#### Aprende
 
-#### Paso 2 · Contexto y caso real
-Una aplicación de entregas que mezcla directamente lógica de negocio con detalles de persistencia (SQL embebido dentro del caso de uso, por ejemplo) obliga a modificar y volver a probar la lógica de negocio cada vez que cambia un detalle técnico de infraestructura, aunque la regla de negocio en sí no haya cambiado.
+**Prerrequisito:** JDK 27, records y paquetes. Comprueba `java --version` y `javac --version`.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Separar el código en `dominio/` (conceptos centrales sin dependencias externas), `servicio/` (lógica de negocio) e `infraestructura/` (persistencia, clientes externos) da a cada capa una razón de cambio distinta y bien delimitada. La analogía: una empresa organizada en departamentos con responsabilidades claramente delimitadas, donde un cambio en el proveedor logístico externo no debería requerir que el departamento de diseño de producto cambie nada de su propio trabajo.
+**Al terminar podrás:** separar dominio, servicio y aplicación, compilar el dominio sin infraestructura y detectar una dependencia que atraviesa la frontera en la dirección equivocada.
 
-**Conceptos clave:** separación dominio/servicio/infraestructura, cohesión por responsabilidad.
+Una aplicación de entregas que mezcla SQL o clientes HTTP con las reglas de negocio obliga a revisar esas reglas cuando cambia una decisión técnica. El dominio debe describir conceptos del negocio; el servicio coordina casos de uso; la infraestructura implementa persistencia y comunicación.
 
-El proyecto integrador organiza el código en capas claramente separadas: `dominio/` contiene los modelos de datos inmutables usando records y sealed interfaces (Módulo 7), representando los conceptos centrales del negocio sin ninguna dependencia hacia detalles de infraestructura; `servicio/` contiene la lógica de negocio propiamente dicha, incluyendo el procesamiento concurrente de tareas usando virtual threads (Módulo 5) para operaciones con I/O; `infraestructura/` contiene los detalles concretos de persistencia y clientes externos, la capa más propensa a cambiar según decisiones técnicas específicas (qué base de datos usar, qué API externa consumir) sin que ese cambio deba afectar la lógica de negocio central en `servicio/`.
+**¿Por qué es importante?** Porque una frontera comprobable permite cambiar un adaptador sin reescribir el modelo. Los nombres de paquetes ayudan, pero la prueba real es qué necesita cada capa para compilar.
 
-Esta separación por capas refleja el mismo principio de cohesión y responsabilidad única estudiado en el Módulo 12: cada capa tiene una razón de cambio distinta y bien delimitada (el modelo de dominio cambia cuando cambian los conceptos del negocio en sí; el servicio cambia cuando cambian las reglas de negocio; la infraestructura cambia cuando cambian las decisiones técnicas de implementación), y estructurar el código según esas fronteras facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin tener que rastrear ese impacto a través de código mezclado sin una separación clara de responsabilidades.
-
-**Analogía:** la arquitectura por capas es como una empresa organizada en departamentos con responsabilidades claramente delimitadas: diseño de producto (dominio), operaciones (servicio) y logística externa (infraestructura), donde un cambio en el proveedor logístico externo no debería requerir que el departamento de diseño de producto cambie nada de su propio trabajo.
-
-**¿Por qué es importante?** Separar el código en capas con responsabilidades bien delimitadas (dominio, servicio, infraestructura) facilita razonar sobre el impacto de un cambio específico, aislando las razones de cambio de cada capa.
-
-**Diagrama:**
+**Analogía:** diseño de producto, operaciones y logística externa pueden colaborar sin que un cambio de transportista altere el diseño del producto.
 
 ```mermaid
 flowchart LR
@@ -34,132 +24,366 @@ flowchart LR
     MAIN --> INFRA
 ```
 
-**Cuándo no usarlo:** para un script de un solo uso o un prototipo descartable sin ninguna regla de negocio real que proteger, separar en tres módulos de build distintos es ceremonia sin beneficio; la diferencia frente a mezclar todo en un único paquete solo se justifica cuando el dominio tiene reglas propias que de verdad conviene aislar de la infraestructura.
+El dominio no importa servicios ni infraestructura. El servicio puede importar el dominio, y el punto de entrada ensambla ambos. No hacen falta tres módulos Maven para demostrar esta dependencia: tres árboles compilados por separado la hacen visible.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-capas-dominio
-cd ejemplo-capas-dominio
-mkdir -p domain/src/main/java/com/example/delivery/domain
-mkdir -p service/src/main/java/com/example/delivery/service
-mkdir -p infrastructure/src/main/java/com/example/delivery/infrastructure
+**Cuándo no usarlo:** un script descartable sin reglas de negocio no necesita esta ceremonia. Tampoco conviertas cada paquete en un proyecto independiente si no existe una frontera que mantener.
+
+#### Practica
+
+Crea una carpeta `ejemplo-capas-dominio` y estos archivos:
+
+```text
+domain/src/main/java/com/example/delivery/domain/Delivery.java
+service/src/main/java/com/example/delivery/service/DeliveryService.java
+app/src/main/java/com/example/delivery/app/Main.java
 ```
-Crea `domain/src/main/java/com/example/delivery/domain/Delivery.java` como una clase o `record` que modele una entrega, **sin ningún import de `infrastructure`**. Crea `service/src/main/java/com/example/delivery/service/DeliveryService.java` que use `Delivery` para aplicar una regla de negocio (por ejemplo, rechazar una entrega con peso menor o igual a cero). Compila el módulo `domain` de forma aislada:
-```bash
-javac -d domain/out $(find domain/src/main/java -name '*.java')
-```
-**Resultado esperado:** `domain` compila sin que `javac` necesite ninguna clase de `infrastructure` en el classpath, confirmando que el dominio no depende de infraestructura.
 
-#### Paso 5 · Práctica guiada
-Pista: importá directamente una clase de `infrastructure` (por ejemplo, un cliente HTTP ficticio) dentro de `Delivery.java` "para simplificar y guardar el registro ahí mismo". Ese es el fallo deliberado: ahora el dominio depende de un detalle de infraestructura concreto, y cambiar ese detalle en el futuro obligaría a modificar y volver a probar la clase de dominio también. Resultado esperado: quitar ese import y mover la lógica a `service` o `infrastructure` restaura la separación.
-
-#### Paso 6 · Práctica independiente
-Agregá una segunda regla de negocio a `DeliveryService` (por ejemplo, exigir una dirección de destino no vacía), y una prueba unitaria en `domain` que confirme que ningún import real de `infrastructure` aparece en ese módulo — podés verificarlo simplemente con `grep -r "infrastructure" domain/src` y confirmando que no hay coincidencias.
-
-#### Paso 7 · Cierre
-Guarda el árbol de capas, el `module-info` o estructura de paquetes, y una prueba que confirme que el dominio compila sin ninguna dependencia de infraestructura; como siguiente paso integra concurrencia y testing en esa misma estructura. Errores comunes: filtrar lógica de negocio dentro de un controlador o adaptador, acceder a infraestructura directamente desde el dominio, y mezclar las tres capas en un único paquete plano "por simplicidad". Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
-**Implicación práctica:** Separar el código en capas con razones de cambio distintas y bien delimitadas facilita razonar sobre qué parte del sistema se ve afectada por un cambio específico, sin rastrear ese impacto a través de código mezclado.
-
-### Tema 2: Integrando concurrencia, modelado y testing
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás procesar un lote de tareas con virtual threads, modelando explícitamente éxito y error como una sealed interface, y probar la lógica de negocio con mocks sin infraestructura real. Prerrequisitos: JDK 27, Maven, Docker y un editor.
-
-#### Paso 2 · Contexto y caso real
-Procesar cientos de tareas de entrega concurrentemente, donde algunas fallan y otras no, usando excepciones para el caso de fallo esperado obligaría a interrumpir todo el procesamiento por un único fallo individual; un resultado modelado explícitamente como éxito o error permite que el resto del lote siga procesándose.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Cada tarea se envía a un `Executors.newVirtualThreadPerTaskExecutor()` (Módulo 5), y su resultado se modela como `sealed interface ResultadoProcesamiento permits Exito, Error {}` (Módulo 7), con el compilador garantizando que el código que procesa esos resultados maneje explícitamente ambos casos. La analogía: una línea de producción con múltiples estaciones simultáneas donde cada producto terminado se etiqueta explícitamente como aprobado o rechazado, nunca como "desconocido".
-
-**Conceptos clave:** procesamiento paralelo con resultado modelado como sealed interface, tests aislados con mocks.
-
-El procesamiento concurrente del proyecto integrador combina virtual threads (Módulo 5) para procesar múltiples tareas en paralelo con un modelo de resultado expresado como sealed interface (Módulo 7): `sealed interface ResultadoProcesamiento permits Exito, Error {}`, con `record Exito(String datos) implements ResultadoProcesamiento {}` y `record Error(String motivo) implements ResultadoProcesamiento {}`, permitiendo que cada tarea procesada concurrentemente devuelva explícitamente si tuvo éxito o falló, sin recurrir a lanzar excepciones para el caso de fallo esperado (un fallo individual de una tarea entre muchas no debería necesariamente interrumpir el procesamiento del resto), y con el compilador garantizando, mediante pattern matching exhaustivo (Módulo 7), que el código que procesa esos resultados maneje explícitamente ambos casos posibles.
-
-Cada tarea se envía a un `Executors.newVirtualThreadPerTaskExecutor()` (Módulo 5), permitiendo procesar un volumen considerable de tareas concurrentemente incluso si cada una involucra I/O bloqueante, sin el costo de memoria que threads de plataforma tradicionales impondrían para ese mismo volumen; la lógica de negocio que decide cómo procesar cada tarea individual se prueba de forma aislada con JUnit 5 y Mockito (Módulo 9), mockeando cualquier dependencia externa (como un repositorio o cliente de red) para verificar la lógica de decisión en sí, sin depender de infraestructura real durante las pruebas.
-
-**Analogía:** este procesamiento integrado es como una línea de producción con múltiples estaciones de trabajo simultáneas (virtual threads) donde cada producto terminado se etiqueta explícitamente como aprobado o rechazado (el sealed interface de resultado), con inspectores de calidad (los tests) que verifican la lógica de cada estación de forma aislada, usando maquetas de las materias primas externas (los mocks) en vez de depender de que la cadena de suministro real esté disponible durante cada inspección de calidad.
-
-**¿Por qué es importante?** Modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar explícitamente éxito y error sin recurrir a excepciones para casos esperados, con el compilador garantizando el manejo exhaustivo de ambos casos; probar la lógica de negocio aislada con mocks permite verificarla sin depender de infraestructura real.
-
-**Código del ejemplo:**
+`Delivery.java` contiene únicamente el modelo:
 
 ```java
-sealed interface ResultadoProcesamiento permits Exito, Error {}
-record Exito(String datos) implements ResultadoProcesamiento {}
-record Error(String motivo) implements ResultadoProcesamiento {}
+package com.example.delivery.domain;
 
-List<ResultadoProcesamiento> resultados;
-try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-    resultados = tareas.stream()
-        .map(t -> executor.submit(() -> procesar(t)))
-        .map(this::obtenerResultado)
-        .toList();
+public record Delivery(String id, double weight, String destination) {
 }
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
-```bash
-mkdir ejemplo-procesamiento-concurrente
-cd ejemplo-procesamiento-concurrente
-mkdir -p src/main/java/academia/procesamiento
+`DeliveryService.java` aplica las reglas:
+
+```java
+package com.example.delivery.service;
+
+import com.example.delivery.domain.Delivery;
+
+public final class DeliveryService {
+    public Delivery register(Delivery delivery) {
+        if (delivery.weight() <= 0) {
+            throw new IllegalArgumentException("weight must be positive");
+        }
+        if (delivery.destination().isBlank()) {
+            throw new IllegalArgumentException("destination is required");
+        }
+        return delivery;
+    }
+}
 ```
-Crea `src/main/java/academia/procesamiento/ProcesadorLote.java` con `sealed interface ResultadoProcesamiento permits Exito, Error {}`, sus dos `record` (`Exito(String datos)`, `Error(String motivo)`), y un método que procese una lista de 10 tareas usando `Executors.newVirtualThreadPerTaskExecutor()`, donde 2 de las 10 tareas simuladas fallan deliberadamente (lanzan una excepción capturada y convertida en `Error`). Ejecuta:
-```bash
-javac -d out src/main/java/academia/procesamiento/ProcesadorLote.java
-java -cp out academia.procesamiento.ProcesadorLote
+
+`Main.java` ensambla el caso de uso:
+
+```java
+package com.example.delivery.app;
+
+import com.example.delivery.domain.Delivery;
+import com.example.delivery.service.DeliveryService;
+
+public final class Main {
+    public static void main(String[] args) {
+        Delivery delivery = new Delivery("RF-13", 2.5, "Madrid");
+        System.out.println(new DeliveryService().register(delivery));
+    }
+}
 ```
-**Resultado esperado:** el programa imprime 8 resultados `Exito` y 2 `Error`, y el procesamiento completo termina sin que ninguna excepción se propague fuera del `main` (las 2 tareas fallidas no interrumpieron a las otras 8).
 
-#### Paso 5 · Práctica guiada
-Pista: reemplazá el manejo de errores por tarea para que, en vez de capturar la excepción y convertirla en `Error`, la deje propagarse sin capturar. Ese es el fallo deliberado: la primera tarea que falla interrumpe también la recolección de resultados de las tareas restantes que sí habían tenido éxito, perdiendo esos resultados válidos por el fallo de una sola tarea no relacionada. Resultado esperado: restaurar el `try/catch` que convierte la excepción en `Error` corrige el comportamiento.
+Compila cada árbol en orden y ejecuta:
 
-#### Paso 6 · Práctica independiente
-Agregá una prueba con Mockito que mockee el colaborador que decide si una tarea específica falla, y verificá con JUnit 5 que el lote completo de 10 resultados (8 `Exito` + 2 `Error`) se recolecta aunque las tareas fallidas no sean las mismas en cada corrida.
-
-#### Paso 7 · Cierre
-Guarda el procesamiento con virtual threads, el `ResultadoProcesamiento` sellado con sus casos `Exito`/`Error`, y las pruebas con Mockito aislando la lógica de negocio; como siguiente paso configura el build reproducible que cierra el track. Errores comunes: lanzar virtual threads sin ningún límite de concurrencia real hacia un recurso externo, usar excepciones para un fallo individual esperado en vez de modelarlo como resultado explícito, y mockear la clase bajo prueba en vez de sus dependencias. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
-**Implicación práctica:** Modelar el resultado de un procesamiento concurrente como una sealed interface permite manejar éxito y error explícitamente, con el compilador garantizando que ningún caso quede sin cubrir, sin recurrir a excepciones para un fallo individual esperado.
-
-### Tema 3: Build reproducible y cierre del track
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás configurar el build del proyecto integrador para que cualquier persona lo clone y lo ejecute con un único comando documentado, sin pasos manuales adicionales. Prerrequisitos: JDK 27, Maven, Docker y un editor.
-
-#### Paso 2 · Contexto y caso real
-Un proyecto sin build reproducible obliga a cada nueva persona del equipo a seguir instrucciones manuales extensas (y propensas a desactualizarse) para preparar su entorno antes de poder ejecutar la aplicación; declarar explícitamente todas las dependencias y un único comando de ejecución elimina esa fricción.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Configurar el build con Gradle o Maven (Módulo 8) para que `./gradlew run` (o `mvn compile exec:java`) ejecute la aplicación completa garantiza el mismo resultado sin importar en qué máquina se ejecute, siempre que se use la misma versión declarada de cada dependencia. La analogía: entregar un electrodoméstico completamente ensamblado y listo para enchufar, en vez de una caja de piezas sueltas con instrucciones ambiguas.
-
-#### Paso 4 · Demostración guiada desde cero
-**Agrega** en `build.gradle.kts` el bloque `tasks.withType<Jar> { isReproducibleFileOrder = true; isPreserveFileTimestamps = false }`, que fija el orden y quita las marcas de tiempo de las entradas del JAR para que dos builds del mismo commit produzcan bytes idénticos.
-
-Parte de una carpeta vacía:
 ```bash
-mkdir ejemplo-build-reproducible
-cd ejemplo-build-reproducible
-gradle init --type java-application --dsl kotlin
+javac -d domain/out $(find domain/src/main/java -name '*.java')
+javac -cp domain/out -d service/out $(find service/src/main/java -name '*.java')
+javac -cp domain/out:service/out -d app/out $(find app/src/main/java -name '*.java')
+java -cp domain/out:service/out:app/out com.example.delivery.app.Main
 ```
-En `build.gradle.kts`, agrega la configuración de JAR reproducible y ejecuta el build dos veces consecutivas, comparando el hash del artefacto generado:
+
+**Resultado esperado:** `Delivery[id=RF-13, weight=2.5, destination=Madrid]`. La primera orden no recibe ningún classpath: demuestra que el dominio compila por sí solo.
+
+**Fallo deliberado:** añade `import com.example.delivery.infrastructure.AuditClient;` a `Delivery.java` y repite solamente la primera compilación.
+
+**Pista:** no crees `AuditClient`: el objetivo es observar la frontera, no satisfacerla.
+
+**Resultado esperado:** `error: package com.example.delivery.infrastructure does not exist`. **Si falla.** Comprueba que estás compilando solo `domain/src/main/java`; incluir otros árboles ocultaría la dirección de la dependencia. Quita el import para restaurar el diseño.
+
+#### Aplica
+
+Añade al servicio la regla que rechaza identificadores en blanco. Crea un adaptador `infrastructure` con un repositorio en memoria que dependa de `DeliveryService`, no al revés, y modifica `Main` para registrar y recuperar la entrega. Ejecuta de nuevo las cuatro órdenes y comprueba con `grep -R "infrastructure" domain/src` que el dominio sigue limpio.
+
+**Checklist de salida**
+
+- [ ] `Delivery` no importa servicio ni infraestructura.
+- [ ] El dominio compila sin classpath.
+- [ ] El servicio valida peso, destino e identificador.
+- [ ] El punto de entrada ensambla las dependencias.
+- [ ] El fallo deliberado identifica la dependencia prohibida.
+- [ ] El adaptador nuevo no invierte la frontera.
+
+**Proyecto integrador:** conserva esta estructura para procesar el lote del Tema 2 y empaquetarlo en el Tema 3.
+
+**Errores comunes:** confundir carpetas con aislamiento efectivo, colocar validación de negocio en un controlador y crear dependencias cíclicas entre capas.
+
+Fuentes: [Maven Guides](https://maven.apache.org/guides/) y [Dev.java Learn](https://dev.java/learn/).
+
+### Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min
+
+#### Aprende
+
+**Prerrequisito:** JDK 27, Maven 3.9 o superior, virtual threads, sealed interfaces y JUnit 5.
+
+**Al terminar podrás:** procesar tareas concurrentemente, convertir fallos esperados en resultados explícitos y probar el reparto de éxitos y errores con una dependencia simulada.
+
+Un lote no debería perder todos sus resultados porque una entrega tenga una dirección incompleta. El fallo esperado pertenece al resultado de esa tarea; un error de infraestructura o una interrupción requieren otro tratamiento.
+
+**¿Por qué es importante?** Porque separar un fallo esperado de un fallo interno evita tanto ocultar errores como abandonar trabajo válido. La interfaz sellada hace visibles los casos que el consumidor debe contemplar.
+
+**Analogía:** una línea de inspección etiqueta cada pieza como aprobada o rechazada; una pieza defectuosa no obliga a tirar las demás.
+
+```java
+sealed interface Resultado permits Exito, Error {}
+record Exito(String tarea) implements Resultado {}
+record Error(String tarea, String motivo) implements Resultado {}
+```
+
+`newVirtualThreadPerTaskExecutor()` crea un virtual thread por tarea y su `close()` espera a que terminen. Esto no elimina los límites del recurso externo: una base de datos o API sigue necesitando control de concurrencia. Mockito sustituye el colaborador en la prueba, nunca la clase que queremos verificar.
+
+#### Practica
+
+Crea `ejemplo-procesamiento-concurrente` con un `pom.xml` que declare `maven.compiler.release` en `27`, JUnit Jupiter `6.0.3`, Mockito `5.21.0` y Surefire `3.5.5`. Añade `exec-maven-plugin` `3.6.4` con `academia.procesamiento.ProcesadorLote` como `mainClass`. Usa las dependencias en ámbito `test`.
+
+Crea `src/main/java/academia/procesamiento/ProcesadorLote.java`:
+
+```java
+package academia.procesamiento;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
+public final class ProcesadorLote {
+    public sealed interface Resultado permits Exito, Error {}
+    public record Exito(String tarea) implements Resultado {}
+    public record Error(String tarea, String motivo) implements Resultado {}
+
+    @FunctionalInterface
+    public interface Operacion {
+        void ejecutar(String tarea);
+    }
+
+    public List<Resultado> procesar(List<String> tareas, Operacion operacion) {
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            return tareas.stream()
+                    .map(tarea -> executor.submit(() -> ejecutar(tarea, operacion)))
+                    .map(future -> {
+                        try {
+                            return future.get();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new IllegalStateException("recolección interrumpida", e);
+                        } catch (ExecutionException e) {
+                            throw new IllegalStateException("fallo interno", e);
+                        }
+                    })
+                    .toList();
+        }
+    }
+
+    private Resultado ejecutar(String tarea, Operacion operacion) {
+        try {
+            operacion.ejecutar(tarea);
+            return new Exito(tarea);
+        } catch (RuntimeException e) {
+            return new Error(tarea, e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        var resultados = new ProcesadorLote().procesar(
+                List.of("1", "2", "3", "4", "5"), tarea -> {
+                    if (tarea.equals("2") || tarea.equals("5")) {
+                        throw new IllegalArgumentException("dirección incompleta");
+                    }
+                });
+        resultados.forEach(System.out::println);
+    }
+}
+```
+
+Ejecuta el programa:
+
 ```bash
-./gradlew clean build
-shasum -a 256 build/libs/*.jar
-./gradlew clean build
-shasum -a 256 build/libs/*.jar
+mvn -q compile exec:java
 ```
-**Resultado esperado:** ambos hashes SHA-256 son idénticos, confirmando que el mismo commit produce exactamente el mismo artefacto en builds sucesivos.
 
-#### Paso 5 · Práctica guiada
-Pista: agregá deliberadamente `System.currentTimeMillis()` como parte de la versión o el manifest del JAR, "para registrar cuándo se construyó". Ese es el fallo deliberado: ahora cada build sucesivo produce un hash distinto, aunque el código fuente no haya cambiado en absoluto, porque el timestamp cambia en cada ejecución. Resultado esperado: quitar el timestamp del manifest (o fijar un valor de versión estable) restaura hashes idénticos entre builds.
+**Resultado esperado:** tres `Exito` y dos `Error`; las tareas `2` y `5` muestran `motivo=dirección incompleta` y las demás conservan su resultado.
 
-#### Paso 6 · Práctica independiente
-Documentá en el `README.md` del proyecto el comando único (`./gradlew run`) que permite a cualquier persona clonar el repositorio y ejecutar la aplicación completa sin pasos manuales adicionales, y verificá siguiendo únicamente esas instrucciones desde una copia nueva del repositorio.
+Crea `src/test/java/academia/procesamiento/ProcesadorLoteTest.java`:
 
-#### Paso 7 · Cierre
-Guarda el comando único de ejecución documentado, y confirma que un checkout limpio del repositorio compila y corre sin pasos manuales adicionales; con esto cerrás el track completo de Java. Como siguiente paso aplica esta misma disciplina de capas, concurrencia y build reproducible al track de Spring Boot. Errores comunes: documentar un comando de ejecución que depende de un paso manual previo no escrito en ningún lado, dejar dependencias sin versión fijada que pueden resolver distinto en cada máquina, y omitir instrucciones de cómo correr los tests junto con la aplicación. Fuentes oficiales: https://maven.apache.org/guides/ y https://dev.java/learn/.
-**¿Por qué es importante?** Porque un build reproducible ejecutable con un solo comando documentado elimina la fricción de configuración manual y garantiza el mismo resultado en cualquier máquina, cerrando el ciclo completo del proyecto integrador: dominio, concurrencia, tests y despliegue reproducible.
+```java
+package academia.procesamiento;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+
+import java.util.List;
+import org.junit.jupiter.api.Test;
+
+final class ProcesadorLoteTest {
+    @Test
+    void conservaExitosCuandoDosTareasFallan() {
+        var operacion = mock(ProcesadorLote.Operacion.class);
+        doAnswer(invocation -> {
+            String tarea = invocation.getArgument(0);
+            if (tarea.equals("2") || tarea.equals("4")) {
+                throw new IllegalArgumentException("fallo esperado");
+            }
+            return null;
+        }).when(operacion).ejecutar(anyString());
+
+        var resultados = new ProcesadorLote().procesar(
+                List.of("1", "2", "3", "4", "5"), operacion);
+
+        assertEquals(3, resultados.stream()
+                .filter(ProcesadorLote.Exito.class::isInstance).count());
+        assertEquals(2, resultados.stream()
+                .filter(ProcesadorLote.Error.class::isInstance).count());
+    }
+}
+```
+
+Ejecuta `mvn test`: debe terminar con `BUILD SUCCESS` y una prueba superada. Mockito puede emitir avisos sobre carga dinámica del agente en JDK 27; no son un fallo de esta prueba.
+
+**Fallo deliberado:** elimina el `try/catch` de `ejecutar` y deja que la excepción de la operación salga del callable.
+
+**Resultado esperado:** `future.get()` recibe `ExecutionException`, la recolección lanza `IllegalStateException: fallo interno` y Maven informa de la causa `dirección incompleta`. **Si falla.** Si todavía aparecen dos `Error`, estás ejecutando una clase anterior; limpia y recompila. Restaura el `try/catch` para volver a aislar los fallos esperados.
+
+#### Aplica
+
+Añade un resultado `Omitida` para tareas duplicadas y actualiza la interfaz sellada y las pruebas. Limita a cuatro las operaciones simultáneas contra un recurso simulado con un `Semaphore`, sin cambiar el executor por tarea. Prueba que una interrupción restaura la marca del thread y que los fallos esperados siguen formando parte de la lista.
+
+**Checklist de salida**
+
+- [ ] El executor se cierra con try-with-resources.
+- [ ] Éxito y error esperado son casos explícitos.
+- [ ] La recolección conserva los resultados válidos.
+- [ ] La interrupción restaura el estado del thread.
+- [ ] Mockito sustituye el colaborador, no el procesador.
+- [ ] El recurso compartido tiene un límite de concurrencia.
+
+**Proyecto integrador:** conecta este procesador con las capas del Tema 1; el dominio no debe conocer el executor.
+
+**Errores comunes:** capturar toda excepción como fallo de negocio, ignorar `InterruptedException` y crear virtual threads sin proteger un recurso agotable.
+
+Fuentes: [Virtual Threads](https://dev.java/learn/concurrency/virtual-threads/), [JUnit 5](https://docs.junit.org/current/user-guide/) y [Mockito](https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html).
+
+### Tema 3: Build reproducible y cierre del track · Avanzado · 50 min
+
+#### Aprende
+
+**Prerrequisito:** JDK 27 y Maven 3.9 o superior; comprueba `mvn --version`.
+
+**Al terminar podrás:** ejecutar una aplicación con una orden documentada, fijar la fecha de las entradas del JAR y comparar dos artefactos byte a byte.
+
+Un proyecto que exige pasos manuales no escritos no es reproducible para otra persona. Además, compilar dos veces el mismo código puede producir archivos distintos si el empaquetado guarda fechas cambiantes.
+
+**¿Por qué es importante?** Porque una orden única reduce errores de preparación y un artefacto idéntico permite relacionar el binario con el código y las dependencias declaradas.
+
+**Analogía:** entregar un equipo ensamblado con una receta fija, no una caja cuya composición cambia según la hora de empaquetado.
+
+Maven usa `project.build.outputTimestamp` para normalizar las fechas de las entradas del archivo. El valor debe ser fijo o derivar de una revisión estable, nunca del reloj actual. Reproducibilidad no significa que dos máquinas con JDK o dependencias diferentes produzcan necesariamente lo mismo: hay que fijar también el entorno y las versiones.
+
+**Cuándo no usarlo:** no fijes una fecha arbitraria en un sistema que ya obtiene ese valor de forma verificable desde su commit o pipeline; conserva una única fuente de verdad.
+
+#### Practica
+
+Crea `ejemplo-build-reproducible/pom.xml`:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>academia</groupId>
+  <artifactId>integrador</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <maven.compiler.release>27</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.6.4</version>
+        <configuration>
+          <mainClass>academia.integrador.Main</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+```
+
+Crea `src/main/java/academia/integrador/Main.java`:
+
+```java
+package academia.integrador;
+
+public final class Main {
+    public static void main(String[] args) {
+        System.out.println("integrador listo");
+    }
+}
+```
+
+Ejecuta la aplicación y construye dos veces, conservando el primer JAR fuera de `target` para que `clean` no lo borre:
+
+```bash
+mvn -q compile exec:java
+mvn -q clean package
+shasum -a 256 target/integrador-1.0.0.jar
+cp target/integrador-1.0.0.jar /tmp/integrador-primero.jar
+mvn -q clean package
+shasum -a 256 target/integrador-1.0.0.jar
+cmp /tmp/integrador-primero.jar target/integrador-1.0.0.jar
+```
+
+**Resultado esperado:** la aplicación imprime `integrador listo`, ambos SHA-256 coinciden y `cmp` no produce salida. La igualdad se comprueba byte a byte, no solo mirando el tamaño.
+
+**Fallo deliberado:** añade `maven-jar-plugin` `3.5.0` con esta configuración dentro de `build/plugins`:
+
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-jar-plugin</artifactId>
+  <version>3.5.0</version>
+  <configuration>
+    <archive>
+      <manifestEntries>
+        <Build-Time>${maven.build.timestamp}</Build-Time>
+      </manifestEntries>
+    </archive>
+  </configuration>
+</plugin>
+```
+
+Repite los dos builds esperando al menos dos segundos entre ellos. **Resultado esperado:** los hashes cambian y `cmp` señala que los archivos difieren. **Si falla.** Si los hashes coinciden, ambos builds ocurrieron dentro de la misma resolución temporal o el plugin no quedó dentro de `build/plugins`. Retira `Build-Time`; conserva `project.build.outputTimestamp`.
+
+#### Aplica
+
+Documenta en el `README.md` del proyecto las versiones de JDK y Maven, `mvn clean verify`, `mvn compile exec:java` y la comparación de hashes. Copia únicamente `pom.xml` y `src` a una carpeta nueva y sigue esas instrucciones sin reutilizar `target`. Añade después las fuentes de los Temas 1 y 2 y consigue que una sola verificación compile y pruebe el integrador completo.
+
+**Checklist de salida**
+
+- [ ] JDK, Maven y plugins tienen versiones documentadas.
+- [ ] La aplicación se ejecuta con una sola orden.
+- [ ] Dos builds del mismo contenido tienen el mismo SHA-256.
+- [ ] `cmp` confirma igualdad byte a byte.
+- [ ] La fecha del manifest no depende del reloj actual.
+- [ ] Una copia sin `target` compila y ejecuta siguiendo el README.
+
+**Proyecto integrador:** cierra el track con capas, procesamiento concurrente, pruebas y empaquetado reproducible en el mismo proyecto.
+
+**Errores comunes:** confundir una compilación exitosa con reproducibilidad, omitir versiones de plugins y comparar hashes sin limpiar el artefacto anterior.
+
+Fuentes: [Reproducible Builds en Maven](https://maven.apache.org/guides/mini/guide-reproducible-builds.html), [Exec Maven Plugin](https://www.mojohaus.org/exec-maven-plugin/) y [Dev.java Learn](https://dev.java/learn/).
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir la aplicación integradora completa con arquitectura por capas, procesamiento concurrente, tests y build reproducible.

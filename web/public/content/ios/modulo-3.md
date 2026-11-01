@@ -1,7 +1,7 @@
 # Módulo 3: Navegación
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -74,7 +74,7 @@ NavigationStack(path: $path) {
 path.append(tarea) // push programático
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, navega del listado al detalle de envío con NavigationStack.
 
 **Límites y decisión de uso:** La pila de navegación representa destinos, no autorización sobre sus datos. Guarda identidades estables en lugar de objetos vivos y valida una ruta restaurada: el recurso pudo eliminarse o dejar de pertenecer al usuario.
@@ -141,7 +141,7 @@ TabView
 └── Tareas  → NavigationStack propio (independiente del de Inicio)
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, presenta la confirmación como sheet y conserva el estado al cerrar.
 
 **Límites y decisión de uso:** Una presentación modal no debe ocultar una tarea incompleta sin posibilidad de recuperación. Define qué se guarda al cerrar y prueba cancelación; evita abrir varios modales simultáneos como respuesta a eventos repetidos.
@@ -181,7 +181,7 @@ flowchart TD
     D -->|Sí| E["path.append(Envio(guia:))"]
 ```
 
-En el proyecto integrador RutaFlow, este handler vive en `examples/rutaflow/ios/ContentView.swift`, junto al `Form` de motivo de no entrega. Límite de la decisión: no conviene validar el formato de la URL en más de un lugar disperso de la app — centralizá esa validación en el único punto de entrada `.onOpenURL`, antes de que el valor llegue a `NavigationPath`; validar tarde, después de ya haber navegado, no conviene porque la vista de destino ya habría recibido un valor no confiable.
+En tu propio proyecto RutaFlow, escribe este handler en `ContentView.swift`, junto al `Form` de motivo de no entrega que crearás en el Paso 6. Límite de la decisión: no conviene validar el formato de la URL en más de un lugar disperso de la app — centralizá esa validación en el único punto de entrada `.onOpenURL`, antes de que el valor llegue a `NavigationPath`; validar tarde, después de ya haber navegado, no conviene porque la vista de destino ya habría recibido un valor no confiable.
 
 ---
 
@@ -206,6 +206,8 @@ Resultado esperado: abrir `rutaflow://envio/RF-4471` navega directamente a `Deta
 Pista: quitá la validación `guia.hasPrefix("RF-")` y probá abrir `rutaflow://envio/<script>` — ese es el fallo deliberado: sin validar el formato de la guía antes de usarla, cualquier contenido arbitrario de una URL maliciosa terminaría navegando a `DetalleEnvio` con un valor que nunca debería tratarse como una guía real.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la validación, y agregá un `Form` con un `Picker` para que el conductor reporte el motivo si no pudo entregar (por ejemplo "destinatario ausente", "dirección incorrecta"), usando `.swipeActions()` en la lista para marcar un envío como "reintentar" sin entrar al detalle.
+
+**Proyecto integrador:** completa en el proyecto vacío de este tema una app de incidencias con `RutaEnvio.swift` para validar y convertir URLs en destinos, `FormularioIncidencia.swift` para exigir un motivo antes de habilitar Guardar y `ContentView.swift` para la lista y el `NavigationStack`. Registra el esquema `rutaflow` en el target y, con la app instalada, ejecuta `xcrun simctl openurl booted 'rutaflow://envio/RF-4471'`: debe abrirse ese detalle. Repite con `rutaflow://envio/NO-VALIDA` y comprueba que permanece la lista; guarda una incidencia y verifica que la guía y el motivo elegido aparecen en el detalle.
 
 #### Paso 7 · Cierre
 Entregá el deep link validado del Paso 4, el formato no validado y su riesgo del Paso 5, y el formulario con swipe actions del Paso 6; explicá por qué una URL entrante nunca debería tratarse como un dato de confianza sin antes validar su forma. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
@@ -235,5 +237,5 @@ Entregá el deep link validado del Paso 4, el formato no validado y su riesgo de
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, abre el detalle de un envío por deep link y valida el formulario.

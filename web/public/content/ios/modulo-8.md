@@ -1,7 +1,7 @@
 # Módulo 8: Arquitectura MVVM
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -81,7 +81,7 @@ struct ListaEnvios: View {
 }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `EnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, separa la vista de detalle en vista, modelo y servicio.
 
 **Límites y decisión de uso:** MVVM no exige que cada vista tenga una clase nueva ni que toda transformación pase por un ViewModel. Extrae reglas y efectos que necesiten pruebas; conserva presentación simple en la vista cuando no introduce dependencias ocultas.
@@ -197,6 +197,8 @@ Pista: agregá un tercer ViewModel (`ResumenRutaViewModel`) que vuelva a copiar 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 haciendo que `ResumenRutaViewModel` también use `EsEnvioAtrasado`, y agregá el margen de tolerancia de 15 minutos solo dentro de `EsEnvioAtrasado.ejecutar` — confirmá que los tres ViewModels reflejan el nuevo comportamiento sin que ninguno haya cambiado su propio código.
 
+**Proyecto integrador:** en ese proyecto iniciado desde una carpeta vacía, conecta `EnviosViewModel.swift`, `DetalleEnvioViewModel.swift` y `ResumenRutaViewModel.swift` al mismo `EsEnvioAtrasado`, inyectando también un reloj para no depender de `Date()` en las pruebas. Crea `RutaFlowAppTests/ReglaAtrasoTests.swift` con un envío vencido hace 20 minutos y otro vencido hace 10: con una tolerancia de 15 minutos, el primero debe quedar atrasado en las tres pantallas y el segundo no. Cambia la tolerancia únicamente en el caso de uso y vuelve a ejecutar las pruebas para demostrar que ninguna copia de la regla quedó escondida en un ViewModel.
+
 #### Paso 7 · Cierre
 Entregá la duplicación provocada en el Paso 5, la corrección centralizada del Paso 6, y una frase explicando en qué punto decidiste que la regla merecía su propio caso de uso en vez de quedarse copiada; mencioná también cuándo NO conviene: una regla usada en un solo ViewModel no necesita todavía esta capa. Siguiente paso: estudia testing con XCTest. Errores comunes: extraer un caso de uso para lógica usada en un solo lugar, duplicar reglas "porque es solo una línea", y adoptar arquitecturas complejas (como TCA) antes de que la app lo necesite genuinamente. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
 **¿Por qué es importante?** Porque reconocer cuándo una regla se duplica evita tanto la sub-arquitectura (lógica copiada entre ViewModels) como la sobre-arquitectura (casos de uso para reglas usadas una sola vez).
@@ -231,7 +233,7 @@ flowchart TD
     end
 ```
 
-En el proyecto integrador RutaFlow, `EsEnvioAtrasado` vive en `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`.
+En tu propio proyecto RutaFlow, crea `Dominio/EsEnvioAtrasado.swift`: primero crea el grupo `Dominio` en el navegador de Xcode y después **File ▸ New ▸ File ▸ Swift File** dentro de ese grupo, con el target de la app seleccionado. Escribe allí el caso de uso del Paso 4.
 
 ---
 
@@ -259,5 +261,5 @@ En el proyecto integrador RutaFlow, `EsEnvioAtrasado` vive en `examples/ios-lab/
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `EnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, documenta un caso donde MVVM no basta y justifica la alternativa.

@@ -259,7 +259,7 @@ useMutation({
 #### Profundización · Diseño y decisiones de arquitectura
 **Cuándo NO usar optimistic updates:** si la mutación tiene alta probabilidad de fallar (pagos con validación de fondos en tiempo real) o si revertir visualmente confunde más de lo que ayuda (operaciones irreversibles como "eliminar cuenta"), conviene esperar la confirmación del servidor aunque introduzca latencia perceptible — el trade-off es velocidad percibida frente al riesgo de mostrar temporalmente un estado que resulta falso.
 
-En el proyecto integrador RutaFlow (`examples/rutaflow/react/dashboard/src/hooks/useMarcarEntregado.ts`), este patrón se aplica al botón "Marcar entregado": como la probabilidad de rechazo del servidor es baja, el optimistic update mejora la experiencia del operador sin generar reversiones frecuentes y confusas.
+En tu proyecto RutaFlow, implementa este patrón en `src/hooks/useMarcarEntregado.ts` para el botón "Marcar entregado": si la probabilidad de rechazo del servidor es baja y la reversión se comunica con claridad, el optimistic update mejora la experiencia del operador sin generar reversiones frecuentes y confusas.
 
 ```mermaid
 sequenceDiagram
@@ -322,6 +322,8 @@ Corregí el Paso 5 restaurando `cancelQueries`, y agregá una notificación visu
 #### Paso 7 · Cierre
 Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explicá por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cerrá el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
 **Implicación práctica:** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
+
+**Proyecto integrador:** aplica una actualización optimista al botón de entrega de RutaFlow, cancela el refetch anterior y muestra una reversión explícita si el servidor rechaza la confirmación.
 
 ## Laboratorio práctico
 

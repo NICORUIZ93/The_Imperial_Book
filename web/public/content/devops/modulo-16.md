@@ -228,7 +228,7 @@ Guarda el `id` recibido en `Crear envio` con `pm.collectionVariables.set('envioI
 
 #### Paso 7 · Cierre
 
-Ya escribes aserciones que validan el cuerpo real de una respuesta JSON, no solo su código de estado, y reconoces un error de script antes de que oculte una prueba incompleta. El siguiente tema ejecuta esta misma colección con reportes exportables y presta atención exacta al código de salida que un pipeline de CI necesita leer. Fuentes oficiales: [Postman — Test scripts](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/) y [Postman — pm.expect (Chai)](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/).
+Ya escribes aserciones que validan el cuerpo real de una respuesta JSON, no solo su código de estado, y reconoces un error de script antes de que oculte una prueba incompleta. El siguiente tema ejecuta esta misma colección con reportes exportables y presta atención exacta al código de salida que un pipeline de CI necesita leer. Fuentes oficiales: [Postman — Test scripts](https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/) y [Chai — BDD assertions](https://www.chaijs.com/api/bdd/).
 
 **Errores comunes:** confirmar solo el código de estado HTTP sin validar el cuerpo de la respuesta; declarar una variable con un nombre que colisiona con el ámbito del sandbox, produciendo un `SyntaxError` confuso de diagnosticar si no se lee el mensaje completo.
 

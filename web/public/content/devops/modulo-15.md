@@ -15,20 +15,65 @@ El pipeline local de RutaFlow arranca con `docker compose up`, y la API falla la
 `depends_on` sin condición ordena el arranque de contenedores, pero no garantiza disponibilidad del servicio interno; un `healthcheck` define una prueba repetible de "listo", y `condition: service_healthy` hace que Compose espere ese estado antes de arrancar el dependiente. La analogía es esperar a que el semáforo esté en verde, no solo a que el poste exista.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `compose.yaml` con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && terraform init
-```
-
-Usa el ejemplo independiente del repositorio `examples/devops-health`: contiene `Dockerfile`, `server.mjs`, manifiesto y lockfile. La API hace `SELECT 1` antes de escuchar y comprueba la DB en cada petición. La contraseña es exclusivamente un dato de laboratorio local.
+Parte de una carpeta vacía y crea manualmente todos los archivos del proyecto:
 
 ```bash
-cd examples/devops-health
-cp .env.example .env
-docker compose -p academia-health-lab config --quiet
-docker compose -p academia-health-lab up --build -d
+mkdir ejemplo-devops-health
+cd ejemplo-devops-health
 ```
-Crea o inspecciona `compose.yaml`:
+
+Crea `package.json`:
+
+```json
+{
+  "name": "health-lab",
+  "private": true,
+  "type": "module",
+  "dependencies": { "pg": "8.13.1" }
+}
+```
+
+Crea `server.mjs`; la API ejecuta `SELECT 1` antes de escuchar y vuelve a comprobar la base en cada petición:
+
+```js
+import http from 'node:http';
+import pg from 'pg';
+
+const client = new pg.Client({ connectionTimeoutMillis: 2000 });
+await client.connect();
+await client.query('SELECT 1');
+
+const server = http.createServer(async (request, response) => {
+  try {
+    const result = await client.query('SELECT 1 AS disponible');
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify(result.rows[0]));
+  } catch {
+    response.writeHead(503, { 'Content-Type': 'application/json' });
+    response.end('{"error":"base no disponible"}');
+  }
+});
+server.listen(3000, '0.0.0.0');
+```
+
+Crea `Dockerfile`:
+
+```dockerfile
+FROM node:22-alpine
+WORKDIR /app
+COPY package.json ./
+RUN npm install --omit=dev
+COPY server.mjs ./
+CMD ["node", "server.mjs"]
+```
+
+Crea `.env` con una contraseña exclusivamente local, no una credencial real:
+
+```dotenv
+LAB_DB_PASSWORD=lab-local-only
+```
+
+Crea `compose.yaml`:
 ```yaml
 services:
   db:
@@ -59,9 +104,14 @@ services:
 volumes:
   lab-db:
 ```
+
+Valida la configuración y levanta los servicios desde esta carpeta:
+
 ```bash
+docker compose -p academia-health-lab config --quiet
+docker compose -p academia-health-lab up --build -d
 docker compose -p academia-health-lab ps
-curl --fail http://127.0.0.1:3080
+curl --retry 15 --retry-connrefused --retry-delay 1 --fail http://127.0.0.1:3080
 docker compose -p academia-health-lab restart api
 curl --retry 10 --retry-connrefused --retry-delay 1 --fail http://127.0.0.1:3080
 ```
@@ -105,10 +155,28 @@ Un `helm upgrade` de RutaFlow despliega la nueva versión de la API al mismo tie
 Los hooks de Helm (`pre-upgrade`, `post-upgrade`) ejecutan recursos en una fase separada del ciclo de release, y `helm.sh/hook-weight` ordena múltiples hooks dentro de la misma fase; sin un hook que bloquee, Helm continúa el upgrade del Deployment sin esperar a que el Job termine. La analogía es repavimentar una calle mientras los autos siguen circulando, en vez de cerrarla hasta terminar.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.yaml` con el contenido de este tema.
+Parte de una carpeta vacía y crea la estructura mínima de tu propio chart:
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo-helm && cd ejemplo-helm
+mkdir -p chart/templates
 ```
+
+Crea `chart/Chart.yaml`:
+
+```yaml
+apiVersion: v2
+name: rutaflow-api
+version: 0.1.0
+```
+
+Crea `chart/values.yaml`:
+
+```yaml
+image:
+  tag: "1.0.0"
+```
+
+Crea `chart/templates/migrate.yaml`:
 
 ```yaml
 apiVersion: batch/v1
@@ -129,12 +197,14 @@ spec:
       restartPolicy: Never
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+Renderiza el chart y verifica las annotations del Job:
 
 ```bash
-bash ejemplo.sh
+helm template rutaflow ./chart
+helm upgrade --install rutaflow ./chart --dry-run=client
 ```
-Verifica la salida y el estado de los recursos creados.
+
+Verifica que la salida conserva `helm.sh/hook: pre-upgrade`, `hook-weight` y `hook-delete-policy`. Para comprobar el orden real frente a una migración que falle, ejecuta el upgrade sin `--dry-run` únicamente contra un clúster de laboratorio con la imagen y el comando de migración de tu propio proyecto.
 
 Resultado esperado: Helm ejecuta este Job en la fase `pre-upgrade` y espera a que complete exitosamente antes de continuar con el upgrade del Deployment; si el Job falla, el `helm upgrade` se detiene y no reemplaza los pods de la API.
 
@@ -175,9 +245,9 @@ El equipo de RutaFlow quiere probar una nueva versión de la API con solo el 10%
 Un service mesh inyecta un sidecar que intercepta todo el tráfico del pod; un `DestinationRule` define subconjuntos (subsets) de un servicio por etiqueta, y un `VirtualService` distribuye pesos de tráfico entre esos subsets, en la capa de red, sin tocar el código de la aplicación. La analogía es dirigir un porcentaje de camiones a un carril de prueba en una ruta, sin que el conductor note la diferencia.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+Parte de una carpeta vacía y crea `virtualservice.yaml` con ambos recursos:
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo-istio && cd ejemplo-istio
 ```
 
 ```yaml
@@ -205,12 +275,13 @@ spec:
           weight: 10
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+Analiza y aplica tus manifiestos en el clúster de laboratorio:
 
 ```bash
-bash ejemplo.sh
+istioctl analyze -f virtualservice.yaml
+kubectl apply -f virtualservice.yaml
+kubectl get destinationrule,virtualservice rutaflow-api
 ```
-Verifica la salida y el estado de los recursos creados.
 
 Resultado esperado: `istioctl proxy-config endpoints` sobre un pod cliente muestra que aproximadamente el 10% de las peticiones nuevas llegan a pods con la etiqueta `version: v2`, sin ningún cambio en el código de quien consume la API.
 
@@ -236,7 +307,7 @@ flowchart LR
 ```
 
 Guardá el `DestinationRule`/`VirtualService` de arriba como
-`examples/rutaflow/devops/virtualservice.yaml`, junto al `deployment.yaml` del proyecto
+`deploy/virtualservice.yaml`, junto al `deploy/deployment.yaml` que escribiste para tu proyecto
 integrador RutaFlow, y confirmá que el Deployment base referenciado por el mesh es el mismo que
 declaraste en el Módulo 7:
 
@@ -262,9 +333,9 @@ Durante un pico de tráfico, una persona de guardia de RutaFlow escala manualmen
 GitOps trata el repositorio como la única fuente de verdad; un operador en modo "pull" reconcilia continuamente el clúster contra ese estado declarado, y con `selfHeal: true` revierte automáticamente cualquier cambio manual que no coincida. La analogía es un termostato que vuelve a la temperatura programada apenas alguien toca la perilla a mano.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.yaml` con el contenido de este tema.
+Parte de una carpeta vacía y crea `application.yaml`:
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo-gitops && cd ejemplo-gitops
 ```
 
 ```yaml
@@ -278,12 +349,13 @@ spec:
     automated: { prune: true, selfHeal: true }
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
+Sustituye `repoURL` y `path` por los de tu propio repositorio de manifiestos y aplica la Application en el clúster de laboratorio:
 
 ```bash
-bash ejemplo.sh
+kubectl apply --dry-run=client -f application.yaml
+kubectl apply -f application.yaml
+argocd app get rutaflow-api
 ```
-Verifica la salida y el estado de los recursos creados.
 
 Resultado esperado: Argo CD reconcilia el clúster contra `infra` cada pocos minutos; cualquier recurso que diverja del manifiesto en Git (incluido un `kubectl edit` manual) es revertido automáticamente al estado declarado, y la UI de Argo CD muestra el recurso como "OutOfSync" justo antes de corregirlo.
 
@@ -312,7 +384,7 @@ sequenceDiagram
 ```
 
 En el proyecto integrador RutaFlow, esta Application de Argo CD apuntaría exactamente al
-manifiesto `examples/rutaflow/devops/deployment.yaml` del repositorio `infra` — no conviene
+manifiesto `deploy/deployment.yaml` del repositorio `infra` — no conviene
 activar `selfHeal: true` sin que el equipo de guardia sepa que cualquier `kubectl scale`
 manual se revierte solo; la diferencia frente a un CD tradicional es justamente esa: no hay
 forma de "parchear rápido y arreglar Git después" sin que el reconciler lo deshaga primero.
@@ -329,29 +401,53 @@ El playbook de aprovisionamiento de RutaFlow se corre cada vez que se agrega un 
 La idempotencia garantiza que aplicar un playbook N veces produce el mismo estado que aplicarlo una vez; módulos como `lineinfile` verifican el estado actual antes de modificar, mientras que comandos de shell genéricos (`echo >>`) solo ejecutan una acción sin verificar nada. La analogía es la diferencia entre "asegurate de que la puerta esté cerrada" y "cerrá la puerta" repetido sin mirar si ya estaba cerrada.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+Parte de una carpeta vacía y crea tu propio playbook y archivo de secretos:
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo-ansible && cd ejemplo-ansible
+```
+
+Genera el valor cifrado y pega la salida completa en `vault.yml`:
+
+```bash
+ansible-vault encrypt_string 'sk-rutaflow-lab-xxx' --name 'api_key'
+```
+
+Crea `site.yml`:
+
+```yaml
+- hosts: all
+  become: true
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Configurar API key de RutaFlow
+      lineinfile:
+        path: /etc/environment
+        regexp: '^RUTAFLOW_API_KEY='
+        line: "RUTAFLOW_API_KEY={{ api_key }}"
+        state: present
+```
+
+Crea `inventory.ini` con la conexión SSH de tu servidor de laboratorio y ejecuta dos veces:
+
+```ini
+[lab]
+servidor ansible_host=192.0.2.10 ansible_user=ubuntu
 ```
 
 ```bash
-ansible-vault encrypt_string 'sk-rutaflow-prod-xxx' --name 'api_key'
+ansible-playbook -i inventory.ini --ask-vault-pass site.yml
 ```
-```yaml
-- name: Configurar API key de RutaFlow
-  lineinfile:
-    path: /etc/environment
-    regexp: '^RUTAFLOW_API_KEY='
-    line: "RUTAFLOW_API_KEY={{ api_key }}"
-    state: present
-```
+
+Sustituye la dirección de documentación `192.0.2.10` por la de tu servidor; no ejecutes el playbook contra una máquina real sin autorización.
+
 Resultado esperado: `ansible-vault encrypt_string` produce un valor cifrado que se guarda en el repositorio sin exponer el secreto en texto plano; la tarea `lineinfile` con `regexp` verifica si la línea ya existe y la reemplaza en vez de duplicarla, dando el mismo resultado si el playbook corre 1 o 10 veces.
 
 #### Paso 5 · Práctica guiada
 Pista: reemplazá la tarea `lineinfile` por `shell: echo "RUTAFLOW_API_KEY={{ api_key }}" >> /etc/environment` "porque es más simple". Ese es el fallo deliberado: correr el playbook una segunda vez agrega una SEGUNDA línea `RUTAFLOW_API_KEY=...` al archivo, y según qué programa la lea primero, el servidor puede terminar usando una key vieja o duplicada sin que nadie lo note.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la tarea `lineinfile` con `regexp` y `state: present`, y verificá la idempotencia corriendo el playbook dos veces seguidas (`ansible-playbook site.yml` x2) confirmando que la segunda ejecución reporta `changed=0` para esa tarea.
+Corregí el Paso 5 restaurando la tarea `lineinfile` con `regexp` y `state: present`, y verificá la idempotencia corriendo dos veces `ansible-playbook -i inventory.ini --ask-vault-pass site.yml`; confirmá que la segunda ejecución reporta `changed=0` para esa tarea.
 
 #### Paso 7 · Cierre
 Entregá el secreto cifrado y la tarea idempotente del Paso 4, la duplicación de línea del Paso 5, y la verificación de `changed=0` del Paso 6; explicá por qué `shell`/`command` nunca son idempotentes por sí mismos, a diferencia de los módulos declarativos de Ansible. Siguiente paso: cerrá el módulo conectando estas prácticas con las métricas DORA que miden el impacto real de todo el pipeline. Errores comunes: guardar secretos sin `ansible-vault`, usar `shell`/`command` para tareas que ya tienen un módulo idempotente equivalente, y no verificar `changed=0` en una segunda ejecución antes de confiar en un playbook. Fuentes oficiales: https://docs.ansible.com/ansible/latest/vault_guide/index.html y https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html.
@@ -370,7 +466,7 @@ En el proyecto integrador RutaFlow, este mismo playbook correría dentro de un c
 reproducible en vez de depender de qué versión de Ansible tenga instalada cada máquina:
 
 ```bash
-docker run --rm -v "$PWD":/playbooks ansible/ansible-runner ansible-playbook /playbooks/site.yml
+docker run --rm -it -v "$PWD":/playbooks ansible/ansible-runner ansible-playbook -i /playbooks/inventory.ini --ask-vault-pass /playbooks/site.yml
 ```
 
 Resultado esperado: el `changed=0` de la segunda ejecución se repite igual dentro del
@@ -389,18 +485,35 @@ El equipo de RutaFlow quiere saber si su proceso de DevSecOps realmente mejoró 
 Las métricas DORA miden el desempeño real de entrega de software con cuatro números: con qué frecuencia se despliega a producción, cuánto tarda un commit en llegar a producción, qué porcentaje de despliegues causa un incidente, y cuánto se tarda en recuperarse. La analogía es un chequeo médico: no mide cómo te sentís, mide signos vitales concretos y comparables en el tiempo.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+Parte de una carpeta vacía para crear tu propia herramienta de medición:
 ```bash
-mkdir ejemplo && cd ejemplo && terraform init
+mkdir ejemplo-dora && cd ejemplo-dora
 ```
 
+Crea `medir_dora.sh`:
+
 ```bash
+#!/usr/bin/env bash
+set -euo pipefail
+PROJECT_DIR=${1:?Indica la carpeta Git de tu propio proyecto}
+: "${DEPLOY_TIME:?Define DEPLOY_TIME}"
+: "${COMMIT_TIME:?Define COMMIT_TIME}"
+
 # Frecuencia de despliegue: despliegues EXITOSOS a producción por día
-git log --since="30 days ago" --grep="deploy: production" --oneline | wc -l
+git -C "$PROJECT_DIR" log --since="30 days ago" --grep="deploy: production" --oneline | wc -l
 
 # Lead time: desde el commit hasta el despliegue exitoso
 echo "$(( $(date -d "$DEPLOY_TIME" +%s) - $(date -d "$COMMIT_TIME" +%s) )) segundos"
 ```
+
+Ejecuta el script con las marcas ISO 8601 de un commit y su despliegue real:
+
+```bash
+export COMMIT_TIME="2026-07-15T10:00:00Z"
+export DEPLOY_TIME="2026-07-15T12:30:00Z"
+bash medir_dora.sh /ruta/a/tu/proyecto
+```
+
 Resultado esperado: la frecuencia de despliegue cuenta únicamente los despliegues que llegaron a producción y pasaron el smoke test posterior, no cada ejecución del pipeline; el lead time mide desde el commit original hasta ese despliegue exitoso, no desde el inicio del pipeline.
 
 #### Paso 5 · Práctica guiada
@@ -432,7 +545,7 @@ kubectl get events --field-selector reason=Started -n rutaflow --sort-by='.lastT
 ```
 
 Resultado esperado: cada evento de inicio de Pod en el namespace `rutaflow` (el mismo que
-despliega `examples/rutaflow/devops/deployment.yaml`) te da una marca de tiempo real para
+despliega `deploy/deployment.yaml`) te da una marca de tiempo real para
 cruzar contra el historial de Git y calcular el lead time real, no estimado. El límite de este
 cálculo manual frente a un dashboard de Four Keys dedicado es que no escala: no conviene
 mantenerlo así una vez que el equipo crece más allá de un solo pipeline.

@@ -1,7 +1,7 @@
 # Módulo 5: Networking con URLSession
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -78,7 +78,7 @@ let (datos, respuesta) = try await URLSession.shared.data(from: url)
 let tareas = try JSONDecoder().decode([Tarea].self, from: datos)
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, consume el endpoint de envíos con URLSession y Codable.
 
 **Límites y decisión de uso:** Decodificar correctamente no significa que la respuesta HTTP represente éxito. Comprueba status, tamaño y campos de dominio antes de usar el modelo y distingue cancelación de un fallo que merece mostrarse al usuario.
@@ -153,7 +153,7 @@ enum ErrorRed: Error {
 }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, modela los errores de red con un enum y muestra el mensaje correcto.
 
 ### Tema 3: Reintentos y cancelación
@@ -209,7 +209,7 @@ flowchart TD
     B -->|pinInvalido| F["throw inmediato, SIN reintentar"]
 ```
 
-En el proyecto integrador RutaFlow, `confirmarConReintentos` vive en `examples/rutaflow/ios/DetalleEntregaView.swift`.
+En tu propio proyecto RutaFlow, crea `DetalleEntregaView.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí `confirmarConReintentos` junto con la vista que lo invoca.
 
 ---
 
@@ -241,6 +241,8 @@ Pista: quitá el `catch ErrorEntrega.pinInvalido` específico, dejando que ese e
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `catch` específico, y envolvé la llamada completa en una `Task` que se cancele si el conductor sale de `DetalleEnvio` antes de que termine — confirmá que cancelar a mitad de un backoff no deja ninguna llamada de red "colgada" de fondo.
 
+**Proyecto integrador:** en el proyecto independiente iniciado vacío en este tema, crea `ServicioConfirmacion.swift` con un protocolo y un fake local que pueda devolver dos `sinConexion` seguidos de éxito o un `pinInvalido` inmediato. Implementa `ConfirmacionViewModel.swift` con el backoff y un contador de llamadas, y conéctalo a `DetalleEntregaView.swift`. Ejecuta ambos escenarios: el transitorio debe realizar exactamente tres llamadas antes de mostrar éxito y el PIN inválido exactamente una; inicia otro caso transitorio, cancela durante la espera y verifica que el contador deja de aumentar y la vista no publica un resultado tardío.
+
 #### Paso 7 · Cierre
 Entregá el reintento selectivo del Paso 4, el reintento desperdiciado sobre un PIN inválido del Paso 5, y la cancelación del Paso 6; explicá por qué reintentar un error 4xx (como PIN inválido) es un desperdicio que nunca cambia el resultado, a diferencia de un error transitorio de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 **Implicación práctica:** Reintentar indiscriminadamente desperdicia llamadas de red en errores que nunca van a cambiar de resultado (un PIN inválido), mientras que cancelar una tarea obsoleta evita procesar una respuesta que ya no corresponde a la intención actual del usuario.
@@ -269,5 +271,5 @@ Entregá el reintento selectivo del Paso 4, el reintento desperdiciado sobre un 
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, reintenta la subida de evidencia con espera y cancelación.

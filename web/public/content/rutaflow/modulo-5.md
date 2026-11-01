@@ -406,21 +406,20 @@ sequenceDiagram
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-Desde una copia del repositorio prepara una carpeta propia:
+Parte de una carpeta vacía y guarda en ella cada archivo indicado a continuación:
 ```bash
-cp -R examples/rutaflow-material/socketio ejemplo-socketio
-cd ejemplo-socketio
-npm ci
+mkdir ejemplo-socketio && cd ejemplo-socketio
+npm install
 npm test
 ```
-Si trabajas sin una copia del repo, crea una carpeta `ejemplo-socketio`, guarda los archivos siguientes retirando el prefijo `socketio/` de cada ruta y ejecuta `npm install` en lugar de `npm ci` para crear el lockfile. No mezcles las versiones del protocolo con las de una librería STOMP.
+Ejecuta `npm install` después de crear `package.json` y `npm test` después de crear el servidor y las pruebas. No mezcles las versiones del protocolo con las de una librería STOMP.
 
-Crea `socketio/package.json` con este contenido completo:
+Crea `package.json` con este contenido completo:
 ```json
 {"name":"rutaflow-socketio-lab","private":true,"type":"module","scripts":{"test":"node --test gateway.test.mjs"},"dependencies":{"express":"^5.1.0","socket.io":"^4.8.1","socket.io-client":"^4.8.1"}}
 ```
 
-Crea `socketio/gateway.mjs` con este contenido completo:
+Crea `gateway.mjs` con este contenido completo:
 ```javascript
 import express from 'express';
 import { createServer } from 'node:http';
@@ -460,7 +459,7 @@ export async function startGateway({ port = 0, token = 'solo-laboratorio' } = {}
 }
 ```
 
-Crea `socketio/gateway.test.mjs` con este contenido completo:
+Crea `gateway.test.mjs` con este contenido completo:
 ```javascript
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -488,7 +487,7 @@ test('HTTP publica y un cliente Socket.IO compatible recibe; rechaza duplicado y
 });
 ```
 
-Crea `socketio/serve.mjs` con este contenido completo:
+Crea `serve.mjs` con este contenido completo:
 ```javascript
 import { startGateway } from './gateway.mjs';
 const gateway = await startGateway({ port: 3100 });
@@ -496,7 +495,7 @@ console.log(gateway.url);
 process.once('SIGINT', async () => { await gateway.close(); });
 ```
 
-Crea `socketio/cliente.dart` con este contenido completo:
+Crea `cliente.dart` con este contenido completo:
 ```dart
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
@@ -515,7 +514,7 @@ void main() {
 
 **Resultado esperado:** la prueba de Node pasa; una petición HTTP produce un evento `posicion` real en el socket suscrito. La prueba también comprueba un ID ajeno rechazado, duplicado 409 y credencial inválida 401. Explica cada bloque: middleware limita tamaño de JSON, handshake verifica la credencial de laboratorio, la sala restringe el único envío de prueba y la secuencia impide publicar una versión anterior.
 
-Para probar el cliente Dart manualmente, ejecuta `node socketio/serve.mjs` si creaste las rutas mostradas, o `node serve.mjs` dentro de la copia del ejemplo. En otra carpeta crea un proyecto con `dart create -t console cliente_posiciones`, ejecuta `dart pub add socket_io_client:^3.1.6`, guarda el contenido de `cliente.dart` en `bin/cliente_posiciones.dart` y ejecuta `dart run`. Publica en otra terminal:
+Para probar el cliente Dart manualmente, ejecuta `node serve.mjs` desde `ejemplo-socketio`. En otra carpeta vacía crea un proyecto con `dart create -t console cliente_posiciones`, ejecuta `dart pub add socket_io_client:^3.1.6`, guarda el contenido de `cliente.dart` en `bin/cliente_posiciones.dart` y ejecuta `dart run`. Publica en otra terminal:
 ```bash
 curl -i -X POST http://127.0.0.1:3100/posiciones/ENV-42 -H 'Content-Type: application/json' -H 'Authorization: Bearer solo-laboratorio' -d '{"sequence":1,"latitude":4.65,"longitude":-74.08}'
 ```
@@ -547,15 +546,15 @@ El proyecto integrador necesita una ruta por calles, no una línea recta entre d
 La API usa `longitud,latitud` y devuelve distancia en metros y duración en segundos. Route calcula un recorrido; Table calcula matrices de tiempos/distancias; Match ajusta trazas y Trip propone un recorrido bajo sus supuestos. No son llamadas intercambiables. **Analogía:** tener un mapa de carreteras permite encontrar caminos, pero no conocer tráfico actual si el perfil no lo incluye. El límite es que la duración estimada no promete hora de llegada ni incluye todas las restricciones operativas de una entrega.
 
 #### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea en ella los tres archivos siguientes:
 ```bash
-cp -R examples/rutaflow-material/osrm ejemplo-osrm
-cd ejemplo-osrm
+mkdir ejemplo-osrm && cd ejemplo-osrm
 python3 ruta.py --fixture respuesta.json
 python3 -m unittest test_ruta.py
 ```
-Si creas los archivos manualmente, colócalos juntos en `ejemplo-osrm`, retirando el prefijo `osrm/` de las rutas mostradas:
+Ejecuta los comandos después de guardar los archivos:
 
-Crea `osrm/ruta.py` con este contenido completo:
+Crea `ruta.py` con este contenido completo:
 ```python
 import argparse
 import json
@@ -602,12 +601,12 @@ if __name__ == '__main__':
     print(f'{metros:g} metros; {segundos:g} segundos')
 ```
 
-Crea `osrm/respuesta.json` con este contenido completo:
+Crea `respuesta.json` con este contenido completo:
 ```json
 {"code":"Ok","routes":[{"distance":1500,"duration":300,"geometry":{"type":"LineString","coordinates":[[13.38886,52.517037],[13.397634,52.529407]]}}]}
 ```
 
-Crea `osrm/test_ruta.py` con este contenido completo:
+Crea `test_ruta.py` con este contenido completo:
 ```python
 import unittest
 from ruta import ruta_url, interpretar

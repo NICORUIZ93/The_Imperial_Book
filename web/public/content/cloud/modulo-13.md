@@ -37,10 +37,9 @@ flowchart LR
     B["DynamoDB (NoSQL)"] --> B1["patrón de acceso conocido y simple, escala horizontal ilimitada"]
 ```
 
-En el proyecto integrador RutaFlow, esta tabla `facturas` convive con `ShipmentEvents`
-(DynamoDB, declarada en `examples/rutaflow/cloud/template.yaml`) a propósito: cada almacén
-resuelve el problema para el que fue diseñado, en vez de forzar todo el dominio dentro de un
-único motor de base de datos.
+En el proyecto integrador RutaFlow, esta tabla `facturas` convive a propósito con la tabla
+DynamoDB `ShipmentEvents` que creaste en el Módulo 4: cada almacén resuelve el problema para el
+que fue diseñado, en vez de forzar todo el dominio dentro de un único motor de base de datos.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -107,9 +106,9 @@ flowchart LR
 Un `DELETE` sin `WHERE` en producción no conviene resolverlo "a mano" reconstruyendo filas de
 memoria — el límite real de esta práctica es que un snapshot nunca probado con un restore real
 (como hiciste en el Paso 4) no cuenta como plan de recuperación, solo como una copia sin
-verificar. En el proyecto integrador RutaFlow, esta misma disciplina de snapshot+restore
-probado aplicaría igual sobre `rutaflow-facturacion` que sobre cualquier tabla declarada en
-`examples/rutaflow/cloud/template.yaml`.
+verificar. En el proyecto integrador RutaFlow, esta misma disciplina de snapshot+restore probado
+aplicaría igual sobre `rutaflow-facturacion` que sobre cualquier tabla que declares en tu propia
+plantilla `template.yaml`.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -195,10 +194,9 @@ flowchart LR
 ```
 
 No conviene correr estas migraciones manualmente contra producción como hiciste con `psql`
-arriba: en el proyecto integrador RutaFlow, un script `scripts/migrate.py` ejecutado desde el
-mismo pipeline que despliega `examples/rutaflow/cloud/template.yaml` aplicaría
-`migraciones_aplicadas` automáticamente en cada entorno, en el mismo orden, sin depender de que
-alguien recuerde correrlo a mano.
+arriba: en el proyecto integrador RutaFlow, un script `scripts/migrate.py` que escribas y ejecutes
+desde el mismo pipeline que despliega tu `template.yaml` aplicaría `migraciones_aplicadas`
+automáticamente en cada entorno, en el mismo orden, sin depender de que alguien recuerde correrlo a mano.
 
 ---
 

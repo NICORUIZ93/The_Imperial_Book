@@ -103,9 +103,9 @@ Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente p
 Al finalizar podrás subir un objeto con metadatos reales y entender por qué el `Content-Type`
 importa. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`).
 #### Paso 2 · Contexto y caso real
-RutaFlow (`examples/rutaflow/cloud/template.yaml`) guarda en el bucket `PruebasEntrega` la foto
-que el conductor sube al cerrar un envío. Si el `Content-Type` queda mal, el navegador del
-cliente no la muestra como imagen — la ofrece para descargar.
+En el diseño de RutaFlow, el bucket `PruebasEntrega` guarda la foto que el conductor sube al
+cerrar un envío. Si el `Content-Type` queda mal, el navegador del cliente no la muestra como
+imagen — la ofrece para descargar.
 #### Paso 3 · Teoría, modelo mental y analogía
 La key es la etiqueta del paquete; Content-Type y ETag son la ficha técnica y la huella que van
 pegadas a esa etiqueta, no al contenido en sí.
@@ -203,10 +203,10 @@ flowchart LR
 
 v1 y v2 siguen existiendo y son recuperables eliminando el marcador de borrado.
 
-En el proyecto integrador RutaFlow este mismo comportamiento está declarado en código, no solo
-ejecutado por CLI: el bucket `PruebasEntrega` de `examples/rutaflow/cloud/template.yaml` fija
-`VersioningConfiguration: { Status: Enabled }`, así que cualquier entorno desplegado desde ese
-archivo nace con el versionado activo que acabás de probar a mano.
+En el proyecto integrador RutaFlow puedes declarar este mismo comportamiento en código, no solo
+ejecutarlo por CLI: escribe en tu propio `template.yaml` el bucket `PruebasEntrega` con
+`VersioningConfiguration: { Status: Enabled }`. Así, cualquier entorno desplegado desde esa
+plantilla nace con el versionado activo que acabás de probar a mano.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -334,10 +334,9 @@ flowchart LR
     C["URL pre-firmada\n(acceso temporal, sin credenciales,\nexpira en el tiempo)"]
 ```
 
-En el proyecto integrador RutaFlow, esta misma URL pre-firmada es la que
-`examples/rutaflow/cloud/functions/confirmar-entrega/index.js` podría devolver junto con el
-evento escrito en `ShipmentEvents`, para que el cliente vea su prueba de entrega sin exponer
-`PruebasEntrega` como bucket público.
+En el proyecto integrador RutaFlow, el handler `confirmar-entrega/index.js` que escribas puede
+devolver esta misma URL pre-firmada junto con el evento escrito en `ShipmentEvents`, para que el
+cliente vea su prueba de entrega sin exponer `PruebasEntrega` como bucket público.
 
 ---
 **Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
@@ -372,22 +371,22 @@ oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-be
 
 **Requisitos previos:** Floci corriendo (Módulo 1) con el servicio S3 activo, AWS CLI configurada contra `http://localhost:4566`.
 
-### Antes de escribir código: ubica el ejemplo
+### Antes de escribir código: crea tu propio proyecto
 
-No necesitas inventar una estructura ni copiar un fragmento aislado. El repositorio ya contiene dos clientes ejecutables que realizan la misma consulta con SDK diferentes:
+Crea una carpeta vacía llamada `s3-sdk-lab` y entra en ella. Elige una de las dos opciones y escribe personalmente cada archivo indicado; no necesitas ningún proyecto o cliente ya preparado. Ambos clientes configuran una conexión, envían `ListBuckets` y convierten la respuesta del SDK en una salida legible.
 
-```text
-The_Imperial_Book/
-└── examples/
-    ├── node/
-    │   ├── package.json
-    │   └── s3-list-buckets.js
-    └── python/
-        ├── requirements.txt
-        └── s3_list_buckets.py
+```bash
+mkdir s3-sdk-lab
+cd s3-sdk-lab
 ```
 
-El archivo `package.json` declara AWS SDK para JavaScript; `requirements.txt` declara `boto3` para Python. Los archivos `s3-list-buckets.js` y `s3_list_buckets.py` son los puntos de entrada: configuran el cliente, envían `ListBuckets` y convierten la respuesta del SDK en una salida legible.
+```text
+s3-sdk-lab/                 # elige UNA de estas dos estructuras
+├── package.json            # opción JavaScript
+├── s3-list-buckets.js
+├── requirements.txt        # opción Python
+└── s3_list_buckets.py
+```
 
 ```mermaid
 sequenceDiagram
@@ -395,7 +394,7 @@ sequenceDiagram
     participant SDK as "SDK AWS"
     participant Floci as "Floci :4566"
     participant S3 as "Servicio S3 local"
-    Estudiante->>SDK: Ejecuta el cliente
+    Estudiante->>SDK: Ejecuta el cliente que escribió
     SDK->>Floci: ListBuckets + credenciales test
     Floci->>S3: Enruta la operación
     S3-->>Floci: Buckets[]
@@ -405,23 +404,57 @@ sequenceDiagram
 
 ### Opción A — JavaScript con AWS SDK v3
 
-Abre una terminal en la raíz del repositorio y ejecuta:
+Desde la carpeta vacía `s3-sdk-lab`, inicializa tu proyecto e instala la dependencia:
 
 ```bash
-cd examples/node
-npm install
+npm init -y
+npm install @aws-sdk/client-s3
+```
+
+Crea `s3-list-buckets.js` con este contenido completo:
+
+```js
+import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+
+const client = new S3Client({
+  region: 'us-east-1',
+  endpoint: 'http://localhost:4566',
+  forcePathStyle: true,
+  credentials: { accessKeyId: 'test', secretAccessKey: 'test' }
+});
+
+try {
+  const result = await client.send(new ListBucketsCommand({}));
+  const buckets = result.Buckets ?? [];
+  if (buckets.length === 0) {
+    console.log('No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket');
+  } else {
+    console.log('Buckets:');
+    for (const bucket of buckets) {
+      console.log(`  - ${bucket.Name} (creado ${bucket.CreationDate?.toISOString()})`);
+    }
+  }
+} catch (error) {
+  console.error('No se pudo consultar S3 local:', error.message);
+  process.exitCode = 1;
+}
+```
+
+El archivo `package.json` generado por `npm init` debe quedar en la misma carpeta. Como el código usa `import`, agrega manualmente la propiedad de primer nivel `"type": "module"` a ese archivo. Después ejecuta:
+
+```bash
 node s3-list-buckets.js
 ```
 
-El ejemplo usa `S3Client` como conexión reutilizable y `ListBucketsCommand` como descripción de una operación concreta. `endpoint` evita enviar la petición a AWS real; `forcePathStyle` genera rutas compatibles con el entorno local; las credenciales `test` son deliberadamente falsas y solo sirven para firmar la petición compatible.
+`S3Client` representa la conexión reutilizable y `ListBucketsCommand` describe una operación concreta. `endpoint` evita enviar la petición a AWS real; `forcePathStyle` genera rutas compatibles con el entorno local; las credenciales `test` son deliberadamente falsas y solo sirven para firmar la petición compatible.
 
 Si todavía no creaste buckets, la salida será:
 
 ```text
-No hay buckets todavía. Crea uno con s3-create-bucket.js
+No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket
 ```
 
-Después de crear `mi-bucket` con el paso 1 de la Parte 1, vuelve a ejecutar el cliente. Debes observar una línea similar a:
+Después de crear `mi-bucket` con el paso 1 de la Parte 1, vuelve a ejecutar tu cliente. Debes observar una línea similar a:
 
 ```text
 Buckets:
@@ -430,10 +463,42 @@ Buckets:
 
 ### Opción B — Python con boto3
 
-En otra terminal, desde la raíz del repositorio:
+Si prefieres Python, comienza igualmente en una carpeta vacía `s3-sdk-lab`. Crea `requirements.txt` con una sola línea:
+
+```text
+boto3
+```
+
+Crea después `s3_list_buckets.py` con este contenido completo:
+
+```python
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
+
+client = boto3.client(
+    "s3",
+    region_name="us-east-1",
+    endpoint_url="http://localhost:4566",
+    aws_access_key_id="test",
+    aws_secret_access_key="test",
+)
+
+try:
+    result = client.list_buckets()
+    buckets = result.get("Buckets", [])
+    if not buckets:
+        print("No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket")
+    else:
+        print("Buckets:")
+        for bucket in buckets:
+            print(f"  - {bucket['Name']} (creado {bucket['CreationDate'].isoformat()})")
+except (BotoCoreError, ClientError) as error:
+    raise SystemExit(f"No se pudo consultar S3 local: {error}")
+```
+
+Crea el entorno virtual, instala la dependencia declarada y ejecuta el archivo que acabas de escribir:
 
 ```bash
-cd examples/python
 python3 -m venv .venv
 source .venv/bin/activate          # macOS o Linux
 # En PowerShell de Windows usa: .venv\Scripts\Activate.ps1
@@ -445,9 +510,9 @@ python s3_list_buckets.py
 
 ### Provoca un fallo útil antes de continuar
 
-Detén Floci y ejecuta cualquiera de los clientes. Debes obtener un error de conexión contra `localhost:4566`. Ese fallo demuestra que el SDK no contiene datos ficticios: depende del servicio local. Inicia Floci de nuevo y confirma que el mismo comando vuelve a funcionar. Si el error menciona AWS real o credenciales de producción, revisa `endpoint`; no añadas claves reales para “arreglarlo”.
+Detén Floci y ejecuta cualquiera de los clientes que escribiste. Debes obtener un error de conexión contra `localhost:4566`. Ese fallo demuestra que el SDK no contiene datos ficticios: depende del servicio local. Inicia Floci de nuevo y confirma que el mismo comando vuelve a funcionar. Si el error menciona AWS real o credenciales de producción, revisa `endpoint`; no añadas claves reales para “arreglarlo”.
 
-**Modificación guiada:** cambia temporalmente la región a `eu-west-1` en uno de los clientes y predice si el listado cambiará en el emulador. Ejecuta, compara el resultado y documenta la diferencia esperada al pasar a AWS real. Luego restaura `us-east-1` para continuar. Esta comparación conecta configuración local con una decisión real de arquitectura, en vez de limitarse a copiar comandos.
+**Modificación guiada:** cambia temporalmente la región a `eu-west-1` en uno de tus clientes y predice si el listado cambiará en el emulador. Ejecuta, compara el resultado y documenta la diferencia esperada al pasar a AWS real. Luego restaura `us-east-1` para continuar. Esta comparación conecta configuración local con una decisión real de arquitectura, en vez de limitarse a copiar comandos.
 
 ### Parte 1 — Operaciones CRUD básicas
 

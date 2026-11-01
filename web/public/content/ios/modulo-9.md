@@ -1,7 +1,7 @@
 # Módulo 9: Testing en iOS
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -15,6 +15,16 @@ El equipo de RutaFlow tiene tests viejos escritos con XCTest y quiere decidir si
 
 #### Paso 3 · Teoría, modelo mental y analogía
 XCTest exige heredar de `XCTestCase` y elegir la aserción específica (`XCTAssertEqual`, `XCTAssertTrue`); Swift Testing usa `struct`s comunes con `@Test` y una única macro `#expect` para cualquier expresión booleana — un formulario con una casilla por tipo de verificación frente a una sola pregunta abierta.
+
+```mermaid
+flowchart LR
+    A["Dominio/EsEnvioAtrasado.swift\nuna sola regla"] --> B["EsEnvioAtrasadoXCTest.swift\nXCTAssertTrue"]
+    A --> C["EsEnvioAtrasadoTesting.swift\n@Test + #expect"]
+    B --> D["Misma fecha vencida\nmismo resultado esperado"]
+    C --> D
+```
+
+Parte de una carpeta vacía y crea `RutaFlowApp` con tests incluidos. En el target de la app crea `Dominio/Envio.swift` con una versión local mínima de `Envio` y `Dominio/EsEnvioAtrasado.swift` con la regla usada por ambas pruebas; no importes archivos de otro tema. En el target `RutaFlowAppTests`, crea `EsEnvioAtrasadoXCTest.swift` para la primera variante y `EsEnvioAtrasadoTesting.swift` para la segunda, cada uno con su import correspondiente.
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
@@ -51,6 +61,9 @@ Pista: en el test de Swift Testing, cambiá `addingTimeInterval(-3600)` por `add
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `-3600`, y agregá un segundo test (en Swift Testing) que confirme que un envío con fecha estimada en el futuro NO está atrasado, usando `#expect(!EsEnvioAtrasado().ejecutar(envio))`.
+
+* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, escribe pruebas de la lógica de entregas con XCTest y Swift Testing.
 
 #### Paso 7 · Cierre
 Entregá los dos tests equivalentes del Paso 4, el fallo por fecha invertida del Paso 5, y el test del caso contrario del Paso 6; explicá con tus propias palabras qué gana Swift Testing frente a XCTest clásico en este caso, y qué NO cambia entre ambos (la regla de negocio verificada es idéntica). Siguiente paso: estudia cómo testear código async. Errores comunes: nombre de test que no coincide con lo que realmente verifica, elegir el `XCTAssert` incorrecto, y mezclar XCTest y Swift Testing sin un criterio claro de cuándo usar cada uno. Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/xctest.
@@ -95,9 +108,6 @@ XCTAssertEqual(Calculadora().sumar(2, 3), 5)
 #expect(Calculadora().sumar(2, 3) == 5)
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
-* Proyecto: en el proyecto integrador RutaFlow, escribe pruebas de la lógica de entregas con XCTest y Swift Testing.
-
 ### Tema 2: Testing de código async
 
 #### Paso 1 · Objetivo y preparación
@@ -108,6 +118,18 @@ Al finalizar vas a testear `confirmarEntrega` (Módulo 5) con Swift Testing, mar
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Marcar el test mismo como `async` permite usar `await` directamente dentro del test, exactamente como en cualquier otro contexto asíncrono — poder simplemente esperar el resultado de un trámite, en vez de configurar una alarma de tiempo límite de antemano.
+
+```mermaid
+sequenceDiagram
+    participant Test as ConfirmacionEntregaAsyncTests.swift
+    participant Fake as ServicioConfirmacionFalso
+    Test->>Fake: await confirmarEntrega(guia, pin)
+    Fake-->>Test: ConfirmacionEntrega o ErrorEntrega
+    Test->>Test: #expect sobre resultado o throw
+    Note over Test,Fake: Sin red, expectation manual ni sleeps
+```
+
+Crea otro proyecto `RutaFlowApp` desde una carpeta vacía, con target de unit tests. En el target de la app escribe `ServicioConfirmacion.swift` con el modelo de respuesta, el error y una función `confirmarEntrega` inyectable; en el target de tests crea `ServicioConfirmacionFalso.swift`, que devuelve resultados controlados sin red, y `ConfirmacionEntregaAsyncTests.swift`, donde van las pruebas `async` de éxito y PIN incorrecto. Estos archivos son completos para esta práctica: no reutilices el cliente de ningún tema anterior.
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
@@ -161,7 +183,7 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, prueba la carga asíncrona de envíos con expectativas controladas.
 
 ### Tema 3: UI Tests con XCUITest
@@ -217,7 +239,7 @@ sequenceDiagram
     App-->>Test: "Entrega confirmada" visible
 ```
 
-En el proyecto integrador RutaFlow, este test vive en `examples/rutaflow/ios/DetalleEntregaView.swift` (vista bajo prueba). Límite de la decisión: no conviene cubrir con XCUITest cada combinación posible de entrada — es demasiado lento y frágil para eso; reservalo específicamente para los flujos críticos end-to-end (como confirmar una entrega), y dejá la cobertura exhaustiva de casos a los unit tests de dominio del Tema 1.
+En tu propio proyecto RutaFlow, escribe la vista bajo prueba en `DetalleEntregaView.swift` dentro del target de la app. Crea el test en `RutaFlowAppUITests/ConfirmacionEntregaUITests.swift` con **File ▸ New ▸ File ▸ Swift File** y selecciona únicamente el target UI Testing; si ese target no existe, agrégalo antes con **File ▸ New ▸ Target ▸ UI Testing Bundle**. Límite de la decisión: no conviene cubrir con XCUITest cada combinación posible de entrada — es demasiado lento y frágil para eso; reservalo específicamente para los flujos críticos end-to-end (como confirmar una entrega), y dejá la cobertura exhaustiva de casos a los unit tests de dominio del Tema 1.
 
 ---
 
@@ -250,6 +272,8 @@ Pista: cambiá `waitForExistence(timeout: 5)` por un simple `app.staticTexts["En
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `waitForExistence`, y agregá un segundo test que escriba un PIN incorrecto y confirme que aparece un mensaje de error en pantalla en vez de "Entrega confirmada" — identificando qué `accessibility identifiers` necesitás agregar a esa vista de error si todavía no existen.
 
+**Proyecto integrador:** en el proyecto nuevo de este tema, crea una pantalla completa en `DetalleEntregaView.swift` con los identificadores `campoGuia`, `campoPin`, `botonConfirmar`, `mensajeExito` y `mensajeError`, usando un servicio local determinista para aceptar únicamente `837201`. En `RutaFlowAppUITests/ConfirmacionEntregaUITests.swift`, conserva el recorrido exitoso y agrega el recorrido con PIN `000000`; ejecuta ambos contra la app instalada. El primero debe mostrar «Entrega confirmada» y el segundo «PIN incorrecto», cada uno mediante `waitForExistence(timeout: 5)`, sin sleeps ni red externa.
+
 #### Paso 7 · Cierre
 Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y el test del flujo de error del Paso 6; explicá por qué un XCUITest necesita esperar explícitamente (`waitForExistence`) en vez de asumir que la UI ya se actualizó apenas después de un `tap()`. Siguiente paso: estudia cómo correr esta suite en CI. Errores comunes: no esperar explícitamente a que la UI se actualice, depender de texto visible en vez de accessibility identifiers estables, y cubrir solo el camino feliz en los UI Tests. Fuentes oficiales: https://developer.apple.com/documentation/xctest/xcuiapplication y https://developer.apple.com/documentation/testing.
 **Implicación práctica:** Un XCUITest valida el flujo completo end-to-end tal como lo experimenta un conductor real, pero exige esperar explícitamente a que la UI se actualice en vez de asumir que el `tap()` tiene efecto inmediato.
@@ -277,5 +301,5 @@ Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, recorre la confirmación de entrega con XCUITest.

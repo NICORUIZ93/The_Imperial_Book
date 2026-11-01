@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -27,15 +28,21 @@ def main() -> None:
     matches = re.findall(r'Ubicación: `([^`]+)`\.[\s\S]*?```python\n(.*?)\n```[\s\S]*?\*\*Salida esperada:\*\*\s*```text\n(.*?)\n```', lesson, flags=re.DOTALL)
     if len(matches) != 17:
         raise SystemExit(f'Se esperaban 17 modelos con salida; encontrados {len(matches)}.')
-    for relative, code, expected in matches:
-        path = ROOT / relative
-        if path.read_text().strip() != code.strip():
-            raise SystemExit(f'Código de la lección distinto del archivo {relative}.')
-        result = subprocess.run([sys.executable, str(path)], capture_output=True, text=True, timeout=10)
-        if result.returncode or result.stdout.strip() != expected.strip():
-            raise SystemExit(f'{relative}: salida diferente de la documentada. {result.stderr}')
-    subprocess.run([sys.executable, str(ROOT / 'examples/electronics/diodos-pdf.py')], check=True, capture_output=True, timeout=10)
-    print('Integración PDF OK: 69 páginas trazadas, 17 modelos reproducidos y estados de diodos comprobados.')
+    diode = re.search(r'```python\n(from fractions import Fraction as F\n[\s\S]*?)\n```', lesson)
+    if not diode:
+        raise SystemExit('No se encontró el modelo de diodos de la lección.')
+    with tempfile.TemporaryDirectory() as directory:
+        for relative, code, expected in matches:
+            path = Path(directory) / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(code + '\n')
+            result = subprocess.run([sys.executable, str(path)], capture_output=True, text=True, timeout=10)
+            if result.returncode or result.stdout.strip() != expected.strip():
+                raise SystemExit(f'{relative}: salida diferente de la documentada. {result.stderr}')
+        diode_path = Path(directory) / 'diodos_pdf.py'
+        diode_path.write_text(diode.group(1) + '\n')
+        subprocess.run([sys.executable, str(diode_path)], check=True, capture_output=True, timeout=10)
+    print('Integración PDF OK: 69 páginas trazadas, 17 modelos de la lección reproducidos y estados de diodos comprobados.')
 
 
 if __name__ == '__main__':

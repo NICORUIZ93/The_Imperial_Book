@@ -1,43 +1,95 @@
 # Módulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER
 
-**Proyecto del módulo:** crea un proyecto Maven o Gradle desde cero, pega el código del tema y corre las pruebas; las equivalencias entre ambos sistemas están en el Módulo 8, Tema 4.
+**Proyecto del módulo:** dos aplicaciones Maven creadas desde carpetas vacías para persistir pedidos y medir las consultas de Hibernate. Escribirás cada entidad, configuración y prueba; ningún ejercicio depende de ejemplos o archivos prefabricados.
 
 ## Aprende construyendo
 
-En este módulo vas a persistir un modelo pequeño de pedidos y medir las consultas que Hibernate ejecuta. La meta no es memorizar anotaciones: es decidir qué datos cargar para cada operación sin producir N+1, errores de sesión cerrada ni respuestas JSON cíclicas.
+La meta no es memorizar anotaciones: es decidir qué datos cargar para cada operación sin producir N+1, errores de sesión cerrada ni respuestas JSON cíclicas.
 
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** dos clientes y tres pedidos en H2. Comprueba la clave foránea, carga los pedidos dentro de una transacción y compara el SQL de `LAZY` y `EAGER`.
-- **Caso RutaFlow:** una pantalla paginada de envíos muestra referencia, estado y última parada. No serialices la entidad completa: crea una proyección DTO para el listado, una consulta de detalle con `@EntityGraph` y mide ambas con datos suficientes para que aparezca N+1.
+- **Ejemplo sencillo:** dos clientes y sus pedidos en H2. Comprobarás la clave foránea, cargarás asociaciones dentro de una transacción y observarás el SQL.
+- **Caso RutaFlow:** una pantalla paginada de envíos muestra referencia, estado y última parada. El listado necesita una proyección DTO y el detalle una consulta específica; serializar la entidad completa no es una estrategia de carga.
 
-La progresión importa: `EAGER` significa que la asociación debe estar disponible, no que Hibernate necesariamente use un `JOIN`. La evidencia del caso real es una prueba de integración con el número de filas y consultas observado, no solo una anotación en la entidad.
+`EAGER` significa que la asociación debe estar disponible, no que Hibernate necesariamente use un único `JOIN`. La evidencia es el número de consultas y filas observado con datos suficientes, no solo una anotación.
 
-### Tema 1: Entidades y relaciones JPA
+### Tema 1: Entidades y relaciones JPA · Intermedio · 55 min
 
-#### Paso 1 · Objetivo y preparación
+#### Aprende
 
-Al finalizar podrás mapear `Cliente` y `Pedido` como entidades, crear una relación bidireccional y guardar el agregado con una transacción. Necesitas JDK 27 o superior y Maven; genera un proyecto desde Spring Initializr con `data-jpa` y `h2`.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
+**Prerrequisito:** JDK 27, Maven 3.9 o superior, clases, colecciones y SQL básico. Comprueba `java --version` y `mvn --version`.
 
-Un sistema de reparto recibe pedidos y necesita consultarlos por cliente. Guardar el pedido como una fila desconectada pierde la relación; guardar el cliente completo dentro de cada pedido duplica datos y vuelve difícil actualizarlos.
+**Al terminar podrás:** mapear `Cliente` y `Pedido`, mantener sincronizados los dos lados de una relación bidireccional y verificar con una prueba que la clave foránea se persiste correctamente.
 
-#### Paso 3 · Teoría y modelo mental
+JPA define el contrato de persistencia; Hibernate traduce entidades y operaciones a SQL. `@Entity` identifica una clase persistente, `@Id` su clave y las asociaciones describen referencias entre filas. En una relación bidireccional, `mappedBy` señala el lado inverso; el lado con `@JoinColumn` es propietario y escribe la clave foránea.
 
-JPA define el contrato de persistencia; Hibernate es una implementación que traduce entidades y operaciones a SQL. `@Entity` identifica una clase persistente, `@Id` su clave y las asociaciones describen referencias entre filas. En una relación bidireccional, `mappedBy` marca el lado inverso: el lado que declara `@JoinColumn` es el propietario que escribe la clave foránea.
+**¿Por qué es importante?** Porque modificar solo una colección Java puede dar una impresión falsa: si el lado propietario queda nulo, la base de datos no refleja la relación y puede rechazar la escritura.
 
-Piensa en el lado propietario como la ficha que conserva la dirección oficial de la relación. Cambiar solo la colección inversa en memoria no garantiza que la base de datos cambie.
-**Analogía:** una relación bidireccional es como una amistad registrada en dos agendas: el lado propietario (`@JoinColumn`) es la agenda donde se anota el teléfono real; el lado inverso (`mappedBy`) solo apunta "ver la otra agenda". Si actualizas una sola, las dos dejan de coincidir.
-#### Paso 4 · Demostración guiada
+**Analogía:** dos agendas pueden mostrar una amistad, pero solo una contiene el teléfono oficial. Cambiar la agenda inversa no actualiza el dato que se usa para contactar.
 
-Crea estos archivos en `src/main/java/academia/pedidos/`. El resto de la aplicación Spring Boot se genera con Initializr.
+`CascadeType.PERSIST` propaga la persistencia desde cliente a pedidos; no implica `REMOVE`. Las cascadas de borrado necesitan una regla de ciclo de vida explícita. Tampoco toda asociación debe ser bidireccional: si solo navegas en una dirección, una relación unidireccional reduce invariantes.
+
+**Cuándo no usarlo:** evita exponer setters generales, cascadas amplias y relaciones bidireccionales cuando el caso de uso no las requiere.
+
+#### Practica
+
+Crea una carpeta vacía y todos los archivos del proyecto:
+
+```bash
+mkdir ejemplo-jpa-relaciones
+cd ejemplo-jpa-relaciones
+mkdir -p src/main/java/academia/pedidos src/test/java/academia/pedidos src/test/resources
+```
+
+Escribe `pom.xml` con Spring Boot, JPA, H2 y pruebas; no uses un generador:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.5.7</version>
+    <relativePath/>
+  </parent>
+  <groupId>academia</groupId><artifactId>jpa-relaciones</artifactId><version>1.0.0</version>
+  <properties><java.version>27</java.version></properties>
+  <dependencies>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
+    <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+  </dependencies>
+</project>
+```
+
+Crea `src/main/java/academia/pedidos/PedidosApplication.java`:
 
 ```java
-// Cliente.java
 package academia.pedidos;
 
-import jakarta.persistence.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PedidosApplication {
+    public static void main(String[] args) {
+        // Las pruebas del laboratorio inician el contexto de persistencia.
+    }
+}
+```
+
+Crea `src/main/java/academia/pedidos/Cliente.java`:
+
+```java
+package academia.pedidos;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,21 +117,17 @@ public class Cliente {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
+Crea `src/main/java/academia/pedidos/Pedido.java`:
 
 ```java
-// Pedido.java
 package academia.pedidos;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Pedido {
@@ -100,95 +148,305 @@ public class Pedido {
 }
 ```
 
-Un test `@DataJpaTest` debe crear un `Cliente`, llamar dos veces a `agregar(new Pedido(...))`, guardarlo con `EntityManager.persist(cliente)` y confirmar que se recuperan dos pedidos. Ejecuta `./mvnw test`.
+Escribe `src/test/resources/application.properties`:
 
-**Resultado esperado:** el test termina en verde y la fila de `pedido` contiene `cliente_id`. **Fallo deliberado:** quita `pedido.asignarCliente(this)` y vuelve a probar. La asociación propietaria queda sin cliente; diagnostica inspeccionando la clave foránea, no solo la colección Java.
-
-#### Paso 5 · Práctica guiada
-
-1. Agrega `EstadoPedido` como enum persistido con `@Enumerated(EnumType.STRING)`.
-2. Escribe un método de repositorio que busque los pedidos de un cliente.
-3. Prueba borrar un cliente con pedidos sin `CascadeType.REMOVE`; decide y documenta la regla de negocio antes de añadir cascada.
-**Pista:** sin `CascadeType.REMOVE`, borrar un `Cliente` con `Pedido` asociados falla por la restricción de clave foránea (`cliente_id` no puede quedar huérfano); decide explícitamente si la regla correcta es cascada, bloqueo o reasignación antes de agregarla.
-#### Paso 6 · Práctica independiente
-
-Modela `Pedido` y `LineaPedido` con una asociación uno-a-muchos. Agrega una línea mediante un método del agregado que actualice ambos lados. Escribe un test que compruebe la clave foránea y el total de líneas. No expongas setters públicos que permitan dejar el agregado inconsistente.
-
-#### Paso 7 · Cierre
-
-Entrega las dos entidades, el test de persistencia y la consulta SQL observada como incremento del proyecto integrador de RutaFlow: modela el vínculo entre cliente y envío; como siguiente paso mide el costo real de cargar asociaciones con LAZY y EAGER. Errores comunes: convertir toda asociación en bidireccional sin necesidad, configurar cascadas amplias sin una regla de ciclo de vida definida, y actualizar solo la colección en memoria sin asignar también el lado propietario de la relación. Fuentes oficiales: https://jakarta.ee/specifications/persistence/ y https://docs.oracle.com/en/java/javase/25/.
-**¿Por qué es importante?** Porque una relación persistida correctamente mantiene la integridad referencial aunque la aplicación se reinicie, y el lado propietario (el que declara `@JoinColumn`) es el único que garantiza que la base de datos refleje el cambio, no solo la colección Java en memoria.
-**Conceptos clave:** `@Entity`, `@Id`, relación bidireccional, `mappedBy`, lado propietario frente a lado inverso.
-
-**Cuándo no usarlo:** no conviertas toda asociación en bidireccional ni configures cascadas amplias sin una regla de ciclo de vida.
-
-### Tema 2: FetchType.LAZY, EAGER y el problema N+1
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás elegir una estrategia de carga por caso de uso y demostrar el costo en número de consultas. Continúa con `Cliente` y `Pedido` del tema anterior; habilita `spring.jpa.show-sql=true` solo para este laboratorio.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-#### Paso 2 · Contexto y caso real
-
-La pantalla de clientes muestra diez clientes y el número de pedidos de cada uno. Una consulta para los clientes más diez consultas para pedidos es N+1: funciona con pocos datos y degrada al aumentar el lote.
-
-#### Paso 3 · Teoría y modelo mental
-
-`LAZY` difiere la carga hasta acceder a la asociación; `EAGER` exige que esté disponible al devolver la entidad, pero **no garantiza un único JOIN**. El proveedor puede emitir consultas adicionales. En JPA, `@ManyToOne` y `@OneToOne` son EAGER por defecto; `@OneToMany` y `@ManyToMany` son LAZY. Declara la intención explícitamente, especialmente `LAZY` en relaciones to-one.
-
-La estrategia de mapeo es el valor por defecto, no un plan de consulta universal. Para cada pantalla o operación usa una consulta específica: `JOIN FETCH`, `@EntityGraph` o una proyección a DTO. El modelo mental: no pidas que el almacén abra cada caja por separado; especifica de antemano las cajas necesarias para esta operación.
-**Analogía:** `LAZY` es pedir el menú y traer cada plato solo cuando lo pides; `EAGER` es que te traigan todo de golpe. El problema N+1 es pedir la lista de comensales (1 consulta) y luego preguntar el plato de cada uno por separado (N consultas): muchos viajes a la cocina por no pedir todo junto.
-#### Paso 4 · Demostración guiada
-
-En `src/test/java/academia/pedidos/ConsultasPedidoTest.java`, persiste diez clientes con pedidos. Limpia el contexto antes de medir para evitar que la caché de primer nivel oculte consultas:
-
-```java
-entityManager.flush();
-entityManager.clear();
-statistics.clear();
-
-List<Cliente> clientes = entityManager.createQuery(
-    "select c from Cliente c", Cliente.class
-).getResultList();
-clientes.forEach(c -> c.getPedidos().size());
-
-System.out.println("Consultas: " + statistics.getPrepareStatementCount());
+```properties
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
 ```
 
-**Ejecuta el ejemplo:**
+Crea `src/test/java/academia/pedidos/RelacionPedidosTest.java`:
+
+```java
+package academia.pedidos;
+
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+class RelacionPedidosTest {
+    @Autowired EntityManager entityManager;
+    @Autowired JdbcTemplate jdbc;
+
+    @Test
+    void guardaPropietarioYClaveForanea() {
+        Cliente cliente = new Cliente("Logística Norte");
+        cliente.agregar(new Pedido("PED-1"));
+        cliente.agregar(new Pedido("PED-2"));
+
+        entityManager.persist(cliente);
+        entityManager.flush();
+        Long clienteId = cliente.getId();
+        entityManager.clear();
+
+        Long total = jdbc.queryForObject(
+            "select count(*) from pedido where cliente_id = ?", Long.class, clienteId);
+        Cliente recuperado = entityManager.find(Cliente.class, clienteId);
+        assertThat(total).isEqualTo(2);
+        assertThat(recuperado.getPedidos()).hasSize(2);
+    }
+}
+```
+
+Ejecuta desde la raíz:
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+mvn clean test
 ```
 
+**Resultado esperado:** una prueba en verde, `BUILD SUCCESS`, dos sentencias de inserción para pedidos y una consulta que confirma dos filas con el mismo `cliente_id`. El test consulta la columna física, no solamente la colección en memoria.
 
-Activa `hibernate.generate_statistics=true` en la configuración de test y obtiene `Statistics` desde `SessionFactory`. Ejecuta `./mvnw test -Dtest=ConsultasPedidoTest`.
+**Fallo deliberado:** elimina `pedido.asignarCliente(this);` de `Cliente.agregar` y ejecuta otra vez. La colección inversa recibe los pedidos, pero su propietario `Pedido.cliente` queda nulo; la persistencia falla por la asociación obligatoria o deja la clave sin asignar. **Corrección:** restaura la asignación dentro del método del agregado y repite la prueba.
 
-**Resultado esperado:** el primer recorrido suele revelar una consulta de clientes y consultas adicionales por asociación. Los números exactos dependen de la versión y del caché; compara con el mismo conjunto de datos y contexto limpio. **Fallo deliberado:** elimina `entityManager.clear()`; explica por qué una sesión ya poblada puede hacer que el contador parezca mejor de lo que es.
+#### Aplica
 
-#### Paso 5 · Práctica guiada
+Agrega `EstadoPedido` como enum y persiste `estado` con `@Enumerated(EnumType.STRING)`. Añade una consulta que obtenga los pedidos por `cliente.id`. Después intenta borrar un cliente con pedidos sin `CascadeType.REMOVE`, conserva el error de clave foránea y decide si la regla debe bloquear, reasignar o borrar.
 
-Reemplaza la consulta por:
+Como ejercicio independiente, modela `LineaPedido` en este mismo proyecto, con un método `Pedido.agregarLinea` que actualice ambos lados. Escribe otra prueba para la clave foránea y el total de líneas, sin setters públicos que permitan dejar el agregado inconsistente.
+
+**Checklist de salida**
+
+- [ ] El proyecto y sus cinco archivos principales se crearon manualmente desde una carpeta vacía.
+- [ ] `Pedido` es el lado propietario mediante `@JoinColumn`.
+- [ ] `Cliente.agregar` sincroniza colección y referencia propietaria.
+- [ ] La prueba confirma dos claves foráneas físicas.
+- [ ] El fallo sin `asignarCliente` se diagnostica y se corrige.
+- [ ] Estado, borrado y líneas nuevas tienen reglas de persistencia explícitas.
+
+**Proyecto integrador:** modela en el Módulo 13 la relación entre cliente y envío con un método de agregado equivalente y añade su prueba de clave foránea antes de implementar consultas de detalle.
+
+**Errores comunes:** actualizar solo el lado inverso, convertir toda relación en bidireccional, añadir `REMOVE` sin una política de ciclo de vida y usar `@Enumerated` sin `EnumType.STRING`.
+
+Fuentes oficiales: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM](https://hibernate.org/orm/documentation/) y [Java Documentation](https://docs.oracle.com/en/java/javase/25/).
+
+### Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h
+
+#### Aprende
+
+**Prerrequisito:** JDK 27, Maven y comprensión del lado propietario JPA. Este tema no reutiliza archivos del tema anterior: volverás a escribir el modelo necesario en un proyecto nuevo.
+
+**Al terminar podrás:** reproducir once consultas para diez clientes, reducirlas a una con `JOIN FETCH` y justificar una estrategia de carga por caso de uso sin confundir `EAGER` con un único join.
+
+`LAZY` difiere la asociación hasta acceder a ella; `EAGER` exige disponibilidad al devolver la entidad, pero el proveedor puede usar consultas adicionales. En JPA, `@ManyToOne` y `@OneToOne` son EAGER por defecto; `@OneToMany` y `@ManyToMany` son LAZY. Declara la intención, especialmente `LAZY` en asociaciones to-one.
+
+**¿Por qué es importante?** Porque una pantalla que consulta diez clientes y luego los pedidos de cada uno realiza 1+N viajes. Con más filas, el coste crece silenciosamente aunque cada consulta sea rápida.
+
+**Analogía:** N+1 es pedir la lista de comensales y después caminar a la cocina una vez por cada plato; un pedido conjunto evita los viajes cuando realmente necesitas todos los platos.
+
+El mapeo es un valor por defecto, no un plan universal. `JOIN FETCH`, `@EntityGraph` y proyecciones DTO responden a necesidades distintas. Un fetch de colección multiplica filas y no debe paginarse sin comprobar la advertencia de Hibernate; una lista resumida suele necesitar un DTO en vez de una entidad completa.
+
+**Cuándo no usarlo:** `EAGER` global no cura `LazyInitializationException`; tampoco uses `JOIN FETCH` de varias colecciones sin medir el producto de filas.
+
+#### Practica
+
+Crea otro proyecto desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-jpa-n-mas-uno
+cd ejemplo-jpa-n-mas-uno
+mkdir -p src/main/java/academia/pedidos src/test/java/academia/pedidos src/test/resources
+```
+
+Escribe `pom.xml` completo:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.5.7</version><relativePath/></parent>
+  <groupId>academia</groupId><artifactId>jpa-consultas</artifactId><version>1.0.0</version>
+  <properties><java.version>27</java.version></properties>
+  <dependencies>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
+    <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>runtime</scope></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+  </dependencies>
+</project>
+```
+
+Crea `src/main/java/academia/pedidos/ConsultasApplication.java`:
 
 ```java
-select distinct c from Cliente c
-left join fetch c.pedidos
+package academia.pedidos;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ConsultasApplication {
+    public static void main(String[] args) {
+        // El laboratorio se ejecuta mediante sus pruebas JPA.
+    }
+}
 ```
 
-Mide otra vez. Luego intenta paginar esa consulta con una colección fetch-join: Hibernate puede advertir o paginar en memoria porque un join de colección multiplica las filas. Para una pantalla paginada, prueba cargar primero IDs paginados y luego los datos necesarios, o usa `@EntityGraph` con una estrategia evaluada.
-**Pista:** si ves la advertencia "firstResult/maxResults specified with collection fetch; applying in memory", el join de colección ya multiplicó las filas antes de paginar; separa la consulta en dos pasos (IDs paginados primero, datos después) para evitar que Hibernate pagine en memoria.
-#### Paso 6 · Práctica independiente
+Crea `src/main/java/academia/pedidos/Cliente.java`:
 
-Implementa tres variantes: consulta base + acceso a relaciones, `JOIN FETCH` y proyección DTO. Registra el conteo de SQL, el número de filas duplicadas y si permite paginación segura. Responde: ¿cuándo es útil LAZY? ¿Cuándo se justifica EAGER? ¿Qué alternativa evita serializar accidentalmente la entidad completa?
+```java
+package academia.pedidos;
 
-#### Paso 7 · Cierre
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
-Entrega test, conteos comparables y decisión por caso de uso para el proyecto integrador de RutaFlow: la vista de detalle de un envío puede necesitar paradas, mientras que una lista resumida no; con esto cerrás el módulo. Errores comunes: usar EAGER global como "cura" para `LazyInitializationException` en vez de resolver cada caso de uso, usar `JOIN FETCH` sobre una colección sin considerar que multiplica filas, y paginar una consulta con fetch-join de colección sin verificar que Hibernate pagina correctamente. Fuentes oficiales: https://jakarta.ee/specifications/persistence/ y https://docs.oracle.com/en/java/javase/25/.
-**¿Por qué es importante?** Porque elegir la estrategia de carga según cada operación evita convertir un endpoint aparentemente simple en cientos de viajes a la base de datos (N+1), sin caer en el extremo opuesto de cargar siempre todo con EAGER.
-**Conceptos clave:** `FetchType.LAZY`/`EAGER`, problema N+1, `JOIN FETCH`, `@EntityGraph`, proyección DTO.
+@Entity
+public class Cliente {
+    @Id @GeneratedValue private Long id;
+    private String nombre;
 
-**Cuándo no usarlo:** EAGER global no es una cura para `LazyInitializationException`; `JOIN FETCH` sin considerar cardinalidad puede multiplicar filas y memoria.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private List<Pedido> pedidos = new ArrayList<>();
+
+    protected Cliente() {}
+    public Cliente(String nombre) { this.nombre = nombre; }
+    public void agregar(Pedido pedido) { pedidos.add(pedido); pedido.asignarCliente(this); }
+    public List<Pedido> getPedidos() { return List.copyOf(pedidos); }
+}
+```
+
+Crea `src/main/java/academia/pedidos/Pedido.java`:
+
+```java
+package academia.pedidos;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
+public class Pedido {
+    @Id @GeneratedValue private Long id;
+    private String referencia;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
+    protected Pedido() {}
+    public Pedido(String referencia) { this.referencia = referencia; }
+    void asignarCliente(Cliente cliente) { this.cliente = cliente; }
+}
+```
+
+Escribe `src/test/resources/application.properties`:
+
+```properties
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.generate_statistics=true
+```
+
+Crea `src/test/java/academia/pedidos/ConsultasPedidoTest.java`:
+
+```java
+package academia.pedidos;
+
+import jakarta.persistence.EntityManager;
+import java.util.List;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+class ConsultasPedidoTest {
+    @Autowired EntityManager entityManager;
+    private Statistics statistics;
+
+    @BeforeEach
+    void preparar() {
+        for (int i = 1; i <= 10; i++) {
+            Cliente cliente = new Cliente("Cliente " + i);
+            cliente.agregar(new Pedido("PED-" + i + "-A"));
+            cliente.agregar(new Pedido("PED-" + i + "-B"));
+            entityManager.persist(cliente);
+        }
+        entityManager.flush();
+        statistics = entityManager.getEntityManagerFactory()
+            .unwrap(SessionFactory.class).getStatistics();
+    }
+
+    @Test
+    void accesoLazyRevelaN_Mas_Uno() {
+        entityManager.clear();
+        statistics.clear();
+
+        List<Cliente> clientes = entityManager.createQuery(
+            "select c from Cliente c", Cliente.class).getResultList();
+        clientes.forEach(cliente -> assertThat(cliente.getPedidos()).hasSize(2));
+
+        assertThat(statistics.getPrepareStatementCount()).isEqualTo(11);
+    }
+
+    @Test
+    void joinFetchCargaLaMismaVistaConUnaConsulta() {
+        entityManager.clear();
+        statistics.clear();
+
+        List<Cliente> clientes = entityManager.createQuery(
+            "select distinct c from Cliente c left join fetch c.pedidos", Cliente.class)
+            .getResultList();
+        clientes.forEach(cliente -> assertThat(cliente.getPedidos()).hasSize(2));
+
+        assertThat(clientes).hasSize(10);
+        assertThat(statistics.getPrepareStatementCount()).isEqualTo(1);
+    }
+}
+```
+
+Ejecuta las dos mediciones:
+
+```bash
+mvn clean test
+```
+
+**Resultado esperado:** dos pruebas en verde. La primera registra 1 consulta de clientes + 10 de colecciones = 11; la segunda registra 1 y conserva diez clientes gracias a `distinct`. Limpiar el contexto antes de medir evita que la caché de primer nivel oculte accesos a la base.
+
+**Fallo deliberado:** elimina `entityManager.clear();` solo en `accesoLazyRevelaN_Mas_Uno` y ejecuta de nuevo. Las entidades y colecciones ya administradas reducen artificialmente las consultas adicionales; el contador ya no representa una solicitud nueva. **Corrección:** restaura `clear()` después de `flush()` y antes de `statistics.clear()`, y vuelve a obtener 11.
+
+Cambia ahora la consulta optimizada por `JOIN FETCH` y añade `.setMaxResults(5)` en una copia del test. Hibernate puede advertir `firstResult/maxResults specified with collection fetch; applying in memory`: el join multiplicó filas antes de paginar. Retira esa paginación y restaura la medición base.
+
+#### Aplica
+
+Compara `LAZY` y `EAGER` cambiando temporalmente `Cliente.pedidos` a `FetchType.EAGER`; registra el SQL sin asumir que aparecerá un join y restaura `LAZY`. Implementa una tercera variante con una proyección `ClienteResumen(nombre, totalPedidos)` y una consulta `select new ... count(p)` agrupada. Como ejercicio independiente, construye un detalle con `@EntityGraph` y una lista paginada en dos consultas: primero IDs y después datos. Registra consultas, filas duplicadas y si cada variante permite paginación segura.
+
+**Checklist de salida**
+
+- [ ] El proyecto nuevo contiene diez clientes y veinte pedidos creados por el test.
+- [ ] El contexto se limpia antes de cada medición.
+- [ ] La variante LAZY demuestra once consultas.
+- [ ] `JOIN FETCH` obtiene la misma vista con una consulta.
+- [ ] El experimento sin `clear` se reconoce como medición inválida.
+- [ ] DTO, `@EntityGraph` y paginación se eligen según el caso de uso.
+
+**Proyecto integrador:** en el Módulo 13, usa un DTO para la lista de envíos y una consulta de detalle para envío con paradas; adjunta los conteos N+1 y optimizados antes de aceptar el cambio.
+
+**Errores comunes:** activar EAGER como cura global, medir con la caché de primer nivel poblada, serializar entidades bidireccionales y paginar un fetch de colección en memoria sin advertirlo.
+
+Fuentes oficiales: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/), [Hibernate ORM](https://hibernate.org/orm/documentation/) y [Java Documentation](https://docs.oracle.com/en/java/javase/25/).
+
+## Construcción guiada del capítulo
+
+| Evidencia | Proyecto independiente | Orden y resultado |
+|---|---|---|
+| Integridad del agregado | `ejemplo-jpa-relaciones` | `mvn clean test`: dos pedidos comparten `cliente_id`; el fallo del lado propietario queda corregido |
+| Costo de carga | `ejemplo-jpa-n-mas-uno` | `mvn clean test`: comparación 11 frente a 1 y advertencia de paginación comprendida |
+
+Cierra el laboratorio con una decisión escrita para lista y detalle del Proyecto integrador. No presentes una anotación como prueba de rendimiento: conserva SQL, estadísticas y datos de entrada.

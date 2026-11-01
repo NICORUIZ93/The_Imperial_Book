@@ -211,7 +211,7 @@ function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonPr
 #### Profundización · Diseño y decisiones de arquitectura
 **Cuándo NO usar un componente polimórfico:** si solo necesitás dos variantes fijas y nunca van a crecer (por ejemplo "botón" vs "link" y nada más), un componente polimórfico genérico con `T extends React.ElementType` agrega complejidad de tipos que no se paga a sí misma — en ese caso, dos componentes simples y explícitos (`BotonAccion` y `EnlaceAccion`) son más fáciles de leer y mantener que una abstracción genérica para dos casos.
 
-En el proyecto integrador RutaFlow (`examples/rutaflow/react/dashboard/src/components/Boton.tsx`), el componente polimórfico se justifica porque "Ver detalle" aparece en más de cinco contextos distintos del dashboard (tabla de envíos, tarjeta de resumen, notificación, breadcrumb, modal), algunos como navegación real y otros como acción en el momento — la cantidad de variantes reales justifica el costo de la abstracción genérica.
+En el dashboard que construyes para RutaFlow, guarda este componente como `src/components/Boton.tsx`. Su diseño polimórfico se justifica si "Ver detalle" aparece en más de cinco contextos distintos (tabla de envíos, tarjeta de resumen, notificación, breadcrumb y modal), algunos como navegación real y otros como acción en el momento — esa cantidad de variantes reales justifica el costo de la abstracción genérica.
 
 ```mermaid
 flowchart TD
@@ -266,6 +266,8 @@ Corregí el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agregá
 #### Paso 7 · Cierre
 Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida de tipo específico del Paso 5, y el segundo caso polimórfico del Paso 6; explicá por qué usar el tipo de elemento más específico posible preserva el acceso tipado a las propiedades reales de ese elemento. Siguiente paso: cerrá el módulo migrando un componente completo a TypeScript estricto sin ningún `any`. Errores comunes: tipar un evento con el tipo base genérico en vez del específico del elemento real, omitir la restricción `T extends React.ElementType` en un componente polimórfico, y aceptar props que no son válidas para el elemento efectivamente renderizado según `as`. Fuentes oficiales: https://react.dev/learn/typescript#typing-the-usestate-hook y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html.
 **Implicación práctica:** Tipar eventos sintéticos correctamente detecta accesos inválidos a propiedades en tiempo de compilación; tipar componentes polimórficos preserva la seguridad de tipos incluso cuando el elemento final es configurable dinámicamente.
+
+**Proyecto integrador:** migra el botón de seguimiento de RutaFlow a un componente polimórfico cuyas props cambien con `as`, y conserva pruebas de compilación para enlace válido y `href` rechazado en un botón.
 
 ## Laboratorio práctico
 

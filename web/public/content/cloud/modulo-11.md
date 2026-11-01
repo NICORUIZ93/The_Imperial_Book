@@ -41,10 +41,9 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, este topic `rutaflow-envio-entregado` es el paso siguiente
-natural para `ConfirmarEntregaFn`: hoy esa función (declarada en
-`examples/rutaflow/cloud/template.yaml`) escribe directo en `ShipmentEvents`; agregarle un
-`sns:Publish` a este topic permitiría notificar al cliente y a analítica sin tocar su lógica de
-escritura actual.
+natural para `ConfirmarEntregaFn`: si tu propia `template.yaml` declara una función que escribe
+directo en `ShipmentEvents`, agregarle un `sns:Publish` a este topic permitiría notificar al
+cliente y a analítica sin tocar su lógica de escritura actual.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -110,10 +109,10 @@ flowchart LR
     RULE -->|"no coincide"| DROP["entra al bus, no dispara nada"]
 ```
 
-En el proyecto integrador RutaFlow, esta regla reemplazaría la lógica de filtrado que hoy
-viviría dentro de `ConfirmarEntregaFn` (`examples/rutaflow/cloud/template.yaml`): en vez de que
-la función decida en código si notificar o no, EventBridge filtra declarativamente antes de que
-cualquier consumidor se entere del evento.
+En el proyecto integrador RutaFlow, esta regla reemplazaría la lógica de filtrado que escribirías
+dentro de `ConfirmarEntregaFn`: en vez de que la función decida en código si notificar o no,
+EventBridge filtra declarativamente antes de que cualquier consumidor se entere del evento. La
+función y la regla pueden convivir en la plantilla `template.yaml` que construyas.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -171,9 +170,9 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, `notificaciones-cliente` como cola SQS (en vez de un
-endpoint HTTP directo hacia el proveedor de SMS) es la misma decisión de resiliencia que
-`DeliveryCommandsDLQ` en `examples/rutaflow/cloud/template.yaml`: aislar un consumidor lento o
-caído detrás de una cola, en vez de dejar que su disponibilidad afecte al resto del sistema.
+endpoint HTTP directo hacia el proveedor de SMS) es la misma decisión de resiliencia que declarar
+`DeliveryCommandsDLQ` en tu propia plantilla `template.yaml`: aislar un consumidor lento o caído
+detrás de una cola, en vez de dejar que su disponibilidad afecte al resto del sistema.
 
 ---
 

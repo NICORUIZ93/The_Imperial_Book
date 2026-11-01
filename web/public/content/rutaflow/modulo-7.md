@@ -371,13 +371,50 @@ mkdir ejemplo && cd ejemplo
 
 Trabaja en una base local de laboratorio con las tablas `envios` y `envio_eventos` del módulo 1 y al menos un envío. Detén las escrituras durante la comparación; en un sistema activo necesitas coordinar una instantánea consistente. Instala los clientes PostgreSQL y configura `DATABASE_URL` para el origen y `PGHOST`, `PGPORT`, `PGUSER` para el servidor local de restauración, donde necesitas permiso para crear bases.
 
-Desde la raíz del repositorio ejecuta el ejemplo independiente `examples/rutaflow/database/backup_verified.sh`:
+En la carpeta vacía crea manualmente `backup_verified.sh` con este contenido completo:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+
+archivo=${1:?"Uso: bash backup_verified.sh backup-envios.dump"}
+[[ -n "${DATABASE_URL:-}" ]] || { echo 'Define DATABASE_URL' >&2; exit 2; }
+[[ ! -e "$archivo" ]] || { echo "No se sobrescribe $archivo" >&2; exit 2; }
+
+lab_dir=$(mktemp -d)
+restore_db="rutaflow_restore_$(date +%s)_$$"
+restore_created=false
+cleanup() {
+  if [[ "$restore_created" == true ]]; then dropdb "$restore_db"; fi
+  rm -rf "$lab_dir"
+}
+trap cleanup EXIT
+
+for tabla in envios envio_eventos; do
+  psql -X -At -v ON_ERROR_STOP=1 "$DATABASE_URL" \
+    -c "SELECT * FROM $tabla ORDER BY 1" > "$lab_dir/$tabla.origen"
+done
+pg_dump --format=custom "$DATABASE_URL" > "$archivo"
+createdb --template=template0 "$restore_db"
+restore_created=true
+pg_restore --exit-on-error --no-owner --no-privileges \
+  --dbname="$restore_db" "$archivo"
+for tabla in envios envio_eventos; do
+  psql -X -At -v ON_ERROR_STOP=1 "$restore_db" \
+    -c "SELECT * FROM $tabla ORDER BY 1" > "$lab_dir/$tabla.restaurada"
+  diff -u "$lab_dir/$tabla.origen" "$lab_dir/$tabla.restaurada"
+done
+printf '%s\n' 'OK: envios y envio_eventos restaurados y comparados'
+```
+
+Configura la conexión local y ejecútalo desde esa carpeta:
 
 ```bash
 # Usa autenticación local configurada; no guardes contraseñas en Git.
 export PGHOST=localhost PGPORT=5432 PGUSER=postgres
 export DATABASE_URL=postgresql://postgres@localhost:5432/rutaflow_lab
-bash examples/rutaflow/database/backup_verified.sh backup-envios.dump
+bash backup_verified.sh backup-envios.dump
 ```
 
 El script guarda una referencia ordenada de ambas tablas, respalda la base completa para incluir funciones y secuencias, crea **una sola identidad de base temporal**, restaura con parada ante errores y compara el contenido. Su `trap` elimina únicamente la base que creó, tanto si la prueba pasa como si falla. Los prefijos temporales permiten identificar una limpieza fallida sin confundirla con una base del usuario.

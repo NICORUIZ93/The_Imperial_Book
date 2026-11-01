@@ -1,7 +1,7 @@
 # Módulo 4: Concurrencia moderna: async/await
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -193,7 +193,7 @@ flowchart TD
     D --> E["@MainActor: asigna envio/conductor\nsolo desde el hilo principal"]
 ```
 
-En el proyecto integrador RutaFlow, `DetalleEnvioViewModel` vive en `examples/rutaflow/ios/DetalleEntregaView.swift`. Límite de la decisión: `TaskGroup`/`async let` no conviene cuando las tareas dependen secuencialmente una de la otra (necesitás el resultado de la primera para pedir la segunda) — ahí `await` secuencial es correcto; reservá el paralelismo específicamente para tareas verdaderamente independientes como este caso.
+En tu propio proyecto RutaFlow, crea `DetalleEnvioViewModel.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí la clase del Paso 4. Límite de la decisión: `TaskGroup`/`async let` no conviene cuando las tareas dependen secuencialmente una de la otra (necesitás el resultado de la primera para pedir la segunda) — ahí `await` secuencial es correcto; reservá el paralelismo específicamente para tareas verdaderamente independientes como este caso.
 
 ---
 
@@ -224,6 +224,8 @@ Resultado esperado: `obtenerEnvio` y `obtenerConductor` corren en paralelo (el t
 Pista: quitá `@MainActor` de `DetalleEnvioViewModel` y llamá `cargar(guia:)` desde una `Task.detached` en segundo plano — ese es el fallo deliberado: sin `@MainActor`, nada impide que `envio`/`conductor` se asignen desde un hilo en segundo plano, el mismo error que provoca crashes intermitentes difíciles de reproducir al actualizar una `@Published` fuera del hilo principal.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `@MainActor`, y agregá una tercera consulta en paralelo (`obtenerHistorialRuta`) al mismo `TaskGroup`/`async let`, confirmando que las tres corren simultáneamente sin que el código se vuelva secuencial por accidente.
+
+**Proyecto integrador:** en el `RutaFlowApp` creado desde una carpeta vacía para este tema, implementa `PanelRutaViewModel.swift` como `@MainActor` y tres funciones locales que simulen con `Task.sleep` consultas de 400, 700 y 500 ms para envío, conductor e historial. En `PanelRutaView.swift`, inicia las tres con `async let` desde una sola acción y muestra los tres resultados cuando terminen. Mide con `ContinuousClock`: la carga debe acercarse a 700 ms y no a 1600 ms; cancela antes de finalizar y comprueba con `Task.isCancelled` que no se publica un panel parcial.
 
 #### Paso 7 · Cierre
 Entregá las dos consultas paralelas del Paso 4, el crash potencial sin `@MainActor` del Paso 5, y la tercera consulta agregada del Paso 6; explicá por qué el compilador puede detectar el error de hilo del Paso 5 en tiempo de compilación, no solo en producción. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.

@@ -68,7 +68,7 @@ flowchart TD
     BI --> Verde
 ```
 
-El proyecto integrador RutaFlow aplica exactamente esta estructura: su módulo `shared` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) se valida en `test-common` antes de que corran los builds de Android e iOS, para que un cambio roto en `SyncEngine` nunca llegue a compilarse como app completa en ninguna de las dos plataformas.
+Aplica exactamente esta estructura a tu proyecto RutaFlow: el módulo `shared`, con `SyncEngine.kt` en `shared/src/commonMain/kotlin/com/academia/kmp/`, se valida en `test-common` antes de que corran los builds de Android e iOS, para que un cambio roto en `SyncEngine` nunca llegue a compilarse como app completa en ninguna de las dos plataformas.
 
 #### Paso 4 · Demostración guiada desde cero
 ```yaml
@@ -104,6 +104,8 @@ Corregí el Paso 5 restaurando el job `build-ios` con `runs-on: macos-latest`, y
 Entregá el workflow con los tres jobs del Paso 4, el pipeline verde engañoso del Paso 5, y la corrección con `needs:` del Paso 6; explicá por qué ahorrar minutos de runner quitando un target de la validación traslada el costo real a un descubrimiento tardío y más caro. Siguiente paso: automatizá la firma y distribución de cada build con Fastlane. Errores comunes: validar solo un target asumiendo que el otro compilará igual, usar un runner Linux estándar para builds de iOS, y no declarar dependencias explícitas (`needs:`) entre el test de lógica compartida y los builds de plataforma. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html y https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners.
 **¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
 
+**Proyecto integrador:** escribe `.github/workflows/rutaflow-kmp.yml` en tu propio proyecto y haz que `commonTest` bloquee tanto el build Android como el framework iOS antes de publicar una versión.
+
 ### Tema 2: Fastlane
 
 #### Paso 1 · Objetivo y preparación
@@ -138,7 +140,7 @@ Esta automatización es particularmente valiosa en un contexto multiplataforma c
 - Subir simultáneamente builds de Android e iOS de la misma versión en un único paso de CI coordinado.
 - Evitar el error humano clásico de subir a producción una build firmada con el certificado de desarrollo equivocado.
 
-El lane termina firmando y subiendo el binario de una app como `examples/rutaflow/ios/RutaFlowApp.swift` (proyecto integrador RutaFlow) empaquetado con el `Shared.framework` del Módulo 8. Antes de confiar en `fastlane beta` en CI, conviene validar el toolchain por separado: `swift --version` confirma que el runner tiene Swift disponible para compilar el `.ipa`. La secuencia completa del lane:
+El lane termina firmando y subiendo el binario de tu app iOS, cuyo punto de entrada puedes crear como `iosApp/RutaFlowApp.swift`, empaquetado con el `Shared.framework` del Módulo 8. Antes de confiar en `fastlane beta` en CI, conviene validar el toolchain por separado: `swift --version` confirma que el runner tiene Swift disponible para compilar el `.ipa`. La secuencia completa del lane:
 
 ```mermaid
 sequenceDiagram
@@ -182,6 +184,8 @@ Corregí el Paso 5 restaurando `increment_build_number` al inicio del lane, y ag
 #### Paso 7 · Cierre
 Entregá el lane completo del Paso 4, el error de build number duplicado del Paso 5, y la verificación de dos ejecuciones consecutivas del Paso 6; explicá por qué automatizar "casi todos" los pasos de una checklist manual no elimina el riesgo del paso que queda afuera. Siguiente paso: sincronizá el número de versión entre ambas plataformas para evitar confusión al diagnosticar bugs. Errores comunes: automatizar solo algunos pasos de la checklist manual original, firmar con el certificate/provisioning profile equivocado por tener múltiples configurados, y no verificar el resultado de la subida antes de notificar al equipo que el release está listo. Fuentes oficiales: https://docs.fastlane.tools/ y https://docs.fastlane.tools/actions/upload_to_testflight/.
 **Implicación práctica:** Fastlane automatiza pasos de release tediosos y propensos a error humano en un único comando consistente y repetible, pero solo elimina el riesgo de los pasos que efectivamente automatiza.
+
+**Proyecto integrador:** crea `fastlane/Fastfile` para RutaFlow con un lane `beta` que incremente build, compile y distribuya; ejecuta dos builds de laboratorio y compara sus números antes de automatizar un release real.
 
 ### Tema 3: Versionado compartido
 

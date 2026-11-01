@@ -120,11 +120,11 @@ flowchart LR
   end
 ```
 
-En el proyecto integrador RutaFlow, esta decisión queda explícita en
-`examples/rutaflow/cloud/template.yaml`: `ConfirmarEntregaFn` no tiene ningún sidecar ni mesh
-declarado porque no conviene instalarlo sin el problema real que resuelve (múltiples servicios
-internos con necesidades de mTLS y reintentos compartidas) — la diferencia frente a adoptarlo
-"porque está de moda" es justamente esa condición concreta de 3+ servicios del Paso 6.
+En el proyecto integrador RutaFlow, esta decisión debe quedar explícita en la `template.yaml` que
+escribas: `ConfirmarEntregaFn` no necesita ningún sidecar ni mesh declarado porque no conviene
+instalarlo sin el problema real que resuelve (múltiples servicios internos con necesidades de mTLS
+y reintentos compartidas) — la diferencia frente a adoptarlo "porque está de moda" es justamente
+esa condición concreta de 3+ servicios del Paso 6.
 
 ### Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados
 
@@ -157,10 +157,10 @@ flowchart LR
   SE["ShipmentEvents (us-east-1)"] <-->|tabla global| SE2["ShipmentEvents (us-west-2)"]
 ```
 
-En el proyecto integrador RutaFlow, ninguna de estas dos técnicas se declara todavía en
-`examples/rutaflow/cloud/template.yaml` — y esa ausencia es la decisión correcta mientras
-RutaFlow corre en una sola región: el límite real de una tabla global o una réplica de lectura
-es el costo y la complejidad operativa que agregan, que no conviene pagar antes de necesitarlos.
+En el proyecto integrador RutaFlow, no agregues todavía ninguna de estas dos técnicas a tu propia
+`template.yaml` — esa ausencia es la decisión correcta mientras RutaFlow corre en una sola región:
+el límite real de una tabla global o una réplica de lectura es el costo y la complejidad operativa
+que agregan, que no conviene pagar antes de necesitarlos.
 
 #### Profundización · EC2 avanzado: Auto Scaling por CPU real, no por umbral fijo
 ```bash
@@ -289,10 +289,10 @@ flowchart LR
   Rol["RutaFlowConfirmarEntregaRole"] -.->|NO debería poder| Presupuesto
 ```
 
-En el proyecto integrador RutaFlow, este presupuesto vigilaría exactamente los recursos
-declarados en `examples/rutaflow/cloud/template.yaml` — `DeliveryCommands`, `ShipmentEvents`,
-`PruebasEntrega` y `ConfirmarEntregaFn` — para que un bug de cualquiera de ellos se detecte por
-costo antes de descubrirse en la factura final.
+En el proyecto integrador RutaFlow, este presupuesto vigilaría exactamente los recursos que
+declares en tu propia `template.yaml` — `DeliveryCommands`, `ShipmentEvents`, `PruebasEntrega` y
+`ConfirmarEntregaFn` — para que un bug de cualquiera de ellos se detecte por costo antes de
+descubrirse en la factura final.
 
 #### Profundización · CloudTrail avanzado: quién modificó el presupuesto, de verdad
 ```bash

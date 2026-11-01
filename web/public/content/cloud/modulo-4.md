@@ -8,7 +8,7 @@
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás comprobar en vivo, con datos reales, por qué DynamoDB no obliga a un esquema fijo. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`).
 #### Paso 2 · Contexto y caso real
-El proyecto integrador RutaFlow (`examples/rutaflow/cloud/template.yaml`) guarda el historial de cada envío en la tabla `ShipmentEvents`. Cada evento es distinto (un "creado" trae datos distintos a un "entregado" con foto), y eso es justo lo que una tabla SQL de columnas fijas obligaría a forzar con columnas vacías o una tabla aparte por tipo de evento. Esta flexibilidad de esquema es exactamente por qué RutaFlow elige DynamoDB: eventos reales nunca son iguales.
+El proyecto integrador RutaFlow guarda el historial de cada envío en la tabla `ShipmentEvents`, que crearás tú con los comandos de este tema. Cada evento es distinto (un "creado" trae datos distintos a un "entregado" con foto), y eso es justo lo que una tabla SQL de columnas fijas obligaría a forzar con columnas vacías o una tabla aparte por tipo de evento. Esta flexibilidad de esquema es exactamente por qué RutaFlow elige DynamoDB: eventos reales nunca son iguales.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una tabla SQL es un archivador con carpetas idénticas; DynamoDB es una caja de fichas donde cada ficha trae solo los campos que le corresponden, mientras comparta la clave que las ordena.
 
@@ -98,7 +98,7 @@ Entregá los tres `put-item`, el error de clave incompleta del Paso 5, y una fra
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a distinguir, sobre la tabla `ShipmentEvents` que ya creaste, qué es obligatorio en un item y qué no. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Tema 1 de este módulo.
 #### Paso 2 · Contexto y caso real
-`ShipmentEvents` ya existe en tu Floci local con el mismo esquema declarado en `examples/rutaflow/cloud/template.yaml` — acá vas a inspeccionar esa definición del proyecto integrador RutaFlow y confirmar qué parte de un item es realmente fija. Solo la clave primaria es obligatoria; todo lo demás varía por evento.
+`ShipmentEvents` ya existe en tu Floci local porque la creaste manualmente en el Tema 1 con clave primaria `shipmentId` (HASH) + `sequence` (RANGE). Acá vas a inspeccionar esa definición con `describe-table` y confirmar qué parte de un item es realmente fija: solo la clave primaria es obligatoria; todo lo demás varía por evento.
 #### Paso 3 · Teoría, modelo mental y analogía
 La tabla es el archivador completo; cada evento de envío es un expediente (item); cada dato del evento (`tipo`, `origen`, `fotoKey`) es un campo (atributo) dentro de ese expediente.
 
@@ -188,12 +188,14 @@ Insertá un evento nuevo con un atributo que no usaste antes (por ejemplo `inten
 #### Paso 7 · Cierre
 Entregá el `describe-table`, el `get-item` vacío del Paso 5 y el `get-item` con el atributo nuevo del Paso 6; explicá por qué ninguno de los tres pasos requirió tocar la definición de la tabla. Siguiente paso: tipos de dato. Errores comunes: atributos innecesarios y capacidad sin medir. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
 
+**Proyecto integrador:** crea la tabla `ShipmentEvents` de RutaFlow con `shipmentId` y `sequence`, inserta un evento con un atributo opcional y demuestra que su recuperación no exige alterar el esquema de la tabla.
+
 ### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás modelar un evento de entrega real con tipos anidados (lista y mapa). Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Temas 1-2 de este módulo.
 #### Paso 2 · Contexto y caso real
-Un evento de tipo `entregado` en el proyecto integrador RutaFlow necesita guardar la ubicación GPS (dos números relacionados: lat, lon) y la lista de fotos subidas — ninguno de los dos encaja bien como un atributo escalar suelto. Ver `examples/rutaflow/cloud/template.yaml` para el esquema real de ShipmentEvents que usa exactamente estos tipos anidados.
+Un evento de tipo `entregado` en el proyecto integrador RutaFlow necesita guardar la ubicación GPS (dos números relacionados: lat, lon) y la lista de fotos subidas — ninguno de los dos encaja bien como un atributo escalar suelto. En el item de `ShipmentEvents` que escribirás en este tema, `ubicacion` será un atributo `M` con `lat` y `lon` de tipo `N`, y `fotos` será un atributo `L`; la tabla no necesita una definición adicional para aceptar esos tipos anidados.
 #### Paso 3 · Teoría, modelo mental y analogía
 `M` es un sub-formulario anidado dentro del evento; `L` es una lista de elementos relacionados que puede crecer sin límite fijo de cuántos hay.
 
@@ -563,7 +565,7 @@ Entregá la creación del índice, la `query` exitosa, el error de índice inexi
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir, con números reales, la diferencia de costo entre Query y Scan sobre `ShipmentEvents`. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Temas 2 y 4 de este módulo.
 #### Paso 2 · Contexto y caso real
-La API de tracking del proyecto integrador RutaFlow (`examples/rutaflow/cloud/functions/`) pide "los eventos de este envío" decenas de veces por minuto en producción — tiene que resolverlo con Query, no con un Scan de toda la tabla de eventos de todos los envíos. Esta diferencia de eficiencia es lo que permite que RutaFlow escale sin deuda operacional.
+La API de tracking del proyecto integrador RutaFlow pide "los eventos de este envío" decenas de veces por minuto en producción — el handler que escribas tiene que resolverlo con Query, no con un Scan de toda la tabla de eventos de todos los envíos. Esta diferencia de eficiencia es lo que permite que RutaFlow escale sin deuda operacional.
 #### Paso 3 · Teoría, modelo mental y analogía
 Query va directo a la partición de un envío; Scan recorre evento por evento de todos los envíos, sin importar cuál buscás.
 
@@ -642,7 +644,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada
 
-En `examples/rutaflow/cloud/template.yaml` (líneas 45-60), ShipmentEvents está definida con clave primaria shipmentId+sequence. Aquí mides el costo de ambas operaciones:
+Sobre la tabla `ShipmentEvents` que creaste en el Tema 1 con clave primaria `shipmentId` + `sequence`, mide ahora el costo de ambas operaciones:
 
 ```bash
 aws dynamodb scan --table-name ShipmentEvents --select COUNT

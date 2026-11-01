@@ -43,23 +43,14 @@ struct BotonContador: View {
 
 **Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `EstadoDemo`.
 * Proyecto: en el proyecto integrador RutaFlow, conecta el formulario de confirmación con @State y @Binding.
 
 **Límites y decisión de uso:** State conserva estado ligado a la identidad de la vista, no almacenamiento durable. Usa Binding para editar la fuente existente y persistencia para datos que deben sobrevivir al cierre; copiar valores en otra fuente puede desincronizarlos.
 
 #### Paso 4 · Demostración guiada desde cero
 
-Crea un proyecto SwiftUI desde cero. En macOS con Xcode instalado, créalo por línea de comandos y ábrelo:
-
-```bash
-mkdir EstadoDemo && cd EstadoDemo
-# Genera un paquete Swift ejecutable (no requiere plantilla de Xcode)
-swift package init --type executable --name EstadoDemo
-swift --version   # confirma que tienes el toolchain de Swift
-```
-
-Para una app SwiftUI con interfaz, crea el proyecto en Xcode (`File ▸ New ▸ Project ▸ App`, interfaz SwiftUI) y reemplaza `ContentView.swift` con este contenido:
+Parte de una carpeta vacía llamada `EstadoDemo`. En Xcode elige **File ▸ New ▸ Project ▸ App**, guarda el proyecto dentro de esa carpeta, nómbralo `EstadoDemo`, selecciona interfaz SwiftUI y lenguaje Swift, y ábrelo. Reemplaza manualmente el contenido de `ContentView.swift` con:
 
 ```swift
 import SwiftUI
@@ -112,7 +103,7 @@ Si la pantalla de RutaFlow muestra tanto la lista de envíos como un contador de
 `@Observable` redibuja solo las vistas que efectivamente leyeron la propiedad específica que cambió — un sistema de notificaciones que avisa solo a quien se suscribió a ese tema exacto, no a todo el canal.
 #### Paso 4 · Demostración guiada desde cero
 
-Continúa en el mismo proyecto SwiftUI del Tema 1 (o crea uno nuevo en Xcode: `File ▸ New ▸ Project ▸ App`, interfaz SwiftUI). Reemplaza `ContentView.swift`:
+Parte de otra carpeta vacía y crea en Xcode un proyecto independiente llamado `EstadoDemo` con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y lenguaje Swift. No reutilices el proyecto del Tema 1. Reemplaza el `ContentView.swift` generado con este contenido escrito manualmente:
 
 ```swift
 import SwiftUI
@@ -182,7 +173,7 @@ class TareasViewModel {
 }
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `EstadoDemo`.
 * Proyecto: en el proyecto integrador RutaFlow, mueve el estado de la jornada a un modelo @Observable.
 
 **Límites y decisión de uso:** Observar cambios no establece una política de persistencia ni de concurrencia. Define quién posee el modelo y dónde puede mutarlo; una propiedad observable compartida sin esas reglas puede seguir produciendo estados incoherentes.
@@ -233,13 +224,13 @@ flowchart TD
     C -.->|sin reenviar manualmente| D["DetalleEnvio\n@Environment(ServicioAPI.self)"]
 ```
 
-En el proyecto integrador RutaFlow, `ServicioAPI` vive en `examples/rutaflow/ios/ContentView.swift`. Límite de la decisión: `@Environment` no conviene para una dependencia que solo necesita una única vista puntual y cercana a la raíz — ahí pasarla directamente por el inicializador es más simple y explícito; reservá `@Environment` específicamente cuando la dependencia debe atravesar varios niveles de vistas intermedias que no la usan.
+En tu propio proyecto RutaFlow, crea `ServicioAPI.swift` con **File ▸ New ▸ File ▸ Swift File**, agrégalo al target de la app y escribe allí la clase del Paso 4. Límite de la decisión: `@Environment` no conviene para una dependencia que solo necesita una única vista puntual y cercana a la raíz — ahí pasarla directamente por el inicializador es más simple y explícito; reservá `@Environment` específicamente cuando la dependencia debe atravesar varios niveles de vistas intermedias que no la usan.
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
 
-En el mismo proyecto SwiftUI, reemplaza el archivo de la app (`<NombreApp>App.swift`) y `ContentView.swift` con este contenido completo:
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `EstadoDemo`; no reutilices los proyectos de los Temas 1 o 2. Crea `ServicioAPI.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y distribuye manualmente el siguiente contenido: la clase `ServicioAPI` y sus imports en `ServicioAPI.swift`, el tipo `@main` en el `EstadoDemoApp.swift` generado (sustituyendo el tipo de app anterior) y las dos vistas en `ContentView.swift` junto con `import SwiftUI`.
 
 ```swift
 import SwiftUI
@@ -251,7 +242,7 @@ class ServicioAPI {
 }
 
 @main
-struct MiApp: App {
+struct EstadoDemoApp: App {
     var body: some Scene {
         WindowGroup { ListaEnvios().environment(ServicioAPI()) }
     }
@@ -278,6 +269,8 @@ xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 1
 Pista: quitá `.environment(ServicioAPI())` del `WindowGroup` pero dejá `@Environment(ServicioAPI.self) var servicio` en `DetalleEnvio` — ese es el fallo deliberado: en tiempo de ejecución, SwiftUI no encuentra ningún `ServicioAPI` inyectado en el ambiente y la app crashea al intentar leer `servicio`, un error silencioso en tiempo de compilación que solo aparece al correr.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando la inyección, y agregá una segunda vista intermedia entre `ListaEnvios` y `DetalleEnvio` que NO lea `ServicioAPI` en absoluto — confirmá que esa vista intermedia no necesita saber nada sobre `ServicioAPI` para que `DetalleEnvio` siga funcionando.
+
+**Proyecto integrador:** en el proyecto iniciado desde cero en este tema, crea `SesionConductor.swift` con una clase `@Observable` que contenga `conductorID` y `nombreVisible`. Crea `JornadaView.swift` como vista intermedia que no reciba la sesión y `DetalleJornadaView.swift` como descendiente que la lea con `@Environment`; inyecta una única instancia desde `EstadoDemoApp.swift`. Añade un borrador local y aplica `.id(sesion.conductorID)` al editor: al cambiar de `c-891` a `c-999`, el texto visible debe corresponder al conductor nuevo y el borrador anterior debe reiniciarse, demostrando tanto la inyección como el efecto de la identidad.
 
 #### Paso 7 · Cierre
 Entregá la inyección funcionando a través de varios niveles del Paso 4, el crash por ambiente faltante del Paso 5, y la vista intermedia ignorante de la dependencia del Paso 6; explicá por qué esto resuelve el mismo "prop drilling" que Context API resuelve en React. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
@@ -306,5 +299,5 @@ Entregá la inyección funcionando a través de varios niveles del Paso 4, el cr
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `EstadoDemo`.
 * Proyecto: en el proyecto integrador RutaFlow, inyecta la sesión del conductor por @Environment y comprueba la identidad.

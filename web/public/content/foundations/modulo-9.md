@@ -8,7 +8,7 @@ Las matemáticas de este módulo no son una colección de fórmulas para memoriz
 ### Tema 1: Lógica para especificar antes de programar
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir pre/postcondiciones formales para `transition()` de RutaFlow y a buscarle un contraejemplo con `hypothesis`. Prerrequisitos: `pip install hypothesis`.
+Al finalizar vas a escribir pre/postcondiciones formales para `transition()` de RutaFlow y a buscarle un contraejemplo con `hypothesis`. Prerrequisitos: instala la dependencia en tu entorno con `python3 -m pip install hypothesis`.
 
 #### Paso 2 · Contexto y caso real
 A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundamentos; en este módulo le toca guardar tareas en un archivo persistente. `transition()` ya impone una regla (`requested not in ALLOWED_TRANSITIONS[current]` lanza error), pero nadie escribió todavía la precondición/postcondición formal que esa regla implementa.
@@ -67,16 +67,19 @@ flowchart LR
     INV -. "debe conservarse" .-> POST
 ```
 
-El contrato formal de este Tema vive directamente sobre el archivo real `examples/rutaflow/foundation/domain.py`: la precondición, transición y postcondición descritas arriba son, literalmente, la especificación en prosa de lo que esas pocas líneas de código ya implementan.
+En la práctica escribirás una implementación mínima de `transition()` para que la precondición, transición y postcondición descritas arriba se conviertan en un contrato ejecutable y comprobable.
 
 **Límites y decisión de uso:** Una especificación lógica solo protege las propiedades que expresa. Añade casos límite y supuestos del entorno; una implementación puede satisfacer una condición parcial y seguir siendo incorrecta para requisitos omitidos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.py` con el contenido de este tema.
+Parte de una carpeta vacía y crea manualmente `contrato.txt`, `domain.py` y `test_contrato.py`:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo-logica && cd ejemplo-logica
 ```
+
+Archivo `contrato.txt`:
 
 ```text
 Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
@@ -85,29 +88,57 @@ Post: transition(current, requested) == requested implica requested ∈ ALLOWED_
 Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
-```bash
-python3 ejemplo.py
-```
-Observa la salida impresa y compárala con el resultado esperado.
+Archivo `domain.py`:
 
 ```python
-from hypothesis import given, strategies as st
-from examples.rutaflow.foundation.domain import ShipmentStatus, ALLOWED_TRANSITIONS, transition
+from enum import Enum
 
-@given(st.sampled_from(ShipmentStatus), st.sampled_from(ShipmentStatus))
-def test_transition_respeta_el_contrato(current, requested):
-    if requested in ALLOWED_TRANSITIONS[current]:
-        assert transition(current, requested) == requested
-    else:
-        try:
-            transition(current, requested)
-            assert False, "debería haber lanzado ValueError"
-        except ValueError:
-            pass
+class ShipmentStatus(str, Enum):
+    CREATED = "created"
+    ASSIGNED = "assigned"
+    OUT_FOR_DELIVERY = "out_for_delivery"
+    DELIVERED = "delivered"
+
+ALLOWED_TRANSITIONS = {
+    ShipmentStatus.CREATED: {ShipmentStatus.ASSIGNED},
+    ShipmentStatus.ASSIGNED: {ShipmentStatus.OUT_FOR_DELIVERY},
+    ShipmentStatus.OUT_FOR_DELIVERY: {ShipmentStatus.DELIVERED},
+    ShipmentStatus.DELIVERED: set(),
+}
+
+def transition(current: ShipmentStatus, requested: ShipmentStatus) -> ShipmentStatus:
+    if requested not in ALLOWED_TRANSITIONS[current]:
+        raise ValueError(f"invalid shipment transition: {current} -> {requested}")
+    return requested
 ```
-Resultado esperado: la prueba generativa corre sobre todas las combinaciones posibles de estados (16 pares) y pasa — confirmando que el contrato descrito arriba coincide exactamente con lo que el código hace, no solo con los casos que alguien pensó a mano.
+
+Archivo `test_contrato.py`:
+
+```python
+import unittest
+from hypothesis import given, strategies as st
+from domain import ShipmentStatus, ALLOWED_TRANSITIONS, transition
+
+class ContratoTransicion(unittest.TestCase):
+    @given(st.sampled_from(ShipmentStatus), st.sampled_from(ShipmentStatus))
+    def test_transition_respeta_el_contrato(self, current, requested):
+        if requested in ALLOWED_TRANSITIONS[current]:
+            self.assertEqual(transition(current, requested), requested)
+        else:
+            with self.assertRaises(ValueError):
+                transition(current, requested)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+Ejecuta la prueba generativa:
+
+```bash
+python3 test_contrato.py
+```
+
+Resultado esperado: `Ran 1 test` seguido de `OK`. Hypothesis genera pares de estados y busca contraejemplos; el contrato, no unos pocos casos felices elegidos a mano, determina qué comportamiento se acepta.
 
 #### Paso 5 · Práctica guiada
 Pista: cambiá la postcondición para afirmar `transition(current, requested) == requested` SIN la condición `if` (es decir, asumí que siempre devuelve lo pedido) — ese es el fallo deliberado: la prueba generativa encuentra un contraejemplo real (por ejemplo `current=DELIVERED, requested=CREATED`) donde `transition` lanza `ValueError` en vez de devolver nada, rompiendo la postcondición mal escrita.
@@ -166,10 +197,29 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `relacion.py`, copiando antes `domain.py` desde `examples/rutaflow/foundation/`, y verificá las propiedades de la relación:
+Parte de una carpeta vacía, crea manualmente `domain.py` y `relacion.py`, y verificá las propiedades de la relación:
 
 ```bash
-mkdir ejemplo && cp examples/rutaflow/foundation/domain.py ejemplo/ && cd ejemplo
+mkdir ejemplo-relacion && cd ejemplo-relacion
+```
+
+Archivo `domain.py`:
+
+```python
+from enum import Enum
+
+class ShipmentStatus(str, Enum):
+    CREATED = "created"
+    ASSIGNED = "assigned"
+    OUT_FOR_DELIVERY = "out_for_delivery"
+    DELIVERED = "delivered"
+
+ALLOWED_TRANSITIONS = {
+    ShipmentStatus.CREATED: {ShipmentStatus.ASSIGNED},
+    ShipmentStatus.ASSIGNED: {ShipmentStatus.OUT_FOR_DELIVERY},
+    ShipmentStatus.OUT_FOR_DELIVERY: {ShipmentStatus.DELIVERED},
+    ShipmentStatus.DELIVERED: set(),
+}
 ```
 
 Archivo `relacion.py`:
@@ -266,10 +316,29 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `grafo.py`, copiando antes `domain.py` desde `examples/rutaflow/foundation/`, y comprobá si su grafo de estados tiene ciclos:
+Parte de una carpeta vacía, crea manualmente `domain.py` y `grafo.py`, y comprobá si su grafo de estados tiene ciclos:
 
 ```bash
-mkdir ejemplo && cp examples/rutaflow/foundation/domain.py ejemplo/ && cd ejemplo
+mkdir ejemplo-grafo && cd ejemplo-grafo
+```
+
+Archivo `domain.py`:
+
+```python
+from enum import Enum
+
+class ShipmentStatus(str, Enum):
+    CREATED = "created"
+    ASSIGNED = "assigned"
+    OUT_FOR_DELIVERY = "out_for_delivery"
+    DELIVERED = "delivered"
+
+ALLOWED_TRANSITIONS = {
+    ShipmentStatus.CREATED: {ShipmentStatus.ASSIGNED},
+    ShipmentStatus.ASSIGNED: {ShipmentStatus.OUT_FOR_DELIVERY},
+    ShipmentStatus.OUT_FOR_DELIVERY: {ShipmentStatus.DELIVERED},
+    ShipmentStatus.DELIVERED: set(),
+}
 ```
 
 Archivo `grafo.py`:
@@ -370,21 +439,50 @@ flowchart LR
     BIAS["sesgo de selección"] -. "no desaparece aumentando n" .-> SAMPLE
 ```
 
-Esta medición de percentiles corre sobre `nearest_neighbor_route`, definida en `examples/rutaflow/foundation/domain.py` — el mismo archivo del proyecto integrador que ya usaste en los tres Temas anteriores, ahora medido en tiempo real en vez de solo leído como lógica.
+Esta medición de percentiles corre sobre una implementación manual de `nearest_neighbor_route`: escribirás la función en tu propia carpeta y la medirás en tiempo real en vez de limitarte a leer su lógica.
 
 **Límites y decisión de uso:** Una muestra pequeña o sesgada no permite generalizar resultados con certeza. Registra procedencia, tamaño y variabilidad, y distingue asociación de causalidad antes de elegir una solución a partir de una medición.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.py` con el contenido de este tema.
+Parte de una carpeta vacía y crea manualmente `domain.py` y `medir.py`:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+mkdir ejemplo-medicion && cd ejemplo-medicion
 ```
+
+Archivo `domain.py`:
+
+```python
+from dataclasses import dataclass
+from math import hypot
+
+@dataclass(frozen=True)
+class Stop:
+    shipment_id: str
+    latitude: float
+    longitude: float
+
+def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> list[Stop]:
+    """Heurística educativa O(n²); no afirma encontrar la ruta óptima."""
+    remaining = stops.copy()
+    ordered = []
+    position = origin
+    while remaining:
+        selected = min(remaining, key=lambda stop: hypot(
+            stop.latitude - position[0], stop.longitude - position[1]))
+        ordered.append(selected)
+        remaining.remove(selected)
+        position = (selected.latitude, selected.longitude)
+    return ordered
+```
+
+Archivo `medir.py`:
 
 ```python
 import time
 from statistics import mean, median, quantiles
-from examples.rutaflow.foundation.domain import Stop, nearest_neighbor_route
+from domain import Stop, nearest_neighbor_route
 
 tiempos = []
 for _ in range(30):
@@ -398,10 +496,10 @@ p95 = quantiles(tiempos, n=100)[94]
 print({"n": len(tiempos), "media": mean(tiempos), "p50": p50, "p95": p95})
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
+Ejecuta la medición:
 
 ```bash
-python3 ejemplo.py
+python3 medir.py
 ```
 Observa la salida impresa y compárala con el resultado esperado.
 

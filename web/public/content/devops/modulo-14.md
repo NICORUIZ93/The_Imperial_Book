@@ -70,7 +70,7 @@ Resultado esperado: `SLI: 99.9450%`, `Presupuesto: 1000 eventos` y `Consumido: 5
 **Fallo deliberado:** cambiá `slo = 0.999` por `slo = 1.0` y ejecutá de nuevo. Falla con `presupuesto de error agotado` en cuanto hay un solo evento malo, porque con ese objetivo cualquier error consume presupuesto y dispara alertas constantes; un objetivo de 100% suele ser económicamente imposible además de frenar cualquier cambio que introduzca el más mínimo riesgo, incluso mejoras reales al producto. **Pista:** el presupuesto no es un adorno; si vale cero, el sistema solo puede congelarse.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `slo = 0.999` y calculá explícitamente cuántos minutos de presupuesto representa el 0.1% en un mes de 30 días (agregá `print(f"Minutos: {0.001 * 30 * 24 * 60:.1f}")` al script). Después llevá el cálculo al **proyecto integrador** RutaFlow: su SLI de `/envios` se mide contra `examples/rutaflow/devops/deployment.yaml`, que expone el viaje vía `rutaflow-delivery-api`; no confundas sus `readinessProbe`/`livenessProbe` con el SLO de negocio, porque un Pod "listo" (probe verde) puede dejar el viaje completo fuera del SLO si la dependencia de DynamoDB (Módulo Cloud 4) responde lenta.
+Corregí el Paso 5 volviendo a `slo = 0.999` y calculá explícitamente cuántos minutos de presupuesto representa el 0.1% en un mes de 30 días (agregá `print(f"Minutos: {0.001 * 30 * 24 * 60:.1f}")` al script). Después llevá el cálculo al **proyecto integrador** RutaFlow: crea tu propio `deployment.yaml` para `rutaflow-delivery-api` y medí el SLI del viaje `/envios` que ese despliegue expone; no confundas sus `readinessProbe`/`livenessProbe` con el SLO de negocio, porque un Pod "listo" (probe verde) puede dejar el viaje completo fuera del SLO si la dependencia de DynamoDB (Módulo Cloud 4) responde lenta.
 
 #### Paso 7 · Cierre
 Entregá el `sli.py` con la salida del Paso 4, la salida `presupuesto de error agotado` del SLO de 100% del Paso 5, y el cálculo de minutos del Paso 6; explicá por qué un SLO de 100% no es "más seguro" sino contraproducente en la práctica. Siguiente paso: estudia cómo una alerta debe conducir a una acción. Errores comunes: definir SLOs sin basarse en el comportamiento histórico real del servicio, confundir SLO con SLA, y no definir explícitamente qué eventos cuentan como "válidos" antes de medir. Límites y decisión de uso: un SLI no captura todo lo que el usuario percibe; no conviene usarlo como única señal si el viaje depende de una experiencia que las métricas del servidor no observan. Fuentes oficiales: https://sre.google/sre-book/service-level-objectives/ y https://prometheus.io/docs/practices/instrumentation/.
@@ -326,7 +326,7 @@ La política limita una imagen y exige una identidad keyless emitida por GitHub 
 Pista: quitá la línea `subject:` de `politica.yaml` y volvé a ejecutar. Ese es el fallo deliberado: el verificador imprime `fallo: sin subject que limite el repositorio firmante` y sale con código 1, porque cualquier imagen firmada por cualquier repositorio que use GitHub Actions pasaría la política.
 
 #### Paso 6 · Práctica independiente
-Restaurá `subject` con el repositorio `rutaflow/api` y agregá una regla que rechace una imagen por digest no promovido. Documentá qué parte de la cadena —SBOM, firma, política de admisión— impide cada uno de estos casos: imagen reconstruida fuera del pipeline, tag mutable y firma válida de otro repositorio. En el proyecto integrador RutaFlow, la política debe proteger `rutaflow-delivery-api` del manifiesto de `examples/rutaflow/devops/`.
+Restaurá `subject` con el repositorio `rutaflow/api` y agregá una regla que rechace una imagen por digest no promovido. Documentá qué parte de la cadena —SBOM, firma, política de admisión— impide cada uno de estos casos: imagen reconstruida fuera del pipeline, tag mutable y firma válida de otro repositorio. En el proyecto integrador RutaFlow, escribe tu propio manifiesto `deploy/deployment.yaml` y configura la política para proteger `rutaflow-delivery-api`.
 
 #### Paso 7 · Cierre
 Entregá la salida del verificador del Paso 4, el fallo sin `subject` del Paso 5, y la política ampliada del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Como siguiente paso, conectá esta política al webhook de admisión del clúster y probá el rechazo con una imagen sin firma. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
@@ -406,14 +406,29 @@ Resultado esperado: `opa eval` devuelve un resultado con el mensaje `app debe ej
 Pista: medí la "adopción de la plataforma" contando únicamente cuántos equipos usan el golden path, sin medir el tiempo real hasta el primer deploy exitoso ni los tickets de soporte generados — ese es el fallo deliberado: esa métrica puede mostrar "alta adopción" mientras los equipos abren decenas de tickets porque el golden path es confuso, ocultando un problema real detrás de un número que solo mide uso forzado.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando métricas de producto reales a la plataforma (tiempo hasta primer deploy, tickets de soporte por equipo, encuesta de satisfacción), y medí el tiempo real del próximo desarrollador nuevo que use el golden path desde cero. Después aplicá la misma política al **proyecto integrador** RutaFlow y comprobá que su manifiesto real ya cumple:
+Corregí el Paso 5 agregando métricas de producto reales a la plataforma (tiempo hasta primer deploy, tickets de soporte por equipo, encuesta de satisfacción), y medí el tiempo real del próximo desarrollador nuevo que use el golden path desde cero. Después crea `pod-no-root.yaml` en esta misma carpeta para representar el caso válido del **proyecto integrador** RutaFlow:
 
-```bash
-opa eval -d policy.rego -i examples/rutaflow/devops/deployment.yaml 'data.kubernetes.admission.deny'
-kubectl apply --dry-run=server -f examples/rutaflow/devops/deployment.yaml
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rutaflow-delivery-api
+spec:
+  containers:
+    - name: app
+      image: registry.rutaflow.app/api:1.0.0
+      securityContext:
+        runAsNonRoot: true
 ```
 
-Resultado esperado: `opa eval` devuelve un arreglo vacío porque `rutaflow-delivery-api` ya declara `runAsNonRoot: true` en su `securityContext`; si alguien quitara esa línea, la política lo rechazaría antes de llegar al clúster, no después.
+Aplicá la misma política y validá el manifiesto sin necesidad de un clúster:
+
+```bash
+opa eval -d policy.rego -i pod-no-root.yaml 'data.kubernetes.admission.deny'
+kubectl apply --dry-run=client -f pod-no-root.yaml
+```
+
+Resultado esperado: `opa eval` devuelve un arreglo vacío porque `app` declara `runAsNonRoot: true`; si quitas esa línea, la política vuelve a rechazarlo antes de llegar al clúster.
 
 #### Paso 7 · Cierre
 Entregá la política Rego del Paso 4, la métrica de adopción incompleta del Paso 5, y las métricas de producto corregidas del Paso 6; explicá por qué "centralizar sin escuchar" crea otro cuello de botella en vez de resolver el problema original. Siguiente paso: cerrá el módulo integrando SLO, alertas, supply chain y platform engineering en la operación completa de RutaFlow. Errores comunes: medir adopción de una plataforma interna sin medir satisfacción ni tiempo real de onboarding, escribir políticas sin mensajes de error reparables, y centralizar la plataforma sin ningún canal de feedback de los equipos que la usan. Límites y decisión de uso: un golden path no reemplaza el criterio de dominio; forzar el caso común y eliminar las vías de escape convierte la plataforma en otro cuello de botella. Fuentes oficiales: https://www.openpolicyagent.org/docs/latest/ y https://internaldeveloperplatform.org/.

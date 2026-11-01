@@ -125,7 +125,7 @@ flowchart LR
     Mock --> FAIL[compileKotlinIosArm64 falla]
 ```
 
-Esta regla de "fake por encima de mock" es la misma que aplica el proyecto integrador RutaFlow: `SyncEngine` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) se prueba con un `Outbox` y un `DeliveryApi` fake, nunca con un mock de JVM, precisamente porque `SyncEngine` también debe compilar en el target iOS. Ejercicio de cierre: ejecutá `./gradlew :shared:compileKotlinIosArm64` después de restaurar el fake y confirmá en la salida que ya no aparece el error de bytecode.
+Esta regla de "fake por encima de mock" es la misma que aplica el proyecto integrador RutaFlow: `SyncEngine` (`shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt`) se prueba con un `Outbox` y un `DeliveryApi` fake, nunca con un mock de JVM, precisamente porque `SyncEngine` también debe compilar en el target iOS. Ejercicio de cierre: ejecutá `./gradlew :shared:compileKotlinIosArm64` después de restaurar el fake y confirmá en la salida que ya no aparece el error de bytecode.
 
 #### Paso 4 · Demostración guiada desde cero
 ```kotlin
@@ -199,7 +199,7 @@ sequenceDiagram
     Test->>Test: assertEquals esperado resultado
 ```
 
-El proyecto integrador RutaFlow depende de esta misma técnica: `SyncEngine.drain()` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) reintenta comandos con backoff, y su suite de `commonTest` usa `runTest` para que esos reintentos simulados no alarguen el pipeline de CI. Ejercicio: medí con Gradle (`./gradlew :shared:allTests`) cuánto tarda la suite si reemplazás `runTest` por `runBlocking` en un test con `delay(5000)`, y compará ese tiempo real contra la ejecución con `runTest`.
+El proyecto integrador RutaFlow depende de esta misma técnica: `SyncEngine.drain()` (`shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt`) reintenta comandos con backoff, y su suite de `commonTest` usa `runTest` para que esos reintentos simulados no alarguen el pipeline de CI. Ejercicio: medí con Gradle (`./gradlew :shared:allTests`) cuánto tarda la suite si reemplazás `runTest` por `runBlocking` en un test con `delay(5000)`, y compará ese tiempo real contra la ejecución con `runTest`.
 
 ---
 

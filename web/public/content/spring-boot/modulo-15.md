@@ -919,15 +919,14 @@ Compensar es ejecutar una nueva acción de negocio; no retrocede el tiempo. Se n
 
 #### Practica
 
-```bash
-cp -R examples/rutaflow-material/sagas ejemplo-compensacion
-cd ejemplo-compensacion
-python3 -m unittest test_compensacion.py
-python3 compensacion.py
-```
-Para crear el ejemplo manualmente, guarda estos archivos juntos, sin el prefijo `sagas/`:
+Parte de una carpeta vacía y crea manualmente los dos archivos del ejercicio en la raíz de `ejemplo-compensacion`:
 
-Crea `sagas/compensacion.py` con este contenido completo:
+```bash
+mkdir ejemplo-compensacion
+cd ejemplo-compensacion
+```
+
+Crea `compensacion.py` con este contenido completo:
 ```python
 import sqlite3
 
@@ -963,7 +962,7 @@ if __name__ == '__main__':
         print('Stock final:', db.execute('SELECT cantidad FROM stock').fetchone()[0])
 ```
 
-Crea `sagas/test_compensacion.py` con este contenido completo:
+Crea `test_compensacion.py` con este contenido completo:
 ```python
 import sqlite3
 import tempfile
@@ -985,6 +984,13 @@ class CompensacionTest(unittest.TestCase):
                 self.assertEqual(10, db.execute('SELECT cantidad FROM stock').fetchone()[0])
                 self.assertEqual('HECHA', db.execute('SELECT estado FROM compensaciones').fetchone()[0])
 if __name__=='__main__':unittest.main()
+```
+
+Ejecuta la prueba y después el programa desde `ejemplo-compensacion`:
+
+```bash
+python3 -m unittest test_compensacion.py
+python3 compensacion.py
 ```
 
 **Resultado esperado:** una prueba correcta; al ejecutar el programa por primera vez aparece compensación pendiente y stock final 10. Explica cada bloque: el identificador `liberar-42` conserva la operación, el fallo mantiene PENDIENTE, el reinicio abre el mismo archivo y el segundo intento comprueba HECHA antes de repetir el efecto. La prueba utiliza una base temporal y verifica la cantidad final, no solo una lista de mensajes.

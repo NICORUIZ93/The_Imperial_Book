@@ -1,7 +1,7 @@
 # Módulo 10: Performance, accesibilidad y HIG
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -60,7 +60,7 @@ Allocations      → uso de memoria y posibles fugas
 Core Animation   → frames perdidos en animaciones/scroll
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `DetalleEntregaView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, perfila la pantalla de seguimiento y documenta la métrica medida.
 
 ### Tema 2: Accesibilidad con VoiceOver
@@ -120,7 +120,7 @@ Image(systemName: "trash").accessibilityLabel("Eliminar tarea")
 // Sin esto, VoiceOver lee simplemente "imagen" — inútil para el usuario
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `DetalleEntregaView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, recorre el detalle de envío con VoiceOver y corrige las etiquetas.
 
 **Límites y decisión de uso:** Escuchar una etiqueta correcta no demuestra que el recorrido completo sea accesible. Prueba orden de navegación, acciones y actualizaciones; no agrupes controles independientes en un elemento que impida ejecutarlos con VoiceOver.
@@ -155,7 +155,7 @@ UIViewRepresentable            → embebe una View de UIKit DENTRO de SwiftUI
 UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de SwiftUI
 ```
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe la práctica en `ContentView.swift` y `DetalleEntregaView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, prueba el detalle con Dynamic Type y una vista UIKit envuelta.
 
 **Límites y decisión de uso:** Seguir una guía visual no garantiza legibilidad con texto ampliado o idiomas largos. Prueba tamaños de accesibilidad y el ciclo de vida del componente UIKit incorporado, evitando supuestos de altura fija.

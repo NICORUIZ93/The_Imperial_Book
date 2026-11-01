@@ -43,33 +43,44 @@ Cualquier tipo que implemente `View` con un `body` es componible en cualquier lu
 3. Extracción correcta + estado `loading` del Paso 6.
 4. **Documento:** explica por qué una vista propia nunca necesita un mecanismo especial.
 
-**Integración RutaFlow:**
+**Integración RutaFlow (proyecto independiente):**
 
-Copia la estructura anterior a tu proyecto RutaFlow (archivo `examples/ios-lab/Sources/RutaFlowLab/ListaEnvios.swift`):
+Parte de una carpeta vacía y crea en Xcode una app iOS llamada `RutaFlowApp` con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y lenguaje Swift. En el navegador del proyecto selecciona el grupo `RutaFlowApp`, elige **File ▸ New ▸ File ▸ Swift File**, nómbralo `ListaEnvios.swift` y confirma que pertenece al target de la app. Escribe manualmente este contenido completo:
 
 ```swift
+import SwiftUI
+
 struct TarjetaEnvio: View {
     let guia: String
-    let estado: EstadoEntrega  // Usa el enum de RutaFlowApp.swift
-    
+    let entregada: Bool
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Text("Guía: \(guia)").font(.headline)
-                Badge(estado: estado)
+                Text(entregada ? "Entregada" : "En ruta")
             }
             Spacer()
-            Image(systemName: estado == .entregada ? "checkmark.circle.fill" : "truck.box")
-                .foregroundStyle(estado == .entregada ? .green : .blue)
+            Image(systemName: entregada ? "checkmark.circle.fill" : "truck.box")
+                .foregroundStyle(entregada ? .green : .blue)
         }
         .padding()
         .background(Color(.systemGray6))
         .clipShape(.rect(cornerRadius: 8))
     }
 }
+
+struct ListaEnvios: View {
+    var body: some View {
+        VStack {
+            TarjetaEnvio(guia: "RF-4471", entregada: false)
+            TarjetaEnvio(guia: "RF-5002", entregada: true)
+        }
+    }
+}
 ```
 
-Ahora, en `ContentView.swift` de RutaFlow, reemplaza `TarjetaEntreguaRow` por esta composición. Verifica que la app renderiza las entregas correctamente desde SwiftData.
+Abre el `RutaFlowApp.swift` generado por Xcode y usa `WindowGroup { ListaEnvios() }` como escena inicial. Ejecuta con ⌘R y verifica que la app muestra ambas entregas; todos los archivos utilizados fueron creados por ti dentro del proyecto.
 
 **Siguiente paso:** estudia @State y @Binding (Módulo 2).
 
@@ -123,12 +134,9 @@ struct ListaEnvios: View {
     }
 }
 ```
-Crea el proyecto y ejecútalo desde cero:
+En otra carpeta vacía llamada `ComposicionDemo`, crea un segundo proyecto independiente en Xcode con **File ▸ New ▸ Project ▸ App** (interfaz SwiftUI), nómbralo `RutaFlowApp` y escribe el código anterior en `ContentView.swift`, seguido de `#Preview { ListaEnvios() }`. No copies este segundo ejemplo dentro de la integración anterior: cada proyecto contiene su propia versión de `TarjetaEnvio` y `ListaEnvios`. Compila tu proyecto con:
 
 ```bash
-mkdir ComposicionDemo && cd ComposicionDemo
-# Crea en Xcode: File ▸ New ▸ Project ▸ App (interfaz SwiftUI), nómbralo RutaFlowApp.
-# Pega el código anterior en ContentView.swift y añade #Preview { ListaEnvios() }
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
 ```
 
@@ -253,7 +261,7 @@ Text("RF-4471: en ruta").padding().background(Color.blue)   // el fondo cubre ta
 Text("RF-4471: en ruta").background(Color.blue).padding()   // el fondo queda ajustado al texto, el padding se ve sin cubrir
 ```
 
-Pégalo en una vista dentro de un `VStack`, en `ContentView.swift`, y ejecútalo:
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices los proyectos del Tema 1. Escribe ambas líneas dentro de un `VStack` en el `ContentView.swift` generado y ejecútalo. Para los Pasos 5 y 6 declara en ese mismo archivo las vistas nuevas indicadas, sin importar archivos de otro tema:
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
@@ -356,11 +364,31 @@ flowchart TD
     B -->|Red real| D["Carga indefinida o falla:\nPreviews no esperan respuestas async reales"]
 ```
 
-En el proyecto integrador RutaFlow, `ListaEnviosGrid` vive en `examples/rutaflow/ios/ContentView.swift`. Límite de la decisión: un Preview no conviene para validar el comportamiento real de una llamada de red — para eso corré la app en el simulador o un test de integración; el Preview sirve específicamente para iterar el diseño visual con datos de muestra fijos, nunca como sustituto de probar la integración real.
+En tu propio proyecto RutaFlow, escribe `ListaEnviosGrid` en `ContentView.swift` o crea `ListaEnviosGrid.swift` con **File ▸ New ▸ File ▸ Swift File** y el target de la app seleccionado. Límite de la decisión: un Preview no conviene para validar el comportamiento real de una llamada de red — para eso corré la app en el simulador o un test de integración; el Preview sirve específicamente para iterar el diseño visual con datos de muestra fijos, nunca como sustituto de probar la integración real.
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
+
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices los proyectos de los Temas 1 o 2. Crea `TarjetaEnvio.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe manualmente la dependencia que usará la grilla:
+
+```swift
+import SwiftUI
+
+struct TarjetaEnvio: View {
+    let guia: String
+    let estado: String
+
+    var body: some View {
+        Text("\(guia): \(estado)")
+            .padding()
+            .background(Color.blue.opacity(0.1))
+    }
+}
+```
+
+Después escribe la grilla y su Preview en `ContentView.swift`:
+
 ```swift
 struct ListaEnviosGrid: View {
     let envios: [(guia: String, estado: String)]
@@ -394,6 +422,8 @@ Pista: cambiá el Preview para que llame a una API real de RutaFlow en vez de pa
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a datos de muestra fijos, y agregá un estado `loading` y uno `error` como dos Previews adicionales separados (`#Preview("Cargando")`, `#Preview("Error")`), para poder ver los tres estados sin tocar código de red real.
 
+**Proyecto integrador:** convierte el `RutaFlowApp` que creaste desde una carpeta vacía en este tema en un manifiesto de ruta. Crea `EnvioMuestra.swift` con un modelo `Identifiable` y 30 envíos locales, y `PanelEnvios.swift` con una `LazyVGrid` de dos columnas que los muestre dentro de un `ScrollView`. Añade Previews llamados `Datos`, `Cargando` y `Error`, alimentados únicamente con esos datos fijos. Desplázate hasta el final y verifica que las 30 guías pueden alcanzarse, que cada estado tiene una representación distinta y que ningún Preview ejecuta red.
+
 #### Paso 7 · Cierre
 Entregá la grilla con Preview funcionando del Paso 4, el intento de red real roto del Paso 5, y los tres estados (`loading`/`error`/datos) del Paso 6; explicá por qué el sistema de Previews está pensado para datos de muestra, no para red real. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **Implicación práctica:** El sistema de Previews acelera drásticamente la iteración de diseño con datos de muestra fijos, pero no está pensado para esperar respuestas de red real — confundir ambos usos produce un canvas que carga indefinidamente o falla.
@@ -422,5 +452,5 @@ Entregá la grilla con Preview funcionando del Paso 4, el intento de red real ro
 
 ---
 
-* Código: `examples/rutaflow/ios/ContentView.swift`
+* Código: escribe y conserva la pantalla en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, aplica la cuadrícula y los wrappers a la pantalla de envíos.

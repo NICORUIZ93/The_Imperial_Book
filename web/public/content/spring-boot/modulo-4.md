@@ -602,16 +602,52 @@ flowchart LR
 
 #### Practica
 
-**Demo paso a paso.** Requisitos: JDK 27 y Maven 3.9. Copia el laboratorio independiente con BOM Spring Boot 4.1.1, cliente y pruebas:
+**Demo paso a paso.** Requisitos: JDK 27 y Maven 3.9. Parte de una carpeta vacía y crea manualmente un proyecto Maven con el BOM de Spring Boot 4.1.1:
 
 ```bash
-cp -R examples/spring-ssrf ejemplo-ssrf
+mkdir -p ejemplo-ssrf/src/main/java/com/academia
+mkdir -p ejemplo-ssrf/src/test/java/com/academia
 cd ejemplo-ssrf
-mvn test          # Maven
-./gradlew test    # Gradle (equivalente)
 ```
 
-Crea o inspecciona `src/main/java/com/academia/SafeClient.java`:
+Crea `pom.xml` con este contenido completo:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.academia</groupId>
+    <artifactId>ejemplo-ssrf</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <properties>
+        <java.version>27</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+Crea `src/main/java/com/academia/SafeClient.java` con este contenido completo:
 
 ```java
 package com.academia;
@@ -641,13 +677,83 @@ public final class SafeClient {
 }
 ```
 
+Crea `src/test/java/com/academia/SafeClientTest.java`. La primera prueba exige el bloqueo antes de que el servidor local reciba una petición; la segunda es el control positivo con el mismo servidor y un filtro que sí permite loopback:
+
+```java
+package com.academia;
+
+import com.sun.net.httpserver.HttpServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.http.client.FilteredHostException;
+import org.springframework.boot.http.client.InetAddressFilter;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class SafeClientTest {
+    private final AtomicInteger solicitudes = new AtomicInteger();
+    private HttpServer server;
+    private String url;
+
+    @BeforeEach
+    void arrancarServidorLocal() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/", exchange -> {
+            solicitudes.incrementAndGet();
+            byte[] body = "OK".getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, body.length);
+            try (var output = exchange.getResponseBody()) {
+                output.write(body);
+            }
+        });
+        server.start();
+        url = "http://127.0.0.1:" + server.getAddress().getPort() + "/";
+    }
+
+    @AfterEach
+    void detenerServidorLocal() {
+        server.stop(0);
+    }
+
+    @Test
+    void bloqueaLoopbackAntesDeConectar() {
+        assertThatThrownBy(() -> SafeClient.externalOnly()
+                .get().uri(url).retrieve().toBodilessEntity())
+            .isInstanceOf(FilteredHostException.class);
+        assertThat(solicitudes.get()).isZero();
+    }
+
+    @Test
+    void elControlPositivoConfirmaQueElServidorResponde() {
+        var response = SafeClient.create(InetAddressFilter.all())
+            .get().uri(url).retrieve().toBodilessEntity();
+
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(solicitudes.get()).isEqualTo(1);
+    }
+}
+```
+
+Ejecuta las pruebas que acabas de escribir:
+
+```bash
+mvn test
+```
+
 **Explicación línea por línea:** `HttpClientSettings.defaults()` parte de la configuración base del transporte JDK; `withConnectTimeout` y `withReadTimeout` acotan cuánto puede colgarse una petición saliente; `withRedirects(HttpRedirects.DONT_FOLLOW)` impide que un redirect traslade la conexión a un destino que la política original no evaluó; `withInetAddressFilter(allowedAddresses)` aplica el control sobre la dirección IP resuelta, no sobre el string de la URL.
 
 `externalAddresses()` describe las direcciones permitidas; el transporte rechaza las demás. No confundir una lista de permitidos con una lista de bloqueados. La configuración desactiva redirects y acota tiempos.
 
-En `src/test/java/com/academia/SafeClientTest.java` la prueba inicia un servidor propio en loopback y puerto efímero. Con el filtro exige directamente `FilteredHostException` con el transporte JDK elegido y cero peticiones recibidas; un segundo cliente de control permite la IP local y debe recibir 200 e incrementar el contador. No se consulta ningún servicio de metadatos real.
+En `src/test/java/com/academia/SafeClientTest.java` cada prueba inicia un servidor propio en loopback y puerto efímero. Con el filtro externo se exige directamente `FilteredHostException` con el transporte JDK elegido y cero peticiones recibidas; un segundo cliente de control permite la IP local y debe recibir 200 e incrementar el contador. No se consulta ningún servicio de metadatos real.
 
-**Resultado esperado:** dos pruebas verdes: bloqueo real del transporte con control positivo y clasificación de IP privadas/metadatos sin conexión. Un timeout genérico no satisface la primera prueba. La aplicación que use este cliente debe clasificar la causa de error; no traduzcas toda `ResourceAccessException` como rechazo por política.
+**Resultado esperado:** dos pruebas verdes: bloqueo real del transporte con cero peticiones recibidas y control positivo con respuesta 200. Un timeout genérico no satisface la primera prueba. La aplicación que use este cliente debe clasificar la causa de error; no traduzcas toda `ResourceAccessException` como rechazo por política.
 
 **Fallo deliberado:** provoca el fallo reemplazando temporalmente `externalAddresses()` por `all()` SOLO en el laboratorio. `mvn test` falla porque la solicitud local ya no lanza `FilteredHostException`. El servidor efímero recibe la petición; restaura el filtro y comprueba el test verde. No pruebes este cambio contra URLs de terceros ni metadatos reales.
 

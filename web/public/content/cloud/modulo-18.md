@@ -47,9 +47,9 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, este User Pool `RutaFlowConductores` es el que, en
-producción, protegería el mismo endpoint `POST /entregas` declarado hoy sin autenticación en
-`examples/rutaflow/cloud/template.yaml` — agregarle un Cognito Authorizer ahí es el siguiente
-paso natural una vez que este módulo confirma que el conductor existe y está verificado.
+producción, protegería el endpoint `POST /entregas` que creaste sin autenticación en el Módulo 6.
+Agregarle un Cognito Authorizer en tu propia plantilla `template.yaml` es el siguiente paso
+natural una vez que este módulo confirma que el conductor existe y está verificado.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -101,9 +101,9 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, el Access Token de este Tema es el que un Cognito
-Authorizer validaría en `POST /entregas` antes de invocar `ConfirmarEntregaFn`
-(`examples/rutaflow/cloud/template.yaml`) — nunca el ID Token, aunque ambos salgan del mismo
-`initiate-auth`.
+Authorizer validaría en `POST /entregas` antes de invocar `ConfirmarEntregaFn` — nunca el ID
+Token, aunque ambos salgan del mismo `initiate-auth`. Esa relación entre endpoint y función la
+declararás en tu propia plantilla `template.yaml`.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tf` con el contenido de este tema.
@@ -170,8 +170,8 @@ tiene sentido sobre ese flujo. No conviene habilitar el flujo implícito para un
 como `app-conductor`: expone el token directamente en la URL de redirección, el mismo riesgo
 que PKCE existe para evitar en el intercambio de código. En el proyecto integrador RutaFlow,
 este mismo `app-conductor` es el cliente público que reemplazaría cualquier login hardcodeado
-en la app móvil del conductor, autenticando contra el mismo `POST /entregas` declarado en
-`examples/rutaflow/cloud/template.yaml`.
+en la app móvil del conductor, autenticando contra el `POST /entregas` que creaste en el Módulo 6
+y cuya infraestructura puedes expresar en tu propia `template.yaml`.
 
 ---
 

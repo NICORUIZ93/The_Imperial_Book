@@ -9,9 +9,9 @@
 Al finalizar podrás enviar y recibir un mensaje real en una cola SQS. Prerrequisitos:
 Módulo 1 (`floci start`, `eval $(floci env)`).
 #### Paso 2 · Contexto y caso real
-RutaFlow (`examples/rutaflow/cloud/template.yaml`) define la cola `DeliveryCommands`: el
-backend la usa para avisar "confirmá esta entrega" sin bloquear al conductor esperando que el
-worker termine.
+En el diseño de RutaFlow, la cola `DeliveryCommands` permite al backend avisar "confirmá esta
+entrega" sin bloquear al conductor esperando que el worker termine. Cuando escribas tu propia
+plantilla `template.yaml`, declararás allí ese recurso.
 #### Paso 3 · Teoría, modelo mental y analogía
 La cola es una bandeja numerada: el productor deja trabajo, el consumidor lo retira cuando
 puede.
@@ -101,9 +101,9 @@ flowchart TD
     TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
 ```
 
-En el proyecto integrador RutaFlow, `ConfirmarEntregaFn` —la función Lambda declarada en
-`examples/rutaflow/cloud/template.yaml`— es exactamente el consumidor idempotente que este tema
-describe: recibe el comando de `DeliveryCommands`, y solo lo da por terminado cuando termina de
+En el proyecto integrador RutaFlow, `ConfirmarEntregaFn` debe ser exactamente el consumidor
+idempotente que este tema describe: cuando escribas tu propia plantilla `template.yaml`, conecta
+esa función con `DeliveryCommands` y haz que solo dé el comando por terminado cuando termine de
 escribir en `ShipmentEvents`, no antes.
 
 #### Paso 4 · Demostración guiada
@@ -251,11 +251,10 @@ flowchart LR
 
 A y B se procesan en paralelo entre sí.
 
-En el proyecto integrador RutaFlow, `ShipmentEvents` (la tabla DynamoDB de
-`examples/rutaflow/cloud/template.yaml`) depende de que los eventos `creado → asignado → en
-camino → entregado` de un mismo envío lleguen en orden — por eso una futura cola de eventos de
-estado de ese mismo sistema debería declararse `.fifo` con `MessageGroupId=shipmentId`, no
-Standard.
+En el proyecto integrador RutaFlow, la tabla DynamoDB `ShipmentEvents` depende de que los
+eventos `creado → asignado → en camino → entregado` de un mismo envío lleguen en orden — por eso
+una futura cola de eventos de estado de ese mismo sistema debería declararse `.fifo` con
+`MessageGroupId=shipmentId`, no Standard.
 
 ---
 

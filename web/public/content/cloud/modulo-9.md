@@ -38,10 +38,9 @@ flowchart LR
 ```
 
 Organizá el código de este proyecto final en una estructura real, no en un solo archivo suelto:
-`src/handlers/router.py` (o `.js`) para el router único mencionado arriba, y un
-`template.yaml` propio en la raíz del proyecto —siguiendo el mismo patrón que
-`examples/rutaflow/cloud/template.yaml`— para declarar los tres recursos que acabás de crear a
-mano por CLI.
+crea manualmente `src/handlers/router.py` (o `.js`) para el router único mencionado arriba y un
+`template.yaml` propio en la raíz de tu proyecto para declarar los tres recursos que acabás de
+crear a mano por CLI.
 
 #### Paso 4 · Demostración guiada
 ```bash

@@ -271,26 +271,20 @@ Corregí el Paso 5 reemplazando la cadena `if`/`else if` por un `switch` exhaust
 Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con `if`/`else if` del Paso 5, y el switch exhaustivo corregido del Paso 6; explicá por qué un `switch` exhaustivo sobre una `sealed class` previene específicamente el tipo de omisión que ocurrió en el Paso 5, mientras que una cadena de `if`/`else if` manual no ofrece esa garantía del compilador. Siguiente paso: cerrá el módulo integrando networking completo en el proyecto. Errores comunes: agregar headers de autenticación manualmente en cada llamada en vez de centralizarlos en un interceptor, usar `if`/`else if` en vez de un `switch` exhaustivo sobre una sealed class, y omitir el manejo explícito del estado de error en la UI. Fuentes oficiales: https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html y https://dart.dev/language/class-modifiers#sealed.
 **Implicación práctica:** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 
-## Referencia: RutaFlow Flutter
+## Aplicación guiada: RutaFlow Flutter
 
-**App completa que demuestra Temas 1-3 de este módulo:**
-
-Ver `examples/flutter_rutaflow/lib/core/api_client.dart`:
-- Cliente Dio con interceptadores (Tema 1, 3)
-- Serialización JSON automática (Tema 2)
-- Manejo de errores y estados
-
-Ver `examples/flutter_rutaflow/lib/core/models.dart`:
-- Modelos con `@JsonSerializable()` y generación automática
-- Deserialization tipada y segura
-
-Ver `examples/flutter_rutaflow/lib/features/deliveries/presentation/delivery_list_screen.dart`:
-- Consumo de API con Riverpod FutureProvider
-- Estados loading/error/data explícitos
-
-**Ejecutar localmente:**
+**Construye una app propia que demuestre los Temas 1-3.** Parte de una carpeta vacía:
 ```bash
-cd examples/flutter_rutaflow
+flutter create rutaflow_flutter
+cd rutaflow_flutter
+flutter pub add dio json_annotation flutter_riverpod
+flutter pub add --dev build_runner json_serializable
+```
+
+Crea manualmente `lib/core/api_client.dart` con el cliente Dio, los interceptadores y el manejo de errores de los Temas 1 y 3. Crea `lib/core/models.dart` con modelos `@JsonSerializable()`, ejecuta `dart run build_runner build` y revisa los archivos generados. Después crea `lib/features/deliveries/presentation/delivery_list_screen.dart`: consume la API mediante un `FutureProvider` de Riverpod y representa loading/error/data de forma explícita. Conecta esa pantalla desde `lib/main.dart`.
+
+**Ejecuta tu app:**
+```bash
 flutter pub get
 flutter run
 ```

@@ -128,7 +128,7 @@ flowchart TD
     Red -->|No, excepción| Leer
 ```
 
-El proyecto integrador RutaFlow resuelve el mismo problema desde el otro extremo: en vez de leer con fallback, `SyncEngine.drain()` (`examples/rutaflow/kotlin-multiplatform/SyncEngine.kt`) escribe con reintento — cuando `DeliveryApi.send()` falla, el comando queda en el `Outbox` con `scheduleRetry` en vez de perderse, el mismo principio de "la red puede fallar, el dato local no se descarta" aplicado a escrituras en vez de lecturas.
+En tu núcleo compartido de RutaFlow puedes resolver el mismo problema desde el otro extremo: implementa `SyncEngine.drain()` en `shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt` para escribir con reintento — cuando `DeliveryApi.send()` falla, el comando queda en el `Outbox` con `scheduleRetry` en vez de perderse, el mismo principio de "la red puede fallar, el dato local no se descarta" aplicado a escrituras en vez de lecturas.
 
 **Cuándo no conviene este patrón:** si los datos cambian con una frecuencia tan alta que una lectura desde caché desactualizada induce al usuario a tomar una decisión incorrecta (precios en una subasta en vivo, por ejemplo), servir un fallback silencioso es peor que mostrar explícitamente un error de conectividad; el trade-off entre disponibilidad (mostrar algo, aunque esté desactualizado) y consistencia (no mostrar nada que no esté confirmado) depende del costo real de un dato obsoleto en ese dominio específico.
 
@@ -166,6 +166,8 @@ Corregí el Paso 5 restaurando el `try/catch` con fallback a `db.tareaQueries.se
 #### Paso 7 · Cierre
 Entregá el repositorio con fallback del Paso 4, la pantalla de error reproducida del Paso 5, y la verificación manual sin red del Paso 6; explicá por qué "simplificar" eliminando el manejo de errores de red convierte un problema de conectividad temporal en una falla completa de la aplicación. Siguiente paso: cerrá el track reflexionando sobre qué compartir realmente entre Android e iOS. Errores comunes: no implementar ningún fallback offline en el repositorio, decidir compartir la lógica de sincronización pero duplicarla por error en cada plataforma, y no probar manualmente el comportamiento sin conexión antes de confiar en el fallback. Fuentes oficiales: https://ktor.io/docs/client-response-validation.html y https://sqldelight.github.io/sqldelight/2.1.0/.
 **¿Por qué es importante?** Combinar Ktor y SQLDelight en el repositorio compartido, con fallback offline a la caché local, hace que ambas plataformas se beneficien exactamente del mismo comportamiento de resiliencia ante conectividad intermitente, sin duplicar esa lógica de sincronización por separado.
+
+**Proyecto integrador:** implementa en RutaFlow un `EnvioRepository` compartido que persista la última respuesta válida y muéstrela con antigüedad visible cuando falle la sincronización, sin presentarla como confirmación nueva.
 
 ### Tema 3: Cierre del track — la promesa realista de KMP
 

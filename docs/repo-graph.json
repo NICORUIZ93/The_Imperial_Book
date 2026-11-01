@@ -629,7 +629,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1883,
+      "lines": 1953,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -661,7 +661,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14030,
+      "lines": 14000,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -841,7 +841,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9724,
+      "lines": 9728,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -900,7 +900,7 @@
     },
     {
       "path": "docs/migration-plan.md",
-      "lines": 196,
+      "lines": 195,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -918,7 +918,7 @@
     },
     {
       "path": "docs/migration-status.json",
-      "lines": 132,
+      "lines": 143,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1195,7 +1195,7 @@
     },
     {
       "path": "docs/topic-source-review.json",
-      "lines": 10948,
+      "lines": 11016,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6655,7 +6655,7 @@
     },
     {
       "path": "scripts/validate_merged_pdf.py",
-      "lines": 43,
+      "lines": 50,
       "kind": "automation-script",
       "symbols": [
         "main"
@@ -6666,7 +6666,8 @@
         "pathlib",
         "re",
         "subprocess",
-        "sys"
+        "sys",
+        "tempfile"
       ],
       "headings": []
     },
@@ -6858,7 +6859,7 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 648,
+      "lines": 663,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7677,7 +7678,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-11.md",
-      "lines": 206,
+      "lines": 205,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7698,7 +7699,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-12.md",
-      "lines": 204,
+      "lines": 203,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7719,7 +7720,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-13.md",
-      "lines": 231,
+      "lines": 229,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7803,7 +7804,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-17.md",
-      "lines": 199,
+      "lines": 200,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -7866,7 +7867,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-2.md",
-      "lines": 488,
+      "lines": 553,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8097,7 +8098,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-3.md",
-      "lines": 328,
+      "lines": 327,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8139,7 +8140,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-31.md",
-      "lines": 364,
+      "lines": 460,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8202,7 +8203,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-34.md",
-      "lines": 781,
+      "lines": 786,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8223,7 +8224,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-4.md",
-      "lines": 726,
+      "lines": 728,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8265,7 +8266,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-6.md",
-      "lines": 402,
+      "lines": 401,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8328,7 +8329,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-9.md",
-      "lines": 475,
+      "lines": 474,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8475,7 +8476,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-14.md",
-      "lines": 457,
+      "lines": 472,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8496,7 +8497,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-15.md",
-      "lines": 452,
+      "lines": 565,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -8893,7 +8894,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-1.md",
-      "lines": 405,
+      "lines": 406,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9019,7 +9020,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-15.md",
-      "lines": 385,
+      "lines": 511,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9082,7 +9083,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-4.md",
-      "lines": 703,
+      "lines": 704,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9103,7 +9104,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-5.md",
-      "lines": 328,
+      "lines": 322,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9250,7 +9251,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 742,
+      "lines": 784,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9292,7 +9293,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-12.md",
-      "lines": 998,
+      "lines": 1016,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9481,7 +9482,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 464,
+      "lines": 536,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9502,7 +9503,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-8.md",
-      "lines": 546,
+      "lines": 610,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9523,7 +9524,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-9.md",
-      "lines": 445,
+      "lines": 543,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9565,7 +9566,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-1.md",
-      "lines": 427,
+      "lines": 457,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9577,11 +9578,11 @@
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Crea en Xcode: File \u25b8 New \u25b8 Project \u25b8 App (interfaz SwiftUI), n\u00f3mbralo RutaFlowApp.",
-        "# Pega el c\u00f3digo anterior en ContentView.swift y a\u00f1ade #Preview { ListaEnvios() }",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u00b7 Fallo deliberado",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Orden de modificadores y layout con stacks",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
       ]
     },
     {
@@ -9607,7 +9608,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-11.md",
-      "lines": 232,
+      "lines": 255,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9628,7 +9629,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-12.md",
-      "lines": 270,
+      "lines": 385,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9649,7 +9650,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-13.md",
-      "lines": 632,
+      "lines": 645,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9670,7 +9671,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-14.md",
-      "lines": 467,
+      "lines": 583,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9681,7 +9682,7 @@
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
         "#### Paso 7 \u00b7 Cierre",
@@ -9691,7 +9692,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-2.md",
-      "lines": 311,
+      "lines": 304,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9704,15 +9705,15 @@
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### C\u00f3mo leer `@State`, `@Binding` y el prefijo `$`",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Genera un paquete Swift ejecutable (no requiere plantilla de Xcode)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: @Observable"
       ]
     },
     {
       "path": "web/public/content/ios/modulo-3.md",
-      "lines": 240,
+      "lines": 242,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9733,7 +9734,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-4.md",
-      "lines": 318,
+      "lines": 320,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9754,7 +9755,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-5.md",
-      "lines": 274,
+      "lines": 276,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9775,7 +9776,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-6.md",
-      "lines": 258,
+      "lines": 260,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9796,7 +9797,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-7.md",
-      "lines": 231,
+      "lines": 234,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9817,7 +9818,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-8.md",
-      "lines": 264,
+      "lines": 266,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9838,7 +9839,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-9.md",
-      "lines": 282,
+      "lines": 306,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -9901,133 +9902,133 @@
     },
     {
       "path": "web/public/content/java/modulo-10.md",
-      "lines": 228,
+      "lines": 447,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 10: M\u00f3dulos (JPMS) y proyectos grandes",
         "## Aprende construyendo",
-        "### Tema 1: module-info.java y encapsulaci\u00f3n fuerte",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "### Tema 1: module-info.java y encapsulaci\u00f3n fuerte \u00b7 Intermedio \u00b7 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Migraci\u00f3n incremental y cu\u00e1ndo JPMS aporta valor \u00b7 Avanzado \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: `opens` para acceso reflexivo controlado de frameworks \u00b7 Avanzado \u00b7 60 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 310,
+      "lines": 534,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 11: JVM interna \u2014 GC, profiling y JIT",
         "## Aprende construyendo",
-        "### Tema 1: Generaciones de memoria y recolectores",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "### Tema 1: Generaciones de memoria y recolectores \u00b7 Avanzado \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Java Flight Recorder y JIT compilation \u00b7 Avanzado \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Referencias especiales y heap dumps \u00b7 Avanzado \u00b7 60 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 564,
+      "lines": 1393,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 12: Buenas pr\u00e1cticas y patrones de dise\u00f1o",
         "## Aprende construyendo",
-        "### Tema 1: Builder \u2014 configuraci\u00f3n paso a paso y validaci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "### Tema 1: Builder \u2014 configuraci\u00f3n paso a paso y validaci\u00f3n \u00b7 Intermedio \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Factory Method y Strategy \u00b7 Intermedio \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Abstract Factory y familias de productos compatibles \u00b7 Avanzado \u00b7 50 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-13.md",
-      "lines": 186,
+      "lines": 410,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 13: Proyecto integrador",
         "## Aprende construyendo",
-        "### Tema 1: Arquitectura por capas del proyecto integrador",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Integrando concurrencia, modelado y testing",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Arquitectura por capas del proyecto integrador \u00b7 Avanzado \u00b7 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Integrando concurrencia, modelado y testing \u00b7 Experto \u00b7 60 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Build reproducible y cierre del track \u00b7 Avanzado \u00b7 50 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-14.md",
-      "lines": 417,
+      "lines": 499,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 14: Java en producci\u00f3n \u2014 memoria, benchmarks y runtime seguro",
         "## Aprende construyendo",
-        "### Tema 1: Compartir memoria requiere orden y visibilidad",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "### Tema 1: Compartir memoria requiere orden y visibilidad \u00b7 Experto \u00b7 60 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: La JVM optimiza y puede invalidar un cron\u00f3metro ingenuo \u00b7 Experto \u00b7 65 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Deserializar es permitir construcci\u00f3n y comportamiento \u00b7 Experto \u00b7 60 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 388,
+      "lines": 1065,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 15: Java Master \u2014 builds, pruebas y observabilidad",
         "## Aprende construyendo",
-        "### Tema 1: Maven avanzado",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "#### Aplicaci\u00f3n pr\u00e1ctica",
-        "### Tema 2: Gradle y builds reproducibles"
+        "### Tema 1: Maven avanzado \u00b7 Avanzado \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Gradle y builds reproducibles \u00b7 Avanzado \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Proyectos multi-m\u00f3dulo sin ciclos \u00b7 Experto \u00b7 1 h 15 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/java/modulo-16.md",
-      "lines": 195,
+      "lines": 453,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10035,20 +10036,20 @@
         "# M\u00f3dulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Entidades y relaciones JPA",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "### Tema 1: Entidades y relaciones JPA \u00b7 Intermedio \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: FetchType.LAZY, EAGER y el problema N+1 \u00b7 Avanzado \u00b7 1 h",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "## Construcci\u00f3n guiada del cap\u00edtulo"
       ]
     },
     {
       "path": "web/public/content/java/modulo-17.md",
-      "lines": 155,
+      "lines": 425,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10056,20 +10057,20 @@
         "# M\u00f3dulo 17: JDBC, DAO y transacciones",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: JDBC, PreparedStatement y DAO",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "### Tema 1: JDBC, PreparedStatement y DAO \u00b7 Intermedio \u00b7 1 h",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Transacciones, ACID y aislamiento \u00b7 Avanzado \u00b7 1 h 15 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "## Construcci\u00f3n guiada del cap\u00edtulo"
       ]
     },
     {
       "path": "web/public/content/java/modulo-18.md",
-      "lines": 158,
+      "lines": 369,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10077,36 +10078,36 @@
         "# M\u00f3dulo 18: HTTP, seguridad y backend con Java",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: HttpClient, REST, timeouts y fallos",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "### Tema 1: HttpClient, REST, timeouts y fallos \u00b7 Intermedio \u00b7 2 h",
+        "#### Aprende",
+        "#### Practica",
+        "# En la otra terminal:",
+        "#### Aplica",
+        "### Tema 2: Tokens, validaci\u00f3n y l\u00edmites de seguridad \u00b7 Avanzado \u00b7 2 h",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica"
       ]
     },
     {
       "path": "web/public/content/java/modulo-19.md",
-      "lines": 843,
+      "lines": 1002,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 19: Java del d\u00eda a d\u00eda \u2014 reflexi\u00f3n, regex, dinero, contratos, plugins e i18n",
         "## Aprende construyendo",
-        "### Tema 1: Reflexi\u00f3n y anotaciones en tiempo de ejecuci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Expresiones regulares con Pattern y Matcher",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Reflexi\u00f3n y anotaciones en tiempo de ejecuci\u00f3n \u00b7 Intermedio \u00b7 90 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Expresiones regulares con Pattern y Matcher \u00b7 Intermedio \u00b7 90 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Dinero exacto con BigDecimal \u00b7 B\u00e1sico \u00b7 75 min",
+        "#### Aprende"
       ]
     },
     {
@@ -10132,23 +10133,23 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 380,
+      "lines": 411,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 20: Java funcional \u2014 interfaces que componen comportamiento",
         "## Aprende construyendo",
-        "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier \u00b7 B\u00e1sico \u00b7 75 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas \u00b7 Intermedio \u00b7 75 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Streams como composici\u00f3n: pereza, orden y efectos que se esconden \u00b7 Intermedio \u00b7 90 min",
+        "#### Aprende"
       ]
     },
     {
@@ -10468,7 +10469,7 @@
     },
     {
       "path": "web/public/content/javascript/modulo-14.md",
-      "lines": 1220,
+      "lines": 1607,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10699,7 +10700,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-10.md",
-      "lines": 271,
+      "lines": 275,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10720,7 +10721,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-11.md",
-      "lines": 261,
+      "lines": 263,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -10741,7 +10742,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-12.md",
-      "lines": 445,
+      "lines": 449,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11077,7 +11078,7 @@
     },
     {
       "path": "web/public/content/node/modulo-14.md",
-      "lines": 474,
+      "lines": 576,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11329,7 +11330,7 @@
     },
     {
       "path": "web/public/content/react/modulo-11.md",
-      "lines": 292,
+      "lines": 294,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11392,7 +11393,7 @@
     },
     {
       "path": "web/public/content/react/modulo-14.md",
-      "lines": 479,
+      "lines": 510,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11497,7 +11498,7 @@
     },
     {
       "path": "web/public/content/react/modulo-6.md",
-      "lines": 348,
+      "lines": 350,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11539,7 +11540,7 @@
     },
     {
       "path": "web/public/content/react/modulo-8.md",
-      "lines": 252,
+      "lines": 254,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11686,7 +11687,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-5.md",
-      "lines": 642,
+      "lines": 641,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11728,7 +11729,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-7.md",
-      "lines": 435,
+      "lines": 472,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11896,7 +11897,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-15.md",
-      "lines": 1188,
+      "lines": 1194,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12018,7 +12019,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 800,
+      "lines": 822,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12039,7 +12040,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 348,
+      "lines": 1107,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12049,13 +12050,13 @@
         "### Tema 1: Productor, t\u00f3pico, key y consumidor \u00b7 Experto \u00b7 1 h 20 min",
         "#### Aprende",
         "#### Practica",
-        "# Copia ejecutable de referencia; se conserva el original para comparar los cambios.",
         "#### Aplica",
         "### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia \u00b7 Experto \u00b7 1 h 50 min",
         "#### Aprende",
         "#### Practica",
-        "# Copia independiente para repetir el tema sin depender de datos de una sesi\u00f3n anterior.",
-        "# Confirma que un error permanente termina en DLT sin escribir el inbox."
+        "#### Aplica",
+        "### Tema 3: Outbox transaccional y flujo de negocio \u00b7 Experto \u00b7 1 h 50 min",
+        "#### Aprende"
       ]
     },
     {
@@ -12102,7 +12103,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 960,
+      "lines": 1066,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

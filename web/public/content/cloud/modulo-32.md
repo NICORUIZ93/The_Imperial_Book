@@ -63,10 +63,10 @@ flowchart LR
     ND["flujo no declarado"] -->|bloqueado| X["✗"]
 ```
 
-Guardá la regla `api_to_db` de arriba en `infra/network.tf`, no como un comando `aws ec2`
-suelto corrido una sola vez: en el proyecto integrador RutaFlow, esa es la diferencia entre una
-regla documentada y versionada junto a `examples/rutaflow/cloud/template.yaml`, y una que
-alguien aplicó manualmente y nadie puede reproducir. El límite real de `--source-group` frente
+Guardá la regla `api_to_db` de arriba en un archivo `infra/network.tf` que crees en tu proyecto,
+no como un comando `aws ec2` suelto corrido una sola vez: en el proyecto integrador RutaFlow, esa
+es la diferencia entre una regla documentada y versionada junto a tu propia `template.yaml`, y una
+que alguien aplicó manualmente y nadie puede reproducir. El límite real de `--source-group` frente
 a un CIDR es que no conviene usarlo cuando el otro extremo vive fuera de tu VPC (un servicio de
 terceros, por ejemplo): ahí sí necesitás un rango de IP explícito, no una referencia de grupo.
 
@@ -137,11 +137,11 @@ flowchart TD
     SEC -.->|"guardrail: Deny StopLogging"| PROD
 ```
 
-En el proyecto integrador RutaFlow, este guardrail viviría junto a la infraestructura de
-`examples/rutaflow/cloud/template.yaml`, en un archivo propio como `infra/guardrails.json`,
-aplicado a la cuenta de producción antes de que exista ningún recurso de aplicación — ese orden
-(gobierno antes que carga de trabajo) es justamente lo que distingue una landing zone de un
-control agregado después de un incidente.
+En el proyecto integrador RutaFlow, este guardrail viviría junto a la infraestructura de tu
+propia `template.yaml`, en un archivo `infra/guardrails.json` que crees manualmente, aplicado a la
+cuenta de producción antes de que exista ningún recurso de aplicación — ese orden (gobierno antes
+que carga de trabajo) es justamente lo que distingue una landing zone de un control agregado
+después de un incidente.
 
 **Límites y decisión de uso:** Una landing zone establece controles iniciales, pero no sustituye autorización dentro de cada aplicación ni evita toda configuración insegura. Revisa excepciones, cuentas nuevas y cambios de políticas de forma continua, con responsables y evidencias.
 
@@ -210,10 +210,10 @@ flowchart LR
     F["fallo"] --> DET["detectar"] --> CONT["contener"] --> REST["conmutar/restaurar"] --> VAL["validar"] --> COM["comunicar"]
 ```
 
-En el proyecto integrador RutaFlow, esta misma tabla de RTO/RPO es la que justificaría, sobre
-los recursos reales de `examples/rutaflow/cloud/template.yaml`, por qué `ShipmentEvents` usa
-PITR de DynamoDB y `rutaflow-facturacion` (Módulo 13) usa snapshot diario en vez de una única
-estrategia genérica aplicada a todo por igual.
+En el proyecto integrador RutaFlow, esta misma tabla de RTO/RPO es la que justificaría, sobre los
+recursos que declares en tu propia `template.yaml`, por qué `ShipmentEvents` usa PITR de DynamoDB
+y `rutaflow-facturacion` (Módulo 13) usa snapshot diario en vez de una única estrategia genérica
+aplicada a todo por igual.
 
 ### Tema 4: Un backup solo existe operativamente después de restaurarlo
 
@@ -274,9 +274,9 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, este game day correría exactamente contra el snapshot de
-`rutaflow-facturacion` que `examples/rutaflow/cloud/template.yaml` referencia indirectamente vía
-el Módulo 13 — el runbook del Paso 6 documentaría ese mismo comando `restore-db-instance-from-db-snapshot`
-con el cronómetro corriendo, no una versión hipotética sin tiempos medidos.
+`rutaflow-facturacion` que creaste en el Módulo 13 — el runbook del Paso 6 documentaría ese mismo
+comando `restore-db-instance-from-db-snapshot` con el cronómetro corriendo, no una versión
+hipotética sin tiempos medidos. Conserva el runbook junto a tu propia `template.yaml`.
 
 ## Revisión oficial de plataforma — julio de 2026
 

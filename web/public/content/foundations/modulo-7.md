@@ -6,7 +6,7 @@
 ### Tema 1: Requisitos, stakeholders y criterios verificables
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a convertir "confirmar una entrega debe ser seguro" en un criterio de aceptación verificable, usando la regla real de `examples/rutaflow/node/confirm-delivery.ts`. Prerrequisitos: ninguno adicional.
+Al finalizar vas a convertir "confirmar una entrega debe ser seguro" en un criterio de aceptación verificable, usando la regla de confirmación `recipientPin`: debe tener exactamente 6 dígitos. Prerrequisitos: ninguno adicional.
 
 #### Paso 2 · Contexto y caso real
 A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundamentos, y en este módulo en particular vas a organizar el código en módulos para reutilizar funciones. "El sistema debe confirmar entregas de forma segura" no es verificable. El código real ya lo resolvió con una regla concreta: `recipientPin` debe tener exactamente 6 dígitos — esa es la especificación que faltaba poner en palabras antes de escribirse en código.
@@ -239,10 +239,10 @@ Entregá el escenario verificado y las dos corridas del Paso 4, la fila duplicad
 ### Tema 3: Diseño modular, principios, patrones y refactoring
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a leer el puerto `DeliveryRepository` real de RutaFlow y a escribir un segundo adaptador que lo implemente sin tocar `confirmDelivery`. Prerrequisitos: Módulo 5 del track Cloud (o lectura directa del archivo).
+Al finalizar vas a definir el puerto `DeliveryRepository`, implementar `confirmDelivery` y escribir un segundo adaptador sin tocar el caso de uso. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos, y Python 3 para el verificador estructural.
 
 #### Paso 2 · Contexto y caso real
-`examples/rutaflow/node/confirm-delivery.ts` ya define `DeliveryRepository` como una interfaz (`findCommandResult`/`confirm`) — el mismo patrón `Protocol` + inyección de dependencias que acabás de ver en el ejemplo de `RepositorioProductos`, pero en código real de este proyecto, no un ejemplo inventado.
+En esta práctica `DeliveryRepository` será una interfaz con dos operaciones (`findCommandResult`/`confirm`): el mismo patrón `Protocol` + inyección de dependencias que acabás de ver en `RepositorioProductos`. Escribirás todos los archivos en una carpeta vacía para comprobar que el dominio no necesita conocer el mecanismo de persistencia.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del repositorio (dos métodos), nunca cómo esos datos llegan a disco — el mismo principio de "el dominio no importa SQLite" aplicado a un archivo que ya existe.
@@ -291,10 +291,43 @@ flowchart LR
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Refactoriza el almacenamiento detrás de un contrato pequeño conservando las pruebas de uso. Sustituye el archivo por un fake y demuestra que crear y completar tareas mantienen su comportamiento.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `verificar_puerto.py` y copiá `confirm-delivery.ts` para comprobar qué expone el contrato:
+Parte de una carpeta vacía y crea manualmente `confirm-delivery.ts` y `verificar_puerto.py`:
 
 ```bash
-mkdir ejemplo && cp examples/rutaflow/node/confirm-delivery.ts ejemplo/ && cd ejemplo
+mkdir ejemplo-puerto && cd ejemplo-puerto
+```
+
+Archivo `confirm-delivery.ts`:
+
+```typescript
+export type DeliveryCommand = Readonly<{
+  commandId: string;
+  shipmentId: string;
+  occurredAt: string;
+  recipientPin: string;
+}>;
+
+export interface DeliveryRepository {
+  findCommandResult(commandId: string): Promise<DeliveryResult | null>;
+  confirm(command: DeliveryCommand): Promise<DeliveryResult>;
+}
+
+export type DeliveryResult = Readonly<{ shipmentId: string; status: 'delivered' }>;
+
+export async function confirmDelivery(
+  command: DeliveryCommand,
+  repository: DeliveryRepository,
+): Promise<DeliveryResult> {
+  if (!command.commandId || !command.shipmentId) throw new TypeError('command identifiers are required');
+  if (!/^\d{6}$/.test(command.recipientPin)) throw new TypeError('recipientPin must contain six digits');
+
+  const previousResult = await repository.findCommandResult(command.commandId);
+  if (previousResult) return previousResult;
+
+  // Una implementación SQL debe insertar commandId y cambiar el envío en una
+  // única transacción con restricción UNIQUE(command_id).
+  return repository.confirm(command);
+}
 ```
 
 Archivo `verificar_puerto.py`:
@@ -330,7 +363,40 @@ referencias de infraestructura: 0
 El contrato expone solo los dos métodos que `confirmDelivery` necesita y ninguna referencia a SQL, HTTP ni DynamoDB. El script verifica la forma del contrato, no que una implementación cumpla el comportamiento; eso se demuestra con el adaptador del Paso 5.
 
 #### Paso 5 · Práctica guiada
-Pista: escribí un adaptador en memoria que implemente ese contrato e inyectalo en `confirmDelivery` dos veces con el mismo `commandId`. Ese es el fallo deliberado a evitar: la segunda llamada no debe volver a confirmar; `findCommandResult` devuelve el resultado ya guardado. Si tu adaptador vuelve a llamar `confirm()`, el defecto está en el adaptador, no en el dominio: contá las confirmaciones y comprobá que el contador queda en 1.
+Crea `adaptador-memoria.ts` con un repositorio en memoria y un contador de efectos. El fallo deliberado a evitar es volver a confirmar en el segundo intento: `findCommandResult` debe devolver el resultado ya guardado y el contador debe quedar en 1. **Pista:** si el contador llega a 2, revisa primero qué devuelve `findCommandResult` después de la primera confirmación y no cambies la validación del PIN.
+
+```typescript
+import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from './confirm-delivery.ts';
+
+const resultados = new Map<string, DeliveryResult>();
+let confirmaciones = 0;
+const repo: DeliveryRepository = {
+  async findCommandResult(commandId) { return resultados.get(commandId) ?? null; },
+  async confirm(command) {
+    confirmaciones += 1;
+    const result = { shipmentId: command.shipmentId, status: 'delivered' as const };
+    resultados.set(command.commandId, result);
+    return result;
+  },
+};
+
+const comando = {
+  commandId: 'cmd-1', shipmentId: 'env-4471',
+  occurredAt: '2026-10-05', recipientPin: '837201',
+};
+console.log(await confirmDelivery(comando, repo));
+console.log(await confirmDelivery(comando, repo));
+console.log('confirmaciones reales:', confirmaciones);
+if (confirmaciones !== 1) throw new Error('el reintento repitió el efecto');
+```
+
+Ejecuta:
+
+```bash
+node adaptador-memoria.ts
+```
+
+Resultado esperado: dos resultados idénticos con estado `delivered` y `confirmaciones reales: 1`. Si el contador llega a 2, revisa la deduplicación antes de culpar al adaptador.
 
 #### Paso 6 · Práctica independiente
 Escribí una prueba caracterizadora sobre `confirmDelivery` usando el adaptador en memoria del Paso 5: documentá qué devuelve con PIN válido, con PIN de 4 dígitos y con `commandId` repetido, antes de proponer cualquier cambio al código real.
@@ -418,19 +484,19 @@ Un `record class` de C# tiene semántica de igualdad por valor generada por el c
 **Analogía:** fotocopiar una ficha que contiene una dirección no duplica el almacén al que esa dirección apunta. El límite es que la igualdad de los miembros también depende de sus tipos: dos listas con elementos iguales no necesariamente comparan como iguales por contenido.
 
 #### Paso 4 · Demostración guiada desde cero
-```bash
-cp -R examples/rutaflow-material/records-csharp ejemplo-records
-cd ejemplo-records
-dotnet run --project Records.csproj
-```
-Si no usas una copia del repo, crea la carpeta `ejemplo-records` y coloca estos dos archivos dentro, sin la subcarpeta `records-csharp`:
+Parte de una carpeta vacía y crea manualmente el proyecto con estos dos archivos:
 
-Crea `records-csharp/Records.csproj` con este contenido completo:
+```bash
+mkdir ejemplo-records && cd ejemplo-records
+```
+
+Crea `Records.csproj` con esta configuración:
+
 ```xml
 <Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>
 ```
 
-Crea `records-csharp/Program.cs` con este contenido completo:
+Crea `Program.cs` con el programa y sus dos records:
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -447,6 +513,12 @@ if (a != b) throw new Exception("Se esperaba igualdad por valor");
 Console.WriteLine("Records con valores iguales comparan igual");
 public record Registro(int Id, List<string> Estados);
 public record Punto(int X, int Y);
+```
+
+Ejecuta el proyecto desde la carpeta que contiene ambos archivos:
+
+```bash
+dotnet run --project Records.csproj
 ```
 
 **Resultado esperado:** `IDs independientes; lista compartida` y `Records con valores iguales comparan igual`. Explica cada bloque: `var` deja que el compilador infiera el tipo, `new` crea objetos, `with` cambia un valor escalar y conserva la referencia de Estados. Añadir un estado desde la copia cambia la lista que también observa el original; los checks lanzan una excepción si el contrato deja de cumplirse.

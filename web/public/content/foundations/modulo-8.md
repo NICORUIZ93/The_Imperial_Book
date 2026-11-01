@@ -8,7 +8,7 @@ Hasta ahora construiste un inventario, lo protegiste con pruebas y seguridad y s
 ### Tema 1: El sistema operativo como administrador y frontera
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a lanzar como proceso real el cálculo de ruta de `examples/rutaflow/foundation/domain.py`, inspeccionarlo con `ps` y detenerlo con una señal. Prerrequisitos: Python 3 instalado.
+Al finalizar vas a escribir un cálculo de ruta mínimo, lanzarlo como proceso real, inspeccionarlo con `ps` y detenerlo con una señal. Prerrequisitos: Python 3 instalado.
 
 #### Paso 2 · Contexto y caso real
 A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundamentos, y en este módulo en particular vas a escribir pruebas para cada función del gestor de tareas. `nearest_neighbor_route` de RutaFlow puede tardar notablemente en una zona con muchas paradas — si un operador necesita cancelarlo a mitad de camino, necesita entender qué hace el sistema operativo con ese proceso, no solo con el código Python.
@@ -51,10 +51,38 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `lento.py`, copiando antes `domain.py` desde `examples/rutaflow/foundation/`:
+Parte de una carpeta vacía y crea manualmente `domain.py` y `lento.py`:
 
 ```bash
-mkdir ejemplo && cp examples/rutaflow/foundation/domain.py ejemplo/ && cd ejemplo
+mkdir ejemplo-procesos && cd ejemplo-procesos
+```
+
+Archivo `domain.py`:
+
+```python
+from dataclasses import dataclass
+from math import hypot
+
+@dataclass(frozen=True)
+class Stop:
+    shipment_id: str
+    latitude: float
+    longitude: float
+
+def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> list[Stop]:
+    """Heurística educativa O(n²); no afirma encontrar la ruta óptima."""
+    remaining = stops.copy()
+    ordered = []
+    position = origin
+    while remaining:
+        selected = min(
+            remaining,
+            key=lambda stop: hypot(stop.latitude - position[0], stop.longitude - position[1]),
+        )
+        ordered.append(selected)
+        remaining.remove(selected)
+        position = (selected.latitude, selected.longitude)
+    return ordered
 ```
 
 Archivo `lento.py`:
@@ -352,15 +380,51 @@ flowchart TB
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea manualmente `domain.py` y `Dockerfile`:
+
+```bash
+mkdir ejemplo-contenedor && cd ejemplo-contenedor
+```
+
+Archivo `domain.py`:
+
+```python
+from dataclasses import dataclass
+from math import hypot
+
+@dataclass(frozen=True)
+class Stop:
+    shipment_id: str
+    latitude: float
+    longitude: float
+
+def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> list[Stop]:
+    remaining = stops.copy()
+    ordered = []
+    position = origin
+    while remaining:
+        selected = min(remaining, key=lambda stop: hypot(
+            stop.latitude - position[0], stop.longitude - position[1]))
+        ordered.append(selected)
+        remaining.remove(selected)
+        position = (selected.latitude, selected.longitude)
+    return ordered
+```
+
+Archivo `Dockerfile`:
+
 ```dockerfile
 FROM python:3.12-slim
 WORKDIR /app
 RUN useradd --create-home --uid 10001 rutaflow
-COPY examples/rutaflow/foundation/domain.py ./domain.py
+COPY domain.py ./domain.py
 RUN mkdir /data && chown rutaflow:rutaflow /data
 USER rutaflow
 CMD ["python", "-c", "from domain import nearest_neighbor_route, Stop; print(nearest_neighbor_route((0,0),[Stop('RF-1',1,1)]))"]
 ```
+
+Construye y ejecuta desde esa misma carpeta:
+
 ```bash
 docker build -t rutaflow-rutas .
 docker run --rm -v rutaflow-cache:/data rutaflow-rutas

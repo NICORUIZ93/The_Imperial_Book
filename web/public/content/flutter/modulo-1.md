@@ -354,9 +354,10 @@ Entregá la lista con Key estable del Paso 4, el bug de identidad provocado en e
 
 **Objetivo:** Observar en tiempo real cómo StatelessWidget y StatefulWidget se reconstruyen diferentemente.
 
-**Setup:**
+**Setup:** parte de una carpeta vacía, genera tu propio proyecto y escribe en `lib/main.dart` el contador y la lista con estado de este módulo:
 ```bash
-cd examples/flutter_rutaflow
+flutter create demo_flutter
+cd demo_flutter
 flutter run -d chrome  # o -d emulator-5554, -d iPad, etc
 ```
 

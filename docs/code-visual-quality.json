@@ -20,7 +20,7 @@
       "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
-      "filePath": 156,
+      "filePath": 150,
       "runCommand": 156,
       "officialSource": 156
     },
@@ -87,7 +87,7 @@
     "java": {
       "topics": 95,
       "code": 95,
-      "commentedCode": 66,
+      "commentedCode": 55,
       "mermaid": 35,
       "archifyVisual": 3,
       "asciiVisual": 0,
@@ -99,8 +99,8 @@
     "spring-boot": {
       "topics": 91,
       "code": 91,
-      "commentedCode": 78,
-      "mermaid": 51,
+      "commentedCode": 77,
+      "mermaid": 54,
       "archifyVisual": 4,
       "asciiVisual": 17,
       "misleadingDiagramLabel": 0,
@@ -135,12 +135,12 @@
     "ios": {
       "topics": 56,
       "code": 56,
-      "commentedCode": 38,
-      "mermaid": 30,
+      "commentedCode": 40,
+      "mermaid": 34,
       "archifyVisual": 0,
       "asciiVisual": 16,
       "misleadingDiagramLabel": 0,
-      "filePath": 56,
+      "filePath": 55,
       "runCommand": 56,
       "officialSource": 56
     },
@@ -1215,43 +1215,113 @@
     },
     {
       "track": "java",
+      "module": 10,
+      "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 11,
+      "topic": "Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
       "module": 12,
-      "topic": "Tema 6: Patrones estructurales — elegir por intención",
+      "topic": "Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 2: Factory Method y Strategy · Intermedio · 55 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 12,
+      "topic": "Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 13,
-      "topic": "Tema 2: Integrando concurrencia, modelado y testing",
+      "topic": "Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 13,
-      "topic": "Tema 3: Build reproducible y cierre del track",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 14,
-      "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
+      "topic": "Tema 3: Build reproducible y cierre del track · Avanzado · 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 15,
-      "topic": "Tema 1: Maven avanzado",
+      "topic": "Tema 1: Maven avanzado · Avanzado · 55 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 15,
-      "topic": "Tema 2: Gradle y builds reproducibles",
+      "topic": "Tema 2: Gradle y builds reproducibles · Avanzado · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 5: Pruebas de integración reproducibles · Experto · 1 h",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 17,
+      "topic": "Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 17,
+      "topic": "Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 18,
+      "topic": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h",
       "missingCode": false,
       "missingComments": true
     },
@@ -1273,6 +1343,13 @@
       "track": "java",
       "module": 2,
       "topic": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 20,
+      "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1501,6 +1578,13 @@
       "missingComments": true
     },
     {
+      "track": "spring-boot",
+      "module": 21,
+      "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
       "track": "kotlin-multiplatform",
       "module": 12,
       "topic": "Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas",
@@ -1644,20 +1728,6 @@
       "track": "ios",
       "module": 10,
       "topic": "Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 11,
-      "topic": "Tema 1: Certificados y provisioning profiles",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 11,
-      "topic": "Tema 2: Archivar, subir y TestFlight",
       "missingCode": false,
       "missingComments": true
     },

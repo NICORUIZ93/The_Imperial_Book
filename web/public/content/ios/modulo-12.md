@@ -1,7 +1,7 @@
 # Módulo 12: Proyecto integrador: app SwiftUI completa
 
 
-**Proyecto del módulo:** crea una vez en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; cada tema reutiliza ese proyecto, pega su código y compila.
+**Proyecto del módulo:** para cada práctica, parte de una carpeta vacía y crea en Xcode (File ▸ New ▸ Project ▸ App, interfaz SwiftUI) un proyecto llamado `RutaFlowApp`; escribe manualmente todos los archivos indicados y compila, sin usar proyectos ya preparados.
 
 ## Aprende construyendo
 
@@ -57,7 +57,7 @@ flowchart TD
     style D fill:#c8e6c9
 ```
 
-En el proyecto integrador RutaFlow, `EnviosViewModel` vive en `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`. Límite de la decisión: esta separación estricta en capas no conviene para un prototipo descartable de una sola pantalla — ahí el costo de las carpetas y protocolos intermedios supera el beneficio; se justifica específicamente cuando el proyecto, como RutaFlow, crece a varios módulos que varios desarrolladores tocan en paralelo.
+En tu propio proyecto RutaFlow, crea el grupo `ViewModels` y dentro el archivo `EnviosViewModel.swift` con **File ▸ New ▸ File ▸ Swift File**, asignado al target de la app. Límite de la decisión: esta separación estricta en capas no conviene para un prototipo descartable de una sola pantalla — ahí el costo de las carpetas y protocolos intermedios supera el beneficio; se justifica específicamente cuando el proyecto, como RutaFlow, crece a varios módulos que varios desarrolladores tocan en paralelo.
 
 #### Paso 4 · Demostración guiada desde cero
 ```text
@@ -131,20 +131,135 @@ flowchart LR
     C -.->|falla: try? sin propagar| B
 ```
 
-El ViewModel de carga comprobable está en `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`. El método `sincronizar()` mostrado aquí es una ampliación que debes implementar en tu proyecto iOS: requiere inyectar servicio y ModelContext, convertir DTOs a EnvioLocal y actualizar por ID; no copies el fragmento como una clase completa ni insertes duplicados en cada refresco. Límite de la decisión: degradar silenciosamente con `try?` no conviene para un error que ocurre durante una acción directa del conductor (como un PIN incorrecto al confirmar una entrega) — ahí el error debe propagarse y mostrarse explícitamente; `try?` se reserva específicamente para sincronización de background no crítica, como este caso.
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices el proyecto del Tema 1. Crea los grupos `Dominio`, `Servicios`, `ViewModels` y `Vistas`. Dentro de cada uno crea manualmente, con **File ▸ New ▸ File ▸ Swift File** y el target `RutaFlowApp` seleccionado, los archivos `EnvioLocal.swift`, `ServicioAPI.swift`, `EnviosViewModel.swift` y `ListaEnvios.swift`. Escribe en ellos los fragmentos correspondientes del Paso 4: inyecta servicio y `ModelContext`, convierte DTOs a `EnvioLocal` y actualiza por ID sin insertar duplicados en cada refresco. Límite de la decisión: degradar silenciosamente con `try?` no conviene para un error que ocurre durante una acción directa del conductor (como un PIN incorrecto al confirmar una entrega) — ahí el error debe propagarse y mostrarse explícitamente; `try?` se reserva específicamente para sincronización de background no crítica, como este caso.
 
 #### Paso 4 · Demostración guiada desde cero
+
+En `Dominio/EnvioLocal.swift`, declara el modelo persistente y el DTO:
+
 ```swift
+import SwiftData
+
+@Model
+final class EnvioLocal {
+    @Attribute(.unique) var id: String
+    var guia: String
+
+    init(id: String, guia: String) {
+        self.id = id
+        self.guia = guia
+    }
+}
+
+struct EnvioRemoto: Sendable {
+    let id: String
+    let guia: String
+}
+```
+
+En `Servicios/ServicioAPI.swift`, escribe este servicio local determinista; representa la respuesta remota sin depender de una API preparada:
+
+```swift
+import Foundation
+
+@MainActor
+final class ServicioAPI {
+    func obtenerEnvios() async throws -> [EnvioRemoto] {
+        [EnvioRemoto(id: "RF-4471", guia: "RF-4471")]
+    }
+}
+```
+
+En `ViewModels/EnviosViewModel.swift`, implementa la orquestación completa:
+
+```swift
+import Foundation
+import Observation
+import SwiftData
+
+@MainActor
 @Observable
-class EnviosViewModel {
+final class EnviosViewModel {
     var envios: [EnvioLocal] = []
     private let servicio: ServicioAPI
     private let context: ModelContext
 
+    init(servicio: ServicioAPI, context: ModelContext) {
+        self.servicio = servicio
+        self.context = context
+    }
+
+    func cargarLocales() {
+        envios = (try? context.fetch(FetchDescriptor<EnvioLocal>())) ?? []
+    }
+
     func sincronizar() async {
         guard let remotos = try? await servicio.obtenerEnvios() else { return }
-        remotos.forEach { context.insert($0) }
+
+        for remoto in remotos {
+            let id = remoto.id
+            let consulta = FetchDescriptor<EnvioLocal>(
+                predicate: #Predicate { $0.id == id }
+            )
+            if let existente = (try? context.fetch(consulta))?.first {
+                existente.guia = remoto.guia
+            } else {
+                context.insert(EnvioLocal(id: remoto.id, guia: remoto.guia))
+            }
+        }
+
         try? context.save()
+        cargarLocales()
+    }
+}
+```
+
+En `Vistas/ListaEnvios.swift`, crea la vista que solo conoce el ViewModel:
+
+```swift
+import SwiftUI
+
+struct ListaEnvios: View {
+    let vm: EnviosViewModel
+
+    var body: some View {
+        List(vm.envios, id: \.id) { envio in
+            Text(envio.guia)
+        }
+        .task {
+            vm.cargarLocales()
+            await vm.sincronizar()
+        }
+    }
+}
+```
+
+Por último, sustituye el contenido del `RutaFlowApp.swift` generado para conectar tus propios tipos:
+
+```swift
+import SwiftUI
+import SwiftData
+
+@main
+struct RutaFlowApp: App {
+    private let container: ModelContainer
+    private let vm: EnviosViewModel
+
+    init() {
+        do {
+            let container = try ModelContainer(for: EnvioLocal.self)
+            self.container = container
+            self.vm = EnviosViewModel(
+                servicio: ServicioAPI(),
+                context: container.mainContext
+            )
+        } catch {
+            fatalError("No se pudo crear el almacén local: \(error)")
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup { ListaEnvios(vm: vm) }
     }
 }
 ```
@@ -208,7 +323,7 @@ graph TD
     style F fill:#fff3e0
 ```
 
-* Código: `examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift`
+* Código: escribe la retrospectiva sobre tu propio `ViewModels/EnviosViewModel.swift`, creado manualmente en el target `RutaFlowApp`.
 
 ---
 

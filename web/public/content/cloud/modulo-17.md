@@ -38,7 +38,7 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, este stream de ubicación GPS es el candidato natural a
-agregarse junto a `ShipmentEvents` en `examples/rutaflow/cloud/template.yaml` el día que el
+agregarse junto a `ShipmentEvents` en la plantilla `template.yaml` que escribas el día que el
 mapa en vivo del cliente necesite leer independientemente del proceso de analítica de rutas —
 algo que la cola `DeliveryCommands` (SQS, un solo consumidor por mensaje) no podría resolver.
 
@@ -100,9 +100,9 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, `mapa-en-vivo` y `alertas-desvio` serían dos consumer
-groups separados sobre el mismo topic de ubicaciones; igual que `ConfirmarEntregaFn` en
-`examples/rutaflow/cloud/template.yaml` tiene su propio rol de mínimo privilegio, cada grupo
-necesitaría su propio permiso de lectura sobre MSK, sin compartir ni el offset ni el acceso.
+groups separados sobre el mismo topic de ubicaciones; igual que `ConfirmarEntregaFn` debe tener
+su propio rol de mínimo privilegio en la `template.yaml` que escribas, cada grupo necesitaría su
+propio permiso de lectura sobre MSK, sin compartir ni el offset ni el acceso.
 
 **Límites y decisión de uso:** Dentro de un grupo, aumentar consumidores por encima de las particiones no aumenta el paralelismo útil de ese topic. El orden está ligado a la partición; una confirmación externa requiere además idempotencia y una política explícita de offsets.
 
@@ -164,9 +164,10 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, `rutaflow-ubicaciones-historico` seguiría el mismo patrón de
-ciclo de vida que `PruebasEntrega` en `examples/rutaflow/cloud/template.yaml`: Firehose entrega
+ciclo de vida que configuraste para `PruebasEntrega` en el Módulo 2: Firehose entrega
 automáticamente, pero no conviene dejar ese bucket creciendo sin una regla de transición a una
-capa más barata (Módulo 2, Tema 4) una vez que el histórico deja de consultarse seguido.
+capa más barata una vez que el histórico deja de consultarse seguido. Declara ambos recursos en tu
+propia plantilla `template.yaml`.
 
 ---
 

@@ -37,11 +37,11 @@ flowchart BT
     B --> C["Athena (consulta SQL usando esos metadatos, sin mover los datos)"]
 ```
 
-En el proyecto integrador RutaFlow, `rutaflow-ubicaciones-historico` es el mismo bucket que
-`examples/rutaflow/cloud/template.yaml` declararía como destino de Firehose: catalogarlo con
-Glue no conviene hacerlo copiando los datos a otra tabla — el límite real de schema-on-read es
-que el esquema declarado puede desincronizarse de los archivos reales si nadie lo mantiene, a
-diferencia de una tabla RDS (Módulo 13) donde la propia base impone el esquema en cada escritura.
+En el proyecto integrador RutaFlow, `rutaflow-ubicaciones-historico` es el bucket que declararías
+como destino de Firehose en tu propia plantilla `template.yaml`: catalogarlo con Glue no conviene
+hacerlo copiando los datos a otra tabla — el límite real de schema-on-read es que el esquema
+declarado puede desincronizarse de los archivos reales si nadie lo mantiene, a diferencia de una
+tabla RDS (Módulo 13) donde la propia base impone el esquema en cada escritura.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -117,9 +117,9 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, este crawler reemplazaría la declaración manual del Tema 1
-cada vez que `examples/rutaflow/cloud/template.yaml` cambie el formato de lo que Firehose
-deposita en `rutaflow-ubicaciones-historico`, sin que nadie tenga que acordarse de actualizar
-la tabla a mano.
+cada vez que cambie el formato de lo que Firehose deposita en `rutaflow-ubicaciones-historico`,
+sin que nadie tenga que acordarse de actualizar la tabla a mano. El bucket, el destino de Firehose
+y el crawler pueden declararse en la plantilla `template.yaml` que escribas.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -164,10 +164,10 @@ flowchart LR
 ```
 
 En el proyecto integrador RutaFlow, partition pruning sobre `rutaflow-ubicaciones-historico`
-(el bucket que `examples/rutaflow/cloud/template.yaml` alimenta vía Firehose) no conviene
-dejarlo para "cuando crezca": el límite real es que, sin particiones desde el día uno, migrar
-meses de archivos ya escritos a una nueva estructura de carpetas es un trabajo de reprocesamiento
-completo, no un simple cambio de configuración.
+(el bucket que tu configuración de Firehose alimenta) no conviene dejarlo para "cuando crezca":
+el límite real es que, sin particiones desde el día uno, migrar meses de archivos ya escritos a
+una nueva estructura de carpetas es un trabajo de reprocesamiento completo, no un simple cambio
+de configuración.
 
 ---
 

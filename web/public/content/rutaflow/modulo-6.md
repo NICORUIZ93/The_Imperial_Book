@@ -423,14 +423,14 @@ flowchart TD
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+Parte de una carpeta vacía y crea manualmente los dos archivos siguientes en ella:
 ```bash
-cp -R examples/rutaflow-material/payments ejemplo-pagos
-cd ejemplo-pagos
+mkdir ejemplo-pagos && cd ejemplo-pagos
 node --test contrato.test.mjs
 ```
-Para crear el ejemplo manualmente, guarda estos dos archivos juntos, sin `payments/`:
+El comando de prueba debe ejecutarse después de guardar ambos archivos:
 
-Crea `payments/contrato.mjs` con este contenido completo:
+Crea `contrato.mjs` con este contenido completo:
 ```javascript
 export function prepararCobro({ paymentMethodId, amountCents, currency }) {
   if (typeof paymentMethodId !== 'string' || !/^pm_test_[a-z0-9]+$/.test(paymentMethodId)) {
@@ -444,7 +444,7 @@ export function prepararCobro({ paymentMethodId, amountCents, currency }) {
 }
 ```
 
-Crea `payments/contrato.test.mjs` con este contenido completo:
+Crea `contrato.test.mjs` con este contenido completo:
 ```javascript
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -459,7 +459,7 @@ test('no transforma silenciosamente el importe', () => {
 });
 ```
 
-**Resultado esperado:** dos pruebas correctas. Explica cada bloque: solo admitimos IDs ficticios `pm_test_...`, el importe es entero positivo y la salida no contiene PAN ni CVV. Documenta el contrato en `payments/README.md`: formato del identificador, moneda admitida y campos prohibidos. Este patrón es un contrato didáctico; no afirma que el prefijo sea una credencial real o que una expresión regular proteja pagos.
+**Resultado esperado:** dos pruebas correctas. Explica cada bloque: solo admitimos IDs ficticios `pm_test_...`, el importe es entero positivo y la salida no contiene PAN ni CVV. Documenta el contrato en `README.md`: formato del identificador, moneda admitida y campos prohibidos. Este patrón es un contrato didáctico; no afirma que el prefijo sea una credencial real o que una expresión regular proteja pagos.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado:** sustituye `Number.isSafeInteger` por una comprobación que acepta cualquier número positivo. El test de 10.5 deja de ser rechazado y falla. **Pista:** las unidades son parte del contrato; convertir sin una regla de redondeo puede cambiar el importe.

@@ -1,7 +1,7 @@
 # Módulo 14: JavaScript Master: TypeScript, WASM y cómputo emergente
 
 
-**Preparación del módulo:** cada tema trabaja sobre una copia independiente del laboratorio, creada desde la raíz del repositorio con Node 24 LTS. El laboratorio incluye scripts, lockfile, HTML, puntos de entrada y la carpeta de cada tema. Las rutas del tema son relativas a esa copia: los archivos existen para poder ejecutar antes de modificarlos, y conviene reescribir el ejemplo y comparar con la versión inicial.
+**Preparación del módulo:** cada tema comienza en una carpeta vacía e independiente con Node 24 LTS. Crearás el proyecto, el manifiesto, los puntos de entrada y todos los archivos indicados; las rutas son relativas a esa carpeta. Conserva cada laboratorio para comparar los cambios posteriores sin depender de archivos prefabricados.
 
 ## Aprende construyendo
 
@@ -42,17 +42,32 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-1
+mkdir ejemplo-js-modulo-14-tema-1
 cd ejemplo-js-modulo-14-tema-1
-npm ci
-npm run check
+npm init -y
+npm install --save-dev typescript tsx
+```
+
+Crea `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
 ```
 
 Crea `src/domain/delivery-status.ts`:
 
 ```ts
 // La unión discriminada obliga a tratar cada estado de la entrega.
-type DeliveryStatus =
+export type DeliveryStatus =
   | { kind: 'assigned'; courierId: string }
   | { kind: 'in-transit'; latitude: number; longitude: number }
   | { kind: 'delivered'; receivedBy: string };
@@ -71,13 +86,24 @@ function assertNever(value: never): never {
 }
 ```
 
+Crea `src/demo.ts` para ejecutar las tres ramas:
+
+```ts
+import { statusLabel } from './domain/delivery-status.js';
+
+console.log(statusLabel({ kind: 'assigned', courierId: 'Ana' }));
+console.log(statusLabel({ kind: 'in-transit', latitude: 4.6, longitude: -74.1 }));
+console.log(statusLabel({ kind: 'delivered', receivedBy: 'Luis' }));
+```
+
 Ejecuta:
 
 ```bash
 npx tsc --noEmit
+npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** termina sin errores y `statusLabel` devuelve texto específico para cada variante.
+**Resultado esperado:** la comprobación termina sin errores y la salida contiene `Asignada a Ana`, `En ruta: 4.6, -74.1` y `Recibida por Luis`.
 
 **Fallo deliberado:** añade `{ kind: "cancelled"; reason: string }` sin incorporarlo al `switch`. `assertNever` recibe un valor distinto de `never` y TypeScript señala la rama faltante antes de ejecutar.
 
@@ -142,10 +168,10 @@ sequenceDiagram
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-2
+mkdir ejemplo-js-modulo-14-tema-2
 cd ejemplo-js-modulo-14-tema-2
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla-ts
+npm install
 ```
 
 Crea `src/workers/route.worker.ts`:
@@ -165,11 +191,52 @@ self.onmessage = (event: MessageEvent<unknown>) => {
 };
 ```
 
-Crea `src/route-client.ts` con `new Worker(new URL("./workers/route.worker.ts", import.meta.url), { type: "module" })`, maneja las variantes success/error, envía `{ segments: [2.4, 3.1, 1.5] }` y expone `destroy()` que llama `terminate()`.
+Crea `src/route-client.ts`:
+
+```ts
+type RouteResponse =
+  | { kind: 'success'; total: number }
+  | { kind: 'error'; message: string };
+
+export function createRouteClient(output: HTMLElement) {
+  const worker = new Worker(new URL('./workers/route.worker.ts', import.meta.url), { type: 'module' });
+  worker.onmessage = (event: MessageEvent<RouteResponse>) => {
+    output.textContent = event.data.kind === 'success'
+      ? `Distancia planificada: ${event.data.total} km`
+      : event.data.message;
+  };
+  return {
+    calculate(segments: number[]) { worker.postMessage({ segments }); },
+    destroy() { worker.terminate(); },
+  };
+}
+```
+
+Sustituye `src/main.ts` por un punto de entrada que también permita comprobar que la UI responde:
+
+```ts
+import { createRouteClient } from './route-client';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <h1>Planificador</h1>
+  <button id="calculate">Calcular</button>
+  <button id="pulse">Comprobar UI: 0</button>
+  <p id="result" role="status"></p>
+`;
+const client = createRouteClient(document.querySelector('#result')!);
+document.querySelector('#calculate')!.addEventListener('click', () => client.calculate([2.4, 3.1, 1.5]));
+let clicks = 0;
+document.querySelector('#pulse')!.addEventListener('click', (event) => {
+  (event.currentTarget as HTMLButtonElement).textContent = `Comprobar UI: ${++clicks}`;
+});
+window.addEventListener('pagehide', () => client.destroy(), { once: true });
+```
 
 ```bash
 npm run dev
 ```
+
+Abre la URL local y pulsa **Calcular**.
 
 **Resultado esperado:** `Distancia planificada: 7 km`; el botón de la UI sigue respondiendo durante un lote grande.
 
@@ -228,10 +295,11 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-3
+mkdir ejemplo-js-modulo-14-tema-3
 cd ejemplo-js-modulo-14-tema-3
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla-ts
+npm install
+npm install maplibre-gl
 ```
 
 Crea `vite.config.ts`:
@@ -253,7 +321,46 @@ export default defineConfig({
 });
 ```
 
-En la vista usa `await import("maplibre-gl")` únicamente después de navegar al mapa. Ejecuta:
+Crea `src/map-view.ts`; el import dinámico se ejecuta únicamente al abrir el mapa:
+
+```ts
+export async function mountMap(container: HTMLElement) {
+  const { Map } = await import('maplibre-gl');
+  return new Map({
+    container,
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [-74.1, 4.6],
+    zoom: 4,
+  });
+}
+```
+
+Sustituye `src/main.ts`:
+
+```ts
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <h1>Seguimiento</h1>
+  <p>La entrega está en tránsito.</p>
+  <button id="open-map">Abrir mapa</button>
+  <p id="map-status" role="status"></p>
+  <div id="map" style="height: 320px"></div>
+`;
+document.querySelector('#open-map')!.addEventListener('click', async () => {
+  const status = document.querySelector<HTMLElement>('#map-status')!;
+  status.textContent = 'Cargando mapa…';
+  try {
+    const { mountMap } = await import('./map-view');
+    await mountMap(document.querySelector<HTMLElement>('#map')!);
+    status.textContent = 'Mapa listo';
+  } catch {
+    status.textContent = 'No se pudo cargar el mapa; el estado textual sigue disponible.';
+  }
+});
+```
+
+Ejecuta:
 
 ```bash
 npm run build
@@ -322,13 +429,25 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-4
+mkdir ejemplo-js-modulo-14-tema-4
 cd ejemplo-js-modulo-14-tema-4
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla-ts
+npm install
+npm install --save-dev vitest jsdom
+npm pkg set scripts.test="vitest run"
 ```
 
-El `src/main.ts` incluido monta el comportamiento con un servicio simulado que resuelve a los 300 ms. Añade un `<button id="confirm-delivery">Confirmar entrega</button>` y `<p id="delivery-feedback" role="status" aria-live="polite"></p>`. Crea `src/ui/delivery-button.ts`:
+Sustituye el contenido de `<div id="app"></div>` en `index.html` por:
+
+```html
+<div id="app">
+  <h1>Entrega RF-101</h1>
+  <button id="confirm-delivery">Confirmar entrega</button>
+  <p id="delivery-feedback" role="status" aria-live="polite"></p>
+</div>
+```
+
+Crea `src/ui/delivery-button.ts`:
 
 ```ts
 export function mountDeliveryButton(button: HTMLButtonElement, feedback: HTMLElement,
@@ -348,14 +467,55 @@ export function mountDeliveryButton(button: HTMLButtonElement, feedback: HTMLEle
 }
 ```
 
+Sustituye `src/main.ts` para montar el botón con un servicio simulado:
+
+```ts
+import { mountDeliveryButton } from './ui/delivery-button';
+
+mountDeliveryButton(
+  document.querySelector<HTMLButtonElement>('#confirm-delivery')!,
+  document.querySelector<HTMLElement>('#delivery-feedback')!,
+  () => new Promise<void>((resolve) => setTimeout(resolve, 300)),
+);
+```
+
+Crea `src/ui/delivery-button.test.ts`:
+
+```ts
+// @vitest-environment jsdom
+import { describe, expect, it } from 'vitest';
+import { mountDeliveryButton } from './delivery-button';
+
+describe('confirmación accesible', () => {
+  it('bloquea duplicados y anuncia el resultado', async () => {
+    document.body.innerHTML = '<button></button><p role="status"></p>';
+    const button = document.querySelector<HTMLButtonElement>('button')!;
+    const feedback = document.querySelector<HTMLElement>('p')!;
+    let resolve!: () => void;
+    const pending = new Promise<void>((done) => { resolve = done; });
+    const unmount = mountDeliveryButton(button, feedback, () => pending);
+    button.click();
+    expect(button.disabled).toBe(true);
+    expect(button.getAttribute('aria-busy')).toBe('true');
+    resolve();
+    await pending;
+    await Promise.resolve();
+    expect(feedback.textContent).toBe('Entrega confirmada');
+    expect(button.disabled).toBe(false);
+    unmount();
+  });
+});
+```
+
 Ejecuta:
 
 ```bash
-npm run lint
+npx tsc --noEmit
 npm test -- src/ui/delivery-button.test.ts
+npm run dev
 ```
 
-**Resultado esperado:** Tab enfoca el botón, Enter/Espacio activan una sola vez, `aria-busy` existe durante la espera y el status anuncia éxito/error sin perder foco.
+**Resultado esperado:** la prueba pasa; en el navegador, Tab enfoca el botón, Enter/Espacio activan una sola vez, `aria-busy` existe durante la espera y el status anuncia éxito/error sin perder foco.
 
 **Fallo deliberado:** reemplaza `<button>` por `<div onclick>`. Desaparecen activación de teclado, rol y foco nativos. Restaura semántica antes de añadir ARIA o handlers personalizados.
 
@@ -413,13 +573,29 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-5
+mkdir ejemplo-js-modulo-14-tema-5
 cd ejemplo-js-modulo-14-tema-5
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla-ts
+npm install
+cargo init --lib wasm
 ```
 
-Crea `wasm/src/lib.rs`:
+Sustituye `wasm/Cargo.toml`:
+
+```toml
+[package]
+name = "route_score"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+```
+
+Sustituye `wasm/src/lib.rs`:
 
 ```rust
 use wasm_bindgen::prelude::*;
@@ -431,21 +607,52 @@ pub fn route_score(distance_km: f64, late_stops: u32) -> f64 {
 }
 ```
 
+Crea `src/wasm/route-score.ts` con carga y fallback en la misma frontera:
+
 ```ts
 import init, { route_score } from '../../wasm/pkg/route_score.js';
 
-await init(); // Instancia el módulo antes de invocar sus exportaciones.
-console.log(route_score(12.5, 2));
+export async function routeScore(distanceKm: number, lateStops: number) {
+  try {
+    await init(); // Instancia el módulo antes de invocar sus exportaciones.
+    return route_score(distanceKm, lateStops);
+  } catch (error) {
+    console.warn('WASM no disponible; se usa el fallback JavaScript', error);
+    return distanceKm + lateStops * 5;
+  }
+}
 ```
 
-Guarda el cargador en `src/wasm/route-score.ts` y ejecuta:
+Crea `src/wasm-demo.ts`:
+
+```ts
+import { routeScore } from './wasm/route-score';
+
+const output = document.querySelector<HTMLOutputElement>('#score')!;
+output.value = String(await routeScore(12.5, 2));
+```
+
+Crea `wasm.html` en la raíz del proyecto:
+
+```html
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>Score de ruta</title></head>
+  <body>
+    <main><h1>Score de ruta</h1><output id="score">Calculando…</output></main>
+    <script type="module" src="/src/wasm-demo.ts"></script>
+  </body>
+</html>
+```
+
+Instala previamente Rust y wasm-pack según https://rustwasm.github.io/wasm-pack/installer/ y ejecuta:
 
 ```bash
 wasm-pack build wasm --target web
 npm run dev
 ```
 
-Instala previamente Rust y wasm-pack según https://rustwasm.github.io/wasm-pack/installer/. El `wasm/Cargo.toml` incluido fija el nombre `route_score`, tipo cdylib y wasm-bindgen. Abre `/wasm.html` después del build WASM; ese punto de entrada está separado del resto del laboratorio.
+Abre `/wasm.html` después del build WASM; este punto de entrada es independiente de `index.html`.
 
 `--target` es la bandera que fija para qué entorno `wasm-pack` empaqueta el módulo (`web`, listo para importar directamente en el navegador).
 
@@ -507,10 +714,10 @@ flowchart TD
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-6
+mkdir ejemplo-js-modulo-14-tema-6
 cd ejemplo-js-modulo-14-tema-6
-npm ci
-npm run check
+npm init -y
+npm install --save-dev tsx typescript
 ```
 
 Crea `src/risk/delivery-risk.ts`:
@@ -587,10 +794,10 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-7
+mkdir ejemplo-js-modulo-14-tema-7
 cd ejemplo-js-modulo-14-tema-7
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla
+npm install
 ```
 
 Crea `src/location/watch-location.js`:
@@ -611,6 +818,34 @@ export function iniciarUbicacion({ onPosition, onError }) {
   );
   return () => navigator.geolocation.clearWatch(id);
 }
+```
+
+Sustituye `src/main.js` para solicitar el permiso solo tras una acción explícita:
+
+```js
+import { iniciarUbicacion } from './location/watch-location';
+
+document.querySelector('#app').innerHTML = `
+  <h1>Seguimiento de entrega</h1>
+  <button id="share">Compartir ubicación</button>
+  <p id="position" role="status">Ubicación no compartida</p>
+  <label>Coordenada manual <input id="manual" placeholder="4.6, -74.1"></label>
+`;
+let detener = () => {};
+document.querySelector('#share').addEventListener('click', () => {
+  detener();
+  detener = iniciarUbicacion({
+    onPosition: ({ latitude, longitude, accuracyMeters, capturedAt }) => {
+      document.querySelector('#position').textContent =
+        `${latitude}, ${longitude}; precisión ±${accuracyMeters} m; ${capturedAt}`;
+    },
+    onError: (error) => {
+      document.querySelector('#position').textContent =
+        `No se pudo obtener la ubicación (${error.code}); usa la entrada manual.`;
+    },
+  });
+});
+window.addEventListener('pagehide', () => detener(), { once: true });
 ```
 
 Ejecuta sobre HTTPS o localhost:
@@ -670,10 +905,10 @@ El proyecto conservará un borrador por pestaña y una cola offline estructurada
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-8
+mkdir ejemplo-js-modulo-14-tema-8
 cd ejemplo-js-modulo-14-tema-8
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla
+npm install
 ```
 
 Crea `src/storage/delivery-draft.js`:
@@ -692,9 +927,29 @@ export function loadDraft() {
 }
 ```
 
+Sustituye `src/main.js` por un formulario mínimo que guarda y recupera el borrador:
+
+```js
+import { loadDraft, saveDraft } from './storage/delivery-draft';
+
+document.querySelector('#app').innerHTML = `
+  <h1>Borrador de entrega</h1>
+  <label>Destinatario <input id="recipient" autocomplete="off"></label>
+  <p id="storage-status" role="status"></p>
+`;
+const input = document.querySelector('#recipient');
+input.value = loadDraft()?.recipient ?? '';
+input.addEventListener('input', () => {
+  saveDraft({ recipient: input.value });
+  document.querySelector('#storage-status').textContent = 'Borrador guardado en esta pestaña';
+});
+```
+
 ```bash
 npm run dev
 ```
+
+Escribe un destinatario y recarga la página.
 
 **Resultado esperado:** el borrador sobrevive a una recarga de la misma pestaña, pero no se comparte con otra sesión independiente.
 
@@ -749,10 +1004,10 @@ patronSeguro.test('código: CO-2026 (urgente) recibido'); // true, sin que "(" a
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-9
+mkdir ejemplo-js-modulo-14-tema-9
 cd ejemplo-js-modulo-14-tema-9
-npm ci
-npm run check
+npm init -y
+npm install --save-dev tsx typescript
 ```
 
 Crea `src/validation/tracking-code.js`:
@@ -767,13 +1022,28 @@ export function parseTrackingCode(value) {
 }
 ```
 
-Ejecuta desde un punto de entrada con casos válidos e inválidos:
+Crea `src/demo.ts` con casos válidos e inválidos:
+
+```ts
+import { parseTrackingCode } from './validation/tracking-code.js';
+
+console.log(parseTrackingCode('CO-2026-000123'));
+for (const invalid of ['prefijo-CO-2026-000123', 'CO-2026-123']) {
+  try {
+    parseTrackingCode(invalid);
+  } catch (error) {
+    console.log(`${invalid}: ${(error as Error).message}`);
+  }
+}
+```
+
+Ejecuta:
 
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** `CO-2026-000123` produce country/year/sequence y una cadena parcial se rechaza.
+**Resultado esperado:** `CO-2026-000123` produce `{ country: 'CO', year: 2026, sequence: '000123' }` y las cadenas parciales se rechazan con el mensaje del contrato.
 
 **Fallo deliberado:** mide `/^(a+)+$/` contra `"a".repeat(n) + "!"` incrementando n. El tiempo crece peligrosamente por backtracking; reemplázala por una condición lineal o regex sin cuantificadores anidados.
 
@@ -827,10 +1097,10 @@ classDiagram
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-10
+mkdir ejemplo-js-modulo-14-tema-10
 cd ejemplo-js-modulo-14-tema-10
-npm ci
-npm run check
+npm init -y
+npm install --save-dev tsx typescript
 ```
 
 Crea `src/routing/route-strategy.js`:
@@ -847,13 +1117,28 @@ export function planRoute(delivery, strategy) {
 }
 ```
 
-Ejecuta desde un punto de entrada con dos rutas:
+Crea `src/demo.ts` con dos rutas y ambas estrategias:
+
+```ts
+import { planRoute, strategies } from './routing/route-strategy.js';
+
+const delivery = {
+  routes: [
+    { id: 'rápida', minutes: 20, energy: 40 },
+    { id: 'ahorro', minutes: 35, energy: 12 },
+  ],
+};
+console.log(planRoute(delivery, strategies.fastest).id);
+console.log(planRoute(delivery, strategies.lowBattery).id);
+```
+
+Ejecuta:
 
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** cada Strategy selecciona una ruta distinta sin modificar `planRoute`.
+**Resultado esperado:** imprime `rápida` y después `ahorro`; cada Strategy selecciona una ruta distinta sin modificar `planRoute`.
 
 **Fallo deliberado:** pasa `"fastest"` directamente en vez de resolver la factory. `planRoute` lanza `Strategy requerida`; corrige la frontera para traducir nombres a funciones y rechazar claves desconocidas.
 
@@ -906,10 +1191,10 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-11
+mkdir ejemplo-js-modulo-14-tema-11
 cd ejemplo-js-modulo-14-tema-11
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla-ts
+npm install
 ```
 
 Crea `public/sw.js`:
@@ -933,9 +1218,43 @@ self.addEventListener('fetch', (event) => {
 });
 ```
 
-El registro en `src/pwa/register-service-worker.js`, importado por main.ts, se activa solo en producción. La instalación precachea HTML y assets del build; las bibliotecas opcionales del mapa no se prometen disponibles offline.
+Crea `src/pwa/register-service-worker.ts`; el registro se activa solo en producción:
 
-Después, desde la raíz de la copia del laboratorio, ejecuta:
+```ts
+export function registerServiceWorker() {
+  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.error('No se pudo registrar el Service Worker', error);
+    });
+  }, { once: true });
+}
+```
+
+Sustituye `src/main.ts`:
+
+```ts
+import { registerServiceWorker } from './pwa/register-service-worker';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <h1>Seguimiento público</h1>
+  <p id="tracking">Último estado disponible: en tránsito.</p>
+  <button id="refresh">Actualizar estado</button>
+`;
+document.querySelector('#refresh')!.addEventListener('click', async () => {
+  const output = document.querySelector<HTMLElement>('#tracking')!;
+  try {
+    const response = await fetch('/api/tracking');
+    if (!response.ok) throw new Error('API no disponible');
+    output.textContent = await response.text();
+  } catch {
+    output.textContent = 'Sin conexión; se conserva el último estado disponible, no una confirmación nueva.';
+  }
+});
+registerServiceWorker();
+```
+
+La instalación precachea HTML y assets del build; las bibliotecas opcionales del mapa no se prometen disponibles offline. Desde la carpeta del proyecto, ejecuta:
 
 ```bash
 npm run build
@@ -989,10 +1308,12 @@ El proyecto mantendrá un socket por vista/servicio, validará cada evento y ded
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-12
+mkdir ejemplo-js-modulo-14-tema-12
 cd ejemplo-js-modulo-14-tema-12
-npm ci
-npm run check
+npm create vite@latest . -- --template vanilla
+npm install
+npm install --save-dev ws
+npm pkg set scripts.socket="node server/socket.mjs"
 ```
 
 Crea `src/realtime/tracking-socket.js`:
@@ -1014,6 +1335,44 @@ export function connectTracking(url, { onEvent, onState }) {
 }
 ```
 
+Crea `server/socket.mjs`:
+
+```js
+import { WebSocketServer } from 'ws';
+
+const server = new WebSocketServer({ port: 8080 });
+server.on('connection', (socket) => {
+  socket.send(JSON.stringify({
+    id: 'evt-1',
+    type: 'tracking.updated',
+    status: 'in-transit',
+  }));
+  socket.on('message', (message) => socket.send(message.toString()));
+});
+console.log('WebSocket local en ws://localhost:8080');
+```
+
+Sustituye `src/main.js`:
+
+```js
+import { connectTracking } from './realtime/tracking-socket';
+
+document.querySelector('#app').innerHTML = `
+  <h1>Seguimiento en vivo</h1>
+  <p id="connection" role="status">connecting</p>
+  <ul id="events"></ul>
+`;
+const disconnect = connectTracking('ws://localhost:8080', {
+  onState: (state) => { document.querySelector('#connection').textContent = state; },
+  onEvent: (event) => {
+    const item = document.createElement('li');
+    item.textContent = `${event.id}: ${event.type}`;
+    document.querySelector('#events').append(item);
+  },
+});
+window.addEventListener('pagehide', disconnect, { once: true });
+```
+
 Ejecuta servidor y app:
 
 ```bash
@@ -1028,7 +1387,7 @@ npm run dev
 
 **Resultado esperado:** UI anuncia conexión, procesa JSON válido, marca inválido sin caer y se desconecta al destruir.
 
-**Fallo deliberado:** envía `{mal-json`. Sin `try/catch` el handler lanza y pierde el evento; con frontera informa `invalid-message` y mantiene conexión.
+**Fallo deliberado:** agrega temporalmente `socket.send('{mal-json')` dentro del handler `connection` del servidor. Sin `try/catch` el handler lanza y pierde el evento; con frontera informa `invalid-message` y mantiene conexión.
 
 #### Paso 5 · Práctica guiada
 
@@ -1071,10 +1430,10 @@ El proyecto recibe dos coordenadas escaladas por un millón en ocho bytes big-en
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-13
+mkdir ejemplo-js-modulo-14-tema-13
 cd ejemplo-js-modulo-14-tema-13
-npm ci
-npm run check
+npm init -y
+npm install --save-dev tsx typescript
 ```
 
 Crea `src/binary/decode-gps.js`:
@@ -1093,13 +1452,30 @@ export function decodeGps(buffer) {
 }
 ```
 
-Ejecuta desde un punto de entrada que escriba dos enteros big-endian:
+Crea `src/demo.ts` para escribir dos enteros big-endian y decodificarlos:
+
+```ts
+import { decodeGps } from './binary/decode-gps.js';
+
+const buffer = new ArrayBuffer(8);
+const view = new DataView(buffer);
+view.setInt32(0, 4_600_000, false);
+view.setInt32(4, -74_100_000, false);
+console.log(decodeGps(buffer));
+try {
+  decodeGps(new ArrayBuffer(7));
+} catch (error) {
+  console.log((error as Error).message);
+}
+```
+
+Ejecuta:
 
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** coordenadas codificadas/decodificadas coinciden y buffer inválido lanza RangeError.
+**Resultado esperado:** imprime `{ latitudeE6: 4600000, longitudeE6: -74100000 }`; el buffer inválido lanza `RangeError` con `Paquete GPS esperado: 8 bytes`.
 
 **Fallo deliberado:** cambia `false` por `true`. Los bytes se interpretan little-endian y producen coordenadas corruptas; restaura orden del protocolo, no ajustes valores a mano.
 
@@ -1161,10 +1537,10 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-cp -R examples/javascript-master ejemplo-js-modulo-14-tema-14
+mkdir ejemplo-js-modulo-14-tema-14
 cd ejemplo-js-modulo-14-tema-14
-npm ci
-npm run check
+npm init -y
+npm install --save-dev tsx typescript
 ```
 
 Crea `src/platform/time.js`:
@@ -1180,13 +1556,24 @@ export function formatDeliveryInstant(iso, timeZone, locale = 'es-CO') {
 export const supportsTemporal = () => typeof globalThis.Temporal !== 'undefined';
 ```
 
+Crea `src/demo.ts`:
+
+```ts
+import { formatDeliveryInstant, supportsTemporal } from './platform/time.js';
+
+const iso = '2026-07-15T18:30:00Z';
+console.log('Bogotá:', formatDeliveryInstant(iso, 'America/Bogota'));
+console.log('Madrid:', formatDeliveryInstant(iso, 'Europe/Madrid'));
+console.log('Temporal disponible:', supportsTemporal());
+```
+
 Ejecuta con un instante y dos zonas:
 
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** ambas salidas representan el mismo instante con horas locales diferentes; `supportsTemporal` informa capacidad real.
+**Resultado esperado:** ambas salidas representan el mismo instante con horas locales diferentes; `Temporal disponible` informa `true` o `false` según la capacidad real del runtime.
 
 **Fallo deliberado:** usa `Temporal.Instant.from` sin feature detection en un runtime sin soporte. Obtendrás ReferenceError; restaura adaptador y carga polyfill de forma condicionada.
 

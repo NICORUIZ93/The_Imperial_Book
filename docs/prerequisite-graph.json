@@ -2542,7 +2542,7 @@
       "track": "java",
       "module": 10,
       "position": 1,
-      "title": "module-info.java y encapsulación fuerte",
+      "title": "module-info.java y encapsulación fuerte · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-10.md",
       "requires": [
         "java:9:3"
@@ -2553,7 +2553,7 @@
       "track": "java",
       "module": 10,
       "position": 2,
-      "title": "Migración incremental y cuándo JPMS aporta valor",
+      "title": "Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-10.md",
       "requires": [
         "java:10:1"
@@ -2564,7 +2564,7 @@
       "track": "java",
       "module": 10,
       "position": 3,
-      "title": "`opens` para acceso reflexivo controlado de frameworks",
+      "title": "`opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
       "file": "web/public/content/java/modulo-10.md",
       "requires": [
         "java:10:2"
@@ -2575,7 +2575,7 @@
       "track": "java",
       "module": 11,
       "position": 1,
-      "title": "Generaciones de memoria y recolectores",
+      "title": "Generaciones de memoria y recolectores · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-11.md",
       "requires": [
         "java:10:3"
@@ -2586,7 +2586,7 @@
       "track": "java",
       "module": 11,
       "position": 2,
-      "title": "Java Flight Recorder y JIT compilation",
+      "title": "Java Flight Recorder y JIT compilation · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-11.md",
       "requires": [
         "java:11:1"
@@ -2597,7 +2597,7 @@
       "track": "java",
       "module": 11,
       "position": 3,
-      "title": "Referencias especiales y heap dumps",
+      "title": "Referencias especiales y heap dumps · Avanzado · 60 min",
       "file": "web/public/content/java/modulo-11.md",
       "requires": [
         "java:11:2"
@@ -2608,7 +2608,7 @@
       "track": "java",
       "module": 11,
       "position": 4,
-      "title": "Foreign Function & Memory API (Java 22)",
+      "title": "Foreign Function & Memory API (Java 22) · Experto · 55 min",
       "file": "web/public/content/java/modulo-11.md",
       "requires": [
         "java:11:3"
@@ -2619,7 +2619,7 @@
       "track": "java",
       "module": 12,
       "position": 1,
-      "title": "Builder — configuración paso a paso y validación",
+      "title": "Builder — configuración paso a paso y validación · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-12.md",
       "requires": [
         "java:11:4"
@@ -2630,7 +2630,7 @@
       "track": "java",
       "module": 12,
       "position": 2,
-      "title": "Factory Method y Strategy",
+      "title": "Factory Method y Strategy · Intermedio · 55 min",
       "file": "web/public/content/java/modulo-12.md",
       "requires": [
         "java:12:1"
@@ -2641,7 +2641,7 @@
       "track": "java",
       "module": 12,
       "position": 3,
-      "title": "Abstract Factory y familias de productos compatibles",
+      "title": "Abstract Factory y familias de productos compatibles · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-12.md",
       "requires": [
         "java:12:2"
@@ -2652,7 +2652,7 @@
       "track": "java",
       "module": 12,
       "position": 4,
-      "title": "SOLID y cuándo NO aplicar un patrón",
+      "title": "SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min",
       "file": "web/public/content/java/modulo-12.md",
       "requires": [
         "java:12:3"
@@ -2663,7 +2663,7 @@
       "track": "java",
       "module": 12,
       "position": 5,
-      "title": "Prototype — copiar configuración sin compartir estado mutable",
+      "title": "Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-12.md",
       "requires": [
         "java:12:4"
@@ -2674,7 +2674,7 @@
       "track": "java",
       "module": 12,
       "position": 6,
-      "title": "Patrones estructurales — elegir por intención",
+      "title": "Patrones estructurales — elegir por intención · Avanzado · 65 min",
       "file": "web/public/content/java/modulo-12.md",
       "requires": [
         "java:12:5"
@@ -2685,7 +2685,7 @@
       "track": "java",
       "module": 13,
       "position": 1,
-      "title": "Arquitectura por capas del proyecto integrador",
+      "title": "Arquitectura por capas del proyecto integrador · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-13.md",
       "requires": [
         "java:12:6"
@@ -2696,7 +2696,7 @@
       "track": "java",
       "module": 13,
       "position": 2,
-      "title": "Integrando concurrencia, modelado y testing",
+      "title": "Integrando concurrencia, modelado y testing · Experto · 60 min",
       "file": "web/public/content/java/modulo-13.md",
       "requires": [
         "java:13:1"
@@ -2707,7 +2707,7 @@
       "track": "java",
       "module": 13,
       "position": 3,
-      "title": "Build reproducible y cierre del track",
+      "title": "Build reproducible y cierre del track · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-13.md",
       "requires": [
         "java:13:2"
@@ -2718,7 +2718,7 @@
       "track": "java",
       "module": 14,
       "position": 1,
-      "title": "Compartir memoria requiere orden y visibilidad",
+      "title": "Compartir memoria requiere orden y visibilidad · Experto · 60 min",
       "file": "web/public/content/java/modulo-14.md",
       "requires": [
         "java:13:3"
@@ -2729,7 +2729,7 @@
       "track": "java",
       "module": 14,
       "position": 2,
-      "title": "La JVM optimiza y puede invalidar un cronómetro ingenuo",
+      "title": "La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min",
       "file": "web/public/content/java/modulo-14.md",
       "requires": [
         "java:14:1"
@@ -2740,7 +2740,7 @@
       "track": "java",
       "module": 14,
       "position": 3,
-      "title": "Deserializar es permitir construcción y comportamiento",
+      "title": "Deserializar es permitir construcción y comportamiento · Experto · 60 min",
       "file": "web/public/content/java/modulo-14.md",
       "requires": [
         "java:14:2"
@@ -2751,7 +2751,7 @@
       "track": "java",
       "module": 14,
       "position": 4,
-      "title": "El runtime es parte del artefacto y necesita ciclo de vida",
+      "title": "El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min",
       "file": "web/public/content/java/modulo-14.md",
       "requires": [
         "java:14:3"
@@ -2762,7 +2762,7 @@
       "track": "java",
       "module": 15,
       "position": 1,
-      "title": "Maven avanzado",
+      "title": "Maven avanzado · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
         "java:14:4"
@@ -2773,7 +2773,7 @@
       "track": "java",
       "module": 15,
       "position": 2,
-      "title": "Gradle y builds reproducibles",
+      "title": "Gradle y builds reproducibles · Avanzado · 45 min",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
         "java:15:1"
@@ -2784,7 +2784,7 @@
       "track": "java",
       "module": 15,
       "position": 3,
-      "title": "Proyectos multi-módulo sin ciclos",
+      "title": "Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
         "java:15:2"
@@ -2795,7 +2795,7 @@
       "track": "java",
       "module": 15,
       "position": 4,
-      "title": "JUnit 5, Mockito y assertions expresivas",
+      "title": "JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
         "java:15:3"
@@ -2806,7 +2806,7 @@
       "track": "java",
       "module": 15,
       "position": 5,
-      "title": "Pruebas de integración reproducibles",
+      "title": "Pruebas de integración reproducibles · Experto · 1 h",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
         "java:15:4"
@@ -2817,7 +2817,7 @@
       "track": "java",
       "module": 15,
       "position": 6,
-      "title": "SLF4J, Logback, MDC y logging estructurado",
+      "title": "SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
         "java:15:5"
@@ -2828,7 +2828,7 @@
       "track": "java",
       "module": 16,
       "position": 1,
-      "title": "Entidades y relaciones JPA",
+      "title": "Entidades y relaciones JPA · Intermedio · 55 min",
       "file": "web/public/content/java/modulo-16.md",
       "requires": [
         "java:15:6"
@@ -2839,7 +2839,7 @@
       "track": "java",
       "module": 16,
       "position": 2,
-      "title": "FetchType.LAZY, EAGER y el problema N+1",
+      "title": "FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
       "file": "web/public/content/java/modulo-16.md",
       "requires": [
         "java:16:1"
@@ -2850,7 +2850,7 @@
       "track": "java",
       "module": 17,
       "position": 1,
-      "title": "JDBC, PreparedStatement y DAO",
+      "title": "JDBC, PreparedStatement y DAO · Intermedio · 1 h",
       "file": "web/public/content/java/modulo-17.md",
       "requires": [
         "java:16:2"
@@ -2861,7 +2861,7 @@
       "track": "java",
       "module": 17,
       "position": 2,
-      "title": "Transacciones, ACID y aislamiento",
+      "title": "Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min",
       "file": "web/public/content/java/modulo-17.md",
       "requires": [
         "java:17:1"
@@ -2872,7 +2872,7 @@
       "track": "java",
       "module": 18,
       "position": 1,
-      "title": "HttpClient, REST, timeouts y fallos",
+      "title": "HttpClient, REST, timeouts y fallos · Intermedio · 2 h",
       "file": "web/public/content/java/modulo-18.md",
       "requires": [
         "java:17:2"
@@ -2883,7 +2883,7 @@
       "track": "java",
       "module": 18,
       "position": 2,
-      "title": "Tokens, validación y límites de seguridad",
+      "title": "Tokens, validación y límites de seguridad · Avanzado · 2 h",
       "file": "web/public/content/java/modulo-18.md",
       "requires": [
         "java:18:1"
@@ -2894,7 +2894,7 @@
       "track": "java",
       "module": 19,
       "position": 1,
-      "title": "Reflexión y anotaciones en tiempo de ejecución",
+      "title": "Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:18:2"
@@ -2905,7 +2905,7 @@
       "track": "java",
       "module": 19,
       "position": 2,
-      "title": "Expresiones regulares con Pattern y Matcher",
+      "title": "Expresiones regulares con Pattern y Matcher · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:19:1"
@@ -2916,7 +2916,7 @@
       "track": "java",
       "module": 19,
       "position": 3,
-      "title": "Dinero exacto con BigDecimal",
+      "title": "Dinero exacto con BigDecimal · Básico · 75 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:19:2"
@@ -2927,7 +2927,7 @@
       "track": "java",
       "module": 19,
       "position": 4,
-      "title": "Assertions y diseño por contrato",
+      "title": "Assertions y diseño por contrato · Intermedio · 75 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:19:3"
@@ -2938,7 +2938,7 @@
       "track": "java",
       "module": 19,
       "position": 5,
-      "title": "ServiceLoader: plugins sin acoplar implementaciones",
+      "title": "ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:19:4"
@@ -2949,7 +2949,7 @@
       "track": "java",
       "module": 19,
       "position": 6,
-      "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
+      "title": "Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:19:5"
@@ -2960,7 +2960,7 @@
       "track": "java",
       "module": 19,
       "position": 7,
-      "title": "Internacionalización: números, monedas, fechas y orden de texto",
+      "title": "Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
         "java:19:6"
@@ -2971,7 +2971,7 @@
       "track": "java",
       "module": 20,
       "position": 1,
-      "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
+      "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
         "java:19:7"
@@ -2982,7 +2982,7 @@
       "track": "java",
       "module": 20,
       "position": 2,
-      "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+      "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
         "java:20:1"
@@ -2993,7 +2993,7 @@
       "track": "java",
       "module": 20,
       "position": 3,
-      "title": "Streams como composición: pereza, orden y efectos que se esconden",
+      "title": "Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
         "java:20:2"

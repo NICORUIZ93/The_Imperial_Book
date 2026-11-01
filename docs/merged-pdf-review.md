@@ -108,7 +108,7 @@ El índice del proyecto incluye archivos versionables, símbolos, imports y enca
 ## Validación de esta integración
 
 - `./scripts/validate.sh`: completo, sin errores; cuatro pruebas de PostgreSQL omitidas por disponibilidad de herramientas locales.
-- `python3 scripts/validate_merged_pdf.py`: 69 destinos, código de lecciones igual al archivo, 17 salidas reproducidas y condiciones de estados de diodos.
+- `python3 scripts/validate_merged_pdf.py`: 69 destinos, 17 programas extraídos de la lección y ejecutados en una carpeta temporal con sus salidas reproducidas, y condiciones de estados de diodos comprobadas desde el código de la propia lección.
 - Programa SOAP mínimo: ejecutado; salida `Consultar envío: ENV-42`.
 - Angular: build correcto; permanece advertencia de bundle inicial de 618.50 kB frente al presupuesto de 600 kB.
 - Pruebas unitarias Angular: 14 casos correctos.

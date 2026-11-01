@@ -144,7 +144,7 @@ Desde una segunda terminal:
 curl -i http://127.0.0.1:3000/salud
 curl -i http://127.0.0.1:3000/no-existe
 ```
-**Resultado esperado:** 200 con `{"estado":"ok"}` y 404 con `{"error":"No encontrado"}`. Detén el servidor con Ctrl+C en su terminal. El mismo archivo está disponible en `examples/cloud-http/server.mjs` desde la raíz del repositorio.
+**Resultado esperado:** 200 con `{"estado":"ok"}` y 404 con `{"error":"No encontrado"}`. Detén el servidor con Ctrl+C en su terminal. Conserva `src/main.mjs` como evidencia: lo escribiste completo en una carpeta que creaste vacía y no necesita ningún archivo adicional para ejecutarse.
 
 #### Paso 5 · Práctica guiada
 Pista: usa un puerto incorrecto para provocar un fallo deliberado, identifica el diagnóstico y corrígelo.

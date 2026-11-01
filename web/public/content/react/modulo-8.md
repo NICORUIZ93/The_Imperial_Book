@@ -177,7 +177,7 @@ expect(result.current.valor).toBe(1);
 #### Profundización · Diseño y decisiones de arquitectura
 **Cuándo NO usar `renderHook`:** si el hook depende fuertemente del árbol de contexto o del layout real (por ejemplo un hook que lee `getBoundingClientRect` de un elemento padre específico), aislarlo con `renderHook` produce un falso positivo — en ese caso conviene testear a través de un componente real con `render`, aceptando el costo extra de montar el árbol completo a cambio de una prueba fiel al comportamiento real en pantalla.
 
-En el proyecto integrador RutaFlow (`examples/rutaflow/react/dashboard/src/hooks/useFiltroZona.test.ts`), este hook se testea de forma aislada porque su lógica (normalizar el texto de zona) no depende de ningún layout visual — justo el caso donde `renderHook` es la decisión correcta frente a un test de componente más costoso.
+En tu proyecto RutaFlow, crea `src/hooks/useFiltroZona.test.ts` y prueba el hook de forma aislada: su lógica (normalizar el texto de zona) no depende de ningún layout visual — justo el caso donde `renderHook` es la decisión correcta frente a un test de componente más costoso.
 
 ```mermaid
 flowchart LR
@@ -225,6 +225,8 @@ Corregí el Paso 5 restaurando `act`, y agregá una segunda prueba que confirme 
 #### Paso 7 · Cierre
 Entregá el test aislado del Paso 4, la advertencia de React por falta de `act` del Paso 5, y la segunda prueba del Paso 6; explicá por qué testear este hook con `renderHook` en vez de envolverlo en un componente visual mantiene la prueba enfocada específicamente en su lógica de estado. Siguiente paso: cerrá el módulo integrando los tres enfoques en la suite completa de RutaFlow. Errores comunes: envolver un hook en un componente visual completo solo para poder testearlo, no envolver actualizaciones de estado en `act`, y testear un hook personalizado únicamente a través de pruebas end-to-end de componentes, sin ninguna prueba aislada de su lógica. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/api/#renderhook y https://react.dev/reference/react/act.
 **¿Por qué es importante?** `renderHook` aísla la prueba de un hook personalizado de cualquier componente visual innecesario, manteniendo la prueba enfocada específicamente en la lógica de estado y efectos del hook.
+
+**Proyecto integrador:** prueba el hook `useFiltroZona` de RutaFlow con `renderHook`, incluidos normalización, valor vacío y cambio de zona, sin montar la pantalla completa.
 
 ## Laboratorio práctico
 

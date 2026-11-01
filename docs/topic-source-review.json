@@ -380,7 +380,7 @@
         "https://sre.google/sre-book/monitoring-distributed-systems/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 376,
+      "line": 413,
       "originalProseUrls": [
         "https://sre.google/sre-book/monitoring-distributed-systems/"
       ],
@@ -396,7 +396,7 @@
         "https://www.postgresql.org/docs/current/two-phase.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 494,
+      "line": 531,
       "originalProseUrls": [
         "https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/",
         "https://www.postgresql.org/docs/current/two-phase.html"
@@ -519,7 +519,7 @@
         "https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 70,
+      "line": 69,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/"
       ],
@@ -534,7 +534,7 @@
         "https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 125,
+      "line": 123,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/"
       ],
@@ -549,7 +549,7 @@
         "https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 180,
+      "line": 177,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/"
       ],
@@ -564,7 +564,7 @@
         "https://docs.arduino.cc/learn/microcontrollers/analog-input/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 237,
+      "line": 233,
       "originalProseUrls": [
         "https://docs.arduino.cc/learn/microcontrollers/analog-input/"
       ],
@@ -579,7 +579,7 @@
         "https://ocw.mit.edu/courses/6-02-introduction-to-eecs-ii-digital-communication-systems-fall-2012/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 292,
+      "line": 287,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-02-introduction-to-eecs-ii-digital-communication-systems-fall-2012/"
       ],
@@ -595,7 +595,7 @@
         "https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 347,
+      "line": 341,
       "originalProseUrls": [
         "https://docs.scipy.org/doc/scipy/reference/signal.html",
         "https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/"
@@ -611,7 +611,7 @@
         "https://docs.scipy.org/doc/scipy/reference/signal.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 404,
+      "line": 397,
       "originalProseUrls": [
         "https://docs.scipy.org/doc/scipy/reference/signal.html"
       ],
@@ -626,7 +626,7 @@
         "https://www.nist.gov/pml/nist-technical-note-1297"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 461,
+      "line": 453,
       "originalProseUrls": [
         "https://www.nist.gov/pml/nist-technical-note-1297"
       ],
@@ -641,7 +641,7 @@
         "https://ocw.mit.edu/courses/6-302-feedback-systems-spring-2007/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 516,
+      "line": 507,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-302-feedback-systems-spring-2007/"
       ],
@@ -656,7 +656,7 @@
         "https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 574,
+      "line": 564,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/"
       ],
@@ -671,7 +671,7 @@
         "https://docs.kicad.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 629,
+      "line": 618,
       "originalProseUrls": [
         "https://docs.kicad.org/"
       ],
@@ -686,7 +686,7 @@
         "https://docs.zephyrproject.org/latest/kernel/services/scheduling/index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 682,
+      "line": 670,
       "originalProseUrls": [
         "https://docs.zephyrproject.org/latest/kernel/services/scheduling/index.html"
       ],
@@ -701,7 +701,7 @@
         "https://docs.python.org/3/library/struct.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 757,
+      "line": 744,
       "originalProseUrls": [
         "https://docs.python.org/3/library/struct.html"
       ],
@@ -716,7 +716,7 @@
         "https://ocw.mit.edu/courses/8-02-physics-ii-electricity-and-magnetism-spring-2007/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 811,
+      "line": 797,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/8-02-physics-ii-electricity-and-magnetism-spring-2007/"
       ],
@@ -731,7 +731,7 @@
         "https://ocw.mit.edu/courses/16-842-fundamentals-of-systems-engineering-fall-2015/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 864,
+      "line": 849,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/16-842-fundamentals-of-systems-engineering-fall-2015/"
       ],
@@ -746,7 +746,7 @@
         "https://webstore.iec.ch/en/publication/3800"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 918,
+      "line": 902,
       "originalProseUrls": [
         "https://webstore.iec.ch/en/publication/3800"
       ],
@@ -1409,7 +1409,7 @@
         "https://refactoring.com/catalog/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 340,
+      "line": 406,
       "originalProseUrls": [
         "https://adr.github.io/",
         "https://refactoring.com/catalog/"
@@ -1440,7 +1440,7 @@
         "https://docs.python.org/3/library/threading.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 102,
+      "line": 130,
       "originalProseUrls": [
         "https://docs.python.org/3/library/threading.html"
       ],
@@ -1456,7 +1456,7 @@
         "https://man7.org/linux/man-pages/man8/ss.8.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 212,
+      "line": 240,
       "originalProseUrls": [
         "http://127.0.0.1:8765/",
         "https://man7.org/linux/man-pages/man8/lsof.8.html",
@@ -1473,7 +1473,7 @@
         "https://docs.python.org/3/library/threading.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 380,
+      "line": 444,
       "originalProseUrls": [
         "https://docs.python.org/3/library/threading.html",
         "https://en.wikipedia.org/wiki/Dining_philosophers_problem"
@@ -1504,7 +1504,7 @@
         "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 121,
+      "line": 152,
       "originalProseUrls": [
         "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set"
       ],
@@ -1519,7 +1519,7 @@
         "https://docs.python.org/3/library/graphlib.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 211,
+      "line": 261,
       "originalProseUrls": [
         "https://docs.python.org/3/library/graphlib.html"
       ],
@@ -1534,7 +1534,7 @@
         "https://docs.python.org/3/library/statistics.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 319,
+      "line": 388,
       "originalProseUrls": [
         "https://docs.python.org/3/library/statistics.html"
       ],
@@ -1564,7 +1564,7 @@
         "https://sre.google/sre-book/incident-response/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 125,
+      "line": 124,
       "originalProseUrls": [
         "https://sre.google/sre-book/incident-response/"
       ],
@@ -1684,7 +1684,7 @@
         "https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 69,
+      "line": 165,
       "originalProseUrls": [
         "https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/"
       ],
@@ -1699,7 +1699,7 @@
         "https://docs.localstack.cloud/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 122,
+      "line": 218,
       "originalProseUrls": [
         "https://docs.localstack.cloud/"
       ],
@@ -1714,7 +1714,7 @@
         "https://testcontainers.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 173,
+      "line": 269,
       "originalProseUrls": [
         "https://testcontainers.com/"
       ],
@@ -1776,7 +1776,7 @@
         "https://spec.openapis.org/oas/latest.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 257,
+      "line": 256,
       "originalProseUrls": [
         "https://spec.openapis.org/oas/latest.html"
       ],
@@ -2372,7 +2372,7 @@
         "https://helm.sh/docs/topics/charts_hooks/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 96,
+      "line": 146,
       "originalProseUrls": [
         "https://helm.sh/docs/chart_template_guide/",
         "https://helm.sh/docs/topics/charts_hooks/"
@@ -2389,7 +2389,7 @@
         "https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 166,
+      "line": 236,
       "originalProseUrls": [
         "https://istio.io/latest/docs/concepts/traffic-management/",
         "https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/"
@@ -2405,7 +2405,7 @@
         "https://opengitops.dev/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 253,
+      "line": 324,
       "originalProseUrls": [
         "https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/",
         "https://opengitops.dev/"
@@ -2422,7 +2422,7 @@
         "https://docs.ansible.com/ansible/latest/vault_guide/index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 320,
+      "line": 392,
       "originalProseUrls": [
         "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html",
         "https://docs.ansible.com/ansible/latest/vault_guide/index.html"
@@ -2453,14 +2453,13 @@
       "path": "web/public/content/devops/modulo-16.md",
       "topic": "Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales",
       "providerCitations": [
-        "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/",
         "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 129,
       "originalProseUrls": [
-        "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/",
-        "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/"
+        "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/",
+        "https://www.chaijs.com/api/bdd/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -3155,7 +3154,7 @@
         "https://web.dev/articles/reduce-javascript-payloads-with-code-splitting"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 196,
+      "line": 263,
       "originalProseUrls": [
         "https://rollupjs.org/configuration-options/",
         "https://vite.dev/guide/build.html",
@@ -3174,7 +3173,7 @@
         "https://www.w3.org/TR/webnn/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 474,
+      "line": 681,
       "originalProseUrls": [
         "https://www.nist.gov/itl/ai-risk-management-framework",
         "https://www.tensorflow.org/js/guide",
@@ -3192,7 +3191,7 @@
         "https://tc39.es/ecma402/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1124,
+      "line": 1500,
       "originalProseUrls": [
         "https://github.com/tc39/proposals",
         "https://tc39.es/ecma262/",
@@ -3600,7 +3599,7 @@
         "https://microservices.io/patterns/data/saga.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 141,
+      "line": 243,
       "originalProseUrls": [
         "https://kafka.js.org/docs/getting-started",
         "https://microservices.io/patterns/data/saga.html"
@@ -4160,7 +4159,7 @@
         "https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 91,
+      "line": 122,
       "originalProseUrls": [
         "https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security"
       ],
@@ -4178,7 +4177,7 @@
         "https://nextjs.org/docs/app/guides/incremental-static-regeneration"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 162,
+      "line": 193,
       "originalProseUrls": [
         "https://nextjs.org/docs/app/api-reference/file-conventions/proxy",
         "https://nextjs.org/docs/app/api-reference/functions/generate-metadata",
@@ -4197,7 +4196,7 @@
         "https://nextjs.org/docs/app/building-your-application/optimizing/images"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 268,
+      "line": 299,
       "originalProseUrls": [
         "https://nextjs.org/docs/app/building-your-application/optimizing/fonts",
         "https://nextjs.org/docs/app/building-your-application/optimizing/images"
@@ -4213,7 +4212,7 @@
         "https://react-spectrum.adobe.com/react-aria/useDialog.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 331,
+      "line": 362,
       "originalProseUrls": [
         "https://react-spectrum.adobe.com/react-aria/useDialog.html"
       ],
@@ -4228,7 +4227,7 @@
         "https://next-intl.dev/docs/usage/messages#plurals"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 399,
+      "line": 430,
       "originalProseUrls": [
         "https://next-intl.dev/docs/usage/messages#plurals"
       ],
@@ -4461,7 +4460,7 @@
         "https://openjdk.org/jeps/261"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 76,
+      "line": 148,
       "originalProseUrls": [
         "https://openjdk.org/jeps/261"
       ],
@@ -4476,7 +4475,7 @@
         "https://docs.oracle.com/en/java/javase/25/gctuning/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 8,
+      "line": 6,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/gctuning/"
       ],
@@ -4491,7 +4490,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 74,
+      "line": 119,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html"
       ],
@@ -4506,7 +4505,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jhsdb.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 138,
+      "line": 240,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jhsdb.html"
       ],
@@ -4522,7 +4521,7 @@
         "https://openjdk.org/jeps/454"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 202,
+      "line": 374,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html",
         "https://openjdk.org/jeps/454"
@@ -4539,7 +4538,7 @@
         "https://refactoring.guru/design-patterns/builder"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 8,
+      "line": 6,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
         "https://refactoring.guru/design-patterns/builder"
@@ -4552,14 +4551,12 @@
       "path": "web/public/content/java/modulo-12.md",
       "topic": "Tema 2: Factory Method y Strategy",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/",
         "https://refactoring.guru/design-patterns/factory-method",
         "https://refactoring.guru/design-patterns/strategy"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 72,
+      "line": 163,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/",
         "https://refactoring.guru/design-patterns/factory-method",
         "https://refactoring.guru/design-patterns/strategy"
       ],
@@ -4571,13 +4568,11 @@
       "path": "web/public/content/java/modulo-12.md",
       "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/",
         "https://refactoring.guru/design-patterns/abstract-factory"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 160,
+      "line": 365,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/",
         "https://refactoring.guru/design-patterns/abstract-factory"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4592,7 +4587,7 @@
         "https://refactoring.guru/files/design-patterns-es-demo.pdf"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 307,
+      "line": 684,
       "originalProseUrls": [
         "https://refactoring.guru/design-patterns/prototype",
         "https://refactoring.guru/files/design-patterns-es-demo.pdf"
@@ -4609,7 +4604,7 @@
         "https://refactoring.guru/design-patterns/structural-patterns"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 380,
+      "line": 852,
       "originalProseUrls": [
         "https://refactoring.guru/design-patterns/adapter",
         "https://refactoring.guru/design-patterns/structural-patterns"
@@ -4625,7 +4620,7 @@
         "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 10,
+      "line": 7,
       "originalProseUrls": [
         "https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html"
       ],
@@ -4640,7 +4635,7 @@
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 109,
+      "line": 105,
       "originalProseUrls": [
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
@@ -4655,7 +4650,7 @@
         "https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 190,
+      "line": 225,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/core/serialization-filtering1.html"
       ],
@@ -4671,7 +4666,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 274,
+      "line": 356,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
@@ -4684,12 +4679,14 @@
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 1: Maven avanzado",
       "providerCitations": [
-        "https://maven.apache.org/enforcer/maven-enforcer-plugin/"
+        "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
+        "https://maven.apache.org/pom.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 9,
       "originalProseUrls": [
-        "https://maven.apache.org/enforcer/maven-enforcer-plugin/"
+        "https://maven.apache.org/enforcer/maven-enforcer-plugin/",
+        "https://maven.apache.org/pom.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4700,13 +4697,15 @@
       "topic": "Tema 2: Gradle y builds reproducibles",
       "providerCitations": [
         "https://docs.gradle.org/9.1.0/release-notes.html",
-        "https://docs.gradle.org/current/userguide/build_cache.html"
+        "https://docs.gradle.org/current/userguide/build_cache.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 61,
+      "line": 205,
       "originalProseUrls": [
         "https://docs.gradle.org/9.1.0/release-notes.html",
-        "https://docs.gradle.org/current/userguide/build_cache.html"
+        "https://docs.gradle.org/current/userguide/build_cache.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4716,11 +4715,13 @@
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
       "providerCitations": [
+        "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
         "https://www.archunit.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 128,
+      "line": 295,
       "originalProseUrls": [
+        "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
         "https://www.archunit.org/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4731,12 +4732,14 @@
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "providerCitations": [
+        "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
         "https://junit.org/junit5/docs/current/user-guide/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 190,
+      "line": 544,
       "originalProseUrls": [
         "https://assertj.github.io/doc/",
+        "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
         "https://junit.org/junit5/docs/current/user-guide/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4747,13 +4750,15 @@
       "path": "web/public/content/java/modulo-15.md",
       "topic": "Tema 5: Pruebas de integración reproducibles",
       "providerCitations": [
-        "https://testcontainers.com/",
+        "https://documentation.red-gate.com/flyway/",
+        "https://java.testcontainers.org/",
         "https://wiremock.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 255,
+      "line": 720,
       "originalProseUrls": [
-        "https://testcontainers.com/",
+        "https://documentation.red-gate.com/flyway/",
+        "https://java.testcontainers.org/",
         "https://wiremock.org/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4767,9 +4772,11 @@
         "https://logback.qos.ch/manual/mdc.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 317,
+      "line": 918,
       "originalProseUrls": [
-        "https://logback.qos.ch/manual/mdc.html"
+        "https://github.com/logfellow/logstash-logback-encoder",
+        "https://logback.qos.ch/manual/mdc.html",
+        "https://www.slf4j.org/manual.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4786,6 +4793,7 @@
       "line": 16,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
+        "https://hibernate.org/orm/documentation/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4800,9 +4808,10 @@
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 125,
+      "line": 227,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
+        "https://hibernate.org/orm/documentation/",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4814,13 +4823,14 @@
       "topic": "Tema 1: JDBC, PreparedStatement y DAO",
       "providerCitations": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
-        "https://jakarta.ee/specifications/persistence/"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 16,
+      "line": 14,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html",
-        "https://jakarta.ee/specifications/persistence/"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
+        "https://h2database.com/html/main.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4834,9 +4844,10 @@
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 93,
+      "line": 201,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
+        "https://h2database.com/html/advanced.html#transaction_isolation",
         "https://jakarta.ee/specifications/persistence/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4847,13 +4858,14 @@
       "path": "web/public/content/java/modulo-18.md",
       "topic": "Tema 1: HttpClient, REST, timeouts y fallos",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 16,
       "originalProseUrls": [
-        "http://localhost:8080/health",
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4867,10 +4879,12 @@
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 95,
+      "line": 186,
       "originalProseUrls": [
         "https://cheatsheetseries.owasp.org/",
-        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html",
+        "https://oauth.net/2/",
+        "https://openid.net/developers/how-connect-works/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -4884,7 +4898,7 @@
         "https://docs.oracle.com/javase/tutorial/i18n/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 714,
+      "line": 846,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
         "https://docs.oracle.com/javase/tutorial/i18n/"
@@ -4935,7 +4949,7 @@
         "https://docs.oracle.com/javase/tutorial/collections/streams/index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 234,
+      "line": 243,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html",
         "https://docs.oracle.com/javase/tutorial/collections/streams/index.html"
@@ -5564,7 +5578,7 @@
         "https://docs.fastlane.tools/actions/upload_to_testflight/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 107,
+      "line": 109,
       "originalProseUrls": [
         "https://docs.fastlane.tools/",
         "https://docs.fastlane.tools/actions/upload_to_testflight/"
@@ -6111,12 +6125,12 @@
       "path": "web/public/content/rutaflow/modulo-3.md",
       "topic": "Tema 2: Mapas operativos",
       "providerCitations": [
-        "https://maplibre.org/maplibre-gl-js/docs/examples/create-and-style-clusters/"
+        "https://maplibre.org/maplibre-gl-js/docs/API/classes/GeoJSONSource/"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 144,
       "originalProseUrls": [
-        "https://maplibre.org/maplibre-gl-js/docs/examples/create-and-style-clusters/"
+        "https://maplibre.org/maplibre-gl-js/docs/API/classes/GeoJSONSource/"
       ],
       "recognitionStatus": "primary-domain-detected",
       "reason": "Dominio documental exacto reconocido; falta revisar su aplicación a la afirmación concreta."
@@ -6221,7 +6235,7 @@
         "https://project-osrm.org/docs/v5.24.0/api/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 538,
+      "line": 537,
       "originalProseUrls": [
         "http://localhost:5000",
         "https://github.com/Project-OSRM/osrm-backend",
@@ -7124,6 +7138,33 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/javax/sql/DataSource.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html",
+      "status": 0,
+      "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jar.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
       "status": 200,
       "finalUrl": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
@@ -7628,6 +7669,15 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://documentation.red-gate.com/flyway/",
+      "status": 0,
+      "finalUrl": "https://documentation.red-gate.com/flyway/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations",
       "status": 200,
       "finalUrl": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations",
@@ -7997,6 +8047,15 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
+      "url": "https://java.testcontainers.org/",
+      "status": 0,
+      "finalUrl": "https://java.testcontainers.org/",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
       "url": "https://java.testcontainers.org/modules/databases/postgres/",
       "status": 200,
       "finalUrl": "https://java.testcontainers.org/modules/databases/postgres/",
@@ -8040,6 +8099,15 @@
       "title": null,
       "checkedAt": "2026-10-31T15:36:40.238233+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
+      "status": 0,
+      "finalUrl": "https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://jotai.org/docs/introduction",
@@ -8141,15 +8209,6 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/",
-      "status": 200,
-      "finalUrl": "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/",
-      "contentType": "text/html; charset=utf-8",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:58.259591+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/",
       "status": 200,
       "finalUrl": "https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-scripts/",
@@ -8231,13 +8290,13 @@
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
-      "url": "https://maplibre.org/maplibre-gl-js/docs/examples/create-and-style-clusters/",
-      "status": 200,
-      "finalUrl": "https://maplibre.org/maplibre-gl-js/docs/examples/create-and-style-clusters/",
-      "contentType": "text/html; charset=utf-8",
+      "url": "https://maplibre.org/maplibre-gl-js/docs/API/classes/GeoJSONSource/",
+      "status": 0,
+      "finalUrl": "https://maplibre.org/maplibre-gl-js/docs/API/classes/GeoJSONSource/",
+      "contentType": "",
       "title": null,
-      "checkedAt": "2026-10-31T15:36:40.762593+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://mapstruct.org/documentation/stable/reference/html/",
@@ -8373,6 +8432,15 @@
       "title": null,
       "checkedAt": "2026-10-31T15:33:20.294629+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
+    },
+    {
+      "url": "https://maven.apache.org/pom.html",
+      "status": 0,
+      "finalUrl": "https://maven.apache.org/pom.html",
+      "contentType": "",
+      "title": null,
+      "checkedAt": null,
+      "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
       "url": "https://microservices.io/patterns/data/saga.html",
@@ -10928,9 +10996,9 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 510,
-    "urlsReachable": 508,
-    "urlsPending": 2
+    "urlsChecked": 516,
+    "urlsReachable": 506,
+    "urlsPending": 10
   },
   "corrections": [
     {

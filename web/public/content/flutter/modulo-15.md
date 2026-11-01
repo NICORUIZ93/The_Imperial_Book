@@ -14,22 +14,46 @@ Un cambio de UI en la pantalla de lista de envíos rompió silenciosamente el es
 `WidgetTester` simula un usuario interactuando con el árbol de widgets en memoria, sin necesitar un dispositivo o emulador real; `pump()` avanza un frame, permitiendo verificar el estado exacto del árbol en cualquier punto. La analogía: un maniquí de pruebas que reacciona exactamente como un usuario real, pero en un entorno de laboratorio controlado y repetible.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `test/lista_envios_test.dart` con el contenido de este tema.
+**Desde cero:** parte de una carpeta vacía y genera tu propio proyecto:
 ```bash
-flutter create ejemplo
+flutter create ejemplo_flutter_testing
+cd ejemplo_flutter_testing
 ```
 
-
-Guarda la prueba en `test/lista_envios_test.dart` del proyecto Flutter que contiene `ListaEnvios` (implementación disponible en `examples/flutter-testing/lib/buscador_envios.dart`). Importa `package:flutter/material.dart`, `package:flutter_test/flutter_test.dart` y el archivo de tu widget; coloca `testWidgets` dentro de `void main()`. Ejecuta `flutter test test/lista_envios_test.dart` desde la carpeta que contiene `pubspec.yaml`.
-
+Crea `lib/buscador_envios.dart` con el widget mínimo que vas a probar:
 ```dart
-testWidgets('muestra "Sin envíos" cuando la lista está vacía', (tester) async {
-  await tester.pumpWidget(const MaterialApp(home: ListaEnvios(envios: [])));
-  expect(find.text('Sin envíos'), findsOneWidget);
-});
+import 'package:flutter/material.dart';
+
+class ListaEnvios extends StatelessWidget {
+  final List<String> envios;
+  const ListaEnvios({super.key, required this.envios});
+
+  @override
+  Widget build(BuildContext context) {
+    if (envios.isEmpty) return const Center(child: Text('Sin envíos'));
+    return ListView(
+      children: envios.map((id) => ListTile(title: Text(id))).toList(),
+    );
+  }
+}
 ```
+
+Crea `test/lista_envios_test.dart` con una prueba completa:
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ejemplo_flutter_testing/buscador_envios.dart';
+
+void main() {
+  testWidgets('muestra "Sin envíos" cuando la lista está vacía', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: ListaEnvios(envios: [])));
+    expect(find.text('Sin envíos'), findsOneWidget);
+  });
+}
+```
+Ejecuta desde la carpeta que contiene `pubspec.yaml`:
 ```bash
-flutter test
+flutter test test/lista_envios_test.dart
 ```
 Resultado esperado: el test pasa en verde, confirmando que el texto "Sin envíos" aparece exactamente cuando la lista está vacía, sin necesidad de ningún emulador corriendo.
 
@@ -64,20 +88,74 @@ Un test que verifica el resultado de una búsqueda de envíos justo después de 
 `pumpAndSettle()` avanza frames repetidamente hasta que no quede ninguna animación o frame pendiente, aproximando lo que un usuario real experimentaría esperando a que la pantalla "se asiente"; si algo mantiene la UI en animación perpetua, `pumpAndSettle()` nunca termina y el test falla por timeout. La analogía: esperar a que una escena termine de moverse antes de tomar la fotografía, en vez de disparar el obturador a mitad del movimiento.
 
 #### Paso 4 · Demostración guiada
-Copia el ejemplo independiente con Widget, fake inyectable y pruebas completos:
+Parte de otra carpeta vacía y crea un proyecto independiente con el widget y sus pruebas:
 ```bash
-cp -R examples/flutter-testing ejemplo-flutter-testing
-cd ejemplo-flutter-testing
-flutter pub get
-flutter gen-l10n
-flutter test test/buscador_envios_test.dart
+flutter create ejemplo_flutter_testing_async
+cd ejemplo_flutter_testing_async
 ```
-Crea o inspecciona `test/buscador_envios_test.dart`:
+
+Crea `lib/buscador_envios.dart` con ambos widgets y una función de búsqueda inyectable:
+```dart
+import 'package:flutter/material.dart';
+
+class ListaEnvios extends StatelessWidget {
+  final List<String> envios;
+  const ListaEnvios({super.key, required this.envios});
+  @override
+  Widget build(BuildContext context) => envios.isEmpty
+      ? const Center(child: Text('Sin envíos'))
+      : ListView(children: envios.map((id) => Text(id)).toList());
+}
+
+class BuscadorEnvios extends StatefulWidget {
+  final Future<String> Function(String guia) buscar;
+  const BuscadorEnvios({super.key, required this.buscar});
+  @override
+  State<BuscadorEnvios> createState() => _BuscadorEnviosState();
+}
+
+class _BuscadorEnviosState extends State<BuscadorEnvios> {
+  final controller = TextEditingController();
+  bool cargando = false;
+  String? resultado;
+  String? error;
+
+  Future<void> consultar() async {
+    setState(() { cargando = true; resultado = null; error = null; });
+    try {
+      final valor = await widget.buscar(controller.text);
+      if (!mounted) return;
+      setState(() { resultado = valor; cargando = false; });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() { error = 'No se pudo cargar'; cargando = false; });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Column(children: [
+      TextField(controller: controller),
+      if (cargando)
+        const CircularProgressIndicator()
+      else
+        IconButton(icon: const Icon(Icons.search), onPressed: consultar),
+      if (resultado != null) Text(resultado!),
+      if (error != null) Text(error!),
+    ]),
+  );
+
+  @override
+  void dispose() { controller.dispose(); super.dispose(); }
+}
+```
+
+Crea `test/buscador_envios_test.dart` con este contenido y ejecuta `flutter test test/buscador_envios_test.dart`:
 ```dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:academia_flutter_testing/buscador_envios.dart';
+import 'package:ejemplo_flutter_testing_async/buscador_envios.dart';
 void main() {
   testWidgets('respuesta controlada después de mostrar carga', (tester) async {
     final respuesta = Completer<String>();
@@ -242,30 +320,78 @@ RutaFlow planea operar en una región con usuarios que hablan español e inglés
 Flutter genera clases de localización tipadas a partir de archivos `.arb` (uno por idioma), reemplazando strings hardcodeados por llamadas a `AppLocalizations.of(context)`; el formato de fechas, números y plurales también depende de la configuración regional (`Locale`), no solo de traducir palabra por palabra. La analogía: traducir un contrato no es reemplazar palabras una por una, sino adaptar el formato completo (fechas, moneda, pluralización) a las convenciones de cada idioma.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `l10n.yaml` con el contenido de este tema.
+**Desde cero:** parte de una carpeta vacía y crea el proyecto con sus dependencias:
 ```bash
-flutter create ejemplo
+flutter create ejemplo_flutter_l10n
+cd ejemplo_flutter_l10n
+flutter pub add flutter_localizations --sdk=flutter
+flutter pub add intl
 ```
 
-**Crea** el archivo `l10n.yaml` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
+En `pubspec.yaml`, dentro de la sección `flutter:` existente, agrega `generate: true`. Crea `l10n.yaml`:
+```yaml
+arb-dir: lib/l10n
+template-arb-file: app_es.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+synthetic-package: false
+```
 
-Usa `examples/flutter-testing` como proyecto independiente. Incluye `l10n.yaml`, `flutter.generate: true`, dependencia flutter_localizations del SDK, intl y `lib/main.dart` con delegates/supportedLocales. Ejecuta desde esa carpeta `flutter pub get`, `flutter gen-l10n` y `flutter test test/l10n_test.dart`: debe comprobar español e inglés.
-
-Archivo `lib/l10n/app_es.arb`:
-
+Crea `lib/l10n/app_es.arb`:
 ```json
 { "estadoEnRuta": "En ruta" }
 ```
-Archivo `lib/l10n/app_en.arb`:
-
+Crea `lib/l10n/app_en.arb`:
 ```json
 { "estadoEnRuta": "In transit" }
 ```
+
+Reemplaza `lib/main.dart` por una app mínima que use delegates y locales soportados:
 ```dart
-Text(AppLocalizations.of(context)!.estadoEnRuta)
+import 'package:flutter/material.dart';
+import 'package:ejemplo_flutter_l10n/l10n/app_localizations.dart';
+
+void main() => runApp(const App());
+class App extends StatelessWidget {
+  const App({super.key});
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: Builder(builder: (context) => Scaffold(
+      body: Center(child: Text(AppLocalizations.of(context)!.estadoEnRuta)),
+    )),
+  );
+}
 ```
+
+Crea `test/l10n_test.dart` para comprobar ambos idiomas:
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ejemplo_flutter_l10n/l10n/app_localizations.dart';
+
+Future<void> probarIdioma(WidgetTester tester, Locale locale, String texto) async {
+  await tester.pumpWidget(MaterialApp(
+    locale: locale,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: Builder(builder: (context) =>
+      Text(AppLocalizations.of(context)!.estadoEnRuta)),
+  ));
+  expect(find.text(texto), findsOneWidget);
+}
+void main() {
+  testWidgets('español', (tester) => probarIdioma(tester, const Locale('es'), 'En ruta'));
+  testWidgets('inglés', (tester) => probarIdioma(tester, const Locale('en'), 'In transit'));
+}
+```
+
+Ejecuta:
 ```bash
+flutter pub get
 flutter gen-l10n
+flutter test test/l10n_test.dart
 ```
 Resultado esperado: `flutter gen-l10n` genera la clase `AppLocalizations`, y la app muestra "En ruta" o "In transit" automáticamente según el `Locale` del dispositivo, sin ningún `if` manual de idioma en el widget.
 

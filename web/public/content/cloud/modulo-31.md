@@ -6,7 +6,7 @@
 ### Tema 1: Arquitectura multi-nube y portabilidad de conocimiento
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a confirmar que `confirmDelivery` de RutaFlow (`examples/rutaflow/node/confirm-delivery.ts`) ya está diseñado contra un puerto, no contra un proveedor cloud específico. Prerrequisitos: Módulo 5 completo.
+Al finalizar vas a escribir y probar un `confirmDelivery` de RutaFlow diseñado contra un puerto `DeliveryRepository`, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti. Prerrequisitos: Módulo 5 completo y Node.js.
 #### Paso 2 · Contexto y caso real
 Si RutaFlow tuviera que migrar su backend de AWS a Azure, la lógica de negocio real —validar el PIN de 6 dígitos, confirmar una entrega una sola vez por `commandId`— no debería cambiar una sola línea; solo debería cambiar qué implementación concreta guarda los datos.
 #### Paso 3 · Teoría, modelo mental y analogía
@@ -41,30 +41,126 @@ flowchart LR
 **Límites y decisión de uso:** Portabilidad de conceptos no significa equivalencia de identidades, errores o consistencia entre proveedores. Introduce adaptadores solo en fronteras útiles y prueba cada contrato; una abstracción que oculta diferencias puede impedir diagnosticar fallos reales.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
+**Desde cero:** crea una carpeta vacía, inicializa tu propio proyecto y escribe los tres archivos siguientes. El adaptador en memoria simula la persistencia para hacer visible el contrato; no pretende emular DynamoDB.
 
 ```bash
-grep -n "interface DeliveryRepository" examples/rutaflow/node/confirm-delivery.ts
+mkdir rutaflow-puertos
+cd rutaflow-puertos
+npm init -y
+npm install --save-dev tsx
+mkdir src tests
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+Crea `src/confirm-delivery.ts` con el contrato y la lógica de negocio:
+
+```ts
+export type ConfirmDeliveryCommand = {
+  shipmentId: string;
+  commandId: string;
+  recipientPin: string;
+};
+
+export type DeliveryResult = {
+  shipmentId: string;
+  commandId: string;
+  status: 'confirmed';
+};
+
+export interface DeliveryRepository {
+  findCommandResult(commandId: string): Promise<DeliveryResult | undefined>;
+  confirm(command: ConfirmDeliveryCommand): Promise<DeliveryResult>;
+}
+
+export async function confirmDelivery(
+  command: ConfirmDeliveryCommand,
+  repository: DeliveryRepository
+): Promise<DeliveryResult> {
+  if (!command.shipmentId) throw new TypeError('shipmentId es obligatorio');
+  if (!/^\d{6}$/.test(command.recipientPin)) {
+    throw new TypeError('recipientPin debe tener 6 dígitos');
+  }
+
+  const previous = await repository.findCommandResult(command.commandId);
+  if (previous) return previous;
+  return repository.confirm(command);
+}
+```
+
+Crea `src/memory-delivery-repository.ts` con un primer adaptador:
+
+```ts
+import type {
+  ConfirmDeliveryCommand,
+  DeliveryRepository,
+  DeliveryResult
+} from './confirm-delivery';
+
+export class MemoryDeliveryRepository implements DeliveryRepository {
+  private readonly results = new Map<string, DeliveryResult>();
+  confirmCalls = 0;
+
+  async findCommandResult(commandId: string): Promise<DeliveryResult | undefined> {
+    return this.results.get(commandId);
+  }
+
+  async confirm(command: ConfirmDeliveryCommand): Promise<DeliveryResult> {
+    this.confirmCalls += 1;
+    const result: DeliveryResult = {
+      shipmentId: command.shipmentId,
+      commandId: command.commandId,
+      status: 'confirmed'
+    };
+    this.results.set(command.commandId, result);
+    return result;
+  }
+}
+```
+
+Crea `tests/confirm-delivery.test.ts` para probar validación e idempotencia sin ningún SDK cloud:
+
+```ts
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { confirmDelivery } from '../src/confirm-delivery';
+import { MemoryDeliveryRepository } from '../src/memory-delivery-repository';
+
+const command = {
+  shipmentId: 'env-4471',
+  commandId: 'cmd-001',
+  recipientPin: '837201'
+};
+
+test('confirma una sola vez por commandId', async () => {
+  const repository = new MemoryDeliveryRepository();
+  const first = await confirmDelivery(command, repository);
+  const second = await confirmDelivery(command, repository);
+  assert.deepEqual(second, first);
+  assert.equal(repository.confirmCalls, 1);
+});
+
+test('rechaza un PIN inválido antes de escribir', async () => {
+  const repository = new MemoryDeliveryRepository();
+  await assert.rejects(
+    confirmDelivery({ ...command, recipientPin: '1234' }, repository),
+    /6 dígitos/
+  );
+  assert.equal(repository.confirmCalls, 0);
+});
+```
+
+Ejecuta las pruebas del proyecto que acabas de crear:
 
 ```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
+npx tsx --test tests/confirm-delivery.test.ts
 ```
-Confirma la respuesta del servicio emulado.
 
-Resultado esperado: `confirmDelivery(command, repository)` recibe un `DeliveryRepository` (el puerto: `findCommandResult`/`confirm`) como parámetro — nunca importa directamente `@aws-sdk/client-dynamodb` ni ningún cliente de Azure dentro de la función. Esa separación ya existe en el código real del proyecto, no es solo una idea teórica.
+Resultado esperado: las dos pruebas pasan. `confirmDelivery(command, repository)` recibe un `DeliveryRepository` (el puerto: `findCommandResult`/`confirm`) como parámetro y no importa `@aws-sdk/client-dynamodb` ni ningún cliente de Azure. La primera prueba también demuestra que repetir `commandId` no duplica la escritura.
 #### Paso 5 · Práctica guiada
-Pista: reescribí `confirmDelivery` para que llame directamente a `new DynamoDBClient()` adentro de la función, en vez de recibir `repository` por parámetro — ese es el fallo deliberado de diseño: ahora la lógica de negocio quedó acoplada a AWS, y migrar a Azure exigiría reescribir y volver a probar `confirmDelivery` entero, no solo escribir un adaptador nuevo.
+Duplica temporalmente la función como `src/confirm-delivery-acoplado.ts`. En esa copia, importa `MemoryDeliveryRepository`, elimina el parámetro `repository` y crea dentro de la función `const repository = new MemoryDeliveryRepository();`. Ese es el fallo deliberado de diseño: la lógica ya no permite sustituir el adaptador; si esa clase concreta usara DynamoDB, migrar a Azure exigiría reescribir y volver a probar `confirmDelivery` entero. **Pista:** compara las firmas de ambas versiones y busca en la copia qué dependencia concreta impide ejecutar las mismas pruebas con otro adaptador. Conserva el original del Paso 4 sin ese acoplamiento.
 #### Paso 6 · Práctica independiente
-Deshacé el Paso 5 y escribí un segundo adaptador que implemente `DeliveryRepository` contra un `Map` en memoria (simulando Cosmos DB sin necesitar Azure real), y confirmá que `confirmDelivery` funciona igual de bien con ese adaptador que con uno respaldado por DynamoDB, sin tocar ni una línea de la función.
+Escribe un segundo adaptador `src/map-delivery-repository.ts` que implemente `DeliveryRepository` con otro `Map` en memoria, esta vez simulando Cosmos DB sin necesitar Azure real. Usa exactamente los mismos dos métodos del puerto y un contador `confirmCalls`; no copies ninguna llamada de un SDK dentro de `confirmDelivery`. En `tests/confirm-delivery.test.ts`, cambia únicamente la importación y la construcción del repositorio para usar tu nueva clase y vuelve a ejecutar `npx tsx --test tests/confirm-delivery.test.ts`. Las mismas dos pruebas deben pasar sin modificar `src/confirm-delivery.ts`.
 #### Paso 7 · Cierre
-Entregá la separación real confirmada del Paso 4, el acoplamiento roto del Paso 5, y el segundo adaptador del Paso 6; explicá qué parte de este diseño es portable entre proveedores y cuál sería específica de cada uno. Siguiente paso: Testcontainers. Errores comunes: abstraer detalles sin necesidad y filtrar tipos del proveedor. Fuente oficial: https://12factor.net/.
+Entregá los archivos del puerto, la función y ambas pruebas del Paso 4, la copia acoplada del Paso 5 y el segundo adaptador con la nueva salida de pruebas del Paso 6; explicá qué parte de este diseño es portable entre proveedores y cuál sería específica de cada uno. Siguiente paso: Testcontainers. Errores comunes: abstraer detalles sin necesidad y filtrar tipos del proveedor. Fuente oficial: https://12factor.net/.
 
 ### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD
 

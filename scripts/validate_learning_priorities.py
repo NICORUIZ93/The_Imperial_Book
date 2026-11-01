@@ -50,7 +50,7 @@ for track in TRACKS:
             next_section = re.search(r"^## ", block[heading.end() - heading.start():], re.MULTILINE)
             if next_section:
                 block = block[:heading.end() - heading.start() + next_section.start()]
-            if "¿Por qué es importante?" not in block:
+            if not re.search(r"\*\*(?:¿Por qué es importante\?|Por qué importa:)\*\*", block):
                 errors.append(f"{path.relative_to(ROOT)} · {heading.group(0)}: falta importancia explícita")
 
 viewer = (ROOT / "web/src/app/course/lesson-viewer.ts").read_text(encoding="utf-8")

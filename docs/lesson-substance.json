@@ -992,12 +992,16 @@
       "track": "java"
     },
     {
-      "legacySections": [],
+      "legacySections": [
+        "## Construcción guiada del capítulo"
+      ],
       "module": 16,
       "track": "java"
     },
     {
-      "legacySections": [],
+      "legacySections": [
+        "## Construcción guiada del capítulo"
+      ],
       "module": 17,
       "track": "java"
     },
@@ -1691,15 +1695,15 @@
     }
   ],
   "summary": {
-    "fingerprint": "ae3b94cc7b2fd2ab787216a2a5dc6fc46914817943fc34155a603dba6cb84b06",
+    "fingerprint": "90e975af9fec0a77b201e89ea1a26742f92d82d50e2f48f25804f69fd234243d",
     "issues": {},
     "legacySections": {
-      "## Construcción guiada del capítulo": 41,
+      "## Construcción guiada del capítulo": 43,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 182
     },
     "modules": 254,
-    "modulesWithLegacySections": 184,
+    "modulesWithLegacySections": 186,
     "topics": 1141,
     "topicsWithIssues": 0
   },
@@ -1708,9 +1712,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 381,
+        "tailWords": 497,
         "topic": "Tema 1: Estructura de un proyecto Android Studio",
-        "words": 1122
+        "words": 1238
       },
       {
         "issues": [],
@@ -1722,9 +1726,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 403,
+        "tailWords": 401,
         "topic": "Tema 3: AndroidManifest.xml y módulos Gradle",
-        "words": 1146
+        "words": 1144
       },
       {
         "issues": [],
@@ -2729,7 +2733,7 @@
         "module": 0,
         "tailWords": 37,
         "topic": "Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs",
-        "words": 1007
+        "words": 1014
       },
       {
         "issues": [],
@@ -2813,7 +2817,7 @@
         "module": 10,
         "tailWords": 63,
         "topic": "Tema 2: KMS y envelope encryption",
-        "words": 1010
+        "words": 1012
       },
       {
         "issues": [],
@@ -2827,28 +2831,28 @@
         "module": 11,
         "tailWords": 63,
         "topic": "Tema 1: El patrón fan-out con SNS",
-        "words": 916
+        "words": 915
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 65,
         "topic": "Tema 2: EventBridge: bus de eventos con filtrado declarativo",
-        "words": 931
+        "words": 939
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 496,
+        "tailWords": 497,
         "topic": "Tema 3: SNS + SQS juntos, y Azure Event Hubs",
-        "words": 823
+        "words": 824
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 64,
         "topic": "Tema 1: Log groups, log streams y correlation ID",
-        "words": 1009
+        "words": 1008
       },
       {
         "issues": [],
@@ -2869,21 +2873,21 @@
         "module": 13,
         "tailWords": 57,
         "topic": "Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL",
-        "words": 988
+        "words": 989
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 63,
         "topic": "Tema 2: Snapshots y restore",
-        "words": 887
+        "words": 888
       },
       {
         "issues": [],
         "module": 13,
-        "tailWords": 467,
+        "tailWords": 468,
         "topic": "Tema 3: Migrations",
-        "words": 853
+        "words": 854
       },
       {
         "issues": [],
@@ -2904,7 +2908,7 @@
         "module": 14,
         "tailWords": 66,
         "topic": "Tema 3: Contenedores vs Lambda, y EKS",
-        "words": 959
+        "words": 958
       },
       {
         "issues": [],
@@ -2953,42 +2957,42 @@
         "module": 17,
         "tailWords": 59,
         "topic": "Tema 1: Streams vs colas",
-        "words": 932
+        "words": 933
       },
       {
         "issues": [],
         "module": 17,
         "tailWords": 64,
         "topic": "Tema 2: MSK (Kafka gestionado) y consumer groups",
-        "words": 1017
+        "words": 1018
       },
       {
         "issues": [],
         "module": 17,
-        "tailWords": 461,
+        "tailWords": 466,
         "topic": "Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka",
-        "words": 812
+        "words": 817
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 57,
         "topic": "Tema 1: Por qué no construir tu propio sistema de autenticación",
-        "words": 1124
+        "words": 1126
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 56,
         "topic": "Tema 2: Access Token, ID Token y Refresh Token",
-        "words": 967
+        "words": 976
       },
       {
         "issues": [],
         "module": 18,
         "tailWords": 68,
         "topic": "Tema 3: OAuth 2.0 y PKCE",
-        "words": 983
+        "words": 991
       },
       {
         "issues": [],
@@ -3002,14 +3006,14 @@
         "module": 19,
         "tailWords": 64,
         "topic": "Tema 2: Glue Crawler y Athena",
-        "words": 946
+        "words": 959
       },
       {
         "issues": [],
         "module": 19,
         "tailWords": 65,
         "topic": "Tema 3: Parquet vs CSV, y partition pruning",
-        "words": 889
+        "words": 886
       },
       {
         "issues": [],
@@ -3023,14 +3027,14 @@
         "module": 2,
         "tailWords": 45,
         "topic": "Tema 2: Claves y metadatos",
-        "words": 960
+        "words": 958
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 57,
         "topic": "Tema 3: Versionado y ciclo de vida",
-        "words": 957
+        "words": 956
       },
       {
         "issues": [],
@@ -3044,7 +3048,7 @@
         "module": 2,
         "tailWords": 62,
         "topic": "Tema 5: Políticas de bucket, ACL y URLs pre-firmadas",
-        "words": 870
+        "words": 867
       },
       {
         "issues": [],
@@ -3058,7 +3062,7 @@
         "module": 20,
         "tailWords": 65,
         "topic": "Tema 2: Textract y Transcribe",
-        "words": 860
+        "words": 858
       },
       {
         "issues": [],
@@ -3373,14 +3377,14 @@
         "module": 3,
         "tailWords": 38,
         "topic": "Tema 1: Colas, productores y consumidores",
-        "words": 957
+        "words": 964
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 47,
         "topic": "Tema 2: Ciclo de vida de un mensaje",
-        "words": 1109
+        "words": 1110
       },
       {
         "issues": [],
@@ -3394,7 +3398,7 @@
         "module": 3,
         "tailWords": 59,
         "topic": "Tema 4: Colas FIFO vs Standard",
-        "words": 1041
+        "words": 1035
       },
       {
         "issues": [],
@@ -3427,9 +3431,9 @@
       {
         "issues": [],
         "module": 31,
-        "tailWords": 57,
+        "tailWords": 68,
         "topic": "Tema 1: Arquitectura multi-nube y portabilidad de conocimiento",
-        "words": 894
+        "words": 1256
       },
       {
         "issues": [],
@@ -3455,9 +3459,9 @@
       {
         "issues": [],
         "module": 32,
-        "tailWords": 478,
+        "tailWords": 484,
         "topic": "Tema 1: Una red segura empieza por flujos, no por subredes",
-        "words": 800
+        "words": 806
       },
       {
         "issues": [],
@@ -3476,9 +3480,9 @@
       {
         "issues": [],
         "module": 32,
-        "tailWords": 401,
+        "tailWords": 404,
         "topic": "Tema 4: Un backup solo existe operativamente después de restaurarlo",
-        "words": 754
+        "words": 757
       },
       {
         "issues": [],
@@ -3490,16 +3494,16 @@
       {
         "issues": [],
         "module": 33,
-        "tailWords": 473,
+        "tailWords": 474,
         "topic": "Tema 2: Kubernetes administrado, ECS y Service Mesh",
-        "words": 829
+        "words": 830
       },
       {
         "issues": [],
         "module": 33,
         "tailWords": 86,
         "topic": "Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados",
-        "words": 1140
+        "words": 1138
       },
       {
         "issues": [],
@@ -3525,100 +3529,100 @@
       {
         "issues": [],
         "module": 34,
-        "tailWords": 439,
+        "tailWords": 435,
         "topic": "Tema 1: Instalación en macOS, Linux y Windows",
-        "words": 565
+        "words": 576
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 25,
         "topic": "Tema 2: Modelo mental de la plataforma",
-        "words": 732
+        "words": 750
       },
       {
         "issues": [],
         "module": 34,
-        "tailWords": 382,
+        "tailWords": 378,
         "topic": "Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK",
-        "words": 751
+        "words": 747
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 25,
         "topic": "Tema 4: Configuración avanzada y ciclo de vida",
-        "words": 630
+        "words": 643
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 68,
         "topic": "Tema 5: Automatización, UI y agentes",
-        "words": 998
+        "words": 1013
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 63,
         "topic": "Tema 6: Servicios AWS incorporados en la documentación actual",
-        "words": 957
+        "words": 953
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 59,
         "topic": "Tema 7: Servicios Azure que completan el recorrido",
-        "words": 973
+        "words": 959
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 68,
         "topic": "Tema 8: Servicios GCP que completan el recorrido",
-        "words": 879
+        "words": 865
       },
       {
         "issues": [],
         "module": 34,
         "tailWords": 391,
         "topic": "Tema 9: floci-ui — explorador visual multi-nube",
-        "words": 862
+        "words": 858
       },
       {
         "issues": [],
         "module": 34,
-        "tailWords": 489,
+        "tailWords": 485,
         "topic": "Tema 10: Laboratorios oficiales reconstruidos en español",
-        "words": 603
+        "words": 617
       },
       {
         "issues": [],
         "module": 34,
-        "tailWords": 351,
+        "tailWords": 347,
         "topic": "Tema 11: Límites y transferencia a producción",
-        "words": 512
+        "words": 531
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 57,
         "topic": "Tema 1: Qué es NoSQL y cuándo usarlo",
-        "words": 1334
+        "words": 1338
       },
       {
         "issues": [],
         "module": 4,
-        "tailWords": 63,
+        "tailWords": 95,
         "topic": "Tema 2: Tablas, items y atributos",
-        "words": 1225
+        "words": 1260
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 55,
         "topic": "Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M",
-        "words": 1766
+        "words": 1788
       },
       {
         "issues": [],
@@ -3639,7 +3643,7 @@
         "module": 4,
         "tailWords": 62,
         "topic": "Tema 6: Query vs Scan",
-        "words": 1304
+        "words": 1302
       },
       {
         "issues": [],
@@ -3653,14 +3657,14 @@
         "module": 5,
         "tailWords": 50,
         "topic": "Tema 2: Estructura de una función Lambda",
-        "words": 1395
+        "words": 1394
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 68,
         "topic": "Tema 3: Runtimes — Node.js, Python, Java, Go",
-        "words": 1331
+        "words": 1333
       },
       {
         "issues": [],
@@ -3681,42 +3685,42 @@
         "module": 5,
         "tailWords": 63,
         "topic": "Tema 6: Integración con S3, DynamoDB Streams y API Gateway",
-        "words": 1250
+        "words": 1251
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 53,
         "topic": "Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",
-        "words": 1030
+        "words": 1036
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 61,
         "topic": "Tema 2: Recursos, métodos y stages",
-        "words": 1271
+        "words": 1270
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 56,
         "topic": "Tema 3: Integración con Lambda (proxy)",
-        "words": 1227
+        "words": 1234
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 75,
         "topic": "Tema 4: Mapeo de entrada/salida y validación con modelos",
-        "words": 979
+        "words": 983
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 66,
         "topic": "Tema 5: Despliegue y variables de stage",
-        "words": 969
+        "words": 981
       },
       {
         "issues": [],
@@ -3751,14 +3755,14 @@
         "module": 7,
         "tailWords": 64,
         "topic": "Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales",
-        "words": 1056
+        "words": 1062
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 61,
         "topic": "Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions",
-        "words": 1078
+        "words": 1079
       },
       {
         "issues": [],
@@ -3779,7 +3783,7 @@
         "module": 9,
         "tailWords": 65,
         "topic": "Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos",
-        "words": 1089
+        "words": 1082
       },
       {
         "issues": [],
@@ -4096,56 +4100,56 @@
         "module": 14,
         "tailWords": 113,
         "topic": "Tema 3: Construir una imagen no demuestra de dónde proviene",
-        "words": 1049
+        "words": 1052
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 143,
         "topic": "Tema 4: Una plataforma interna es un producto con límites",
-        "words": 963
+        "words": 993
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 206,
         "topic": "Tema 1: Docker y Compose avanzados",
-        "words": 766
+        "words": 877
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 208,
         "topic": "Tema 2: Kubernetes extensible y Helm avanzado",
-        "words": 641
+        "words": 713
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 311,
+        "tailWords": 313,
         "topic": "Tema 3: Service Mesh con Istio o Linkerd",
+        "words": 747
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 268,
+        "topic": "Tema 4: GitOps con Argo CD y Flux",
+        "words": 685
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 281,
+        "topic": "Tema 5: Ansible, inventarios, roles y Vault",
         "words": 758
       },
       {
         "issues": [],
         "module": 15,
-        "tailWords": 270,
-        "topic": "Tema 4: GitOps con Argo CD y Flux",
-        "words": 686
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 273,
-        "topic": "Tema 5: Ansible, inventarios, roles y Vault",
-        "words": 678
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 336,
+        "tailWords": 334,
         "topic": "Tema 6: DevSecOps y métricas DORA",
-        "words": 755
+        "words": 802
       },
       {
         "issues": [],
@@ -4157,9 +4161,9 @@
       {
         "issues": [],
         "module": 16,
-        "tailWords": 211,
+        "tailWords": 204,
         "topic": "Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales",
-        "words": 1047
+        "words": 1040
       },
       {
         "issues": [],
@@ -4833,7 +4837,7 @@
         "module": 12,
         "tailWords": 137,
         "topic": "Tema 3: Cierre del track",
-        "words": 935
+        "words": 938
       },
       {
         "issues": [],
@@ -4910,14 +4914,14 @@
         "module": 15,
         "tailWords": 235,
         "topic": "Tema 1: flutter test y WidgetTester",
-        "words": 659
+        "words": 688
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 195,
         "topic": "Tema 2: pumpAndSettle, golden e integration tests",
-        "words": 802
+        "words": 972
       },
       {
         "issues": [],
@@ -4938,7 +4942,7 @@
         "module": 15,
         "tailWords": 226,
         "topic": "Tema 5: Internacionalización completa",
-        "words": 705
+        "words": 830
       },
       {
         "issues": [],
@@ -5234,7 +5238,7 @@
         "module": 10,
         "tailWords": 69,
         "topic": "Tema 1: La red convierte el resultado en una incertidumbre",
-        "words": 1138
+        "words": 1132
       },
       {
         "issues": [],
@@ -5248,7 +5252,7 @@
         "module": 10,
         "tailWords": 119,
         "topic": "Tema 3: Mensajes que se procesan con efectos exactamente una vez",
-        "words": 1202
+        "words": 1286
       },
       {
         "issues": [],
@@ -5269,7 +5273,7 @@
         "module": 10,
         "tailWords": 89,
         "topic": "Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
-        "words": 679
+        "words": 678
       },
       {
         "issues": [],
@@ -5318,119 +5322,119 @@
         "module": 12,
         "tailWords": 147,
         "topic": "Tema 1: Matemáticas aplicadas: derivada, integral y modelos",
-        "words": 621
+        "words": 615
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 129,
         "topic": "Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton",
-        "words": 633
+        "words": 627
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 130,
         "topic": "Tema 3: Electrónica analógica: diodos, transistores y amplificadores",
-        "words": 633
+        "words": 627
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 127,
         "topic": "Tema 4: Electrónica digital: lógica y máquinas de estados",
-        "words": 553
+        "words": 547
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 135,
         "topic": "Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones",
-        "words": 596
+        "words": 590
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 124,
         "topic": "Tema 6: Comunicaciones: modulación y detección de errores",
-        "words": 558
+        "words": 552
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 158,
         "topic": "Tema 7: Señales y sistemas: muestreo, Fourier y convolución",
-        "words": 636
+        "words": 630
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 153,
         "topic": "Tema 8: DSP: filtros digitales y compresión",
-        "words": 614
+        "words": 608
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 119,
         "topic": "Tema 9: Instrumentación: calibración, DAQ e incertidumbre",
-        "words": 545
+        "words": 539
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 151,
         "topic": "Tema 10: Control automático: realimentación, PID y estabilidad",
-        "words": 607
+        "words": 601
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 124,
         "topic": "Tema 11: Potencia: conversión, eficiencia y disipación",
-        "words": 579
+        "words": 573
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 129,
         "topic": "Tema 12: PCB: esquemático, ERC, DRC y fabricación",
-        "words": 601
+        "words": 595
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 125,
         "topic": "Tema 13: Sistemas embebidos: RTOS, buses y firmware",
-        "words": 842
+        "words": 836
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 126,
         "topic": "Tema 14: Programación de bajo nivel: C, memoria y depuración",
-        "words": 569
+        "words": 563
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 132,
         "topic": "Tema 15: Electromagnetismo: Faraday y líneas de transmisión",
-        "words": 567
+        "words": 561
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 136,
         "topic": "Tema 16: Gestión profesional: requisitos, riesgos y evidencia",
-        "words": 588
+        "words": 582
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 152,
         "topic": "Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3",
-        "words": 618
+        "words": 612
       },
       {
         "issues": [],
@@ -5724,7 +5728,7 @@
         "module": 6,
         "tailWords": 153,
         "topic": "Tema 1: Activos, amenazas, riesgos y límites de confianza",
-        "words": 3153
+        "words": 3147
       },
       {
         "issues": [],
@@ -5773,7 +5777,7 @@
         "module": 7,
         "tailWords": 104,
         "topic": "Tema 3: Diseño modular, principios, patrones y refactoring",
-        "words": 889
+        "words": 1120
       },
       {
         "issues": [],
@@ -5787,14 +5791,14 @@
         "module": 7,
         "tailWords": 65,
         "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
-        "words": 651
+        "words": 645
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 121,
         "topic": "Tema 1: El sistema operativo como administrador y frontera",
-        "words": 952
+        "words": 1021
       },
       {
         "issues": [],
@@ -5815,7 +5819,7 @@
         "module": 8,
         "tailWords": 127,
         "topic": "Tema 4: Contenedores: aislamiento reproducible",
-        "words": 957
+        "words": 1052
       },
       {
         "issues": [],
@@ -5829,28 +5833,28 @@
         "module": 9,
         "tailWords": 136,
         "topic": "Tema 1: Lógica para especificar antes de programar",
-        "words": 1131
+        "words": 1158
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 95,
         "topic": "Tema 2: Conjuntos, relaciones, funciones e inducción",
-        "words": 884
+        "words": 912
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 112,
         "topic": "Tema 3: Conteo, grafos y estructuras conectadas",
-        "words": 922
+        "words": 950
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 133,
         "topic": "Tema 4: Probabilidad y evidencia para decisiones técnicas",
-        "words": 1124
+        "words": 1176
       }
     ],
     "ios": [
@@ -5887,42 +5891,42 @@
         "module": 1,
         "tailWords": 36,
         "topic": "Tema 1: El protocolo View y composición",
-        "words": 1336
+        "words": 1434
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 107,
         "topic": "Tema 2: Orden de modificadores y layout con stacks",
-        "words": 1209
+        "words": 1253
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 115,
         "topic": "Tema 3: Previews, LazyVGrid/ScrollView y property wrappers",
-        "words": 983
+        "words": 1166
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 454,
+        "tailWords": 463,
         "topic": "Tema 1: Instruments",
-        "words": 788
+        "words": 797
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 416,
+        "tailWords": 425,
         "topic": "Tema 2: Accesibilidad con VoiceOver",
-        "words": 701
+        "words": 710
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 126,
         "topic": "Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit",
-        "words": 863
+        "words": 872
       },
       {
         "issues": [],
@@ -5934,44 +5938,44 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 486,
+        "tailWords": 459,
         "topic": "Tema 1: Certificados y provisioning profiles",
-        "words": 828
+        "words": 939
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 479,
+        "tailWords": 452,
         "topic": "Tema 2: Archivar, subir y TestFlight",
-        "words": 813
+        "words": 971
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 141,
         "topic": "Tema 3: Metadata y versionado",
-        "words": 914
+        "words": 951
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 134,
         "topic": "Tema 1: Arquitectura del proyecto integrador",
-        "words": 925
+        "words": 937
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 152,
         "topic": "Tema 2: Sincronización entre red y persistencia local",
-        "words": 933
+        "words": 1226
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 140,
         "topic": "Tema 3: Cierre del track",
-        "words": 955
+        "words": 963
       },
       {
         "issues": [],
@@ -5985,21 +5989,21 @@
         "module": 13,
         "tailWords": 116,
         "topic": "Tema 2: Proteger datos es controlar todas sus copias",
-        "words": 894
+        "words": 1003
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 111,
         "topic": "Tema 3: Offline-first es un protocolo, no una caché",
-        "words": 928
+        "words": 1035
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 128,
         "topic": "Tema 4: Operar significa detectar, limitar y aprender del fallo",
-        "words": 840
+        "words": 996
       },
       {
         "issues": [],
@@ -6025,93 +6029,93 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 267,
+        "tailWords": 270,
         "topic": "Tema 1: Swift Testing y pruebas asíncronas",
-        "words": 761
+        "words": 985
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 234,
+        "tailWords": 244,
         "topic": "Tema 2: ViewInspector con criterio",
-        "words": 565
+        "words": 914
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 216,
+        "tailWords": 237,
         "topic": "Tema 3: Combine avanzado",
-        "words": 567
+        "words": 674
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 246,
+        "tailWords": 269,
         "topic": "Tema 4: Animaciones y matchedGeometryEffect",
-        "words": 553
+        "words": 664
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 200,
+        "tailWords": 223,
         "topic": "Tema 5: UIViewRepresentable",
-        "words": 532
+        "words": 642
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 254,
+        "tailWords": 267,
         "topic": "Tema 6: UIViewControllerRepresentable y Coordinator",
-        "words": 593
+        "words": 606
       },
       {
         "issues": [],
         "module": 14,
-        "tailWords": 361,
+        "tailWords": 377,
         "topic": "Tema 7: Core ML y Vision — inferencia en el dispositivo",
-        "words": 1019
+        "words": 1161
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 123,
         "topic": "Tema 1: @State y @Binding",
-        "words": 1114
+        "words": 1086
       },
       {
         "issues": [],
         "module": 2,
-        "tailWords": 433,
+        "tailWords": 439,
         "topic": "Tema 2: @Observable",
-        "words": 853
+        "words": 876
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 115,
         "topic": "Tema 3: @Environment y identidad vs valor",
-        "words": 943
+        "words": 1111
       },
       {
         "issues": [],
         "module": 3,
-        "tailWords": 416,
+        "tailWords": 422,
         "topic": "Tema 1: NavigationStack y NavigationPath",
-        "words": 728
+        "words": 734
       },
       {
         "issues": [],
         "module": 3,
-        "tailWords": 447,
+        "tailWords": 453,
         "topic": "Tema 2: Sheets, full screen covers y TabView",
-        "words": 774
+        "words": 780
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 113,
         "topic": "Tema 3: Deep linking y controles de formulario",
-        "words": 822
+        "words": 921
       },
       {
         "issues": [],
@@ -6132,7 +6136,7 @@
         "module": 4,
         "tailWords": 129,
         "topic": "Tema 3: TaskGroup y MainActor",
-        "words": 929
+        "words": 1034
       },
       {
         "issues": [],
@@ -6144,72 +6148,72 @@
       {
         "issues": [],
         "module": 5,
-        "tailWords": 443,
+        "tailWords": 449,
         "topic": "Tema 1: URLSession con async/await y Codable",
-        "words": 813
+        "words": 819
       },
       {
         "issues": [],
         "module": 5,
-        "tailWords": 427,
+        "tailWords": 433,
         "topic": "Tema 2: Errores tipados",
-        "words": 810
+        "words": 816
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 126,
         "topic": "Tema 3: Reintentos y cancelación",
-        "words": 903
+        "words": 1014
       },
       {
         "issues": [],
         "module": 6,
-        "tailWords": 407,
+        "tailWords": 416,
         "topic": "Tema 1: @Model y ModelContainer",
-        "words": 732
+        "words": 741
       },
       {
         "issues": [],
         "module": 6,
-        "tailWords": 433,
+        "tailWords": 442,
         "topic": "Tema 2: @Query y operaciones de escritura",
-        "words": 767
+        "words": 776
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 119,
         "topic": "Tema 3: Migraciones y SwiftData vs Core Data",
-        "words": 846
+        "words": 964
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 424,
+        "tailWords": 433,
         "topic": "Tema 1: Publishers y Subscribers",
-        "words": 710
+        "words": 719
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 447,
+        "tailWords": 456,
         "topic": "Tema 2: Operadores: debounce y combineLatest",
-        "words": 774
+        "words": 783
       },
       {
         "issues": [],
         "module": 7,
-        "tailWords": 464,
+        "tailWords": 474,
         "topic": "Tema 3: Combine vs async/await",
-        "words": 813
+        "words": 914
       },
       {
         "issues": [],
         "module": 8,
-        "tailWords": 397,
+        "tailWords": 406,
         "topic": "Tema 1: De una vista \"gorda\" a MVVM",
-        "words": 822
+        "words": 831
       },
       {
         "issues": [],
@@ -6221,30 +6225,30 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 413,
+        "tailWords": 444,
         "topic": "Tema 3: Cuándo MVVM no alcanza",
-        "words": 790
+        "words": 917
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 491,
+        "tailWords": 467,
         "topic": "Tema 1: XCTest clásico y Swift Testing",
-        "words": 846
+        "words": 955
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 449,
+        "tailWords": 459,
         "topic": "Tema 2: Testing de código async",
-        "words": 764
+        "words": 889
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 143,
         "topic": "Tema 3: UI Tests con XCUITest",
-        "words": 1000
+        "words": 1113
       }
     ],
     "java": [
@@ -6335,275 +6339,275 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 114,
-        "topic": "Tema 1: module-info.java y encapsulación fuerte",
-        "words": 921
+        "tailWords": 225,
+        "topic": "Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min",
+        "words": 1176
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 118,
-        "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
-        "words": 967
+        "tailWords": 251,
+        "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min",
+        "words": 1147
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 128,
-        "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks",
-        "words": 950
+        "tailWords": 252,
+        "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
+        "words": 1236
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 109,
-        "topic": "Tema 1: Generaciones de memoria y recolectores",
-        "words": 1059
+        "tailWords": 231,
+        "topic": "Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min",
+        "words": 1275
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 119,
-        "topic": "Tema 2: Java Flight Recorder y JIT compilation",
-        "words": 978
+        "tailWords": 226,
+        "topic": "Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min",
+        "words": 1202
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 132,
-        "topic": "Tema 3: Referencias especiales y heap dumps",
-        "words": 991
+        "tailWords": 255,
+        "topic": "Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min",
+        "words": 1233
       },
       {
         "issues": [],
         "module": 11,
-        "tailWords": 460,
-        "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
-        "words": 857
+        "tailWords": 236,
+        "topic": "Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min",
+        "words": 1037
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 101,
-        "topic": "Tema 1: Builder — configuración paso a paso y validación",
-        "words": 912
+        "tailWords": 208,
+        "topic": "Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min",
+        "words": 1122
       },
       {
         "issues": [],
         "module": 12,
-        "tailWords": 103,
-        "topic": "Tema 2: Factory Method y Strategy",
-        "words": 1010
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 254,
-        "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
-        "words": 815
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 90,
-        "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
-        "words": 1093
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 55,
-        "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable",
-        "words": 729
-      },
-      {
-        "issues": [],
-        "module": 12,
-        "tailWords": 78,
-        "topic": "Tema 6: Patrones estructurales — elegir por intención",
-        "words": 741
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 118,
-        "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
-        "words": 960
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 125,
-        "topic": "Tema 2: Integrando concurrencia, modelado y testing",
-        "words": 957
-      },
-      {
-        "issues": [],
-        "module": 13,
-        "tailWords": 144,
-        "topic": "Tema 3: Build reproducible y cierre del track",
-        "words": 565
-      },
-      {
-        "issues": [],
-        "module": 14,
-        "tailWords": 88,
-        "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-        "words": 926
-      },
-      {
-        "issues": [],
-        "module": 14,
-        "tailWords": 482,
-        "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-        "words": 908
-      },
-      {
-        "issues": [],
-        "module": 14,
-        "tailWords": 83,
-        "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-        "words": 840
-      },
-      {
-        "issues": [],
-        "module": 14,
-        "tailWords": 109,
-        "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
-        "words": 1069
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 378,
-        "topic": "Tema 1: Maven avanzado",
-        "words": 864
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 341,
-        "topic": "Tema 2: Gradle y builds reproducibles",
-        "words": 748
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 324,
-        "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-        "words": 653
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 332,
-        "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-        "words": 716
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 329,
-        "topic": "Tema 5: Pruebas de integración reproducibles",
-        "words": 696
-      },
-      {
-        "issues": [],
-        "module": 15,
-        "tailWords": 354,
-        "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-        "words": 791
-      },
-      {
-        "issues": [],
-        "module": 16,
-        "tailWords": 172,
-        "topic": "Tema 1: Entidades y relaciones JPA",
-        "words": 817
-      },
-      {
-        "issues": [],
-        "module": 16,
         "tailWords": 189,
-        "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "words": 814
+        "topic": "Tema 2: Factory Method y Strategy · Intermedio · 55 min",
+        "words": 1178
       },
       {
         "issues": [],
-        "module": 17,
-        "tailWords": 176,
-        "topic": "Tema 1: JDBC, PreparedStatement y DAO",
-        "words": 703
+        "module": 12,
+        "tailWords": 207,
+        "topic": "Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min",
+        "words": 968
       },
       {
         "issues": [],
-        "module": 17,
-        "tailWords": 197,
-        "topic": "Tema 2: Transacciones, ACID y aislamiento",
-        "words": 664
+        "module": 12,
+        "tailWords": 213,
+        "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min",
+        "words": 1168
       },
       {
         "issues": [],
-        "module": 18,
-        "tailWords": 173,
-        "topic": "Tema 1: HttpClient, REST, timeouts y fallos",
-        "words": 729
+        "module": 12,
+        "tailWords": 235,
+        "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min",
+        "words": 993
       },
       {
         "issues": [],
-        "module": 18,
-        "tailWords": 212,
-        "topic": "Tema 2: Tokens, validación y límites de seguridad",
-        "words": 784
+        "module": 12,
+        "tailWords": 217,
+        "topic": "Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min",
+        "words": 1300
       },
       {
         "issues": [],
-        "module": 19,
-        "tailWords": 189,
-        "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
-        "words": 848
+        "module": 13,
+        "tailWords": 150,
+        "topic": "Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min",
+        "words": 706
       },
       {
         "issues": [],
-        "module": 19,
-        "tailWords": 200,
-        "topic": "Tema 2: Expresiones regulares con Pattern y Matcher",
-        "words": 841
+        "module": 13,
+        "tailWords": 174,
+        "topic": "Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min",
+        "words": 847
       },
       {
         "issues": [],
-        "module": 19,
-        "tailWords": 186,
-        "topic": "Tema 3: Dinero exacto con BigDecimal",
-        "words": 795
+        "module": 13,
+        "tailWords": 187,
+        "topic": "Tema 3: Build reproducible y cierre del track · Avanzado · 50 min",
+        "words": 720
       },
       {
         "issues": [],
-        "module": 19,
-        "tailWords": 185,
-        "topic": "Tema 4: Assertions y diseño por contrato",
-        "words": 815
+        "module": 14,
+        "tailWords": 178,
+        "topic": "Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min",
+        "words": 673
       },
       {
         "issues": [],
-        "module": 19,
-        "tailWords": 185,
-        "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
-        "words": 824
+        "module": 14,
+        "tailWords": 166,
+        "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Experto · 65 min",
+        "words": 701
       },
       {
         "issues": [],
-        "module": 19,
-        "tailWords": 195,
-        "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks",
-        "words": 909
+        "module": 14,
+        "tailWords": 142,
+        "topic": "Tema 3: Deserializar es permitir construcción y comportamiento · Experto · 60 min",
+        "words": 680
       },
       {
         "issues": [],
-        "module": 19,
+        "module": 14,
+        "tailWords": 138,
+        "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Experto · 60 min",
+        "words": 635
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 206,
+        "topic": "Tema 1: Maven avanzado · Avanzado · 55 min",
+        "words": 1120
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 252,
+        "topic": "Tema 2: Gradle y builds reproducibles · Avanzado · 45 min",
+        "words": 828
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 199,
+        "topic": "Tema 3: Proyectos multi-módulo sin ciclos · Experto · 1 h 15 min",
+        "words": 1338
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 206,
+        "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas · Avanzado · 55 min",
+        "words": 984
+      },
+      {
+        "issues": [],
+        "module": 15,
         "tailWords": 203,
-        "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
-        "words": 913
+        "topic": "Tema 5: Pruebas de integración reproducibles · Experto · 1 h",
+        "words": 1251
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 202,
+        "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 55 min",
+        "words": 862
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 229,
+        "topic": "Tema 1: Entidades y relaciones JPA · Intermedio · 55 min",
+        "words": 1112
+      },
+      {
+        "issues": [],
+        "module": 16,
+        "tailWords": 221,
+        "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 1 h",
+        "words": 1234
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 251,
+        "topic": "Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 1 h",
+        "words": 1130
+      },
+      {
+        "issues": [],
+        "module": 17,
+        "tailWords": 268,
+        "topic": "Tema 2: Transacciones, ACID y aislamiento · Avanzado · 1 h 15 min",
+        "words": 1245
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 182,
+        "topic": "Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 2 h",
+        "words": 1001
+      },
+      {
+        "issues": [],
+        "module": 18,
+        "tailWords": 198,
+        "topic": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 2 h",
+        "words": 1130
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 141,
+        "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 90 min",
+        "words": 742
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 146,
+        "topic": "Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 90 min",
+        "words": 758
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 145,
+        "topic": "Tema 3: Dinero exacto con BigDecimal · Básico · 75 min",
+        "words": 714
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 144,
+        "topic": "Tema 4: Assertions y diseño por contrato · Intermedio · 75 min",
+        "words": 730
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 136,
+        "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 2 h",
+        "words": 790
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 153,
+        "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 90 min",
+        "words": 781
+      },
+      {
+        "issues": [],
+        "module": 19,
+        "tailWords": 146,
+        "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 90 min",
+        "words": 820
       },
       {
         "issues": [],
@@ -6629,23 +6633,23 @@
       {
         "issues": [],
         "module": 20,
-        "tailWords": 139,
-        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
-        "words": 893
+        "tailWords": 164,
+        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 75 min",
+        "words": 765
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 129,
-        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "words": 691
+        "tailWords": 159,
+        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 75 min",
+        "words": 676
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 126,
-        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
-        "words": 727
+        "tailWords": 162,
+        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 90 min",
+        "words": 723
       },
       {
         "issues": [],
@@ -7130,35 +7134,35 @@
         "module": 14,
         "tailWords": 146,
         "topic": "Tema 1: TypeScript avanzado",
-        "words": 753
+        "words": 830
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 105,
         "topic": "Tema 2: Workers y ejecución fuera del hilo principal",
-        "words": 698
+        "words": 825
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 154,
         "topic": "Tema 3: Bundlers y optimización",
-        "words": 711
+        "words": 844
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 116,
         "topic": "Tema 4: Accesibilidad web",
-        "words": 709
+        "words": 872
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 110,
         "topic": "Tema 5: WebAssembly con Rust o C",
-        "words": 770
+        "words": 887
       },
       {
         "issues": [],
@@ -7172,56 +7176,56 @@
         "module": 14,
         "tailWords": 106,
         "topic": "Tema 7: Geolocalización, permisos y precisión GPS",
-        "words": 517
+        "words": 621
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 112,
         "topic": "Tema 8: sessionStorage, cookies e IndexedDB",
-        "words": 515
+        "words": 593
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 106,
         "topic": "Tema 9: Expresiones regulares avanzadas y Unicode",
-        "words": 570
+        "words": 614
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 105,
         "topic": "Tema 10: Patrones Factory, Strategy, Observer y Pub/Sub",
-        "words": 499
+        "words": 544
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 145,
         "topic": "Tema 11: Service Workers, PWA y estrategias de caché",
-        "words": 666
+        "words": 778
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 92,
         "topic": "Tema 12: WebSocket y comunicación en tiempo real",
-        "words": 475
+        "words": 613
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 116,
         "topic": "Tema 13: Typed Arrays, ArrayBuffer y DataView",
-        "words": 466
+        "words": 519
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 105,
         "topic": "Tema 14: ECMAScript moderno, Temporal e iterator helpers",
-        "words": 621
+        "words": 667
       },
       {
         "issues": [],
@@ -7592,16 +7596,16 @@
       {
         "issues": [],
         "module": 10,
-        "tailWords": 161,
+        "tailWords": 191,
         "topic": "Tema 1: Pipeline Gradle multiplataforma en CI",
-        "words": 1100
+        "words": 1135
       },
       {
         "issues": [],
         "module": 10,
-        "tailWords": 147,
+        "tailWords": 179,
         "topic": "Tema 2: Fastlane",
-        "words": 991
+        "words": 1025
       },
       {
         "issues": [],
@@ -7620,9 +7624,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 161,
+        "tailWords": 189,
         "topic": "Tema 2: Sincronización de datos remotos con caché local",
-        "words": 1155
+        "words": 1186
       },
       {
         "issues": [],
@@ -7634,9 +7638,9 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 150,
+        "tailWords": 178,
         "topic": "Tema 1: La mejor frontera compartida es deliberadamente pequeña",
-        "words": 1074
+        "words": 1104
       },
       {
         "issues": [],
@@ -7648,9 +7652,9 @@
       {
         "issues": [],
         "module": 12,
-        "tailWords": 154,
+        "tailWords": 181,
         "topic": "Tema 3: Un artefacto compatible necesita más que el mismo número de versión",
-        "words": 1191
+        "words": 1224
       },
       {
         "issues": [],
@@ -7676,9 +7680,9 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 367,
+        "tailWords": 370,
         "topic": "Tema 3: Swift Export",
-        "words": 804
+        "words": 807
       },
       {
         "issues": [],
@@ -7690,9 +7694,9 @@
       {
         "issues": [],
         "module": 13,
-        "tailWords": 244,
+        "tailWords": 247,
         "topic": "Tema 5: Publicación en Maven Central",
-        "words": 613
+        "words": 616
       },
       {
         "issues": [],
@@ -7916,14 +7920,14 @@
         "module": 9,
         "tailWords": 153,
         "topic": "Tema 2: Fakes en vez de mocks",
-        "words": 988
+        "words": 991
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 156,
         "topic": "Tema 3: runTest para coroutines",
-        "words": 938
+        "words": 941
       }
     ],
     "node": [
@@ -7974,7 +7978,7 @@
         "module": 1,
         "tailWords": 118,
         "topic": "Tema 3: Workspaces — monorepos con npm/pnpm",
-        "words": 1185
+        "words": 1181
       },
       {
         "issues": [],
@@ -8147,9 +8151,9 @@
       {
         "issues": [],
         "module": 14,
-        "tailWords": 302,
+        "tailWords": 307,
         "topic": "Tema 2: GraphQL avanzado y Federation",
-        "words": 804
+        "words": 1179
       },
       {
         "issues": [],
@@ -8569,9 +8573,9 @@
       {
         "issues": [],
         "module": 11,
-        "tailWords": 161,
+        "tailWords": 193,
         "topic": "Tema 3: Eventos tipados y componentes polimórficos",
-        "words": 1139
+        "words": 1172
       },
       {
         "issues": [],
@@ -8627,7 +8631,7 @@
         "module": 14,
         "tailWords": 194,
         "topic": "Tema 1: Server Components y streaming",
-        "words": 843
+        "words": 978
       },
       {
         "issues": [],
@@ -8786,9 +8790,9 @@
       {
         "issues": [],
         "module": 6,
-        "tailWords": 137,
+        "tailWords": 164,
         "topic": "Tema 3: Optimistic updates",
-        "words": 1156
+        "words": 1186
       },
       {
         "issues": [],
@@ -8835,9 +8839,9 @@
       {
         "issues": [],
         "module": 8,
-        "tailWords": 159,
+        "tailWords": 182,
         "topic": "Tema 3: Testing de hooks personalizados",
-        "words": 929
+        "words": 947
       },
       {
         "issues": [],
@@ -8956,9 +8960,9 @@
       {
         "issues": [],
         "module": 3,
-        "tailWords": 168,
+        "tailWords": 163,
         "topic": "Tema 2: Mapas operativos",
-        "words": 1219
+        "words": 1214
       },
       {
         "issues": [],
@@ -9014,14 +9018,14 @@
         "module": 5,
         "tailWords": 89,
         "topic": "Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
-        "words": 1343
+        "words": 1309
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 75,
         "topic": "Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
-        "words": 925
+        "words": 920
       },
       {
         "issues": [],
@@ -9049,7 +9053,7 @@
         "module": 6,
         "tailWords": 68,
         "topic": "Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
-        "words": 689
+        "words": 694
       },
       {
         "issues": [],
@@ -9077,7 +9081,7 @@
         "module": 7,
         "tailWords": 274,
         "topic": "Tema 4: Continuidad, costes y proyecto final",
-        "words": 1259
+        "words": 1412
       }
     ],
     "spring-boot": [
@@ -9338,7 +9342,7 @@
         "module": 15,
         "tailWords": 221,
         "topic": "Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 1 h 15 min",
-        "words": 843
+        "words": 853
       },
       {
         "issues": [],
@@ -9492,35 +9496,35 @@
         "module": 20,
         "tailWords": 311,
         "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
-        "words": 1005
+        "words": 986
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 288,
         "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
-        "words": 879
+        "words": 981
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 399,
+        "tailWords": 447,
         "topic": "Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
-        "words": 1449
+        "words": 2796
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 397,
+        "tailWords": 454,
         "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
-        "words": 1810
+        "words": 2390
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 418,
+        "tailWords": 480,
         "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
-        "words": 1370
+        "words": 2347
       },
       {
         "issues": [],
@@ -9590,7 +9594,7 @@
         "module": 4,
         "tailWords": 332,
         "topic": "Tema 4: Protección SSRF con InetAddressFilter (Spring Boot 4.1) · Experto · 50 min",
-        "words": 1258
+        "words": 1645
       },
       {
         "issues": [],

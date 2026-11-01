@@ -4,7 +4,7 @@ Capítulo de introducción aplicada a las 16 áreas de la página 4 y al control
 
 Este capítulo conecta programación con mediciones físicas. Empieza por unidades, circuitos y lógica antes de integrar sensores. Los ejemplos se ejecutan con la biblioteca estándar de Python; simulan fenómenos y decisiones, no sustituyen montaje, datasheets ni práctica de laboratorio.
 
-**Preparación:** instala Python 3 y Git, clona la academia y ejecuta los comandos desde la raíz. En Windows reemplaza `python3` por `py`. No requiere compra de componentes ni conexión de cargas eléctricas.
+**Preparación:** instala Python 3. Cada práctica parte de una carpeta vacía y tú escribes manualmente el archivo indicado; no necesitas clonar ningún proyecto. En Windows reemplaza `python3` por `py`. No requiere compra de componentes ni conexión de cargas eléctricas.
 
 **Proyecto integrador:** diseña un sensor de temperatura para RutaFlow con señal cruda, calibración, filtrado, consumo, contrato binario y criterios de aceptación. Conserva unidades y condiciones de medición en el registro, para que el backend no confunda una muestra con una verdad absoluta.
 
@@ -15,7 +15,7 @@ Este capítulo conecta programación con mediciones físicas. Empieza por unidad
 ### Tema 1: Matemáticas aplicadas: derivada, integral y modelos
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. **En una frase:** Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/matematicas.py`.
+Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. **En una frase:** Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `matematicas.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Un sensor de una entrega informa corriente cada segundo; integrar esas muestras estima carga consumida por su batería. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -24,7 +24,7 @@ Al finalizar podrás integrar muestras de corriente y contrastar la carga estima
 **Analogía y mecanismo:** La derivada es el velocímetro y la integral es el odómetro: una describe cuánto cambia algo y la otra acumula cambios. Para una carga Q(t)=t², I(t)=dQ/dt=2t. La integración numérica aproxima áreas; reducir el paso permite estudiar el error. Álgebra lineal expresa circuitos como Ax=b; las ecuaciones diferenciales describen RC/RLC; Laplace facilita estudiar transitorios y Fourier separa frecuencias. Las series aproximan funciones dentro de su región de convergencia, no universalmente.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/matematicas.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `matematicas.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 tiempos = [0, 1, 2, 3]
@@ -36,8 +36,7 @@ print(f"Carga: {carga:.1f} C")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/matematicas.py
+python3 matematicas.py
 ```
 
 **Salida esperada:**
@@ -70,7 +69,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. **En una frase:** Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/circuitos.py`.
+Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. **En una frase:** Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `circuitos.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Una entrada ADC carga un divisor de tensión; su voltaje cae respecto al valor calculado sin carga. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -79,7 +78,7 @@ Al finalizar podrás calcular el efecto de una carga usando el equivalente de Th
 **Analogía y mecanismo:** Una red de agua ayuda a recordar que en un nodo se conserva flujo, pero la corriente eléctrica exige un circuito cerrado. Kirchhoff impone suma de corrientes cero en nodos y suma de tensiones cero en lazos. Thévenin reduce una red lineal a Vth en serie con Rth; Norton usa In=Vth/Rth en paralelo. Superposición combina respuestas lineales, no potencias. En AC se usan impedancias: R, jωL y 1/(jωC); la potencia activa es Vrms·Irms·cos(φ). RC, RL y RLC almacenan energía y generan transitorios.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/circuitos.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `circuitos.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 fuente, r1, r2, carga = 5.0, 1000.0, 1000.0, 1000.0
@@ -91,8 +90,7 @@ print(f"Vth={vth:.3f} V; Rth={rth:.0f} ohm; salida={v_carga:.3f} V")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/circuitos.py
+python3 circuitos.py
 ```
 
 **Salida esperada:**
@@ -125,7 +123,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 3: Electrónica analógica: diodos, transistores y amplificadores
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. **En una frase:** La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/analogica.py`.
+Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. **En una frase:** La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `analogica.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Una señal de temperatura de 0.2 V requiere ganancia diez para usar mejor el rango de un ADC de 3.3 V. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -134,7 +132,7 @@ Al finalizar podrás estimar ganancia de un operacional y detectar saturación p
 **Analogía y mecanismo:** Un amplificador se parece a un megáfono: aumenta una señal usando energía de su alimentación. Un diodo conduce asimétricamente; el modelo de caída fija es una aproximación. BJT y MOSFET pueden amplificar o conmutar según su polarización. Un operacional con realimentación negativa aproxima V+=V− dentro de sus límites de alimentación, ganancia y ancho de banda. Fuentes y reguladores estabilizan alimentación; osciladores generan señales; filtros seleccionan frecuencias.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/analogica.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `analogica.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 vin, rf, rg, alimentacion = 0.2, 9000, 1000, 3.3
@@ -146,8 +144,7 @@ print(f"Ganancia={ganancia:.1f}; salida={salida:.2f} V")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/analogica.py
+python3 analogica.py
 ```
 
 **Salida esperada:**
@@ -180,7 +177,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 4: Electrónica digital: lógica y máquinas de estados
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. **En una frase:** La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/digital.py`.
+Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. **En una frase:** La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `digital.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Una puerta de almacén autoriza despacho solo si hay paquete y la puerta está cerrada. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -189,7 +186,7 @@ Al finalizar podrás construir una tabla de verdad y detectar un despacho no aut
 **Analogía y mecanismo:** Un semáforo es una máquina de estados: la misma entrada produce efectos distintos según el estado actual. Álgebra booleana modela AND, OR y NOT; un circuito combinacional depende de entradas actuales y uno secuencial conserva memoria. Contadores, registros y memorias almacenan estado. TTL y CMOS describen familias eléctricas con umbrales, alimentación y capacidad de corriente distintos, no solo ceros y unos.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/digital.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `digital.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 for paquete in (False, True):
@@ -200,8 +197,7 @@ for paquete in (False, True):
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/digital.py
+python3 digital.py
 ```
 
 **Salida esperada:**
@@ -237,7 +233,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. **En una frase:** Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/microcontroladores.py`.
+Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. **En una frase:** Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `microcontroladores.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** El dispositivo del repartidor convierte la batería en una lectura ADC y reporta autonomía. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -246,7 +242,7 @@ Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción 
 **Analogía y mecanismo:** Es una pequeña oficina: CPU decide, memoria conserva trabajo y periféricos atienden entradas y salidas. GPIO lee niveles; ADC cuantiza voltaje; PWM varía el ciclo de trabajo de pulsos. UART es comunicación serial asíncrona; I2C usa direcciones y dos líneas; SPI suele usar reloj y selección de dispositivo. Interrupciones notifican eventos y temporizadores marcan periodos sin bloquear el programa. C/C++ permiten controlar registros y memoria, pero Python aquí solo simula el cálculo.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/microcontroladores.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `microcontroladores.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 bits, referencia, voltaje = 12, 3.3, 1.65
@@ -258,8 +254,7 @@ print(f"ADC={codigo}; reconstruido={reconstruido:.4f} V")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/microcontroladores.py
+python3 microcontroladores.py
 ```
 
 **Salida esperada:**
@@ -292,7 +287,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 6: Comunicaciones: modulación y detección de errores
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. **En una frase:** Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/comunicaciones.py`.
+Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. **En una frase:** Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `comunicaciones.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Un sensor envía un byte y un bit de paridad; el receptor detecta una alteración simple. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -301,7 +296,7 @@ Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la
 **Analogía y mecanismo:** Hablar por teléfono separa mensaje, medio y receptor. Modulación modifica amplitud, frecuencia o fase de una portadora; demodulación recupera el mensaje. La teoría de información relaciona incertidumbre, tasa y capacidad. Código de línea representa bits físicamente; antenas y propagación determinan alcance y pérdidas. Detectar un error no equivale a corregirlo ni autenticar al emisor.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/comunicaciones.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `comunicaciones.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 dato = 0b10110010
@@ -313,8 +308,7 @@ print(f"Trama válida: {valido}")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/comunicaciones.py
+python3 comunicaciones.py
 ```
 
 **Salida esperada:**
@@ -347,7 +341,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 7: Señales y sistemas: muestreo, Fourier y convolución
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. **En una frase:** Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/senales.py`.
+Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. **En una frase:** Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `senales.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Un sensor vibratorio de 7 Hz muestreado a 10 Hz produce muestras indistinguibles de otra frecuencia. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -356,7 +350,7 @@ Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo
 **Analogía y mecanismo:** Tomar fotos de una rueda ilustra el muestreo: si fotografías demasiado lento puede parecer que gira al revés. Un sistema LTI es lineal e invariante en el tiempo; su salida es la convolución de entrada con respuesta al impulso. Correlación mide semejanza a distintos desplazamientos. Fourier analiza frecuencias y Laplace incluye dinámica y condiciones de convergencia. Reconstrucción exige señal acotada en banda y filtrado antialias previo.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/senales.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `senales.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 import math
@@ -368,8 +362,7 @@ print(f"Diferencia máxima: {max(abs(x-y) for x,y in zip(a,b)):.6f}")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/senales.py
+python3 senales.py
 ```
 
 **Salida esperada:**
@@ -404,7 +397,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 8: DSP: filtros digitales y compresión
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. **En una frase:** El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/dsp.py`.
+Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. **En una frase:** El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `dsp.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** La temperatura del paquete tiene un pico aislado; una media móvil lo atenúa sin demostrar que el pico fuera falso. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -413,7 +406,7 @@ Al finalizar podrás cuantificar el efecto y el retardo de una media móvil caus
 **Analogía y mecanismo:** Promediar varias opiniones reduce fluctuaciones, pero retrasa una noticia nueva: un filtro también introduce compromiso entre ruido y respuesta. Un FIR combina muestras finitas; un IIR reutiliza salidas y necesita estabilidad. La transformada Z estudia sistemas discretos; polos y ceros condicionan respuesta. Compresión sin pérdida conserva muestras y con pérdida admite distorsión a cambio de menor tamaño; audio, imagen y video requieren métricas apropiadas.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/dsp.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `dsp.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 muestras = [20, 20, 29, 20, 20]
@@ -425,8 +418,7 @@ print(filtradas)
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/dsp.py
+python3 dsp.py
 ```
 
 **Salida esperada:**
@@ -461,7 +453,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 9: Instrumentación: calibración, DAQ e incertidumbre
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. **En una frase:** La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/sensores.py`.
+Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. **En una frase:** La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `sensores.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Dos referencias permiten corregir ganancia y offset de un sensor térmico del transporte. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -470,7 +462,7 @@ Al finalizar podrás calibrar una lectura con dos referencias y comprobar un ter
 **Analogía y mecanismo:** Una regla desplazada puede medir siempre dos centímetros de más: muchos dígitos no la vuelven exacta. Sensores de temperatura, presión, humedad, luz y posición requieren acondicionamiento y adquisición DAQ. Calibración compara referencias; linealización corrige una curva; transductores convierten energía y actuadores cambian el entorno. Resolución, repetibilidad, exactitud e incertidumbre describen propiedades distintas.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/sensores.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `sensores.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 raw_frio, raw_caliente = 102, 902
@@ -482,8 +474,7 @@ print(f"Temperatura: {pendiente * 502 + offset:.2f} °C")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/sensores.py
+python3 sensores.py
 ```
 
 **Salida esperada:**
@@ -516,7 +507,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 10: Control automático: realimentación, PID y estabilidad
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. **En una frase:** El control automático compara una medición con una referencia y ajusta una acción para reducir el error. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/control.py`.
+Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. **En una frase:** El control automático compara una medición con una referencia y ajusta una acción para reducir el error. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `control.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Se simula la temperatura de un compartimento con pérdidas y potencia acotada. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -525,7 +516,7 @@ Al finalizar podrás simular un lazo proporcional y explicar su error estacionar
 **Analogía y mecanismo:** Un termostato compara temperatura deseada y real. El modelo de planta describe su dinámica; P reacciona al error, I lo acumula y D estima su cambio. Saturación exige anti-windup. Bode, Nyquist y Routh permiten analizar estabilidad bajo sus supuestos; ver una respuesta rápida no demuestra margen ante retardo o perturbaciones. Compensadores modifican la dinámica del lazo.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/control.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `control.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 temperatura, referencia = 20.0, 25.0
@@ -538,8 +529,7 @@ print(f"Temperatura: {temperatura:.2f} °C")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/control.py
+python3 control.py
 ```
 
 **Salida esperada:**
@@ -574,7 +564,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 11: Potencia: conversión, eficiencia y disipación
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. **En una frase:** La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/potencia.py`.
+Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. **En una frase:** La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `potencia.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** La unidad de seguimiento requiere 5 V y 1 A desde la batería de 12 V de un vehículo. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -583,7 +573,7 @@ Al finalizar podrás calcular relación de conversión y pérdidas de una fuente
 **Analogía y mecanismo:** Un convertidor se parece a una transmisión: cambia la relación de salida, no crea energía. Rectificadores convierten AC en DC; inversores hacen DC a AC; buck reduce DC y boost la eleva. En un buck ideal Vout=D·Vin. Motores requieren dimensionar arranque, conmutación y protecciones; las fuentes conmutadas disipan pérdidas y generan rizado. La temperatura depende de pérdidas y resistencia térmica.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/potencia.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `potencia.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 vin, vout, corriente, eficiencia = 12, 5, 1, 0.9
@@ -595,8 +585,7 @@ print(f"Duty={duty:.3f}; pérdidas={pin-pout:.3f} W")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/potencia.py
+python3 potencia.py
 ```
 
 **Salida esperada:**
@@ -629,7 +618,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 12: PCB: esquemático, ERC, DRC y fabricación
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. **En una frase:** El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/pcb.py`.
+Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. **En una frase:** El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `pcb.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** La placa del sensor tiene dos pistas paralelas cuyo espacio debe respetar la regla del fabricante. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -638,7 +627,7 @@ Al finalizar podrás evaluar una separación de pistas y distinguirla de una rev
 **Analogía y mecanismo:** El esquemático es el plano de conexiones y el layout es la distribución real de calles. ERC encuentra incompatibilidades eléctricas y DRC verifica geometría; ninguno demuestra funcionamiento. Retorno de corriente, desacoplo, integridad de señal y gestión térmica importan tanto como unir redes. KiCad organiza esquemático, placa, BOM y Gerbers; el fabricante define anchos, separaciones y tolerancias.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/pcb.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `pcb.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 centros_mm, ancho_a, ancho_b, minimo = 0.50, 0.30, 0.30, 0.25
@@ -648,8 +637,7 @@ print(f"Espacio={espacio:.2f} mm; cumple={espacio >= minimo}")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/pcb.py
+python3 pcb.py
 ```
 
 **Salida esperada:**
@@ -682,7 +670,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 13: Sistemas embebidos: RTOS, buses y firmware
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. **En una frase:** Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/embebidos.py`.
+Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. **En una frase:** Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `embebidos.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** El sensor debe adquirir temperatura cada 20 ms y publicar cada 100 ms. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -691,7 +679,7 @@ Al finalizar podrás estimar utilización de tareas y separar ese cálculo de ga
 **Analogía y mecanismo:** Una cocina con varias órdenes requiere prioridad y plazos, no solo velocidad media. RTOS planifica tareas; tiempo real significa cumplir deadlines. SPI, I2C, CAN y USB tienen contratos y costes distintos; firmware inicializa hardware, valida datos y recupera fallos. IoT añade conectividad, identidad y actualizaciones. Una tarea que bloquea un bus puede impedir medir a tiempo aunque la CPU esté libre.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/embebidos.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `embebidos.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 def simular_rms(tareas, horizonte_ms):
@@ -723,8 +711,7 @@ for tick, nombre, pendiente in fallos:
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/embebidos.py
+python3 embebidos.py
 ```
 
 **Salida esperada:**
@@ -757,7 +744,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 14: Programación de bajo nivel: C, memoria y depuración
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. **En una frase:** La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/bajo-nivel.py`.
+Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. **En una frase:** La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `bajo-nivel.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Un mensaje UART transmite una medición sin signo de 16 bits en little-endian. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -766,7 +753,7 @@ Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacu
 **Analogía y mecanismo:** Un buffer es una fila de casillas con capacidad fija; escribir fuera invade otra responsabilidad. C/C++ dan control explícito y requieren ownership, límites y vida útil; ASM expresa instrucciones de máquina. Estructuras y algoritmos condicionan coste; depuración con GDB, warnings y sanitizers ayuda a localizar errores. Python puede ensayar un contrato binario, pero no reproduce comportamiento indefinido de C.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/bajo-nivel.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `bajo-nivel.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 import struct
@@ -777,8 +764,7 @@ print(trama.hex(), struct.unpack("<H", trama)[0])
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/bajo-nivel.py
+python3 bajo-nivel.py
 ```
 
 **Salida esperada:**
@@ -811,7 +797,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 15: Electromagnetismo: Faraday y líneas de transmisión
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. **En una frase:** El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/electromagnetismo.py`.
+Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. **En una frase:** El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `electromagnetismo.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Un cable de sensor cercano a un motor capta tensión inducida por un campo cambiante. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -820,7 +806,7 @@ Al finalizar podrás estimar tensión inducida y explicar cómo influye el área
 **Analogía y mecanismo:** Un lazo de cable funciona como una pequeña antena: capta cambios de flujo magnético. Coulomb describe fuerzas entre cargas; Faraday relaciona variación de flujo con tensión inducida; Maxwell unifica campos eléctricos y magnéticos. Ondas y líneas de transmisión requieren considerar velocidad de propagación, impedancia y terminaciones cuando el retardo no es despreciable frente al flanco.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/electromagnetismo.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `electromagnetismo.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 area, cambio_campo, intervalo = 0.001, 0.01, 0.001
@@ -830,8 +816,7 @@ print(f"Tensión inducida: {voltaje:.3f} V")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/electromagnetismo.py
+python3 electromagnetismo.py
 ```
 
 **Salida esperada:**
@@ -864,7 +849,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 16: Gestión profesional: requisitos, riesgos y evidencia
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. **En una frase:** La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/gestion.py`.
+Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. **En una frase:** La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `gestion.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** RutaFlow acepta un sensor si su error máximo medido es menor o igual a 0.5 °C en los puntos acordados. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -873,7 +858,7 @@ Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura d
 **Analogía y mecanismo:** Construir un puente exige acordar carga, plazo y prueba de aceptación antes de elegir materiales. Documentación técnica captura supuestos y decisiones; trabajo en equipo necesita interfaces y responsables; pensamiento crítico separa observación y explicación. Innovación y aprendizaje continuo consisten en experimentar con criterios, no perseguir herramientas sin objetivo.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/gestion.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `gestion.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 referencias = [0, 25, 50]
@@ -884,8 +869,7 @@ print(f"Error máximo={max(errores):.2f} °C; acepta={max(errores) <= 0.5}")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/gestion.py
+python3 gestion.py
 ```
 
 **Salida esperada:**
@@ -918,7 +902,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 ### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. **En una frase:** Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `examples/electronics/plc.py`.
+Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. **En una frase:** Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `plc.py`.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** La cinta del almacén debe detenerse si se abre una puerta o se activa una alarma. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
@@ -927,7 +911,7 @@ Al finalizar podrás reproducir un interlock de control y verificar una orden de
 **Analogía y mecanismo:** Es un supervisor que toma una foto de entradas, decide y publica órdenes en cada ronda. El ciclo de scan no es instantáneo: entradas pueden cambiar entre rondas. IEC 61131-3 define lenguajes de programación de controladores; Structured Text y Ladder tienen semántica y herramientas propias. Variables globales, bus de campo, HMI y registro cumplen funciones distintas. Una HMI muestra y solicita acciones; el control valida interlocks.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `examples/electronics/plc.py` en un proyecto nuevo o utiliza el archivo incluido en el repositorio:
+Crea `plc.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
 
 ```python
 entradas = {"marcha": True, "puerta_cerrada": False, "alarma": False}
@@ -937,8 +921,7 @@ print(f"Motor habilitado: {motor}")
 ```
 
 ```bash
-mkdir -p examples/electronics
-python3 examples/electronics/plc.py
+python3 plc.py
 ```
 
 **Salida esperada:**
@@ -986,12 +969,47 @@ Llama x al nodo de R1/D1/D2, y al superior derecho, z al punto entre R2 y D3, w 
 
 La corriente por R1 es (8-0.5)/3000 = 2.5 mA. R2 conduce (0-(-2))/1000 = 2 mA hacia D3; por tanto D2 lleva 2 mA y D1 recibe los 0.5 mA restantes. D3 conduce 2 mA en sentido inverso: ánodo a -10 V y cátodo a -2 V. D4 tiene 0 V ánodo-cátodo y 0 mA, consistente con bloqueo. Se cumplen KCL y las desigualdades de los cuatro estados; asumirlos sin comprobar corrientes no sería una solución.
 
-Desde la raíz ejecuta:
+Para comprobar el modelo, parte de una carpeta vacía y crea manualmente `diodos_pdf.py`:
 
 ```bash
-python3 examples/electronics/diodos-pdf.py
+mkdir practica-diodos && cd practica-diodos
 ```
 
-**Salida esperada:** D1 directa 0.500 mA; D2 directa 2.000 mA; D3 ruptura Zener 2.000 mA inversos; D4 bloqueado 0.000 mA. El archivo usa fracciones exactas para comprobar KCL y condiciones de estado. **Fallo deliberado:** cambia la referencia derecha a +10 V sin actualizar los nodos: las aserciones de polarización fallan y te obligan a reconstruir el modelo. **Práctica:** calcula potencia en R1 y R2 y demuestra que son no negativas.
+```python
+from fractions import Fraction as F
+
+izquierda, derecha = F(0), F(-10)
+x, y, z, u = F(1, 2), F(0), F(-2), F(-10)
+w = y - 10
+# Corrientes orientadas según los ánodos y cátodos leídos en el dibujo.
+i2 = (y - z) / 1000
+i3 = (z - y) / 1000
+i4 = (w - u) / 1000
+i1 = (8 - x) / 3000 - i2
+
+# KCL en los cuatro nodos desconocidos.
+assert (x - 8) / 3000 + i1 + i2 == 0
+assert (y - z) / 1000 + (w - u) / 1000 - i2 == 0
+assert (z - y) / 1000 - i3 == 0
+assert (u - w) / 1000 + i4 == 0
+# Cada hipótesis debe satisfacer tanto tensión como corriente.
+assert x - izquierda == F(1, 2) and i1 > 0
+assert x - y == F(1, 2) and i2 > 0
+assert derecha - z == -8 and i3 < 0
+assert -8 < u - derecha < F(1, 2) and i4 == 0
+
+print(f"D1 directa: {float(i1 * 1000):.3f} mA")
+print(f"D2 directa: {float(i2 * 1000):.3f} mA")
+print(f"D3 ruptura Zener: {float(-i3 * 1000):.3f} mA (sentido inverso)")
+print("D4 bloqueado: 0.000 mA")
+```
+
+Ejecuta:
+
+```bash
+python3 diodos_pdf.py
+```
+
+**Salida esperada:** D1 directa 0.500 mA; D2 directa 2.000 mA; D3 ruptura Zener 2.000 mA inversos; D4 bloqueado 0.000 mA. El archivo usa fracciones exactas para comprobar KCL y condiciones de estado. **Fallo deliberado:** cambia `derecha` a `F(10)` sin reconstruir los demás nodos: las aserciones de polarización fallan y te obligan a revisar el modelo. **Práctica:** calcula `p_r1 = (8 - x) * ((8 - x) / 3000)` y `p_r2 = (y - z) * i2`, y demuestra que ambas potencias son no negativas.
 
 **Límite profesional:** esto valida el modelo de umbral y las polaridades interpretadas del dibujo, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware. **Próximamente:** netlist real de `ngspice` del mismo circuito, comparando sus corrientes de nodo contra las calculadas aquí a mano.

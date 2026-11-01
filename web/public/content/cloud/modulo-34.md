@@ -11,7 +11,7 @@ Las fuentes principales son la [portada multi-nube](https://floci.io/), [Floci A
 
 - Docker debe responder a `docker version`.
 - Debes reconocer una terminal y una variable de entorno.
-- Crea `examples/tracks/cloud/floci-oficial/` para guardar comandos, resultados y errores.
+- Crea una carpeta vacía `floci-oficial/` con `mkdir floci-oficial && cd floci-oficial` para guardar los comandos, archivos, resultados y errores que escribas durante el módulo.
 - Nunca uses credenciales de producción. Los valores locales `test` no conceden acceso a AWS.
 
 ## Aprende construyendo
@@ -25,9 +25,10 @@ El mismo laboratorio debe funcionar en los tres sistemas.
 #### Paso 3 · Teoría, modelo mental y analogía
 Instalar es preparar herramientas y luego comprobar el diagnóstico, como revisar una estación antes de operar.
 #### Paso 4 · Demostración guiada
-Crea `examples/floci-oficial/install.js` y `install.md` desde una carpeta vacía.
+Parte de una carpeta vacía, crea `install.md` para tu bitácora y escribe `tema-1-diagnostico.sh` con los tres comandos de la sección **Practícalo tú**.
 ```bash
-mkdir ejemplo-floci-install
+mkdir floci-install
+cd floci-install
 docker --version
 ```
 Resultado esperado: Docker disponible.
@@ -55,7 +56,7 @@ En PowerShell puedes ejecutar `iwr https://floci.io/install.ps1 | iex`. La alter
 **Practícalo tú:**
 
 ```bash
-# archivo: src/labs/modulo-34/tema-1-diagnostico.sh — ejecutar con: bash tema-1-diagnostico.sh
+# archivo: tema-1-diagnostico.sh — ejecutar con: bash tema-1-diagnostico.sh
 docker version --format '{{.Server.Version}}'
 floci --version
 floci doctor
@@ -135,9 +136,10 @@ Inicia AWS con `floci start`, Azure con `floci az start` y GCP con `floci gcp st
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Relaciona cada comando del proyecto con plano de gestión o plano de datos. Crea un recurso y úsalo después; documenta ambas respuestas para no confundir configuración exitosa con servicio operativo.
 
 #### Paso 4 · Demostración guiada
-Crea `examples/floci-oficial/model.js` y `model.md` desde una carpeta vacía.
+Parte de una carpeta vacía y crea `model.md` con la tabla de motores, los dos diagramas Mermaid y los endpoints 4566, 4577 y 4588 explicados en este tema.
 ```bash
-mkdir ejemplo-floci-model
+mkdir floci-model
+cd floci-model
 docker --version
 ```
 Resultado esperado: Docker disponible.
@@ -196,7 +198,7 @@ Una variable mal aplicada suele producir dos errores opuestos: conexión rechaza
 **Practícalo tú:**
 
 ```bash
-# archivo: src/labs/modulo-34/tema-3-tres-clis.sh — ejecutar con: bash tema-3-tres-clis.sh
+# archivo: tema-3-tres-clis.sh — ejecutar con: bash tema-3-tres-clis.sh
 eval "$(floci env)"
 echo "AWS -> $AWS_ENDPOINT_URL"
 eval "$(floci az env)"
@@ -245,7 +247,7 @@ TLS local permite recorrer código sensible al esquema HTTPS mediante un certifi
 **Practícalo tú:**
 
 ```bash
-# archivo: src/labs/modulo-34/tema-4-persistencia.sh — ejecutar con: bash tema-4-persistencia.sh
+# archivo: tema-4-persistencia.sh — ejecutar con: bash tema-4-persistencia.sh
 floci start --persist ./data
 aws s3 mb s3://demo-persistente
 floci snapshot save antes-de-reiniciar
@@ -266,9 +268,10 @@ aws s3 ls | grep demo-persistente
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Documenta configuración, arranque y apagado del entorno de entregas. Reinícialo y comprueba qué recursos se conservan según el almacenamiento configurado, sin asumir persistencia por haber usado Docker.
 
 #### Paso 4 · Demostración guiada
-Crea `examples/floci-oficial/lifecycle.js` y `lifecycle.md` desde una carpeta vacía.
+Parte de una carpeta vacía, crea `lifecycle.md` para registrar el estado observado y escribe `tema-4-persistencia.sh` con el flujo completo de la sección **Practícalo tú**.
 ```bash
-mkdir ejemplo-floci-lifecycle
+mkdir floci-lifecycle
+cd floci-lifecycle
 docker --version
 ```
 Resultado esperado: Docker disponible.
@@ -298,7 +301,7 @@ Para CI efímero, inicia Floci dentro del job, ejecuta migraciones y pruebas, ca
 
 #### Construcción guiada: un entorno seguro para un agente de programación
 
-El objetivo no es permitir que un agente “haga cualquier cosa”, sino darle un contrato verificable y un destino local. Crea `examples/tracks/cloud/agente-local/.env.example` con valores desechables; el archivo real `.env` no debe contener credenciales cloud ni publicarse en Git.
+El objetivo no es permitir que un agente “haga cualquier cosa”, sino darle un contrato verificable y un destino local. Desde tu carpeta de trabajo, ejecuta `mkdir agente-local && cd agente-local` para partir de una carpeta vacía y crea manualmente `.env.example` con valores desechables; el archivo real `.env` no debe contener credenciales cloud ni publicarse en Git.
 
 ```dotenv
 AWS_ENDPOINT_URL=http://localhost:4566
@@ -396,7 +399,7 @@ El inventario completo también incluye S3, AWS Backup, Transfer Family, DynamoD
 **Practícalo tú:**
 
 ```bash
-# archivo: src/labs/modulo-34/tema-6-servicio-nuevo.sh — ejecutar con: bash tema-6-servicio-nuevo.sh
+# archivo: tema-6-servicio-nuevo.sh — ejecutar con: bash tema-6-servicio-nuevo.sh
 aws batch create-compute-environment --compute-environment-name demo-batch \
   --type MANAGED --state ENABLED
 aws batch describe-compute-environments --compute-environments demo-batch \
@@ -461,8 +464,8 @@ Estos se suman a Blob Storage, Queue Storage, Table Storage, Azure Functions, Ap
 Inicia el proveedor con `floci az start` y carga las variables con `eval "$(floci az env)"`. En PowerShell usa `floci az env | Invoke-Expression`. La variable esencial es `AZURE_STORAGE_CONNECTION_STRING`: reúne cuenta, clave local y endpoints de Blob, Queue y Table. No la reemplaces con una cadena de producción.
 
 ```bash
-mkdir -p examples/tracks/cloud/azure-blob
-cd examples/tracks/cloud/azure-blob
+mkdir azure-blob
+cd azure-blob
 printf '{"envio":"RF-101","estado":"recibido"}\n' > evidencia.json
 az storage container create --name evidencias --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
 az storage blob upload --container-name evidencias --name RF-101.json --file evidencia.json --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
@@ -486,7 +489,7 @@ mkdir ejemplo && cd ejemplo && floci start
 
 ```bash
 eval "$(floci az env)"
-mkdir -p examples/tracks/cloud/azure-blob && cd examples/tracks/cloud/azure-blob
+mkdir azure-blob && cd azure-blob
 printf '{"envio":"RF-101","estado":"recibido"}\n' > evidencia.json
 az storage container create --name evidencias --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
 az storage blob upload --container-name evidencias --name RF-101.json --file evidencia.json --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
@@ -539,8 +542,8 @@ También forman parte del catálogo Cloud Storage, Pub/Sub, Firestore, Datastore
 Ejecuta `floci gcp start` y después `eval "$(floci gcp env)"`; en PowerShell canaliza la salida a `Invoke-Expression`. Los SDK de GCP no comparten una única variable: Storage, Pub/Sub, Firestore y otros clientes leen hosts de emulador diferentes. `CLOUDSDK_CORE_PROJECT=floci-local` identifica el espacio local; no necesitas descargar un JSON de cuenta de servicio.
 
 ```bash
-mkdir -p examples/tracks/cloud/gcp-storage
-cd examples/tracks/cloud/gcp-storage
+mkdir gcp-storage
+cd gcp-storage
 printf '{"envio":"RF-102","estado":"en-ruta"}\n' > evento.json
 gcloud storage buckets create gs://demo-local
 gcloud storage cp evento.json gs://demo-local/eventos/RF-102.json
@@ -566,7 +569,7 @@ flowchart LR
 #### Paso 4 · Demostración guiada
 ```bash
 eval "$(floci gcp env)"
-mkdir -p examples/tracks/cloud/gcp-storage && cd examples/tracks/cloud/gcp-storage
+mkdir gcp-storage && cd gcp-storage
 printf '{"envio":"RF-102","estado":"en-ruta"}\n' > evento.json
 gcloud storage buckets create gs://demo-local
 gcloud storage cp evento.json gs://demo-local/eventos/RF-102.json
@@ -613,7 +616,7 @@ Resultado esperado: el secreto `rutaflow/api-key` aparece inmediatamente en la s
 #### Paso 5 · Práctica guiada
 Pista: abrí el editor JSON clave-valor de `floci-ui` sobre ese secreto, cambiá `valor-inicial` a `valor-editado` desde la UI, y confirmá desde CLI con `aws secretsmanager get-secret-value --secret-id rutaflow/api-key` — ese es el fallo deliberado si asumís que la UI es solo de lectura: también escribe contra el mismo backend real, así que un cambio hecho ahí (por error, o por otra persona del equipo) modifica el estado real que tus scripts y tests después leerán, sin quedar registrado en ningún control de versiones.
 #### Paso 6 · Práctica independiente
-Corregí esa asunción documentando en `src/labs/modulo-34/floci-ui-reglas.md` qué cambios son aceptables hacer desde la UI (exploración, verificación visual) y cuáles deben hacerse siempre desde código versionado; después, recreá el secreto desde CLI con el valor correcto para dejar el estado consistente con lo que el código espera.
+Corregí esa asunción documentando en `floci-ui-reglas.md` qué cambios son aceptables hacer desde la UI (exploración, verificación visual) y cuáles deben hacerse siempre desde código versionado; después, recreá el secreto desde CLI con el valor correcto para dejar el estado consistente con lo que el código espera.
 #### Paso 7 · Cierre
 Entregá el secreto creado por CLI y visible en la UI del Paso 4, la edición cruzada desde la UI del Paso 5, y la corrección documentada del Paso 6; explicá por qué una herramienta visual que también permite escribir necesita una regla explícita de "qué se edita ahí y qué se edita en código", igual que cualquier consola de administración de un proveedor real. Siguiente paso: laboratorios oficiales reconstruidos en español. Errores comunes: asumir que una consola visual es solo de lectura cuando también permite escribir; tratar un cambio hecho desde la UI como si estuviera versionado o fuera reproducible por otra persona del equipo. Fuentes oficiales: https://floci.io/ y https://github.com/floci-io/floci-ui.
 
@@ -645,9 +648,10 @@ Un laboratorio debe producir evidencia, no solo una pantalla verde.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada laboratorio es experimento con hipótesis, pasos y resultado.
 #### Paso 4 · Demostración guiada
-Crea `examples/floci-oficial/lab.js` y `lab.md` desde una carpeta vacía.
+Parte de una carpeta vacía, crea `lab.md` para hipótesis, evidencia y limpieza, y escribe `tema-10-s3-101.sh` con el laboratorio completo de la sección **Practícalo tú**.
 ```bash
-mkdir ejemplo-floci-lab
+mkdir floci-lab
+cd floci-lab
 docker --version
 ```
 Resultado esperado: Docker disponible.
@@ -679,7 +683,7 @@ Inicia una instancia local, abre y cierra puertos mientras corre y observa los s
 **Practícalo tú:**
 
 ```bash
-# archivo: src/labs/modulo-34/tema-9-s3-101.sh — ejecutar con: bash tema-9-s3-101.sh
+# archivo: tema-10-s3-101.sh — ejecutar con: bash tema-10-s3-101.sh
 aws s3 mb s3://demo-101
 echo "manifiesto de prueba" > manifiesto.txt
 aws s3 cp manifiesto.txt s3://demo-101/
@@ -710,9 +714,10 @@ Un emulador acelera desarrollo, pero no prueba cuotas, latencia ni facturación 
 #### Paso 3 · Teoría, modelo mental y analogía
 El emulador es simulador; producción es carretera con tráfico y coste.
 #### Paso 4 · Demostración guiada
-Crea `examples/floci-oficial/production-boundaries.js` y `production-boundaries.md` desde una carpeta vacía.
+Parte de una carpeta vacía, crea `production-boundaries.md` con los criterios de promoción y escribe `tema-11-matriz-de-limites.sh` con el contenido de la sección **Practícalo tú**; ese script generará `matriz-limites.md`.
 ```bash
-mkdir ejemplo-floci-limits
+mkdir floci-limits
+cd floci-limits
 node --version
 ```
 
@@ -739,7 +744,7 @@ Compatibilidad de API significa que clientes y formatos se comportan como espera
 **Practícalo tú:**
 
 ```bash
-# archivo: src/labs/modulo-34/tema-10-matriz-de-limites.sh — ejecutar con: bash tema-10-matriz-de-limites.sh
+# archivo: tema-11-matriz-de-limites.sh — ejecutar con: bash tema-11-matriz-de-limites.sh
 cat <<'EOF' > matriz-limites.md
 | Capacidad | Validado localmente | Requiere nube real | Riesgo si se omite |
 |---|---|---|---|

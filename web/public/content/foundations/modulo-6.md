@@ -8,7 +8,7 @@
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a producir el primer artefacto de una auditoría de seguridad real: un registro de riesgos STRIDE para RutaFlow y un verificador de límites de confianza. El registro no es una lista de miedos: cada fila tendrá activo, escenario, impacto, probabilidad, control, efectividad, propietario y tratamiento, y el verificador rechazará el archivo si falta cualquiera de esos datos o si un flujo cruza una zona sin límite declarado.
 
-Prerrequisitos: Python 3 y el Módulo 5. No necesitás herramientas externas, servicios en la nube ni conexión a internet: todo corre con la biblioteca estándar. Venías de `ALLOWED_TRANSITIONS` en `examples/rutaflow/foundation/domain.py`, una regla que rechaza transiciones inválidas; este tema explica qué amenaza concreta justifica esa regla y qué riesgo queda abierto después de aplicarla.
+Prerrequisitos: Python 3 y el Módulo 5. No necesitás herramientas externas, servicios en la nube ni conexión a internet: todo corre con la biblioteca estándar. Venías de `ALLOWED_TRANSITIONS`, una regla que rechaza transiciones inválidas; este tema explica qué amenaza concreta justifica esa regla y qué riesgo queda abierto después de aplicarla.
 
 #### Paso 2 · Contexto y caso real
 RutaFlow mueve envíos con un ciclo de estados: `CREATED → ASSIGNED → OUT_FOR_DELIVERY → DELIVERED`. El control `ALLOWED_TRANSITIONS` impide saltar de `CREATED` a `DELIVERED`, pero ningún documento vinculaba esa regla con un ataque concreto. Esa ausencia tiene consecuencias prácticas: cuando un operador presiona para "destrabar" un envío, no hay forma de explicar qué fraude permite la excepción ni quién acepta el riesgo.

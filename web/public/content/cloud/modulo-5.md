@@ -166,7 +166,7 @@ Entregá los tiempos de las tres invocaciones y el error del zip vacío del Paso
 ### Tema 2: Estructura de una función Lambda
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a hacer que `confirmar-entrega` reciba y valide un comando real de entrega, con la misma forma que usa `examples/rutaflow/node/confirm-delivery.ts`. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a hacer que `confirmar-entrega` reciba y valide un comando real de entrega con el contrato `shipmentId` + `recipientPin` que escribirás en tu propio handler. Prerrequisitos: Tema 1 de este módulo.
 #### Paso 2 · Contexto y caso real
 Un comando real de `DeliveryCommands` (Módulo 3) del proyecto integrador RutaFlow trae `shipmentId` y `recipientPin` (el PIN de 6 dígitos que el destinatario confirma al recibir). El handler necesita leer eso de `event`, no inventarlo — debe seguir el contrato exacto que RutaFlow define.
 #### Paso 3 · Teoría, modelo mental y analogía
@@ -321,7 +321,7 @@ Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar en vivo qué pasa cuando el código de `confirmar-entrega` necesita una dependencia que el runtime de Node.js no trae incluida, y aprenderás a empaquetar correctamente con dependencias REALES del proyecto integrador. Prerrequisitos: Tema 2 de este módulo.
 #### Paso 2 · Contexto y caso real
-El handler real del proyecto integrador RutaFlow (`examples/rutaflow/cloud/functions/confirmar-entrega/`) usa `@aws-sdk/client-dynamodb` para escribir en `ShipmentEvents` (la misma tabla que estudiaste en Módulo 4) — una dependencia externa que el runtime `nodejs20.x` no incluye por defecto. Sin empaquetar correctamente esta dependencia, tu código no puede acceder a DynamoDB.
+El handler de RutaFlow que escribirás en este tema usa `@aws-sdk/client-dynamodb` para escribir en `ShipmentEvents` (la misma tabla que estudiaste en Módulo 4) — una dependencia externa que instalarás y empaquetarás tú, y que el runtime `nodejs20.x` no incluye por defecto. Sin empaquetar correctamente esta dependencia, tu código no puede acceder a DynamoDB.
 #### Paso 3 · Teoría, modelo mental y analogía
 El runtime es el motor; las dependencias externas son el combustible que ese motor no trae de fábrica — si no las empaquetás junto a tu código, el motor arranca pero se queda sin combustible a mitad de camino.
 
@@ -674,7 +674,7 @@ Entregá la publicación de la versión 1, el error de versión inexistente del 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a cerrar el ciclo completo del proyecto integrador RutaFlow: conectar `DeliveryCommands` (Módulo 3) para que dispare `confirmar-entrega` automáticamente, sin que nadie la invoque a mano. Prerrequisitos: Módulo 3 completo, Temas 1-5 de este módulo.
 #### Paso 2 · Contexto y caso real
-El proyecto integrador RutaFlow declara en `examples/rutaflow/cloud/template.yaml` esta conexión como código (`ConfirmarEntregaFn`, evento `SQS` sobre `DeliveryCommands`) — acá la reproducís a mano con la CLI para ver exactamente qué hace esa declaración por detrás.
+En el proyecto integrador RutaFlow puedes declarar esta conexión como código en tu propia `template.yaml` (`ConfirmarEntregaFn`, evento `SQS` sobre `DeliveryCommands`) — acá la reproducís a mano con la CLI para ver exactamente qué haría esa declaración por detrás.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un event source mapping es un sensor permanente: no invocás la Lambda vos, el servicio de origen (la cola) la invoca automáticamente cada vez que hay mensajes nuevos.
 

@@ -39,8 +39,8 @@ Las API WebSocket resuelven un problema completamente distinto: mientras que RES
 ```
 
 En el proyecto integrador RutaFlow, `API_ID` apunta a la misma API REST que en los próximos
-Temas vas a conectar con `ConfirmarEntregaFn` (declarada en
-`examples/rutaflow/cloud/template.yaml`). La diferencia frente a elegir API HTTP desde el
+Temas vas a conectar con `ConfirmarEntregaFn`; después podrás declarar esa función en una
+plantilla `template.yaml` escrita por ti. La diferencia frente a elegir API HTTP desde el
 principio: acá se usa REST a propósito, porque este módulo necesita el control granular de
 modelos de validación del Tema 4, algo que API HTTP no conviene usar si tu caso real no lo
 necesita.
@@ -153,10 +153,9 @@ Desplegado en stages:
 ```
 
 En el proyecto integrador RutaFlow, este mismo recurso `/entregas` con método `POST` es el que,
-en producción, declararías junto a `ConfirmarEntregaFn` en
-`examples/rutaflow/cloud/template.yaml` mediante un evento `Api:` en vez de los comandos
-`create-resource`/`put-method` manuales que acabás de ejecutar — infraestructura como código en
-vez de pasos sueltos de CLI.
+en producción, declararías junto a `ConfirmarEntregaFn` en tu propia `template.yaml` mediante un
+evento `Api:` en vez de los comandos `create-resource`/`put-method` manuales que acabás de
+ejecutar — infraestructura como código en vez de pasos sueltos de CLI.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -227,9 +226,9 @@ sequenceDiagram
 ```
 
 En el proyecto integrador RutaFlow, esta misma integración proxy y el `AWS::Lambda::Permission`
-implícito que SAM genera a partir del evento `Api:` de `ConfirmarEntregaFn` en
-`examples/rutaflow/cloud/template.yaml` reemplazan en producción los dos comandos manuales
-(`put-integration` y `add-permission`) que ejecutaste arriba.
+implícito que SAM genera a partir del evento `Api:` de `ConfirmarEntregaFn` reemplazan en
+producción los dos comandos manuales (`put-integration` y `add-permission`) que ejecutaste arriba.
+Puedes expresar ambos en la plantilla `template.yaml` que escribas para tu proyecto.
 #### Paso 4 · Demostración guiada
 ```bash
 aws apigateway put-integration --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" --http-method POST \
@@ -285,9 +284,9 @@ Petición POST /tareas con cuerpo malformado
 ```
 
 En el proyecto integrador RutaFlow, este `EntregaModel` es el que validaría en la puerta el
-mismo payload `{shipmentId, recipientPin}` que `ConfirmarEntregaFn` (en
-`examples/rutaflow/cloud/template.yaml`) ya valida internamente — defensa en profundidad entre
-API Gateway y la propia función.
+mismo payload `{shipmentId, recipientPin}` que `ConfirmarEntregaFn` ya valida internamente —
+defensa en profundidad entre API Gateway y la propia función. Puedes conservar ambos contratos en
+tu propia plantilla `template.yaml`.
 
 #### Paso 4 · Demostración guiada
 ```bash
@@ -344,9 +343,9 @@ Configuración actual (recursos, métodos, integraciones)
 ```
 
 En el proyecto integrador RutaFlow, el stage `dev` que acabás de desplegar a mano es el que un
-pipeline de CI (ver `examples/rutaflow/devops/deployment.yaml` para el equivalente en
-Kubernetes) desplegaría automáticamente en cada cambio a `template.yaml`, sin pasos manuales de
-`create-deployment`.
+pipeline de CI desplegaría automáticamente en cada cambio a tu propio `template.yaml`, sin pasos
+manuales de `create-deployment`. Si el proyecto usa Kubernetes, ese mismo pipeline puede aplicar
+un archivo `deployment.yaml` que escribas con la configuración de despliegue.
 
 ---
 
