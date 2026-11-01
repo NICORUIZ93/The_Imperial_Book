@@ -209,9 +209,9 @@ estructural detectada por heurísticas, no calidad ni ejecución: el corte
 versionado registra 1141/1141 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 1040/1141 con sus marcadores de
-siete pasos: los 25 módulos migrados a Aprende/Practica/Aplica, entre ellos los
-23 módulos de Spring Boot y los Módulos 21–22 de Java, ya no usan esos marcadores. Ninguno de esos resultados demuestra que las instrucciones sean
+auditoría independiente de metodología registra 1000/1141 con sus marcadores de
+siete pasos: los 34 módulos migrados a Aprende/Practica/Aplica, entre ellos los
+23 módulos de Spring Boot y los Módulos 0–8 y 21–22 de Java, ya no usan esos marcadores. Ninguno de esos resultados demuestra que las instrucciones sean
 correctas, que los ejemplos se ejecuten o que el tema enseñe de forma efectiva.
 El estado por tema y las señales adicionales están en
 [`docs/seven-step-methodology.md`](docs/seven-step-methodology.md),

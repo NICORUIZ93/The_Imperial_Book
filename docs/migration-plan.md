@@ -12,7 +12,7 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 | 0 · Sincronización | Cerrada | Corte del cierre: 252 módulos, 1131 temas; `validate.sh` en verde |
 | 1 · Infraestructura | Cerrada | Registro de migración, validador por módulo y auditorías adaptadas |
 | 2 · Piloto Spring Boot | Cerrada | M0–M22 migrados: 91/91 temas y sus proyectos de cierre conservados |
-| 3 · Java + Node.js | En curso | Java: Módulos 21–22 nuevos en formato nuevo (10 temas); M0–M20 y Node pendientes |
+| 3 · Java + Node.js | En curso | Java: Módulos 0–8 y 21–22 en formato nuevo (50 temas); M9–M20 y Node pendientes |
 | 4 · JavaScript + Angular + React | No iniciada | Depende del piloto |
 | 5 · Cloud + DevOps | No iniciada | Depende del piloto |
 | 6 · KMP + Android + iOS + Flutter | No iniciada | Depende del piloto |
@@ -32,7 +32,7 @@ auditor para aceptar también una sección `#### Practica` con cuerpo accionable
 ## Contrato de correspondencia: siete pasos → Aprende/Practica/Aplica
 
 Decisión del 2026-10-31: el formato canónico de todo el sitio es
-Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M22 y Java M21–M22. Los
+Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M22 y Java M0–M8 y M21–M22. Los
 siete pasos no se borran: cada uno tiene un destino y su texto se mueve, se
 conserva y se completa.
 

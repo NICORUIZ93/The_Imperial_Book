@@ -2071,7 +2071,7 @@
       "track": "java",
       "module": 0,
       "position": 1,
-      "title": "Del código fuente a la JVM",
+      "title": "Del código fuente a la JVM · Básico · 35 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": []
     },
@@ -2080,7 +2080,7 @@
       "track": "java",
       "module": 0,
       "position": 2,
-      "title": "public static void main — qué significa cada palabra",
+      "title": "public static void main — qué significa cada palabra · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:1"
@@ -2091,7 +2091,7 @@
       "track": "java",
       "module": 0,
       "position": 3,
-      "title": "JDK, JRE y JVM",
+      "title": "JDK, JRE y JVM · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:2"
@@ -2102,7 +2102,7 @@
       "track": "java",
       "module": 0,
       "position": 4,
-      "title": "Tipos primitivos vs referencias",
+      "title": "Tipos primitivos vs referencias · Básico · 40 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:3"
@@ -2113,7 +2113,7 @@
       "track": "java",
       "module": 0,
       "position": 5,
-      "title": "Variables, conversiones y `String`",
+      "title": "Variables, conversiones y `String` · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:4"
@@ -2124,7 +2124,7 @@
       "track": "java",
       "module": 0,
       "position": 6,
-      "title": "Operadores, precedencia y control de flujo",
+      "title": "Operadores, precedencia y control de flujo · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:5"
@@ -2135,7 +2135,7 @@
       "track": "java",
       "module": 0,
       "position": 7,
-      "title": "Arreglos, wrappers y paso de argumentos",
+      "title": "Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:6"
@@ -2146,7 +2146,7 @@
       "track": "java",
       "module": 0,
       "position": 8,
-      "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
+      "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-0.md",
       "requires": [
         "java:0:7"
@@ -2157,7 +2157,7 @@
       "track": "java",
       "module": 1,
       "position": 1,
-      "title": "Clases, objetos, constructores y encapsulación",
+      "title": "Clases, objetos, constructores y encapsulación · Básico · 40 min",
       "file": "web/public/content/java/modulo-1.md",
       "requires": [
         "java:0:8"
@@ -2168,7 +2168,7 @@
       "track": "java",
       "module": 1,
       "position": 2,
-      "title": "Herencia y sobreescritura",
+      "title": "Herencia y sobreescritura · Intermedio · 1 h",
       "file": "web/public/content/java/modulo-1.md",
       "requires": [
         "java:1:1"
@@ -2179,7 +2179,7 @@
       "track": "java",
       "module": 1,
       "position": 3,
-      "title": "Interfaces, clases abstractas y cuándo usar cada una",
+      "title": "Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-1.md",
       "requires": [
         "java:1:2"
@@ -2190,7 +2190,7 @@
       "track": "java",
       "module": 1,
       "position": 4,
-      "title": "Sobrecarga vs sobreescritura, y modificadores de acceso",
+      "title": "Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min",
       "file": "web/public/content/java/modulo-1.md",
       "requires": [
         "java:1:3"
@@ -2201,7 +2201,7 @@
       "track": "java",
       "module": 2,
       "position": 1,
-      "title": "List, Set, Map y sus implementaciones",
+      "title": "List, Set, Map y sus implementaciones · Básico · 45 min",
       "file": "web/public/content/java/modulo-2.md",
       "requires": [
         "java:1:4"
@@ -2212,7 +2212,7 @@
       "track": "java",
       "module": 2,
       "position": 2,
-      "title": "Genéricos, wildcards y type erasure",
+      "title": "Genéricos, wildcards y type erasure · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-2.md",
       "requires": [
         "java:2:1"
@@ -2223,7 +2223,7 @@
       "track": "java",
       "module": 2,
       "position": 3,
-      "title": "Comparable vs Comparator, e iteración",
+      "title": "Comparable vs Comparator, e iteración · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-2.md",
       "requires": [
         "java:2:2"
@@ -2234,7 +2234,7 @@
       "track": "java",
       "module": 3,
       "position": 1,
-      "title": "Checked vs unchecked exceptions",
+      "title": "Checked vs unchecked exceptions · Básico · 40 min",
       "file": "web/public/content/java/modulo-3.md",
       "requires": [
         "java:2:3"
@@ -2245,7 +2245,7 @@
       "track": "java",
       "module": 3,
       "position": 2,
-      "title": "try-with-resources",
+      "title": "try-with-resources · Básico · 40 min",
       "file": "web/public/content/java/modulo-3.md",
       "requires": [
         "java:3:1"
@@ -2256,7 +2256,7 @@
       "track": "java",
       "module": 3,
       "position": 3,
-      "title": "Excepciones personalizadas y no tragar excepciones",
+      "title": "Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-3.md",
       "requires": [
         "java:3:2"
@@ -2267,7 +2267,7 @@
       "track": "java",
       "module": 4,
       "position": 1,
-      "title": "Stream API — map, filter, reduce, collect",
+      "title": "Stream API — map, filter, reduce, collect · Básico · 45 min",
       "file": "web/public/content/java/modulo-4.md",
       "requires": [
         "java:3:3"
@@ -2278,7 +2278,7 @@
       "track": "java",
       "module": 4,
       "position": 2,
-      "title": "Optional — evitar null explícitamente",
+      "title": "Optional — evitar null explícitamente · Intermedio · 40 min",
       "file": "web/public/content/java/modulo-4.md",
       "requires": [
         "java:4:1"
@@ -2289,7 +2289,7 @@
       "track": "java",
       "module": 4,
       "position": 3,
-      "title": "Streams paralelos y referencias a métodos",
+      "title": "Streams paralelos y referencias a métodos · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-4.md",
       "requires": [
         "java:4:2"
@@ -2300,7 +2300,7 @@
       "track": "java",
       "module": 4,
       "position": 4,
-      "title": "Stream Gatherers (Java 24)",
+      "title": "Stream Gatherers (Java 24) · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-4.md",
       "requires": [
         "java:4:3"
@@ -2311,7 +2311,7 @@
       "track": "java",
       "module": 5,
       "position": 1,
-      "title": "ExecutorService y gestión de hilos",
+      "title": "ExecutorService y gestión de hilos · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:4:4"
@@ -2322,7 +2322,7 @@
       "track": "java",
       "module": 5,
       "position": 2,
-      "title": "CompletableFuture",
+      "title": "CompletableFuture · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:1"
@@ -2333,7 +2333,7 @@
       "track": "java",
       "module": 5,
       "position": 3,
-      "title": "Virtual threads",
+      "title": "Virtual threads · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:2"
@@ -2344,7 +2344,7 @@
       "track": "java",
       "module": 5,
       "position": 4,
-      "title": "Condiciones de carrera y sincronización",
+      "title": "Condiciones de carrera y sincronización · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:3"
@@ -2355,7 +2355,7 @@
       "track": "java",
       "module": 5,
       "position": 5,
-      "title": "Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
+      "title": "Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:4"
@@ -2366,7 +2366,7 @@
       "track": "java",
       "module": 5,
       "position": 6,
-      "title": "Scoped Values frente a ThreadLocal (Java 25)",
+      "title": "Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:5"
@@ -2377,7 +2377,7 @@
       "track": "java",
       "module": 5,
       "position": 7,
-      "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
+      "title": "Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
       "file": "web/public/content/java/modulo-5.md",
       "requires": [
         "java:5:6"
@@ -2388,7 +2388,7 @@
       "track": "java",
       "module": 6,
       "position": 1,
-      "title": "NIO.2 — Path y Files",
+      "title": "NIO.2 — Path y Files · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-6.md",
       "requires": [
         "java:5:7"
@@ -2399,7 +2399,7 @@
       "track": "java",
       "module": 6,
       "position": 2,
-      "title": "Serialización con Jackson",
+      "title": "Serialización con Jackson · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-6.md",
       "requires": [
         "java:6:1"
@@ -2410,7 +2410,7 @@
       "track": "java",
       "module": 6,
       "position": 3,
-      "title": "Archivos grandes y recursos del classpath",
+      "title": "Archivos grandes y recursos del classpath · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-6.md",
       "requires": [
         "java:6:2"
@@ -2421,7 +2421,7 @@
       "track": "java",
       "module": 7,
       "position": 1,
-      "title": "record — modelos inmutables sin boilerplate",
+      "title": "record — modelos inmutables sin boilerplate · Básico · 45 min",
       "file": "web/public/content/java/modulo-7.md",
       "requires": [
         "java:6:3"
@@ -2432,7 +2432,7 @@
       "track": "java",
       "module": 7,
       "position": 2,
-      "title": "sealed — jerarquías cerradas y exhaustividad",
+      "title": "sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-7.md",
       "requires": [
         "java:7:1"
@@ -2443,7 +2443,7 @@
       "track": "java",
       "module": 7,
       "position": 3,
-      "title": "Pattern matching exhaustivo y para instanceof",
+      "title": "Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-7.md",
       "requires": [
         "java:7:2"
@@ -2454,7 +2454,7 @@
       "track": "java",
       "module": 7,
       "position": 4,
-      "title": "Unnamed variables y patterns (_, Java 22)",
+      "title": "Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-7.md",
       "requires": [
         "java:7:3"
@@ -2465,7 +2465,7 @@
       "track": "java",
       "module": 8,
       "position": 1,
-      "title": "pom.xml vs build.gradle.kts",
+      "title": "pom.xml vs build.gradle.kts · Básico · 45 min",
       "file": "web/public/content/java/modulo-8.md",
       "requires": [
         "java:7:4"
@@ -2476,7 +2476,7 @@
       "track": "java",
       "module": 8,
       "position": 2,
-      "title": "Ciclo de vida de build y scopes",
+      "title": "Ciclo de vida de build y scopes · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-8.md",
       "requires": [
         "java:8:1"
@@ -2487,7 +2487,7 @@
       "track": "java",
       "module": 8,
       "position": 3,
-      "title": "Proyectos multi-módulo",
+      "title": "Proyectos multi-módulo · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-8.md",
       "requires": [
         "java:8:2"
@@ -2498,7 +2498,7 @@
       "track": "java",
       "module": 8,
       "position": 4,
-      "title": "Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+      "title": "Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min",
       "file": "web/public/content/java/modulo-8.md",
       "requires": [
         "java:8:3"

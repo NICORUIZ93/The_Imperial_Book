@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 254,
     "topics": 1141,
-    "topicsWithSignals": 146,
+    "topicsWithSignals": 126,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
@@ -7906,21 +7906,21 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 1: Del código fuente a la JVM",
+      "title": "Tema 1: Del código fuente a la JVM · Básico · 35 min",
       "file": "web/public/content/java/modulo-0.md",
       "line": 30,
       "signals": [],
       "newLaboratory": false,
-      "humanPedagogicalReview": "pre-read-pending-human-signoff",
-      "humanReviewEvidence": "docs/manual-review-log.md (2026-10-31; Pre-lectura IA (firma humana pendiente))",
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 2: public static void main — qué significa cada palabra",
+      "title": "Tema 2: public static void main — qué significa cada palabra · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 103,
+      "line": 130,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7930,9 +7930,9 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 3: JDK, JRE y JVM",
+      "title": "Tema 3: JDK, JRE y JVM · Básico · 30 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 158,
+      "line": 212,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7942,9 +7942,9 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 4: Tipos primitivos vs referencias",
+      "title": "Tema 4: Tipos primitivos vs referencias · Básico · 40 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 216,
+      "line": 295,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7954,9 +7954,9 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 5: Variables, conversiones y `String`",
+      "title": "Tema 5: Variables, conversiones y `String` · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 289,
+      "line": 395,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7966,9 +7966,9 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 6: Operadores, precedencia y control de flujo",
+      "title": "Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 344,
+      "line": 482,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7978,9 +7978,9 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
+      "title": "Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 428,
+      "line": 594,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -7990,9 +7990,9 @@
     {
       "track": "java",
       "module": 0,
-      "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
+      "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 509,
+      "line": 702,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8002,7 +8002,7 @@
     {
       "track": "java",
       "module": 1,
-      "title": "Tema 1: Clases, objetos, constructores y encapsulación",
+      "title": "Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min",
       "file": "web/public/content/java/modulo-1.md",
       "line": 8,
       "signals": [
@@ -8016,9 +8016,9 @@
     {
       "track": "java",
       "module": 1,
-      "title": "Tema 2: Herencia y sobreescritura",
+      "title": "Tema 2: Herencia y sobreescritura · Intermedio · 1 h",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 45,
+      "line": 105,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8028,9 +8028,9 @@
     {
       "track": "java",
       "module": 1,
-      "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
+      "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 143,
+      "line": 265,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -8040,12 +8040,10 @@
     {
       "track": "java",
       "module": 1,
-      "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
+      "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 211,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "line": 388,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -8556,12 +8554,10 @@
     {
       "track": "java",
       "module": 2,
-      "title": "Tema 1: List, Set, Map y sus implementaciones",
+      "title": "Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min",
       "file": "web/public/content/java/modulo-2.md",
       "line": 6,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -8570,12 +8566,10 @@
     {
       "track": "java",
       "module": 2,
-      "title": "Tema 2: Genéricos, wildcards y type erasure",
+      "title": "Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-2.md",
-      "line": 69,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "line": 123,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -8584,12 +8578,10 @@
     {
       "track": "java",
       "module": 2,
-      "title": "Tema 3: Comparable vs Comparator, e iteración",
+      "title": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-2.md",
-      "line": 126,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "line": 234,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -8754,12 +8746,10 @@
     {
       "track": "java",
       "module": 3,
-      "title": "Tema 1: Checked vs unchecked exceptions",
+      "title": "Tema 1: Checked vs unchecked exceptions · Básico · 40 min",
       "file": "web/public/content/java/modulo-3.md",
       "line": 6,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -8768,255 +8758,190 @@
     {
       "track": "java",
       "module": 3,
-      "title": "Tema 2: try-with-resources",
+      "title": "Tema 2: try-with-resources · Básico · 40 min",
       "file": "web/public/content/java/modulo-3.md",
-      "line": 64,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 3,
-      "title": "Tema 3: Excepciones personalizadas y no tragar excepciones",
-      "file": "web/public/content/java/modulo-3.md",
-      "line": 120,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 4,
-      "title": "Tema 1: Stream API — map, filter, reduce, collect",
-      "file": "web/public/content/java/modulo-4.md",
-      "line": 8,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 4,
-      "title": "Tema 2: Optional — evitar null explícitamente",
-      "file": "web/public/content/java/modulo-4.md",
-      "line": 68,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 4,
-      "title": "Tema 3: Streams paralelos y referencias a métodos",
-      "file": "web/public/content/java/modulo-4.md",
-      "line": 124,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 4,
-      "title": "Tema 4: Stream Gatherers (Java 24)",
-      "file": "web/public/content/java/modulo-4.md",
-      "line": 183,
-      "signals": [
-        "ejemplo-breve-revisar-contexto",
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 1: ExecutorService y gestión de hilos",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 8,
-      "signals": [],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 2: CompletableFuture",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 70,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 3: Virtual threads",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 130,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 4: Condiciones de carrera y sincronización",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 186,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 240,
-      "signals": [],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 332,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 5,
-      "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
-      "file": "web/public/content/java/modulo-5.md",
-      "line": 414,
-      "signals": [],
-      "newLaboratory": true,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 6,
-      "title": "Tema 1: NIO.2 — Path y Files",
-      "file": "web/public/content/java/modulo-6.md",
-      "line": 6,
-      "signals": [],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 6,
-      "title": "Tema 2: Serialización con Jackson",
-      "file": "web/public/content/java/modulo-6.md",
-      "line": 107,
-      "signals": [],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 6,
-      "title": "Tema 3: Archivos grandes y recursos del classpath",
-      "file": "web/public/content/java/modulo-6.md",
-      "line": 165,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 7,
-      "title": "Tema 1: record — modelos inmutables sin boilerplate",
-      "file": "web/public/content/java/modulo-7.md",
-      "line": 8,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 7,
-      "title": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
-      "file": "web/public/content/java/modulo-7.md",
-      "line": 66,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 7,
-      "title": "Tema 3: Pattern matching exhaustivo y para instanceof",
-      "file": "web/public/content/java/modulo-7.md",
       "line": 122,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 3,
+      "title": "Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-3.md",
+      "line": 239,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "title": "Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min",
+      "file": "web/public/content/java/modulo-4.md",
+      "line": 8,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "title": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
+      "file": "web/public/content/java/modulo-4.md",
+      "line": 142,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "title": "Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-4.md",
+      "line": 265,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 4,
+      "title": "Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min",
+      "file": "web/public/content/java/modulo-4.md",
+      "line": 399,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 8,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 2: CompletableFuture · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 112,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 3: Virtual threads · Intermedio · 50 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 232,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 345,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 482,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 604,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 5,
+      "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
+      "file": "web/public/content/java/modulo-5.md",
+      "line": 766,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 6,
+      "title": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-6.md",
+      "line": 6,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 6,
+      "title": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
+      "file": "web/public/content/java/modulo-6.md",
+      "line": 137,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 6,
+      "title": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-6.md",
+      "line": 272,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9025,9 +8950,45 @@
     {
       "track": "java",
       "module": 7,
-      "title": "Tema 4: Unnamed variables y patterns (_, Java 22)",
+      "title": "Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 185,
+      "line": 8,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "title": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-7.md",
+      "line": 133,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "title": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
+      "file": "web/public/content/java/modulo-7.md",
+      "line": 247,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 7,
+      "title": "Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min",
+      "file": "web/public/content/java/modulo-7.md",
+      "line": 368,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -9037,7 +8998,7 @@
     {
       "track": "java",
       "module": 8,
-      "title": "Tema 1: pom.xml vs build.gradle.kts",
+      "title": "Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
       "file": "web/public/content/java/modulo-8.md",
       "line": 6,
       "signals": [],
@@ -9049,23 +9010,9 @@
     {
       "track": "java",
       "module": 8,
-      "title": "Tema 2: Ciclo de vida de build y scopes",
+      "title": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 76,
-      "signals": [
-        "clase-java-no-visible"
-      ],
-      "newLaboratory": false,
-      "humanPedagogicalReview": "pending",
-      "humanReviewEvidence": null,
-      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
-    },
-    {
-      "track": "java",
-      "module": 8,
-      "title": "Tema 3: Proyectos multi-módulo",
-      "file": "web/public/content/java/modulo-8.md",
-      "line": 130,
+      "line": 137,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -9075,9 +9022,21 @@
     {
       "track": "java",
       "module": 8,
-      "title": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+      "title": "Tema 3: Proyectos multi-módulo · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 185,
+      "line": 278,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "title": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min",
+      "file": "web/public/content/java/modulo-8.md",
+      "line": 445,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

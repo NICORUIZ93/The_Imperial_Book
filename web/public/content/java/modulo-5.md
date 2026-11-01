@@ -5,23 +5,43 @@
 
 ## Aprende construyendo
 
-### Tema 1: ExecutorService y gestión de hilos
+### Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar enviarás ocho cálculos a un executor de cuatro hilos, recogerás sus resultados y comprobarás su terminación. **Prerrequisitos:** clases, excepciones, lambdas y JDK 27. Comprueba `java --version` y `javac --version`. No necesitas Maven para este ejemplo independiente desde carpeta vacía.
+**Prerrequisito:** clases, excepciones, lambdas y JDK 27. Comprueba `java --version` y `javac --version`. No necesitas Maven para este ejemplo independiente desde carpeta vacía.
 
-#### Paso 2 · Contexto y caso real
+**Al terminar podrás:** enviar ocho cálculos a un executor de cuatro hilos, recoger sus resultados y comprobar su terminación.
+
+#### Aprende
+
 El proyecto integrador calcula tarifas para varias entregas. **¿Por qué es importante?** Un executor permite limitar hilos activos y centralizar su ciclo de vida. No afirmamos que crear exactamente 200 hilos agote cualquier máquina ni que un pool siempre sea más rápido: depende del trabajo y de los recursos disponibles.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`submit` entrega una tarea y devuelve un Future; `get` espera su resultado y propaga fallos. `shutdown` deja de aceptar trabajo nuevo y permite terminar el pendiente. `awaitTermination` comprueba si acabó en un plazo. **Analogía:** un equipo fijo recoge encargos de una cola en lugar de contratar una persona nueva por cada encargo. El límite es que una cola sin límite también puede consumir memoria: limitar hilos no equivale a limitar trabajo pendiente.
+`submit` entrega una tarea y devuelve un Future; `get` espera su resultado y propaga fallos. `shutdown` deja de aceptar trabajo nuevo y permite terminar el pendiente. `awaitTermination` comprueba si acabó en un plazo.
 
-#### Paso 4 · Demostración guiada desde cero
+**Analogía:** un equipo fijo recoge encargos de una cola en lugar de contratar una persona nueva por cada encargo. El límite es que una cola sin límite también puede consumir memoria: limitar hilos no equivale a limitar trabajo pendiente.
+
+**Conceptos clave:** `ExecutorService`, `Future`, `shutdown` y `awaitTermination` como ciclo de vida explícito del pool.
+
+**Código del ejemplo:**
+
+```java
+Future<Integer> pendiente = pool.submit(() -> 1000 + distancia * 500);
+int total = pendiente.get();   // espera el resultado y propaga sus fallos
+pool.shutdown();               // deja de aceptar trabajo nuevo
+```
+
+**Límites y decisión de uso:** este pool usa una cola no acotada; para carga variable en producción define capacidad y política de rechazo, y mide tareas CPU frente a I/O.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-executor
 cd ejemplo-executor
 ```
-Crea `ProcesadorTarifas.java` completo:
+
+**Crea** `ProcesadorTarifas.java` completo:
+
 ```java
 import java.util.ArrayList;
 import java.util.List;
@@ -50,39 +70,58 @@ public class ProcesadorTarifas {
     }
 }
 ```
+
+**Ejecuta el ejemplo:**
+
 ```bash
 javac ProcesadorTarifas.java
 java ProcesadorTarifas
 ```
+
 **Resultado esperado:** `Total: 26000` y `Pool cerrado`. Explica cada bloque: la copia final de distancia identifica el encargo, los Futures conservan sus resultados y finally cierra el recurso incluso si un cálculo falla. Recoger Futures en orden no fuerza que las tareas se ejecuten en ese mismo orden.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** elimina `pool.shutdown()`. Al vencer la espera, el cierre forzado sigue evitando dejar la JVM colgada, pero se lanza el error de terminación. **Pista:** terminar tareas no ordena al executor dejar de esperar trabajo nuevo. Repón shutdown y comprueba el cierre normal.
+**Fallo deliberado:** elimina `pool.shutdown()`. Al vencer la espera, el cierre forzado sigue evitando dejar la JVM colgada, pero se lanza el error de terminación.
 
-#### Paso 6 · Práctica independiente
+**Pista:** terminar tareas no ordena al executor dejar de esperar trabajo nuevo. Repón shutdown y comprueba el cierre normal.
+
+**Si falla.** Si el programa imprime el total pero no `Pool cerrado`, la excepción de terminación se lanzó dentro del `finally`: revisa que `awaitTermination` reciba una unidad de tiempo. Si la JVM no termina, falta `shutdown()` o `shutdownNow()`. Si el total no es 26000, la lambda capturó una variable que cambia en lugar de la copia final `distancia`.
+
+#### Aplica
+
 Representa los ocho cálculos como `List<Callable<Integer>>` y usa `invokeAll`. Comprueba que el total sigue siendo 26000. Añade un cálculo que lanza una excepción y localiza cómo llega a quien llama; no conviertas un fallo en una tarifa cero sin una regla de negocio.
 
-#### Paso 7 · Cierre
-El siguiente tema compone dependencias con CompletableFuture; el laboratorio posterior separa timeout y cancelación. **Errores comunes:** olvidar shutdown, asumir que shutdown espera y medir rendimiento con una sola ejecución diminuta. **Límites y decisión de uso:** este pool usa una cola no acotada; para carga variable en producción define capacidad y política de rechazo, y mide tareas CPU frente a I/O.
+**Checklist de salida.**
 
-**Fuentes oficiales:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Executors](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html).
+- [ ] `ProcesadorTarifas.java` compila con `javac` y se ejecuta con `java ProcesadorTarifas`.
+- [ ] La salida muestra `Total: 26000` y `Pool cerrado`.
+- [ ] `invokeAll` produce el mismo total que los `submit` individuales.
+- [ ] Un cálculo que lanza una excepción llega a quien llama como fallo, no como tarifa cero.
+- [ ] El pool se cierra siempre, incluso si un cálculo falla.
+- [ ] Explicas por qué limitar hilos no limita el trabajo pendiente en una cola no acotada.
 
-### Tema 2: CompletableFuture
+**Si falla.** Si `invokeAll` devuelve resultados en un orden distinto, recuerda que respeta el orden de la lista de tareas, no el de finalización. Si la excepción no llega a quien llama, revisa que estés llamando `get()` sobre el Future correspondiente.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás encadenar una obtención de datos asíncrona, una transformación y un manejo de errores centralizado con `CompletableFuture`. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
+El siguiente tema compone dependencias con CompletableFuture; el laboratorio posterior separa timeout y cancelación.
 
-#### Paso 2 · Contexto y caso real
+**Errores comunes:** olvidar shutdown, asumir que shutdown espera y medir rendimiento con una sola ejecución diminuta.
+
+**Fuente oficial:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Executors](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html).
+
+---
+
+### Tema 2: CompletableFuture · Intermedio · 45 min
+
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+
+**Al terminar podrás:** encadenar una obtención de datos asíncrona, una transformación y un manejo de errores centralizado con `CompletableFuture`.
+
+#### Aprende
+
 Consultar la tarifa de una ruta requiere primero obtener la distancia (una llamada lenta) y luego calcular el precio con ella; anidar callbacks manualmente para esta secuencia se vuelve ilegible apenas se agrega un paso más.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`CompletableFuture` compone pasos asíncronos dependientes como una cadena lineal (`thenApply`, `thenCompose`), con `exceptionally` centralizando el manejo de errores de toda la cadena. La analogía: encargar tareas sucesivas a distintos proveedores, donde cada uno empieza su parte solo cuando el anterior entrega la suya, sin que quien encarga espere bloqueado frente a cada uno.
+**¿Por qué es importante?** `CompletableFuture` permite componer operaciones asíncronas dependientes entre sí de forma legible y lineal, con manejo de errores centralizado, evitando la anidación progresiva de callbacks manuales.
 
-**Conceptos clave:** composición de operaciones asíncronas, manejo de errores en la cadena.
-
-Cada secuencia de llamadas dependientes entre sí del proyecto integrador de este track (obtener datos, transformarlos, reaccionar al resultado) se beneficiará de esta misma composición lineal en vez de callbacks anidados.
-
-**Cuándo no usarlo:** para una única llamada asíncrona sin pasos dependientes posteriores, encadenar `CompletableFuture` agrega sintaxis sin beneficio; basta con `supplyAsync` y esperar su resultado directamente.
+`CompletableFuture` compone pasos asíncronos dependientes como una cadena lineal (`thenApply`, `thenCompose`), con `exceptionally` centralizando el manejo de errores de toda la cadena.
 
 `CompletableFuture` representa un valor que estará disponible en el futuro como resultado de una operación asíncrona, permitiendo encadenar transformaciones y reacciones sobre ese valor futuro sin bloquear el hilo actual esperando su resultado:
 
@@ -102,47 +141,107 @@ Esta composición fluida resuelve el problema de anidar callbacks asíncronos su
 
 **Analogía:** `CompletableFuture` es como encargar una serie de tareas sucesivas a distintos proveedores, donde cada proveedor solo empieza su parte cuando el anterior efectivamente entrega su resultado, sin que quien encargó todo el proceso tenga que esperar bloqueado presencialmente frente a cada proveedor mientras trabaja.
 
-**¿Por qué es importante?** `CompletableFuture` permite componer operaciones asíncronas dependientes entre sí de forma legible y lineal, con manejo de errores centralizado, evitando la anidación progresiva de callbacks manuales.
+**Conceptos clave:** composición de operaciones asíncronas, manejo de errores en la cadena.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+**Cuándo no usarlo:** para una única llamada asíncrona sin pasos dependientes posteriores, encadenar `CompletableFuture` agrega sintaxis sin beneficio; basta con `supplyAsync` y esperar su resultado directamente.
+
+Cada secuencia de llamadas dependientes entre sí del proyecto integrador de este track (obtener datos, transformarlos, reaccionar al resultado) se beneficiará de esta misma composición lineal en vez de callbacks anidados.
+
+**Implicación práctica:** Anidar callbacks manualmente para una secuencia de pasos asíncronos dependientes se vuelve ilegible apenas se agrega un paso más, mientras que encadenar con `thenApply`/`thenCompose` y centralizar errores con `exceptionally` mantiene la cadena lineal y legible.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-completable-future
 cd ejemplo-completable-future
 mkdir -p src/main/java/academia/asincrono
 ```
-Crea `CalculoTarifa.java` con `CompletableFuture.supplyAsync(() -> obtenerDistancia(ruta)).thenApply(distancia -> calcularTarifa(distancia)).thenAccept(tarifa -> ...).exceptionally(...)`. Compila y ejecuta:
+
+**Crea** `CalculoTarifa.java` con `CompletableFuture.supplyAsync(() -> obtenerDistancia(ruta)).thenApply(distancia -> calcularTarifa(distancia)).thenAccept(tarifa -> ...).exceptionally(...)`:
+
+```java
+package academia.asincrono;
+
+import java.util.concurrent.CompletableFuture;
+
+public final class CalculoTarifa {
+    static double obtenerDistancia(String ruta) {
+        if (ruta == null || ruta.isBlank()) {
+            throw new IllegalArgumentException("ruta vacía");
+        }
+        return 12.5;
+    }
+
+    static double calcularTarifa(double distancia) {
+        return distancia * 1.2;
+    }
+
+    public static void main(String[] args) {
+        CompletableFuture.supplyAsync(() -> obtenerDistancia("ruta-42"))
+            .thenApply(CalculoTarifa::calcularTarifa)
+            .thenAccept(tarifa -> System.out.println("Tarifa: " + tarifa))
+            .exceptionally(error -> {
+                System.err.println("Falló: " + error.getMessage());
+                return null;
+            })
+            .join();
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
 ```bash
 javac -d out src/main/java/academia/asincrono/CalculoTarifa.java
 java -cp out academia.asincrono.CalculoTarifa
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: haz que `obtenerDistancia` lance una excepción deliberadamente para provocar un fallo en medio de la cadena; confirma que `exceptionally` la captura sin necesidad de un `try/catch` en cada paso intermedio. Resultado esperado: el error se maneja en un único lugar, no en cada etapa.
+**Resultado esperado:** `Tarifa: 15.0`, calculada a partir de una distancia de 12.5 y un factor de 1.2.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado:** haz que `obtenerDistancia` lance una excepción deliberadamente para provocar un fallo en medio de la cadena; cambia la ruta `"ruta-42"` por `""`.
+
+**Pista:** confirma que `exceptionally` la captura sin necesidad de un `try/catch` en cada paso intermedio. **Resultado esperado:** el error se maneja en un único lugar, no en cada etapa.
+
+**Si falla.** Si la cadena termina sin imprimir nada, falta la operación terminal `join()` o `thenAccept`. Si la excepción no llega a `exceptionally`, revisa que el fallo ocurra dentro de un paso de la cadena y no al construirla fuera del `supplyAsync`.
+
+#### Aplica
+
 Agrega un segundo paso asíncrono con `thenCompose` (que a su vez devuelva otro `CompletableFuture`, por ejemplo verificar disponibilidad del conductor) y confirma que la cadena completa sigue siendo lineal y legible.
 
-#### Paso 7 · Cierre
-Guarda la cadena completa, la salida exitosa y el error capturado por `exceptionally`; como siguiente paso estudia virtual threads. Errores comunes: anidar callbacks manualmente en vez de encadenar con `thenApply`/`thenCompose`, usar `thenApply` cuando el paso siguiente devuelve otro `CompletableFuture` (produce un `CompletableFuture<CompletableFuture<T>>` anidado en vez de aplanarlo), y omitir `exceptionally` dejando que una excepción en cualquier paso intermedio se propague sin manejar. Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**Implicación práctica:** Anidar callbacks manualmente para una secuencia de pasos asíncronos dependientes se vuelve ilegible apenas se agrega un paso más, mientras que encadenar con `thenApply`/`thenCompose` y centralizar errores con `exceptionally` mantiene la cadena lineal y legible.
+**Checklist de salida.**
 
-### Tema 3: Virtual threads
+- [ ] `CalculoTarifa.java` compila y ejecuta con `javac` y `java -cp out`.
+- [ ] La cadena exitosa imprime `Tarifa: 15.0`.
+- [ ] Una ruta vacía se captura en `exceptionally` y muestra el mensaje de fallo.
+- [ ] `thenCompose` añade un segundo paso asíncrono sin anidar `CompletableFuture`.
+- [ ] La cadena completa sigue siendo lineal, sin callbacks anidados.
+- [ ] Explicas la diferencia entre `thenApply` y `thenCompose`.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás lanzar decenas de miles de tareas concurrentes de I/O bloqueante con virtual threads, algo inviable con threads de plataforma. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
+**Si falla.** Si al usar `thenApply` obtienes un `CompletableFuture<CompletableFuture<T>>`, el paso devuelve otro future: cambia a `thenCompose`. Si el fallo del segundo paso no llega a `exceptionally`, colócalo dentro de la operación asíncrona, no en la construcción de la cadena.
 
-#### Paso 2 · Contexto y caso real
+Guarda la cadena completa, la salida exitosa y el error capturado por `exceptionally`.
+
+**Errores comunes:** anidar callbacks manualmente en vez de encadenar con `thenApply`/`thenCompose`, usar `thenApply` cuando el paso siguiente devuelve otro `CompletableFuture` (produce un `CompletableFuture<CompletableFuture<T>>` anidado en vez de aplanarlo), y omitir `exceptionally` dejando que una excepción en cualquier paso intermedio se propague sin manejar.
+
+**Fuente oficial:** [dev.java: Concurrency](https://dev.java/learn/concurrency/) y [Virtual Threads](https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html).
+
+---
+
+### Tema 3: Virtual threads · Intermedio · 50 min
+
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+
+**Al terminar podrás:** lanzar decenas de miles de tareas concurrentes de I/O bloqueante con virtual threads, algo inviable con threads de plataforma.
+
+#### Aprende
+
 Simular 50 000 solicitudes de tracking de entregas que cada una espera una respuesta de red simulada agotaría la memoria disponible con threads de plataforma tradicionales (aproximadamente 1 MB de stack cada uno); con virtual threads es viable.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un virtual thread es gestionado por la JVM, no mapea 1:1 a un hilo del sistema operativo, y se suspende automáticamente durante una espera de I/O liberando el "carrier thread" real. La analogía: una sala de espera compartida y económica donde miles esperan a la vez, y solo se asigna un recurso físico real a quien está siendo atendido en ese instante.
+**¿Por qué es importante?** Los virtual threads consumen una fracción de la memoria de los threads de plataforma y permiten lanzar cientos de miles de tareas concurrentes con código síncrono familiar, siendo especialmente apropiados para cargas dominadas por I/O bloqueante.
 
-**Conceptos clave:** hilos gestionados por la JVM, costo de memoria drásticamente menor, ideal para I/O bloqueante.
-
-Cualquier operación del proyecto integrador de este track dominada por espera de I/O (consultar varias fuentes externas a la vez) se beneficiará de virtual threads exactamente como en esta medición.
-
-**Cuándo no usarlo:** los virtual threads no aceleran cálculo puro de CPU; para código CPU-intensivo sin I/O bloqueante, un pool de threads de plataforma bien dimensionado al número de núcleos disponibles sigue siendo la elección correcta.
+Un virtual thread es gestionado por la JVM, no mapea 1:1 a un hilo del sistema operativo, y se suspende automáticamente durante una espera de I/O liberando el "carrier thread" real.
 
 Un thread de plataforma tradicional está respaldado directamente por un hilo del sistema operativo, con un costo de memoria considerable (aproximadamente 1 MB de stack por thread) y un límite práctico impuesto por el sistema operativo de, típicamente, unos pocos miles de threads simultáneos como máximo razonable; un virtual thread (introducido de forma estable en Java 21, resultado del proyecto Loom) es gestionado enteramente por la JVM en vez de mapear directamente a un hilo del sistema operativo, consumiendo una fracción diminuta de esa memoria, y permitiendo lanzar cientos de miles (o incluso millones) de tareas concurrentes con código de aspecto completamente síncrono y familiar, sin necesidad de reescribir la lógica en un estilo asíncrono basado en callbacks o `CompletableFuture` explícito.
 
@@ -158,47 +257,104 @@ Este bloque lanza 100,000 tareas concurrentes, cada una en su propio virtual thr
 
 **Analogía:** un thread de plataforma es como reservar una habitación de hotel completa dedicada exclusivamente a una única tarea, con un costo fijo considerable sin importar cuánto tiempo esa tarea pase simplemente esperando sin hacer nada; un virtual thread es como una sala de espera compartida y económica donde miles de personas pueden esperar simultáneamente, y solo se asigna un recurso físico real (el carrier thread) a quien efectivamente está siendo atendido en ese instante específico, liberándolo inmediatamente para atender a otra persona en cuanto la primera simplemente vuelve a esperar.
 
-**¿Por qué es importante?** Los virtual threads consumen una fracción de la memoria de los threads de plataforma y permiten lanzar cientos de miles de tareas concurrentes con código síncrono familiar, siendo especialmente apropiados para cargas dominadas por I/O bloqueante.
+**Conceptos clave:** hilos gestionados por la JVM, costo de memoria drásticamente menor, ideal para I/O bloqueante.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+Cualquier operación del proyecto integrador de este track dominada por espera de I/O (consultar varias fuentes externas a la vez) se beneficiará de virtual threads exactamente como en esta medición.
+
+**Cuándo no usarlo:** los virtual threads no aceleran cálculo puro de CPU; para código CPU-intensivo sin I/O bloqueante, un pool de threads de plataforma bien dimensionado al número de núcleos disponibles sigue siendo la elección correcta.
+
+**Implicación práctica:** Los virtual threads permiten decenas de miles de tareas de I/O bloqueante con una fracción de la memoria de los threads de plataforma, pero esa ventaja desaparece por completo para cálculo puro de CPU, donde un pool de plataforma bien dimensionado sigue siendo la elección correcta.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-virtual-threads
 cd ejemplo-virtual-threads
 mkdir -p src/main/java/academia/virtuales
 ```
-Crea `TrackingMasivo.java` que lance 50 000 tareas con `Executors.newVirtualThreadPerTaskExecutor()`, cada una simulando una espera de I/O con `Thread.sleep(50)`. Compila y ejecuta, midiendo el tiempo total:
+
+**Crea** `TrackingMasivo.java` que lance 50 000 tareas con `Executors.newVirtualThreadPerTaskExecutor()`, cada una simulando una espera de I/O con `Thread.sleep(50)`:
+
+```java
+package academia.virtuales;
+
+import java.time.Duration;
+import java.util.concurrent.Executors;
+
+public final class TrackingMasivo {
+    public static void main(String[] args) throws Exception {
+        int solicitudes = 50_000;
+        long inicio = System.nanoTime();
+
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (int i = 0; i < solicitudes; i++) {
+                executor.submit(() -> {
+                    Thread.sleep(Duration.ofMillis(50));
+                    return null;
+                });
+            }
+        }
+
+        long fin = System.nanoTime();
+        System.out.printf("%d solicitudes en %.0f ms%n",
+            solicitudes, (fin - inicio) / 1_000_000.0);
+    }
+}
+```
+
+**Ejecuta el ejemplo** midiendo el tiempo total:
+
 ```bash
 javac -d out src/main/java/academia/virtuales/TrackingMasivo.java
 java -cp out academia.virtuales.TrackingMasivo
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: cambia deliberadamente el executor a `Executors.newFixedThreadPool(200)` con las mismas 50 000 tareas para provocar un fallo de expectativa; el tiempo total aumenta drásticamente porque solo 200 tareas pueden esperar a la vez. Resultado esperado: confirmas que los virtual threads permiten mucha más concurrencia de I/O con el mismo hardware.
+**Resultado esperado:** las 50 000 solicitudes terminan en un tiempo cercano a los 50 ms de una sola espera (con variación según el hardware), no en 50 000 × 50 ms. El `try` con el executor espera a que todas las tareas terminen antes de cerrar.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado:** cambia el executor a `Executors.newFixedThreadPool(200)` con las mismas 50 000 tareas; el tiempo total aumenta drásticamente porque solo 200 tareas pueden esperar a la vez.
+
+**Pista:** observa la diferencia de tiempo, no la memoria exacta por hilo; el argumento de los virtual threads es la capacidad de concurrencia con el mismo hardware.
+
+**Si falla.** Si el tiempo ronda los 2500 segundos con el pool fijo, es el comportamiento esperado: 50 000 tareas divididas en tandas de 200. Si la JVM termina antes de que las tareas acaben, falta el `try` que cierra y espera el executor. Si `Thread.sleep(Duration)` no compila, usa `Thread.sleep(50)`.
+
+#### Aplica
+
 Reemplaza `Thread.sleep(50)` por un cálculo puro de CPU (por ejemplo, contar primos) y repite la comparación; confirma que ahí los virtual threads no ofrecen ninguna ventaja sobre un pool de plataforma bien dimensionado.
 
-#### Paso 7 · Cierre
-Guarda ambas mediciones (I/O bloqueante y CPU pura) y la conclusión sobre cuándo virtual threads ayudan; como siguiente paso estudia condiciones de carrera. Errores comunes: asumir que los virtual threads aceleran cualquier carga sin medir, usar virtual threads para cálculo CPU-intensivo puro (no ofrecen ninguna ventaja ahí), y llamar código nativo (JNI o el Foreign Function & Memory API del Módulo 11) desde dentro de un virtual thread sin saber que eso todavía "fija" (pin) el carrier thread en JDK 27 — a diferencia de `synchronized`, cuyo pinning sí se eliminó en JDK 24 (JEP 491). Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**Implicación práctica:** Los virtual threads permiten decenas de miles de tareas de I/O bloqueante con una fracción de la memoria de los threads de plataforma, pero esa ventaja desaparece por completo para cálculo puro de CPU, donde un pool de plataforma bien dimensionado sigue siendo la elección correcta.
+**Checklist de salida.**
 
-### Tema 4: Condiciones de carrera y sincronización
+- [ ] `TrackingMasivo.java` compila y se ejecuta con `javac` y `java -cp out`.
+- [ ] Las 50 000 tareas de I/O terminan en un tiempo acorde a una sola espera.
+- [ ] Con `newFixedThreadPool(200)` el tiempo total crece de forma evidente.
+- [ ] La variante con cálculo de CPU no mejora al usar virtual threads.
+- [ ] El executor se cierra con `try` y no deja tareas huérfanas.
+- [ ] Explicas por qué la ventaja desaparece en cargas CPU-intensivas.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir una condición de carrera real con un contador compartido y corregirla con `synchronized`. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
+**Si falla.** Si la variante de CPU tarda lo mismo en ambos casos, es el resultado esperado y confirma el límite: los virtual threads no aceleran cálculo puro. Si el programa se queda sin memoria con las tareas de I/O, revisa que no estés usando threads de plataforma en lugar del executor virtual.
 
-#### Paso 2 · Contexto y caso real
+Guarda ambas mediciones (I/O bloqueante y CPU pura) y la conclusión sobre cuándo virtual threads ayudan.
+
+**Errores comunes:** asumir que los virtual threads aceleran cualquier carga sin medir, usar virtual threads para cálculo CPU-intensivo puro (no ofrecen ninguna ventaja ahí), y llamar código nativo (JNI o el Foreign Function & Memory API del Módulo 11) desde dentro de un virtual thread sin saber que eso todavía "fija" (pin) el carrier thread en JDK 27 — a diferencia de `synchronized`, cuyo pinning sí se eliminó en JDK 24 (JEP 491).
+
+**Fuente oficial:** [dev.java: Concurrency](https://dev.java/learn/concurrency/) y [Virtual Threads](https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html).
+
+---
+
+### Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min
+
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+
+**Al terminar podrás:** reproducir una condición de carrera real con un contador compartido y corregirla con `synchronized`.
+
+#### Aprende
+
 Cien hilos incrementando simultáneamente un contador compartido de "entregas procesadas hoy" sin ninguna coordinación pierden incrementos silenciosamente: el total final es menor al esperado, sin ningún error explícito.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`contador++` son en realidad tres operaciones (leer, sumar, escribir); dos hilos pueden leer el mismo valor antes de que cualquiera escriba el incrementado, perdiendo uno de los dos. La analogía: dos personas mirando el mismo saldo de una cuenta compartida al mismo tiempo, cada una decidiendo retirar dinero basándose en ese saldo ya obsoleto.
+**¿Por qué es importante?** Una condición de carrera produce resultados incorrectos silenciosos dependientes del orden impredecible de ejecución de los hilos; `synchronized` y otras primitivas de coordinación garantizan acceso exclusivo o coordinado a estado compartido mutable, eliminando esa impredecibilidad.
 
-**Conceptos clave:** acceso concurrente no coordinado, `synchronized`, primitivas de coordinación.
-
-Cualquier contador o estado mutable compartido entre hilos del proyecto integrador de este track necesitará esta misma protección (`synchronized`, `AtomicInteger` o una estructura concurrente), nunca acceso concurrente sin coordinar.
-
-**Cuándo no usarlo:** `synchronized` en cada acceso a un contador de alta frecuencia introduce contención entre hilos; para ese caso específico, `AtomicInteger` (basado en operaciones atómicas de hardware) suele rendir mejor que un bloque `synchronized` completo.
+`contador++` son en realidad tres operaciones (leer, sumar, escribir); dos hilos pueden leer el mismo valor antes de que cualquiera escriba el incrementado, perdiendo uno de los dos.
 
 Una condición de carrera ocurre cuando múltiples hilos acceden y modifican el mismo estado compartido mutable sin ninguna coordinación explícita entre ellos, produciendo resultados incorrectos que dependen del orden impredecible en que el sistema operativo efectivamente intercala la ejecución de esos hilos: dos hilos incrementando el mismo contador (`contador++`, que en realidad son tres operaciones separadas a nivel de máquina: leer el valor actual, sumarle uno, y escribir el resultado) pueden ambos leer el mismo valor antes de que cualquiera de los dos escriba su resultado incrementado, perdiendo efectivamente uno de los dos incrementos sin que ningún error explícito se produzca, simplemente un resultado final incorrecto y silencioso.
 
@@ -206,7 +362,7 @@ Una condición de carrera ocurre cuando múltiples hilos acceden y modifican el 
 
 **Analogía:** una condición de carrera es como dos personas mirando el mismo saldo de una cuenta compartida al mismo tiempo, cada una decidiendo retirar dinero basándose en ese saldo ya obsoleto para cuando efectivamente actualizan el registro, terminando con un saldo final incorrecto sin que ninguna operación individual haya fallado explícitamente; `synchronized` es como una ventanilla única que solo atiende a una persona a la vez para esa cuenta específica, garantizando que cada consulta y actualización del saldo ocurra de forma completamente aislada respecto a cualquier otra.
 
-**¿Por qué es importante?** Una condición de carrera produce resultados incorrectos silenciosos dependientes del orden impredecible de ejecución de los hilos; `synchronized` y otras primitivas de coordinación garantizan acceso exclusivo o coordinado a estado compartido mutable, eliminando esa impredecibilidad.
+**Conceptos clave:** acceso concurrente no coordinado, `synchronized`, primitivas de coordinación.
 
 **Código del ejemplo:**
 
@@ -214,39 +370,130 @@ Una condición de carrera ocurre cuando múltiples hilos acceden y modifican el 
 synchronized void incrementar() { contador++; } // garantiza acceso exclusivo a la sección crítica
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+Cualquier contador o estado mutable compartido entre hilos del proyecto integrador de este track necesitará esta misma protección (`synchronized`, `AtomicInteger` o una estructura concurrente), nunca acceso concurrente sin coordinar.
+
+**Cuándo no usarlo:** `synchronized` en cada acceso a un contador de alta frecuencia introduce contención entre hilos; para ese caso específico, `AtomicInteger` (basado en operaciones atómicas de hardware) suele rendir mejor que un bloque `synchronized` completo.
+
+**Implicación práctica:** Una condición de carrera produce resultados incorrectos silenciosos (sin ninguna excepción) que dependen del orden impredecible de ejecución de los hilos, y solo una prueba con múltiples hilos reales la expone — nunca se detecta leyendo el código.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-condicion-carrera
 cd ejemplo-condicion-carrera
 mkdir -p src/main/java/academia/concurrencia
 ```
-Crea `ContadorEntregas.java` con un campo `int contador` incrementado por 100 hilos concurrentes sin sincronización, y compara con la misma clase usando `synchronized void incrementar()`. Compila y ejecuta ambas versiones:
+
+**Crea** `ContadorEntregas.java` con un campo `int contador` incrementado por 100 hilos concurrentes sin sincronización, y compara con la misma clase usando `synchronized void incrementar()`:
+
+```java
+package academia.concurrencia;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public final class ContadorEntregas {
+    private int contador;
+
+    synchronized void incrementar() {
+        contador++;
+    }
+
+    static int ejecutar(boolean sincronizado) throws InterruptedException {
+        ContadorEntregas contador = new ContadorEntregas();
+        ExecutorService pool = Executors.newFixedThreadPool(100);
+        CountDownLatch salida = new CountDownLatch(1);
+        try {
+            for (int hilo = 0; hilo < 100; hilo++) {
+                pool.submit(() -> {
+                    salida.await();
+                    for (int i = 0; i < 1_000; i++) {
+                        if (sincronizado) {
+                            contador.incrementar();
+                        } else {
+                            contador.contador++;
+                        }
+                    }
+                    return null;
+                });
+            }
+            salida.countDown();
+            pool.shutdown();
+            pool.awaitTermination(10, TimeUnit.SECONDS);
+        } finally {
+            pool.shutdownNow();
+        }
+        return contador.valor();
+    }
+
+    int valor() {
+        return contador;
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println("Sin sincronizar:  " + ejecutar(false));
+        System.out.println("Con synchronized: " + ejecutar(true));
+    }
+}
+```
+
+**Ejecuta el ejemplo** con ambas versiones:
+
 ```bash
 javac -d out src/main/java/academia/concurrencia/ContadorEntregas.java
 java -cp out academia.concurrencia.ContadorEntregas
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: ejecuta la versión sin sincronizar varias veces seguidas para provocar el fallo deliberado; el resultado final varía entre ejecuciones y es menor a 100 veces la cantidad de incrementos por hilo. Resultado esperado: con `synchronized`, el resultado es siempre el mismo valor correcto, sin importar cuántas veces lo ejecutes.
+**Resultado esperado:** la versión sin sincronizar suele quedar por debajo de 100 000 (y cambia entre ejecuciones); la versión con `synchronized` imprime exactamente 100 000.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado:** ejecuta la versión sin sincronizar varias veces seguidas; el resultado final varía entre ejecuciones y es menor a 100 veces la cantidad de incrementos por hilo.
+
+**Pista:** con `synchronized`, el resultado es siempre el mismo valor correcto, sin importar cuántas veces lo ejecutes.
+
+**Si falla.** Si la versión sin sincronizar siempre da 100 000, repite la ejecución: la pérdida depende del intercalado y no ocurre en todas las corridas. Si la versión sincronizada también pierde incrementos, revisa que el `synchronized` cubra la operación completa y no solo una parte. Si el programa se queda esperando, el latch de salida no se liberó.
+
+#### Aplica
+
 Reemplaza `synchronized` por `AtomicInteger` (usando `incrementAndGet()`) y confirma que el resultado sigue siendo correcto y determinista, sin necesidad de un bloque `synchronized` explícito.
 
-#### Paso 7 · Cierre
-Guarda ambas versiones (sin sincronizar y con `synchronized`/`AtomicInteger`), los resultados inconsistentes y el resultado corregido; como siguiente paso estudia NIO.2. Errores comunes: asumir que `contador++` es una operación atómica, sincronizar solo la lectura o solo la escritura en vez de la operación completa de leer-sumar-escribir, y usar `synchronized` en cada acceso a un contador de muy alta frecuencia cuando `AtomicInteger` rendiría mejor con la misma corrección. Fuentes oficiales: https://dev.java/learn/concurrency/ y https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html.
-**Implicación práctica:** Una condición de carrera produce resultados incorrectos silenciosos (sin ninguna excepción) que dependen del orden impredecible de ejecución de los hilos, y solo una prueba con múltiples hilos reales la expone — nunca se detecta leyendo el código.
+**Checklist de salida.**
 
-### Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)
+- [ ] `ContadorEntregas.java` compila y ejecuta con `javac` y `java -cp out`.
+- [ ] La versión sin sincronizar pierde incrementos en al menos una ejecución.
+- [ ] La versión con `synchronized` imprime siempre 100 000.
+- [ ] `AtomicInteger` reemplaza `synchronized` con el mismo resultado correcto.
+- [ ] Explicas por qué `contador++` no es una operación atómica.
+- [ ] Distingues sincronizar la operación completa de sincronizar solo una parte.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a lanzar dos subtareas relacionadas (distancia y disponibilidad del conductor) con `StructuredTaskScope`, cancelando automáticamente la otra si cualquiera falla. Prerrequisitos: JDK 27 y un editor. Comprueba java --version. **`StructuredTaskScope` sigue en preview en JDK 27 (JEP 533, séptima ronda)**, no finalizada: compilar y ejecutar requiere las banderas `--enable-preview --release 27` explícitas, porque `javac` solo acepta previews de la release exacta del JDK que compila.
+**Si falla.** Si `AtomicInteger` no compila, falta `import java.util.concurrent.atomic.AtomicInteger;`. Si el resultado vuelve a ser incorrecto, el incremento sigue ejecutándose sobre el `int` original y no sobre el atómico.
 
-#### Paso 2 · Contexto y caso real
+Guarda ambas versiones (sin sincronizar y con `synchronized`/`AtomicInteger`), los resultados inconsistentes y el resultado corregido.
+
+**Errores comunes:** asumir que `contador++` es una operación atómica, sincronizar solo la lectura o solo la escritura en vez de la operación completa de leer-sumar-escribir, y usar `synchronized` en cada acceso a un contador de muy alta frecuencia cuando `AtomicInteger` rendiría mejor con la misma corrección.
+
+**Fuente oficial:** [dev.java: Concurrency](https://dev.java/learn/concurrency/) y [Virtual Threads](https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html).
+
+---
+
+### Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min
+
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`. **`StructuredTaskScope` sigue en preview en JDK 27 (JEP 533, séptima ronda)**, no finalizada: compilar y ejecutar requiere las banderas `--enable-preview --release 27` explícitas, porque `javac` solo acepta previews de la release exacta del JDK que compila.
+
+**Al terminar podrás:** lanzar dos subtareas relacionadas (distancia y disponibilidad del conductor) con `StructuredTaskScope`, cancelando automáticamente la otra si cualquiera falla.
+
+#### Aprende
+
 El servicio de tracking lanza dos llamadas relacionadas con `CompletableFuture` por separado (distancia y disponibilidad del conductor); si la de distancia falla, la de disponibilidad sigue corriendo en segundo plano sin que nadie la cancele, consumiendo recursos para un resultado que ya no se va a usar.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Structured concurrency trata un grupo de subtareas relacionadas como una única unidad: todas nacen dentro del mismo scope y ese scope no termina hasta que todas terminan (o se cancelan). La analogía: un padre que lleva a sus hijos a un museo — si uno se pierde, no se va dejando a los demás dispersos; reúne o cancela el paseo completo antes de continuar.
+**¿Por qué es importante?** `StructuredTaskScope` garantiza que un grupo de subtareas relacionadas comparta un ciclo de vida común, cancelando el resto automáticamente si cualquiera falla, eliminando las subtareas huérfanas que `CompletableFuture` suelto no previene.
+
+Structured concurrency trata un grupo de subtareas relacionadas como una única unidad: todas nacen dentro del mismo scope y ese scope no termina hasta que todas terminan (o se cancelan).
+
+**Analogía:** un padre que lleva a sus hijos a un museo — si uno se pierde, no se va dejando a los demás dispersos; reúne o cancela el paseo completo antes de continuar.
 
 **Conceptos clave:** StructuredTaskScope, fork, join, Joiner, cancelación conjunta, árbol de tareas.
 
@@ -254,15 +501,18 @@ Cada operación del **proyecto integrador** de este track que dependa de varias 
 
 **Cuándo no usarlo:** para una única tarea asíncrona sin ninguna otra subtarea relacionada, `StructuredTaskScope` agrega ceremonia sin beneficio; basta con `Executors.newVirtualThreadPerTaskExecutor()` y esperar ese único resultado. Tampoco reemplaza el diseño de timeouts y presupuestos de latencia: el scope acota el ciclo de vida, no la duración de cada subtarea.
 
-**¿Por qué es importante?** `StructuredTaskScope` garantiza que un grupo de subtareas relacionadas comparta un ciclo de vida común, cancelando el resto automáticamente si cualquiera falla, eliminando las subtareas huérfanas que `CompletableFuture` suelto no previene.
+**Límites y decisión de uso:** el scope no impone timeouts ni presupuestos de latencia por sí solo, y no conviene adoptarlo para una única llamada asíncrona sin subtareas hermanas.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** crea una **carpeta vacía** y dentro el archivo Java completo; no necesitás Gradle ni un proyecto previo.
+#### Practica
+
+**Desde cero:** crea una **carpeta vacía** y dentro el archivo Java completo; no necesitás Gradle ni un proyecto previo.
+
 ```bash
 mkdir -p ejemplo/src/academia/concurrencia && cd ejemplo
 ```
 
-Crea `src/academia/concurrencia/CalculoTarifaEstructurado.java` con este contenido completo:
+**Crea** `src/academia/concurrencia/CalculoTarifaEstructurado.java` con este contenido completo:
+
 ```java
 package academia.concurrencia;
 
@@ -303,13 +553,15 @@ public class CalculoTarifaEstructurado {
 ```
 
 **Ejecuta el ejemplo** (compila y corre con la preview de JDK 27):
+
 ```bash
 javac --release 27 --enable-preview -d out src/academia/concurrencia/CalculoTarifaEstructurado.java
 java --enable-preview -cp out academia.concurrencia.CalculoTarifaEstructurado
 ```
-Verifica la salida y compárala con el resultado esperado.
 
-Resultado esperado: `disponibilidad cancelada` y `falló: java.lang.IllegalStateException: ruta sin coordenadas`; nunca aparece `disponibilidad terminó`, porque `scope.join()` cancela la otra subtarea en cuanto una falla. La JVM además imprime una advertencia de que estás usando funcionalidades en preview. Explica cada bloque: `open` crea el scope con un `Joiner` que exige éxito de todas las subtareas, `fork` lanza cada subtarea dentro del mismo árbol, `join` espera el cierre conjunto y `Subtask.get()` solo se lee después, cuando el resultado ya está disponible.
+**Resultado esperado:** `disponibilidad cancelada` y `falló: java.lang.IllegalStateException: ruta sin coordenadas`; nunca aparece `disponibilidad terminó`, porque `scope.join()` cancela la otra subtarea en cuanto una falla. La JVM además imprime una advertencia de que estás usando funcionalidades en preview. Explica cada bloque: `open` crea el scope con un `Joiner` que exige éxito de todas las subtareas, `fork` lanza cada subtarea dentro del mismo árbol, `join` espera el cierre conjunto y `Subtask.get()` solo se lee después, cuando el resultado ya está disponible.
+
+**Referencia visual del ciclo de vida:**
 
 ```mermaid
 flowchart LR
@@ -320,28 +572,55 @@ flowchart LR
   J --> E[excepción relanzada, sin huérfanos]
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: reemplazá el `StructuredTaskScope` por dos `CompletableFuture.supplyAsync(...)` independientes sin ningún scope que los agrupe, y hacé que el primero lance una excepción. Ese es el fallo deliberado: el segundo `CompletableFuture` sigue ejecutándose completo en segundo plano, sin que nadie lo cancele ni lo espere, consumiendo el carrier thread para un resultado que la tarifa final ya no va a usar porque el cálculo ya falló.
+**Fallo deliberado:** reemplaza el `StructuredTaskScope` por dos `CompletableFuture.supplyAsync(...)` independientes sin ningún scope que los agrupe, y haz que el primero lance una excepción. Ahora el segundo `CompletableFuture` sigue ejecutándose completo en segundo plano, sin que nadie lo cancele ni lo espere, consumiendo el carrier thread para un resultado que la tarifa final ya no va a usar porque el cálculo ya falló.
 
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `StructuredTaskScope` con `fork`/`join`, y agregá una tercera subtarea (por ejemplo, registrar el intento en un log de auditoría) confirmando que las tres se cancelan juntas si cualquiera falla.
+**Pista:** con la preview, el mensaje de la JVM sobre funcionalidades experimentales es esperado; si no aparece la cancelación, revisa que ambas subtareas se lancen con `fork` dentro del mismo scope.
 
-#### Paso 7 · Cierre
-Entregá el scope con cancelación conjunta del Paso 4, la subtarea huérfana del Paso 5, y la tercera subtarea agregada del Paso 6; explicá por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene. Siguiente paso: estudia Scoped Values, el complemento de structured concurrency para propagar contexto sin ThreadLocal. Errores comunes: lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí. Límites y decisión de uso: el scope no impone timeouts ni presupuestos de latencia por sí solo, y no conviene adoptarlo para una única llamada asíncrona sin subtareas hermanas. Fuentes oficiales: https://openjdk.org/jeps/533 y https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html. **Actualización de plataforma (octubre 2026):** este Tema usa la séptima ronda de preview (JEP 533, JDK 27), ya propuesta como candidata a finalizarse sin cambios adicionales. Las banderas deben coincidir con la release del JDK en uso: `javac --release 25 --enable-preview` con JDK 27 falla con «preview language features are only supported for release 27», así que el ejemplo se compiló y ejecutó con `--release 27 --enable-preview`.
+**Si falla.** Si `javac` rechaza la compilación con «preview language features are only supported for release 27», usa exactamente `--release 27 --enable-preview`. Si `disponibilidad terminó` aparece, la otra subtarea no se canceló: confirma que ambas están dentro del scope y que el fallo ocurre tras el `fork`. Si `Subtask.get()` se llama antes de `join()`, el resultado aún no está disponible.
 
-### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
+#### Aplica
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a propagar un ID de correlación a través de virtual threads hijos con `ScopedValue`, evitando el crecimiento de memoria que produce `ThreadLocal` heredable con cientos de miles de virtual threads. Prerrequisitos: Tema 3 y Tema 5 de este módulo.
+Corrige el paso anterior volviendo a `StructuredTaskScope` con `fork`/`join`, y agrega una tercera subtarea (por ejemplo, registrar el intento en un log de auditoría) confirmando que las tres se cancelan juntas si cualquiera falla.
 
-#### Paso 2 · Contexto y caso real
+**Checklist de salida.**
+
+- [ ] El ejemplo compila con `javac --release 27 --enable-preview`.
+- [ ] La salida muestra `disponibilidad cancelada` y nunca `disponibilidad terminó`.
+- [ ] La excepción de la primera subtarea llega al `catch` del `main`.
+- [ ] Dos `CompletableFuture` sueltos dejan viva la subtarea hermana.
+- [ ] La tercera subtarea también se cancela cuando una falla.
+- [ ] Explicas por qué el scope acota el ciclo de vida pero no la duración.
+
+**Si falla.** Si el `catch` imprime un mensaje distinto, revisa que `obtenerDistancia` lance después del `fork`. Si la tercera subtarea no se cancela, confirma que se lanzó con `fork` dentro del mismo `try` del scope. Si la compilación falla por preview, comprueba que `java` y `javac` sean del mismo JDK 27.
+
+Entrega el scope con cancelación conjunta del paso de práctica, la subtarea huérfana del fallo deliberado, y la tercera subtarea agregada; explica por qué estructurar la concurrencia como un árbol (con el mismo ciclo de vida que su scope padre) elimina las fugas de subtareas que `CompletableFuture` suelto no previene.
+
+**Errores comunes:** lanzar subtareas con CompletableFuture sin ningún scope que las agrupe y cancele juntas, no leer `Subtask.get()` solo después de `join()`, y usar structured concurrency para tareas que no están genuinamente relacionadas entre sí.
+
+**Fuente oficial:** [JEP 533: Structured Concurrency](https://openjdk.org/jeps/533) y [Structured Concurrency](https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html). **Actualización de plataforma (octubre 2026):** este tema usa la séptima ronda de preview (JEP 533, JDK 27), ya propuesta como candidata a finalizarse sin cambios adicionales. Las banderas deben coincidir con la release del JDK en uso: `javac --release 25 --enable-preview` con JDK 27 falla con «preview language features are only supported for release 27», así que el ejemplo se compiló y ejecutó con `--release 27 --enable-preview`.
+
+---
+
+### Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min
+
+**Prerrequisito:** los Temas 3 y 5 de este módulo, y JDK 27. Comprueba `java --version`.
+
+**Al terminar podrás:** propagar un ID de correlación a través de virtual threads hijos con `ScopedValue`, evitando el crecimiento de memoria que produce `ThreadLocal` heredable con cientos de miles de virtual threads.
+
+#### Aprende
+
 El servicio usa un `ThreadLocal<String>` heredable para propagar el ID de correlación de cada solicitud a los virtual threads que lanza para procesarla; bajo una carga de 500.000 virtual threads simultáneos, el heap crece de forma sostenida porque cada copia heredada del `ThreadLocal` queda retenida hasta que el hilo específico termine y sea recolectado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`ScopedValue` vincula un valor a una porción específica y acotada de código (no al hilo completo como `ThreadLocal`): el valor es inmutable durante ese scope, se propaga automáticamente a los virtual threads hijos lanzados dentro de él, y se libera automáticamente al salir del bloque, sin retenerlo indefinidamente. La analogía: un gafete de visitante que solo es válido dentro del edificio y se devuelve automáticamente al salir, en vez de una llave que el visitante se queda y alguien debe recordar reclamar después.
+**¿Por qué es importante?** `ThreadLocal` heredable retiene una copia por cada hilo que lo hereda durante toda su vida; con cientos de miles de virtual threads esa retención se vuelve un problema de memoria real que `ScopedValue` evita por diseño.
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `src/main/java/academia/concurrencia/ContextoCorrelacion.java`:
+`ScopedValue` vincula un valor a una porción específica y acotada de código (no al hilo completo como `ThreadLocal`): el valor es inmutable durante ese scope, se propaga automáticamente a los virtual threads hijos lanzados dentro de él, y se libera automáticamente al salir del bloque, sin retenerlo indefinidamente.
+
+**Analogía:** un gafete de visitante que solo es válido dentro del edificio y se devuelve automáticamente al salir, en vez de una llave que el visitante se queda y alguien debe recordar reclamar después.
+
+**Conceptos clave:** `ScopedValue`, valor inmutable acotado al scope, propagación automática a virtual threads hijos.
+
+**Código del ejemplo:**
+
 ```java
 static final ScopedValue<String> ID_CORRELACION = ScopedValue.newInstance();
 
@@ -353,16 +632,7 @@ ScopedValue.where(ID_CORRELACION, generarId()).run(() -> {
 });
 ```
 
-**Ejecuta el ejemplo:**
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
-
-Resultado esperado: dentro del bloque `run`, cualquier código (incluidas las subtareas lanzadas con `StructuredTaskScope`) puede leer `ID_CORRELACION.get()` con el mismo valor, y ese valor deja de existir automáticamente apenas el bloque `run` termina, sin ninguna llamada manual de limpieza.
+**Referencia visual del ciclo de vida:**
 
 ```mermaid
 flowchart LR
@@ -371,15 +641,97 @@ flowchart LR
   R --> X[fin del run: valor liberado automáticamente]
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `ScopedValue` por un `InheritableThreadLocal<String>` para propagar el mismo ID de correlación, y lanzá 500.000 virtual threads que lo hereden. Ese es el fallo deliberado: cada virtual thread retiene su propia copia heredada del `ThreadLocal` durante toda su vida, y con esa cantidad de virtual threads simultáneos el heap crece de forma medible y sostenida, justo el problema de memoria que los virtual threads estaban destinados a evitar.
+#### Practica
 
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `ScopedValue`, y medí el uso de heap antes y después del cambio lanzando la misma carga de 500.000 virtual threads, confirmando que `ScopedValue` no muestra ese crecimiento sostenido.
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
 
-#### Paso 7 · Cierre
-Entregá la propagación con `ScopedValue` del Paso 4, el crecimiento de heap con `ThreadLocal` heredable del Paso 5, y la medición comparativa del Paso 6; explicá por qué un valor inmutable y acotado a un scope es más apropiado que un valor mutable heredado por cientos de miles de virtual threads. Siguiente paso: estudia NIO.2 para completar el manejo de datos del proyecto integrador. Errores comunes: usar `ThreadLocal` heredable como propagación de contexto por defecto con virtual threads, intentar mutar un `ScopedValue` desde dentro de su propio scope (son inmutables por diseño), y no medir el uso real de memoria antes de descartar el problema como "poco probable". Fuentes oficiales: https://openjdk.org/jeps/506 y https://docs.oracle.com/en/java/javase/25/core/scoped-values.html.
-**¿Por qué es importante?** `ThreadLocal` heredable retiene una copia por cada hilo que lo hereda durante toda su vida; con cientos de miles de virtual threads esa retención se vuelve un problema de memoria real que `ScopedValue` evita por diseño.
+```bash
+mkdir ejemplo-scoped-values
+cd ejemplo-scoped-values
+mkdir -p src/main/java/academia/concurrencia
+```
+
+**Crea** `src/main/java/academia/concurrencia/ContextoCorrelacion.java` con una ejecución completa:
+
+```java
+package academia.concurrencia;
+
+import java.util.concurrent.StructuredTaskScope;
+
+public final class ContextoCorrelacion {
+    static final ScopedValue<String> ID_CORRELACION = ScopedValue.newInstance();
+
+    static String generarId() {
+        return "req-" + System.nanoTime();
+    }
+
+    static String procesarEnvio() {
+        return "procesado por " + ID_CORRELACION.get();
+    }
+
+    public static void main(String[] args) {
+        ScopedValue.where(ID_CORRELACION, generarId()).run(() -> {
+            try (var scope = StructuredTaskScope.open()) {
+                var subtarea = scope.fork(ContextoCorrelacion::procesarEnvio);
+                scope.join();
+                System.out.println(subtarea.get());
+            } catch (Exception e) {
+                System.out.println("falló: " + e.getMessage());
+            }
+        });
+
+        System.out.println("Fuera del scope: " + ID_CORRELACION.isBound());
+    }
+}
+```
+
+**Ejecuta el ejemplo** (compila y corre con la preview de JDK 27):
+
+```bash
+javac --release 27 --enable-preview -d out src/main/java/academia/concurrencia/ContextoCorrelacion.java
+java --enable-preview -cp out academia.concurrencia.ContextoCorrelacion
+```
+
+**Resultado esperado:** dentro del bloque `run`, la subtarea imprime `procesado por req-…`; fuera del bloque, `Fuera del scope: false`, porque el valor deja de existir automáticamente al terminar `run`, sin ninguna llamada manual de limpieza.
+
+**Alternativa con Maven o Gradle:**
+
+```bash
+# Maven
+mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd app && mvn test
+# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+```
+
+**Fallo deliberado:** reemplaza `ScopedValue` por un `InheritableThreadLocal<String>` para propagar el mismo ID de correlación, y lanza 500.000 virtual threads que lo hereden. Cada virtual thread retiene su propia copia heredada del `ThreadLocal` durante toda su vida, y con esa cantidad de virtual threads simultáneos el heap crece de forma medible y sostenida, justo el problema de memoria que los virtual threads estaban destinados a evitar.
+
+**Pista:** mide el heap antes y después con `Runtime.getRuntime().totalMemory() - freeMemory()`; la comparación importa como tendencia, no como byte exacto.
+
+**Si falla.** Si `ScopedValue` no compila, confirma que el JDK es 25 o superior. Si `isBound()` devuelve `true` fuera del scope, estás leyendo el valor dentro de otro bloque `where`. Si la compilación falla por preview, usa las mismas banderas que el ejemplo.
+
+#### Aplica
+
+Corrige el paso anterior volviendo a `ScopedValue`, y mide el uso de heap antes y después del cambio lanzando la misma carga de 500.000 virtual threads, confirmando que `ScopedValue` no muestra ese crecimiento sostenido.
+
+**Checklist de salida.**
+
+- [ ] `ContextoCorrelacion.java` compila con `javac --release 27 --enable-preview`.
+- [ ] La subtarea lee el ID de correlación dentro del scope.
+- [ ] `isBound()` devuelve `false` al salir del bloque `run`.
+- [ ] La variante con `InheritableThreadLocal` muestra crecimiento de heap bajo carga.
+- [ ] La variante con `ScopedValue` no muestra ese crecimiento sostenido.
+- [ ] Explicas por qué un valor inmutable y acotado es preferible a uno heredado y mutable.
+
+**Si falla.** Si el heap no crece con `InheritableThreadLocal`, aumenta la carga o mide durante la ejecución, no solo al final. Si `ScopedValue` parece no propagarse, revisa que la subtarea se lance dentro del `run` y no antes.
+
+Entrega la propagación con `ScopedValue` del paso de práctica, el crecimiento de heap con `ThreadLocal` heredable del fallo deliberado, y la medición comparativa; explica por qué un valor inmutable y acotado a un scope es más apropiado que un valor mutable heredado por cientos de miles de virtual threads. Siguiente paso: estudia NIO.2 para completar el manejo de datos del proyecto integrador.
+
+**Errores comunes:** usar `ThreadLocal` heredable como propagación de contexto por defecto con virtual threads, intentar mutar un `ScopedValue` desde dentro de su propio scope (son inmutables por diseño), y no medir el uso real de memoria antes de descartar el problema como "poco probable".
+
+**Fuente oficial:** [JEP 506: Scoped Values](https://openjdk.org/jeps/506) y [Scoped Values](https://docs.oracle.com/en/java/javase/25/core/scoped-values.html).
+
+---
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir un servicio concurrente que procese N tareas en paralelo usando virtual threads, corrigiendo una condición de carrera provocada intencionalmente.
@@ -411,25 +763,35 @@ Entregá la propagación con `ScopedValue` del Paso 4, el crecimiento de heap co
 
 ## Laboratorio de transferencia
 
-### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
+### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar limitarás una espera y comprobarás que una tarea acepta la interrupción antes de cerrar su executor. **Prerrequisitos:** excepciones, try/finally y Future. JDK 27; comprueba `java --version` y `javac --version`. Ejemplo independiente desde carpeta vacía.
+**Prerrequisito:** excepciones, try/finally y Future. JDK 27; comprueba `java --version` y `javac --version`. Ejemplo independiente desde carpeta vacía.
 
-#### Paso 2 · Contexto y caso real
+**Al terminar podrás:** limitar una espera y comprobar que una tarea acepta la interrupción antes de cerrar su executor.
+
+#### Aprende
+
 El proyecto integrador consulta un proveedor que puede tardar demasiado. Dejar de esperar no significa que ese trabajo se haya detenido. **¿Por qué es importante?** Tareas abandonadas siguen consumiendo conexiones, CPU o memoria.
 
-#### Paso 3 · Teoría, modelo mental y analogía
 `get` con timeout limita cuánto espera quien llama. `cancel(true)` solicita interrupción; no mata un hilo de forma segura. La tarea debe responder a esa señal. Las esperas interrumpibles, como `sleep`, lanzan `InterruptedException`; si la capturas y finalizas, puedes restaurar la marca de interrupción.
 
 **Analogía:** un plazo vence en recepción, pero hay que avisar también a quien ejecuta el encargo. El límite es que el aviso requiere cooperación; una tarea que ignora interrupciones puede seguir activa.
 
-#### Paso 4 · Demostración guiada desde cero
+**Conceptos clave:** timeout de espera, interrupción cooperativa, terminación verificada del executor.
+
+**Límites y decisión de uso:** tiempos exactos dependen del planificador; verifica resultados y terminación, no una duración exacta al milisegundo.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía.
+
 ```bash
 mkdir timeout-java
 cd timeout-java
 ```
-Crea `Plazo.java` completo:
+
+**Crea** `Plazo.java` completo:
+
 ```java
 import java.util.concurrent.*;
 
@@ -463,19 +825,39 @@ public class Plazo {
     }
 }
 ```
+
+**Ejecuta el ejemplo:**
+
 ```bash
 javac Plazo.java
 java Plazo
 ```
+
 **Resultado esperado:** `Plazo agotado` y `Executor terminado`, sin esperar diez segundos. Explica cada bloque: el latch confirma que empezó la tarea, `get` limita la espera y `finally` comprueba terminación. Un timeout no afirma que un servicio remoto haya deshecho nada.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** elimina el catch del timeout y conserva `finally`. El programa informa `TimeoutException`; comprueba que el executor sigue cerrándose. **Pista:** el manejo del resultado y la limpieza son responsabilidades distintas. Repón el catch y el mensaje de negocio.
+**Fallo deliberado:** elimina el catch del timeout y conserva `finally`. El programa informa `TimeoutException`; comprueba que el executor sigue cerrándose.
 
-#### Paso 6 · Práctica independiente
+**Pista:** el manejo del resultado y la limpieza son responsabilidades distintas. Repón el catch y el mensaje de negocio.
+
+**Si falla.** Si el programa tarda diez segundos, el timeout no se aplicó: revisa la sobrecarga de `get` con tiempo y unidad. Si aparece `La tarea no cooperó`, la tarea ignoró la interrupción. Si el programa no termina, falta `shutdownNow()` o `awaitTermination`.
+
+#### Aplica
+
 Haz una variante rápida con espera de 10 ms y timeout de 2 segundos. Debe mostrar `Respuesta` y terminar. Escribe qué harías si el proveedor no coopera y qué límite pondrías al número de peticiones simultáneas.
 
-#### Paso 7 · Cierre
-El siguiente paso es propagar un presupuesto de tiempo entre llamadas. **Errores comunes:** asumir que `cancel` garantiza terminación, tragarse interrupciones y cerrar un pool sin comprobar tareas pendientes. **Límites y decisión de uso:** tiempos exactos dependen del planificador; verifica resultados y terminación, no una duración exacta al milisegundo.
+**Checklist de salida.**
 
-**Fuentes oficiales:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Future](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html).
+- [ ] `Plazo.java` compila con `javac` y se ejecuta con `java Plazo`.
+- [ ] La ejecución imprime `Plazo agotado` y `Executor terminado`.
+- [ ] El programa no espera los diez segundos de la tarea.
+- [ ] La variante con espera de 10 ms y timeout de 2 s imprime `Respuesta`.
+- [ ] El `finally` verifica la terminación del executor.
+- [ ] Explicas por qué `cancel(true)` requiere cooperación de la tarea.
+
+**Si falla.** Si la variante rápida imprime `Plazo agotado`, el timeout es menor que la espera: revisa los valores. Si el programa termina sin imprimir `Executor terminado`, el `finally` no llegó a ejecutarse.
+
+El siguiente paso es propagar un presupuesto de tiempo entre llamadas.
+
+**Errores comunes:** asumir que `cancel` garantiza terminación, tragarse interrupciones y cerrar un pool sin comprobar tareas pendientes.
+
+**Fuente oficial:** [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html) y [Future](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html).

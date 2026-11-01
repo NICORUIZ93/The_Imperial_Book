@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 95 | 41 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 95 | 21 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 4 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 73 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -675,18 +675,18 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 9 | [Tema 1: XCTest clásico y Swift Testing](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 9 | [Tema 2: Testing de código async](../web/public/content/ios/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | ios / 9 | [Tema 3: UI Tests con XCUITest](../web/public/content/ios/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 1: Del código fuente a la JVM](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 2: public static void main — qué significa cada palabra](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 3: JDK, JRE y JVM](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 4: Tipos primitivos vs referencias](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 5: Variables, conversiones y `String`](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 6: Operadores, precedencia y control de flujo](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación](../web/public/content/java/modulo-1.md) | clase-java-no-visible |
-| java / 1 | [Tema 2: Herencia y sobreescritura](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso](../web/public/content/java/modulo-1.md) | clase-java-no-visible |
+| java / 0 | [Tema 1: Del código fuente a la JVM · Básico · 35 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 2: public static void main — qué significa cada palabra · Básico · 30 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 3: JDK, JRE y JVM · Básico · 30 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 4: Tipos primitivos vs referencias · Básico · 40 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 5: Variables, conversiones y `String` · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 6: Operadores, precedencia y control de flujo · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 45 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 0 | [Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 50 min](../web/public/content/java/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 1 | [Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min](../web/public/content/java/modulo-1.md) | clase-java-no-visible |
+| java / 1 | [Tema 2: Herencia y sobreescritura · Intermedio · 1 h](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 1 | [Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 1 | [Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min](../web/public/content/java/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 10 | [Tema 1: module-info.java y encapsulación fuerte](../web/public/content/java/modulo-10.md) | clase-java-no-visible |
 | java / 10 | [Tema 2: Migración incremental y cuándo JPMS aporta valor](../web/public/content/java/modulo-10.md) | clase-java-no-visible |
 | java / 10 | [Tema 3: `opens` para acceso reflexivo controlado de frameworks](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
@@ -726,9 +726,9 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 19 | [Tema 5: ServiceLoader: plugins sin acoplar implementaciones](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 7: Internacionalización: números, monedas, fechas y orden de texto](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
-| java / 2 | [Tema 2: Genéricos, wildcards y type erasure](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
-| java / 2 | [Tema 3: Comparable vs Comparator, e iteración](../web/public/content/java/modulo-2.md) | clase-java-no-visible |
+| java / 2 | [Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 2 | [Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 2 | [Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min](../web/public/content/java/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 20 | [Tema 3: Streams como composición: pereza, orden y efectos que se esconden](../web/public/content/java/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
@@ -742,31 +742,31 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 22 | [Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min](../web/public/content/java/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 22 | [Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min](../web/public/content/java/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 22 | [Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min](../web/public/content/java/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 3 | [Tema 1: Checked vs unchecked exceptions](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
-| java / 3 | [Tema 2: try-with-resources](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
-| java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones](../web/public/content/java/modulo-3.md) | clase-java-no-visible |
-| java / 4 | [Tema 1: Stream API — map, filter, reduce, collect](../web/public/content/java/modulo-4.md) | clase-java-no-visible |
-| java / 4 | [Tema 2: Optional — evitar null explícitamente](../web/public/content/java/modulo-4.md) | clase-java-no-visible |
-| java / 4 | [Tema 3: Streams paralelos y referencias a métodos](../web/public/content/java/modulo-4.md) | clase-java-no-visible |
-| java / 4 | [Tema 4: Stream Gatherers (Java 24)](../web/public/content/java/modulo-4.md) | ejemplo-breve-revisar-contexto, clase-java-no-visible |
-| java / 5 | [Tema 1: ExecutorService y gestión de hilos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 2: CompletableFuture](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 3: Virtual threads](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 4: Condiciones de carrera y sincronización](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25)](../web/public/content/java/modulo-5.md) | clase-java-no-visible |
-| java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 1: NIO.2 — Path y Files](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 2: Serialización con Jackson](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 6 | [Tema 3: Archivos grandes y recursos del classpath](../web/public/content/java/modulo-6.md) | clase-java-no-visible |
-| java / 7 | [Tema 1: record — modelos inmutables sin boilerplate](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 7 | [Tema 2: sealed — jerarquías cerradas y exhaustividad](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 7 | [Tema 3: Pattern matching exhaustivo y para instanceof](../web/public/content/java/modulo-7.md) | clase-java-no-visible |
-| java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22)](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 1: pom.xml vs build.gradle.kts](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 2: Ciclo de vida de build y scopes](../web/public/content/java/modulo-8.md) | clase-java-no-visible |
-| java / 8 | [Tema 3: Proyectos multi-módulo](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 3 | [Tema 1: Checked vs unchecked exceptions · Básico · 40 min](../web/public/content/java/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 3 | [Tema 2: try-with-resources · Básico · 40 min](../web/public/content/java/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 3 | [Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 45 min](../web/public/content/java/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 4 | [Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 4 | [Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 4 | [Tema 3: Streams paralelos y referencias a métodos · Intermedio · 45 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 4 | [Tema 4: Stream Gatherers (Java 24) · Avanzado · 50 min](../web/public/content/java/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 2: CompletableFuture · Intermedio · 45 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 3: Virtual threads · Intermedio · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 50 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 5 | [Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min](../web/public/content/java/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 6 | [Tema 1: NIO.2 — Path y Files · Intermedio · 45 min](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 6 | [Tema 2: Serialización con Jackson · Intermedio · 50 min](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 6 | [Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min](../web/public/content/java/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 7 | [Tema 1: record — modelos inmutables sin boilerplate · Básico · 45 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 7 | [Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 7 | [Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 7 | [Tema 4: Unnamed variables y patterns (_, Java 22) · Avanzado · 50 min](../web/public/content/java/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 8 | [Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 8 | [Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 8 | [Tema 3: Proyectos multi-módulo · Intermedio · 50 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
 | java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
 | java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | clase-java-no-visible |

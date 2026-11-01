@@ -3,22 +3,19 @@
 
 ## Aprende construyendo
 
-### Tema 1: List, Set, Map y sus implementaciones
+### Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás medir la diferencia real de rendimiento entre `ArrayList` y `LinkedList`, y elegir `HashSet`/`TreeSet` según si necesitas orden. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
 
-#### Paso 2 · Contexto y caso real
+**Al terminar podrás:** medir la diferencia real de rendimiento entre `ArrayList` y `LinkedList`, y elegir `HashSet`/`TreeSet` según si necesitas orden.
+
+#### Aprende
+
 Un sistema de entregas debe insertar miles de registros al inicio de una cola de prioridad y, por separado, eliminar guías duplicadas de un lote importado; la estructura equivocada convierte una operación instantánea en una lenta.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`ArrayList` accede a cualquier índice al instante pero desplaza todo al insertar al inicio; `LinkedList` inserta al inicio sin desplazar nada pero debe recorrer nodo por nodo para acceder por índice. La analogía: un estante numerado (rápido para buscar por número, lento para insertar al frente) frente a una cadena de personas tomadas de la mano (rápido para insertar en cualquier punto, lento para llegar a la posición 500).
+**¿Por qué es importante?** Elegir `ArrayList` frente a `LinkedList` según si el patrón de acceso predominante es indexado o de inserción/eliminación frecuente en los extremos evita costos de rendimiento innecesarios; elegir `HashSet` frente a `TreeSet` según si se necesita o no orden automático evita el costo adicional de mantener ese orden cuando no es requerido.
 
-**Conceptos clave:** acceso indexado vs inserción eficiente, unicidad, orden.
-
-Elegir la colección correcta según el patrón de acceso real (no por costumbre) es la misma decisión que tomarás para cada estructura de datos del proyecto integrador de este track.
-
-**Cuándo no usarlo:** medir rendimiento con `nanoTime()` como aquí tiene sentido para decidir entre estructuras con volumen real; para una colección de un puñado de elementos que nunca crecerá, la diferencia entre `ArrayList` y `LinkedList` es irrelevante y no vale la pena medirla.
+`ArrayList` accede a cualquier índice al instante pero desplaza todo al insertar al inicio; `LinkedList` inserta al inicio sin desplazar nada pero debe recorrer nodo por nodo para acceder por índice.
 
 `ArrayList` implementa `List` respaldado por un arreglo redimensionable internamente, ofreciendo acceso indexado rápido (`O(1)`, acceder a cualquier posición por su índice es prácticamente instantáneo) e inserción eficiente al final, pero inserción o eliminación costosa al inicio o en medio (`O(n)`, dado que todos los elementos posteriores deben desplazarse una posición); `LinkedList` implementa la misma interfaz `List` respaldada internamente por una lista doblemente enlazada de nodos, ofreciendo inserción y eliminación eficiente al inicio o en medio (sin necesidad de desplazar elementos, solo reenlazar referencias), a costa de acceso indexado más lento (`O(n)`, dado que acceder a una posición arbitraria requiere recorrer la lista nodo por nodo desde uno de los extremos).
 
@@ -28,7 +25,7 @@ Elegir la colección correcta según el patrón de acceso real (no por costumbre
 
 **Analogía:** `ArrayList` es como un estante numerado donde acceder a cualquier posición específica por su número es instantáneo, pero insertar un nuevo objeto al principio requiere renumerar y desplazar físicamente todos los demás objetos; `LinkedList` es como una cadena de personas tomadas de las manos, donde insertar a alguien nuevo en cualquier punto solo requiere que sus dos vecinos inmediatos se suelten y vuelvan a tomarse de la mano con la persona nueva, sin mover a nadie más, pero encontrar a la persona en la posición 500 requiere contar uno por uno desde el principio.
 
-**¿Por qué es importante?** Elegir `ArrayList` frente a `LinkedList` según si el patrón de acceso predominante es indexado o de inserción/eliminación frecuente en los extremos evita costos de rendimiento innecesarios; elegir `HashSet` frente a `TreeSet` según si se necesita o no orden automático evita el costo adicional de mantener ese orden cuando no es requerido.
+**Conceptos clave:** acceso indexado vs inserción eficiente, unicidad, orden.
 
 **Código del ejemplo:**
 
@@ -43,45 +40,103 @@ Map<String, Integer> edades = new HashMap<>();
 edades.put("Ana", 28);
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+Elegir la colección correcta según el patrón de acceso real (no por costumbre) es la misma decisión que tomarás para cada estructura de datos del proyecto integrador de este track.
+
+**Cuándo no usarlo:** medir rendimiento con `nanoTime()` como aquí tiene sentido para decidir entre estructuras con volumen real; para una colección de un puñado de elementos que nunca crecerá, la diferencia entre `ArrayList` y `LinkedList` es irrelevante y no vale la pena medirla.
+
+**Implicación práctica:** Elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-listas-rendimiento
 cd ejemplo-listas-rendimiento
 mkdir -p src/main/java/academia/colecciones
 ```
-Crea `ComparacionListas.java` que inserte 100 000 elementos al inicio de un `ArrayList` y de un `LinkedList`, midiendo el tiempo de cada uno con `System.nanoTime()`. Compila y ejecuta:
+
+**Crea** `src/main/java/academia/colecciones/ComparacionListas.java`, que inserta 100 000 elementos al inicio de un `ArrayList` y de un `LinkedList` y mide el tiempo de cada uno con `System.nanoTime()`:
+
+```java
+package academia.colecciones;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+public final class ComparacionListas {
+    private static final int ELEMENTOS = 100_000;
+
+    public static void main(String[] args) {
+        medir("ArrayList", new ArrayList<>());
+        medir("LinkedList", new LinkedList<>());
+    }
+
+    private static void medir(String nombre, List<Integer> lista) {
+        long inicio = System.nanoTime();
+        for (int i = 0; i < ELEMENTOS; i++) {
+            lista.add(0, i);
+        }
+        long fin = System.nanoTime();
+        System.out.printf("%s: %.1f ms%n", nombre, (fin - inicio) / 1_000_000.0);
+    }
+}
+```
+
+**Ejecuta el ejemplo** (compila y mide ambas inserciones):
+
 ```bash
 javac -d out src/main/java/academia/colecciones/ComparacionListas.java
 java -cp out academia.colecciones.ComparacionListas
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: reduce el tamaño a 100 elementos para provocar un fallo deliberado de expectativa (la diferencia se vuelve casi imperceptible); sube de nuevo a 100 000 y confirma que `LinkedList` gana claramente en inserciones al inicio. Resultado esperado: la diferencia de rendimiento solo se manifiesta con volumen suficiente.
+**Resultado esperado:** ambos tiempos se imprimen, y `LinkedList` muestra un tiempo claramente menor porque insertar al inicio no desplaza elementos.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado:** reduce `ELEMENTOS` a 100 y vuelve a ejecutar. La diferencia se vuelve casi imperceptible, porque con pocos elementos el costo de desplazar el arreglo es demasiado pequeño para notarse; restaura 100 000 y confirma de nuevo la ventaja de `LinkedList` en inserciones al inicio.
+
+**Pista:** la medición incluye el calentamiento de la JVM; si los primeros resultados parecen ruidosos, ejecuta cada medición más de una vez dentro del mismo programa. **Resultado esperado:** la diferencia de rendimiento solo se manifiesta con volumen suficiente.
+
+**Si falla.** Si `javac` no encuentra el archivo, revisa la ruta y que el paquete coincida con la carpeta. Si el programa no imprime nada, confirma que el método `main` esté declarado exactamente como `public static void main(String[] args)`. Si `ArrayList` parece más rápido al inicio, estás midiendo inserciones al final o el tamaño es demasiado pequeño.
+
+#### Aplica
+
 Agrega una comparación equivalente entre `HashSet` y `TreeSet` insertando guías duplicadas: confirma que ambos eliminan duplicados, pero solo `TreeSet` conserva orden al iterar.
 
-#### Paso 7 · Cierre
-Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cuándo cada estructura gana; como siguiente paso estudia genéricos. Errores comunes: usar `ArrayList` cuando en realidad se necesita unicidad garantizada (debería ser un `Set`), usar un objeto mutable como clave de `HashMap`/`HashSet` (si su hash cambia después de insertarlo, deja de encontrarse), y asumir que `HashSet` conserva algún orden solo porque en una prueba particular pareció hacerlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**Implicación práctica:** Elegir la colección equivocada para el patrón de acceso real (inserción frecuente al inicio, necesidad de unicidad, necesidad de orden) convierte una operación que debería ser instantánea en una lenta, o permite silenciosamente duplicados que el negocio no toleraba.
+**Checklist de salida.**
 
-### Tema 2: Genéricos, wildcards y type erasure
+- [ ] `ComparacionListas.java` compila y ejecuta con las dos mediciones.
+- [ ] Con 100 000 inserciones al inicio, `LinkedList` gana claramente.
+- [ ] Con 100 elementos, la diferencia se vuelve casi imperceptible.
+- [ ] `HashSet` y `TreeSet` rechazan la guía duplicada.
+- [ ] Solo `TreeSet` imprime las guías en orden al iterar.
+- [ ] Explicas qué patrón de acceso favorece a cada implementación.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir una clase genérica propia (`Caja<T>`) y explicar por qué su información de tipo desaparece en tiempo de ejecución. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
+**Si falla.** Si `TreeSet` lanza `ClassCastException` al insertar, los elementos no implementan `Comparable` ni se proporcionó un `Comparator`. Si `HashSet` conserva un orden aparente, no está garantizado: cambia el orden de inserción y comprueba que la salida cambia.
 
-#### Paso 2 · Contexto y caso real
+Guarda el código de medición, los tiempos obtenidos y la conclusión sobre cuándo cada estructura gana.
+
+**Errores comunes:** usar `ArrayList` cuando en realidad se necesita unicidad garantizada (debería ser un `Set`), usar un objeto mutable como clave de `HashMap`/`HashSet` (si su hash cambia después de insertarlo, deja de encontrarse), y asumir que `HashSet` conserva algún orden solo porque en una prueba particular pareció hacerlo.
+
+**Fuente oficial:** [dev.java: Collections Framework](https://dev.java/learn/api/collections-framework/) y [The Java Tutorials: Generics](https://docs.oracle.com/javase/tutorial/java/generics/).
+
+### Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min
+
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+
+**Al terminar podrás:** escribir una clase genérica propia (`Caja<T>`) y explicar por qué su información de tipo desaparece en tiempo de ejecución.
+
+#### Aprende
+
 Un almacén temporal necesita guardar y devolver un valor de cualquier tipo (una guía, un paquete, un conductor) sin duplicar la misma clase contenedora para cada tipo distinto, y sin perder verificación de tipos en tiempo de compilación.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`<T>` es un parámetro de tipo verificado en compilación; el type erasure borra esa información específica del bytecode final, dejando una única clase compartida en tiempo de ejecución. La analogía: una plantilla de formulario que se ajusta según el tipo de dato durante el llenado, pero el archivo final guardado no conserva ninguna etiqueta indicando para qué tipo fue diseñada.
+**¿Por qué es importante?** Los genéricos proporcionan seguridad de tipos en tiempo de compilación sin necesidad de castear manualmente; el type erasure explica por qué esa información de tipo genérico no está disponible para inspección en tiempo de ejecución, una limitación relevante al usar reflexión o al diseñar ciertas APIs genéricas avanzadas.
+
+`<T>` es un parámetro de tipo verificado en compilación; el type erasure borra esa información específica del bytecode final, dejando una única clase compartida en tiempo de ejecución.
 
 **Conceptos clave:** `<T>`, seguridad de tipos en compilación, borrado de tipos en tiempo de ejecución.
 
-Escribir tipos genéricos propios como `Caja<T>` es la misma técnica que usarás para el repositorio genérico del proyecto integrador de este track.
-
-**Cuándo no usarlo:** si la clase siempre va a contener el mismo tipo concreto y nunca necesitará una segunda variante, hacerla genérica agrega un parámetro de tipo sin beneficio real; resérvalo para cuando genuinamente necesites la misma estructura con más de un tipo de contenido.
+**Código del ejemplo:**
 
 ```java
 class Caja<T> {
@@ -98,47 +153,97 @@ Los wildcards (`List<? extends Number>`, aceptando una lista de `Number` o cualq
 
 **Analogía:** los genéricos son como una plantilla de formulario que se ajusta automáticamente para verificar que solo se ingrese el tipo de dato correcto según el propósito específico de cada formulario concreto (uno para texto, otro para números); el type erasure es como que, una vez que el formulario ya fue completado y archivado, el archivo físico final no conserva ninguna etiqueta especial indicando para qué tipo de formulario fue diseñado originalmente, aunque esa verificación sí se aplicó estrictamente durante el proceso de llenado.
 
-**¿Por qué es importante?** Los genéricos proporcionan seguridad de tipos en tiempo de compilación sin necesidad de castear manualmente; el type erasure explica por qué esa información de tipo genérico no está disponible para inspección en tiempo de ejecución, una limitación relevante al usar reflexión o al diseñar ciertas APIs genéricas avanzadas.
+Escribir tipos genéricos propios como `Caja<T>` es la misma técnica que usarás para el repositorio genérico del proyecto integrador de este track.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+**Cuándo no usarlo:** si la clase siempre va a contener el mismo tipo concreto y nunca necesitará una segunda variante, hacerla genérica agrega un parámetro de tipo sin beneficio real; resérvalo para cuando genuinamente necesites la misma estructura con más de un tipo de contenido.
+
+**Implicación práctica:** El type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-genericos-caja
 cd ejemplo-genericos-caja
 mkdir -p src/main/java/academia/generico
 ```
-Crea `Caja.java` con la clase genérica `Caja<T>` (código en "Código del ejemplo") y una clase `Main` que instancie `Caja<String>` y `Caja<Integer>`, imprimiendo `getClass()` de ambas instancias. Compila y ejecuta:
+
+**Crea** `src/main/java/academia/generico/Caja.java` con la clase genérica del ejemplo y un `Main` que instancie `Caja<String>` y `Caja<Integer>` e imprima `getClass()` de ambas:
+
+```java
+package academia.generico;
+
+class Caja<T> {
+    private T contenido;
+    void guardar(T valor) { this.contenido = valor; }
+    T obtener() { return contenido; }
+}
+
+final class Main {
+    public static void main(String[] args) {
+        Caja<String> texto = new Caja<>();
+        Caja<Integer> numero = new Caja<>();
+        texto.guardar("RF-1");
+        numero.guardar(42);
+        System.out.println(texto.obtener());
+        System.out.println(numero.obtener());
+        System.out.println(texto.getClass().getName());
+        System.out.println(numero.getClass().getName());
+        System.out.println(texto.getClass() == numero.getClass());
+    }
+}
+```
+
+**Ejecuta el ejemplo** (compila y compara las clases de ambas cajas):
+
 ```bash
 javac -d out src/main/java/academia/generico/Caja.java
 java -cp out academia.generico.Main
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: intenta guardar un `Integer` en una `Caja<String>` para provocar un fallo deliberado de compilación; el compilador lo rechaza aunque en tiempo de ejecución ambas cajas sean la misma clase `Caja`. Resultado esperado: confirmas que `getClass()` de `Caja<String>` y `Caja<Integer>` imprime el mismo nombre de clase.
+**Resultado esperado:** `RF-1`, `42`, dos veces `academia.generico.Caja` y `true`: ambas instancias comparten la misma clase en tiempo de ejecución.
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado:** agrega `texto.guardar(42);` en `main` y recompila. El compilador lo rechaza con un error de tipos incompatibles (`Integer` no se convierte a `String`), aunque en tiempo de ejecución ambas cajas sean la misma clase `Caja`; elimina la línea después de leer el error.
+
+**Pista:** si el compilador no rechaza el `Integer`, estás usando un raw type (`Caja` sin `<String>`), que pierde toda la verificación. **Resultado esperado:** confirmas que `getClass()` de `Caja<String>` y `Caja<Integer>` imprime el mismo nombre de clase.
+
+**Si falla.** Si `javac` no encuentra `Main`, confirma que está en el mismo archivo `Caja.java` y en el mismo paquete. Si `getClass()` imprime nombres distintos, estás comparando clases de contenedores diferentes. Si el error de tipos no aparece, la variable se declaró sin parámetro de tipo.
+
+#### Aplica
+
 Escribe un método `mostrarTodos(List<? extends Number> lista)` usando un wildcard, y prueba que acepta tanto `List<Integer>` como `List<Double>` sin necesitar sobrecargas separadas para cada tipo.
 
-#### Paso 7 · Cierre
-Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación provocado; como siguiente paso estudia Comparable y Comparator. Errores comunes: usar raw types (`Caja` sin `<T>`) perdiendo toda verificación de tipos, y asumir que la información genérica está disponible por reflexión en runtime. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**Implicación práctica:** El type erasure explica por qué `Caja<String>` y `Caja<Integer>` son la misma clase en tiempo de ejecución, una limitación real al diseñar APIs que necesiten inspeccionar tipos genéricos por reflexión, y una razón concreta para nunca usar raw types sin darse cuenta de que se pierde toda la verificación de tipos del compilador.
+**Checklist de salida.**
 
-### Tema 3: Comparable vs Comparator, e iteración
+- [ ] `Caja.java` compila y `Main` imprime ambos valores.
+- [ ] `Caja<String>` y `Caja<Integer>` imprimen el mismo nombre de clase.
+- [ ] Guardar un `Integer` en una `Caja<String>` no compila.
+- [ ] Explicas qué información de tipo se borra en tiempo de ejecución.
+- [ ] `mostrarTodos` acepta `List<Integer>` y `List<Double>` con una sola firma.
+- [ ] No usas raw types en el código final.
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar el orden natural de una clase con `Comparable` y ofrecer órdenes alternativos con `Comparator`, sin modificar la clase original. Prerrequisitos: JDK 27 y un editor. Comprueba java --version.
+**Si falla.** Si `mostrarTodos` no acepta `List<Integer>`, revisa que el parámetro declare el wildcard y no un tipo concreto. Si el método no compila al leer elementos, recuerda que `? extends Number` permite leer como `Number`, pero no agregar valores a la lista.
 
-#### Paso 2 · Contexto y caso real
+Guarda `Caja`, la prueba de `getClass()` idéntico y el error de compilación provocado.
+
+**Errores comunes:** usar raw types (`Caja` sin `<T>`) perdiendo toda verificación de tipos, y asumir que la información genérica está disponible por reflexión en runtime.
+
+**Fuente oficial:** [dev.java: Collections Framework](https://dev.java/learn/api/collections-framework/) y [The Java Tutorials: Generics](https://docs.oracle.com/javase/tutorial/java/generics/).
+
+### Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min
+
+**Prerrequisito:** JDK 27 y un editor. Comprueba `java --version`.
+
+**Al terminar podrás:** implementar el orden natural de una clase con `Comparable` y ofrecer órdenes alternativos con `Comparator`, sin modificar la clase original.
+
+#### Aprende
+
 Un listado de entregas necesita un orden natural único por antigüedad (`Comparable`) y, además, la posibilidad de reordenarlo puntualmente por destino o por peso sin tocar la clase `Entrega`.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`Comparable` define el único orden natural de una clase implementando `compareTo`; `Comparator` define órdenes alternativos externos sin modificar esa clase. La analogía: el orden oficial de un catálogo (por código de producto) frente a pedirle temporalmente que lo muestre ordenado por precio, sin alterar su orden oficial para nadie más.
+**¿Por qué es importante?** `Comparable` define el único orden natural de una clase; `Comparator` permite múltiples órdenes alternativos externos sin modificar esa clase, siendo la elección correcta según si se necesita un único criterio canónico o múltiples criterios intercambiables.
 
-**Conceptos clave:** orden natural único frente a órdenes alternativos externos, `entrySet()`.
-
-Definir el orden natural de cada entidad del proyecto integrador de este track (por fecha, por antigüedad) con `Comparable`, y reservar `Comparator` para vistas alternativas puntuales, evita mezclar ambas responsabilidades en una sola clase.
-
-**Cuándo no usarlo:** implementar `Comparable` no tiene sentido para una clase que nunca se ordenará (una entidad puramente de referencia); y usar un `Comparator` externo para el único orden que la clase siempre necesitará agrega indirección donde `Comparable` sería más directo.
+`Comparable` define el único orden natural de una clase implementando `compareTo`; `Comparator` define órdenes alternativos externos sin modificar esa clase.
 
 `Comparable<Persona>` (implementado directamente por la clase `Persona`, definiendo `compareTo`) establece el único orden "natural" de esa clase, apropiado cuando existe una forma canónica y única de ordenar objetos de ese tipo (por ejemplo, ordenar personas por edad como su criterio de orden natural más obvio y común); `Comparator` (una función o clase externa a `Persona`, pasada explícitamente a métodos de ordenamiento como `sort`) permite definir órdenes alternativos adicionales sin modificar la clase original (`personas.sort(Comparator.comparing(Persona::getNombre))`, ordenando por nombre sin tocar la implementación de `compareTo` que ya ordena por edad), apropiado cuando se necesitan múltiples criterios de orden distintos según el contexto específico de cada uso.
 
@@ -146,7 +251,7 @@ Recorrer un `Map` con for-each requiere iterar sobre `entrySet()` (`for (Map.Ent
 
 **Analogía:** `Comparable` es como la forma oficial y única en que un catálogo ordena sus productos por defecto (por ejemplo, por código de producto); `Comparator` es como poder pedirle al mismo catálogo que, sin modificar su orden oficial, te lo muestre temporalmente ordenado de otra forma alternativa según tu necesidad puntual (por precio, por nombre), sin alterar el orden oficial del catálogo para nadie más.
 
-**¿Por qué es importante?** `Comparable` define el único orden natural de una clase; `Comparator` permite múltiples órdenes alternativos externos sin modificar esa clase, siendo la elección correcta según si se necesita un único criterio canónico o múltiples criterios intercambiables.
+**Conceptos clave:** orden natural único frente a órdenes alternativos externos, `entrySet()`.
 
 **Código del ejemplo:**
 
@@ -161,30 +266,108 @@ for (Map.Entry<String, Integer> entrada : edades.entrySet()) {
 }
 ```
 
----
+Definir el orden natural de cada entidad del proyecto integrador de este track (por fecha, por antigüedad) con `Comparable`, y reservar `Comparator` para vistas alternativas puntuales, evita mezclar ambas responsabilidades en una sola clase.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía:
+**Cuándo no usarlo:** implementar `Comparable` no tiene sentido para una clase que nunca se ordenará (una entidad puramente de referencia); y usar un `Comparator` externo para el único orden que la clase siempre necesitará agrega indirección donde `Comparable` sería más directo.
+
+**Implicación práctica:** Mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
+
+#### Practica
+
+**Desde cero:** parte de una carpeta vacía y prepara la estructura.
+
 ```bash
 mkdir ejemplo-comparable-comparator
 cd ejemplo-comparable-comparator
 mkdir -p src/main/java/academia/orden
 ```
-Crea `Entrega.java` implementando `Comparable<Entrega>` por antigüedad, y una clase `Main` que ordene una lista primero con `Collections.sort` (orden natural) y luego con `lista.sort(Comparator.comparing(Entrega::getDestino))`. Compila y ejecuta:
+
+**Crea** `src/main/java/academia/orden/Entrega.java` con la entidad que implementa `Comparable<Entrega>` por antigüedad y un `Main` que la ordene primero de forma natural y luego por destino:
+
+```java
+package academia.orden;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+class Entrega implements Comparable<Entrega> {
+    private final String numero;
+    private final int antiguedadDias;
+    private final String destino;
+    private final double pesoKg;
+
+    Entrega(String numero, int antiguedadDias, String destino, double pesoKg) {
+        this.numero = numero;
+        this.antiguedadDias = antiguedadDias;
+        this.destino = destino;
+        this.pesoKg = pesoKg;
+    }
+
+    public int compareTo(Entrega otra) {
+        return Integer.compare(this.antiguedadDias, otra.antiguedadDias);
+    }
+
+    String getDestino() { return destino; }
+    double getPesoKg() { return pesoKg; }
+
+    @Override
+    public String toString() {
+        return numero + " (" + destino + ", " + antiguedadDias + " días, " + pesoKg + " kg)";
+    }
+}
+
+final class Main {
+    public static void main(String[] args) {
+        List<Entrega> entregas = new ArrayList<>(List.of(
+            new Entrega("RF-3", 2, "Lima", 8.5),
+            new Entrega("RF-1", 5, "Arequipa", 3.0),
+            new Entrega("RF-2", 1, "Lima", 12.0)
+        ));
+        Collections.sort(entregas);
+        System.out.println("Natural: " + entregas);
+        entregas.sort(Comparator.comparing(Entrega::getDestino));
+        System.out.println("Por destino: " + entregas);
+    }
+}
+```
+
+**Ejecuta el ejemplo** (ordena la misma lista con dos criterios):
+
 ```bash
 javac -d out src/main/java/academia/orden/Entrega.java
 java -cp out academia.orden.Main
 ```
 
-#### Paso 5 · Práctica guiada
-Pista: elimina deliberadamente `implements Comparable<Entrega>` para provocar un fallo de compilación al llamar `Collections.sort(lista)` sin `Comparator`; restaura la interfaz y confirma que ambos órdenes (natural y alternativo) coexisten sin conflicto. Resultado esperado: dos salidas ordenadas de forma distinta a partir de la misma lista.
+**Resultado esperado:** el primer listado queda ordenado por antigüedad (`RF-2`, `RF-3`, `RF-1`) y el segundo por destino (`Arequipa` primero y luego las dos de `Lima`, conservando entre ellas el orden natural porque el ordenamiento es estable).
 
-#### Paso 6 · Práctica independiente
+**Fallo deliberado:** elimina `implements Comparable<Entrega>` de la clase y recompila. `Collections.sort(entregas)` deja de compilar porque la lista no conoce un orden natural; restaura la interfaz y confirma que ambos órdenes coexisten sin conflicto.
+
+**Pista:** si el compilador acepta el código sin `Comparable`, la lista se está ordenando con un `Comparator` explícito en esa llamada. **Resultado esperado:** dos salidas ordenadas de forma distinta a partir de la misma lista.
+
+**Si falla.** Si `javac` no encuentra `Entrega`, revisa el paquete y la ruta. Si `Collections.sort` compila pero el orden no cambia, verifica que `compareTo` devuelva la comparación de antigüedad y no una resta con desbordamiento. Si el segundo orden pierde el orden natural entre destinos iguales, estás usando un algoritmo inestable o un comparador que no lo preserva.
+
+#### Aplica
+
 Agrega un segundo `Comparator` por peso y encadénalos con `thenComparing`; recorre el resultado con un `Map<String, List<Entrega>>` agrupado por destino usando `entrySet()`.
 
-#### Paso 7 · Cierre
-Guarda `Entrega`, ambos órdenes obtenidos y el error de compilación provocado; como siguiente paso estudia excepciones. Errores comunes: implementar `compareTo` con una resta de enteros (`this.valor - otro.valor`) que puede desbordar con valores extremos en vez de usar `Integer.compare`, modificar después de insertar el campo por el que un `TreeSet`/`TreeMap` ya ordenó un objeto (corrompe la estructura interna), y definir un `Comparable` inconsistente con `equals` sin documentarlo. Fuentes oficiales: https://dev.java/learn/api/collections-framework/ y https://docs.oracle.com/javase/tutorial/java/generics/.
-**Implicación práctica:** Mezclar el único orden natural de una clase (`Comparable`) con necesidades de orden puntuales y alternativas (`Comparator`) en una sola implementación obliga a modificar la clase original cada vez que alguien necesita un criterio de orden distinto.
+**Checklist de salida.**
+
+- [ ] `Entrega.java` compila y ejecuta ambos ordenamientos.
+- [ ] El orden natural produce `RF-2`, `RF-3`, `RF-1`.
+- [ ] El segundo listado agrupa por destino sin modificar `Entrega`.
+- [ ] Sin `Comparable`, `Collections.sort` no compila y explicas por qué.
+- [ ] El `Comparator` encadenado ordena por peso dentro de cada destino.
+- [ ] Recorres el `Map` con `entrySet()` y accedes a clave y valor en la misma iteración.
+
+**Si falla.** Si `thenComparing` no compila, el primer comparador debe devolver un `Comparator<Entrega>` y el segundo debe seguir siendo compatible con el mismo tipo. Si el `Map` agrupado pierde entregas, revisa que la clave de agrupación no sea `null` y que uses `computeIfAbsent` o una acumulación equivalente.
+
+Guarda `Entrega`, ambos órdenes obtenidos y el error de compilación provocado.
+
+**Errores comunes:** implementar `compareTo` con una resta de enteros (`this.valor - otro.valor`) que puede desbordar con valores extremos en vez de usar `Integer.compare`, modificar después de insertar el campo por el que un `TreeSet`/`TreeMap` ya ordenó un objeto (corrompe la estructura interna), y definir un `Comparable` inconsistente con `equals` sin documentarlo.
+
+**Fuente oficial:** [dev.java: Collections Framework](https://dev.java/learn/api/collections-framework/) y [The Java Tutorials: Generics](https://docs.oracle.com/javase/tutorial/java/generics/).
 
 ## Construcción guiada del capítulo
 

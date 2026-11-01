@@ -87,7 +87,7 @@
     "java": {
       "topics": 95,
       "code": 95,
-      "commentedCode": 68,
+      "commentedCode": 66,
       "mermaid": 35,
       "archifyVisual": 3,
       "asciiVisual": 0,
@@ -1209,7 +1209,7 @@
     {
       "track": "java",
       "module": 1,
-      "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
+      "topic": "Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -1258,119 +1258,133 @@
     {
       "track": "java",
       "module": 2,
-      "topic": "Tema 1: List, Set, Map y sus implementaciones",
+      "topic": "Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 2,
-      "topic": "Tema 2: Genéricos, wildcards y type erasure",
+      "topic": "Tema 2: Genéricos, wildcards y type erasure · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 2,
-      "topic": "Tema 3: Comparable vs Comparator, e iteración",
+      "topic": "Tema 3: Comparable vs Comparator, e iteración · Intermedio · 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 3,
-      "topic": "Tema 2: try-with-resources",
+      "topic": "Tema 2: try-with-resources · Básico · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 4,
-      "topic": "Tema 1: Stream API — map, filter, reduce, collect",
+      "topic": "Tema 1: Stream API — map, filter, reduce, collect · Básico · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 4,
-      "topic": "Tema 2: Optional — evitar null explícitamente",
+      "topic": "Tema 2: Optional — evitar null explícitamente · Intermedio · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 1: ExecutorService y gestión de hilos",
+      "topic": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 2: CompletableFuture",
+      "topic": "Tema 2: CompletableFuture · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 3: Virtual threads",
+      "topic": "Tema 3: Virtual threads · Intermedio · 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 4: Condiciones de carrera y sincronización",
+      "topic": "Tema 4: Condiciones de carrera y sincronización · Intermedio · 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
+      "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, preview en JDK 27) · Avanzado · 55 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 5,
-      "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
+      "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 6,
-      "topic": "Tema 1: NIO.2 — Path y Files",
+      "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 6,
-      "topic": "Tema 2: Serialización con Jackson",
+      "topic": "Tema 2: Serialización con Jackson · Intermedio · 50 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 6,
-      "topic": "Tema 3: Archivos grandes y recursos del classpath",
+      "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 7,
-      "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
+      "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "java",
       "module": 7,
-      "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
+      "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 1: pom.xml vs build.gradle.kts · Básico · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "java",
+      "module": 8,
+      "topic": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },

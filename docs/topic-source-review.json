@@ -4952,7 +4952,7 @@
         "https://openjdk.org/jeps/485"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 183,
+      "line": 399,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html",
         "https://openjdk.org/jeps/485"
@@ -4986,7 +4986,7 @@
         "https://openjdk.org/jeps/533"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 240,
+      "line": 482,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/27/core/structured-concurrency.html",
         "https://openjdk.org/jeps/533"
@@ -5003,7 +5003,7 @@
         "https://openjdk.org/jeps/506"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 332,
+      "line": 604,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/core/scoped-values.html",
         "https://openjdk.org/jeps/506"
@@ -5020,7 +5020,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 414,
+      "line": 766,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html",
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html"
@@ -5037,7 +5037,7 @@
         "https://openjdk.org/jeps/456"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 185,
+      "line": 368,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/22/language/unnamed-variables-and-patterns.html",
         "https://openjdk.org/jeps/456"
@@ -5050,13 +5050,13 @@
       "path": "web/public/content/java/modulo-8.md",
       "topic": "Tema 1: pom.xml vs build.gradle.kts",
       "providerCitations": [
-        "https://docs.gradle.org/current/userguide/",
+        "https://docs.gradle.org/current/userguide/userguide.html",
         "https://maven.apache.org/guides/"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 6,
       "originalProseUrls": [
-        "https://docs.gradle.org/current/userguide/",
+        "https://docs.gradle.org/current/userguide/userguide.html",
         "https://maven.apache.org/guides/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -5070,7 +5070,7 @@
         "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 76,
+      "line": 137,
       "originalProseUrls": [
         "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
@@ -5085,7 +5085,7 @@
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 130,
+      "line": 278,
       "originalProseUrls": [
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
       ],
@@ -5102,7 +5102,7 @@
         "https://maven.apache.org/guides/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 185,
+      "line": 445,
       "originalProseUrls": [
         "https://docs.gradle.org/current/userguide/migrating_from_maven.html",
         "https://docs.gradle.org/current/userguide/userguide.html",
@@ -6806,15 +6806,6 @@
       "contentType": "text/html",
       "title": null,
       "checkedAt": "2026-10-31T15:33:19.085302+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.gradle.org/current/userguide/",
-      "status": 200,
-      "finalUrl": "https://docs.gradle.org/current/userguide/",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:33:19.320847+00:00",
       "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
     },
     {
@@ -10937,8 +10928,8 @@
     "additionalRecognizedTopics": 378,
     "remainingUnrecognizedTopics": 0,
     "applicabilityPendingTopics": 378,
-    "urlsChecked": 511,
-    "urlsReachable": 509,
+    "urlsChecked": 510,
+    "urlsReachable": 508,
     "urlsPending": 2
   },
   "corrections": [
