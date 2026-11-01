@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-01 00:21 UTC
+Generated: 2026-11-01 03:05 UTC
 Root: `Academia_Floci`
-Indexed files: 981
+Indexed files: 989
 Import edges: 57
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -15,19 +15,19 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 59 files
-- `automation-script`: 40 files
-- `course-content`: 260 files
-- `documentation`: 63 files
+- `angular-app`: 60 files
+- `automation-script`: 41 files
+- `course-content`: 262 files
+- `documentation`: 66 files
 - `example`: 495 files
 - `local-infra`: 1 files
-- `project-file`: 63 files
+- `project-file`: 64 files
 
 ## File Types
 
-- `.md`: 330
-- `.py`: 166
-- `.json`: 74
+- `.md`: 335
+- `.py`: 167
+- `.json`: 75
 - `.java`: 73
 - `.ts`: 66
 - `.js`: 54
@@ -39,8 +39,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.mjs`: 19
 - `.kt`: 13
 - `.yaml`: 9
+- `.scss`: 9
 - `.yml`: 8
-- `.scss`: 8
 - `.sh`: 7
 - `.jsx`: 6
 - `.tf`: 4
@@ -62,9 +62,9 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: ServiceGroup, CloudComparison, AltCloudGroup
 - `web/src/app/catalog/course-catalog.ts` (158 lines, angular-app)
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
-- `web/src/app/course/course-shell.ts` (68 lines, angular-app)
-  - symbols: CourseShellComponent, track, officialPath, sidebarOpen, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1244 lines, angular-app)
+- `web/src/app/course/course-shell.ts` (83 lines, angular-app)
+  - symbols: CourseShellComponent, track, officialPath, sidebarOpen, bookReading, trackLogo, percent
+- `web/src/app/course/lesson-viewer.ts` (1755 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -158,7 +158,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (29 lines) - imports: @angular/router, ./catalog/course-catalog, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (323 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (326 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (133 lines)
@@ -172,8 +172,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/course-module.model.spec.ts` (14 lines) - imports: ./course-module.model
 - `web/src/app/course-module.model.ts` (37 lines) - symbols: CourseModule, Track
 - `web/src/app/course/course-shell.html` (42 lines) - symbols: main-content
-- `web/src/app/course/course-shell.scss` (79 lines)
-- ... 41 more files
+- `web/src/app/course/course-shell.scss` (87 lines)
+- ... 42 more files
 
 ### automation-script
 
@@ -195,7 +195,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/fix_lessons.py` (114 lines) - symbols: safe_print, iter_text_check_files, find_text_quality_issues, main; imports: ast, glob, os, re
 - `scripts/merge_duplicate_sections.py` (178 lines) - symbols: topic_slice, paragraph_span, normalized, merge_marker, merge_topic, drop_generic_scaffold, fences_balanced, guard; imports: __future__, argparse, re, sys, pathlib, audit_lesson_substance, audit_seven_step_methodology, audit_topic_learning_quality
 - `scripts/prepare_study_diagram.py` (39 lines) - symbols: main; imports: argparse, hashlib, json, pathlib
-- ... 22 more files
+- ... 23 more files
 
 ### course-content
 
@@ -217,7 +217,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
-- ... 242 more files
+- ... 244 more files
 
 ### documentation
 
@@ -229,6 +229,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `README.md` (365 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/CONTINUAR-7-PASOS.md` (76 lines) - headings: # Continuación de la metodología de siete pasos, ## Qué se corrigió en el auditor (no repetir), ## Regla de oro, ## Los 5 temas que faltaban (resueltos)
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
+- `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (45 lines) - headings: # Metodología Aprende construyendo, ## Ciclo de cada capítulo, ## Tamaño de las experiencias, ## Regla para mostrar soluciones
 - `docs/PLAN-TOTAL-DE-CAMBIO.md` (388 lines) - headings: # Plan total de mejora de profundidad, ## Diagnóstico, ## Objetivo de salida — todavía no acreditado, ## Fases
@@ -238,8 +239,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/RUNBOOKS-DEVOPS.md` (1409 lines) - headings: # DevOps Runbooks — Troubleshooting Operacional, ## Runbook 1: Docker Image Build Failures, ### Síntomas, ### Diagnosis
 - `docs/SKILLS-VISUALES-Y-ESTUDIO.md` (94 lines) - headings: # Skills para visuales y estudio desde cero, ## Selección y uso, ## Recorrido que debe comprobarse, ## Cómo usar las skills en una revisión
 - `docs/auditoria-profundidad-cobertura.md` (235 lines) - headings: # Auditoría de profundidad y cobertura — The Imperial Book, ## Corrección de estado — 2026-10-30, ## Resumen ejecutivo (sin adornos), ## Eje 1 — PROFUNDIDAD (¿el Paso 4 es ejecutable de cero a profesional?)
-- `docs/biblioteca-externa-gaps-android.md` (31 lines) - headings: # Huecos del track Android frente a la biblioteca externa, ## Estado (2026-10-28), ## Libros cotejados, ## Huecos
-- ... 45 more files
+- ... 48 more files
 
 ### example
 
@@ -287,4 +287,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (819 lines)
 - `docs/lesson-substance.json` (9724 lines)
-- ... 45 more files
+- ... 46 more files

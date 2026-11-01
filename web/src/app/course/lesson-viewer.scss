@@ -2,7 +2,7 @@
 
 // Sistema tipográfico "libro técnico": serif de lectura para prosa y
 // títulos, sans para etiquetas/UI/eyebrows, mono para código, claves y datos.
-$serif:var(--font-sans); // cuerpo de lectura: Fira Sans, como el libro
+$serif:var(--font-serif); // el modo libro reemplaza --font-serif por --font-reading
 $display:var(--font-display);
 $sans-ui:var(--font-sans);
 
@@ -528,3 +528,4 @@ $sans-ui:var(--font-sans);
 
 .lesson-markdown ::ng-deep .topic-focus-link { display:inline-block; margin-top:10px; color:var(--accent); font:600 11px/1.2 var(--font-sans); letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
 .lesson-markdown ::ng-deep .topic-focus-link:hover { text-decoration:underline; }
+

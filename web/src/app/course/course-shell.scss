@@ -56,6 +56,14 @@
 .shell.overview-mode .shell-main { width:100%; }
 .overview-only-hidden { display:none !important; }
 
+// Lectura de libro: ni barra de aplicación ni índice lateral. La hoja del
+// lector ocupa la mesa completa, como un manual impreso abierto.
+.shell.book-shell .shell-topbar,
+.shell.book-shell .shell-sidebar,
+.shell.book-shell .shell-scrim { display:none; }
+.shell.book-shell .shell-body { display:block; }
+.shell.book-shell .shell-main { width:100%; }
+
 @media (max-width: 860px) {
   .mobile-only { display:grid; }
   .shell-sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:4px 6px 14px; }

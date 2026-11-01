@@ -32,6 +32,8 @@
   --font-serif: 'Fira Sans', system-ui, sans-serif;  /* titulares */
   --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;     /* cuerpo/UI */
   --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace; /* código */
+  /* Prosa del modo libro: una serif de lectura del sistema, sin descargas. */
+  --font-reading: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
 }
 
 // Tema oscuro = "lectura nocturna": la misma página, en papel gris carbón.
@@ -67,6 +69,7 @@
   --font-serif: 'Fira Sans', system-ui, sans-serif;
   --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace;
+  --font-reading: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
 }
 
 :root {

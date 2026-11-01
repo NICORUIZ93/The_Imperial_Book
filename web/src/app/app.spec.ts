@@ -11,6 +11,9 @@ describe('App', () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     localStorage.clear();
+    // El modo libro (activo por defecto) se especifica en lesson-viewer; estas
+    // pruebas describen el capítulo completo en una sola columna.
+    localStorage.setItem('academia-floci-book-mode', 'off');
     // jsdom no implementa scroll; el visor lo usa al cambiar de capítulo y al saltar a la práctica.
     Object.defineProperty(window, 'scrollTo', { value: vi.fn(), configurable: true, writable: true });
     Object.defineProperty(Element.prototype, 'scrollIntoView', { value: vi.fn(), configurable: true, writable: true });

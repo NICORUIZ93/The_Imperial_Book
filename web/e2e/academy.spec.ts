@@ -2,7 +2,13 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(() => localStorage.clear());
+  // Los recorridos de este archivo verifican el capítulo completo en una sola
+  // columna; el modo libro (paginado y activo por defecto) tiene sus propias
+  // pruebas al final.
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem('academia-floci-book-mode', 'off');
+  });
   await page.reload();
 });
 
@@ -158,7 +164,12 @@ test('accesibilidad y respaldo: exporta y restaura progreso desde controles etiq
   const javaCard = page.locator('.card').filter({
     has: page.getByRole('link', { name: 'Abrir Java: fundamentos y temas avanzados', exact: true }),
   });
-  await expect(javaCard.locator('.card-bottom')).toContainText('5% marcado');
+  // El porcentaje se deriva del número real de módulos de la ruta, no de una
+  // cifra fija que envejezca cuando el track crece.
+  const meta = await javaCard.locator('.card-meta').innerText();
+  const totalModules = Number(meta.match(/(\d+) módulos/)?.[1]);
+  expect(totalModules).toBeGreaterThan(0);
+  await expect(javaCard.locator('.card-bottom')).toContainText(`${Math.round(100 / totalModules)}% marcado`);
 });
 
 test('curso cloud: abre primero el mapa de ruta y después el contenido base de Floci', async ({ page }) => {
@@ -427,4 +438,116 @@ test('lector: enlaza el tema con la práctica del capítulo cuando existe', asyn
   await practiceLink.click();
   await expect(page).toHaveURL(/#practica-del-capitulo$/);
   await expect(page.locator('#practica-del-capitulo')).toBeInViewport();
+});
+
+// --- Modo libro (paginado, activo por defecto) -------------------------------
+// El beforeEach desactiva el modo libro para el resto del archivo; estas
+// pruebas lo activan y verifican la paginación editorial.
+
+async function enableBookMode(page: import('@playwright/test').Page): Promise<void> {
+  await page.evaluate(() => localStorage.setItem('academia-floci-book-mode', 'on'));
+}
+
+test('modo libro: portada, temas y cierre conservan todo el capítulo', async ({ page }) => {
+  await enableBookMode(page);
+  await page.goto('/curso/angular/0');
+
+  const pagebar = page.locator('.book-pagebar');
+  await expect(pagebar).toBeVisible();
+  await expect(pagebar).toContainText('Portada');
+  await expect(page.locator('.lesson-hero')).toBeVisible();
+  const strip = page.locator('.chapter-topic-strip-list a');
+  await expect(strip).toHaveCount(4);
+  await expect(page.locator('.topic-card').first()).toBeHidden();
+
+  const topicCount = await strip.count();
+  await expect(page.locator('.book-page-select option')).toHaveCount(topicCount + 2);
+
+  await page.locator('.chapter-topic-strip-list a').first().click();
+  await expect(page).toHaveURL(/pagina=tema-1/);
+  await expect(page.locator('.book-topic-head h2')).toBeVisible();
+  await expect(page.locator('.topic-card').first()).toBeVisible();
+  await expect(page.locator('.topic-card').nth(1)).toBeHidden();
+
+  await page.getByRole('button', { name: 'Página siguiente' }).click();
+  await expect(page).toHaveURL(/pagina=tema-2/);
+  await expect(page.locator('.topic-card').nth(1)).toBeVisible();
+  await expect(page.locator('.topic-card').first()).toBeHidden();
+
+  await page.locator('.book-page-select').selectOption('cierre');
+  await expect(page).toHaveURL(/pagina=cierre/);
+  await expect(page.locator('.book-back-cover')).toBeVisible();
+  await expect(page.locator('.project-progress-card')).toBeVisible();
+  await expect(page.locator('.book-back-cover .book-summary-list li')).toHaveCount(topicCount);
+
+  // La dirección de página es la canónica: recargar conserva el cierre.
+  await page.reload();
+  await expect(page.locator('.book-back-cover')).toBeVisible();
+
+  await page.locator('.book-page-select').selectOption('portada');
+  await expect(page).toHaveURL(/pagina=portada/);
+  await expect(page.locator('.lesson-hero')).toBeVisible();
+  await expect(page.locator('.book-topic-head')).toHaveCount(0);
+});
+
+test('modo libro: el objetivo viene del texto ya escrito y las flechas cambian de página', async ({ page }) => {
+  await enableBookMode(page);
+  await page.goto('/curso/angular/1');
+  await expect(page.locator('.chapter-topic-strip-list a').first()).toBeVisible();
+
+  await page.locator('.chapter-topic-strip-list a').first().click();
+  const objective = page.locator('.book-topic-objective');
+  await expect(objective).toContainText('Al terminar podrás');
+  expect((await objective.innerText()).length).toBeGreaterThan(40);
+  // Sin invención: el texto mostrado proviene del párrafo que ya escribió el
+  // autor (oculto en la página para no repetirlo en la tarjeta del tema).
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim();
+  const shown = normalize((await objective.innerText()).replace(/^al (?:terminar|finalizar) podrás/i, ''));
+  const source = page.locator('.topic-card').first().locator('.book-objective-source');
+  await expect(source).toHaveCount(1);
+  expect(normalize((await source.textContent()) ?? '')).toContain(shown);
+
+  await page.keyboard.press('ArrowRight');
+  await expect(page).toHaveURL(/pagina=tema-2/);
+  await page.keyboard.press('ArrowLeft');
+  await expect(page).toHaveURL(/pagina=tema-1/);
+});
+
+test('modo libro: reconoce el objetivo escrito en futuro sin reescribirlo', async ({ page }) => {
+  await enableBookMode(page);
+  await page.goto('/curso/java/12?pagina=tema-1');
+
+  const objective = page.locator('.book-topic-objective').first();
+  await expect(objective).toBeVisible();
+  // La voz del autor se conserva: "Al finalizar construirás…" se muestra tal cual.
+  await expect(objective).toContainText('Al finalizar');
+  await expect(objective).toContainText('construirás un objeto inmutable');
+  await expect(page.locator('p.book-objective-source').first()).toBeHidden();
+});
+
+test('modo libro: salir del modo devuelve el capítulo completo y persiste la elección', async ({ page }) => {
+  await enableBookMode(page);
+  await page.goto('/curso/angular/0');
+  await page.locator('.book-pagebar .book-exit').click();
+
+  await expect(page.locator('.book-pagebar')).toHaveCount(0);
+  await expect(page.locator('.topic-card').nth(1)).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('academia-floci-book-mode'))).toBe('off');
+
+  await page.reload();
+  await expect(page.locator('.book-pagebar')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Leer como libro' })).toBeVisible();
+});
+
+test('modo libro: oculta el objetivo sin ocultar el prerrequisito que lo acompaña', async ({ page }) => {
+  await enableBookMode(page);
+  await page.goto('/curso/spring-boot/15?pagina=tema-7');
+
+  const objective = page.locator('.book-topic-objective').first();
+  await expect(objective).toBeVisible();
+  await expect(objective).toContainText('recuperar una compensación');
+  // El tema escribe objetivo y prerrequisitos en el mismo párrafo: la cabecera
+  // repite el objetivo, pero el resto del párrafo debe seguir legible.
+  await expect(page.locator('p.book-objective-source').first()).toBeHidden();
+  await expect(page.locator('p:visible', { hasText: /Prerrequisitos?:/ }).first()).toBeVisible();
 });

@@ -8,6 +8,7 @@ import { findTrack } from '../course-data';
 import { CommandPaletteService } from '../command-palette.service';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
+import { BookModeService } from './book-mode.service';
 import { LessonIndexComponent } from './lesson-index';
 import { findOfficialLearningPath } from '../official-learning-paths';
 
@@ -22,6 +23,7 @@ export class CourseShellComponent {
   readonly progressService = inject(ProgressService);
   readonly paletteService = inject(CommandPaletteService);
   readonly themeService = inject(ThemeService);
+  private readonly bookModeService = inject(BookModeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -42,6 +44,19 @@ export class CourseShellComponent {
     ),
     { initialValue: this.router.url.endsWith('/overview') },
   );
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(event => event.urlAfterRedirects),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+  // La hoja del libro ocupa la pantalla: barra superior e índice se retiran
+  // mientras se lee una página. Al salir del modo libro vuelven.
+  readonly bookReading = computed(() => this.bookModeService.enabled()
+    && /\/curso\/[^/?#]+\/\d+/.test(this.currentUrl())
+    && !this.isOverview());
   private readonly openSidebarButton = viewChild<ElementRef<HTMLButtonElement>>('openSidebarButton');
   readonly trackLogo = computed(() => {
     const id = this.trackId();

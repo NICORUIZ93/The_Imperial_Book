@@ -14,6 +14,7 @@ import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { glossaryFor } from '../technical-glossary';
 import { TopicIndexService, type IndexedTopic } from '../topic-index.service';
+import { BookModeService } from './book-mode.service';
 
 let mermaidInitialized = false;
 
@@ -67,6 +68,12 @@ const CLOUD_MODULE_SOURCES: Record<number, { label: string; url: string }> = {
 };
 
 const TOPIC_META = /\s+·\s+(?:Básico|Intermedio|Avanzado|Experto)\s+·\s+\d+(?:[–-]\d+)?\s*(?:min|h(?:\s+\d+\s*min)?)\s*$/i;
+// El objetivo puede abrir el párrafo o seguir a los prerrequisitos dentro del
+// mismo párrafo; en ambos casos empieza una oración después de un punto.
+const TOPIC_OBJECTIVE = /(^|[.!?]\s+)(?:Al finalizar\s+(?:vas a|podrás)|Al terminar\s+podrás|Objetivo(?:\s+del\s+tema)?)\b/i;
+// Variante escrita en futuro ("Al finalizar construirás…"). Se reconoce solo en
+// el Paso 1, donde el primer párrafo es el objetivo por construcción.
+const TOPIC_OBJECTIVE_FUTURE = /^Al finalizar\s+/i;
 
 function slugSource(text: string): string {
   return text.replace(TOPIC_META, '');
@@ -93,6 +100,20 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 }
 
+type BookPageKind = 'front' | 'topic' | 'back';
+
+/** Datos de una página-tema que ya existen en el Markdown: nada se inventa. */
+interface BookTopicDetail {
+  index: number;
+  title: string;
+  fragment: string;
+  level: string;
+  duration: string;
+  objective: string;
+  objectiveLabel: string;
+  summary: string;
+}
+
 /**
  * Vista de lectura tipo libro: título, teoría y navegación simple al
  * capítulo/módulo anterior y siguiente. Las prácticas verificables ofrecen
@@ -102,7 +123,8 @@ function escapeHtml(text: string): string {
   selector: 'app-lesson-viewer',
   imports: [CommonModule, RouterLink, LucideAngularModule],
   templateUrl: './lesson-viewer.html',
-  styleUrl: './lesson-viewer.scss',
+  styleUrls: ['./lesson-viewer.scss', './lesson-viewer.book.scss'],
+  host: { '[class.book-reading-host]': 'bookActive()' },
 })
 export class LessonViewerComponent implements OnDestroy {
   readonly icons = { BookOpen, Boxes, Check, ChevronLeft, ChevronRight, CircleCheck, Clock3, Code2, Copy, Database, Gauge, LockKeyhole, ShieldCheck, Zap };
@@ -110,8 +132,10 @@ export class LessonViewerComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly contentService = inject(ContentService);
+  private readonly bookModeService = inject(BookModeService);
   readonly progressService = inject(ProgressService);
   readonly topicIndex = inject(TopicIndexService);
+  readonly bookMode = this.bookModeService.enabled;
 
   readonly trackId = toSignal(
     this.route.parent!.paramMap.pipe(map(params => params.get('trackId') ?? '')),
@@ -127,6 +151,11 @@ export class LessonViewerComponent implements OnDestroy {
   private readonly topicIndexParam = toSignal(
     this.route.paramMap.pipe(map(params => params.get('topicIndex'))),
     { initialValue: this.route.snapshot.paramMap.get('topicIndex') },
+  );
+  /** Página del modo libro: portada, tema-N o cierre. */
+  private readonly pageParam = toSignal(
+    this.route.queryParamMap.pipe(map(params => params.get('pagina'))),
+    { initialValue: this.route.snapshot.queryParamMap.get('pagina') },
   );
   /** Índice 0-based cuando la URL es /curso/:trackId/:moduleId/tema/:n (n = 1-based). */
   readonly focusedTopicIndex = computed(() => {
@@ -238,6 +267,41 @@ export class LessonViewerComponent implements OnDestroy {
   readonly copiedCode = signal<string | null>(null);
   private copyTimer: ReturnType<typeof setTimeout> | null = null;
 
+  // Modo libro: portada + una página por tema + cierre. La vista enfocada
+  // (/tema/:n) mantiene su propio recorrido y no se pagina.
+  readonly bookReady = signal(false);
+  readonly bookPageKind = signal<BookPageKind>('front');
+  readonly bookTopicIndex = signal(0);
+  readonly chapterTopicDetails = signal<BookTopicDetail[]>([]);
+  readonly bookActive = computed(() => this.bookMode() && this.focusedTopicIndex() === null);
+  readonly bookTopicCount = computed(() => this.bookReady() ? this.chapterTopicDetails().length : this.chapterTopics().length);
+  readonly bookPageCount = computed(() => this.bookTopicCount() + 2);
+  readonly bookPageTopic = computed(() => this.chapterTopicDetails()[this.bookTopicIndex()] ?? null);
+  readonly bookPagePosition = computed(() => {
+    const kind = this.bookPageKind();
+    if (kind === 'front') return 0;
+    if (kind === 'back') return Math.max(1, this.bookPageCount() - 1);
+    return Math.min(Math.max(0, this.bookPageCount() - 2), this.bookTopicIndex() + 1);
+  });
+  readonly bookPageLabel = computed(() => {
+    const kind = this.bookPageKind();
+    if (kind === 'front') return 'Portada';
+    if (kind === 'back') return 'Cierre del capítulo';
+    const topic = this.bookPageTopic();
+    return topic ? `Tema ${topic.index + 1} · ${topic.title}` : `Tema ${this.bookTopicIndex() + 1}`;
+  });
+  readonly bookPageValue = computed(() => {
+    const kind = this.bookPageKind();
+    if (kind === 'front') return 'portada';
+    if (kind === 'back') return 'cierre';
+    return `tema-${this.bookTopicIndex() + 1}`;
+  });
+  readonly bookHasPrevious = computed(() => this.bookPagePosition() > 0);
+  readonly bookHasNext = computed(() => this.bookPagePosition() < this.bookPageCount() - 1);
+  readonly bookAnnouncement = computed(() => this.bookActive()
+    ? `Página ${this.bookPagePosition() + 1} de ${this.bookPageCount()}: ${this.bookPageLabel()}`
+    : this.chapterAnnouncement());
+
   // La caja de lectura limita cada diagrama a 680×360 para no romper la columna
   // de texto; los diagramas anchos o altos se leen en este diálogo, a tamaño
   // natural y con desplazamiento, en vez de encogerse hasta ser ilegibles.
@@ -253,6 +317,10 @@ export class LessonViewerComponent implements OnDestroy {
   private previousBodyOverflow = '';
   private static readonly DIAGRAM_ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5];
   private readonly updateReadingProgress = (): void => {
+    if (this.bookActive() && this.bookReady()) {
+      this.readingProgress.set(Math.round((this.bookPagePosition() + 1) / Math.max(1, this.bookPageCount()) * 100));
+      return;
+    }
     const article = this.lessonContent()?.nativeElement;
     if (!article) return;
     const rect = article.getBoundingClientRect();
@@ -288,7 +356,18 @@ export class LessonViewerComponent implements OnDestroy {
       if (!fragment || !this.lessonHtml()) return;
       afterNextRender(() => {
         const container = this.lessonContent()?.nativeElement;
-        if (container) this.scrollToRequestedFragment(container, fragment);
+        if (!container) return;
+        if (this.bookActive() && this.bookReady()) {
+          const page = this.pageForFragment(container, fragment);
+          this.bookPageKind.set(page.kind);
+          this.bookTopicIndex.set(page.topicIndex);
+          this.applyBookPage(container);
+          // Un enlace con ancla (buscador, enlaces externos) se convierte en la
+          // página canónica del libro para que recargar conserve el destino.
+          this.syncBookUrl(page.kind, page.topicIndex);
+          return;
+        }
+        this.scrollToRequestedFragment(container, fragment);
       }, { injector: this.injector });
     });
 
@@ -300,7 +379,33 @@ export class LessonViewerComponent implements OnDestroy {
         if (container) this.applyTopicFocus(container);
       }, { injector: this.injector });
     });
+
+    // El historial (atrás/adelante) y los enlaces con ?pagina= cambian la
+    // página sin recargar la lección: la misma estructura ya paginada se
+    // vuelve a mostrar, sin repetir Mermaid ni perder el scroll de lectura.
+    effect(() => {
+      const active = this.bookActive();
+      const param = this.pageParam();
+      const ready = this.bookReady();
+      if (!this.lessonHtml() || !ready) return;
+      afterNextRender(() => {
+        const container = this.lessonContent()?.nativeElement;
+        if (!container) return;
+        if (!active) {
+          if (this.bookWasActive) this.restoreChapterView(container);
+          this.bookWasActive = false;
+          return;
+        }
+        this.bookWasActive = true;
+        const page = this.pageFromParam(param) ?? this.pageForUrl(container);
+        this.bookPageKind.set(page.kind);
+        this.bookTopicIndex.set(page.topicIndex);
+        this.applyBookPage(container, true);
+      }, { injector: this.injector });
+    });
   }
+
+  private bookWasActive = false;
 
   retryLesson(): void {
     const trackId = this.trackId();
@@ -315,6 +420,10 @@ export class LessonViewerComponent implements OnDestroy {
     this.closeDiagram();
     this.lessonHtml.set(null);
     this.lessonError.set(null);
+    this.bookReady.set(false);
+    this.chapterTopicDetails.set([]);
+    this.bookPageKind.set('front');
+    this.bookTopicIndex.set(0);
     this.lessonLoading.set(moduleId !== undefined);
     if (moduleId === undefined) return;
     try {
@@ -386,8 +495,11 @@ export class LessonViewerComponent implements OnDestroy {
     this.applyTopicFocus(container);
     this.enhanceVerifiableExercises(container);
     this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')), hasPractice);
+    this.numberBookExhibits(container);
+    this.refreshBookStructure(container);
+    this.applyInitialBookPage(container);
     const fragment = this.requestedFragment();
-    if (fragment) this.scrollToRequestedFragment(container, fragment);
+    if (fragment && !this.bookActive()) this.scrollToRequestedFragment(container, fragment);
     window.removeEventListener('scroll', this.updateReadingProgress);
     window.addEventListener('scroll', this.updateReadingProgress, { passive: true });
     this.updateReadingProgress();
@@ -981,6 +1093,370 @@ export class LessonViewerComponent implements OnDestroy {
     requestAnimationFrame(() => card.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' }));
   }
 
+  toggleBookMode(): void {
+    const enabled = !this.bookMode();
+    this.bookModeService.setEnabled(enabled);
+    const container = this.lessonContent()?.nativeElement;
+    if (!container) return;
+    if (enabled) {
+      if (!this.bookReady()) this.refreshBookStructure(container);
+      this.applyInitialBookPage(container);
+    } else {
+      this.restoreChapterView(container);
+    }
+  }
+
+  openTopicPage(index: number): void {
+    this.setBookPage('topic', index);
+  }
+
+  previousBookPage(): void {
+    this.goToBookPosition(this.bookPagePosition() - 1);
+  }
+
+  nextBookPage(): void {
+    this.goToBookPosition(this.bookPagePosition() + 1);
+  }
+
+  selectBookPage(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value === 'portada') this.setBookPage('front');
+    else if (value === 'cierre') this.setBookPage('back');
+    else {
+      const index = Number(value.replace('tema-', '')) - 1;
+      if (Number.isInteger(index) && index >= 0) this.setBookPage('topic', index);
+    }
+  }
+
+  private setBookPage(kind: BookPageKind, topicIndex = 0, updateUrl = true): void {
+    const index = kind === 'topic'
+      ? Math.min(Math.max(0, topicIndex), Math.max(0, this.bookTopicCount() - 1))
+      : 0;
+    this.bookPageKind.set(kind);
+    this.bookTopicIndex.set(index);
+    const container = this.lessonContent()?.nativeElement;
+    if (container) this.applyBookPage(container);
+    this.updateReadingProgress();
+    if (updateUrl) this.syncBookUrl(kind, index);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  private goToBookPosition(position: number): void {
+    if (position <= 0) this.setBookPage('front');
+    else if (position >= this.bookPageCount() - 1) this.setBookPage('back');
+    else this.setBookPage('topic', position - 1);
+  }
+
+  private syncBookUrl(kind: BookPageKind, topicIndex: number): void {
+    const pagina = kind === 'front' ? 'portada' : kind === 'back' ? 'cierre' : `tema-${topicIndex + 1}`;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { pagina },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+      // La página reemplaza al ancla de un tema: el número de página es ahora
+      // la dirección canónica de lectura.
+      fragment: undefined,
+    });
+  }
+
+  private applyInitialBookPage(container: HTMLElement): void {
+    if (!this.bookActive()) {
+      this.restoreChapterView(container);
+      return;
+    }
+    const page = this.pageForUrl(container);
+    this.bookPageKind.set(page.kind);
+    this.bookTopicIndex.set(page.topicIndex);
+    this.applyBookPage(container, true);
+  }
+
+  private pageFromParam(param: string | null): { kind: BookPageKind; topicIndex: number } | null {
+    if (!param) return null;
+    const topic = param.match(/^tema-(\d+)$/);
+    if (topic) return { kind: 'topic', topicIndex: Math.max(0, Number(topic[1]) - 1) };
+    if (param === 'cierre') return { kind: 'back', topicIndex: 0 };
+    if (param === 'portada') return { kind: 'front', topicIndex: 0 };
+    return null;
+  }
+
+  private pageForUrl(container: HTMLElement): { kind: BookPageKind; topicIndex: number } {
+    const fragment = this.requestedFragment();
+    return this.pageFromParam(this.pageParam())
+      ?? (fragment ? this.pageForFragment(container, fragment) : { kind: 'front' as const, topicIndex: 0 });
+  }
+
+  private pageForFragment(container: HTMLElement, fragment: string): { kind: BookPageKind; topicIndex: number } {
+    const target = container.querySelector<HTMLElement>(`#${CSS.escape(fragment)}`);
+    const block = target?.closest<HTMLElement>('[data-book-page]');
+    if (block) {
+      const kind = block.dataset['bookPage'];
+      const index = Number(block.dataset['bookTopic'] ?? 0);
+      if (kind === 'topic') return { kind: 'topic', topicIndex: Number.isInteger(index) ? index : 0 };
+      if (kind === 'back') return { kind: 'back', topicIndex: 0 };
+      if (kind === 'front') return { kind: 'front', topicIndex: 0 };
+    }
+    const index = this.chapterTopicDetails().findIndex(detail => detail.fragment === fragment);
+    return index >= 0 ? { kind: 'topic', topicIndex: index } : { kind: 'front', topicIndex: 0 };
+  }
+
+  /**
+   * Clasifica el capítulo ya enriquecido en bloques de página. Se hace sobre
+   * el DOM —después de agrupar temas y secciones— porque el Markdown no
+   * distingue portada, tema y cierre: esa estructura la produce el lector.
+   */
+  private refreshBookStructure(container: HTMLElement): void {
+    const cards = Array.from(container.querySelectorAll<HTMLElement>('.topic-card'));
+    const topics = this.chapterTopics();
+    this.chapterTopicDetails.set(cards.map((card, index) => {
+      const source = topics[index];
+      const heading = card.querySelector<HTMLElement>(':scope > .topic-heading');
+      const headingText = heading?.textContent ?? '';
+      const meta = headingText.match(TOPIC_META)?.[0]?.replace(/^\s*·\s*/, '').trim() ?? '';
+      const [level = '', duration = ''] = meta.split(/\s*·\s*/);
+      this.decorateTopicSteps(card);
+      const objective = this.captureTopicObjective(card);
+      return {
+        index,
+        title: source?.title ?? this.topicTitle(heading ?? card),
+        fragment: source?.fragment ?? heading?.id ?? '',
+        level,
+        duration,
+        objective: objective?.text ?? '',
+        objectiveLabel: objective?.label ?? '',
+        summary: this.captureTopicSummary(card),
+      };
+    }));
+
+    let seenTopic = false;
+    const mark = (element: Element, kind: BookPageKind, topicIndex?: number): void => {
+      const block = element as HTMLElement;
+      block.dataset['bookPage'] = kind;
+      if (topicIndex === undefined) delete block.dataset['bookTopic'];
+      else block.dataset['bookTopic'] = String(topicIndex);
+      block.classList.remove('book-page-hidden');
+      block.removeAttribute('inert');
+      block.removeAttribute('aria-hidden');
+    };
+
+    Array.from(container.children).forEach(child => {
+      const directCard = cards.indexOf(child as HTMLElement);
+      if (directCard >= 0) {
+        seenTopic = true;
+        mark(child, 'topic', directCard);
+        return;
+      }
+      if (child.matches('.lesson-section')) {
+        const innerCards = Array.from(child.querySelectorAll<HTMLElement>(':scope > .topic-card'));
+        if (!innerCards.length) {
+          mark(child, seenTopic ? 'back' : 'front');
+          return;
+        }
+        let passedTopics = false;
+        Array.from(child.children).forEach(grand => {
+          const index = cards.indexOf(grand as HTMLElement);
+          if (index >= 0) {
+            passedTopics = true;
+            seenTopic = true;
+            mark(grand, 'topic', index);
+            return;
+          }
+          mark(grand, passedTopics ? 'back' : 'front');
+        });
+        return;
+      }
+      mark(child, seenTopic ? 'back' : 'front');
+    });
+
+    this.bookReady.set(cards.length > 0);
+  }
+
+  private applyBookPage(container: HTMLElement, scroll = false): void {
+    const active = this.bookActive();
+    container.classList.toggle('book-paged', active);
+    const kind = this.bookPageKind();
+    const topicIndex = this.bookTopicIndex();
+    container.querySelectorAll<HTMLElement>('[data-book-page]').forEach(block => {
+      const visible = !active
+        || (block.dataset['bookPage'] === kind
+          && (kind !== 'topic' || Number(block.dataset['bookTopic']) === topicIndex));
+      block.classList.toggle('book-page-hidden', !visible);
+      block.toggleAttribute('inert', !visible);
+      if (visible) block.removeAttribute('aria-hidden');
+      else block.setAttribute('aria-hidden', 'true');
+    });
+    const cards = Array.from(container.querySelectorAll<HTMLElement>('.topic-card'));
+    cards.forEach((card, index) => {
+      const expanded = !active ? card.classList.contains('expanded') : index === topicIndex;
+      card.classList.toggle('expanded', expanded);
+      const toggle = card.querySelector<HTMLButtonElement>('[data-topic-toggle]');
+      toggle?.setAttribute('aria-expanded', String(expanded));
+      const label = toggle?.querySelector('span');
+      if (label) label.textContent = expanded ? 'Ocultar tema' : 'Abrir tema';
+    });
+    if (scroll) window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  private restoreChapterView(container: HTMLElement): void {
+    container.classList.remove('book-paged');
+    container.querySelectorAll<HTMLElement>('[data-book-page]').forEach(block => {
+      block.classList.remove('book-page-hidden');
+      block.removeAttribute('inert');
+      block.removeAttribute('aria-hidden');
+    });
+    const cards = Array.from(container.querySelectorAll<HTMLElement>('.topic-card'));
+    // En la ruta de un tema, restaurar no puede reabrir el primero: el foco
+    // del autor manda sobre el orden por defecto del capítulo.
+    const target = this.focusedTopicIndex() ?? 0;
+    cards.forEach((card, index) => {
+      const expanded = index === target;
+      card.classList.toggle('expanded', expanded);
+      const toggle = card.querySelector<HTMLButtonElement>('[data-topic-toggle]');
+      toggle?.setAttribute('aria-expanded', String(expanded));
+      const label = toggle?.querySelector('span');
+      if (label) label.textContent = expanded ? 'Ocultar tema' : 'Abrir tema';
+    });
+  }
+
+  /**
+   * Numeración editorial "Figura N.M" / "Listado N.M" sobre lo que ya existe:
+   * diagramas y bloques de código. No crea figuras ni códigos nuevos.
+   */
+  private numberBookExhibits(container: HTMLElement): void {
+    const chapter = this.module()?.id ?? 0;
+    let figureCount = 0;
+    container.querySelectorAll<HTMLElement>('figure').forEach(figure => {
+      const label = figure.querySelector<HTMLElement>('figcaption small');
+      if (!label || label.dataset['numbered'] === 'true') return;
+      figureCount += 1;
+      label.dataset['numbered'] = 'true';
+      label.textContent = `Figura ${chapter}.${figureCount} · ${label.textContent?.trim() ?? 'Diagrama'}`;
+    });
+    let listingCount = 0;
+    container.querySelectorAll<HTMLElement>('.code-example-bar').forEach(bar => {
+      if (bar.querySelector('.code-example-number')) return;
+      const label = bar.querySelector<HTMLElement>('.code-example-label');
+      if (!label) return;
+      listingCount += 1;
+      const number = document.createElement('span');
+      number.className = 'code-example-number';
+      number.textContent = `Listado ${chapter}.${listingCount}`;
+      bar.insertBefore(number, label);
+    });
+  }
+
+  private decorateTopicSteps(card: HTMLElement): void {
+    const steps = Array.from(card.querySelectorAll<HTMLElement>('.session-steps > li'));
+    steps.forEach(step => {
+      const label = step.querySelector('.step-head em')?.textContent?.trim() ?? '';
+      if (/cierre|aplica/i.test(label)) step.classList.add('step-closing');
+    });
+  }
+
+  /** Objetivo ya escrito por el autor en el Paso 1 (o en "Al terminar podrás"). */
+  private captureTopicObjective(card: HTMLElement): { label: string; text: string } | null {
+    const stepParagraphs = Array.from(card.querySelectorAll<HTMLParagraphElement>(
+      '.session-steps li[data-step="1"] .step-body p',
+    ));
+    const bodyParagraphs = Array.from(card.querySelectorAll<HTMLParagraphElement>('.topic-body > p'));
+    const candidates = [...stepParagraphs, ...bodyParagraphs];
+    let source: HTMLParagraphElement | undefined;
+    let leadIndex = 0;
+    let label = 'Al terminar podrás';
+    for (const paragraph of candidates) {
+      const match = TOPIC_OBJECTIVE.exec(paragraph.textContent ?? '');
+      if (match) {
+        source = paragraph;
+        leadIndex = match.index + match[1].length;
+        break;
+      }
+    }
+    if (!source) {
+      source = stepParagraphs.find(paragraph => TOPIC_OBJECTIVE_FUTURE.test(paragraph.textContent?.trim() ?? ''));
+      if (source) label = 'Al finalizar';
+    }
+    if (!source) return null;
+    // Si los prerrequisitos abren el párrafo, se separan para que el objetivo
+    // quede solo en su párrafo: la cabecera lo repite y el requisito sigue visible.
+    if (leadIndex > 0) this.splitLeadingText(source, leadIndex);
+    const text = source.textContent ?? '';
+    // Parte del contenido escribe el objetivo y los prerrequisitos en el mismo
+    // párrafo. En modo libro se oculta el objetivo porque la cabecera lo repite,
+    // así que el resto del párrafo se separa para no perder esa información.
+    const boundary = /(?:Prerrequisitos?|Conocimiento previo)\s*:/i.exec(text)?.index ?? -1;
+    if (boundary > 0) this.splitObjectiveParagraph(source, boundary);
+    source.classList.add('book-objective-source');
+    const raw = (boundary > 0 ? text.slice(0, boundary) : text).trim();
+    const lead = label === 'Al finalizar'
+      ? /^Al finalizar\s*:?\s*/i
+      : /^(?:Al finalizar\s+(?:vas a|podrás)|Al terminar\s+podrás|Objetivo(?:\s+del\s+tema)?)\s*:?\s*/i;
+    return {
+      label,
+      text: this.clipSentence(raw.replace(lead, ''), 280),
+    };
+  }
+
+  /** Mueve a un párrafo aparte lo que precede al objetivo dentro del mismo párrafo. */
+  private splitLeadingText(paragraph: HTMLParagraphElement, index: number): void {
+    const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+    let consumed = 0;
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const length = node.textContent?.length ?? 0;
+      if (index < consumed + length) {
+        const range = document.createRange();
+        range.setStart(paragraph, 0);
+        range.setEnd(node, index - consumed);
+        const prefix = document.createElement('p');
+        prefix.className = 'book-prerequisite';
+        prefix.append(range.extractContents());
+        paragraph.before(prefix);
+        return;
+      }
+      consumed += length;
+    }
+  }
+
+  /** Mueve a un párrafo aparte lo que sigue al objetivo dentro del mismo párrafo. */
+  private splitObjectiveParagraph(paragraph: HTMLParagraphElement, boundary: number): void {
+    const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+    let consumed = 0;
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const length = node.textContent?.length ?? 0;
+      if (boundary < consumed + length) {
+        const range = document.createRange();
+        range.setStart(node, boundary - consumed);
+        range.setEnd(paragraph, paragraph.childNodes.length);
+        const remainder = document.createElement('p');
+        remainder.className = 'book-prerequisite';
+        remainder.append(range.extractContents());
+        paragraph.after(remainder);
+        return;
+      }
+      consumed += length;
+    }
+  }
+
+  /** Cierre del tema ya escrito en el Paso 7; sirve de resumen del capítulo. */
+  private captureTopicSummary(card: HTMLElement): string {
+    const closing = card.querySelector<HTMLElement>('.session-steps li[data-step="7"] .step-body p, .session-steps li.step-closing .step-body p');
+    return closing ? this.clipSentence(closing.textContent ?? '', 240) : '';
+  }
+
+  private clipSentence(text: string, limit: number): string {
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (clean.length <= limit) return clean;
+    const cut = clean.slice(0, limit);
+    // Preferir el final de una oración antes del límite: un resumen del cierre
+    // no debe quedar cortado a mitad de palabra.
+    const sentenceEnd = Math.max(
+      cut.lastIndexOf('. '),
+      cut.lastIndexOf('; '),
+      cut.lastIndexOf(': '),
+    );
+    if (sentenceEnd > limit * 0.45) return cut.slice(0, sentenceEnd + 1).trim();
+    return `${cut.slice(0, Math.max(0, cut.lastIndexOf(' '))).trim()}…`;
+  }
+
   /** Da ancla a la sección de práctica del capítulo cuando el autor la escribió. */
   private markChapterPractice(container: HTMLElement): boolean {
     const heading = Array.from(container.querySelectorAll<HTMLHeadingElement>('h3'))
@@ -1121,6 +1597,15 @@ export class LessonViewerComponent implements OnDestroy {
     if (practiceLink) {
       event.preventDefault();
       const container = this.lessonContent()?.nativeElement;
+      if (this.bookActive() && this.bookReady()) {
+        // La práctica vive en el cierre del capítulo; se salta a ella una vez
+        // mostrada la página, sin dejar un ancla vacía en la dirección.
+        this.setBookPage('back');
+        requestAnimationFrame(() => container
+          ?.querySelector<HTMLElement>(`#${LessonViewerComponent.PRACTICE_ANCHOR}`)
+          ?.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' }));
+        return;
+      }
       container?.querySelector<HTMLElement>(`#${LessonViewerComponent.PRACTICE_ANCHOR}`)
         ?.scrollIntoView({ behavior: this.scrollBehavior(), block: 'start' });
       void this.router.navigate([], { relativeTo: this.route, fragment: LessonViewerComponent.PRACTICE_ANCHOR, replaceUrl: true });
@@ -1137,6 +1622,13 @@ export class LessonViewerComponent implements OnDestroy {
     if (topicDestination) {
       event.preventDefault();
       const id = topicDestination.dataset['topicDestination'];
+      if (this.bookActive() && this.bookReady() && id) {
+        const index = this.chapterTopicDetails().findIndex(detail => detail.fragment === id);
+        if (index >= 0) {
+          this.setBookPage('topic', index);
+          return;
+        }
+      }
       const destination = id ? document.getElementById(id) : null;
       const card = destination?.closest<HTMLElement>('.topic-card');
       if (destination && card) {
@@ -1210,6 +1702,18 @@ export class LessonViewerComponent implements OnDestroy {
     if (document.querySelector('dialog[open]')) return;
     const target = event.target as HTMLElement | null;
     if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName ?? ''))) return;
+    if (this.bookActive() && this.bookReady()) {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+        event.preventDefault();
+        this.nextBookPage();
+        return;
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        this.previousBookPage();
+        return;
+      }
+    }
     const key = event.key.toLowerCase();
     const destination = key === 'j' ? this.nextModule() : key === 'k' ? this.previousModule() : null;
     if (!destination) return;
@@ -1219,6 +1723,13 @@ export class LessonViewerComponent implements OnDestroy {
 
   jumpToTopic(event: Event, fragment: string): void {
     event.preventDefault();
+    if (this.bookActive() && this.bookReady()) {
+      const index = this.chapterTopicDetails().findIndex(detail => detail.fragment === fragment);
+      if (index >= 0) {
+        this.setBookPage('topic', index);
+        return;
+      }
+    }
     const container = this.lessonContent()?.nativeElement;
     const destination = container?.querySelector<HTMLElement>(`#${CSS.escape(fragment)}`);
     const card = destination?.closest<HTMLElement>('.topic-card');

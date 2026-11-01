@@ -1,14 +1,43 @@
 <ng-container *ngIf="module() as m; else notFound">
   <div class="reading-progress" aria-hidden="true"><span [style.width.%]="readingProgress()"></span></div>
-  <div class="lesson-layout" [class.focus-mode="focusMode()"]>
+  <div class="lesson-layout" [class.focus-mode="focusMode()"] [class.book-reading]="bookActive()">
     <article class="lesson">
-      <header class="lesson-hero">
-        <div class="lesson-eyebrow"><lucide-icon [img]="icons.BookOpen" /> {{ track()?.name }} · Módulo {{ m.id }} · {{ track()?.modules?.length }} módulos · {{ levelLabel(m.level) }}</div>
-        <h1>{{ m.title }}</h1>
-        <p class="lesson-description">{{ m.description }}</p>
+      <nav class="book-pagebar" *ngIf="bookActive()" aria-label="Páginas del capítulo">
+        <a class="book-home" routerLink="/catalogo">Catálogo</a>
+        <span class="book-running-head"><strong>{{ m.shortTitle }}</strong></span>
+        <div class="book-pager">
+          <button type="button" class="book-pager-button" [disabled]="!bookHasPrevious()" aria-keyshortcuts="ArrowLeft" aria-label="Página anterior" (click)="previousBookPage()">←</button>
+          <label class="book-page-select-label">
+            <span class="sr-only">Ir a una página del capítulo</span>
+            <select class="book-page-select" [value]="bookPageValue()" (change)="selectBookPage($event)">
+              <option value="portada" [selected]="bookPageValue() === 'portada'">Portada</option>
+              <option *ngFor="let topic of chapterTopicDetails(); let i = index" [value]="'tema-' + (i + 1)" [selected]="bookPageValue() === 'tema-' + (i + 1)">Tema {{ i + 1 }} · {{ topic.title }}</option>
+              <option value="cierre" [selected]="bookPageValue() === 'cierre'">Cierre del capítulo</option>
+            </select>
+          </label>
+          <span class="book-page-count">{{ bookPagePosition() + 1 }} / {{ bookPageCount() }}</span>
+          <button type="button" class="book-pager-button" [disabled]="!bookHasNext()" aria-keyshortcuts="ArrowRight" aria-label="Página siguiente" (click)="nextBookPage()">→</button>
+        </div>
+        <button type="button" class="book-exit" (click)="toggleBookMode()">Capítulo completo</button>
+      </nav>
+      <header class="lesson-hero" [class.book-hidden]="bookActive() && bookPageKind() !== 'front'">
+        <ng-container *ngIf="!bookActive()">
+          <div class="lesson-eyebrow"><lucide-icon [img]="icons.BookOpen" /> {{ track()?.name }} · Módulo {{ m.id }} · {{ track()?.modules?.length }} módulos · {{ levelLabel(m.level) }}</div>
+          <h1>{{ m.title }}</h1>
+          <p class="lesson-description">{{ m.description }}</p>
+        </ng-container>
+        <div class="book-chapter-opener" *ngIf="bookActive()">
+          <span class="book-chapter-number">Capítulo {{ m.id }}</span>
+          <h1>{{ m.title }}</h1>
+          <p class="book-chapter-description">{{ m.description }}</p>
+          <p class="book-chapter-byline">{{ track()?.name }} · {{ m.duration }} · Nivel {{ levelLabel(m.level) }}</p>
+        </div>
         <div class="lesson-meta">
           <span><lucide-icon [img]="icons.Clock3" /> {{ m.duration }}</span>
           <a *ngIf="officialSource() as source" [href]="source.url" target="_blank" rel="noopener noreferrer">{{ source.label }}</a>
+          <button type="button" class="focus-toggle book-mode-toggle" [attr.aria-pressed]="bookMode()" (click)="toggleBookMode()">
+            {{ bookMode() ? 'Ver capítulo completo' : 'Leer como libro' }}
+          </button>
           <button type="button" class="focus-toggle" [attr.aria-pressed]="focusMode()" (click)="focusMode.set(!focusMode())">
             {{ focusMode() ? 'Salir de concentración' : 'Modo concentración' }}
           </button>
@@ -16,7 +45,7 @@
         <nav class="chapter-topic-strip" *ngIf="chapterTopics().length > 1" aria-label="Temas de este capítulo">
           <div class="chapter-topic-strip-heading"><span>Temas de este capítulo</span><small>{{ currentTopicIndex() + 1 }} de {{ chapterTopics().length }} · {{ completedTopicCount() }} leídos</small></div>
           <div class="chapter-topic-strip-list">
-            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="isTopicDone(topic)" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ topic.title }}</a>
+            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="isTopicDone(topic)" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ topic.title }}<small class="book-toc-page" *ngIf="bookActive()">{{ i + 2 }}</small></a>
           </div>
         </nav>
         <details class="course-guide" *ngIf="moduleId() === 0 && courseGuide() as guide">
@@ -30,9 +59,9 @@
         <span>Vista de un tema: <strong>{{ topic.title }}</strong></span>
         <a [routerLink]="['/curso', trackId(), moduleId()]">Volver al capítulo completo</a>
       </p>
-      <p class="sr-only" aria-live="polite">{{ chapterAnnouncement() }}</p>
+      <p class="sr-only" aria-live="polite">{{ bookAnnouncement() }}</p>
 
-      <section class="floci-overview" *ngIf="isCloudIntroduction()" aria-labelledby="floci-overview-title">
+      <section class="floci-overview" *ngIf="isCloudIntroduction()" [class.book-hidden]="bookActive() && bookPageKind() !== 'front'" aria-labelledby="floci-overview-title">
         <div class="floci-overview-intro">
           <span>Documentación oficial · explicada en español</span>
           <h2 id="floci-overview-title">Una nube local para aprender construyendo</h2>
@@ -61,6 +90,35 @@
         </ol>
       </section>
 
+      <header class="book-topic-head" *ngIf="bookActive() && bookPageKind() === 'topic' && bookPageTopic() as topic">
+        <span class="book-topic-kicker">Tema {{ topic.index + 1 }} de {{ bookTopicCount() }} · § {{ m.id }}.{{ topic.index + 1 }}</span>
+        <h2>{{ topic.title }}</h2>
+        <p class="book-topic-meta" *ngIf="topic.level || topic.duration">
+          <span *ngIf="topic.level">{{ topic.level }}</span>
+          <span *ngIf="topic.duration">{{ topic.duration }}</span>
+        </p>
+        <p class="book-topic-objective" *ngIf="topic.objective"><strong>{{ topic.objectiveLabel }}</strong> {{ topic.objective }}</p>
+      </header>
+
+      <section class="book-back-cover" *ngIf="bookActive() && bookPageKind() === 'back'">
+        <span class="book-back-kicker">Cierre del capítulo</span>
+        <h2>{{ m.title }}</h2>
+        <p class="book-back-deliverable" *ngIf="m.deliverable"><strong>Entrega del capítulo</strong> {{ m.deliverable }}</p>
+        <ol class="book-summary-list" *ngIf="chapterTopicDetails().length">
+          <li *ngFor="let topic of chapterTopicDetails()">
+            <button type="button" class="book-summary-topic" (click)="openTopicPage(topic.index)">Tema {{ topic.index + 1 }} · {{ topic.title }}</button>
+            <p *ngIf="topic.summary">{{ topic.summary }}</p>
+          </li>
+        </ol>
+        <div class="book-back-actions">
+          <button type="button" class="book-complete" [class.done]="isComplete()" [attr.aria-pressed]="isComplete()" (click)="toggleComplete()">{{ isComplete() ? 'Capítulo leído' : 'Marcar capítulo como leído' }}</button>
+          <div class="book-chapter-nav">
+            <button type="button" *ngIf="previousModule() as prev" (click)="goToModule(prev.id)">← {{ prev.shortTitle }}</button>
+            <button type="button" *ngIf="nextModule() as next" (click)="goToModule(next.id)">{{ next.shortTitle }} →</button>
+          </div>
+        </div>
+      </section>
+
       <section class="lesson-panel">
         <div *ngIf="lessonLoading()" class="lesson-skeleton" role="status" aria-live="polite">Cargando lección…</div>
         <div *ngIf="!lessonLoading() && lessonHtml() as html" #lessonContent class="lesson-markdown" [innerHTML]="html" (click)="copyCode($event)"></div>
@@ -72,7 +130,7 @@
         <p *ngIf="diagramError() as error" class="lesson-error" role="alert">{{ error }}</p>
       </section>
 
-      <details class="project-progress-card" *ngIf="trackProject() as project" aria-labelledby="project-progress-title">
+      <details class="project-progress-card" *ngIf="trackProject() as project" [class.book-hidden]="bookActive() && bookPageKind() !== 'back'" aria-labelledby="project-progress-title">
         <summary>Proyecto de esta ruta <span>Ver hitos y progreso</span></summary>
         <div class="project-progress-heading">
           <div><small>Hilo conductor</small><h2 id="project-progress-title">{{ project.title }}</h2></div>
@@ -91,7 +149,7 @@
         </div>
       </details>
 
-      <footer class="lesson-footer">
+      <footer class="lesson-footer" [class.book-hidden]="bookActive()">
         <button class="complete-toggle" [class.done]="isComplete()" [attr.aria-pressed]="isComplete()" (click)="toggleComplete()">
           <lucide-icon [img]="icons.CircleCheck" />
           <span>{{ isComplete() ? 'Capítulo leído' : 'Marcar capítulo como leído' }}</span>
@@ -102,6 +160,8 @@
         </div>
         <p class="lesson-shortcuts">Atajos de lectura: <kbd>k</kbd> capítulo anterior · <kbd>j</kbd> capítulo siguiente</p>
       </footer>
+
+      <p class="book-folio" *ngIf="bookActive()" aria-hidden="true">{{ bookPagePosition() + 1 }}</p>
     </article>
   </div>
 </ng-container>

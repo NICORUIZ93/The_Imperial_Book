@@ -149,6 +149,27 @@
       ]
     },
     {
+      "path": "docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md",
+      "lines": 11995,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Inventario completo: cursos, m\u00f3dulos, temas y subtemas",
+        "## 1. RutaFlow \u2014 Proyecto integrador log\u00edstico",
+        "### M\u00f3dulo 0 \u00b7 RutaFlow desde cero: producto, entorno y dominio",
+        "#### Tema 1: El proceso log\u00edstico como sistema",
+        "#### Tema 2: Entorno reproducible en Windows, macOS y Linux",
+        "#### Tema 3: Arquitectura, privacidad y amenazas",
+        "### M\u00f3dulo 1 \u00b7 Datos, geograf\u00eda y contabilidad de una entrega",
+        "#### Tema 1: Modelo relacional e historial",
+        "#### Tema 2: Geograf\u00eda con precisi\u00f3n \u00fatil",
+        "#### Tema 3: Ledger de doble partida",
+        "### M\u00f3dulo 2 \u00b7 Backend: env\u00edos, asignaci\u00f3n e idempotencia",
+        "#### Tema 1: Contratos HTTP y autorizaci\u00f3n"
+      ]
+    },
+    {
       "path": "docs/MATRIZ-CURRICULAR.md",
       "lines": 73,
       "kind": "documentation",
@@ -878,6 +899,31 @@
       ]
     },
     {
+      "path": "docs/migration-plan.md",
+      "lines": 141,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Plan de migraci\u00f3n editorial",
+        "## Estado de las fases",
+        "## Cifras corregidas",
+        "## Reglas de preservaci\u00f3n",
+        "## Identidad: m\u00f3dulos, fragmentos y progreso",
+        "## Spring Boot: mapa corregido (91 temas, 17 m\u00f3dulos)",
+        "## Validaci\u00f3n por m\u00f3dulo",
+        "## Pr\u00f3ximo paso"
+      ]
+    },
+    {
+      "path": "docs/migration-status.json",
+      "lines": 26,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/official-learning-guides.json",
       "lines": 22,
       "kind": "project-file",
@@ -1101,6 +1147,21 @@
       "symbols": [],
       "imports": [],
       "headings": []
+    },
+    {
+      "path": "docs/spring-boot-migration-log.md",
+      "lines": 78,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Registro de migraci\u00f3n \u2014 Spring Boot",
+        "## Preservaci\u00f3n",
+        "## Niveles del bloque",
+        "## Identidad y progreso",
+        "## Verificaci\u00f3n ejecutada",
+        "## Pendiente"
+      ]
     },
     {
       "path": "docs/temas-inventario.md",
@@ -5313,13 +5374,14 @@
     },
     {
       "path": "examples/spring-kafka-rutaflow/VERIFICATION.md",
-      "lines": 33,
+      "lines": 41,
       "kind": "example",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Verificaci\u00f3n del laboratorio \u2014 2026-10-30",
-        "## L\u00edmites de esta evidencia"
+        "## L\u00edmites de esta evidencia",
+        "## Verificaci\u00f3n 2026-10-31 \u2014 destino Java 27"
       ]
     },
     {
@@ -6605,6 +6667,25 @@
       "headings": []
     },
     {
+      "path": "scripts/validate_migration.py",
+      "lines": 150,
+      "kind": "automation-script",
+      "symbols": [
+        "topics_in",
+        "section",
+        "validate_topic",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "sys",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/validate_official_learning_paths.py",
       "lines": 65,
       "kind": "automation-script",
@@ -6714,7 +6795,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 431,
+      "lines": 554,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -10067,6 +10148,48 @@
       ]
     },
     {
+      "path": "web/public/content/java/modulo-21.md",
+      "lines": 988,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 21: APIs p\u00fablicas, compatibilidad y evoluci\u00f3n",
+        "## Aprende construyendo",
+        "### Tema 1: Qu\u00e9 es la superficie p\u00fablica de una API \u00b7 B\u00e1sico \u00b7 40 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Compatibilidad binaria frente a compatibilidad de fuente \u00b7 Intermedio \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Evolucionar sin romper: default methods, deprecaci\u00f3n y retirada \u00b7 Intermedio \u00b7 45 min",
+        "#### Aprende"
+      ]
+    },
+    {
+      "path": "web/public/content/java/modulo-22.md",
+      "lines": 1082,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# M\u00f3dulo 22: El objeto por dentro: igualdad, copia, enums y tipos anidados",
+        "## Aprende construyendo",
+        "### Tema 1: El contrato de equals y hashCode \u00b7 B\u00e1sico \u00b7 35 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Claves mutables y el mapa que pierde entradas \u00b7 Intermedio \u00b7 40 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Copia defensiva, copia superficial y clone \u00b7 Intermedio \u00b7 40 min",
+        "#### Aprende"
+      ]
+    },
+    {
       "path": "web/public/content/java/modulo-3.md",
       "lines": 210,
       "kind": "course-content",
@@ -10530,7 +10653,7 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-0.md",
-      "lines": 605,
+      "lines": 607,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11622,7 +11745,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-0.md",
-      "lines": 450,
+      "lines": 453,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11643,7 +11766,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-1.md",
-      "lines": 392,
+      "lines": 395,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11664,7 +11787,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1530,
+      "lines": 1538,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11685,7 +11808,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-11.md",
-      "lines": 467,
+      "lines": 470,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11874,7 +11997,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 887,
+      "lines": 893,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11958,7 +12081,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 551,
+      "lines": 554,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11979,7 +12102,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 955,
+      "lines": 960,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12000,7 +12123,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 513,
+      "lines": 516,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12021,7 +12144,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 537,
+      "lines": 540,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12042,7 +12165,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 572,
+      "lines": 575,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12063,7 +12186,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 1057,
+      "lines": 1062,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12084,7 +12207,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 699,
+      "lines": 702,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12936,7 +13059,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 323,
+      "lines": 326,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -13103,7 +13226,7 @@
     },
     {
       "path": "web/src/app/course/course-shell.scss",
-      "lines": 79,
+      "lines": 87,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -13111,13 +13234,14 @@
     },
     {
       "path": "web/src/app/course/course-shell.ts",
-      "lines": 68,
+      "lines": 83,
       "kind": "angular-app",
       "symbols": [
         "CourseShellComponent",
         "track",
         "officialPath",
         "sidebarOpen",
+        "bookReading",
         "trackLogo",
         "percent"
       ],
@@ -13132,6 +13256,7 @@
         "../command-palette.service",
         "../progress.service",
         "../theme.service",
+        "./book-mode.service",
         "./lesson-index",
         "../official-learning-paths"
       ],
@@ -13180,8 +13305,16 @@
       "headings": []
     },
     {
+      "path": "web/src/app/course/lesson-viewer.book.scss",
+      "lines": 322,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/src/app/course/lesson-viewer.html",
-      "lines": 131,
+      "lines": 191,
       "kind": "angular-app",
       "symbols": [
         "floci-overview-title",
@@ -13193,7 +13326,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 531,
+      "lines": 532,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -13201,7 +13334,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1244,
+      "lines": 1755,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -13246,6 +13379,7 @@
         "../learning-activities",
         "../technical-glossary",
         "../topic-index.service",
+        "./book-mode.service",
         "mermaid"
       ],
       "headings": []
@@ -13669,7 +13803,7 @@
     },
     {
       "path": "web/src/styles.scss",
-      "lines": 125,
+      "lines": 128,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
