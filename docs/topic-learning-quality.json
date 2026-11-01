@@ -16513,7 +16513,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
+        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -16535,7 +16535,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: Mockito — aislar dependencias",
+        "topic": "Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -16557,7 +16557,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: Tests parametrizados y cobertura",
+        "topic": "Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 77 | 14 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 95 | 21 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 95 | 18 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 91 | 4 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 73 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
@@ -767,9 +767,9 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 8 | [Tema 2: Ciclo de vida de build y scopes · Intermedio · 45 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 8 | [Tema 3: Proyectos multi-módulo · Intermedio · 50 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 8 | [Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min](../web/public/content/java/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
-| java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
-| java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | clase-java-no-visible |
+| java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 9 | [Tema 2: Mockito — aislar dependencias · Intermedio · 50 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 9 | [Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 1: Variables — `const`, `let` y `var`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 2: Tipos primitivos y `typeof`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 3: Conversión, coerción e igualdad](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

@@ -135,22 +135,22 @@
     },
     "java": {
       "topics": 95,
-      "objective": 45,
+      "objective": 42,
       "prerequisites": 95,
-      "context": 45,
-      "theoryAnalogy": 45,
-      "guidedDemo": 45,
+      "context": 42,
+      "theoryAnalogy": 42,
+      "guidedDemo": 42,
       "codeExplanation": 95,
       "execution": 95,
       "expectedResult": 95,
       "deliberateFailure": 95,
-      "guidedPractice": 45,
-      "independentPractice": 45,
-      "closure": 45,
+      "guidedPractice": 42,
+      "independentPractice": 42,
+      "closure": 42,
       "commonErrors": 95,
       "resources": 95,
       "standaloneExample": 86,
-      "complete": 45
+      "complete": 42
     },
     "javascript": {
       "topics": 88,
@@ -18760,77 +18760,77 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
+        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 9,
-        "topic": "Tema 2: Mockito — aislar dependencias",
+        "topic": "Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 9,
-        "topic": "Tema 3: Tests parametrizados y cobertura",
+        "topic": "Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       }
     ],

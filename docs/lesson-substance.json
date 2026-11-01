@@ -1691,7 +1691,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "45a71f418d68bb5b98c71117df632dc41343cefcd70048525da59da9dc232d75",
+    "fingerprint": "ae3b94cc7b2fd2ab787216a2a5dc6fc46914817943fc34155a603dba6cb84b06",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -6895,23 +6895,23 @@
       {
         "issues": [],
         "module": 9,
-        "tailWords": 450,
-        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-        "words": 800
+        "tailWords": 212,
+        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
+        "words": 1142
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 103,
-        "topic": "Tema 2: Mockito — aislar dependencias",
-        "words": 866
+        "tailWords": 204,
+        "topic": "Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
+        "words": 1273
       },
       {
         "issues": [],
         "module": 9,
-        "tailWords": 146,
-        "topic": "Tema 3: Tests parametrizados y cobertura",
-        "words": 1034
+        "tailWords": 261,
+        "topic": "Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
+        "words": 1404
       }
     ],
     "javascript": [

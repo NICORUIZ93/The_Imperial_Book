@@ -2509,7 +2509,7 @@
       "track": "java",
       "module": 9,
       "position": 1,
-      "title": "JUnit 5 — anotaciones y ciclo de vida",
+      "title": "JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
       "file": "web/public/content/java/modulo-9.md",
       "requires": [
         "java:8:4"
@@ -2520,7 +2520,7 @@
       "track": "java",
       "module": 9,
       "position": 2,
-      "title": "Mockito — aislar dependencias",
+      "title": "Mockito — aislar dependencias · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-9.md",
       "requires": [
         "java:9:1"
@@ -2531,7 +2531,7 @@
       "track": "java",
       "module": 9,
       "position": 3,
-      "title": "Tests parametrizados y cobertura",
+      "title": "Tests parametrizados y cobertura · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-9.md",
       "requires": [
         "java:9:2"

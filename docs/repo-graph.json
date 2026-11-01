@@ -661,7 +661,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14036,
+      "lines": 14030,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -918,7 +918,7 @@
     },
     {
       "path": "docs/migration-status.json",
-      "lines": 131,
+      "lines": 132,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -10321,23 +10321,23 @@
     },
     {
       "path": "web/public/content/java/modulo-9.md",
-      "lines": 214,
+      "lines": 560,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 9: Testing con JUnit 5 y Mockito",
         "## Aprende construyendo",
-        "### Tema 1: JUnit 5 \u2014 anotaciones y ciclo de vida",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Mockito \u2014 aislar dependencias",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: JUnit 5 \u2014 anotaciones y ciclo de vida \u00b7 B\u00e1sico \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Mockito \u2014 aislar dependencias \u00b7 Intermedio \u00b7 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Tests parametrizados y cobertura \u00b7 Intermedio \u00b7 50 min",
+        "#### Aprende"
       ]
     },
     {

@@ -4,7 +4,7 @@
     "tracks": 14,
     "modules": 254,
     "topics": 1141,
-    "topicsWithSignals": 126,
+    "topicsWithSignals": 123,
     "newLaboratories": 25
   },
   "humanPedagogicalReview": {
@@ -9046,12 +9046,10 @@
     {
       "track": "java",
       "module": 9,
-      "title": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
+      "title": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min",
       "file": "web/public/content/java/modulo-9.md",
       "line": 6,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9060,12 +9058,10 @@
     {
       "track": "java",
       "module": 9,
-      "title": "Tema 2: Mockito — aislar dependencias",
+      "title": "Tema 2: Mockito — aislar dependencias · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-9.md",
-      "line": 65,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "line": 171,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9074,12 +9070,10 @@
     {
       "track": "java",
       "module": 9,
-      "title": "Tema 3: Tests parametrizados y cobertura",
+      "title": "Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min",
       "file": "web/public/content/java/modulo-9.md",
-      "line": 130,
-      "signals": [
-        "clase-java-no-visible"
-      ],
+      "line": 362,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,

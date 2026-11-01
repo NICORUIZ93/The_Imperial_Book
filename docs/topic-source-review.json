@@ -5134,7 +5134,7 @@
         "https://site.mockito.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 65,
+      "line": 171,
       "originalProseUrls": [
         "https://site.mockito.org/"
       ],
@@ -5150,7 +5150,7 @@
         "https://www.jacoco.org/jacoco/trunk/doc/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 130,
+      "line": 362,
       "originalProseUrls": [
         "https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests",
         "https://www.jacoco.org/jacoco/trunk/doc/"
