@@ -399,6 +399,26 @@ test('lector: marca un tema como leído y lo conserva al recargar', async ({ pag
   await expect(page.locator('.chapter-topic-strip-heading small')).toContainText('1 leídos');
 });
 
+test('lector: el código largo se ajusta dentro del bloque', async ({ page }) => {
+  await page.goto('/curso/spring-boot/16');
+  const example = page.locator('.lesson-markdown .code-example').first();
+  await example.waitFor();
+  const toggle = example.locator('[data-wrap-code]');
+  const pre = example.locator('pre');
+  const narrow = (page.viewportSize()?.width ?? 0) <= 720;
+
+  await expect(toggle).toHaveAttribute('aria-pressed', narrow ? 'true' : 'false');
+  if (narrow) {
+    await expect(example).toHaveClass(/wrap-lines/);
+  } else {
+    await expect(example).not.toHaveClass(/wrap-lines/);
+    await toggle.click();
+  }
+
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  expect(await pre.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+});
+
 test('lector: j y k cambian de capítulo y no reaccionan al escribir', async ({ page }) => {
   await page.goto('/curso/angular/0');
   await expect(page.locator('.topic-step-navigation').first()).toBeVisible();

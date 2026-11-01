@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-01 04:26 UTC
+Generated: 2026-11-01 04:40 UTC
 Root: `Academia_Floci`
 Indexed files: 991
 Import edges: 60
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (83 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, bookReading, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1777 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1782 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph

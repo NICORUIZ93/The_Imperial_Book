@@ -260,6 +260,9 @@
 .lesson-markdown ::ng-deep .code-line-number { display:none; }
 .lesson-markdown ::ng-deep .code-line-text { min-width:0; }
 .lesson-markdown ::ng-deep .code-example.wrap-lines pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+.lesson-markdown ::ng-deep .code-example.wrap-lines .code-line { min-width:0; }
+/* El renglón partido se sangra como continuación, no como código nuevo. */
+.lesson-markdown ::ng-deep .code-example.wrap-lines .code-line-text { padding-left:1.6em; text-indent:-1.6em; }
 .lesson-markdown ::ng-deep .code-example pre:focus-visible,
 .lesson-markdown ::ng-deep .visual-diagram pre:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 

@@ -745,7 +745,12 @@ export class LessonViewerComponent implements OnDestroy {
       const wrapper = document.createElement('div');
       wrapper.className = 'code-example';
       wrapper.dataset['language'] = language.toLowerCase();
-      wrapper.innerHTML = `<div class="code-example-bar"><span class="code-example-label">${escapeHtml(label)}</span>${showLanguage ? `<span class="code-example-language">${escapeHtml(languageLabel)}</span>` : ''}<button type="button" data-wrap-code aria-pressed="false" aria-label="Ajustar líneas de ${escapeHtml(label)}">Ajustar</button><button type="button" data-copy-code="${index}" aria-label="Copiar ${escapeHtml(label)}">Copiar</button></div>`;
+      // En pantallas estrechas el listado se ajusta desde el principio: un
+      // renglón de 80 caracteres no cabe en 330 px y desplazarlo en horizontal
+      // esconde justo lo que se está explicando.
+      const wrapped = window.matchMedia?.('(max-width: 720px)').matches ?? false;
+      if (wrapped) wrapper.classList.add('wrap-lines');
+      wrapper.innerHTML = `<div class="code-example-bar"><span class="code-example-label">${escapeHtml(label)}</span>${showLanguage ? `<span class="code-example-language">${escapeHtml(languageLabel)}</span>` : ''}<button type="button" data-wrap-code aria-pressed="${wrapped}" aria-label="Ajustar líneas de ${escapeHtml(label)}">${wrapped ? 'Sin ajuste' : 'Ajustar'}</button><button type="button" data-copy-code="${index}" aria-label="Copiar ${escapeHtml(label)}">Copiar</button></div>`;
       pre.parentNode?.insertBefore(wrapper, pre);
       wrapper.appendChild(pre);
       this.decorateCodeLines(pre);

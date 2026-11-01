@@ -6788,7 +6788,7 @@
     },
     {
       "path": "web/angular.json",
-      "lines": 109,
+      "lines": 110,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6796,7 +6796,7 @@
     },
     {
       "path": "web/e2e/academy.spec.ts",
-      "lines": 554,
+      "lines": 574,
       "kind": "project-file",
       "symbols": [],
       "imports": [
@@ -13349,7 +13349,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.scss",
-      "lines": 453,
+      "lines": 456,
       "kind": "angular-app",
       "symbols": [],
       "imports": [],
@@ -13357,7 +13357,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1777,
+      "lines": 1782,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
