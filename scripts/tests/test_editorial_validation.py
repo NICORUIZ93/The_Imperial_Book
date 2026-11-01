@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import audit_topic_learning_quality as audit
 import audit_code_visual_quality as visual_audit
 import fix_lessons
+import validate_migration
 from rebuild_topic_source_review import base_topic
 
 
@@ -212,6 +213,24 @@ class DocumentationConsistencyTests(unittest.TestCase):
         result = self.run_checks(expiry=100)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("caducidad", result.stderr)
+
+
+class MigrationHeadingTests(unittest.TestCase):
+    def test_numeric_and_complementary_headings_are_accepted(self):
+        for heading in (
+            "### Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
+            "### Tema complementario: SOAP y protocolos · Avanzado · 50 min",
+        ):
+            with self.subTest(heading=heading):
+                self.assertIsNotNone(validate_migration.TITLE.match(heading))
+
+    def test_complementary_heading_still_requires_level_and_duration(self):
+        for heading in (
+            "### Tema complementario: SOAP y protocolos",
+            "### Tema complementario: SOAP y protocolos · Avanzado",
+        ):
+            with self.subTest(heading=heading):
+                self.assertIsNone(validate_migration.TITLE.match(heading))
 
 
 if __name__ == "__main__":

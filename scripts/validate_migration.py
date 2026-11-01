@@ -19,8 +19,11 @@ CONTENT = ROOT / "web/public/content"
 STATUS = ROOT / "docs/migration-status.json"
 
 TOPIC = re.compile(r"^###\s+(Tema\b.+)$", re.MULTILINE | re.IGNORECASE)
+# `Tema complementario` ya es convención del índice web y del auditor completo;
+# conservarlo evita cambiar su fragmento de progreso al migrar el módulo.
 TITLE = re.compile(
-    r"^###\s+Tema\s+\d+:\s+.+?\s+·\s+(Básico|Intermedio|Avanzado|Experto)\s+·\s+"
+    r"^###\s+Tema(?:\s+\d+|\s+(?:complementario|suplementario)):\s+.+?\s+·\s+"
+    r"(Básico|Intermedio|Avanzado|Experto)\s+·\s+"
     r"\d+(?:[–-]\d+)?\s*(?:min|h(?:\s+\d+\s*min)?)\s*$",
     re.IGNORECASE,
 )

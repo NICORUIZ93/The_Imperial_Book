@@ -12,7 +12,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 95 | 41 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 91 | 3 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| spring-boot | 91 | 4 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | android | 73 | 0 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 63 | 6 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -1130,20 +1130,20 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 2 | [Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 40 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 5: OpenAPI con springdoc: el contrato como prueba · Intermedio · 40 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 2 | [Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Intermedio · 35 min](../web/public/content/spring-boot/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 1: Scheduling y tareas periódicas](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 2: Eventos locales, eventos transaccionales y mensajería](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 3: Correo con Spring Mail y entrega recuperable](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 5: @Async y ejecutores: trabajo en segundo plano con límites](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 20 | [Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
-| spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 20 | [Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min](../web/public/content/spring-boot/modulo-21.md) | clase-java-no-visible |
+| spring-boot / 22 | [Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 22 | [Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| spring-boot / 22 | [Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min](../web/public/content/spring-boot/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 1: Entidades y repositorios derivados · Intermedio · 35 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 2: El problema N+1 y su corrección · Avanzado · 50 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 3 | [Tema 3: Migraciones con Flyway · Intermedio · 35 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |

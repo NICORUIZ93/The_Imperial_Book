@@ -1454,35 +1454,35 @@
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 1: Scheduling y tareas periódicas",
+      "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
+      "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 3: Correo con Spring Mail y entrega recuperable",
+      "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
+      "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "spring-boot",
       "module": 20,
-      "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
       "missingCode": false,
       "missingComments": true
     },

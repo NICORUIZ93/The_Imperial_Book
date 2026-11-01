@@ -24511,7 +24511,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 1: Scheduling y tareas periódicas",
+        "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24533,7 +24533,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
+        "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24555,7 +24555,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 3: Correo con Spring Mail y entrega recuperable",
+        "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24577,7 +24577,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
+        "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24599,7 +24599,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
+        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24621,7 +24621,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24643,7 +24643,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24665,7 +24665,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24687,7 +24687,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 1: Productor, tópico, key y consumidor",
+        "topic": "Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24709,7 +24709,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
+        "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24731,7 +24731,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 3: Outbox transaccional y flujo de negocio",
+        "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24753,7 +24753,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
+        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24775,7 +24775,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 2: C4: contexto, contenedores, componentes y código",
+        "topic": "Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24797,7 +24797,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
+        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -661,7 +661,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 14075,
+      "lines": 14077,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -900,7 +900,7 @@
     },
     {
       "path": "docs/migration-plan.md",
-      "lines": 192,
+      "lines": 196,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -918,7 +918,7 @@
     },
     {
       "path": "docs/migration-status.json",
-      "lines": 119,
+      "lines": 122,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6538,11 +6538,12 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 219,
+      "lines": 238,
       "kind": "automation-script",
       "symbols": [
         "EditorialValidationTests",
-        "DocumentationConsistencyTests"
+        "DocumentationConsistencyTests",
+        "MigrationHeadingTests"
       ],
       "imports": [
         "json",
@@ -6556,6 +6557,7 @@
         "audit_topic_learning_quality",
         "audit_code_visual_quality",
         "fix_lessons",
+        "validate_migration",
         "rebuild_topic_source_review"
       ],
       "headings": []
@@ -6670,7 +6672,7 @@
     },
     {
       "path": "scripts/validate_migration.py",
-      "lines": 150,
+      "lines": 153,
       "kind": "automation-script",
       "symbols": [
         "topics_in",
@@ -12016,7 +12018,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 674,
+      "lines": 800,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12024,57 +12026,57 @@
         "# M\u00f3dulo 20: Integraciones Spring \u2014 scheduling, eventos, correo y cach\u00e9",
         "## Aprende construyendo",
         "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Scheduling y tareas peri\u00f3dicas",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda"
+        "### Tema 1: Scheduling y tareas peri\u00f3dicas \u00b7 Avanzado \u00b7 1 h 10 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda \u00b7 Avanzado \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Correo con Spring Mail y entrega recuperable \u00b7 Avanzado \u00b7 1 h 10 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-21.md",
-      "lines": 526,
+      "lines": 348,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 21: Apache Kafka con Spring Boot \u2014 eventos, consumidores y recuperaci\u00f3n",
         "## Aprende construyendo",
-        "### Tema 1: Productor, t\u00f3pico, key y consumidor",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "### Tema 1: Productor, t\u00f3pico, key y consumidor \u00b7 Experto \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
         "# Copia ejecutable de referencia; se conserva el original para comparar los cambios.",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda y modelo mental",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia"
+        "#### Aplica",
+        "### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia \u00b7 Experto \u00b7 1 h 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "# Copia independiente para repetir el tema sin depender de datos de una sesi\u00f3n anterior.",
+        "# Confirma que un error permanente termina en DLT sin escribir el inbox."
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-22.md",
-      "lines": 417,
+      "lines": 423,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 22: Arquitectura: puertos, C4 y decisiones",
         "## Aprende construyendo",
-        "### Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Hexagonal: puertos que hablan el idioma del dominio \u00b7 Experto \u00b7 1 h 10 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo \u00b7 Experto \u00b7 1 h 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias \u00b7 Experto \u00b7 1 h 10 min",
+        "#### Aprende"
       ]
     },
     {

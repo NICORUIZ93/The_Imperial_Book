@@ -249,22 +249,22 @@
     },
     "spring-boot": {
       "topics": 91,
-      "objective": 14,
+      "objective": 0,
       "prerequisites": 91,
-      "context": 14,
-      "theoryAnalogy": 14,
-      "guidedDemo": 14,
+      "context": 0,
+      "theoryAnalogy": 0,
+      "guidedDemo": 0,
       "codeExplanation": 91,
       "execution": 91,
       "expectedResult": 91,
       "deliberateFailure": 91,
-      "guidedPractice": 14,
-      "independentPractice": 14,
-      "closure": 14,
+      "guidedPractice": 0,
+      "independentPractice": 0,
+      "closure": 0,
       "commonErrors": 91,
       "resources": 91,
       "standaloneExample": 90,
-      "complete": 14
+      "complete": 0
     }
   },
   "topics": {
@@ -27847,352 +27847,352 @@
       },
       {
         "module": 20,
-        "topic": "Tema 1: Scheduling y tareas periódicas",
+        "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
+        "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema 3: Correo con Spring Mail y entrega recuperable",
+        "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
+        "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
+        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
+        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 20,
-        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 21,
-        "topic": "Tema 1: Productor, tópico, key y consumidor",
+        "topic": "Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 21,
-        "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
+        "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 21,
-        "topic": "Tema 3: Outbox transaccional y flujo de negocio",
+        "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 22,
-        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
+        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 22,
-        "topic": "Tema 2: C4: contexto, contenedores, componentes y código",
+        "topic": "Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {
         "module": 22,
-        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
+        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
         "criteria": {
-          "objective": true,
+          "objective": false,
           "prerequisites": true,
-          "context": true,
-          "theoryAnalogy": true,
-          "guidedDemo": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": true,
-          "independentPractice": true,
-          "closure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
           "commonErrors": true,
           "resources": true,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 15,
-          "complete": true
+          "stepsPassed": 8,
+          "complete": false
         }
       },
       {

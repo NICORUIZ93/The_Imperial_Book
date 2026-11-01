@@ -11,7 +11,7 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 |---|---|---|
 | 0 · Sincronización | Cerrada | Corte del cierre: 252 módulos, 1131 temas; `validate.sh` en verde |
 | 1 · Infraestructura | Cerrada | Registro de migración, validador por módulo y auditorías adaptadas |
-| 2 · Piloto Spring Boot | En curso | M0–M19 migrados: 77/91 temas y 14 laboratorios de cierre |
+| 2 · Piloto Spring Boot | Cerrada | M0–M22 migrados: 91/91 temas y sus proyectos de cierre conservados |
 | 3 · Java + Node.js | En curso | Java: Módulos 21–22 nuevos en formato nuevo (10 temas); M0–M20 y Node pendientes |
 | 4 · JavaScript + Angular + React | No iniciada | Depende del piloto |
 | 5 · Cloud + DevOps | No iniciada | Depende del piloto |
@@ -19,7 +19,7 @@ estrategia de identidad para no perder temas, progreso ni enlaces.
 | 7 · Fundamentos + RutaFlow | No iniciada | Depende del piloto |
 | 8 · Huecos curriculares | No iniciada | Requiere fases 2–7 cerradas |
 
-El piloto migró sus veinte primeros módulos sin perder temas ni fragmentos. El
+El piloto migró sus veintitrés primeros módulos sin perder temas ni fragmentos. El
 resto del contenido sigue en siete pasos; `docs/seven-step-methodology.md`
 declara ambos estados y `docs/migration-status.json` es la fuente de verdad.
 
@@ -32,7 +32,7 @@ auditor para aceptar también una sección `#### Practica` con cuerpo accionable
 ## Contrato de correspondencia: siete pasos → Aprende/Practica/Aplica
 
 Decisión del 2026-10-31: el formato canónico de todo el sitio es
-Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M19 y Java M21–M22. Los
+Aprende/Practica/Aplica, el que ya usan Spring Boot M0–M22 y Java M21–M22. Los
 siete pasos no se borran: cada uno tiene un destino y su texto se mueve, se
 conserva y se completa.
 
@@ -46,11 +46,14 @@ conserva y se completa.
 | 6 · Práctica independiente | `#### Aplica`: reto abierto |
 | 7 · Cierre | `#### Aplica`: siguiente paso, errores comunes, límites o cuándo no usarlo, fuente oficial y transferencia al proyecto |
 
-El piloto Spring Boot M0–M19 sirve de referencia para cada fila; ningún paso
+El piloto Spring Boot M0–M22 sirve de referencia para cada fila; ningún paso
 queda sin destino. El formato canónico exige además contenido que el texto
 legacy puede no tener y que se redacta durante la migración, nunca se genera:
 
 - Título `### Tema N: … · [Nivel] · [Duración]`; el validador rechaza otro formato.
+  La convención existente `### Tema complementario: … · [Nivel] · [Duración]` se
+  conserva —el índice web ya la reconoce y renombrarla cambiaría su fragmento de
+  progreso—, con el mismo nivel y duración obligatorios.
 - `**Checklist de salida.**` con al menos cuatro ítems verificables dentro de `Aplica`.
 - `**Si falla.**` con el diagnóstico del fallo reproducido en el tema.
 - Proyecto de cierre del módulo cuando el módulo ya lo trae; la migración no
@@ -163,7 +166,8 @@ Correcciones respecto al prompt:
 `docs/migration-status.json` registra los módulos migrados por track y los temas
 originales. `scripts/validate_migration.py` exige, solo para esos módulos:
 
-- encabezado `### Tema N: … · Nivel · Duración` con nivel y duración válidos;
+- encabezado `### Tema N: … · Nivel · Duración` (o `### Tema complementario: … ·
+  Nivel · Duración`) con nivel y duración válidos;
 - secciones `#### Aprende`, `#### Practica` y `#### Aplica`;
 - checklist de salida con al menos cuatro ítems;
 - ausencia de encabezados `#### Paso` residuales;

@@ -4808,7 +4808,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 1,
-      "title": "Scheduling y tareas periódicas",
+      "title": "Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:19:2"
@@ -4819,7 +4819,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 2,
-      "title": "Eventos locales, eventos transaccionales y mensajería",
+      "title": "Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:1"
@@ -4830,7 +4830,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 3,
-      "title": "Correo con Spring Mail y entrega recuperable",
+      "title": "Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:2"
@@ -4841,7 +4841,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 4,
-      "title": "Caché con Spring Cache, Caffeine y Redis",
+      "title": "Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:3"
@@ -4852,7 +4852,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 5,
-      "title": "@Async y ejecutores: trabajo en segundo plano con límites",
+      "title": "@Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:4"
@@ -4863,7 +4863,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 6,
-      "title": "Integraciones empresariales, SOAP y fronteras de protocolo",
+      "title": "Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:5"
@@ -4874,7 +4874,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 7,
-      "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
+      "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:6"
@@ -4885,7 +4885,7 @@
       "track": "spring-boot",
       "module": 20,
       "position": 8,
-      "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
+      "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-20.md",
       "requires": [
         "spring-boot:20:7"
@@ -4896,7 +4896,7 @@
       "track": "spring-boot",
       "module": 21,
       "position": 1,
-      "title": "Productor, tópico, key y consumidor",
+      "title": "Productor, tópico, key y consumidor · Experto · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-21.md",
       "requires": [
         "spring-boot:20:8"
@@ -4907,7 +4907,7 @@
       "track": "spring-boot",
       "module": 21,
       "position": 2,
-      "title": "Reintentos, DLT, entrega al menos una vez e idempotencia",
+      "title": "Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-21.md",
       "requires": [
         "spring-boot:21:1"
@@ -4918,7 +4918,7 @@
       "track": "spring-boot",
       "module": 21,
       "position": 3,
-      "title": "Outbox transaccional y flujo de negocio",
+      "title": "Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
       "file": "web/public/content/spring-boot/modulo-21.md",
       "requires": [
         "spring-boot:21:2"
@@ -4929,7 +4929,7 @@
       "track": "spring-boot",
       "module": 22,
       "position": 1,
-      "title": "Hexagonal: puertos que hablan el idioma del dominio",
+      "title": "Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-22.md",
       "requires": [
         "spring-boot:21:3"
@@ -4940,7 +4940,7 @@
       "track": "spring-boot",
       "module": 22,
       "position": 2,
-      "title": "C4: contexto, contenedores, componentes y código",
+      "title": "C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
       "file": "web/public/content/spring-boot/modulo-22.md",
       "requires": [
         "spring-boot:22:1"
@@ -4951,7 +4951,7 @@
       "track": "spring-boot",
       "module": 22,
       "position": 3,
-      "title": "ADR: decisiones con contexto, alternativas y consecuencias",
+      "title": "ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
       "file": "web/public/content/spring-boot/modulo-22.md",
       "requires": [
         "spring-boot:22:2"

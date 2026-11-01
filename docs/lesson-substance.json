@@ -1691,7 +1691,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "37350aae0acbcf4b9c574752f0ea1f55f621dada47eb831766dfb207b1f4cb91",
+    "fingerprint": "8df4e5802c5c6ce68cbea0e19c64a4e5358dcddb45aeb18544018986124cf6b3",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9448,100 +9448,100 @@
       {
         "issues": [],
         "module": 20,
-        "tailWords": 101,
-        "topic": "Tema 1: Scheduling y tareas periódicas",
-        "words": 733
+        "tailWords": 307,
+        "topic": "Tema 1: Scheduling y tareas periódicas · Avanzado · 1 h 10 min",
+        "words": 859
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 115,
-        "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería",
-        "words": 786
+        "tailWords": 334,
+        "topic": "Tema 2: Eventos locales, eventos transaccionales y mensajería · Avanzado · 1 h 20 min",
+        "words": 903
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 98,
-        "topic": "Tema 3: Correo con Spring Mail y entrega recuperable",
-        "words": 720
+        "tailWords": 279,
+        "topic": "Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 1 h 10 min",
+        "words": 838
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 161,
-        "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis",
-        "words": 802
+        "tailWords": 355,
+        "topic": "Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 1 h 20 min",
+        "words": 921
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 218,
-        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites",
-        "words": 1053
+        "tailWords": 386,
+        "topic": "Tema 5: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 1 h 40 min",
+        "words": 1207
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 59,
-        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo",
-        "words": 607
+        "tailWords": 261,
+        "topic": "Tema complementario: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 50 min",
+        "words": 718
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 101,
-        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-        "words": 865
+        "tailWords": 311,
+        "topic": "Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 1 h 30 min",
+        "words": 1005
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 81,
-        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
-        "words": 741
+        "tailWords": 288,
+        "topic": "Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 1 h 10 min",
+        "words": 879
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 170,
-        "topic": "Tema 1: Productor, tópico, key y consumidor",
-        "words": 1269
+        "tailWords": 399,
+        "topic": "Tema 1: Productor, tópico, key y consumidor · Experto · 1 h 20 min",
+        "words": 1449
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 164,
-        "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia",
-        "words": 1582
+        "tailWords": 397,
+        "topic": "Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Experto · 1 h 50 min",
+        "words": 1810
       },
       {
         "issues": [],
         "module": 21,
-        "tailWords": 203,
-        "topic": "Tema 3: Outbox transaccional y flujo de negocio",
-        "words": 1187
+        "tailWords": 418,
+        "topic": "Tema 3: Outbox transaccional y flujo de negocio · Experto · 1 h 50 min",
+        "words": 1370
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 106,
-        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio",
-        "words": 861
+        "tailWords": 288,
+        "topic": "Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min",
+        "words": 1054
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 101,
-        "topic": "Tema 2: C4: contexto, contenedores, componentes y código",
-        "words": 834
+        "tailWords": 278,
+        "topic": "Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min",
+        "words": 1021
       },
       {
         "issues": [],
         "module": 22,
-        "tailWords": 137,
-        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias",
-        "words": 877
+        "tailWords": 325,
+        "topic": "Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min",
+        "words": 1081
       },
       {
         "issues": [],

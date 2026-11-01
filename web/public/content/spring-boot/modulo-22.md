@@ -2,23 +2,17 @@
 
 ## Aprende construyendo
 
-Cada Tema parte de una carpeta vacía, produce un artefacto concreto y lo verifica con un comando real.
+Cada tema parte de una carpeta vacía, produce un artefacto concreto y lo verifica con un comando real.
 
-### Tema 1: Hexagonal: puertos que hablan el idioma del dominio
+### Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Experto · 1 h 10 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Java 21 o superior, `javac`/`java` en el `PATH`, y el Módulo 15 (Clean Architecture y DDD táctico). Comprueba `javac -version`.
 
-Al finalizar vas a separar una regla de negocio de su infraestructura con un puerto que devuelve tipos del dominio, y a compilar el caso de uso sin Spring ni JPA en el classpath.
+**Al terminar podrás:** separar una regla de negocio de su infraestructura con un puerto que devuelve tipos del dominio, y compilar el caso de uso sin Spring ni JPA en el classpath.
 
-**Conocimiento previo:** Java 21 o superior, `javac`/`java` en el `PATH`, y el Módulo 15 (Clean Architecture y DDD táctico). Comprueba `javac -version`.
+#### Aprende
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un puerto que devuelve `Page<ReservaEntity>` obliga al dominio a depender de Spring Data: el test del caso de uso levanta el contexto de Spring, tarda segundos y falla cuando cambia la versión de JPA. El síntoma aparece cuando alguien intenta probar una regla de negocio y descubre que necesita una base de datos.
-
-En el proyecto integrador, las reglas de asignación de envíos deben probarse sin infraestructura. Un puerto que habla el idioma del negocio es lo que hace posible esa prueba.
-
-#### Paso 3 · Teoría, modelo mental y analogía
+**¿Por qué es importante?** Un puerto que devuelve `Page<ReservaEntity>` obliga al dominio a depender de Spring Data: el test del caso de uso levanta el contexto de Spring, tarda segundos y falla cuando cambia la versión de JPA. El síntoma aparece cuando alguien intenta probar una regla de negocio y descubre que necesita una base de datos. En el proyecto integrador, las reglas de asignación de envíos deben probarse sin infraestructura. Un puerto que habla el idioma del negocio es lo que hace posible esa prueba.
 
 La arquitectura hexagonal separa tres zonas: el **dominio** (tipos y reglas), la **aplicación** (casos de uso que coordinan) y los **adaptadores** (HTTP, JPA, colas). El puerto es una interfaz declarada por la aplicación y hablada en tipos del dominio; el adaptador la implementa traduciendo desde su tecnología.
 
@@ -34,16 +28,16 @@ flowchart TD
     Adaptador --> Dominio["Dominio: Reserva y ReservaId"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía:
+**Desde cero:** parte de una carpeta vacía y prepara el proyecto:
 
 ```bash
 mkdir arquitectura-hexagonal && cd arquitectura-hexagonal
 mkdir src
 ```
 
-Crea `src/Hexagonal.java` con este contenido completo:
+**Crea** el archivo `src/Hexagonal.java` y pega en él el código mostrado a continuación; guárdalo antes de compilarlo:
 
 ```java
 import java.util.ArrayList;
@@ -99,7 +93,7 @@ public final class Hexagonal {
 }
 ```
 
-Compila y ejecuta sin ninguna dependencia externa:
+**Ejecuta el ejemplo** (compila y corre sin ninguna dependencia externa):
 
 ```bash
 javac -d out src/Hexagonal.java
@@ -127,45 +121,46 @@ El diagnóstico es que el dominio ahora depende de un framework. No falta una de
 
 **Conceptos clave:** puerto, adaptador, dirección de dependencias, tipos del dominio.
 
-#### Paso 5 · Práctica guiada
+Añade al puerto `List<Reserva> buscarPorVehiculo(String vehiculo)` y verifica que sigue compilando sin Spring. Si necesitas `Pageable` para paginar, la paginación pertenece al adaptador, no al puerto.
 
-**Pista:** añade al puerto `List<Reserva> buscarPorVehiculo(String vehiculo)` y verifica que sigue compilando sin Spring. Si necesitas `Pageable` para paginar, la paginación pertenece al adaptador, no al puerto.
+**Pista:** si el puerto nuevo exige `Pageable`, la compilación vuelve a fallar; la paginación se implementa en el adaptador y el puerto devuelve una lista del dominio. **Resultado esperado:** el proyecto compila y el caso de uso se prueba con `EnMemoria`, sin levantar contexto.
 
-**Resultado esperado:** el proyecto compila y el caso de uso se prueba con `EnMemoria`, sin levantar contexto.
+**Si falla.** Si `javac` no encuentra el archivo, ejecútalo desde la carpeta que contiene `src`. Si `java` dice que no encuentra `Hexagonal`, falta `-cp out`. Si vuelve el error de `org.springframework.data.domain`, el puerto sigue hablando en tipos de infraestructura.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 Crea `src/CancelarReserva.java`: un caso de uso que busque la reserva, valide que no esté ya cancelada y guarde el cambio. Ejecútalo con `java -cp out` desde una clase `Main` propia.
 
 **Resultado esperado:** cancelar dos veces la misma reserva produce un mensaje de dominio, no un `NullPointerException`.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
 
-Siguiente paso: documentar el sistema completo con C4.
+- [ ] `javac -d out src/Hexagonal.java` compila sin Spring ni JPA en el classpath.
+- [ ] `java -cp out Hexagonal` imprime `reserva=RES-1 vehiculo=camion-1`.
+- [ ] El puerto `ReservaRepository` devuelve `Reserva` y `Optional<Reserva>`, no entidades ni `Pageable`.
+- [ ] El fallo deliberado reproduce el error de `org.springframework.data.domain` y se corrige.
+- [ ] `CancelarReserva` valida el estado y cancelar dos veces deja un mensaje de dominio.
+- [ ] La decisión sobre paginación en el adaptador queda explicada.
 
-**Errores comunes:** devolver entidades JPA desde el puerto; inyectar `Pageable` en el dominio; poner la lógica de negocio en el adaptador; crear un puerto por cada método del repositorio.
+**Si falla.** Si cancelar dos veces lanza `NullPointerException`, la búsqueda no está devolviendo un caso de dominio y el flujo no valida el estado. Si la segunda cancelación se guarda en silencio, falta la comprobación de la reserva ya cancelada. Si `Main` no compila junto a `CancelarReserva`, vuelve a ejecutar `javac -d out` sobre ambos archivos.
+
+Documentar el sistema completo con C4 es el siguiente paso. **Errores comunes:** devolver entidades JPA desde el puerto; inyectar `Pageable` en el dominio; poner la lógica de negocio en el adaptador; crear un puerto por cada método del repositorio.
 
 **Límites y decisión de uso:** hexagonal no significa una carpeta por capa ni un puerto por tabla. Si el sistema es un CRUD sin reglas, la separación añade ceremonia sin beneficio. En el proyecto integrador se justifica donde hay reglas que deben probarse sin infraestructura.
 
 **Fuente oficial:** [Hexagonal Architecture (Alistair Cockburn)](https://alistair.cockburn.us/hexagonal-architecture/) y [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/).
 
-### Tema 2: C4: contexto, contenedores, componentes y código
+### Tema 2: C4: contexto, contenedores, componentes y código · Experto · 1 h 20 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Tema 1 de este módulo; Node.js 20 o superior (`node --version`).
 
-Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlazar cada relación con el código que la implementa y a validar el documento con un script que falla si un contenedor del sistema no aparece.
+**Al terminar podrás:** dibujar los cuatro niveles C4 de una API de envíos, enlazar cada relación con el código que la implementa y validar el documento con un script que falla si un contenedor del sistema no aparece.
 
-**Conocimiento previo:** Tema 1 de este módulo; Node.js 20 o superior (`node --version`).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Un diagrama que nadie puede contrastar se convierte en decoración. En el proyecto integrador, el diagrama de contenedores se usa para decidir dónde vive la cola y quién escribe en la base; si el diagrama muestra un worker que el código no tiene, la decisión se toma sobre una ficción.
 
-C4 resuelve el problema de escala: no se dibuja todo en un solo nivel. Cada nivel responde una pregunta distinta y no repite la anterior.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Los cuatro niveles son: **contexto** (el sistema y sus usuarios), **contenedores** (aplicaciones, colas y bases que se despliegan por separado), **componentes** (piezas dentro de un contenedor) y **código** (clases y relaciones). Cada flecha debe corresponder a una llamada o dependencia real.
+C4 resuelve el problema de escala: no se dibuja todo en un solo nivel. Cada nivel responde una pregunta distinta y no repite la anterior. Los cuatro niveles son: **contexto** (el sistema y sus usuarios), **contenedores** (aplicaciones, colas y bases que se despliegan por separado), **componentes** (piezas dentro de un contenedor) y **código** (clases y relaciones). Cada flecha debe corresponder a una llamada o dependencia real.
 
 **Analogía:** es un mapa de escalas. El contexto es el mapa del país, los contenedores son las ciudades, los componentes son los barrios y el código son las calles. Un mapa de país con calles es ilegible; un mapa de calles que pretende explicar el país, también.
 
@@ -178,16 +173,16 @@ flowchart LR
     Api --> Transportadora["Transportadora externa"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía:
+**Desde cero:** parte de una carpeta vacía y prepara la estructura:
 
 ```bash
 mkdir c4-envios && cd c4-envios
 mkdir -p docs/c4
 ```
 
-Crea `validar-c4.mjs` y `docs/c4/envios.md`. El validador primero, para que el documento tenga una prueba:
+**Crea** `validar-c4.mjs` y `docs/c4/envios.md`. El validador primero, para que el documento tenga una prueba:
 
 ```javascript
 // Comprueba que el C4 tenga los cuatro niveles y los contenedores reales.
@@ -247,7 +242,7 @@ flowchart LR
     CrearEnvio["CrearEnvio"] --> EnvioRepository["EnvioRepository"]
 ```
 
-Verifica:
+**Ejecuta el ejemplo** (verifica el documento):
 
 ```bash
 node validar-c4.mjs
@@ -259,45 +254,46 @@ node validar-c4.mjs
 
 **Conceptos clave:** nivel C4, contenedor, relación verificable, documento versionado.
 
-#### Paso 5 · Práctica guiada
+Añade el nivel de código de `CancelarEnvio` con su dependencia de `EnvioRepository` y vuelve a ejecutar. El contador de relaciones debe subir sin tocar el validador.
 
-**Pista:** añade el nivel de código de `CancelarEnvio` con su dependencia de `EnvioRepository` y vuelve a ejecutar. El contador de relaciones debe subir sin tocar el validador.
+**Pista:** si el contador no sube, el diagrama añadido no contiene una flecha `-->`; el validador cuenta relaciones, no secciones. **Resultado esperado:** `C4 OK: 4 niveles y 13 relaciones`.
 
-**Resultado esperado:** `C4 OK: 4 niveles y 13 relaciones`.
+**Si falla.** Si el validador responde `Faltan niveles`, revisa que cada sección use exactamente `## Contexto`, `## Contenedores`, `## Componentes` y `## Código`. Si responde `Faltan contenedores`, el nombre debe aparecer en el texto, incluso dentro de un diagrama. Si responde `Se esperaban al menos 12 relaciones`, cuenta las flechas reales antes de tocar el umbral: el documento perdió una relación.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 Añade un contenedor real que hoy no está en el diagrama (por ejemplo, un `worker` de recordatorios) y actualiza también la lista `contenedores` del validador. Ejecuta `node validar-c4.mjs`.
 
 **Resultado esperado:** el validador pasa y el documento menciona el nuevo contenedor en el nivel correcto.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
 
-Siguiente paso: registrar por qué se eligió esta arquitectura.
+- [ ] `docs/c4/envios.md` contiene los cuatro niveles con sus encabezados exactos.
+- [ ] El documento incluye los contenedores `api`, `worker`, `base-datos` y `cola`.
+- [ ] `node validar-c4.mjs` imprime `C4 OK: 4 niveles y 12 relaciones`.
+- [ ] La eliminación de una flecha produce el mensaje con el conteo real y se restaura.
+- [ ] El nivel de código de `CancelarEnvio` sube el contador a 13 relaciones.
+- [ ] El nuevo contenedor aparece en el nivel correcto y en la lista del validador.
 
-**Errores comunes:** mezclar niveles en un solo dibujo; dibujar un contenedor que no existe; usar C4 como sustituto de un ADR; no versionar el diagrama junto al código.
+**Si falla.** Si tras añadir el contenedor el validador sigue fallando, actualiza también la lista `contenedores`; el validador no lee Mermaid, lee el texto. Si el conteo de relaciones sube sin que el diagrama las muestre, estás contando una flecha de otro nivel: cada nivel debe mantener sus propias relaciones.
+
+Registrar por qué se eligió esta arquitectura es el siguiente paso. **Errores comunes:** mezclar niveles en un solo dibujo; dibujar un contenedor que no existe; usar C4 como sustituto de un ADR; no versionar el diagrama junto al código.
 
 **Límites y decisión de uso:** C4 documenta estructura, no decisiones ni comportamiento en tiempo de ejecución. Para una decisión que cambia el costo futuro, el artefacto correcto es un ADR. En el proyecto integrador, C4 responde «qué hay» y el ADR responde «por qué».
 
 **Fuente oficial:** [C4 model](https://c4model.com/) y [Diagramas como código con Mermaid](https://mermaid.js.org/syntax/flowchart.html).
 
-### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias
+### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 1 h 10 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Temas 1 y 2; Node.js 20 o superior.
 
-Al finalizar vas a escribir tres Architecture Decision Records con contexto, alternativas, consecuencias y estado, y a validarlos con un script que falla si falta una sección o si no se consideró ninguna alternativa.
+**Al terminar podrás:** escribir tres Architecture Decision Records con contexto, alternativas, consecuencias y estado, y validarlos con un script que falla si falta una sección o si no se consideró ninguna alternativa.
 
-**Conocimiento previo:** Temas 1 y 2; Node.js 20 o superior.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Dentro de un año, alguien preguntará por qué la asignación va por Kafka y no por una llamada directa. Sin un ADR, la respuesta se pierde y la decisión se revierte por moda. En el proyecto integrador, la elección de cola, base de datos y estrategia de reintentos debe poder revisarse sin depender de la memoria del equipo.
 
-Un ADR no es un documento de diseño: es la memoria de una decisión concreta, con las alternativas que se descartaron y el costo que se aceptó.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Un ADR tiene cinco partes: **contexto** (la fuerza que obliga a decidir), **decisión** (qué se eligió), **alternativas** (qué se descartó y por qué), **consecuencias** (qué se gana y qué se paga) y **estado** (propuesta, aceptada, reemplazada). El estado importa: una decisión reemplazada sigue siendo historia útil.
+Un ADR no es un documento de diseño: es la memoria de una decisión concreta, con las alternativas que se descartaron y el costo que se aceptó. Tiene cinco partes: **contexto** (la fuerza que obliga a decidir), **decisión** (qué se eligió), **alternativas** (qué se descartó y por qué), **consecuencias** (qué se gana y qué se paga) y **estado** (propuesta, aceptada, reemplazada). El estado importa: una decisión reemplazada sigue siendo historia útil.
 
 **Analogía:** es el acta de una reunión técnica. No describe la oficina ni el organigrama; registra qué se decidió, quién lo propuso, qué otras opciones había y qué se aceptó perder. Sin acta, la reunión se repite cada seis meses.
 
@@ -311,16 +307,16 @@ flowchart LR
     Consecuencias --> Estado["Estado: aceptada o reemplazada"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía:
+**Desde cero:** parte de una carpeta vacía y prepara la estructura:
 
 ```bash
 mkdir adr-envios && cd adr-envios
 mkdir -p docs/adr
 ```
 
-Crea `validar-adr.mjs` y tres ADR. Empieza por el validador:
+**Crea** `validar-adr.mjs` y tres ADR. Empieza por el validador:
 
 ```javascript
 // Verifica que cada ADR tenga las secciones y al menos dos alternativas.
@@ -381,7 +377,9 @@ migraciones y un esquema que exige revisar cada cambio.
 Aceptada el 2026-10-30.
 ```
 
-Crea `docs/adr/0002-kafka-para-asignacion.md` y `docs/adr/0003-reintentos-con-outbox.md` con la misma estructura y al menos dos alternativas cada uno. Verifica:
+Crea `docs/adr/0002-kafka-para-asignacion.md` y `docs/adr/0003-reintentos-con-outbox.md` con la misma estructura y al menos dos alternativas cada uno.
+
+**Ejecuta el ejemplo** (verifica los ADR):
 
 ```bash
 node validar-adr.mjs
@@ -393,23 +391,31 @@ node validar-adr.mjs
 
 **Conceptos clave:** contexto, decisión, alternativas, consecuencias, estado del ADR.
 
-#### Paso 5 · Práctica guiada
+Cambia el estado de `0002` a `Reemplazada por 0004` y crea `0004` con la nueva decisión. El validador debe seguir pasando y el historial queda explícito.
 
-**Pista:** cambia el estado de `0002` a `Reemplazada por 0004` y crea `0004` con la nueva decisión. El validador debe seguir pasando y el historial queda explícito.
+**Pista:** el validador cuenta las alternativas por el patrón `- **` al inicio de línea; una lista numerada o con otro marcador no se contabiliza. **Resultado esperado:** `ADR OK: 4 decisiones...` sin borrar la decisión anterior.
 
-**Resultado esperado:** `ADR OK: 4 decisiones...` sin borrar la decisión anterior.
+**Si falla.** Si responde `Se esperaban 3 ADR y hay N`, los nombres deben empezar por cuatro dígitos y terminar en `.md` dentro de `docs/adr`. Si responde `faltan ## Alternativas`, revisa el encabezado exacto y las dos alternativas con `- **`. Si responde `se esperaban al menos 2 alternativas`, las opciones están escritas como texto continuo y no como lista.
 
-#### Paso 6 · Práctica independiente
+#### Aplica
 
 Escribe un ADR para una decisión del proyecto integrador que todavía no esté documentada (por ejemplo, autenticación con JWT o estrategia de caché) y enlázalo desde el README del proyecto.
 
 **Resultado esperado:** el validador pasa y el README apunta al ADR con su número.
 
-#### Paso 7 · Cierre
+**Checklist de salida.**
 
-Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto.
+- [ ] `validar-adr.mjs` exige tres archivos con nombres `NNNN-*.md`.
+- [ ] Los ADR `0001`, `0002` y `0003` existen y pasan `node validar-adr.mjs`.
+- [ ] Cada ADR contiene contexto, decisión, alternativas, consecuencias y estado.
+- [ ] Cada ADR registra al menos dos alternativas reales con `- **`.
+- [ ] El fallo deliberado del ADR `0003` reproduce el mensaje de sección faltante y se corrige.
+- [ ] El ADR `0004` reemplaza a `0002` sin borrar la decisión anterior.
+- [ ] El README del proyecto integrador enlaza el nuevo ADR por su número.
 
-**Errores comunes:** escribir un ADR después de implementar sin registrar las alternativas; copiar el mismo texto en los tres; dejar el estado «propuesta» para siempre; usar el ADR para describir la arquitectura completa.
+**Si falla.** Si el ADR nuevo no aparece, comprueba que sigue el patrón `NNNN-titulo.md` y que está en `docs/adr`. Si el estado reemplazado rompe el validador, el problema está en una sección o alternativa ausente, no en el texto del estado. Si el README enlaza un número que no existe, el enlace apunta a una decisión inexistente.
+
+Aplicar el mismo criterio a cada nueva decisión del proyecto es el siguiente paso. **Errores comunes:** escribir un ADR después de implementar sin registrar las alternativas; copiar el mismo texto en los tres; dejar el estado «propuesta» para siempre; usar el ADR para describir la arquitectura completa.
 
 **Límites y decisión de uso:** un ADR documenta una decisión, no garantiza que sea buena. Si la decisión es reversible y barata, el registro puede ser una línea en el commit; el ADR se justifica cuando el costo de revertir es alto. En el proyecto integrador se escribe para las decisiones que alguien querrá cuestionar dentro de un año.
 
