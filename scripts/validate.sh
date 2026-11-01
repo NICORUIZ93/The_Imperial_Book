@@ -66,6 +66,9 @@ if (trackIdsInData.length !== Object.keys(TRACK_SOURCES).length) {
   throw new Error(`TRACKS debe tener ${Object.keys(TRACK_SOURCES).length} tracks. Encontrados=${trackIdsInData.length}`);
 }
 
+let moduleFileTotal = 0;
+let contentTopicTotal = 0;
+
 for (const [trackId, sourceFile] of Object.entries(TRACK_SOURCES)) {
   const source = fs.readFileSync(sourceFile, 'utf8');
   const definedModules = (source.match(/^\s*m\(\d+,/gm) || []).length;
@@ -78,6 +81,11 @@ for (const [trackId, sourceFile] of Object.entries(TRACK_SOURCES)) {
   }
   if (moduleFiles !== definedModules) {
     throw new Error(`El track '${trackId}' define ${definedModules} modulos en ${sourceFile} pero tiene ${moduleFiles} archivos en ${contentDir}/`);
+  }
+  moduleFileTotal += moduleFiles;
+  for (let i = 0; i < moduleFiles; i += 1) {
+    const content = fs.readFileSync(`${contentDir}/modulo-${i}.md`, 'utf8');
+    contentTopicTotal += (content.match(/^###\s+Tema(?:\s|:)/gm) || []).length;
   }
   for (const heading of ['## Aprende construyendo']) {
     const missing = [];
@@ -133,6 +141,28 @@ if (Number(declaredInventory[1]) !== moduleTotal || moduleTotal !== expectedModu
     `README.md declara ${declaredInventory[1]} módulos; tabla=${moduleTotal}, tracks=${expectedModuleTotal}`,
   );
 }
+if (Number(declaredInventory[1]) !== moduleFileTotal) {
+  throw new Error(
+    `README.md declara ${declaredInventory[1]} módulos pero el contenido tiene ${moduleFileTotal} archivos modulo-N.md`,
+  );
+}
+if (Number(declaredInventory[2]) !== contentTopicTotal) {
+  throw new Error(
+    `README.md declara ${declaredInventory[2]} temas pero el contenido tiene ${contentTopicTotal} encabezados '### Tema'`,
+  );
+}
+if (Number(readmeCoverage[2]) !== contentTopicTotal || Number(reportCoverage[2]) !== contentTopicTotal) {
+  throw new Error(
+    `README y full-review declaran ${readmeCoverage[2]}/${reportCoverage[2]} temas; el contenido tiene ${contentTopicTotal}`,
+  );
+}
+const reviewInventory = fullReview.match(/(\d+) módulos y (\d+) temas/);
+if (!reviewInventory ||
+    Number(reviewInventory[1]) !== moduleFileTotal || Number(reviewInventory[2]) !== contentTopicTotal) {
+  throw new Error(
+    `docs/full-review.md debe declarar ${moduleFileTotal} módulos y ${contentTopicTotal} temas; declara ${reviewInventory ? `${reviewInventory[1]} y ${reviewInventory[2]}` : 'un inventario distinto'}`,
+  );
+}
 
 // Los 3 diagramas Mermaid pedidos (arquitectura, flujo de peticion, comparativa)
 // deben existir en el contenido real del track Cloud.
@@ -171,6 +201,7 @@ python3 scripts/audit_code_visual_quality.py --check
 python3 scripts/rebuild_topic_source_review.py --check
 python3 scripts/build_editorial_backlog.py --check
 python3 scripts/validate_learning_priorities.py
+python3 scripts/validate_migration.py
 python3 scripts/build_web_topic_index.py --check
 python3 scripts/build_prerequisite_graph.py --check
 python3 scripts/build_repo_graph.py --check

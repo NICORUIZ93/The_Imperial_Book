@@ -1,23 +1,17 @@
 # Módulo 5: Configuración, perfiles y manejo de errores
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `ApplicationContextRunner` y `MockMvc` reales, para que "la aplicación falla al arranque" o "el formato de error es consistente" sean afirmaciones comprobables, no solo descritas.
-
+Cada tema declara su nivel, su duración y una verificación reproducible. La configuración se comprueba con `ApplicationContextRunner` y el formato de error con `MockMvc` reales, para que "la aplicación falla al arranque" o "el formato de error es consistente" sean afirmaciones ejecutadas, no solo descritas.
 
 ## Aprende construyendo
 
-### Tema 1: @ConfigurationProperties tipado
+### Tema 1: @ConfigurationProperties tipado · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Spring Initializr y starters (Módulo 1); `application.yml` vs `application.properties` (Módulo 1).
+**Al terminar podrás:** agrupar configuración relacionada en un tipo fuertemente tipado con `@ConfigurationProperties`, y confirmar con un test real que los valores de `application.yml` se enlazan correctamente.
 
-Al finalizar podrás agrupar configuración relacionada en un tipo fuertemente tipado con `@ConfigurationProperties`, y confirmar con un test real que los valores de `application.yml` se enlazan correctamente.
-
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); `application.yml` vs `application.properties` (Módulo 1).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Una API de entregas cambia URLs, límites y credenciales entre local, pruebas y producción; leer cada valor individual con `@Value("${...}")` disperso en distintas clases dificulta tener una visión centralizada de toda la configuración relacionada con un aspecto específico, como JWT.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** agrupación de configuración relacionada, frente a `@Value` disperso.
 
@@ -33,9 +27,9 @@ flowchart LR
   B --> C[un único tipo tipado, inyectable donde se necesite]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `validation`) y crea `src/main/java/com/academia/config/JwtConfig.java`:
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `validation`) y crea `src/main/java/com/academia/config/JwtConfig.java`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/config
@@ -123,7 +117,7 @@ mvn test -Dtest=JwtConfigTest       # Maven
 
 **Fallo deliberado:** cambia `app.jwt.expiracion-segundos=900` por `app.jwt.expiracion-segundos=texto-no-numerico` en el test y ejecuta de nuevo. El `context.getBean(JwtConfig.class)` lanza una excepción real (`context.run(...)` captura el fallo internamente; verifica con `contextRunner.withPropertyValues(...).run(context -> assertThat(context).hasFailed())`) porque Spring no puede convertir ese texto al tipo `long` declarado — diagnostica confirmando que la verificación de tipos ocurre al enlazar la configuración, antes de que ningún código de negocio intente usar ese valor. Revierte el valor antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un tercer campo al `record` (`boolean modoDebug`) y confirma con el test que también se enlaza correctamente desde `application.yml`.
 2. Usa `@NestedConfigurationProperty` para agrupar un sub-objeto anidado dentro de `JwtConfig` (por ejemplo, una configuración de reintentos) y confirma que también se enlaza correctamente.
@@ -131,8 +125,6 @@ mvn test -Dtest=JwtConfigTest       # Maven
 4. Escribe de memoria (sin mirar) un `record` con `@ConfigurationProperties` y dos campos validados, y un test `ApplicationContextRunner` que confirme el enlace correcto.
 
 **Pista:** `ApplicationContextRunner` es más rápido que `@SpringBootTest` para probar configuración aislada porque no levanta toda la aplicación, solo el subconjunto de beans que declares con `withUserConfiguration(...)`.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para declarar el prefijo de configuración correcto:
 
@@ -142,31 +134,40 @@ mvn test -Dtest=JwtConfigTest       # Maven
 public record JwtConfig(@NotBlank String secreto, @Min(60) long expiracionSegundos) {}
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `record` con `@ConfigurationProperties` y validación, y un test `ApplicationContextRunner` que confirme el enlace correcto de sus valores. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `record` con `@ConfigurationProperties` y validación, y un test `ApplicationContextRunner` que confirme el enlace correcto de sus valores. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya agrupas configuración relacionada en un tipo fuertemente tipado y validado, confirmando con un test real que los valores de `application.yml` se enlazan correctamente. El siguiente tema confirma qué ocurre cuando un valor obligatorio falta por completo. Fuente oficial: [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties).
+**Reto abierto.** Reúne toda la configuración dispersa de tu proyecto en tres grupos tipados y validados: seguridad, almacenamiento y límites de negocio. Elimina los `@Value` sueltos, documenta el prefijo de cada grupo y demuestra con `ApplicationContextRunner` que un valor inválido se rechaza al enlazar.
+
+**Checklist de salida.**
+
+- [ ] Cada grupo de configuración relacionada vive en un `record` validado.
+- [ ] Los valores se enlazan desde `application.yml` con un test que los comprueba.
+- [ ] No queda ningún `@Value` para propiedades de un grupo ya tipado.
+- [ ] Un valor de tipo incorrecto hace fallar el enlace antes de usarse.
+- [ ] El README documenta prefijos, valores obligatorios y valores por defecto.
+
+**Si falla.** Si el bean no existe en el contexto, confirma `@EnableConfigurationProperties` o el escaneo correspondiente; si los valores llegan `null`, revisa que los nombres en `application.yml` usen kebab-case y coincidan con el prefijo declarado.
+
+**Siguiente paso:** el Tema 2 confirma qué ocurre cuando un valor obligatorio falta por completo.
 
 **Errores comunes:** usar `@Value` disperso en vez de `@ConfigurationProperties` agrupado, perdiendo visión centralizada; olvidar `@EnableConfigurationProperties` o el escaneo de componentes, dejando la clase sin registrar aunque esté bien declarada.
 
-**Cuándo no usarlo:** para un único valor de configuración aislado sin relación con ningún grupo mayor (por ejemplo, un feature flag booleano suelto), un `@Value` simple es más directo que crear un `record` completo solo para ese valor.
+**Límites y decisión de uso:** para un único valor de configuración aislado sin relación con ningún grupo mayor (por ejemplo, un feature flag booleano suelto), un `@Value` simple es más directo que crear un `record` completo solo para ese valor.
 
-`@ConfigurationProperties` tipado es como organizará su configuración el proyecto integrador de este track (microservicio productivo, Módulo 12), sin strings mágicos dispersos.
+**Fuente oficial:** [Spring Boot — Type-safe Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties).
 
-### Tema 2: Fallar rápido al arranque
+**Transferencia al proyecto integrador:** `@ConfigurationProperties` tipado es como organizará su configuración el proyecto integrador de este track (microservicio productivo, Módulo 12), sin strings mágicos dispersos.
 
-#### Paso 1 · Objetivo y preparación
+### Tema 2: Fallar rápido al arranque · Intermedio · 30 min
 
-Al finalizar podrás confirmar, con un test real, que la aplicación se niega a arrancar cuando falta un valor de configuración obligatorio, en vez de arrancar con un valor inválido que fallaría más tarde.
+**Prerrequisito:** Tema 1 de este módulo (`@ConfigurationProperties`).
+**Al terminar podrás:** confirmar, con un test real, que la aplicación se niega a arrancar cuando falta un valor de configuración obligatorio, en vez de arrancar con un valor inválido que fallaría más tarde.
 
-**Conocimiento previo:** Tema 1 de este módulo (`@ConfigurationProperties`).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Si `app.jwt.secreto` falta y la aplicación arranca de todas formas, el problema se manifestará mucho más tarde —posiblemente ya en producción bajo tráfico real— cuando algún código intente usar ese valor `null`, en un momento y contexto completamente distinto de donde realmente se originó el problema.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** validación temprana, evitar fallas silenciosas tardías en producción.
 
@@ -176,7 +177,7 @@ Con `@Validated` aplicado a una clase de `@ConfigurationProperties`, si falta un
 
 **Diagrama:**
 
-```
+```text
 ┌── sin @Validated ──────────────────────────────────────┐
 │  falta app.jwt.secreto → app arranca "bien" →               │
 │  falla más tarde en producción (NullPointerException)       │
@@ -187,9 +188,9 @@ Con `@Validated` aplicado a una clase de `@ConfigurationProperties`, si falta un
 └──────────────────────────────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea `src/test/java/com/academia/config/FalloArranqueTest.java`, confirmando con `ApplicationContextRunner` que la ausencia del valor obligatorio impide el arranque:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea `src/test/java/com/academia/config/FalloArranqueTest.java`, confirmando con `ApplicationContextRunner` que la ausencia del valor obligatorio impide el arranque:
 
 ```bash
 mkdir -p academia-spring/src/test/java/com/academia/config
@@ -236,11 +237,13 @@ mvn test -Dtest=FalloArranqueTest   # Maven
 ./gradlew test --tests FalloArranqueTest # Gradle (equivalente)
 ```
 
+**Explicación línea por línea:** `withPropertyValues` define el conjunto exacto de propiedades que verá el contexto; el primer test omite deliberadamente `app.jwt.secreto`; `hasFailed()` comprueba que el contexto no arrancó y `hasRootCauseInstanceOf(BindValidationException.class)` comprueba la causa raíz real del fallo; el segundo test demuestra que con todas las propiedades presentes el mismo contexto arranca.
+
 **Resultado esperado:** ambos tests pasan: sin `app.jwt.secreto`, el contexto falla al arrancar con una causa raíz `BindValidationException` (la excepción real que Spring lanza cuando `@Validated` rechaza un valor); con todos los valores obligatorios presentes, el contexto arranca sin fallos — la diferencia medida directamente sobre el resultado real del arranque, no sobre una suposición.
 
 **Fallo deliberado:** quita temporalmente `@Validated` de `JwtConfig` (dejando solo `@ConfigurationProperties`) y ejecuta de nuevo `sinElValorObligatorioElContextoNoArranca`. El test FALLA porque ahora `assertThat(context).hasFailed()` es falso: el contexto arranca "exitosamente" con `secreto = null`, exactamente el escenario peligroso que este Tema previene — diagnostica confirmando que `@Validated` es la línea específica de código responsable de convertir un valor faltante en un fallo de arranque inmediato, en vez de un `null` silencioso que fallaría más tarde en un lugar distinto. Revierte `@Validated` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un tercer test que confirme que un valor de `expiracion-segundos` menor a `60` (violando `@Min(60)`) también hace fallar el arranque, con el mismo tipo de causa raíz.
 2. Lee el mensaje completo de `context.getStartupFailure().getMessage()` en un test y confirma que menciona explícitamente el nombre de la propiedad problemática.
@@ -249,8 +252,6 @@ mvn test -Dtest=FalloArranqueTest   # Maven
 
 **Pista:** `context.getStartupFailure()` devuelve la excepción completa con toda la cadena de causas; `hasRootCauseInstanceOf(...)` navega hasta la causa más profunda, que es normalmente la más específica y útil para diagnosticar.
 
-#### Paso 6 · Práctica independiente
-
 **Completa el código:** rellena el espacio para confirmar que el contexto falló al arrancar:
 
 ```java
@@ -258,31 +259,40 @@ contextRunner.withPropertyValues("app.jwt.expiracion-segundos=900")
     .run(context -> assertThat(context).____());
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos tests `ApplicationContextRunner`: uno que confirme el fallo de arranque ante un valor faltante, y otro que confirme el arranque exitoso con todos los valores presentes. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, dos tests `ApplicationContextRunner`: uno que confirme el fallo de arranque ante un valor faltante, y otro que confirme el arranque exitoso con todos los valores presentes. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya confirmas con un test real que un valor de configuración obligatorio faltante impide el arranque completo de la aplicación, en vez de dejarla arrancar con un valor inválido. El siguiente tema aborda cómo comunicar de forma consistente los errores que sí ocurren durante la operación normal, ya con la aplicación arrancada. Fuente oficial: [Spring Boot — Testing auto-configuration](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration).
+**Reto abierto.** Marca como obligatorias todas las propiedades sin valor por defecto seguro (secretos, credenciales, URLs de servicios) y deja con valor por defecto explícito las que sí lo tengan. Demuestra con tests que cada propiedad obligatoria falta una a la vez y el arranque se detiene, y documenta el mensaje que recibe quien despliega.
+
+**Checklist de salida.**
+
+- [ ] Cada propiedad sin valor por defecto seguro es obligatoria y validada.
+- [ ] Un test por propiedad demuestra que su ausencia impide el arranque.
+- [ ] El mensaje de fallo nombra la propiedad problemática.
+- [ ] Las propiedades con valor por defecto seguro no bloquean el arranque.
+- [ ] El README explica qué hacer ante el error de validación.
+
+**Si falla.** Si el contexto arranca con una propiedad faltante, confirma que `@Validated` sigue en la clase y que la restricción está en el componente correcto del record; si el mensaje no nombra la propiedad, revisa que estés leyendo la causa raíz y no solo la excepción externa.
+
+**Siguiente paso:** el Tema 3 aborda cómo comunicar de forma consistente los errores que sí ocurren durante la operación normal.
 
 **Errores comunes:** omitir `@Validated` en la clase de configuración, dejando que un valor faltante pase desapercibido hasta usarse en producción; definir valores por defecto inseguros para propiedades que deberían ser explícitamente obligatorias, como secretos o credenciales.
 
-**Cuándo no usarlo:** para un valor de configuración genuinamente opcional con un valor por defecto seguro y razonable (por ejemplo, un tamaño de página de paginación), forzar validación obligatoria sin un valor por defecto sería innecesariamente rígido; reserva `@NotBlank`/`@Min` sin default para valores donde no existe un valor por defecto seguro.
+**Límites y decisión de uso:** para un valor de configuración genuinamente opcional con un valor por defecto seguro y razonable (por ejemplo, un tamaño de página de paginación), forzar validación obligatoria sin un valor por defecto sería innecesariamente rígido; reserva `@NotBlank`/`@Min` sin default para valores donde no existe un valor por defecto seguro.
 
-Fallar rápido al arranque es la estrategia que adoptará el proyecto integrador de este track (microservicio productivo, Módulo 12) para no desplegar con configuración inválida.
+**Fuente oficial:** [Spring Boot — Testing auto-configuration](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.testing-auto-configuration).
 
-### Tema 3: Manejo global de excepciones consistente entre entornos
+**Transferencia al proyecto integrador:** fallar rápido al arranque es la estrategia que adoptará el proyecto integrador de este track (microservicio productivo, Módulo 12) para no desplegar con configuración inválida.
 
-#### Paso 1 · Objetivo y preparación
+### Tema 3: Manejo global de excepciones consistente entre entornos · Avanzado · 40 min
 
-Al finalizar podrás extender el manejo global de excepciones (Módulo 2) para una nueva excepción de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente.
+**Prerrequisito:** `@ControllerAdvice` y `ResponseEntity` (Módulo 2); Temas 1-2 de este módulo.
+**Al terminar podrás:** extender el manejo global de excepciones (Módulo 2) para una nueva excepción de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente.
 
-**Conocimiento previo:** `@ControllerAdvice` y `ResponseEntity` (Módulo 2); Temas 1-2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Cada nueva regla de negocio que puede fallar (por ejemplo, exceder el límite de paradas por ruta) necesita comunicar el error al cliente de la API en el MISMO formato que cualquier otro error ya manejado, sin que el consumidor de la API tenga que aprender un formato distinto por cada tipo de excepción nueva.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** el mismo `@RestControllerAdvice` extendido, formato uniforme sin importar el entorno.
 
@@ -299,9 +309,9 @@ flowchart LR
   B --> D[mismo formato JSON de error, sin importar el entorno]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea la excepción de negocio y su mapeo en `src/main/java/com/academia/errores/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea la excepción de negocio y su mapeo en `src/main/java/com/academia/errores/`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/errores
@@ -410,7 +420,7 @@ mvn test -Dtest=ManejadorGlobalErroresTest # Maven
 
 **Fallo deliberado:** en `RutasController`, reemplaza `throw new LimiteParadasExcedidoException(LIMITE_PARADAS)` por una respuesta manual de error construida directamente en el método (`return "ERROR: límite excedido"`, con `200 OK` por defecto en vez de un código de error). Ejecuta de nuevo `excederElLimiteDeParadasDevuelveProblemDetailConsistente` — el test FALLA porque `status().isUnprocessableEntity()` no coincide con el `200` real devuelto — diagnostica confirmando por qué construir respuestas de error manualmente dentro de cada endpoint, en vez de lanzar una excepción de negocio hacia el manejador centralizado, produce inconsistencias reales y detectables: un cliente que espera `422` con `ProblemDetail` recibiría un `200` con un texto plano no estructurado. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega una segunda excepción de negocio distinta al mismo `@RestControllerAdvice` y confirma con un test que ambas producen el mismo formato `application/problem+json`, solo con `title`/`detail` distintos.
 2. Agrega un campo adicional al `ProblemDetail` (`problema.setProperty("limite", LIMITE_PARADAS)`) y confirma con `jsonPath("$.limite")` que aparece en la respuesta.
@@ -418,8 +428,6 @@ mvn test -Dtest=ManejadorGlobalErroresTest # Maven
 4. Escribe de memoria (sin mirar) una excepción de negocio, su mapeo en `@RestControllerAdvice` a `ProblemDetail`, y un test `MockMvc` que confirme el código de estado y el `title`. Compara después contra el patrón del Paso 4.
 
 **Pista:** `content().contentTypeCompatibleWith("application/problem+json")` es más robusto que comparar el string exacto del `Content-Type`, porque tolera parámetros adicionales como el charset que Spring puede agregar automáticamente.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para mapear la excepción a una respuesta HTTP:
 
@@ -430,19 +438,31 @@ public ProblemDetail manejarLimiteExcedido(LimiteParadasExcedidoException ex) {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una excepción de negocio mapeada a `ProblemDetail` en un `@RestControllerAdvice`, y un test `MockMvc` que confirme el código de estado y el formato de la respuesta. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, una excepción de negocio mapeada a `ProblemDetail` en un `@RestControllerAdvice`, y un test `MockMvc` que confirme el código de estado y el formato de la respuesta. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya extiendes el manejo centralizado de excepciones para una nueva regla de negocio, confirmando con `MockMvc` real que el formato de error permanece consistente sin importar qué endpoint lo originó. Esto cierra el módulo de configuración y manejo de errores; el siguiente módulo aborda cómo probar la aplicación completa de forma automatizada. Fuente oficial: [Spring — Error Handling for REST with ProblemDetail](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html).
+**Reto abierto.** Define el catálogo completo de errores de negocio del proyecto, con código HTTP, `title` estable y campos adicionales por tipo. Implementa cada excepción y su handler, y demuestra con tests que el `Content-Type` y la forma del cuerpo son idénticos en desarrollo, pruebas y producción.
+
+**Checklist de salida.**
+
+- [ ] Cada excepción de negocio tiene un handler en el mismo `@RestControllerAdvice`.
+- [ ] Todos los errores devuelven `application/problem+json` con la misma forma.
+- [ ] Los códigos HTTP distinguen validación, conflicto, recurso ausente y límite excedido.
+- [ ] Ningún endpoint construye respuestas de error a mano.
+- [ ] El catálogo de errores está documentado y probado.
+
+**Si falla.** Si el handler no se aplica, confirma que la clase está escaneada por el contexto y que la excepción no se captura antes en un `try/catch` local; si cambia el `Content-Type`, revisa que devuelvas `ProblemDetail` y no un `Map` genérico.
+
+**Siguiente paso:** el módulo 6 aborda cómo probar la aplicación completa de forma automatizada.
 
 **Errores comunes:** construir respuestas de error manualmente dentro de un endpoint específico en vez de lanzar una excepción hacia el manejador centralizado; crear un `@ControllerAdvice` nuevo y separado para cada excepción, en vez de extender el mismo existente.
 
-**Cuándo no usarlo:** para un error verdaderamente específico de un único endpoint sin ninguna posibilidad de reutilización en otro lugar de la aplicación, manejarlo directamente en el método del controller sin pasar por el mecanismo global puede ser aceptable; reserva el `@RestControllerAdvice` centralizado para excepciones de negocio con sentido a nivel de aplicación.
+**Límites y decisión de uso:** para un error verdaderamente específico de un único endpoint sin ninguna posibilidad de reutilización en otro lugar de la aplicación, manejarlo directamente en el método del controller sin pasar por el mecanismo global puede ser aceptable; reserva el `@RestControllerAdvice` centralizado para excepciones de negocio con sentido a nivel de aplicación.
 
----
+**Fuente oficial:** [Spring — Error Handling for REST with ProblemDetail](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html).
 
-El manejo global de excepciones de este tema es el que mantendrá consistente el proyecto integrador de este track (microservicio productivo, Módulo 12) entre entornos.
+**Transferencia al proyecto integrador:** el manejo global de excepciones de este tema es el que mantendrá consistente el proyecto integrador de este track (microservicio productivo, Módulo 12) entre entornos.
 
 ## Laboratorio práctico
 
@@ -465,4 +485,28 @@ El manejo global de excepciones de este tema es el que mantendrá consistente el
 - **Omitir `@Validated` en la clase de configuración.** Sin ella, un valor faltante puede pasar desapercibido hasta usarse en producción.
 - **Crear un nuevo `@ControllerAdvice` separado para cada nueva excepción.** Extiende el mismo `@ControllerAdvice` centralizado existente.
 
----
+## Proyecto de cierre del módulo
+
+**Objetivo:** entregar un servicio que arranque con configuración tipada y validada, se detenga ante un valor obligatorio ausente y devuelva un único formato de error para todo su dominio.
+
+**Entregables.**
+
+1. Tres grupos de configuración tipados con `@ConfigurationProperties` (seguridad, persistencia y límites) y sus valores en `application.yml`.
+2. `@Validated` en cada grupo, con al menos una propiedad obligatoria y una con valor por defecto seguro documentado.
+3. Tests `ApplicationContextRunner` que comprueben el enlace correcto, el fallo por valor faltante y el fallo por valor fuera de rango.
+4. Un catálogo de al menos cuatro excepciones de negocio con handlers en un único `@RestControllerAdvice`.
+5. Tests `MockMvc` que verifiquen código, `Content-Type` y forma del cuerpo de cada error.
+6. `README.md` con tabla de propiedades (nombre, tipo, obligatoriedad, valor por defecto) y el procedimiento ante un fallo de arranque.
+
+**Rúbrica (100 puntos).**
+
+| Criterio | Puntos |
+|---|---:|
+| Configuración agrupada, tipada y enlazada desde `application.yml` | 20 |
+| Validación al arranque probada con causa raíz real | 20 |
+| Propiedades opcionales con valor por defecto seguro documentado | 10 |
+| Catálogo de errores con formato uniforme `application/problem+json` | 20 |
+| Cobertura de casos normales, límite y error en tests | 15 |
+| README reproducible y diagnóstico de fallos provocados | 15 |
+
+**Criterio de aceptación:** si la aplicación arranca con un secreto obligatorio ausente, o si dos errores de negocio devuelven formas distintas de cuerpo, el módulo no se considera cerrado aunque la rúbrica sume 100.

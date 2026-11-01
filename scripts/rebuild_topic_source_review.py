@@ -18,6 +18,14 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/topic-source-review.json"
 URL_PATTERN = re.compile(r"https?://[^\s<>\[\])`\"']+", re.IGNORECASE)
 TRAILING_PUNCTUATION = ".,;:"
+TOPIC_META = re.compile(
+    r"\s+·\s+(?:Básico|Intermedio|Avanzado|Experto)\s+·\s+\d+(?:[–-]\d+)?\s*(?:min|h(?:\s+\d+\s*min)?)\s*$",
+    re.IGNORECASE,
+)
+
+
+def base_topic(title: str) -> str:
+    return TOPIC_META.sub("", title).strip()
 
 
 def topic_blocks(text: str) -> dict[str, tuple[str, int]]:
@@ -27,7 +35,9 @@ def topic_blocks(text: str) -> dict[str, tuple[str, int]]:
     for index, heading in enumerate(headings):
         end = headings[index + 1].start() if index + 1 < len(headings) else len(visible)
         title = heading.group(1).strip()
-        result[title] = (visible[heading.start():end], visible[:heading.start()].count("\n") + 1)
+        entry = (visible[heading.start():end], visible[:heading.start()].count("\n") + 1)
+        result[title] = entry
+        result.setdefault(base_topic(title), entry)
     return result
 
 

@@ -7,7 +7,7 @@ No mide aprendizaje ni calidad de la explicación; detecta señales que requiere
 
 - ``bloque-repetido``: una sección editorial aparece dos veces en el mismo tema.
 - ``cola-tras-cierre``: más de 500 palabras después del encabezado del Paso 7
-  (señal de texto pegado de otra generación, no de un cierre).
+  o de Aplica (señal de texto pegado de otra generación, no de un cierre).
 - ``andamiaje-generico``: frases plantilla que prometen independencia sin
   demostrarla ("este tema se puede reproducir en una carpeta vacía").
 - ``parrafo-repetido``: el mismo párrafo dos veces dentro del tema.
@@ -97,7 +97,7 @@ def evaluate_topic(block: str) -> dict:
         if generic in block:
             codes.add("andamiaje-generico")
 
-    closure = re.search(r"^####\s+Paso 7[^\n]*$", block, re.MULTILINE)
+    closure = re.search(r"^####\s+(?:Paso 7|Aplica)\b[^\n]*$", block, re.MULTILINE)
     tail_words = 0
     if closure:
         tail_words = count_words(block[closure.end():])

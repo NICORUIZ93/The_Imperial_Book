@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baselineCommit": "07733a29",
-  "reviewedAt": "2026-10-31",
+  "reviewedAt": "2026-11-01",
   "method": "Inventario de los 378 temas sin dominio reconocido en la línea base; verificación HTTP de citas ya escritas para 19 proveedores documentales inequívocos.",
   "limits": "El éxito HTTP no prueba pertinencia, actualidad de versiones ni calidad pedagógica. Todos los temas conservan revisión manual pendiente.",
   "providerHostsReviewed": [
@@ -5167,7 +5167,7 @@
         "https://start.spring.io/starter.zip"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 341,
+      "line": 356,
       "originalProseUrls": [
         "https://resilience4j.readme.io/docs/circuitbreaker",
         "https://start.spring.io/starter.zip"
@@ -5183,7 +5183,7 @@
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 906,
+      "line": 1008,
       "originalProseUrls": [
         "https://martinfowler.com/bliki/DDD_Aggregate.html"
       ],
@@ -5200,7 +5200,7 @@
         "https://docs.temporal.io/develop/java/workflows/basics"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1063,
+      "line": 1188,
       "originalProseUrls": [
         "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
         "https://docs.temporal.io/design-patterns/saga-pattern",
@@ -5358,7 +5358,7 @@
         "https://jakarta.ee/specifications/bean-validation/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 121,
+      "line": 127,
       "originalProseUrls": [
         "https://jakarta.ee/specifications/bean-validation/"
       ],
@@ -5374,7 +5374,7 @@
         "https://projectlombok.org/features/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 325,
+      "line": 343,
       "originalProseUrls": [
         "https://mapstruct.org/documentation/stable/reference/html/",
         "https://projectlombok.org/features/"
@@ -5391,7 +5391,7 @@
         "https://springdoc.org/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 508,
+      "line": 547,
       "originalProseUrls": [
         "https://spec.openapis.org/oas/latest.html",
         "https://springdoc.org/"
@@ -5438,7 +5438,7 @@
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 183,
+      "line": 195,
       "originalProseUrls": [
         "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching"
       ],
@@ -5453,7 +5453,7 @@
         "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 334,
+      "line": 360,
       "originalProseUrls": [
         "https://documentation.red-gate.com/flyway/flyway-concepts/migrations"
       ],
@@ -5468,7 +5468,7 @@
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 544,
+      "line": 564,
       "originalProseUrls": [
         "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
         "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes"
@@ -5484,7 +5484,7 @@
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 168,
+      "line": 174,
       "originalProseUrls": [
         "https://java.testcontainers.org/modules/databases/postgres/"
       ],
@@ -5499,7 +5499,7 @@
         "https://kafka.apache.org/documentation/#consumerconfigs"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 586,
+      "line": 610,
       "originalProseUrls": [
         "https://kafka.apache.org/documentation/#consumerconfigs"
       ],
@@ -5531,7 +5531,7 @@
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 496,
+      "line": 514,
       "originalProseUrls": [
         "https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking"
       ],

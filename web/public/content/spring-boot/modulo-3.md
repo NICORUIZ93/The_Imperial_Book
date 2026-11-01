@@ -1,23 +1,17 @@
 # Módulo 3: Persistencia con Spring Data JPA
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra una base de datos H2 real embebida y `mvn test`, para que cada afirmación sobre queries y migraciones sea comprobable, no solo descrita.
-
+Cada tema declara nivel, duración y una verificación real contra una base de datos H2 embebida y `mvn test`, para que cada afirmación sobre consultas y migraciones sea comprobable, no solo descrita.
 
 ## Aprende construyendo
 
-### Tema 1: Entidades y repositorios derivados
+### Tema 1: Entidades y repositorios derivados · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Spring Initializr y starters (Módulo 1); DTOs vs entidades (Módulo 2).
+**Al terminar podrás:** mapear una clase Java a una tabla con `@Entity`, declarar un repositorio derivado y explicar cuándo se necesita `@Query` explícito.
 
-Al finalizar podrás mapear una clase Java a una tabla con `@Entity`, declarar un repositorio derivado cuyo nombre de método genera la query automáticamente, y explicar cuándo ese mecanismo deja de ser suficiente y se necesita `@Query` explícito.
-
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); DTOs vs entities (Módulo 2).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Una lista de tareas pendientes necesita persistirse en una base de datos real; escribir SQL manual para cada consulta simple (buscar por estado, por usuario) es repetitivo y propenso a errores tipográficos que solo se detectan en tiempo de ejecución.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** mapeo objeto-relacional (`@Entity`), query derivada del nombre del método, `@Query` explícito para casos complejos.
 
@@ -31,7 +25,7 @@ public class Tarea {
 }
 ```
 
-Esta clase mapea una clase Java a una tabla de base de datos: Hibernate (la implementación de JPA que usa Spring Data JPA) traduce automáticamente entre instancias de esta clase y filas de la tabla, gestionando la generación de identificadores (`@GeneratedValue`).
+Esta clase mapea una clase Java a una tabla: Hibernate (la implementación de JPA que usa Spring Data JPA) traduce automáticamente entre instancias y filas, gestionando la generación de identificadores (`@GeneratedValue`).
 
 ```java
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
@@ -39,9 +33,9 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 }
 ```
 
-Esta interfaz demuestra la capacidad más distintiva de Spring Data: Spring parsea el nombre del método (`findBy` + `Completada` + `False`) y genera la implementación SQL automáticamente, sin ningún cuerpo escrito a mano. Cuando la consulta necesaria es demasiado compleja para expresarse por convención de nombres (agregaciones, joins específicos), `@Query` con JPQL explícito da control total.
+Esta interfaz demuestra la capacidad más distintiva de Spring Data: Spring parsea el nombre del método (`findBy` + `Completada` + `False`) y genera la implementación SQL automáticamente, sin ningún cuerpo escrito a mano. Cuando la consulta es demasiado compleja para expresarse por convención de nombres (agregaciones, joins específicos), `@Query` con JPQL explícito da control total.
 
-**Analogía:** un método derivado es como pedirle a un asistente que entienda automáticamente qué necesitas a partir de cómo formulas tu pedido en lenguaje natural estructurado ("las tareas no completadas"); `@Query` es darle a ese mismo asistente instrucciones explícitas y precisas cuando el pedido es demasiado específico para que lo infiera por sí solo.
+**Analogía:** un método derivado es como pedirle a un asistente que entienda automáticamente qué necesitas a partir de cómo formulas tu pedido ("las tareas no completadas"); `@Query` es darle instrucciones explícitas y precisas cuando el pedido es demasiado específico para inferirlo.
 
 **Diagrama:**
 
@@ -52,9 +46,9 @@ flowchart LR
   D["@Query JPQL explícito"] --> E[control total sobre el SQL exacto]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`data-jpa`, `h2`) y crea la entidad y el repositorio en `src/main/java/com/academia/tarea/`:
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`), genera el proyecto con `data-jpa` y `h2` y crea la entidad y el repositorio en `src/main/java/com/academia/tarea/`:
 
 ```bash
 mkdir -p academia-spring
@@ -63,6 +57,8 @@ curl -fsSL https://start.spring.io/starter.zip -d dependencies=data-jpa,h2 -d ja
 unzip -o app.zip
 mkdir -p src/main/java/com/academia/tarea
 ```
+
+1. Crea `src/main/java/com/academia/tarea/Tarea.java`:
 
 ```java
 // src/main/java/com/academia/tarea/Tarea.java
@@ -93,6 +89,8 @@ public class Tarea {
 }
 ```
 
+2. Crea `src/main/java/com/academia/tarea/TareaRepository.java`:
+
 ```java
 // src/main/java/com/academia/tarea/TareaRepository.java
 package com.academia.tarea;
@@ -105,9 +103,9 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 }
 ```
 
-**Explicación línea por línea:** `@Id @GeneratedValue` delega en la base de datos la generación del identificador; el constructor protegido sin argumentos es requerido por JPA para reconstruir instancias desde filas de la base de datos, mientras el constructor público controla la creación válida desde código de aplicación; `findByCompletadaFalse()` no tiene cuerpo porque Spring Data genera la implementación completa a partir del nombre del método en tiempo de arranque.
+**Explicación línea por línea:** `@Id @GeneratedValue` delega en la base la generación del identificador; el constructor protegido sin argumentos es requerido por JPA para reconstruir instancias desde filas, mientras el constructor público controla la creación válida desde código; `findByCompletadaFalse()` no tiene cuerpo porque Spring Data genera la implementación a partir del nombre en tiempo de arranque.
 
-Escribe un test real con `@DataJpaTest` (levanta un contexto JPA real contra H2 en memoria, sin mockear nada) que guarda tareas y confirma que el método derivado filtra correctamente:
+3. Escribe un test real con `@DataJpaTest` (levanta un contexto JPA contra H2, sin mockear nada):
 
 ```java
 // src/test/java/com/academia/tarea/TareaRepositoryTest.java
@@ -138,29 +136,29 @@ class TareaRepositoryTest {
 }
 ```
 
+4. Ejecuta el test:
+
 ```bash
 mvn test -Dtest=TareaRepositoryTest # Maven
 ./gradlew test --tests TareaRepositoryTest # Gradle (equivalente)
 ```
 
-`mvn` es el comando que ejecuta Maven; `test` es la fase del ciclo de vida que compila y corre las pruebas, y `-Dtest=` es la propiedad que acota la ejecución a una sola clase de test.
+`mvn` ejecuta Maven; `test` es la fase que compila y corre las pruebas, y `-Dtest=` acota la ejecución a una sola clase.
 
-**Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que `findByCompletadaFalse()` devuelve exactamente las dos tareas guardadas sin completar, generadas por Spring Data a partir únicamente del nombre del método, sin SQL escrito a mano.
+**Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que `findByCompletadaFalse()` devuelve exactamente las dos tareas sin completar, generadas a partir únicamente del nombre del método, sin SQL escrito a mano.
 
-**Fallo deliberado:** cambia el nombre del método en `TareaRepository` a `findByTituloo` (columna inexistente, error tipográfico deliberado) y vuelve a ejecutar `mvn test`. La aplicación falla al ARRANCAR el contexto de Spring (no al ejecutar la query), con `PropertyReferenceException: No property 'tituloo' found for type 'Tarea'` — diagnostica confirmando que Spring Data valida los nombres de método contra las propiedades reales de la entidad en tiempo de arranque, adelantando ese error a un momento mucho más temprano que si hubiera sido SQL manual con un typo en el nombre de columna. Revierte el nombre antes de continuar.
+**Fallo deliberado:** cambia el nombre del método a `findByTituloo` (columna inexistente, error tipográfico deliberado) y ejecuta `mvn test`. La aplicación falla al ARRANCAR el contexto (no al ejecutar la query) con `PropertyReferenceException: No property 'tituloo' found for type 'Tarea'`. Diagnostica confirmando que Spring Data valida los nombres contra las propiedades reales de la entidad en el arranque, adelantando el error mucho antes que un SQL manual con un typo. Revierte el nombre.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
-1. Agrega un segundo método derivado (`findByTituloContaining(String fragmento)`) y confirma con un test real que filtra correctamente por coincidencia parcial.
-2. Agrega un método derivado con dos condiciones (`findByCompletadaFalseAndTituloContaining(String fragmento)`) y confirma su comportamiento con datos que solo cumplen una de las dos condiciones.
-3. Reemplaza `findByCompletadaFalse()` por el equivalente exacto en `@Query("SELECT t FROM Tarea t WHERE t.completada = false")` y confirma que el test original sigue pasando sin ninguna otra modificación.
-4. Escribe de memoria (sin mirar) una entidad con dos campos y un repositorio con un método derivado que filtre por uno de ellos.
+1. Agrega `findByTituloContaining(String fragmento)` y confirma con un test que filtra por coincidencia parcial.
+2. Agrega `findByCompletadaFalseAndTituloContaining(String fragmento)` y pruébalo con datos que solo cumplen una condición.
+3. Reemplaza `findByCompletadaFalse()` por `@Query("SELECT t FROM Tarea t WHERE t.completada = false")` y confirma que el test original sigue pasando.
+4. Escribe de memoria una entidad con dos campos y un repositorio con un método derivado que filtre por uno de ellos.
 
-**Pista:** si el nombre del método derivado empieza a tener más de dos o tres condiciones encadenadas, es una señal de que `@Query` explícito sería más legible que seguir extendiendo el nombre.
+**Pista:** si el nombre derivado empieza a tener más de dos o tres condiciones encadenadas, `@Query` explícito será más legible.
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que Spring genere la query a partir del nombre del método:
+**Completa el código:** rellena el espacio para que Spring genere la query desde el nombre:
 
 ```java
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
@@ -168,37 +166,46 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una entidad `@Entity` con `@Id @GeneratedValue`, y un repositorio con un método derivado que filtre por un campo booleano. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe una entidad `@Entity` con `@Id @GeneratedValue` y un repositorio con un método derivado por un campo booleano.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya mapeas una clase Java a una tabla con `@Entity`, declaras repositorios cuya query se genera a partir del nombre del método, y confirmas con un test real contra H2 que el resultado es correcto. El siguiente tema aborda qué ocurre cuando estas queries derivadas se combinan con relaciones entre entidades. Fuente oficial: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+**Reto abierto.** Modela entregas y estados con una entidad `Envio` y un repositorio que cubra búsquedas por estado, por guía parcial y por rango de fechas. Usa métodos derivados donde la intención sea legible y `@Query` donde la convención se vuelva ambigua. Demuestra con `@DataJpaTest` al menos cuatro consultas y documenta por qué elegiste cada mecanismo.
 
-**Errores comunes:** escribir SQL manual para consultas simples que un método derivado resolvería automáticamente; encadenar demasiadas condiciones en el nombre del método hasta volverlo ilegible, en vez de cambiar a `@Query`.
+**Checklist de salida.**
 
-**Cuándo no usarlo:** para una consulta con agregaciones, joins específicos, o lógica que no se expresa naturalmente como una secuencia de condiciones sobre propiedades, un método derivado se vuelve forzado o imposible; usa `@Query` con JPQL explícito desde el principio en esos casos.
+- [ ] La entidad tiene identificador generado y constructor protegido.
+- [ ] Al menos dos consultas derivadas y una `@Query` funcionan en pruebas.
+- [ ] Un nombre de método inválido rompe el arranque y el diagnóstico está documentado.
+- [ ] Las pruebas usan H2 real, sin mocks del repositorio.
+- [ ] El README explica cuándo un método derivado deja de ser suficiente.
 
-Las entidades y repositorios que definas aquí son la base de persistencia del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Si falla.** Si el contexto no arranca por una propiedad inexistente, revisa el nombre contra los campos reales. Si un método derivado devuelve vacío, comprueba el nombre exacto y los datos insertados. Si `@DataJpaTest` no encuentra el repositorio, revisa el paquete y la anotación de la clase principal.
 
-### Tema 2: El problema N+1 y su corrección
+**Siguiente paso:** el Tema 2 aborda qué ocurre cuando estas consultas se combinan con relaciones entre entidades.
 
-#### Paso 1 · Objetivo y preparación
+**Errores comunes:** escribir SQL manual para consultas simples que un método derivado resolvería; encadenar demasiadas condiciones en el nombre hasta volverlo ilegible.
 
-Al finalizar podrás reproducir el problema N+1 con una relación `@OneToMany`, medir el número real de queries ejecutadas, y corregirlo con `JOIN FETCH`.
+**Límites y decisión de uso:** para agregaciones, joins específicos o lógica que no se expresa como una secuencia de condiciones, un método derivado se vuelve forzado o imposible; usa `@Query` desde el principio.
 
-**Conocimiento previo:** Tema 1 de este módulo (entidades y repositorios).
+**Fuente oficial:** [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
 
-#### Paso 2 · Contexto y caso real
+**Transferencia al proyecto integrador:** estas entidades y repositorios son la base de persistencia del microservicio productivo.
 
-**¿Por qué es importante?** Iterar sobre una lista de usuarios accediendo a las tareas de cada uno, con una relación cargada perezosamente, dispara una query SQL separada por cada usuario individual — un problema de rendimiento que empeora directamente con el tamaño de los datos y puede pasar desapercibido en desarrollo con pocos registros de prueba.
+### Tema 2: El problema N+1 y su corrección · Avanzado · 50 min
 
-#### Paso 3 · Teoría con analogía
+**Prerrequisito:** Tema 1 de este módulo (entidades y repositorios).
+**Al terminar podrás:** reproducir el problema N+1 con una relación `@OneToMany`, medir el número real de consultas y corregirlo con `JOIN FETCH`.
+
+#### Aprende
+
+**¿Por qué es importante?** Iterar sobre una lista de usuarios accediendo a las tareas de cada uno, con una relación perezosa, dispara una query SQL separada por cada usuario: un problema de rendimiento que empeora con el tamaño de los datos y puede pasar desapercibido en desarrollo con pocos registros.
 
 **Conceptos clave:** carga perezosa (`lazy`), una query adicional por cada elemento de una colección, `JOIN FETCH`.
 
-`@OneToMany(mappedBy = "usuario") private List<Tarea> tareas;` mapea una relación uno-a-muchos, con carga perezosa por defecto: la lista de tareas de un usuario no se carga desde la base de datos hasta que efectivamente se accede a ella (`u.getTareas().size()`). Esto se vuelve problemático al iterar sobre una colección de usuarios: por cada usuario, Hibernate ejecuta una query SQL separada para cargar sus tareas, resultando en N queries adicionales más la query original que cargó la lista de usuarios — de ahí "N+1". `@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();` corrige esto indicándole a Hibernate que cargue usuarios y tareas relacionadas en una única query con `JOIN` real.
+`@OneToMany(mappedBy = "usuario") private List<Tarea> tareas;` mapea una relación uno-a-muchos con carga perezosa por defecto: la lista de tareas no se carga hasta que se accede a ella (`u.getTareas().size()`). Al iterar sobre una colección de usuarios, Hibernate ejecuta una query separada por usuario para cargar sus tareas, resultando en N queries adicionales más la original — de ahí "N+1". `@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();` corrige esto indicando que cargue usuarios y tareas en una única query con `JOIN` real.
 
-**Analogía:** el problema N+1 es como enviar un mensajero por separado a buscar cada ingrediente de una receta, uno a la vez, en vez de un único mensajero que trae todos los ingredientes en un solo viaje coordinado (`JOIN FETCH`); cada viaje individual tiene un costo fijo que se multiplica innecesariamente.
+**Analogía:** el problema N+1 es como enviar un mensajero por separado a buscar cada ingrediente de una receta, uno a la vez, en vez de un único mensajero que trae todos en un solo viaje coordinado (`JOIN FETCH`); cada viaje tiene un costo fijo que se multiplica.
 
 **Diagrama:**
 
@@ -209,14 +216,16 @@ flowchart LR
   D["JOIN FETCH u.tareas"] --> E["1 sola query con JOIN"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea `src/main/java/com/academia/tarea/Usuario.java` con la relación, habilitando además el contador de queries real vía el logger de Hibernate:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía) y crea `src/main/java/com/academia/tarea/Usuario.java` con la relación, habilitando el contador de queries real vía el logger de Hibernate:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/tarea
 cd academia-spring
 ```
+
+1. Crea `Usuario.java`:
 
 ```java
 // src/main/java/com/academia/tarea/Usuario.java
@@ -245,6 +254,8 @@ public class Usuario {
 }
 ```
 
+2. Activa las estadísticas reales:
+
 ```bash
 cat >> src/main/resources/application.properties <<'EOF'
 spring.jpa.properties.hibernate.generate_statistics=true
@@ -252,9 +263,9 @@ logging.level.org.hibernate.stat=DEBUG
 EOF
 ```
 
-**Explicación línea por línea:** `@OneToMany(mappedBy = "usuario")` declara la relación uno-a-muchos con carga perezosa (comportamiento por defecto de `@OneToMany`); `hibernate.generate_statistics=true` activa las estadísticas reales de Hibernate, que reportan el número exacto de queries ejecutadas por sesión — la forma real de medir N+1, no una estimación.
+**Explicación línea por línea:** `@OneToMany(mappedBy = "usuario")` declara la relación uno-a-muchos con carga perezosa (comportamiento por defecto); `hibernate.generate_statistics=true` activa estadísticas que reportan el número exacto de queries por sesión, la forma real de medir N+1.
 
-Escribe un test real que provoca N+1 deliberadamente, leyendo el conteo real de queries desde `SessionFactory.getStatistics()`:
+3. Escribe un test que provoque N+1 y lea el conteo real desde `SessionFactory.getStatistics()`:
 
 ```java
 // src/test/java/com/academia/tarea/NMasUnoTest.java
@@ -292,25 +303,25 @@ class NMasUnoTest {
 }
 ```
 
+4. Ejecuta el test:
+
 ```bash
 mvn test -Dtest=NMasUnoTest         # Maven
 ./gradlew test --tests NMasUnoTest  # Gradle (equivalente)
 ```
 
-**Resultado esperado:** el test pasa: `stats.getQueryExecutionCount()` reporta exactamente `4` queries (1 de `findAll()` + 3 de acceso perezoso, una por usuario) — la medición real del problema N+1, no una suposición.
+**Resultado esperado:** el test pasa y `stats.getQueryExecutionCount()` reporta exactamente `4` queries (1 de `findAll()` + 3 de acceso perezoso, una por usuario): la medición real del problema, no una suposición.
 
-**Fallo deliberado:** cambia el conteo esperado a `assertThat(stats.getQueryExecutionCount()).isEqualTo(1L)` (asumiendo, incorrectamente, que `findAll()` ya trae todo) y ejecuta de nuevo. El test FALLA con `expected: 1L but was: 4L` — diagnostica confirmando con evidencia real, no intuición, que la carga perezosa efectivamente dispara las queries adicionales al iterar. Revierte la aserción a `4L`, luego corrige el método con `JOIN FETCH` en `UsuarioRepository` (`@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();`) y confirma que, usando ese método en vez de `findAll()`, `stats.getQueryExecutionCount()` baja a `1L`.
+**Fallo deliberado:** cambia el conteo esperado a `isEqualTo(1L)` (asumiendo que `findAll()` ya trae todo) y ejecuta. El test FALLA con `expected: 1L but was: 4L`. Diagnostica con evidencia real que la carga perezosa dispara las queries adicionales al iterar. Revierte a `4L`, corrige el repositorio con `JOIN FETCH` (`@Query("SELECT u FROM Usuario u JOIN FETCH u.tareas") List<Usuario> buscarConTareas();`) y confirma que usando ese método el conteo baja a `1L`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
-1. Agrega un cuarto usuario y confirma que el conteo de queries sube a `5` (1 + 4) antes de la corrección, y permanece en `1` después de aplicar `JOIN FETCH`.
-2. Prueba `@EntityGraph(attributePaths = "tareas")` sobre `findAll()` como alternativa declarativa a `JOIN FETCH` y confirma con `Statistics` que también reduce el conteo a `1`.
-3. Provoca N+1 con una segunda relación (agrega `@OneToMany` de `Usuario` a una nueva entidad `Comentario`) y confirma que iterar sobre ambas relaciones multiplica el número de queries adicionales.
-4. Escribe de memoria (sin mirar) una entidad con `@OneToMany` y un test que mida el número real de queries con `Statistics` antes y después de `JOIN FETCH`.
+1. Agrega un cuarto usuario y confirma que el conteo sube a `5` antes de la corrección y permanece en `1` después de `JOIN FETCH`.
+2. Prueba `@EntityGraph(attributePaths = "tareas")` sobre `findAll()` como alternativa declarativa y confirma con `Statistics` que reduce el conteo a `1`.
+3. Provoca N+1 con una segunda relación (`@OneToMany` de `Usuario` a `Comentario`) y confirma que iterar sobre ambas multiplica las queries adicionales.
+4. Escribe de memoria una entidad con `@OneToMany` y un test que mida el número real de queries antes y después de `JOIN FETCH`.
 
-**Pista:** `stats.clear()` antes de la sección que quieres medir es imprescindible; sin eso, el conteo incluye queries de configuración previas y el número deja de ser interpretable.
-
-#### Paso 6 · Práctica independiente
+**Pista:** `stats.clear()` antes de la sección que quieres medir es imprescindible; sin eso, el conteo incluye queries previas y deja de ser interpretable.
 
 **Completa el código:** rellena el espacio para cargar usuarios y tareas en una única query:
 
@@ -319,41 +330,51 @@ mvn test -Dtest=NMasUnoTest         # Maven
 List<Usuario> buscarConTareas();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que mida con `Statistics.getQueryExecutionCount()` la diferencia entre iterar con carga perezosa y usar `JOIN FETCH`. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe un test que mida con `Statistics.getQueryExecutionCount()` la diferencia entre carga perezosa y `JOIN FETCH`.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya reproduces el problema N+1 y lo mides con estadísticas reales de Hibernate, en vez de asumir su presencia o ausencia. El siguiente tema aborda cómo versionar cambios de esquema sin depender de la generación automática de Hibernate. Fuente oficial: [Hibernate — Fetching strategies](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching).
+**Reto abierto.** Reproduce N+1 con tres entidades relacionadas y demuestra con `Statistics` el número exacto de queries antes y después de la corrección. Compara `JOIN FETCH`, `@EntityGraph` y una proyección DTO, y decide cuál usarías para un listado paginado de entregas. Documenta el trade-off entre traer datos de más y ejecutar N+1.
 
-**Errores comunes:** no notar el problema N+1 hasta que aparece en producción con datasets grandes, por no haberlo medido durante el desarrollo; usar `EAGER` indiscriminadamente en todas las relaciones como "solución" genérica, lo que puede cargar datos innecesarios incluso cuando no se necesitan.
+**Checklist de salida.**
 
-**Cuándo no usarlo:** para una relación que casi nunca se accede junto con la entidad principal, forzar `JOIN FETCH` en todas las consultas cargaría datos innecesarios la mayoría del tiempo; resérvalo para los accesos donde realmente se sabe que la relación se usará.
+- [ ] El test mide queries reales, no estimaciones.
+- [ ] La corrección baja el conteo a una consulta para el caso probado.
+- [ ] Se comparan al menos dos alternativas con evidencia.
+- [ ] El README explica cuándo `JOIN FETCH` carga datos innecesarios.
+- [ ] La prueba falla de forma legible si el conteo cambia.
+- [ ] No se usa `EAGER` indiscriminadamente como solución.
 
-Detectar y corregir N+1 es una revisión obligatoria antes de dar por completo el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Si falla.** Si el conteo no baja, la consulta con `JOIN FETCH` no se está usando o la relación es de otro tipo. Si el conteo varía entre ejecuciones, falta `stats.clear()` o hay caché de segundo nivel. Si aparecen duplicados, usa `DISTINCT` en la consulta.
 
-### Tema 3: Migraciones con Flyway
+**Siguiente paso:** el Tema 3 aborda cómo versionar cambios de esquema sin depender de la generación automática de Hibernate.
 
-#### Paso 1 · Objetivo y preparación
+**Errores comunes:** no notar N+1 hasta producción, por no medirlo durante el desarrollo; usar `EAGER` indiscriminadamente como "solución" genérica, cargando datos innecesarios incluso cuando no se necesitan.
 
-Al finalizar podrás versionar un cambio de esquema con una migración de Flyway, y explicar por qué `hibernate.ddl-auto=update` es riesgoso en producción.
+**Límites y decisión de uso:** para una relación que casi nunca se accede junto con la entidad principal, forzar `JOIN FETCH` en todas las consultas cargaría datos innecesarios; resérvalo para accesos donde sabes que la relación se usará.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+**Fuente oficial:** [Hibernate — Fetching strategies](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching).
 
-#### Paso 2 · Contexto y caso real
+**Transferencia al proyecto integrador:** detectar y corregir N+1 es una revisión obligatoria antes de cerrar el microservicio productivo.
+
+### Tema 3: Migraciones con Flyway · Intermedio · 35 min
+
+**Prerrequisito:** Temas 1 y 2 de este módulo.
+**Al terminar podrás:** versionar un cambio de esquema con Flyway y explicar por qué `hibernate.ddl-auto=update` es riesgoso en producción.
+
+#### Aprende
 
 **¿Por qué es importante?** Un cambio de esquema aplicado automáticamente por Hibernate (`ddl-auto=update`) no queda registrado en ningún historial versionado ni revisable en un pull request; una migración de Flyway sí, y se aplica de forma idéntica y predecible en cada entorno.
 
-#### Paso 3 · Teoría con analogía
-
 **Conceptos clave:** esquema versionado y revisable, riesgo de `ddl-auto` en producción, migraciones aplicadas en orden secuencial.
 
-`hibernate.ddl-auto=update` permite que Hibernate genere y actualice automáticamente el esquema basándose en las entidades declaradas, cómodo en desarrollo temprano pero riesgoso en producción: Hibernate podría inferir un cambio distinto al pretendido, sin quedar registrado en ningún historial revisable antes de aplicarse. `V1__crear_tabla_tareas.sql` (una migración de Flyway, nombrada según su convención de versión secuencial) declara explícitamente en SQL puro el cambio de esquema, versionado en el repositorio, revisable en un pull request, y aplicado de forma idéntica en cada entorno — Flyway registra qué migraciones ya se aplicaron en cada base de datos, aplicando únicamente las nuevas pendientes, en orden.
+`hibernate.ddl-auto=update` permite que Hibernate genere y actualice el esquema basándose en las entidades, cómodo en desarrollo temprano pero riesgoso en producción: Hibernate podría inferir un cambio distinto al pretendido, sin quedar registrado en un historial revisable antes de aplicarse. `V1__crear_tabla_tareas.sql` declara explícitamente en SQL puro el cambio de esquema, versionado en el repositorio, revisable en un pull request y aplicado de forma idéntica en cada entorno. Flyway registra qué migraciones ya se aplicaron y ejecuta únicamente las pendientes, en orden.
 
-**Analogía:** `ddl-auto=update` es como dejar que un asistente reorganice el mobiliario de una casa según sus propias inferencias, sin un plano ni revisión previa; Flyway es seguir un plano de renovación explícito, versionado y revisado antes de ejecutarse, aplicado exactamente igual en cada casa idéntica.
+**Analogía:** `ddl-auto=update` es como dejar que un asistente reorganice el mobiliario según sus inferencias, sin plano ni revisión previa; Flyway es seguir un plano de renovación explícito, versionado y revisado antes de ejecutarse, aplicado igual en cada casa idéntica.
 
 **Diagrama:**
 
-```
+```text
 ┌── V1__crear_tabla_tareas.sql ──┐
 │  aplicada primero                │
 └──────────┬─────────────────┘
@@ -364,14 +385,16 @@ Al finalizar podrás versionar un cambio de esquema con una migración de Flyway
 └──────────────────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega la dependencia `flyway-core` y crea la migración inicial en `src/main/resources/db/migration/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía), agrega `flyway-core` y crea la migración inicial en `src/main/resources/db/migration/`:
 
 ```bash
 mkdir -p academia-spring/src/main/resources/db/migration
 cd academia-spring
 ```
+
+1. Crea `src/main/resources/db/migration/V1__crear_tabla_tarea.sql`:
 
 ```sql
 -- src/main/resources/db/migration/V1__crear_tabla_tarea.sql
@@ -381,6 +404,8 @@ CREATE TABLE tarea (
     completada BOOLEAN NOT NULL DEFAULT false
 );
 ```
+
+2. Desactiva `ddl-auto` y activa Flyway:
 
 ```bash
 # desactiva ddl-auto: el esquema ahora lo gestiona exclusivamente Flyway
@@ -392,9 +417,9 @@ mvn test          # Maven
 ./gradlew test    # Gradle (equivalente)
 ```
 
-**Explicación línea por línea:** `V1__crear_tabla_tarea.sql` (prefijo `V1`, número de versión secuencial, seguido de `__` y una descripción) declara el esquema inicial en SQL real; `spring.jpa.hibernate.ddl-auto=validate` le indica a Hibernate que NO genere ni modifique el esquema, solo que valide que las entidades coincidan con lo que Flyway ya creó — si no coinciden, la aplicación falla al arrancar en vez de aplicar un cambio silencioso no revisado.
+**Explicación línea por línea:** `V1__crear_tabla_tarea.sql` (prefijo `V1`, versión secuencial, `__` y descripción) declara el esquema inicial en SQL real; `spring.jpa.hibernate.ddl-auto=validate` indica a Hibernate que NO genere ni modifique el esquema, solo que valide que las entidades coincidan con lo que Flyway creó; si no coinciden, la aplicación falla al arrancar en vez de aplicar un cambio silencioso.
 
-Confirma con un test real que la migración se aplicó y el esquema coincide con la entidad `Tarea`, guardando y leyendo una fila real:
+3. Confirma con un test real que la migración se aplicó y el esquema coincide con la entidad:
 
 ```java
 // src/test/java/com/academia/tarea/MigracionFlywayTest.java
@@ -422,45 +447,58 @@ class MigracionFlywayTest {
 }
 ```
 
+4. Ejecuta el test:
+
 ```bash
 mvn test -Dtest=MigracionFlywayTest # Maven
 ./gradlew test --tests MigracionFlywayTest # Gradle (equivalente)
 ```
 
-**Resultado esperado:** `BUILD SUCCESS`, confirmando que Flyway aplicó `V1__crear_tabla_tarea.sql` antes de que el contexto de Spring arrancara, que `ddl-auto=validate` confirmó que la entidad `Tarea` coincide con ese esquema, y que guardar y leer una fila real funciona correctamente.
+**Resultado esperado:** `BUILD SUCCESS`, confirmando que Flyway aplicó `V1__crear_tabla_tarea.sql` antes de que el contexto arrancara, que `ddl-auto=validate` confirmó la coincidencia con la entidad y que guardar y leer una fila real funciona.
 
-**Fallo deliberado:** agrega manualmente un campo nuevo a la entidad `Tarea` (por ejemplo, `private String descripcion;`) SIN crear ninguna migración `V2` que agregue la columna correspondiente, y ejecuta `mvn test` de nuevo. La aplicación falla al arrancar con `SchemaManagementException: Schema-validation: missing column [descripcion] in table [tarea]` — diagnostica confirmando exactamente el propósito de `ddl-auto=validate`: en vez de que Hibernate silenciosamente agregara la columna faltante (el riesgo de `ddl-auto=update`), la aplicación se niega a arrancar hasta que exista una migración explícita y revisable que agregue esa columna. Revierte el campo agregado, o crea `V2__agregar_columna_descripcion.sql` con `ALTER TABLE tarea ADD COLUMN descripcion VARCHAR(500);` para resolverlo correctamente.
+**Fallo deliberado:** agrega un campo a `Tarea` (por ejemplo, `private String descripcion;`) SIN crear la migración `V2` correspondiente y ejecuta `mvn test`. La aplicación falla al arrancar con `SchemaManagementException: Schema-validation: missing column [descripcion] in table [tarea]`. Diagnostica confirmando el propósito de `ddl-auto=validate`: en vez de que Hibernate agregue la columna silenciosamente (el riesgo de `update`), la aplicación se niega a arrancar hasta que exista una migración explícita y revisable. Revierte el campo o crea `V2__agregar_columna_descripcion.sql` con `ALTER TABLE tarea ADD COLUMN descripcion VARCHAR(500);`.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
-1. Agrega `V2__agregar_indice_completada.sql` con `CREATE INDEX idx_tarea_completada ON tarea(completada);` y confirma que `mvn test` sigue en verde tras aplicar ambas migraciones en secuencia.
-2. Intenta nombrar una migración fuera de secuencia (`V1__otra_migracion.sql`, reutilizando la versión `1` ya aplicada) y observa el error real que produce Flyway ante una versión duplicada.
-3. Agrega una migración que renombre una columna (`ALTER TABLE tarea RENAME COLUMN titulo TO nombre;`) y actualiza la entidad correspondientemente, confirmando que el test de lectura/escritura sigue pasando con el nuevo nombre.
-4. Escribe de memoria (sin mirar) una migración `V1` que cree una tabla de dos columnas, y un test que confirme que Flyway la aplicó correctamente.
+1. Agrega `V2__agregar_indice_completada.sql` con `CREATE INDEX idx_tarea_completada ON tarea(completada);` y confirma que `mvn test` sigue en verde tras aplicar ambas migraciones.
+2. Intenta nombrar una migración fuera de secuencia (`V1__otra_migracion.sql`, reutilizando la versión ya aplicada) y observa el error real de Flyway ante una versión duplicada.
+3. Agrega una migración que renombre una columna (`ALTER TABLE tarea RENAME COLUMN titulo TO nombre;`) y actualiza la entidad; confirma que el test sigue pasando.
+4. Escribe de memoria una migración `V1` que cree una tabla de dos columnas y un test que confirme que Flyway la aplicó.
 
-**Pista:** el prefijo de versión (`V1`, `V2`, ...) debe ser único y estrictamente creciente; Flyway rechaza aplicar una migración con una versión ya registrada como aplicada.
+**Pista:** el prefijo de versión (`V1`, `V2`, ...) debe ser único y estrictamente creciente; Flyway rechaza aplicar una versión ya registrada.
 
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que Hibernate solo valide el esquema, sin modificarlo:
+**Completa el código:** rellena el espacio para que Hibernate solo valide el esquema:
 
 ```properties
 spring.jpa.hibernate.ddl-auto=____
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una migración `V1` que cree una tabla con al menos dos columnas, y explica en una frase por qué `ddl-auto=validate` es preferible a `update` en producción. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe una migración `V1` que cree una tabla con al menos dos columnas, y explica en una frase por qué `validate` es preferible a `update` en producción.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya versionas cambios de esquema con migraciones explícitas y revisables de Flyway, en vez de depender de la inferencia automática de Hibernate. Esto cierra el módulo de persistencia; el siguiente módulo aborda cómo exponer y proteger estos datos a través de una API REST completa. Fuente oficial: [Flyway — Migrations](https://documentation.red-gate.com/flyway/flyway-concepts/migrations).
+**Reto abierto.** Versiona el esquema del proyecto de entregas con Flyway: crea `V1` con las tablas base, `V2` con un índice y `V3` con una columna nueva. Mantén `ddl-auto=validate` y demuestra que una entidad desalineada impide arrancar. Documenta cómo se aplicaría el mismo conjunto de migraciones en una base vacía y en una base ya poblada.
 
-**Errores comunes:** confiar en `ddl-auto=update` en un entorno de producción, arriesgando cambios de esquema no versionados ni revisables; editar tablas manualmente en vez de a través de una migración versionada, perdiendo el historial y la reproducibilidad entre entornos.
+**Checklist de salida.**
 
-**Cuándo no usarlo:** para un prototipo local descartable sin ningún dato que preservar entre reinicios, `ddl-auto=create-drop` sin Flyway es más simple y suficiente; reserva las migraciones versionadas para cualquier entorno compartido o con datos que deban persistir.
+- [ ] Las tres migraciones se aplican en orden sobre una base vacía.
+- [ ] `ddl-auto=validate` detecta cualquier desalineación entre entidad y esquema.
+- [ ] Una versión duplicada produce un error explícito y documentado.
+- [ ] El test de lectura/escritura pasa después de cada migración.
+- [ ] El README explica cómo revertir o reparar una migración fallida.
+- [ ] Ninguna tabla se modifica manualmente fuera de una migración.
 
----
+**Si falla.** Si Flyway no se ejecuta, revisa la dependencia y `spring.flyway.enabled=true`. Si falla la validación, crea la migración que corresponda en vez de cambiar `ddl-auto`. Si una migración fallida bloquea el arranque, no borres el historial: documenta la reparación y aplica una migración nueva.
 
-Las migraciones con Flyway que escribas aquí versionan el esquema del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Siguiente paso:** el Módulo 4 aborda cómo exponer y proteger estos datos a través de una API REST completa.
+
+**Errores comunes:** confiar en `ddl-auto=update` en producción, arriesgando cambios de esquema no versionados; editar tablas manualmente en vez de a través de una migración, perdiendo el historial y la reproducibilidad.
+
+**Límites y decisión de uso:** para un prototipo local descartable sin datos que preservar, `ddl-auto=create-drop` sin Flyway es más simple y suficiente; reserva las migraciones versionadas para entornos compartidos o con datos que deban persistir.
+
+**Fuente oficial:** [Flyway — Migrations](https://documentation.red-gate.com/flyway/flyway-concepts/migrations).
+
+**Transferencia al proyecto integrador:** estas migraciones versionan el esquema del microservicio productivo.
 
 ## Laboratorio práctico
 
@@ -472,16 +510,41 @@ Las migraciones con Flyway que escribas aquí versionan el esquema del proyecto 
 |---|---|---|---|
 | 1 | Definir `Tarea` con `@Entity` y su repositorio | Ver Tema 1 | Método derivado `findByCompletadaFalse` |
 | 2 | Comparar con el equivalente en `@Query` | Ver Tema 1 | Discute cuándo cada enfoque es apropiado |
-| 3 | Modelar `@OneToMany` y provocar N+1 | Ver Tema 2 | Cuenta las queries ejecutadas con `Statistics` |
+| 3 | Modelar `@OneToMany` y provocar N+1 | Ver Tema 2 | Cuenta las queries con `Statistics` |
 | 4 | Corregir con `JOIN FETCH` o `@EntityGraph` | Ver Tema 2 | Mide la diferencia real en queries |
 | 5 | Configurar Flyway con una migración versionada | Ver Tema 3 | En vez de `ddl-auto=update` |
 
-**Verificación:** el laboratorio se considera exitoso si la corrección del problema N+1 reduce el número de queries medido con `Statistics` de N+1 a una única query, y si el esquema de la base de datos se gestiona completamente mediante migraciones versionadas de Flyway, con `ddl-auto=validate` confirmando la coincidencia.
+**Verificación:** el laboratorio se considera exitoso si la corrección de N+1 reduce el número de queries medido con `Statistics` de N+1 a una única query y si el esquema se gestiona completamente con migraciones versionadas de Flyway, con `ddl-auto=validate` confirmando la coincidencia.
 
 **Errores comunes y soluciones**
 
-- **Confiar en `ddl-auto=update` en un entorno de producción.** Usa migraciones versionadas con Flyway.
-- **No notar el problema N+1 hasta que aparece en producción con datos reales.** Mide el número de queries con `Statistics` durante el desarrollo, con datasets representativos.
-- **Sobreusar `@Query` para casos que un método derivado simple resolvería.** Usa métodos derivados para consultas simples y directas.
+- **Confiar en `ddl-auto=update` en producción.** Usa migraciones versionadas con Flyway.
+- **No notar N+1 hasta que aparece en producción.** Mide las queries con `Statistics` durante el desarrollo, con datasets representativos.
+- **Sobreusar `@Query` para casos que un método derivado resolvería.** Usa métodos derivados para consultas simples y directas.
 
----
+## Proyecto de cierre del módulo
+
+**Objetivo:** entregar una capa de persistencia verificable con entidades mapeadas, consultas derivadas y explícitas, N+1 medido y corregido, y esquema versionado con Flyway.
+
+**Entregables.**
+
+1. Proyecto `entregas-persistencia` con `data-jpa`, `h2` y `flyway-core`.
+2. Entidades `Envio` y `EstadoEnvio` con relaciones y constructores requeridos por JPA.
+3. Repositorios con al menos tres consultas derivadas y dos `@Query`.
+4. Pruebas `@DataJpaTest` para cada consulta, sin mocks del repositorio.
+5. Prueba que mida `Statistics.getQueryExecutionCount()` antes y después de `JOIN FETCH`.
+6. Migraciones `V1`, `V2` y `V3`, con `ddl-auto=validate`.
+7. `README.md` con el modelo, el conteo de queries, las migraciones y el diagnóstico de dos fallos.
+
+**Rúbrica (100 puntos).**
+
+| Criterio | Puntos |
+|---|---:|
+| Entidades y repositorios correctos sobre H2 real | 20 |
+| Consultas cubiertas por pruebas y con intención clara | 20 |
+| N+1 reproducido, medido y corregido con evidencia | 20 |
+| Migraciones en orden y `validate` activo | 20 |
+| Fallos reproducidos y diagnosticados por escrito | 10 |
+| README reproducible y commits legibles | 10 |
+
+**Criterio de aceptación:** si el proyecto depende de `ddl-auto=update` o si el conteo de queries no está probado, el proyecto no se cierra aunque la rúbrica sume 100.

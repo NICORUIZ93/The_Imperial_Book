@@ -91,7 +91,7 @@
     },
     {
       "path": "README.md",
-      "lines": 364,
+      "lines": 365,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -608,7 +608,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 1876,
+      "lines": 1869,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -640,7 +640,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 13972,
+      "lines": 14075,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -648,7 +648,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1162,
+      "lines": 1172,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -820,7 +820,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 9642,
+      "lines": 9724,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -922,7 +922,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 12449,
+      "lines": 12559,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1069,7 +1069,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 28576,
+      "lines": 28826,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1077,7 +1077,7 @@
     },
     {
       "path": "docs/seven-step-methodology.md",
-      "lines": 30,
+      "lines": 32,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1096,7 +1096,7 @@
     },
     {
       "path": "docs/specialization-outcomes.json",
-      "lines": 1322,
+      "lines": 1325,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1114,7 +1114,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 25153,
+      "lines": 25373,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6000,7 +6000,7 @@
     },
     {
       "path": "scripts/audit_course_depth.py",
-      "lines": 140,
+      "lines": 147,
       "kind": "automation-script",
       "symbols": [
         "signals",
@@ -6082,7 +6082,7 @@
     },
     {
       "path": "scripts/audit_seven_step_methodology.py",
-      "lines": 174,
+      "lines": 176,
       "kind": "automation-script",
       "symbols": [
         "matches",
@@ -6226,7 +6226,7 @@
     },
     {
       "path": "scripts/build_web_topic_index.py",
-      "lines": 75,
+      "lines": 81,
       "kind": "automation-script",
       "symbols": [
         "slugify",
@@ -6383,9 +6383,10 @@
     },
     {
       "path": "scripts/rebuild_topic_source_review.py",
-      "lines": 148,
+      "lines": 158,
       "kind": "automation-script",
       "symbols": [
+        "base_topic",
         "topic_blocks",
         "prose_urls",
         "check_url",
@@ -6473,7 +6474,7 @@
     },
     {
       "path": "scripts/tests/test_editorial_validation.py",
-      "lines": 202,
+      "lines": 204,
       "kind": "automation-script",
       "symbols": [
         "EditorialValidationTests",
@@ -6490,7 +6491,8 @@
         "unittest.mock",
         "audit_topic_learning_quality",
         "audit_code_visual_quality",
-        "fix_lessons"
+        "fix_lessons",
+        "rebuild_topic_source_review"
       ],
       "headings": []
     },
@@ -6520,7 +6522,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 182,
+      "lines": 213,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -11620,7 +11622,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-0.md",
-      "lines": 412,
+      "lines": 450,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -11630,76 +11632,76 @@
         "# macOS/Linux",
         "# Windows PowerShell",
         "## Aprende construyendo",
-        "### Tema 1: Inversi\u00f3n de control y el contenedor de Spring",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "### Tema 1: Inversi\u00f3n de control y el contenedor de Spring \u00b7 B\u00e1sico \u00b7 20 min",
+        "#### Aprende",
+        "#### Practica",
         "# compila y ejecuta el proyecto Java con el wrapper de Maven",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
+        "#### Aplica",
+        "### Tema 2: Inyecci\u00f3n por constructor vs por campo \u00b7 B\u00e1sico \u00b7 20 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-1.md",
-      "lines": 339,
+      "lines": 392,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 1: Spring Boot CLI y estructura de proyecto",
         "## Aprende construyendo",
-        "### Tema 1: Spring Initializr y starters",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "### Tema 1: Spring Initializr y starters \u00b7 B\u00e1sico \u00b7 20 min",
+        "#### Aprende",
+        "#### Practica",
         "# descarga y arranca con Maven el proyecto generado por Spring Initializr",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: application.yml vs application.properties"
+        "#### Aplica",
+        "### Tema 2: application.yml vs application.properties \u00b7 B\u00e1sico \u00b7 20 min",
+        "#### Aprende",
+        "#### Practica",
+        "# arranca el proyecto Java con Maven usando la configuraci\u00f3n de application.yml",
+        "# arranca el proyecto Java con Maven usando application.properties en vez de application.yml"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-10.md",
-      "lines": 1369,
+      "lines": 1530,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 10: Microservicios con Spring Cloud",
         "## Aprende construyendo",
-        "### Tema 1: Config Server y service discovery",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "### Tema 1: Config Server y service discovery \u00b7 Intermedio \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
         "# src/main/resources/application.yml",
         "# src/main/resources/config/servicio-pedidos.yml",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "#### Aplica",
+        "### Tema 2: Spring Cloud Gateway \u00b7 Intermedio \u00b7 40 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-11.md",
-      "lines": 385,
+      "lines": 467,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 11: Empaquetado y despliegue",
         "## Aprende construyendo",
-        "### Tema 1: Fat JAR vs capas de Docker",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: GraalVM native image",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Fat JAR vs capas de Docker \u00b7 Intermedio \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "# src/main/resources/application.yml",
+        "#### Aplica",
+        "### Tema 2: GraalVM native image \u00b7 Avanzado \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Health checks para Kubernetes \u00b7 Intermedio \u00b7 40 min"
       ]
     },
     {
@@ -11872,23 +11874,23 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-2.md",
-      "lines": 761,
+      "lines": 887,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 2: REST APIs con Spring Web",
         "## Aprende construyendo",
-        "### Tema 1: Por qu\u00e9 DTOs en vez de entidades directamente",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "### Tema 1: Por qu\u00e9 DTOs en vez de entidades directamente \u00b7 Intermedio \u00b7 30 min",
+        "#### Aprende",
+        "#### Practica",
         "# descarga el proyecto y ejecuta las pruebas Java con Maven",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Validaci\u00f3n con Bean Validation y ResponseEntity"
+        "#### Aplica",
+        "### Tema 2: Validaci\u00f3n con Bean Validation y ResponseEntity \u00b7 Intermedio \u00b7 25 min",
+        "#### Aprende",
+        "#### Practica",
+        "# ejecuta las pruebas Java con Maven, incluyendo la petici\u00f3n inv\u00e1lida",
+        "#### Aplica"
       ]
     },
     {
@@ -11956,133 +11958,133 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-3.md",
-      "lines": 488,
+      "lines": 551,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 3: Persistencia con Spring Data JPA",
         "## Aprende construyendo",
-        "### Tema 1: Entidades y repositorios derivados",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: El problema N+1 y su correcci\u00f3n",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Entidades y repositorios derivados \u00b7 Intermedio \u00b7 35 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: El problema N+1 y su correcci\u00f3n \u00b7 Avanzado \u00b7 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Migraciones con Flyway \u00b7 Intermedio \u00b7 35 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-4.md",
-      "lines": 869,
+      "lines": 955,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 4: Spring Security",
         "## Aprende construyendo",
-        "### Tema 1: SecurityFilterChain moderno",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: SecurityFilterChain moderno \u00b7 Intermedio \u00b7 40 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol \u00b7 Avanzado \u00b7 55 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: CORS y CSRF \u00b7 Intermedio \u00b7 35 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-5.md",
-      "lines": 469,
+      "lines": 513,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 5: Configuraci\u00f3n, perfiles y manejo de errores",
         "## Aprende construyendo",
-        "### Tema 1: @ConfigurationProperties tipado",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "### Tema 1: @ConfigurationProperties tipado \u00b7 Intermedio \u00b7 35 min",
+        "#### Aprende",
+        "#### Practica",
         "# src/main/resources/application.yml",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Fallar r\u00e1pido al arranque"
+        "#### Aplica",
+        "### Tema 2: Fallar r\u00e1pido al arranque \u00b7 Intermedio \u00b7 30 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Manejo global de excepciones consistente entre entornos \u00b7 Avanzado \u00b7 40 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-6.md",
-      "lines": 494,
+      "lines": 537,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 6: Testing en Spring Boot",
         "## Aprende construyendo",
-        "### Tema 1: Slices de testing \u2014 @WebMvcTest",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: @DataJpaTest con Testcontainers",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Slices de testing \u2014 @WebMvcTest \u00b7 Intermedio \u00b7 35 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: @DataJpaTest con Testcontainers \u00b7 Avanzado \u00b7 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "# requiere Docker corriendo localmente; Testcontainers lo usa para levantar el contenedor real",
+        "#### Aplica",
+        "### Tema 3: @SpringBootTest completo y estrategia de pir\u00e1mide de tests \u00b7 Avanzado \u00b7 45 min"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-7.md",
-      "lines": 530,
+      "lines": 572,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 7: Observabilidad con Actuator",
         "## Aprende construyendo",
-        "### Tema 1: Actuator y health checks personalizados",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: M\u00e9tricas de negocio con Micrometer",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Actuator y health checks personalizados \u00b7 Intermedio \u00b7 35 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: M\u00e9tricas de negocio con Micrometer \u00b7 Avanzado \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Liveness vs readiness \u00b7 Intermedio \u00b7 30 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-8.md",
-      "lines": 991,
+      "lines": 1057,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 8: Mensajer\u00eda \u2014 Kafka/RabbitMQ",
         "## Aprende construyendo",
-        "### Tema 1: Producers y consumers con Spring Kafka",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Dead-letter queue",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n"
+        "### Tema 1: Producers y consumers con Spring Kafka \u00b7 Avanzado \u00b7 50 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 2: Dead-letter queue \u00b7 Avanzado \u00b7 45 min",
+        "#### Aprende",
+        "#### Practica",
+        "#### Aplica",
+        "### Tema 3: Productor idempotente y transacciones (exactly-once) \u00b7 Experto \u00b7 50 min",
+        "#### Aprende"
       ]
     },
     {
       "path": "web/public/content/spring-boot/modulo-9.md",
-      "lines": 650,
+      "lines": 699,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -12098,12 +12100,12 @@
         "### 7. Ejecuta y observa un resultado concreto",
         "### 8. Provoca tres fallos antes de continuar",
         "## Aprende construyendo",
-        "### Tema 1: Mono y Flux"
+        "### Tema 1: Mono y Flux \u00b7 Intermedio \u00b7 40 min"
       ]
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5059,
+      "lines": 5103,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13199,7 +13201,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1237,
+      "lines": 1244,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -13569,7 +13571,7 @@
     },
     {
       "path": "web/src/app/tracks/java.track.ts",
-      "lines": 279,
+      "lines": 307,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

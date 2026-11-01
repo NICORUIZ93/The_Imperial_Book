@@ -125,6 +125,8 @@ def render_markdown(data: dict) -> str:
         "",
         "Un tema completo hace visibles los siete pasos solicitados y sus apoyos profesionales según 16 marcadores heurísticos. Este reporte no confunde una mención curricular con una lección terminada. El resultado no demuestra calidad, aprendizaje ni ejecución de los ejemplos; la auditoría de criterios editoriales es independiente y usa otra rúbrica.",
         "",
+        "El contenido actual sigue en siete pasos. La migración incremental al formato Aprende/Practica/Aplica se registra en [migration-status.json](./migration-status.json) y se planifica en [migration-plan.md](./migration-plan.md); este auditor mide los temas aún legacy y no acredita la migración.",
+        "",
         "| Track | Temas | " + " | ".join(labels) + " | Completos |",
         "|---|---:|" + "---:|" * (len(keys) + 1),
     ]

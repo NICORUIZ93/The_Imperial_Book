@@ -66,6 +66,12 @@ const CLOUD_MODULE_SOURCES: Record<number, { label: string; url: string }> = {
   34: { label: 'Floci AWS oficial', url: 'https://floci.io/aws/' },
 };
 
+const TOPIC_META = /\s+·\s+(?:Básico|Intermedio|Avanzado|Experto)\s+·\s+\d+(?:[–-]\d+)?\s*(?:min|h(?:\s+\d+\s*min)?)\s*$/i;
+
+function slugSource(text: string): string {
+  return text.replace(TOPIC_META, '');
+}
+
 function slugify(text: string, seen: Set<string>): string {
   const base = text
     .normalize('NFD')
@@ -585,7 +591,8 @@ export class LessonViewerComponent implements OnDestroy {
       // ancla del encabezado coincide con el fragment del menú lateral y el
       // click en un tema sí hace scroll hasta él. Debe asignarse ANTES de quitar
       // el prefijo "Tema N:", porque después ese texto ya no está disponible.
-      if (!heading.id) heading.id = slugify(text, topicSlugSeen);
+      // El sufijo · Nivel · Duración se excluye para conservar el fragmento.
+      if (!heading.id) heading.id = slugify(slugSource(text), topicSlugSeen);
       const title = text.replace(/^Tema\s+\d+\s*:\s*/i, '');
       heading.innerHTML = `<span class="section-number">§ ${chapterNumber}.${temaIndex}</span>${escapeHtml(title)}`;
     });

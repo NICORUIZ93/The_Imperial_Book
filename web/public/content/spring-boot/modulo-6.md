@@ -1,23 +1,17 @@
 # Módulo 6: Testing en Spring Boot
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `mvn test` real contra cada nivel de la pirámide de tests, para que "un slice es más rápido que el contexto completo" sea una afirmación medible, no solo descrita.
-
+Cada tema declara su nivel, su duración y una verificación reproducible. Los tres niveles de la pirámide se comprueban con `mvn test` real, para que "un slice es más rápido que el contexto completo" sea una afirmación medida, no solo descrita.
 
 ## Aprende construyendo
 
-### Tema 1: Slices de testing — @WebMvcTest
+### Tema 1: Slices de testing — @WebMvcTest · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** `@RestController` y `ResponseEntity` (Módulo 2); DTOs vs entities (Módulo 2).
+**Al terminar podrás:** probar la capa web de un controller con `@WebMvcTest`, mockeando el servicio inyectado, y explicar por qué este slice arranca más rápido que el contexto completo de la aplicación.
 
-Al finalizar podrás probar la capa web de un controller con `@WebMvcTest`, mockeando el servicio inyectado, y explicar por qué este slice arranca más rápido que el contexto completo de la aplicación.
-
-**Conocimiento previo:** `@RestController` y `ResponseEntity` (Módulo 2); DTOs vs entities (Módulo 2).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Una API de entregas necesita detectar rápido si el problema está en el controller (mapeo de rutas, serialización JSON, validación) sin necesitar que la base de datos real ni el servicio de negocio completo estén disponibles para esa prueba específica.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** contexto parcial, más rápido que el contexto completo.
 
@@ -34,9 +28,9 @@ flowchart LR
   C --> D[MockMvc simula la petición HTTP completa]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`) y crea el controller junto con su test de slice en `src/main/java` y `src/test/java`:
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`) y crea el controller junto con su test de slice en `src/main/java` y `src/test/java`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/tarea
@@ -132,7 +126,7 @@ mvn test -Dtest=TareaControllerTest # Maven
 
 **Fallo deliberado:** elimina la anotación `@MockitoBean` de `servicio` (dejando el campo sin anotar) y ejecuta de nuevo `mvn test -Dtest=TareaControllerTest`. El test FALLA porque Spring no puede resolver la dependencia `TareaService` dentro del contexto parcial de `@WebMvcTest` (que no escanea `@Service` por diseño): `NoSuchBeanDefinitionException` — diagnostica confirmando que `@MockitoBean` no es solo una conveniencia, sino el mecanismo específico que hace posible que un slice de solo la capa web pueda satisfacer las dependencias del controller sin levantar la aplicación completa. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un segundo test que confirme un `400 Bad Request` cuando el cuerpo de la petición está vacío, usando `when(servicio.crear("")).thenThrow(new IllegalArgumentException())` junto con un `@ExceptionHandler` que lo mapee.
 2. Mide el tiempo real de ejecución de `TareaControllerTest` (`mvn test -Dtest=TareaControllerTest` reporta el tiempo) y compáralo mentalmente con lo que esperarías de un `@SpringBootTest` completo (Tema 3).
@@ -140,8 +134,6 @@ mvn test -Dtest=TareaControllerTest # Maven
 4. Escribe de memoria (sin mirar) un `@WebMvcTest` con `@MockitoBean` para un servicio, y un test que confirme un código de estado usando `when(...).thenReturn(...)`.
 
 **Pista:** si un test de `@WebMvcTest` falla con `NoSuchBeanDefinitionException`, la causa casi siempre es una dependencia del controller que no está mockeada con `@MockitoBean`.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para levantar únicamente el contexto de la capa web:
 
@@ -153,31 +145,40 @@ class TareaControllerTest {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@WebMvcTest` con un servicio mockeado y una aserción sobre el código de estado HTTP. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un test `@WebMvcTest` con un servicio mockeado y una aserción sobre el código de estado HTTP. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya pruebas la capa web de forma aislada y rápida con `@WebMvcTest`, confirmando con `MockMvc` real el comportamiento del controller sin depender de la lógica de negocio real. El siguiente tema aborda cómo probar la capa de persistencia contra una base de datos real, no aproximada. Fuente oficial: [Spring Boot — Testing the Web Layer](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-mvc-tests).
+**Reto abierto.** Especifica y prueba el contrato HTTP completo de un controller real: códigos de éxito, validación fallida, recurso ausente y error de negocio. Mide el tiempo de la suite de slice y compáralo con el mismo contrato probado mediante `@SpringBootTest`; documenta la diferencia y qué garantiza cada nivel.
+
+**Checklist de salida.**
+
+- [ ] El slice prueba éxito, validación, ausencia y error de negocio.
+- [ ] Cada dependencia del controller está mockeada explícitamente.
+- [ ] Las aserciones cubren código, `Content-Type` y cuerpo.
+- [ ] El tiempo del slice se midió y se comparó con el contexto completo.
+- [ ] Ningún test de slice toca base de datos ni red.
+
+**Si falla.** Si aparece `NoSuchBeanDefinitionException`, falta un `@MockitoBean`; si el código es correcto pero el cuerpo no coincide, revisa la serialización y el tipo de retorno del controller.
+
+**Siguiente paso:** el Tema 2 aborda cómo probar la capa de persistencia contra una base de datos real, no aproximada.
 
 **Errores comunes:** cargar el contexto completo (`@SpringBootTest`) para probar lógica que un slice más rápido cubriría igual de bien; olvidar `@MockitoBean` para una dependencia del controller, causando `NoSuchBeanDefinitionException`.
 
-**Cuándo no usarlo:** para verificar que múltiples capas reales (controller, servicio, repositorio, base de datos) funcionan correctamente juntas de principio a fin, un slice de solo la capa web no es suficiente; ese es el propósito de `@SpringBootTest` (Tema 3).
+**Límites y decisión de uso:** para verificar que múltiples capas reales (controller, servicio, repositorio, base de datos) funcionan correctamente juntas de principio a fin, un slice de solo la capa web no es suficiente; ese es el propósito de `@SpringBootTest` (Tema 3).
 
-Los slices de testing con `@WebMvcTest` son los que probarán la capa web del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Fuente oficial:** [Spring Boot — Testing the Web Layer](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html#testing.spring-boot-applications.spring-mvc-tests).
 
-### Tema 2: @DataJpaTest con Testcontainers
+**Transferencia al proyecto integrador:** los slices de testing con `@WebMvcTest` son los que probarán la capa web del proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-#### Paso 1 · Objetivo y preparación
+### Tema 2: @DataJpaTest con Testcontainers · Avanzado · 50 min
 
-Al finalizar podrás probar un repositorio contra una base de datos PostgreSQL real y desechable con Testcontainers, y explicar por qué es preferible a H2 en memoria para fidelidad de comportamiento.
+**Prerrequisito:** Tema 1 de este módulo; entidades y repositorios (Módulo 3).
+**Al terminar podrás:** probar un repositorio contra una base de datos PostgreSQL real y desechable con Testcontainers, y explicar por qué es preferible a H2 en memoria para fidelidad de comportamiento.
 
-**Conocimiento previo:** Tema 1 de este módulo; entidades y repositorios (Módulo 3).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** H2 puede comportarse de forma sutilmente distinta a PostgreSQL en aspectos específicos del dialecto SQL o tipos de datos particulares, produciendo pruebas que pasan contra H2 pero fallarían contra la base de datos real usada en producción.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** base de datos real desechable, comportamiento fiel frente a H2 en memoria.
 
@@ -208,9 +209,9 @@ flowchart LR
   C --> D[contenedor descartado al terminar la suite]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega las dependencias reales `org.testcontainers:postgresql` y `org.testcontainers:junit-jupiter`, y crea el test de repositorio en `src/test/java/com/academia/tarea/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez), agrega las dependencias reales `org.testcontainers:postgresql` y `org.testcontainers:junit-jupiter`, y crea el test de repositorio en `src/test/java/com/academia/tarea/`:
 
 ```bash
 mkdir -p academia-spring/src/test/java/com/academia/tarea
@@ -291,9 +292,9 @@ mvn test -Dtest=TareaRepositoryTestcontainersTest # Maven
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde, confirmando que Testcontainers levantó un contenedor PostgreSQL real, Spring se conectó a él dinámicamente, y la fila guardada se lee correctamente — el mismo motor de base de datos que correría en producción, no una aproximación.
 
-**Fallo deliberado:** cambia la imagen del contenedor a una versión de PostgreSQL con un tipo de columna incompatible: agrega a `Tarea` un campo `private java.util.UUID identificadorExterno;` sin ninguna conversión, y fuerza una query nativa que use una función específica de PostgreSQL no soportada por H2 (por ejemplo, `@Query(value = "SELECT gen_random_uuid()", nativeQuery = true)`). Ejecuta el mismo test contra H2 en memoria (cambiando temporalmente la dependencia a H2 sin Testcontainers) y compara: la función `gen_random_uuid()` falla contra H2 con un error de función desconocida, mientras que contra el contenedor PostgreSQL real de este Tema funciona correctamente — diagnostica confirmando exactamente el riesgo que Testcontainers elimina: una función específica del dialecto SQL real que H2 no reproduce fielmente. Revierte los cambios de prueba antes de continuar.
+**Fallo deliberado:** agrega a `Tarea` un campo `private java.util.UUID identificadorExterno;` sin ninguna conversión, y fuerza una query nativa que use una función específica de PostgreSQL no soportada por H2 (`@Query(value = "SELECT gen_random_uuid()", nativeQuery = true)`). Ejecuta el mismo test contra H2 en memoria (cambiando temporalmente la dependencia a H2 sin Testcontainers) y compara: la función `gen_random_uuid()` falla contra H2 con un error de función desconocida, mientras que contra el contenedor PostgreSQL real de este Tema funciona correctamente — diagnostica confirmando exactamente el riesgo que Testcontainers elimina: una función específica del dialecto SQL real que H2 no reproduce fielmente. Revierte los cambios de prueba antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un segundo test en la misma clase que confirme un método derivado (`findByTituloContaining`) contra el mismo contenedor PostgreSQL, reutilizando el contenedor ya levantado (el campo `static` lo comparte entre tests de la misma clase).
 2. Cambia la versión de la imagen (`postgres:16` a `postgres:15`) y confirma que el mismo test sigue pasando, ilustrando que Testcontainers facilita probar contra distintas versiones reales.
@@ -301,8 +302,6 @@ mvn test -Dtest=TareaRepositoryTestcontainersTest # Maven
 4. Escribe de memoria (sin mirar) un `@DataJpaTest @Testcontainers` con `@Container` y `@DynamicPropertySource`, y un test que confirme guardar y leer una entidad. Compara después contra el patrón del Paso 4.
 
 **Pista:** el campo `@Container` debe ser `static` para que Testcontainers lo comparta entre todos los tests de la misma clase, evitando levantar un contenedor nuevo por cada método de test individual.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para inyectar la URL real del contenedor en la configuración de Spring:
 
@@ -313,31 +312,40 @@ static void propiedades(DynamicPropertyRegistry registry) {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@DataJpaTest @Testcontainers` con un `PostgreSQLContainer` real y una aserción sobre una entidad guardada y leída. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un test `@DataJpaTest @Testcontainers` con un `PostgreSQLContainer` real y una aserción sobre una entidad guardada y leída. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya pruebas la capa de persistencia contra una base de datos real y desechable, en vez de una aproximación que podría comportarse distinto en producción. El siguiente y último tema de este módulo aborda cuándo vale la pena pagar el costo del contexto completo. Fuente oficial: [Testcontainers — Spring Boot integration](https://java.testcontainers.org/modules/databases/postgres/).
+**Reto abierto.** Migra las pruebas de persistencia del proyecto a PostgreSQL real y añade al menos una consulta que use una función del dialecto (tipo espacial, `gen_random_uuid()` o índice específico). Demuestra que la prueba falla contra H2 y pasa contra el contenedor, y documenta el costo de arranque que asume la suite.
+
+**Checklist de salida.**
+
+- [ ] Las pruebas de repositorio corren contra PostgreSQL real, no H2.
+- [ ] Al menos una consulta específica del dialecto está cubierta.
+- [ ] El contenedor es compartido por clase y se descarta al terminar.
+- [ ] La prueba demuestra por qué H2 no era suficiente en ese caso.
+- [ ] El README indica el requisito de Docker y cómo ejecutar solo esa suite.
+
+**Si falla.** Si el contenedor no arranca, confirma que Docker está activo y que el puerto no está bloqueado; si la conexión usa H2, revisa que `@DynamicPropertySource` se ejecute antes del contexto y que no exista una URL fija en `application.properties`.
+
+**Siguiente paso:** el Tema 3 aborda cuándo vale la pena pagar el costo del contexto completo.
 
 **Errores comunes:** confiar en H2 en memoria para verificar comportamiento específico de PostgreSQL; no declarar el contenedor como `static`, levantando uno nuevo innecesariamente por cada método de test, incrementando el tiempo total de la suite.
 
-**Cuándo no usarlo:** para lógica de repositorio genuinamente independiente del motor de base de datos específico (queries triviales sin funciones propietarias), H2 en memoria puede seguir siendo aceptable por su velocidad; reserva Testcontainers para cuando la fidelidad al motor real importa.
+**Límites y decisión de uso:** para lógica de repositorio genuinamente independiente del motor de base de datos específico (queries triviales sin funciones propietarias), H2 en memoria puede seguir siendo aceptable por su velocidad; reserva Testcontainers para cuando la fidelidad al motor real importa.
 
-`@DataJpaTest` con Testcontainers es como probarás la capa de persistencia del proyecto integrador de este track (microservicio productivo, Módulo 12) contra una base real.
+**Fuente oficial:** [Testcontainers — Spring Boot integration](https://java.testcontainers.org/modules/databases/postgres/).
 
-### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests
+**Transferencia al proyecto integrador:** `@DataJpaTest` con Testcontainers es como probarás la capa de persistencia del proyecto integrador de este track (microservicio productivo, Módulo 12) contra una base real.
 
-#### Paso 1 · Objetivo y preparación
+### Tema 3: @SpringBootTest completo y estrategia de pirámide de tests · Avanzado · 45 min
 
-Al finalizar podrás escribir un test end-to-end con `@SpringBootTest` que ejercita controller, servicio y repositorio reales juntos, y explicar por qué debe reservarse para pocos flujos verdaderamente críticos.
+**Prerrequisito:** Temas 1 y 2 de este módulo.
+**Al terminar podrás:** escribir un test end-to-end con `@SpringBootTest` que ejercita controller, servicio y repositorio reales juntos, y explicar por qué debe reservarse para pocos flujos verdaderamente críticos.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Un flujo crítico de negocio (crear una tarea y confirmar que aparece en la lista de pendientes) involucra el controller, el servicio y el repositorio trabajando juntos; los tests de slice de los Temas 1 y 2 verifican cada capa por separado, pero ninguno confirma que las tres funcionen correctamente coordinadas.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** contexto completo, muchos unitarios/pocos de integración completa.
 
@@ -347,7 +355,7 @@ Al finalizar podrás escribir un test end-to-end con `@SpringBootTest` que ejerc
 
 **Diagrama:**
 
-```
+```text
 ┌── pocos: @SpringBootTest completo ──────────────────────┐
 │  contexto total, para flujos end-to-end críticos            │
 └──────────────────┬───────────────────────────┘
@@ -359,9 +367,9 @@ Al finalizar podrás escribir un test end-to-end con `@SpringBootTest` que ejerc
 └─────────────────────────────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y completa `TareaService` real (sin mockear nada esta vez), creando el test end-to-end en `src/test/java/com/academia/tarea/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y completa `TareaService` real (sin mockear nada esta vez), creando el test end-to-end en `src/test/java/com/academia/tarea/`:
 
 ```bash
 mkdir -p academia-spring/src/test/java/com/academia/tarea
@@ -402,7 +410,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest // levanta TODO el contexto real: controller + servicio + repositorio + base de datos H2 embebida
+@SpringBootTest // levanta el contexto completo real: controller + servicio + repositorio + base de datos H2 embebida
 @AutoConfigureMockMvc
 class CrearTareaEndToEndTest {
 
@@ -435,7 +443,7 @@ mvn test -Dtest=CrearTareaEndToEndTest # Maven
 
 **Fallo deliberado:** en `TareaService.crear`, cambia `repositorio.save(new Tarea(titulo))` por simplemente `new Tarea(titulo)` (sin llamar a `save`, olvidando persistir). El test `mockMvc.perform(...)` seguiría respondiendo `201` (el controller no sabe que el servicio no persistió nada), pero `assertThat(tareaRepository.findAll())` FALLA porque la lista está vacía — diagnostica confirmando por qué un test de solo la capa web (Tema 1, con el servicio mockeado) NUNCA habría detectado este bug: el mock siempre "funciona" según lo que le configuraste, sin importar si la implementación real relacionada con la base de datos está rota. Solo un test end-to-end como este, que usa el servicio y el repositorio reales, expone el problema. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un segundo test end-to-end que confirme un flujo de lectura completo: crear una tarea vía POST y luego consultarla vía GET, confirmando que ambos pasan por las tres capas reales.
 2. Compara el tiempo reportado por Maven entre `TareaControllerTest` (Tema 1, slice), `TareaRepositoryTestcontainersTest` (Tema 2, slice con contenedor) y `CrearTareaEndToEndTest` (Tema 3, completo), documentando el orden de velocidad observado.
@@ -443,8 +451,6 @@ mvn test -Dtest=CrearTareaEndToEndTest # Maven
 4. Escribe de memoria (sin mirar) un `@SpringBootTest` con `MockMvc` que confirme, contra un repositorio real (no mockeado), que una petición HTTP persistió datos correctamente. Compara después contra el patrón del Paso 4.
 
 **Pista:** un bug real donde el mock "esconde" el problema (como el fallo deliberado de este Tema) es la razón principal por la que la pirámide recomienda ALGUNOS `@SpringBootTest`, no CERO — un slice perfectamente verde puede coexistir con un flujo real completamente roto.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para levantar el contexto completo de la aplicación:
 
@@ -454,19 +460,31 @@ mvn test -Dtest=CrearTareaEndToEndTest # Maven
 class CrearTareaEndToEndTest { }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `@SpringBootTest` con `MockMvc` y una aserción directa contra un repositorio real confirmando persistencia. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un test `@SpringBootTest` con `MockMvc` y una aserción directa contra un repositorio real confirmando persistencia. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya distingues los tres niveles de la pirámide de tests (unitarios, slices, `@SpringBootTest` completo) y confirmas con evidencia real por qué cada uno responde una pregunta distinta que los otros no cubren. Esto cierra el módulo de testing; el siguiente módulo aborda cómo documentar y observar esta misma API en producción. Fuente oficial: [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
+**Reto abierto.** Define la pirámide de tests del proyecto por flujo de negocio: qué se prueba con unitarios, qué con slices y qué con un único `@SpringBootTest` por flujo crítico. Implementa un test end-to-end de un flujo completo (crear, leer y verificar persistencia) y publica en el README el tiempo de cada nivel y la razón de la distribución.
+
+**Checklist de salida.**
+
+- [ ] Hay unitarios, slices y al menos un end-to-end, cada uno con propósito declarado.
+- [ ] El end-to-end verifica persistencia real contra el repositorio, no solo el código HTTP.
+- [ ] El orden de velocidad entre los tres niveles está medido.
+- [ ] El fallo que el mock oculta se reprodujo y se documentó.
+- [ ] La suite completa corre con un único comando.
+
+**Si falla.** Si el end-to-end responde `201` pero no persiste, revisa que el servicio real esté en el contexto y que no quede un `@MockitoBean` residual; si tarda demasiado, confirma que no haya varios `@SpringBootTest` cubriendo el mismo flujo.
+
+**Siguiente paso:** el módulo 7 aborda cómo observar esta misma API en producción.
 
 **Errores comunes:** usar `@SpringBootTest` para todo, incluso pruebas simples de lógica de negocio que un test unitario con Mockito cubriría igual de bien y mucho más rápido; no tener NINGÚN `@SpringBootTest`, confiando únicamente en slices que, como demuestra el fallo deliberado, pueden dejar pasar bugs de integración entre capas.
 
-**Cuándo no usarlo:** para verificar lógica de negocio aislada sin ninguna dependencia de infraestructura real (cálculos, validaciones puras), un test unitario con Mockito puro, sin ningún contexto de Spring involucrado, es preferible por su velocidad.
+**Límites y decisión de uso:** para verificar lógica de negocio aislada sin ninguna dependencia de infraestructura real (cálculos, validaciones puras), un test unitario con Mockito puro, sin ningún contexto de Spring involucrado, es preferible por su velocidad.
 
----
+**Fuente oficial:** [Spring Boot — Testing Spring Boot Applications](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html).
 
-La pirámide de tests que diseñes aquí es la misma que aplicará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Transferencia al proyecto integrador:** la pirámide de tests que diseñes aquí es la misma que aplicará el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
 ## Laboratorio práctico
 
@@ -490,4 +508,29 @@ La pirámide de tests que diseñes aquí es la misma que aplicará el proyecto i
 - **Confiar en H2 en memoria para verificar comportamiento específico de PostgreSQL.** Usa Testcontainers para fidelidad real con la base de datos de producción.
 - **No mockear el servicio en un test de `@WebMvcTest`.** Sin `@MockitoBean`, Spring intentará resolver la dependencia real, fallando si no está disponible en ese contexto parcial.
 
----
+## Proyecto de cierre del módulo
+
+**Objetivo:** entregar una suite que demuestre, con tiempos medidos, qué garantiza cada nivel de la pirámide y que atrape un fallo de integración que un slice no detecta.
+
+**Entregables.**
+
+1. Controller de entregas con endpoints de creación y consulta, y su `@WebMvcTest` con éxito, validación y error de negocio.
+2. Repositorio probado con `@DataJpaTest` y PostgreSQL real por Testcontainers, incluida al menos una consulta del dialecto.
+3. Un `@SpringBootTest` end-to-end por flujo crítico, con aserción directa contra el repositorio real.
+4. Un test unitario puro del servicio, sin contexto de Spring.
+5. Tabla comparativa de tiempos por nivel, generada a partir de una ejecución real de `mvn test`.
+6. `README.md` con requisitos (JDK, Docker), comandos y explicación de qué cubre cada nivel.
+
+**Rúbrica (100 puntos).**
+
+| Criterio | Puntos |
+|---|---:|
+| Slice web con todas las dependencias mockeadas y casos completos | 15 |
+| Persistencia probada contra PostgreSQL real con consulta del dialecto | 20 |
+| End-to-end con verificación de persistencia real | 20 |
+| Test unitario sin contexto de Spring | 10 |
+| Tiempos medidos y justificación de la distribución de la pirámide | 15 |
+| Reproducibilidad: un comando desde un clon limpio | 10 |
+| Diagnóstico escrito del fallo que el mock ocultaba | 10 |
+
+**Criterio de aceptación:** si la suite depende de H2 para una consulta específica del motor real, o si ningún test verifica persistencia de punta a punta, el módulo no se considera cerrado aunque la rúbrica sume 100.

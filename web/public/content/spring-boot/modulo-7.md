@@ -1,23 +1,17 @@
 # Módulo 7: Observabilidad con Actuator
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `MockMvc` real contra los endpoints reales de Actuator, para que "health responde UP/DOWN" o "la métrica se incrementó" sean afirmaciones comprobables, no solo descritas.
-
+Cada tema declara su nivel, su duración y una verificación reproducible. La salud y las métricas se comprueban con `MockMvc` real contra los endpoints reales de Actuator, para que "health responde UP/DOWN" o "la métrica se incrementó" sean afirmaciones ejecutadas, no solo descritas.
 
 ## Aprende construyendo
 
-### Tema 1: Actuator y health checks personalizados
+### Tema 1: Actuator y health checks personalizados · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** Spring Initializr y starters (Módulo 1); `@Component` y `@Service` (Módulo 1).
+**Al terminar podrás:** exponer `/actuator/health` con un `HealthIndicator` personalizado que refleja la disponibilidad real de una dependencia, y confirmar con `MockMvc` real los estados `UP` y `DOWN`.
 
-Al finalizar podrás exponer `/actuator/health` con un `HealthIndicator` personalizado que refleja la disponibilidad real de una dependencia, y confirmar con `MockMvc` real los estados `UP` y `DOWN`.
-
-**Conocimiento previo:** Spring Initializr y starters (Módulo 1); `@Component` y `@Service` (Módulo 1).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Una plataforma de entregas necesita distinguir una aplicación viva de una instancia lista para recibir tráfico; sin señales operativas explícitas, un fallo se descubre por quejas de usuarios en vez de por evidencia observable.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** endpoints estándar de observabilidad, `HealthIndicator` propio.
 
@@ -35,9 +29,9 @@ flowchart LR
   C -->|no disponible| E["DOWN -> 503"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `actuator`) y crea el health indicator en `src/main/java/com/academia/observabilidad/`:
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `actuator`) y crea el health indicator en `src/main/java/com/academia/observabilidad/`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/observabilidad
@@ -151,7 +145,7 @@ mvn test -Dtest=ActuatorHealthTest  # Maven
 
 **Fallo deliberado:** cambia `Health.down()` por `Health.up()` dentro de la rama `else` (invirtiendo la lógica por error: reportar `UP` incluso cuando el servicio NO está disponible) y ejecuta de nuevo `healthRespondeDownCuandoLaDependenciaNoEstaDisponible`. El test FALLA porque `/actuator/health` sigue respondiendo `UP` pese a que `marcarComoNoDisponible()` fue llamado — diagnostica confirmando que un `HealthIndicator` mal implementado no solo no ayuda, sino que activamente esconde un problema real detrás de una señal falsamente positiva, potencialmente peor que no tener ningún health check en absoluto. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un segundo `HealthIndicator` para una segunda dependencia simulada, y confirma que si SOLO una de las dos está `DOWN`, el estado general (`$.status`) también es `DOWN` (Actuator combina todos los indicadores).
 2. Prueba `management.endpoint.health.show-details=never` en vez de `always` y confirma con un test que `$.components` ya no aparece en la respuesta.
@@ -159,8 +153,6 @@ mvn test -Dtest=ActuatorHealthTest  # Maven
 4. Escribe de memoria (sin mirar) un `HealthIndicator` que refleje el estado de un componente simulado, y un test `MockMvc` que confirme `UP` y `DOWN` en ambos escenarios.
 
 **Pista:** el nombre pasado a `@Component("nombre")` es exactamente la clave que aparecerá en `$.components.<nombre>.status` dentro del JSON de `/actuator/health` — Spring lo deriva del nombre del bean, quitando el sufijo `HealthIndicator` si el bean no tiene un nombre explícito.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para reportar un estado saludable:
 
@@ -170,31 +162,40 @@ public Health health() {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `HealthIndicator` que dependa del estado de un componente simulado, y un test `MockMvc` que confirme ambos estados posibles. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `HealthIndicator` que dependa del estado de un componente simulado, y un test `MockMvc` que confirme ambos estados posibles. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya expones `/actuator/health` con un indicador personalizado que refleja el estado real de una dependencia, confirmado con `MockMvc` en ambos escenarios. El siguiente tema agrega métricas de negocio, no solo estado binario. Fuente oficial: [Spring Boot Actuator — Health Information](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health).
+**Reto abierto.** Define qué dependencias del proyecto son críticas para la salud y cuáles no. Implementa un indicador por dependencia crítica, demuestra con tests que cualquiera de ellas en `DOWN` degrada el estado general y limita la exposición de Actuator a los endpoints necesarios.
+
+**Checklist de salida.**
+
+- [ ] Cada dependencia crítica tiene un indicador con nombre explícito.
+- [ ] Un solo indicador en `DOWN` hace `DOWN` el estado general.
+- [ ] Los escenarios `UP` y `DOWN` están probados con `MockMvc`.
+- [ ] La exposición de Actuator está restringida y documentada.
+- [ ] Los detalles sensibles no se publican en producción.
+
+**Si falla.** Si el componente no aparece, revisa que el bean esté registrado y que su nombre no choque con otro; si siempre responde `UP`, revisa que la lógica no consulte un estado cacheado o invertido.
+
+**Siguiente paso:** el Tema 2 agrega métricas de negocio, no solo estado binario.
 
 **Errores comunes:** exponer todos los endpoints de Actuator públicamente sin restricción, algunos de los cuales revelan configuración interna sensible; escribir un `HealthIndicator` con lógica invertida o incompleta, produciendo una señal falsamente positiva peor que no tener ninguna señal.
 
-**Cuándo no usarlo:** para una dependencia interna cuyo fallo la aplicación ya maneja completamente de forma transparente para el usuario (por ejemplo, con un fallback automático sin degradación visible), agregar un `HealthIndicator` que la marque como crítica podría generar alertas innecesarias por un problema que en realidad no afecta el servicio.
+**Límites y decisión de uso:** para una dependencia interna cuyo fallo la aplicación ya maneja completamente de forma transparente para el usuario (por ejemplo, con un fallback automático sin degradación visible), agregar un `HealthIndicator` que la marque como crítica podría generar alertas innecesarias por un problema que en realidad no afecta el servicio.
 
-Los health checks personalizados de Actuator son los que expondrá el proyecto integrador de este track (microservicio productivo, Módulo 12) en producción.
+**Fuente oficial:** [Spring Boot Actuator — Health Information](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health).
 
-### Tema 2: Métricas de negocio con Micrometer
+**Transferencia al proyecto integrador:** los health checks personalizados de Actuator son los que expondrá el proyecto integrador de este track (microservicio productivo, Módulo 12) en producción.
 
-#### Paso 1 · Objetivo y preparación
+### Tema 2: Métricas de negocio con Micrometer · Avanzado · 45 min
 
-Al finalizar podrás registrar una métrica de negocio custom con Micrometer, y confirmar con un test real que se incrementa correctamente y aparece en `/actuator/metrics`.
+**Prerrequisito:** Tema 1 de este módulo.
+**Al terminar podrás:** registrar una métrica de negocio custom con Micrometer, y confirmar con un test real que se incrementa correctamente y aparece en `/actuator/metrics`.
 
-**Conocimiento previo:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Las métricas técnicas genéricas que Actuator expone automáticamente (uso de CPU, latencia HTTP) no capturan tendencias de negocio; contar cuántos pedidos se crean por minuto le da valor directo al equipo de producto, no solo al de infraestructura.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** métricas custom, valor para el equipo de producto, no solo infraestructura.
 
@@ -227,9 +228,9 @@ flowchart LR
   C --> D["GET /actuator/metrics/pedidos.creados"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea el servicio con la métrica en `src/main/java/com/academia/observabilidad/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea el servicio con la métrica en `src/main/java/com/academia/observabilidad/`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/observabilidad
@@ -314,7 +315,7 @@ mvn test -Dtest=PedidoServiceMetricaTest # Maven
 
 **Fallo deliberado:** en `PedidoService.crear`, elimina la línea `pedidosCreados.increment();` (dejando el método vacío, olvidando registrar la métrica). Ejecuta de nuevo el test — la aserción `assertThat(meterRegistry.counter("pedidos.creados").count()).isEqualTo(valorInicial + 2)` FALLA porque el contador nunca se incrementó — diagnostica confirmando un problema real y común: una métrica de negocio que existe en el código pero cuyo punto de incremento se olvida en un método específico, dejando el conteo silenciosamente incorrecto sin que ningún error visible lo señale hasta que alguien note que el dashboard "no se mueve". Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega una métrica de tipo `Timer` (`registry.timer("pedidos.tiempo.procesamiento")`) que mida cuánto tarda `crear(...)`, y confirma con un test que `count()` refleja el número de invocaciones.
 2. Agrega una etiqueta (`tag`) a la métrica (`registry.counter("pedidos.creados", "region", "sur")`) y confirma con un test que dos regiones distintas se acumulan como series separadas, consultables independientemente.
@@ -322,8 +323,6 @@ mvn test -Dtest=PedidoServiceMetricaTest # Maven
 4. Escribe de memoria (sin mirar) un servicio con un `Counter` de Micrometer, y un test que confirme su valor exacto tras varias invocaciones. Compara después contra el patrón del Paso 4.
 
 **Pista:** `meterRegistry.counter("nombre")` sin etiquetas y `meterRegistry.counter("nombre", "tag", "valor")` con etiquetas son series de métricas DISTINTAS internamente, aunque compartan el mismo nombre base — ten cuidado de consultar la combinación exacta de nombre y etiquetas que registraste.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para incrementar el contador de negocio:
 
@@ -333,31 +332,40 @@ public void crear(String descripcion) {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con un `Counter` de Micrometer registrado en el constructor, y un test que confirme su incremento exacto tras dos llamadas. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un servicio con un `Counter` de Micrometer registrado en el constructor, y un test que confirme su incremento exacto tras dos llamadas. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya registras métricas de negocio custom con Micrometer, confirmando con un test real tanto el valor interno del `MeterRegistry` como su exposición en `/actuator/metrics`. El siguiente y último tema de este módulo distingue dos señales de salud con propósitos operativos distintos. Fuente oficial: [Micrometer — Application Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+**Reto abierto.** Elige dos eventos de negocio que el equipo de producto querría contar y registra un contador o temporizador por evento, con etiquetas de baja cardinalidad. Demuestra su valor exacto en tests, límites de exposición en Actuator y una consulta que un sistema de monitoreo podría usar.
+
+**Checklist de salida.**
+
+- [ ] Cada evento de negocio relevante tiene una métrica dedicada.
+- [ ] Las etiquetas son de baja cardinalidad y están justificadas.
+- [ ] El valor exacto se verifica en un test tras varias invocaciones.
+- [ ] La métrica es visible en `/actuator/metrics/<nombre>`.
+- [ ] El README describe qué significa cada métrica para negocio.
+
+**Si falla.** Si el contador no aparece en Actuator, confirma el nombre exacto y que el endpoint `metrics` esté expuesto; si el valor no coincide, revisa si el contador se creó con etiquetas distintas de las que consultas.
+
+**Siguiente paso:** el Tema 3 distingue dos señales de salud con propósitos operativos distintos.
 
 **Errores comunes:** exponer solo métricas técnicas genéricas sin ninguna métrica de negocio custom; usar un valor de alta cardinalidad (como un ID de usuario único) como etiqueta, generando una explosión de series de métricas distintas que degrada el sistema de monitoreo.
 
-**Cuándo no usarlo:** para un evento tan infrecuente o de tan bajo valor analítico que ninguna decisión de negocio dependería de observarlo (un caso extremadamente raro sin impacto operativo), agregar una métrica dedicada puede ser esfuerzo sin retorno; reserva las métricas custom para eventos con valor de negocio real.
+**Límites y decisión de uso:** para un evento tan infrecuente o de tan bajo valor analítico que ninguna decisión de negocio dependería de observarlo (un caso extremadamente raro sin impacto operativo), agregar una métrica dedicada puede ser esfuerzo sin retorno; reserva las métricas custom para eventos con valor de negocio real.
 
-Las métricas de negocio con Micrometer que definas aquí son las que monitoreará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Fuente oficial:** [Micrometer — Application Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
 
-### Tema 3: Liveness vs readiness
+**Transferencia al proyecto integrador:** las métricas de negocio con Micrometer que definas aquí son las que monitoreará el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
-#### Paso 1 · Objetivo y preparación
+### Tema 3: Liveness vs readiness · Intermedio · 30 min
 
-Al finalizar podrás configurar endpoints de liveness y readiness separados, y explicar con evidencia real por qué confundirlos causa reinicios innecesarios en un despliegue orquestado.
+**Prerrequisito:** Temas 1 y 2 de este módulo.
+**Al terminar podrás:** configurar endpoints de liveness y readiness separados, y explicar con evidencia real por qué confundirlos causa reinicios innecesarios en un despliegue orquestado.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Una aplicación podría estar perfectamente viva (sin necesitar reiniciarse) pero temporalmente no lista para recibir tráfico —por ejemplo, durante el arranque mientras inicializa conexiones— un caso donde reiniciar el pod (liveness fallando) sería contraproducente, mientras sacarlo temporalmente de la rotación (readiness fallando) es el comportamiento correcto.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** ¿debe reiniciarse el pod? vs ¿debe recibir tráfico ahora?
 
@@ -367,7 +375,7 @@ Al finalizar podrás configurar endpoints de liveness y readiness separados, y e
 
 **Diagrama:**
 
-```
+```text
 ┌── liveness: ¿debe reiniciarse el pod? ──────────────┐
 │  UP: el proceso está sano, no necesita reinicio          │
 │  DOWN: algo irrecuperable, Kubernetes reinicia el pod    │
@@ -378,9 +386,9 @@ Al finalizar podrás configurar endpoints de liveness y readiness separados, y e
 └──────────────────────────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y actualiza `src/main/resources/application.properties` para habilitar las sondas separadas:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y actualiza `src/main/resources/application.properties` para habilitar las sondas separadas:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/observabilidad
@@ -473,7 +481,7 @@ mvn test -Dtest=LivenessReadinessTest # Maven
 
 **Fallo deliberado:** en un despliegue mal configurado (documenta esto sin modificar código, es un error de configuración de infraestructura, no de la aplicación), apunta la sonda de liveness de Kubernetes hacia `/actuator/health/readiness` en vez de `/actuator/health/liveness`. Con esa configuración incorrecta, el mismo escenario de este test (readiness `DOWN` durante una recuperación temporal) haría que Kubernetes interprete la falla de READINESS como si fuera una falla de LIVENESS, reiniciando el pod innecesariamente en vez de simplemente esperar a que vuelva a estar listo — diagnostica confirmando por qué la distinción de este Tema no es solo conceptual: apuntar la sonda equivocada al endpoint equivocado en la configuración de despliegue produce reinicios reales e innecesarios en producción.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un test que confirme que, tras `marcarComoListo()`, `/actuator/health/readiness` vuelve a responder `200` con `UP`.
 2. Documenta en una frase, para un escenario de tu elección, cuándo publicarías `LivenessState.BROKEN` (el estado equivalente para liveness) en vez de solo afectar readiness.
@@ -482,27 +490,37 @@ mvn test -Dtest=LivenessReadinessTest # Maven
 
 **Pista:** `AvailabilityChangeEvent` es el mecanismo idiomático de Spring Boot para este propósito; modificar directamente algún estado interno sin pasar por este evento no actualizaría los endpoints de Actuator correctamente.
 
-#### Paso 6 · Práctica independiente
-
 **Completa el código:** rellena el espacio para publicar el cambio de estado de readiness:
 
 ```java
 AvailabilityChangeEvent.publish(publisher, this, ReadinessState.____);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme que marcar la aplicación como no lista afecta `/actuator/health/readiness` pero no `/actuator/health/liveness`. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un test `MockMvc` que confirme que marcar la aplicación como no lista afecta `/actuator/health/readiness` pero no `/actuator/health/liveness`. Compara después contra el patrón del Paso 4.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya distingues liveness de readiness con evidencia real, confirmando que un cambio de disponibilidad afecta la señal correcta sin disparar un reinicio innecesario. Esto cierra el módulo de observabilidad; el siguiente módulo aborda cómo documentar y versionar esta misma API. Fuente oficial: [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
+**Reto abierto.** Escribe los manifiestos de despliegue que apuntan cada sonda a su endpoint correcto y documenta el comportamiento ante un arranque lento, una dependencia caída y un apagado ordenado. Demuestra con tests que readiness cambia sin alterar liveness y explica en el runbook qué reinicia y qué solo saca de rotación.
+
+**Checklist de salida.**
+
+- [ ] Liveness y readiness son endpoints separados y habilitados.
+- [ ] Un test demuestra que readiness `DOWN` no altera liveness.
+- [ ] Las sondas del despliegue apuntan al endpoint correcto.
+- [ ] El runbook diferencia reinicio de retirada de tráfico.
+- [ ] El apagado ordenado usa el evento de disponibilidad, no estado interno.
+
+**Si falla.** Si readiness no responde, confirma que las tres propiedades están activas y que el endpoint no está bloqueado por seguridad; si apagar readiness también apaga liveness, revisa la configuración de sondas del despliegue, no el código.
+
+**Siguiente paso:** el módulo 8 aborda mensajería y integraciones asíncronas.
 
 **Errores comunes:** usar un único endpoint de salud genérico en Kubernetes en vez de separar liveness de readiness, causando reinicios innecesarios; apuntar por error la sonda de liveness hacia el endpoint de readiness (o viceversa) en la configuración de despliegue.
 
-**Cuándo no usarlo:** para un despliegue que no corre en un orquestador que distinga estas dos sondas (por ejemplo, un servidor tradicional sin Kubernetes ni un mecanismo equivalente), la distinción liveness/readiness no tiene ningún consumidor real que la aproveche; un único endpoint `/actuator/health` sigue siendo suficiente en ese contexto.
+**Límites y decisión de uso:** para un despliegue que no corre en un orquestador que distinga estas dos sondas (por ejemplo, un servidor tradicional sin Kubernetes ni un mecanismo equivalente), la distinción liveness/readiness no tiene ningún consumidor real que la aproveche; un único endpoint `/actuator/health` sigue siendo suficiente en ese contexto.
 
----
+**Fuente oficial:** [Spring Boot — Kubernetes Probes](https://docs.spring.io/spring-boot/reference/actuator/kubernetes-probes.html).
 
-Distinguir liveness de readiness es lo que evitará que Kubernetes reinicie innecesariamente el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Transferencia al proyecto integrador:** distinguir liveness de readiness es lo que evitará que Kubernetes reinicie innecesariamente el proyecto integrador de este track (microservicio productivo, Módulo 12).
 
 ## Laboratorio práctico
 
@@ -526,4 +544,28 @@ Distinguir liveness de readiness es lo que evitará que Kubernetes reinicie inne
 - **Solo exponer métricas técnicas genéricas.** Agrega métricas de negocio custom con Micrometer para dar valor al equipo de producto.
 - **Usar un único endpoint de salud genérico en Kubernetes.** Separa liveness de readiness para evitar reinicios innecesarios.
 
----
+## Proyecto de cierre del módulo
+
+**Objetivo:** entregar un servicio observable que distinga salud de negocio, estado de dependencias y disponibilidad para tráfico, con evidencia ejecutada de cada señal.
+
+**Entregables.**
+
+1. `academia-observabilidad` con Actuator y exposición restringida a `health`, `metrics` e `info`.
+2. Al menos dos `HealthIndicator` con nombre explícito y pruebas de `UP` y `DOWN`, incluida la degradación del estado general.
+3. Dos métricas de negocio con etiquetas de baja cardinalidad, verificadas por valor exacto y visibles en `/actuator/metrics`.
+4. Endpoints `liveness` y `readiness` habilitados y una prueba que demuestre que readiness `OUT_OF_SERVICE` no altera liveness.
+5. Manifiesto de despliegue (o documento equivalente) con cada sonda apuntando a su endpoint correcto.
+6. `README.md` con el catálogo de señales, su significado operativo y el procedimiento ante cada una.
+
+**Rúbrica (100 puntos).**
+
+| Criterio | Puntos |
+|---|---:|
+| Health indicators con nombres explícitos y pruebas de ambos estados | 20 |
+| Estado general degradado cuando una dependencia crítica falla | 15 |
+| Métricas de negocio correctas, con cardinalidad justificada | 20 |
+| Liveness y readiness independientes, probados con `MockMvc` | 20 |
+| Sondas del despliegue correctamente apuntadas y documentadas | 10 |
+| Exposición de Actuator limitada y runbook de señales | 15 |
+
+**Criterio de aceptación:** si un health indicator puede reportar `UP` con su dependencia caída, si readiness afecta liveness o si las sondas del despliegue están cruzadas, el módulo no se considera cerrado aunque la rúbrica sume 100.

@@ -5,19 +5,14 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Producers y consumers con Spring Kafka
+### Tema 1: Producers y consumers con Spring Kafka · Avanzado · 50 min
 
-#### Paso 1 · Objetivo y preparación
+**Prerrequisito:** `@Service` e inyección de dependencias (Módulo 1); manejo global de excepciones (Módulo 2).
+**Al terminar podrás:** publicar un evento con `KafkaTemplate` y consumirlo con `@KafkaListener`, confirmando con un broker Kafka real (embebido, sin Docker) que el desacoplamiento entre publicador y consumidor funciona de extremo a extremo.
 
-Al finalizar podrás publicar un evento con `KafkaTemplate` y consumirlo con `@KafkaListener`, confirmando con un broker Kafka real (embebido, sin Docker) que el desacoplamiento entre publicador y consumidor funciona de extremo a extremo.
-
-**Conocimiento previo:** `@Service` e inyección de dependencias (Módulo 1); manejo global de excepciones (Módulo 2).
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** La asignación de un conductor y el envío de notificaciones no deben bloquear el request HTTP que crea una tarea; un evento desacopla al publicador de sus consumidores, permitiendo que la notificación se procese de forma independiente sin que el creador de la tarea espere por ella.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** desacoplamiento vía topic, `@KafkaListener`.
 
@@ -55,9 +50,9 @@ flowchart LR
   C --> E["@KafkaListener groupId=analytics (futuro, sin tocar el publicador)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `kafka`) y crea el evento, el publicador y el consumidor en `src/main/java/com/academia/mensajeria/`:
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), genera el proyecto con Spring Initializr real (`web`, `kafka`) y crea el evento, el publicador y el consumidor en `src/main/java/com/academia/mensajeria/`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/mensajeria
@@ -169,16 +164,14 @@ mvn test -Dtest=EventoPublisherTest # Maven
 
 **Fallo deliberado:** cambia el topic en `@KafkaListener(topics = "tareas.creadas", ...)` a `@KafkaListener(topics = "tareas.otro-topic", ...)` (un topic distinto al que `EventoPublisher` realmente publica) y ejecuta de nuevo. El test FALLA con un timeout de `Awaitility` (`ConditionTimeoutException`, tras esperar los 5 segundos completos sin que la condición se cumpla nunca) porque el consumidor está escuchando un topic que nunca recibe ningún mensaje — diagnostica confirmando que el acoplamiento entre publicador y consumidor, aunque no sea de compilación, SÍ existe implícitamente a través del nombre del topic: si ambos no coinciden exactamente en ese string, el desacoplamiento se convierte en una desconexión silenciosa sin ningún error de compilación que lo señale. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un segundo `@KafkaListener` con un `groupId` distinto escuchando el mismo topic, y confirma con el test que AMBOS reciben el mismo evento de forma independiente.
 2. Publica dos eventos con la misma clave (`evento.id()`) y confirma, inspeccionando el orden en `eventosRecibidos`, que llegan en el mismo orden en que se publicaron (garantía de orden por partición cuando comparten clave).
 3. Publica un evento con un `id` nulo o vacío y observa (documentando el resultado) si eso afecta a qué partición se enruta, comparado con un `id` no vacío.
-4. Escribe de memoria (sin mirar) un `EventoPublisher` con `KafkaTemplate`, un `@KafkaListener` independiente, y un test `@EmbeddedKafka` con `Awaitility` que confirme la entrega. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `EventoPublisher` con `KafkaTemplate`, un `@KafkaListener` independiente, y un test `@EmbeddedKafka` con `Awaitility` que confirme la entrega. Compara después contra el patrón del demo.
 
 **Pista:** el consumo de Kafka es inherentemente asíncrono; un test que verifica el resultado inmediatamente después de `publicar(...)` sin ningún mecanismo de espera (como `Awaitility`) es una fuente clásica de tests intermitentes (flaky), porque el consumidor podría no haber procesado el mensaje todavía en ese instante exacto.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para registrar el consumidor sobre el topic correcto:
 
@@ -187,31 +180,41 @@ mvn test -Dtest=EventoPublisherTest # Maven
 public void escuchar(TareaCreadaEvent evento) { }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un publicador con `KafkaTemplate`, un consumidor con `@KafkaListener`, y un test `@EmbeddedKafka` que confirme la entrega con `Awaitility`. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un publicador con `KafkaTemplate`, un consumidor con `@KafkaListener`, y un test `@EmbeddedKafka` que confirme la entrega con `Awaitility`. Compara después contra el patrón del demo.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya publicas y consumes eventos desacoplados con Kafka, confirmando con un broker real embebido que la entrega efectivamente ocurre de extremo a extremo. El siguiente tema aborda qué ocurre cuando el consumidor falla al procesar un mensaje. Fuente oficial: [Spring for Apache Kafka — Testing](https://docs.spring.io/spring-kafka/reference/testing.html).
+**Reto abierto.** Diseña el flujo de notificaciones de una plataforma de entregas: `TareaService` publica un evento al crear una tarea, y dos grupos de consumidores independientes (notificaciones y analítica) reaccionan sin que el servicio creador conozca a ninguno. Publica tres eventos de la misma tarea y demuestra con el broker real que ambos grupos reciben los tres, en orden, y que añadir un tercer grupo no exige tocar el publicador.
+
+**Checklist de salida.**
+
+- [ ] El publicador no importa ni referencia ninguna clase de los consumidores.
+- [ ] Un test `@EmbeddedKafka` confirma la entrega real a cada grupo, con `Awaitility` y timeout explícito.
+- [ ] Eventos de la misma clave se consumen en el orden de publicación.
+- [ ] Añadir un segundo `groupId` no modifica el código del publicador.
+- [ ] El fallo deliberado del topic mal escrito está reproducido y diagnosticado en tus notas.
+- [ ] Sabes explicar por qué el test falla por timeout y no por una excepción de compilación.
+
+**Si falla.** Si el test pasa en vacío, comprueba que el topic del `@KafkaListener` coincide carácter por carácter con el de `send(...)` y que `spring.kafka.bootstrap-servers` apunta a `${spring.embedded.kafka.brokers}`. Si el consumo es intermitente, sustituye cualquier `Thread.sleep` por `Awaitility` con un timeout real.
+
+**Siguiente paso:** el siguiente tema aborda qué ocurre cuando el consumidor falla al procesar un mensaje.
 
 **Errores comunes:** asumir que el consumo es sincrónico y verificar el resultado sin ningún mecanismo de espera, produciendo tests intermitentes; que publicador y consumidor no coincidan exactamente en el nombre del topic, una desconexión silenciosa sin error de compilación.
 
-**Cuándo no usarlo:** para una operación que el llamador necesita confirmar que se completó exitosamente antes de continuar (por ejemplo, verificar el stock disponible antes de confirmar una compra), una llamada síncrona directa es más apropiada que un evento asíncrono desacoplado.
+**Límites y decisión de uso:** para una operación que el llamador necesita confirmar que se completó exitosamente antes de continuar (por ejemplo, verificar el stock disponible antes de confirmar una compra), una llamada síncrona directa es más apropiada que un evento asíncrono desacoplado.
 
-Los producers y consumers de Spring Kafka que implementes aquí son los que integrará el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Fuente oficial:** [Spring for Apache Kafka — Testing](https://docs.spring.io/spring-kafka/reference/testing.html).
 
-### Tema 2: Dead-letter queue
+**Transferencia al proyecto integrador:** los producers y consumers de Spring Kafka que implementes aquí son los que integrará el microservicio productivo (Módulo 12).
 
-#### Paso 1 · Objetivo y preparación
+### Tema 2: Dead-letter queue · Avanzado · 45 min
 
-Al finalizar podrás configurar reintentos limitados y una dead-letter queue para mensajes que fallan repetidamente, confirmando con un broker real que el mensaje problemático termina exactamente ahí, sin bloquear los mensajes siguientes.
+**Prerrequisito:** Tema 1 de este módulo.
+**Al terminar podrás:** configurar reintentos limitados y una dead-letter queue para mensajes que fallan repetidamente, confirmando con un broker real que el mensaje problemático termina exactamente ahí, sin bloquear los mensajes siguientes.
 
-**Conocimiento previo:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Un mensaje con un payload corrupto o una condición que el consumidor no puede manejar no debería bloquear indefinidamente el procesamiento de todos los mensajes válidos que llegan después de él en la misma partición.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** reintentos limitados, destino final para mensajes que fallan repetidamente.
 
@@ -237,9 +240,9 @@ flowchart LR
   B -->|agotados los 3 reintentos| D["publicado en tareas.creadas.DLT"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea la configuración de manejo de errores en `src/main/java/com/academia/mensajeria/`:
+**Demo paso a paso.** Reutiliza `academia-spring` (o créalo desde una carpeta vacía con `mkdir -p academia-spring` si es tu primera vez) y crea la configuración de manejo de errores en `src/main/java/com/academia/mensajeria/`:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/mensajeria
@@ -348,16 +351,14 @@ mvn test -Dtest=DeadLetterQueueTest # Maven
 
 **Fallo deliberado:** quita el `@Bean errorHandler` completo de `KafkaErrorConfig` (dejando el manejo de errores por defecto de Spring Kafka, sin DLQ configurada) y ejecuta de nuevo el test. El test FALLA con timeout en `KafkaTestUtils.getSingleRecord(...)` porque ningún mensaje llega a `pedidos.procesar.DLT` — sin el `errorHandler` explícito, el mensaje fallido se reintenta indefinidamente con la política por defecto, o se descarta según la configuración implícita, pero en cualquier caso NUNCA llega a la DLQ que el test espera — diagnostica confirmando que la dead-letter queue no es un comportamiento automático de Kafka, sino algo que debe configurarse explícitamente con un `DefaultErrorHandler` y un `DeadLetterPublishingRecoverer`. Revierte el cambio antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Publica un mensaje válido inmediatamente después del inválido en el mismo test, y confirma que el mensaje válido se procesa sin ningún retraso causado por los reintentos del mensaje anterior (los reintentos son por mensaje individual, no bloquean toda la partición indefinidamente en este patrón).
 2. Aumenta `FixedBackOff(100L, 2)` a `FixedBackOff(100L, 0)` (cero reintentos) y confirma que el mensaje llega a la DLQ inmediatamente tras el primer fallo, sin ningún reintento.
 3. Inspecciona los headers del `ConsumerRecord` recibido en la DLQ (`registroEnDlq.headers()`) y documenta qué información adicional sobre la excepción original Spring Kafka adjunta automáticamente.
-4. Escribe de memoria (sin mirar) un `DefaultErrorHandler` con `DeadLetterPublishingRecoverer`, y un test que confirme que un mensaje fallido termina en el topic `.DLT` correspondiente. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `DefaultErrorHandler` con `DeadLetterPublishingRecoverer`, y un test que confirme que un mensaje fallido termina en el topic `.DLT` correspondiente. Compara después contra el patrón del demo.
 
 **Pista:** el sufijo `.DLT` (Dead Letter Topic) es la convención por defecto de `DeadLetterPublishingRecoverer`; puede personalizarse, pero mantener la convención por defecto facilita que cualquier desarrollador del equipo sepa dónde buscar mensajes fallidos sin necesitar documentación adicional.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para configurar 3 reintentos con 1 segundo entre cada uno antes de enviar a la DLQ:
 
@@ -365,31 +366,41 @@ mvn test -Dtest=DeadLetterQueueTest # Maven
 return new DefaultErrorHandler(recoverer, new ____(1000L, 3));
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `DefaultErrorHandler` con reintentos limitados y `DeadLetterPublishingRecoverer`, y un test que confirme el mensaje fallido en la DLQ. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un `DefaultErrorHandler` con reintentos limitados y `DeadLetterPublishingRecoverer`, y un test que confirme el mensaje fallido en la DLQ. Compara después contra el patrón del demo.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya configuras reintentos limitados y una dead-letter queue real, confirmando con un broker Kafka embebido que un mensaje problemático queda aislado y trazable sin bloquear el flujo normal. El siguiente tema profundiza en productores idempotentes y transacciones para evitar duplicados, el requisito de nivel profesional que la DLQ por sí sola no resuelve. Fuente oficial: [Spring for Apache Kafka — Dead Letters](https://docs.spring.io/spring-kafka/reference/retrytopic.html).
+**Reto abierto.** Añade al procesador de pedidos un mensaje que siempre falla y otro que siempre funciona, y demuestra sobre el broker real que el fallido termina en `pedidos.procesar.DLT` tras agotar los reintentos mientras el válido se procesa sin esperar. Documenta cuántos reintentos configuraste, dónde queda el mensaje y quién se encarga de investigarlo.
+
+**Checklist de salida.**
+
+- [ ] La DLQ está configurada explícitamente con `DefaultErrorHandler` y un recoverer.
+- [ ] El número de reintentos y su espera están documentados y justificados.
+- [ ] Un test lee el mensaje fallido directamente desde `pedidos.procesar.DLT`.
+- [ ] Un mensaje válido publicado después del fallido se procesa sin quedar bloqueado.
+- [ ] Has reproducido el fallo sin `errorHandler` y explicado el timeout resultante.
+- [ ] Existe un dueño y un procedimiento escrito para vaciar la DLQ.
+
+**Si falla.** Si la DLQ queda vacía, verifica que el topic `.DLT` esté declarado en `@EmbeddedKafka(topics = {...})` y que el `DefaultErrorHandler` sea el bean realmente usado por el contenedor de listeners. Si todo llega a la DLQ, revisa que la excepción del consumidor sea del tipo que el handler trata como reintentable.
+
+**Siguiente paso:** el siguiente tema profundiza en productores idempotentes y transacciones para evitar duplicados, el requisito de nivel profesional que la DLQ por sí sola no resuelve.
 
 **Errores comunes:** no configurar ninguna dead-letter queue, arriesgando que un mensaje problemático bloquee o se pierda silenciosamente; no monitorear ni asignar dueño a la DLQ, dejando mensajes fallidos acumulándose sin que nadie los investigue.
 
-**Cuándo no usarlo:** para un consumidor donde CUALQUIER fallo de procesamiento debe detener inmediatamente todo el flujo hasta que un humano intervenga (un escenario donde continuar procesando otros mensajes sería inaceptable), reintentar y luego enviar silenciosamente a una DLQ podría ocultar un problema que requiere atención inmediata en vez de diferida.
+**Límites y decisión de uso:** para un consumidor donde CUALQUIER fallo de procesamiento debe detener inmediatamente todo el flujo hasta que un humano intervenga (un escenario donde continuar procesando otros mensajes sería inaceptable), reintentar y luego enviar silenciosamente a una DLQ podría ocultar un problema que requiere atención inmediata en vez de diferida.
 
-La dead-letter queue de este tema es la que evitará perder mensajes fallidos en el proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Fuente oficial:** [Spring for Apache Kafka — Dead Letters](https://docs.spring.io/spring-kafka/reference/retrytopic.html).
 
-### Tema 3: Productor idempotente y transacciones (exactly-once)
+**Transferencia al proyecto integrador:** la dead-letter queue de este tema es la que evitará perder mensajes fallidos en el microservicio productivo (Módulo 12).
 
-#### Paso 1 · Objetivo y preparación
+### Tema 3: Productor idempotente y transacciones (exactly-once) · Experto · 50 min
 
-Al finalizar podrás configurar un productor idempotente y una transacción Kafka que evite publicar un evento duplicado si el productor reintenta tras un fallo de red, confirmando con un broker real que el duplicado nunca llega al topic.
+**Prerrequisito:** Tema 1 de este módulo.
+**Al terminar podrás:** configurar un productor idempotente y una transacción Kafka que evite publicar un evento duplicado si el productor reintenta tras un fallo de red, confirmando con un broker real que el duplicado nunca llega al topic.
 
-**Conocimiento previo:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Sin idempotencia, un timeout de red que en realidad SÍ se entregó en el broker hace que el productor reintente, publicando el mismo evento de negocio dos veces — un conductor podría recibir la misma notificación de "nueva entrega asignada" duplicada, o un pago podría registrarse dos veces si el evento dispara un cobro.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** productor idempotente, ack perdido en la red (no el mensaje), deduplicación por el broker.
 
@@ -420,9 +431,9 @@ sequenceDiagram
   Note over B: descarta el duplicado, no escribe dos veces
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` y crea el publicador idempotente junto con un procesador que aplica su propia verificación de idempotencia, en `src/main/java/com/academia/mensajeria/`, confirmando con un broker real que un pago duplicado (el mismo `evento.id()` llegando dos veces al topic, el escenario real que un reintento de red o de aplicación produce) se aplica exactamente una vez:
+**Demo paso a paso.** Reutiliza `academia-spring` y crea el publicador idempotente junto con un procesador que aplica su propia verificación de idempotencia, en `src/main/java/com/academia/mensajeria/`, confirmando con un broker real que un pago duplicado (el mismo `evento.id()` llegando dos veces al topic, el escenario real que un reintento de red o de aplicación produce) se aplica exactamente una vez:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/mensajeria
@@ -554,16 +565,14 @@ mvn test -Dtest=ProductorIdempotenteTest # Maven
 
 **Fallo deliberado:** en `ProcesadorPagosIdempotente.procesar`, quita el `if (idsYaAplicados.add(evento.id()))` (incrementando `cobrosRealmenteAplicados` sin ninguna condición, para cada mensaje recibido sin importar su id) y ejecuta de nuevo `mvn test -Dtest=ProductorIdempotenteTest`. El test FALLA: `cobrosRealmenteAplicados` queda en `2` en vez de `1` — diagnostica confirmando que la idempotencia del PRODUCTOR (que sigue activa en `ProducerFactory`) nunca fue la responsable de evitar el cobro duplicado; sin la verificación explícita de idempotencia en el consumidor, el mismo pago se aplica dos veces. Restaura el `if` antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Configura `acks=all` sin idempotencia y repite el experimento de reintento; confirma que el duplicado aparece igual (`acks=all` por sí solo no da idempotencia).
 2. Combina idempotencia con una transacción que agrupe la publicación del evento Y una actualización del estado en base de datos (vía `KafkaTransactionManager` o un patrón outbox), confirmando que ambas operaciones tienen éxito o fallan juntas.
 3. Mide con `@EmbeddedKafka` cuántos registros produce una publicación con y sin idempotencia tras forzar 3 reintentos simulados.
-4. Escribe de memoria (sin mirar) la configuración mínima de un productor idempotente. Compara después contra el Paso 4.
+4. Escribe de memoria (sin mirar) la configuración mínima de un productor idempotente. Compara después contra el demo.
 
 **Pista:** la idempotencia del productor resuelve duplicados causados por reintentos DEL PRODUCTOR; no resuelve duplicados causados por reintentos DEL CONSUMIDOR (si el consumidor procesa un mensaje pero falla al confirmar el offset) — ese caso necesita diseño de consumidor idempotente, independiente del rebalanceo del Tema 4.
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el valor que activa la deduplicación del productor:
 
@@ -571,31 +580,41 @@ mvn test -Dtest=ProductorIdempotenteTest # Maven
 config.put(ProducerConfig.____, true);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, el bean `ProducerFactory` con idempotencia activada y `acks=all`. Compara después contra el Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, el bean `ProducerFactory` con idempotencia activada y `acks=all`. Compara después contra el demo.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya configuras un productor idempotente y confirmas, con un pago realmente duplicado en el topic, que la verificación de idempotencia del consumidor es la que garantiza que el cobro se aplique exactamente una vez. El siguiente tema aborda el rebalanceo de consumer groups, el costo operacional de escalar consumidores horizontalmente. Fuente oficial: [Exactly Once Semantics — Spring for Apache Kafka](https://docs.spring.io/spring-kafka/reference/kafka/exactly-once.html).
+**Reto abierto.** Publica el mismo pago dos veces con identidad estable y demuestra que el cobro real se aplica una sola vez, mientras el topic contiene dos registros. Añade después una transacción que agrupe la publicación con una escritura en base de datos y explica, con la prueba correspondiente, qué ocurre si una de las dos operaciones falla.
+
+**Checklist de salida.**
+
+- [ ] El productor tiene `enable.idempotence=true` y `acks=all` configurados explícitamente.
+- [ ] El consumidor deduplica por una identidad de negocio estable, no por offset.
+- [ ] Un test demuestra dos entregas en el topic y un solo efecto de negocio.
+- [ ] Has reproducido el fallo quitando la deduplicación del consumidor y explicado el resultado `2`.
+- [ ] Distingues en tus notas un reintento del productor de un reintento de la aplicación.
+- [ ] La deduplicación se conservaría tras un reinicio del proceso (almacén persistente o outbox).
+
+**Si falla.** Si el test ve `1` incluso sin deduplicación, probablemente ambas llamadas compartan clave y el consumidor aún no procesó la segunda al evaluar la aserción; espera al valor esperado con timeout y vuelve a medir. Si ves `2` con la deduplicación activa, revisa que `idsYaAplicados` viva en el bean que realmente consume y que el id sea el mismo en ambos envíos.
+
+**Siguiente paso:** el siguiente tema aborda el rebalanceo de consumer groups, el costo operacional de escalar consumidores horizontalmente.
 
 **Errores comunes:** asumir que `acks=all` por sí solo da idempotencia (da durabilidad, no deduplicación); asumir que la idempotencia del productor también deduplica errores del lado del consumidor.
 
-**Cuándo no usarlo:** para eventos donde un duplicado ocasional es tolerable y barato de ignorar (ej. una métrica de telemetría no crítica), la ceremonia adicional de productor idempotente/transaccional puede no justificarse frente a su costo de throughput.
+**Límites y decisión de uso:** para eventos donde un duplicado ocasional es tolerable y barato de ignorar (ej. una métrica de telemetría no crítica), la ceremonia adicional de productor idempotente/transaccional puede no justificarse frente a su costo de throughput.
 
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** Publica una confirmación con identidad de evento estable y protege también el consumidor. Repite el evento de negocio y verifica un solo cobro, distinguiendo transacción Kafka de transacción de la base externa.
+**Fuente oficial:** [Exactly Once Semantics — Spring for Apache Kafka](https://docs.spring.io/spring-kafka/reference/kafka/exactly-once.html).
 
-### Tema 4: Rebalanceo de consumer groups y partition assignment
+**Transferencia al proyecto integrador:** publica una confirmación con identidad de evento estable y protege también el consumidor. Repite el evento de negocio y verifica un solo cobro, distinguiendo transacción Kafka de transacción de la base externa.
 
-#### Paso 1 · Objetivo y preparación
+### Tema 4: Rebalanceo de consumer groups y partition assignment · Avanzado · 45 min
 
-Al finalizar podrás reproducir un rebalanceo completo de un consumer group al reiniciar una instancia, y configurar static group membership para evitarlo en reinicios breves.
+**Prerrequisito:** Tema 1 de este módulo.
+**Al terminar podrás:** reproducir un rebalanceo completo de un consumer group al reiniciar una instancia, y configurar static group membership para evitarlo en reinicios breves.
 
-**Conocimiento previo:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Cada vez que una instancia de un consumer group se une o abandona el grupo (incluyendo un simple restart de un pod en Kubernetes), Kafka reasigna TODAS las particiones entre TODAS las instancias restantes, deteniendo momentáneamente el consumo de todo el grupo — invisible en desarrollo con una sola instancia, pero costoso en producción con varias.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** consumer group, rebalanceo, partition assignment strategy, static membership.
 
@@ -626,9 +645,9 @@ sequenceDiagram
   Note over C1,C2: ambos detienen el consumo durante el rebalanceo
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Reutiliza `academia-spring` y crea un `ConsumerRebalanceListener` real que registra qué particiones tiene asignadas esta instancia en cada momento, en `src/main/java/com/academia/mensajeria/`, y un test que arranca dos consumidores reales en el mismo `groupId` para forzar un rebalanceo genuino y confirmar qué particiones se revocan y a quién se reasignan:
+**Demo paso a paso.** Reutiliza `academia-spring` y crea un `ConsumerRebalanceListener` real que registra qué particiones tiene asignadas esta instancia en cada momento, en `src/main/java/com/academia/mensajeria/`, y un test que arranca dos consumidores reales en el mismo `groupId` para forzar un rebalanceo genuino y confirmar qué particiones se revocan y a quién se reasignan:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/mensajeria
@@ -756,16 +775,14 @@ mvn test -Dtest=RebalanceoRealTest  # Maven
 
 **Fallo deliberado:** en `EstadoParticionRebalanceListener.onPartitionsRevoked`, quita la línea `particionesAsignadasActualmente.removeAll(particiones);` (deja solo el contador) y ejecuta de nuevo `mvn test -Dtest=RebalanceoRealTest`. El test FALLA en la aserción de la suma de particiones (ahora reporta `3` en vez de `2`, porque la primera instancia sigue "creyendo" que conserva una partición que el broker ya reasignó a la segunda) — diagnostica confirmando por qué ignorar `onPartitionsRevoked` deja a una instancia con estado local obsoleto tras un rebalanceo real: seguiría sirviendo, cacheando o contando datos de una partición que ya no le pertenece. Restaura la línea antes de continuar.
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Repite el experimento con 3 instancias en vez de 2, y cuenta cuántas particiones cambian de dueño con y sin `CooperativeStickyAssignor`.
 2. Configura `session.timeout.ms` deliberadamente corto (ej. 5 segundos) y confirma que un reinicio que tarda más que eso SÍ dispara rebalanceo incluso con static membership.
 3. Documenta qué pasaría si dos instancias distintas usaran accidentalmente el mismo `group.instance.id`.
-4. Escribe de memoria (sin mirar) la configuración de `group.instance.id` y `CooperativeStickyAssignor`. Compara después contra el Paso 4.
+4. Escribe de memoria (sin mirar) la configuración de `group.instance.id` y `CooperativeStickyAssignor`. Compara después contra el demo.
 
 **Pista:** static membership protege contra reinicios BREVES y conocidos (deploys, restarts); no reemplaza un diseño que tolere genuinamente la pérdida permanente de una instancia (ese caso siempre necesita un rebalanceo real).
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena la configuración que da identidad estable a la instancia entre reinicios:
 
@@ -773,31 +790,41 @@ mvn test -Dtest=RebalanceoRealTest  # Maven
 config.put(ConsumerConfig.____, "notificaciones-1");
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, la configuración completa de un consumer con static membership y `CooperativeStickyAssignor`. Compara después contra el Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, la configuración completa de un consumer con static membership y `CooperativeStickyAssignor`. Compara después contra el demo.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya reproducís un rebalanceo real con dos consumidores del mismo grupo y confirmás, con un `ConsumerRebalanceListener` real, que las particiones se revocan y reasignan correctamente entre ambos. El siguiente y último tema de este módulo compara Kafka con RabbitMQ para elegir según el patrón de consumo real necesario. Fuente oficial: [Kafka Consumer Configs — Apache Kafka](https://kafka.apache.org/documentation/#consumerconfigs).
+**Reto abierto.** Levanta dos consumidores del mismo grupo sobre un topic de dos particiones, retira uno en pleno procesamiento y demuestra con un `ConsumerRebalanceListener` real qué particiones se revocan y cómo se reparten las restantes. Después configura `group.instance.id` y comprueba qué cambia en un reinicio breve.
+
+**Checklist de salida.**
+
+- [ ] Dos instancias reales del mismo `groupId` se reparten las particiones sin duplicarlas ni perderlas.
+- [ ] El listener implementa `onPartitionsRevoked` y `onPartitionsAssigned`, no solo uno.
+- [ ] Un test demuestra la revocación tras unirse la segunda instancia.
+- [ ] Has reproducido el estado obsoleto quitando `removeAll` y explicado por qué la suma da 3.
+- [ ] `group.instance.id` es único por instancia y está documentado.
+- [ ] Sabes decir qué reinicio NO evita static membership y por qué.
+
+**Si falla.** Si la suma de particiones nunca llega a 2, espera a que ambas instancias completen la asignación con un timeout mayor: el rebalanceo real tarda, no es instantáneo. Si el segundo contenedor no se une, verifica que use el mismo nombre de grupo y el mismo broker embebido.
+
+**Siguiente paso:** el siguiente y último tema de este módulo compara Kafka con RabbitMQ para elegir según el patrón de consumo real necesario.
 
 **Errores comunes:** asumir que un simple restart de un pod no tiene costo en un consumer group con muchas particiones; usar el mismo `group.instance.id` en dos instancias distintas por error de configuración (deben ser únicas).
 
-**Cuándo no usarlo:** para un consumer group de una sola instancia (sin escalado horizontal), el rebalanceo no es un problema real a evitar; static membership agrega configuración sin beneficio en ese caso.
+**Límites y decisión de uso:** para un consumer group de una sola instancia (sin escalado horizontal), el rebalanceo no es un problema real a evitar; static membership agrega configuración sin beneficio en ese caso.
 
-**Transferencia al proyecto integrador «Backend profesional de entregas»:** Ejecuta dos consumidores del grupo y retira uno durante el procesamiento. Comprueba reasignación y repetición segura de mensajes, conservando el orden por clave que necesita cada entrega.
+**Fuente oficial:** [Kafka Consumer Configs — Apache Kafka](https://kafka.apache.org/documentation/#consumerconfigs).
 
-### Tema 5: Kafka frente a RabbitMQ
+**Transferencia al proyecto integrador:** ejecuta dos consumidores del grupo y retira uno durante el procesamiento. Comprueba reasignación y repetición segura de mensajes, conservando el orden por clave que necesita cada entrega.
 
-#### Paso 1 · Objetivo y preparación
+### Tema 5: Kafka frente a RabbitMQ · Intermedio · 35 min
 
-Al finalizar podrás implementar el mismo flujo de consumo con Spring AMQP sobre RabbitMQ real, y explicar con evidencia en qué se diferencia su modelo de entrega del de Kafka.
+**Prerrequisito:** Temas 1 a 4 de este módulo.
+**Al terminar podrás:** implementar el mismo flujo de consumo con Spring AMQP sobre RabbitMQ real, y explicar con evidencia en qué se diferencia su modelo de entrega del de Kafka.
 
-**Conocimiento previo:** Temas 1 a 4 de este módulo.
-
-#### Paso 2 · Contexto y caso real
+#### Aprende
 
 **¿Por qué es importante?** Elegir la tecnología de mensajería equivocada para el patrón de consumo real necesario (retención y relectura de historial vs. distribución simple de trabajo) genera complejidad innecesaria o limitaciones inesperadas más adelante.
-
-#### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** log distribuido retenido frente a broker de colas tradicional.
 
@@ -807,20 +834,22 @@ Al finalizar podrás implementar el mismo flujo de consumo con Spring AMQP sobre
 
 **Diagrama:**
 
-```
-┌── Kafka: log distribuido ────────────────────────┐
-│  retiene mensajes; múltiples consumidores leen el      │
-│  mismo stream completo, incluso ya "consumido" antes    │
-└──────────────────────────────────────────────┘
-┌── RabbitMQ: broker de colas tradicional ─────────┐
-│  mensaje entregado y eliminado de la cola;              │
-│  más simple para distribución punto-a-punto             │
-└──────────────────────────────────────────────┘
+```text
+┌ Kafka: log distribuido ───────────────────────────────────┐
+│ retiene mensajes; varios grupos de consumidores           │
+│ pueden releer el mismo stream completo, incluso           │
+│ eventos ya consumidos                                     │
+└───────────────────────────────────────────────────────────┘
+┌ RabbitMQ: broker de colas tradicional ────────────────────┐
+│ el mensaje se entrega y se elimina de la cola;            │
+│ un solo trabajador del pool lo recibe                     │
+│ (competencia de consumidores)                             │
+└───────────────────────────────────────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### Practica
 
-Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), agrega la dependencia real `spring-boot-starter-amqp` y crea `src/main/java/com/academia/mensajeria/RabbitConfig.java` con el equivalente en RabbitMQ del publicador/consumidor del Tema 1:
+**Demo paso a paso.** Desde una carpeta vacía (o continuando en `academia-spring`, o créala con `mkdir -p academia-spring` si es tu primera vez), agrega la dependencia real `spring-boot-starter-amqp` y crea `src/main/java/com/academia/mensajeria/RabbitConfig.java` con el equivalente en RabbitMQ del publicador/consumidor del Tema 1:
 
 ```bash
 mkdir -p academia-spring/src/main/java/com/academia/mensajeria
@@ -927,18 +956,16 @@ mvn test -Dtest=RabbitVsKafkaTest   # Maven
 
 **Resultado esperado:** `BUILD SUCCESS` con el test en verde: el mensaje se entrega al listener real vía RabbitMQ, y al intentar leer la cola de nuevo directamente (`receiveAndConvert`), no queda ningún mensaje pendiente — confirmando en código, no solo en teoría, la diferencia central con Kafka (Tema 1): RabbitMQ elimina el mensaje de la cola tras la entrega, mientras Kafka lo retiene y permitiría que un nuevo `groupId` lo releyera desde el principio del topic.
 
-**Fallo deliberado:** intenta releer el mismo mensaje con un `RabbitListener` adicional usando un `groupId` conceptualmente equivalente al de Kafka (RabbitMQ no tiene el concepto de `groupId`; si agregas un SEGUNDO `@RabbitListener(queues = "tareas.creadas.rabbit")` en otra clase, ambos listeners COMPITEN por los mensajes de la misma cola, cada mensaje se entrega a SOLO UNO de los dos, no a ambos). Verifica esto agregando un segundo listener y confirmando que la suma de mensajes recibidos por ambos, no cada uno por separado, coincide con el total publicado — diagnostica confirmando que RabbitMQ implementa competencia de consumidores (distribución de trabajo) sobre una cola, fundamentalmente distinto del fan-out real que Kafka logra con múltiples `groupId` independientes, cada uno recibiendo TODOS los mensajes (Tema 1, Paso 5, punto 1).
+**Fallo deliberado:** intenta releer el mismo mensaje con un `RabbitListener` adicional usando un `groupId` conceptualmente equivalente al de Kafka (RabbitMQ no tiene el concepto de `groupId`; si agregas un SEGUNDO `@RabbitListener(queues = "tareas.creadas.rabbit")` en otra clase, ambos listeners COMPITEN por los mensajes de la misma cola, cada mensaje se entrega a SOLO UNO de los dos, no a ambos). Verifica esto agregando un segundo listener y confirmando que la suma de mensajes recibidos por ambos, no cada uno por separado, coincide con el total publicado — diagnostica confirmando que RabbitMQ implementa competencia de consumidores (distribución de trabajo) sobre una cola, fundamentalmente distinto del fan-out real que Kafka logra con múltiples `groupId` independientes, cada uno recibiendo TODOS los mensajes (Tema 1).
 
-#### Paso 5 · Práctica guiada — repetición progresiva
+**Ejercicios.**
 
 1. Agrega un segundo test que confirme la competencia de consumidores: dos `@RabbitListener` sobre la misma cola, publica 10 mensajes, y confirma que la SUMA de lo recibido por ambos es 10 (no 20, como sería con dos `@KafkaListener` con `groupId` distintos sobre el mismo topic).
 2. Configura la cola de RabbitMQ como `durable = false` y documenta, basándote en la documentación oficial, qué pasaría con los mensajes pendientes si el broker se reiniciara.
 3. Compara el tiempo de arranque del contenedor `RabbitMQContainer` (Tema 5) frente a `@EmbeddedKafka` (Temas 1-2) ejecutando ambas suites y observando los tiempos reportados por Maven.
-4. Escribe de memoria (sin mirar) una tabla de dos columnas comparando Kafka y RabbitMQ en retención, patrón de consumo y fan-out real vs. competencia de consumidores. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) una tabla de dos columnas comparando Kafka y RabbitMQ en retención, patrón de consumo y fan-out real vs. competencia de consumidores. Compara después contra el patrón del demo.
 
 **Pista:** la pregunta que determina la elección correcta no es "¿cuál es más rápido o más popular?", sino "¿necesito que MÚLTIPLES consumidores independientes reciban CADA UNO su propia copia completa del mismo mensaje (Kafka), o necesito distribuir CADA mensaje entre UN SOLO trabajador de un pool (RabbitMQ)?".
-
-#### Paso 6 · Práctica independiente
 
 **Completa el código:** rellena el espacio para registrar el consumidor sobre la cola de RabbitMQ:
 
@@ -947,19 +974,58 @@ mvn test -Dtest=RabbitVsKafkaTest   # Maven
 public void escuchar(String titulo) { }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un test que confirme que RabbitMQ elimina un mensaje de la cola tras entregarlo, a diferencia de la retención de Kafka. Compara después contra el patrón del Paso 4.
+**Reto de memoria:** cierra este documento y escribe, solo de memoria, un test que confirme que RabbitMQ elimina un mensaje de la cola tras entregarlo, a diferencia de la retención de Kafka. Compara después contra el patrón del demo.
 
-#### Paso 7 · Cierre
+#### Aplica
 
-Ya implementas el mismo patrón de consumo desacoplado sobre RabbitMQ real, confirmando con evidencia de código la diferencia central de modelo de entrega frente a Kafka. Esto cierra el módulo de mensajería; el siguiente módulo aborda cómo estructurar el código de dominio con principios de arquitectura hexagonal. Fuente oficial: [Spring AMQP Reference](https://docs.spring.io/spring-amqp/reference/).
+**Reto abierto.** Implementa el mismo flujo de creación de tareas sobre RabbitMQ y demuestra con evidencia de test la diferencia central: el mensaje desaparece de la cola tras entregarse y dos listeners sobre la misma cola se reparten el trabajo en vez de duplicarlo. Después escribe la decisión de mensajería para un sistema de entregas: qué patrón de consumo necesita y qué broker lo satisface.
+
+**Checklist de salida.**
+
+- [ ] El flujo funciona contra un RabbitMQ real levantado por Testcontainers.
+- [ ] Un test confirma que el mensaje ya no está en la cola después de consumirse.
+- [ ] Un test demuestra competencia de consumidores con la suma de mensajes.
+- [ ] La decisión Kafka/RabbitMQ está escrita con el patrón de consumo como criterio, no con popularidad.
+- [ ] Sabes explicar qué se pierde al usar RabbitMQ para event sourcing.
+- [ ] Sabes explicar qué cuesta usar Kafka para distribuir trabajo simple entre workers.
+
+**Si falla.** Si el contenedor no arranca, confirma que Docker esté corriendo. Si `receiveAndConvert` devuelve el mensaje, el listener no llegó a consumirlo todavía: espera la entrega con `await()` antes de comprobar la cola vacía.
+
+**Siguiente paso:** esto cierra el módulo de mensajería; el siguiente módulo aborda la programación reactiva con WebFlux y el modelo no bloqueante.
 
 **Errores comunes:** confundir el modelo de retención de Kafka con el de RabbitMQ, asumiendo que ambos permiten releer el historial completo; asumir que agregar un segundo `@RabbitListener` sobre la misma cola duplicará la entrega, cuando en realidad divide el trabajo entre ambos.
 
-**Cuándo no usarlo:** para un flujo que necesita garantías de ordenamiento estricto y reprocesamiento completo del historial de eventos de negocio (auditoría, event sourcing), RabbitMQ por sí solo no ofrece esa retención; Kafka es la elección más apropiada para ese patrón específico.
+**Límites y decisión de uso:** para un flujo que necesita garantías de ordenamiento estricto y reprocesamiento completo del historial de eventos de negocio (auditoría, event sourcing), RabbitMQ por sí solo no ofrece esa retención; Kafka es la elección más apropiada para ese patrón específico.
 
----
+**Fuente oficial:** [Spring AMQP Reference](https://docs.spring.io/spring-amqp/reference/).
 
-La comparación Kafka frente a RabbitMQ de este tema es la que justificará la elección de mensajería del proyecto integrador de este track (microservicio productivo, Módulo 12).
+**Transferencia al proyecto integrador:** la comparación Kafka frente a RabbitMQ de este tema es la que justificará la elección de mensajería del microservicio productivo (Módulo 12).
+
+## Proyecto de cierre del módulo
+
+**Objetivo:** entregar un servicio de pedidos que publique eventos a un broker real, tolere fallos de consumo sin bloquearse y garantice un único efecto de negocio ante entregas duplicadas.
+
+**Entregables.**
+
+1. Un publicador de eventos con clave estable y un consumidor independiente, probados contra `@EmbeddedKafka`.
+2. Configuración explícita de reintentos y dead-letter queue, con un test que lea el mensaje fallido desde el topic `.DLT`.
+3. Productor idempotente (`enable.idempotence=true`, `acks=all`) y consumidor con deduplicación por identidad de negocio.
+4. Consumer group con dos instancias y `ConsumerRebalanceListener` que mantenga el estado local fiel a las particiones asignadas.
+5. `README.md` con la decisión Kafka frente a RabbitMQ justificada por el patrón de consumo y el procedimiento ante mensajes en la DLQ.
+6. Un test por tema que falle si se elimina la protección correspondiente, documentado con el diagnóstico observado.
+
+**Rúbrica (100 puntos).**
+
+| Criterio | Puntos |
+|---|---:|
+| Publicación y consumo desacoplados sobre broker real | 20 |
+| Reintentos limitados y DLQ verificada por test | 20 |
+| Exactly-once de negocio con productor idempotente y consumidor deduplicado | 20 |
+| Rebalanceo real reproducido y estado de particiones consistente | 15 |
+| Decisión de broker justificada por patrón de consumo | 15 |
+| README con diagnóstico de los fallos provocados y operación de la DLQ | 10 |
+
+**Criterio de aceptación:** si un mensaje fallido se pierde sin llegar a la DLQ, o si un pago duplicado produce dos efectos de negocio, el módulo no se considera cerrado aunque la rúbrica sume 100.
 
 ## Laboratorio práctico
 

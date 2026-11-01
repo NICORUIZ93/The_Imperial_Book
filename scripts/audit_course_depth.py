@@ -46,7 +46,7 @@ def signals(demo: str) -> list[str]:
         found.append('ejemplo-breve-revisar-contexto')
     if re.search(r'useQuery\(', demo) and not re.search(r'QueryClientProvider|plantilla|repositorio', demo):
         found.append('proveedor-query-no-visible')
-    if re.search(r'(crea|implementa)[^\n]{0,150}\.java', demo, re.I) and not re.search(r'\bclass\s+\w+', demo):
+    if re.search(r'(crea|implementa)[^\n]{0,150}\.java', demo, re.I) and not re.search(r'\b(?:class|record|interface|enum)\s+\w+', demo):
         found.append('clase-java-no-visible')
     return found
 
@@ -86,6 +86,13 @@ def build() -> dict:
         module = int(re.search(r'\d+', path.stem)[0])
         for title, block in topic_blocks(student_visible_content(raw)):
             demo = re.search(r'^#### Paso 4[^\n]*\n([\s\S]*?)(?=^#### Paso 5|\Z)', block, re.M | re.I)
+            if demo is None:
+                practica = re.search(r'^#### Practica\s*\n([\s\S]*?)(?=^#### Aplica\s*$|\Z)', block, re.M | re.I)
+                if practica:
+                    demo = re.match(
+                        r'([\s\S]*?)(?=^\*\*(?:Ejercicios|Pista|Completa el código)\b|\Z)',
+                        practica.group(1), re.M,
+                    )
             clean_title = re.sub(r'^Tema(?:\s+(?:\d+|complementario))?\s*:\s*', '', title)
             review = human.get((path.parent.name, module, title))
             rows.append({'track':path.parent.name, 'module':module, 'title':title,

@@ -3140,6 +3140,50 @@
         "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       }
     ],
+    "21": [
+      {
+        "title": "Qué es la superficie pública de una API",
+        "fragment": "tema-1-que-es-la-superficie-publica-de-una-api"
+      },
+      {
+        "title": "Compatibilidad binaria frente a compatibilidad de fuente",
+        "fragment": "tema-2-compatibilidad-binaria-frente-a-compatibilidad-de-fuente"
+      },
+      {
+        "title": "Evolucionar sin romper: default methods, deprecación y retirada",
+        "fragment": "tema-3-evolucionar-sin-romper-default-methods-deprecacion-y-retirada"
+      },
+      {
+        "title": "Genéricos, borrado y métodos puente en la superficie pública",
+        "fragment": "tema-4-genericos-borrado-y-metodos-puente-en-la-superficie-publica"
+      },
+      {
+        "title": "Verificar la compatibilidad en el build",
+        "fragment": "tema-5-verificar-la-compatibilidad-en-el-build"
+      }
+    ],
+    "22": [
+      {
+        "title": "El contrato de equals y hashCode",
+        "fragment": "tema-1-el-contrato-de-equals-y-hashcode"
+      },
+      {
+        "title": "Claves mutables y el mapa que pierde entradas",
+        "fragment": "tema-2-claves-mutables-y-el-mapa-que-pierde-entradas"
+      },
+      {
+        "title": "Copia defensiva, copia superficial y clone",
+        "fragment": "tema-3-copia-defensiva-copia-superficial-y-clone"
+      },
+      {
+        "title": "Enums de dominio: estado, código y comportamiento",
+        "fragment": "tema-4-enums-de-dominio-estado-codigo-y-comportamiento"
+      },
+      {
+        "title": "Clases anidadas, this$0 y la referencia que retiene",
+        "fragment": "tema-5-clases-anidadas-this-0-y-la-referencia-que-retiene"
+      }
+    ],
     "3": [
       {
         "title": "Checked vs unchecked exceptions",

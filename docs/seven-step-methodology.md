@@ -2,6 +2,8 @@
 
 Un tema completo hace visibles los siete pasos solicitados y sus apoyos profesionales según 16 marcadores heurísticos. Este reporte no confunde una mención curricular con una lección terminada. El resultado no demuestra calidad, aprendizaje ni ejecución de los ejemplos; la auditoría de criterios editoriales es independiente y usa otra rúbrica.
 
+El contenido actual sigue en siete pasos. La migración incremental al formato Aprende/Practica/Aplica se registra en [migration-status.json](./migration-status.json) y se planifica en [migration-plan.md](./migration-plan.md); este auditor mide los temas aún legacy y no acredita la migración.
+
 | Track | Temas | objective | prerequisites | context | theoryAnalogy | guidedDemo | codeExplanation | execution | expectedResult | deliberateFailure | guidedPractice | independentPractice | closure | commonErrors | resources | standaloneExample | Completos |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | android | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 | 73 |
@@ -11,14 +13,14 @@ Un tema completo hace visibles los siete pasos solicitados y sus apoyos profesio
 | flutter | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 | 63 |
 | foundations | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 | 99 |
 | ios | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 |
-| java | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 | 85 |
+| java | 95 | 85 | 95 | 85 | 85 | 85 | 95 | 95 | 95 | 95 | 85 | 85 | 85 | 95 | 95 | 87 | 85 |
 | javascript | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 | 88 |
 | kotlin-multiplatform | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 | 56 |
 | node | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 | 77 |
 | react | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 | 58 |
 | rutaflow | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 |
-| spring-boot | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 | 91 |
-| **Total** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** | **1131** |
+| spring-boot | 91 | 43 | 91 | 43 | 43 | 43 | 91 | 91 | 91 | 91 | 43 | 43 | 43 | 91 | 91 | 90 | 43 |
+| **Total** | **1141** | **1083** | **1141** | **1083** | **1083** | **1083** | **1141** | **1141** | **1141** | **1141** | **1083** | **1083** | **1083** | **1141** | **1141** | **1132** | **1083** |
 
 ## Interpretación
 

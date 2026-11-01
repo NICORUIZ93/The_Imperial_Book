@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1131 | 0 |
-| Código | 1131 | 0 |
-| Ruta | 1131 | 0 |
-| Ejecución | 1131 | 0 |
-| Resultado | 1131 | 0 |
-| Modificación | 1131 | 0 |
-| Conexión con un proyecto | 1131 | 0 |
-| Modelo mental | 1131 | 0 |
-| Límites | 1131 | 0 |
-| **Perfil de criterios detectado** | **1131** | **0** |
+| Explicación | 1141 | 0 |
+| Código | 1141 | 0 |
+| Ruta | 1141 | 0 |
+| Ejecución | 1141 | 0 |
+| Resultado | 1141 | 0 |
+| Modificación | 1141 | 0 |
+| Conexión con un proyecto | 1141 | 0 |
+| Modelo mental | 1141 | 0 |
+| Límites | 1141 | 0 |
+| **Perfil de criterios detectado** | **1141** | **0** |
 
 ## Prioridad por track
 
@@ -30,7 +30,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 63 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | foundations | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 85 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| java | 95 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | node | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |

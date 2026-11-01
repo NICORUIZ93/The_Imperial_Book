@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import audit_topic_learning_quality as audit
 import audit_code_visual_quality as visual_audit
 import fix_lessons
+from rebuild_topic_source_review import base_topic
 
 
 class EditorialValidationTests(unittest.TestCase):
@@ -127,12 +128,13 @@ El proyecto integrador tiene límites.
             if path not in by_path:
                 text = (root / path).read_text()
                 headings = list(re.finditer(r"^###\s+(Tema(?:[^:]*)?:\s*[^\n]+)", text, re.MULTILINE))
-                by_path[path] = {
-                    heading.group(1).strip(): text[
-                        heading.start():headings[index + 1].start() if index + 1 < len(headings) else len(text)
-                    ]
-                    for index, heading in enumerate(headings)
-                }
+                blocks = {}
+                for index, heading in enumerate(headings):
+                    title = heading.group(1).strip()
+                    block = text[heading.start():headings[index + 1].start() if index + 1 < len(headings) else len(text)]
+                    blocks[title] = block
+                    blocks.setdefault(base_topic(title), block)
+                by_path[path] = blocks
             block = by_path[path][row["topic"]]
             detected = {url.rstrip(".,;:") for url in visual_audit.official_source_urls(block)}
             self.assertEqual(sorted(row["providerCitations"]), sorted(detected))

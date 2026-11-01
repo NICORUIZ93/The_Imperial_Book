@@ -458,18 +458,20 @@
         {
           "id": "JAVA-3",
           "level": "Integración",
-          "statement": "Construir software concurrente, persistente y probado preservando integridad con JDBC, JPA y transacciones explícitas.",
+          "statement": "Construir software concurrente, persistente y probado preservando la integridad del modelo con JDBC, JPA y transacciones explícitas.",
           "moduleIds": [
             8,
             9,
             10,
             11,
             16,
-            17
+            17,
+            22
           ],
           "evidence": [
             "prueba de concurrencia",
-            "consultas SQL y persistencia transaccional probadas"
+            "consultas SQL y persistencia transaccional probadas",
+            "auditoría de igualdad, copia y estados del modelo"
           ],
           "cs2023": [
             "DM",
@@ -483,13 +485,14 @@
         {
           "id": "JAVA-4",
           "level": "Experto",
-          "statement": "Diagnosticar y endurecer aplicaciones Java mediante arquitectura, JMM, profiling, seguridad HTTP y seguridad de runtime.",
+          "statement": "Diagnosticar y endurecer aplicaciones Java mediante arquitectura, JMM, profiling, seguridad HTTP, seguridad de runtime y evolución de APIs compatibles.",
           "moduleIds": [
             12,
             13,
             14,
             15,
-            18
+            18,
+            21
           ],
           "evidence": [
             "perfil JFR/JMH",

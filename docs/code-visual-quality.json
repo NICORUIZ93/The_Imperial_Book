@@ -85,24 +85,24 @@
       "officialSource": 58
     },
     "java": {
-      "topics": 85,
-      "code": 85,
-      "commentedCode": 58,
-      "mermaid": 25,
+      "topics": 95,
+      "code": 95,
+      "commentedCode": 68,
+      "mermaid": 35,
       "archifyVisual": 3,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 85,
-      "runCommand": 85,
-      "officialSource": 85
+      "filePath": 95,
+      "runCommand": 95,
+      "officialSource": 95
     },
     "spring-boot": {
       "topics": 91,
       "code": 91,
-      "commentedCode": 77,
-      "mermaid": 48,
+      "commentedCode": 78,
+      "mermaid": 51,
       "archifyVisual": 4,
-      "asciiVisual": 20,
+      "asciiVisual": 17,
       "misleadingDiagramLabel": 0,
       "filePath": 91,
       "runCommand": 91,
@@ -1392,13 +1392,6 @@
       "track": "java",
       "module": 9,
       "topic": "Tema 3: Tests parametrizados y cobertura",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "spring-boot",
-      "module": 11,
-      "topic": "Tema 1: Fat JAR vs capas de Docker",
       "missingCode": false,
       "missingComments": true
     },

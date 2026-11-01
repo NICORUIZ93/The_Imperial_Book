@@ -19,6 +19,12 @@ MODULE_FILE = re.compile(r"modulo-(\d+)\.md$")
 EXCLUDED_CONTENT_GROUPS = {"lecciones", "oficial-es"}
 
 
+TOPIC_META = re.compile(
+    r"\s+·\s+(?:Básico|Intermedio|Avanzado|Experto)\s+·\s+\d+(?:[–-]\d+)?\s*(?:min|h(?:\s+\d+\s*min)?)\s*$",
+    re.IGNORECASE,
+)
+
+
 def slugify(text: str, seen: set[str]) -> str:
     normalized = unicodedata.normalize("NFD", text)
     normalized = "".join(char for char in normalized if unicodedata.category(char) != "Mn")
@@ -54,9 +60,9 @@ def main() -> None:
         for heading_match in HEADING.finditer(path.read_text(encoding="utf-8")):
             level, raw_title = heading_match.groups()
             title = re.sub(r"\s+#+$", "", raw_title).strip()
-            heading_id = slugify(title, seen)
+            heading_id = slugify(TOPIC_META.sub("", title), seen)
             if level == "###" and re.match(r"^Tema(?:\s|:)", title, re.IGNORECASE):
-                topics.append({"title": clean_topic_title(title), "fragment": heading_id})
+                topics.append({"title": clean_topic_title(TOPIC_META.sub("", title)), "fragment": heading_id})
         index[path.parent.name][match.group(1)] = topics
 
     rendered = json.dumps(dict(sorted(index.items())), ensure_ascii=False, indent=2) + "\n"
