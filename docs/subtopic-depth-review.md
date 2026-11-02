@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 111
-- Pendientes: 1048
-- Candidatos prioritarios por señales: 1005
+- Revisados humanamente para subtemas: 114
+- Pendientes: 1045
+- Candidatos prioritarios por señales: 1002
 
 ## Cobertura por track
 
@@ -24,7 +24,7 @@
 | node | 77 | 0 | 77 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 93 | 2 | 91 |
+| spring-boot | 93 | 5 | 88 |
 
 ## Cola prioritaria
 
@@ -943,9 +943,6 @@
 - `rutaflow/modulo-7` — Tema 2: SLO y respuesta a incidentes — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend) — lista conceptos clave sin mapa interno verificable
 - `rutaflow/modulo-7` — Tema 4: Continuidad, costes y proyecto final — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-0` — Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `spring-boot/modulo-0` — Tema 2: Inyección por constructor vs por campo · Básico · 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `spring-boot/modulo-0` — Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-1` — Tema 1: Spring Initializr y starters · Básico · 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-1` — Tema 2: application.yml vs application.properties · Básico · 20 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-1` — Tema 3: Perfiles y estructura por capas · Intermedio · 30 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -1145,5 +1142,8 @@
 - `java/modulo-9` — Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 45 min — @Test y aserciones; ciclo de vida (@BeforeEach/@AfterEach); @BeforeAll/@AfterAll; instancia por prueba y @TestInstance; aislamiento e independencia del orden; aserciones expresivas (assertThrows/assertAll)
 - `java/modulo-9` — Tema 2: Mockito — aislar dependencias · Intermedio · 50 min — mock vs dependencia real; @Mock/@InjectMocks; stub: when(...).thenReturn(...); verify sobre interacción; argument matchers (any/eq); thenThrow para simular fallos; cuándo NO mockear
 - `java/modulo-9` — Tema 3: Tests parametrizados y cobertura · Intermedio · 50 min — @ParameterizedTest + @ValueSource; @CsvSource (varios parámetros); @MethodSource (datos complejos); cobertura de líneas y ramas (JaCoCo); qué NO mide la cobertura; aserciones fluidas (AssertJ)
+- `spring-boot/modulo-0` — Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min — acoplamiento con new frente a IoC; el contenedor crea y conecta beans; estereotipo registra la clase como bean; depender de la abstracción, no la implementación; component scanning por paquete; @Primary/@Qualifier ante varios candidatos; cuándo IoC es ceremonia excesiva
+- `spring-boot/modulo-0` — Tema 2: Inyección por constructor vs por campo · Básico · 20 min — inyección por constructor permite final; test sin contenedor con new; inyección por campo se asigna tras construir; NullPointerException al instanciar con new; reflexión para testear campo privado; pérdida de inmutabilidad con campo no-final; constructor gigante → objeto de configuración
+- `spring-boot/modulo-0` — Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min — @Component/@Service/@Repository; @Repository traduce excepciones de persistencia; spring-boot-starter-webmvc autoconfigura; singleton (default): una instancia por contenedor; prototype: instancia nueva por resolución; prototype ≠ una instancia por petición HTTP; scope irrelevante sin estado mutable
 - `spring-boot/modulo-0` — Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min — Orden de fases de inicializacion; @PostConstruct como hook estandar; InitializingBean.afterPropertiesSet; @PreDestroy / DisposableBean al cerrar; BeanPostProcessor envuelve todos los beans; Recursos de prototype no se destruyen solos; Abrir recurso en el constructor
 - `spring-boot/modulo-0` — Tema 5: AOP con @Aspect y @Around — preocupaciones transversales · Avanzado · 40 min — @Aspect + @EnableAspectJAutoProxy; @Around y ProceedingJoinPoint.proceed(); Pointcut execution(...); El advice conserva la excepcion original; El proxy es el mecanismo (igual que @Transactional); Auto-invocacion no pasa por el aspecto; Abusar de AOP oscurece el flujo

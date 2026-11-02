@@ -1677,7 +1677,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "9f76c7e7b512d0789e78e1b848225699cbe0f1680a63d5d09afb18ffd2d1a998",
+    "fingerprint": "7c4cbbb4d1b51ef38c61be6834b4dd7c36c26b955f35d9a030ba0733e5ffb759",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 41,
@@ -9184,7 +9184,7 @@
         "module": 0,
         "tailWords": 288,
         "topic": "Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min",
-        "words": 1620
+        "words": 1706
       },
       {
         "issues": [],
@@ -9198,7 +9198,7 @@
         "module": 0,
         "tailWords": 259,
         "topic": "Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min",
-        "words": 1422
+        "words": 1448
       },
       {
         "issues": [],

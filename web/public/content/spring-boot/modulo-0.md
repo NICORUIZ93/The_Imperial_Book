@@ -10,7 +10,7 @@ Completa primero los fundamentos del track Java o asegúrate de entender clases,
 - **macOS:** usa `brew install --cask temurin` y `brew install git`; instala IntelliJ desde JetBrains Toolbox.
 - **Ubuntu/Debian:** instala el paquete de Temurin 27 desde [Adoptium](https://adoptium.net/temurin/releases/?version=27) con `sudo apt install ./<archivo>.deb`, o usa SDKMAN; instala Git e IntelliJ.
 
-No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, Spring Boot estable, JDK 27 y la dependencia **Spring Web**. Descarga, descomprime y ejecuta:
+No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, Spring Boot estable (4.1.x), JDK 27 y la dependencia **Spring Web**. En Spring Boot 4 esa dependencia genera el artefacto `spring-boot-starter-webmvc` (el antiguo `spring-boot-starter-web` se renombró a `spring-boot-starter-webmvc` en Spring Boot 4.0): si alguna vez editas el `pom.xml` a mano, usa el nombre nuevo. Descarga, descomprime y ejecuta:
 
 ```bash
 # macOS/Linux
@@ -126,7 +126,19 @@ curl http://localhost:8080/status
 
 **Resultado esperado:** la respuesta HTTP contiene `procesado: ...` con el resultado de `RepositorioTareas.buscar()` — confirmando que Spring creó ambos beans y conectó `ServicioTareas` con su `RepositorioTareas` sin que tú escribieras el `new` que los une.
 
-**Fallo deliberado:** quita la anotación `@Service` de la clase y vuelve a ejecutar `./mvnw spring-boot:run`. Si algún otro bean depende de `ServicioTareas` por constructor, el arranque falla con `NoSuchBeanDefinitionException` (Spring no encuentra un bean que satisfaga esa dependencia). Diagnostica confirmando que, sin la anotación, la clase deja de ser gestionada por el contenedor y ninguna inyección automática puede alcanzarla, aunque el código siga compilando perfectamente.
+**Fallo deliberado:** quita la anotación `@Service` de la clase y vuelve a ejecutar `./mvnw spring-boot:run`. Si algún otro bean (por ejemplo, el controlador de `GET /status`) depende de `ServicioTareas` por constructor, el arranque falla. En Spring Boot 4 el *failure analyzer* muestra un mensaje legible en lugar del stack trace crudo:
+
+```text
+APPLICATION FAILED TO START
+
+Parameter 0 of constructor in com.example.demo.StatusController required a bean
+of type 'com.example.demo.ServicioTareas' that could not be found.
+
+Action:
+Consider defining a bean of type 'com.example.demo.ServicioTareas' in your configuration.
+```
+
+La causa raíz interna es una `NoSuchBeanDefinitionException` (Spring no encuentra un bean que satisfaga esa dependencia), pero el texto que verás es el del analizador, no el nombre de la excepción. Diagnostica confirmando que, sin la anotación, la clase deja de ser gestionada por el contenedor y ninguna inyección automática puede alcanzarla, aunque el código siga compilando perfectamente.
 
 Confirma también que `ServicioTareas` nunca importa ni instancia ninguna implementación concreta de `RepositorioTareas` con `new`: solo el contenedor conoce qué implementación existe y decide cuál pasar al constructor.
 
@@ -334,7 +346,7 @@ private ____ RepositorioTareas repositorio;
 
 **Si falla.** Si el test no compila por un campo privado, no lo hagas público: cambia la clase a constructor. Si el contexto no arranca, revisa que el constructor no reciba dependencias no registradas como beans.
 
-**Siguiente paso:** el Tema 3 cubre los estereotipos y cómo `spring-boot-starter-web` autoconfigura el proyecto.
+**Siguiente paso:** el Tema 3 cubre los estereotipos y cómo `spring-boot-starter-webmvc` autoconfigura el proyecto.
 
 **Errores comunes:** usar `@Autowired` sobre un campo por costumbre en vez de preferir el constructor; declarar dependencias no-`final` sin necesidad, perdiendo la inmutabilidad verificada por el compilador.
 
@@ -348,7 +360,7 @@ private ____ RepositorioTareas repositorio;
 
 **Prerrequisito:** Temas 1-2 de este módulo.
 
-**Al terminar podrás:** distinguir `@Component`/`@Service`/`@Repository`, explicar qué autoconfigura `spring-boot-starter-web` y elegir entre `singleton` y `prototype` con una prueba real.
+**Al terminar podrás:** distinguir `@Component`/`@Service`/`@Repository`, explicar qué autoconfigura `spring-boot-starter-webmvc` y elegir entre `singleton` y `prototype` con una prueba real.
 
 #### Aprende
 
@@ -360,7 +372,7 @@ private ____ RepositorioTareas repositorio;
 |---|---|---|
 | `@Component`/`@Service`/`@Repository` | Núcleo | Los tres registran bean; solo uno añade función |
 | `@Repository` traduce excepciones de persistencia | Variante | Jerarquía `DataAccessException` unificada |
-| `spring-boot-starter-web` autoconfigura | Núcleo | Tomcat embebido + Jackson + MVC sin XML |
+| `spring-boot-starter-webmvc` autoconfigura | Núcleo | Tomcat embebido + Jackson + MVC sin XML |
 | `singleton` (default): una instancia por contenedor | Núcleo | Dos resoluciones → mismo `id()` |
 | `prototype`: instancia nueva por resolución | Núcleo | Dos resoluciones → `id()` distintos |
 | `prototype` ≠ una instancia por petición HTTP | Error frecuente | Confusión produce estado compartido |
@@ -372,7 +384,7 @@ Cada fila tiene su explicación individual a continuación.
 
 **`@Repository` traduce excepciones de persistencia (variante).** Es el único estereotipo con comportamiento añadido: traduce automáticamente las excepciones específicas del proveedor de persistencia (JDBC, JPA) a la jerarquía `DataAccessException` de Spring. Así el código de capas superiores no se acopla a excepciones propietarias de la base de datos.
 
-**`spring-boot-starter-web` autoconfigura (núcleo).** Añadir este starter trae y configura un servidor Tomcat embebido, Jackson para JSON y Spring MVC con valores por defecto sensatos, sin la configuración XML extensa del Spring clásico. La autoconfiguración es lo que hace que un proyecto arranque un servidor web con cero configuración manual.
+**`spring-boot-starter-webmvc` autoconfigura (núcleo).** Añadir este starter (en Spring Boot 4 se llama `spring-boot-starter-webmvc`; antes era `spring-boot-starter-web`) trae y configura un servidor Tomcat embebido, Jackson para JSON y Spring MVC con valores por defecto sensatos, sin la configuración XML extensa del Spring clásico. La autoconfiguración es lo que hace que un proyecto arranque un servidor web con cero configuración manual.
 
 **`singleton` (default): una instancia por contenedor (núcleo).** El scope por defecto crea una única instancia compartida en todo el contenedor. Resolver el bean dos veces devuelve el mismo objeto, por eso dos lecturas de `id()` de un `singleton` coinciden. Es adecuado para componentes sin estado o con estado compartido deliberado (un contador global).
 
@@ -384,7 +396,7 @@ Cada fila tiene su explicación individual a continuación.
 
 **Conceptos clave:** `@Component`/`@Service`/`@Repository`, autoconfiguración de starters, `singleton` vs `prototype`.
 
-`@Component`, `@Service` y `@Repository` son variantes especializadas de la misma anotación base `@Component`, que le indica a Spring "gestiona esta clase como un bean"; la diferencia es principalmente semántica y documental, con una excepción funcional: `@Repository` traduce automáticamente excepciones específicas de la tecnología de persistencia subyacente a una jerarquía de excepciones propia y consistente de Spring. `spring-boot-starter-web` trae automáticamente un servidor Tomcat embebido, Jackson para JSON y Spring MVC, autoconfigurados con valores por defecto sensatos, sin la configuración XML extensa que el Spring clásico exigía. `@Scope` controla el ciclo de vida de un bean: `singleton` (por defecto, una instancia por contenedor) o `prototype` (una instancia nueva cada vez que el contenedor resuelve el bean, no cada vez que llega una petición HTTP).
+`@Component`, `@Service` y `@Repository` son variantes especializadas de la misma anotación base `@Component`, que le indica a Spring "gestiona esta clase como un bean"; la diferencia es principalmente semántica y documental, con una excepción funcional: `@Repository` traduce automáticamente excepciones específicas de la tecnología de persistencia subyacente a una jerarquía de excepciones propia y consistente de Spring. `spring-boot-starter-webmvc` (llamado `spring-boot-starter-web` antes de Spring Boot 4) trae automáticamente un servidor Tomcat embebido, Jackson para JSON y Spring MVC, autoconfigurados con valores por defecto sensatos, sin la configuración XML extensa que el Spring clásico exigía. `@Scope` controla el ciclo de vida de un bean: `singleton` (por defecto, una instancia por contenedor) o `prototype` (una instancia nueva cada vez que el contenedor resuelve el bean, no cada vez que llega una petición HTTP).
 
 **Analogía:** los estereotipos son distintos uniformes de un mismo tipo de empleado, donde el uniforme de `@Repository` además incluye una traducción automática de idioma para comunicarse con sistemas externos; un bean `singleton` es como una única impresora compartida por toda la oficina, mientras un bean `prototype` es como una hoja de papel nueva que se entrega cada vez que alguien la pide.
 
@@ -813,7 +825,7 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 | 2 | Definir `@Service` y `@Repository` con inyección por constructor | Ver Tema 1 | Verifica la conexión automática |
 | 3 | Escribir un test unitario sin levantar el contenedor | Ver Tema 2 | `new ServicioTareas(mock)` directo |
 | 4 | Declarar un bean `prototype` y confirmar instancias distintas | Ver Tema 3 | Compara contra el default `singleton` |
-| 5 | Investigar qué autoconfigura `spring-boot-starter-web` | Ver Tema 3 | Documenta las dependencias que trae |
+| 5 | Investigar qué autoconfigura `spring-boot-starter-webmvc` | Ver Tema 3 | Documenta las dependencias que trae |
 
 **Verificación:** el laboratorio se considera exitoso si el servicio y el repositorio se conectan por inyección de constructor, si el test unitario corre sin contenedor, y si el bean `prototype` produce una instancia distinta en cada resolución mientras el `singleton` reutiliza la misma.
 

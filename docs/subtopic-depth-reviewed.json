@@ -67,6 +67,24 @@
         "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html"
       ]
     },
+    "spring-boot/modulo-0::Tema 1: Inversión de control y el contenedor de Spring · Básico · 20 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Spring Boot 4.1.1 / Spring Framework 7.0.9 sobre Temurin 27.0.1 (mvn -o, starter-webmvc): proyecto real (StatusController -> ServicioTareas -> RepositorioTareas por constructor) arranca Tomcat en 8080 y GET /status devuelve 'procesado: tarea-1' sin ningún new. Al quitar @Service el arranque falla (exit 1) con el failure analyzer: 'Parameter 0 of constructor in StatusController required a bean of type ServicioTareas that could not be found'. Se corrigió el contenido: el starter se renombró a spring-boot-starter-webmvc en SB 4 y el fallo muestra el analizador, no el texto NoSuchBeanDefinitionException.",
+      "criticalSubtopics": ["acoplamiento con new frente a IoC", "el contenedor crea y conecta beans", "estereotipo registra la clase como bean", "depender de la abstracción, no la implementación", "component scanning por paquete", "@Primary/@Qualifier ante varios candidatos", "cuándo IoC es ceremonia excesiva"],
+      "sources": ["https://docs.spring.io/spring-framework/reference/core/beans.html", "https://docs.spring.io/spring-boot/how-to/webserver.html"]
+    },
+    "spring-boot/modulo-0::Tema 2: Inyección por constructor vs por campo · Básico · 20 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Spring Boot 4.1.1 sobre Temurin 27.0.1 (mvn -o test): el test de constructor 'new ServicioTareas(mock)' pasa en verde (2 tests, 0 fallos); el test de ServicioTareasConCampo instanciado con new lanza NullPointerException en procesar() porque @Autowired sobre campo privado solo se asigna tras construir vía reflexión. El fallo deliberado 'servicio.repositorio = mock' no compila: 'repositorio has private access in ServicioTareasConCampo'.",
+      "criticalSubtopics": ["inyección por constructor permite final", "test sin contenedor con new", "inyección por campo se asigna tras construir", "NullPointerException al instanciar con new", "reflexión para testear campo privado", "pérdida de inmutabilidad con campo no-final", "constructor gigante → objeto de configuración"],
+      "sources": ["https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html", "https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html"]
+    },
+    "spring-boot/modulo-0::Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 25 min": {
+      "status": "reviewed", "reviewDate": "2026-11-02",
+      "execution": "Spring Boot 4.1.1 sobre Temurin 27.0.1 (mvn -o, jar ejecutable): resolver dos veces un bean @Scope(\"prototype\") da ids distintos ('prototype distintos = true'); resolver dos veces un @Component por defecto da el mismo objeto ('singleton iguales = true', 's1 == s2 = true'). El fallo deliberado (quitar @Scope) reduce prototype a singleton. Se corrigió la referencia a spring-boot-starter-web → spring-boot-starter-webmvc (renombrado en SB 4).",
+      "criticalSubtopics": ["@Component/@Service/@Repository", "@Repository traduce excepciones de persistencia", "spring-boot-starter-webmvc autoconfigura", "singleton (default): una instancia por contenedor", "prototype: instancia nueva por resolución", "prototype ≠ una instancia por petición HTTP", "scope irrelevante sin estado mutable"],
+      "sources": ["https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html", "https://docs.spring.io/spring-boot/reference/using/auto-configuration.html"]
+    },
     "spring-boot/modulo-0::Tema 4: Ciclo de vida de un bean y BeanPostProcessor · Intermedio · 30 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-01",
