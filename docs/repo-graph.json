@@ -568,7 +568,7 @@
       "headings": []
     },
     {
-      "path": "docs/auditoria-profundidad-cobertura.md",
+      "path": "docs/archivo/auditoria-profundidad-cobertura.md",
       "lines": 235,
       "kind": "documentation",
       "symbols": [],
@@ -586,6 +586,89 @@
         "### P0 \u2014 Arreglar el instrumento de medici\u00f3n",
         "### P1 \u2014 Profundidad cr\u00edtica (Paso 4 ejecutable)",
         "### P2 \u2014 Cobertura: puerta de entrada"
+      ]
+    },
+    {
+      "path": "docs/archivo/continuacion-material-rutaflow.md",
+      "lines": 38,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Continuaci\u00f3n del material de Proyecto-RutaFlow",
+        "## Referencias examinadas",
+        "## Implementaci\u00f3n",
+        "## Evidencia y l\u00edmites"
+      ]
+    },
+    {
+      "path": "docs/archivo/integracion-biblioteca-externa-progreso.md",
+      "lines": 207,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Integraci\u00f3n de biblioteca externa y capturas \u2014 progreso",
+        "## Fase 1 \u2014 Capturas: revisi\u00f3n visual completa, integraci\u00f3n parcial",
+        "## Fase 2 \u2014 Biblioteca externa `/Volumes/Nicolas/03_Libros_Biblioteca/` (EN PROGRESO)",
+        "### C\u00f3mo retomar",
+        "### Cat\u00e1logo inicial de la sesi\u00f3n anterior",
+        "### Orden de prioridad sugerido (por impacto directo en tracks existentes)",
+        "## Hallazgos por integrar (se completa a medida que se revisan libros)",
+        "## Continuidad entre m\u00e1quinas \u2014 actualizaci\u00f3n 2026-10-13",
+        "## Siguiente acci\u00f3n concreta",
+        "## Verificaci\u00f3n del primer incremento",
+        "## Recuperar este incremento en otra PC",
+        "## Continuidad de Copilot \u2014 2026-10-30"
+      ]
+    },
+    {
+      "path": "docs/archivo/renovacion-cursos-2026-10-29.md",
+      "lines": 27,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Renovaci\u00f3n de cursos y experiencia de estudio",
+        "## Cambios entregados",
+        "## Cobertura de revisi\u00f3n",
+        "## Trabajo pendiente"
+      ]
+    },
+    {
+      "path": "docs/archivo/renovacion-primera-entrega.md",
+      "lines": 53,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Renovaci\u00f3n: portada y primera sesi\u00f3n",
+        "## Alcance entregado",
+        "## Alineaci\u00f3n de aprendizaje",
+        "## Verificaci\u00f3n realizada",
+        "## Fuentes primarias consultadas",
+        "## Siguientes lotes"
+      ]
+    },
+    {
+      "path": "docs/archivo/validacion-extensa-roadmaps.md",
+      "lines": 157,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
+        "## Tablero maestro: cobertura + profundidad por track",
+        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
+        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
+        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
+        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
+        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
+        "### java \u2014 profundidad (41/72)",
+        "### android \u2014 cobertura",
+        "### cloud \u2014 cobertura (amplitud enorme, bien)",
+        "### node \u2014 cobertura (casi completo)",
+        "### angular \u2014 cobertura (casi completo)"
       ]
     },
     {
@@ -862,19 +945,6 @@
       ]
     },
     {
-      "path": "docs/continuacion-material-rutaflow.md",
-      "lines": 38,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Continuaci\u00f3n del material de Proyecto-RutaFlow",
-        "## Referencias examinadas",
-        "## Implementaci\u00f3n",
-        "## Evidencia y l\u00edmites"
-      ]
-    },
-    {
       "path": "docs/course-curriculum-inventory.json",
       "lines": 53,
       "kind": "project-file",
@@ -993,27 +1063,6 @@
         "## Hallazgos estructurales que requieren priorizaci\u00f3n",
         "## Registro de revisi\u00f3n manual",
         "## Reproducibilidad"
-      ]
-    },
-    {
-      "path": "docs/integracion-biblioteca-externa-progreso.md",
-      "lines": 207,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Integraci\u00f3n de biblioteca externa y capturas \u2014 progreso",
-        "## Fase 1 \u2014 Capturas: revisi\u00f3n visual completa, integraci\u00f3n parcial",
-        "## Fase 2 \u2014 Biblioteca externa `/Volumes/Nicolas/03_Libros_Biblioteca/` (EN PROGRESO)",
-        "### C\u00f3mo retomar",
-        "### Cat\u00e1logo inicial de la sesi\u00f3n anterior",
-        "### Orden de prioridad sugerido (por impacto directo en tracks existentes)",
-        "## Hallazgos por integrar (se completa a medida que se revisan libros)",
-        "## Continuidad entre m\u00e1quinas \u2014 actualizaci\u00f3n 2026-10-13",
-        "## Siguiente acci\u00f3n concreta",
-        "## Verificaci\u00f3n del primer incremento",
-        "## Recuperar este incremento en otra PC",
-        "## Continuidad de Copilot \u2014 2026-10-30"
       ]
     },
     {
@@ -1287,34 +1336,6 @@
       ]
     },
     {
-      "path": "docs/renovacion-cursos-2026-10-29.md",
-      "lines": 27,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Renovaci\u00f3n de cursos y experiencia de estudio",
-        "## Cambios entregados",
-        "## Cobertura de revisi\u00f3n",
-        "## Trabajo pendiente"
-      ]
-    },
-    {
-      "path": "docs/renovacion-primera-entrega.md",
-      "lines": 53,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Renovaci\u00f3n: portada y primera sesi\u00f3n",
-        "## Alcance entregado",
-        "## Alineaci\u00f3n de aprendizaje",
-        "## Verificaci\u00f3n realizada",
-        "## Fuentes primarias consultadas",
-        "## Siguientes lotes"
-      ]
-    },
-    {
       "path": "docs/requested-master-topics.json",
       "lines": 189,
       "kind": "project-file",
@@ -1559,27 +1580,6 @@
         "## Las pruebas E2E no encuentran navegador o se quedan colgadas",
         "## Las credenciales locales son rechazadas",
         "## La validaci\u00f3n del repositorio falla"
-      ]
-    },
-    {
-      "path": "docs/validacion-extensa-roadmaps.md",
-      "lines": 157,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
-        "## Tablero maestro: cobertura + profundidad por track",
-        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
-        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
-        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
-        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
-        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
-        "### java \u2014 profundidad (41/72)",
-        "### android \u2014 cobertura",
-        "### cloud \u2014 cobertura (amplitud enorme, bien)",
-        "### node \u2014 cobertura (casi completo)",
-        "### angular \u2014 cobertura (casi completo)"
       ]
     },
     {
