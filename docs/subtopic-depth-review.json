@@ -1,9 +1,9 @@
 {
   "summary": {
     "topics": 1159,
-    "reviewed": 62,
-    "pending": 1097,
-    "priorityCandidates": 1050,
+    "reviewed": 75,
+    "pending": 1084,
+    "priorityCandidates": 1037,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -42,8 +42,8 @@
       },
       "java": {
         "topics": 109,
-        "reviewed": 60,
-        "pending": 49
+        "reviewed": 73,
+        "pending": 36
       },
       "javascript": {
         "topics": 88,
@@ -10401,174 +10401,380 @@
       "track": "java",
       "module": 10,
       "topic": "Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: dos módulos (academia.core exporta solo dominio, academia.app requires core) compilan y ejecutan ('Guia[numero=E-001]'); importar el paquete interno no exportado falla en compilación con 'package academia.core.interno is not visible' (encapsulación fuerte, aunque la clase es public).",
+        "criticalSubtopics": [
+          "module-info.java",
+          "exports y encapsulación fuerte",
+          "requires",
+          "requires transitive",
+          "module path vs classpath",
+          "named/automatic/unnamed modules"
+        ],
+        "sources": [
+          "https://dev.java/learn/modules/",
+          "https://docs.oracle.com/javase/specs/jls/se27/html/jls-7.html#jls-7.7"
+        ]
+      }
     },
     {
       "id": "java/modulo-10::Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min",
       "track": "java",
       "module": 10,
       "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: migración bottom-up domain->application compila en orden y ejecuta ('Entrega[numero=E-002]'); un requires a un módulo inexistente falla temprano en compilación con 'module not found: academia.inexistente'.",
+        "criticalSubtopics": [
+          "migración bottom-up (hoja primero)",
+          "automatic modules como puente",
+          "requires transitive en migración",
+          "module not found",
+          "costo/beneficio de JPMS"
+        ],
+        "sources": [
+          "https://openjdk.org/jeps/261",
+          "https://dev.java/learn/modules/"
+        ]
+      }
     },
     {
       "id": "java/modulo-10::Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
       "track": "java",
       "module": 10,
       "topic": "Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con jackson-databind 2.21.8 (repo local, en module path): sin opens la app compila pero falla en runtime con InvalidDefinitionException/InaccessibleObjectException y el mensaje literal 'module academia.dominio does not \"opens academia.dominio\" to module com.fasterxml.jackson.databind'; con 'opens ... to com.fasterxml.jackson.databind' produce {\"id\":\"E1\"}.",
+        "criticalSubtopics": [
+          "exports vs opens",
+          "InaccessibleObjectException",
+          "opens ... to acotado",
+          "exports ... to cualificado",
+          "open module",
+          "cuándo NO abrir"
+        ],
+        "sources": [
+          "https://dev.java/learn/modules/",
+          "https://openjdk.org/jeps/261"
+        ]
+      }
     },
     {
       "id": "java/modulo-11::Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min",
       "track": "java",
       "module": 11,
       "topic": "Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: CargaAsignacion ejecutada con -XX:+UseG1GC (g1.log con 1314 eventos 'Pause Young') y con -XX:+UseZGC (zgc.log con sus colecciones); ambos recolectan ~40 GB asignados sin OOM con -Xmx64m. Se mide antes de comparar.",
+        "criticalSubtopics": [
+          "hipótesis generacional débil",
+          "generación joven vs vieja",
+          "G1 (throughput/pausas, default JDK 27)",
+          "ZGC (latencia)",
+          "medir antes de tunear",
+          "heap vs memoria nativa"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/27/gctuning/",
+          "https://openjdk.org/jeps/523"
+        ]
+      }
     },
     {
       "id": "java/modulo-11::Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min",
       "track": "java",
       "module": 11,
       "topic": "Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: MetodoCaliente grabado con -XX:StartFlightRecording -> perfil.jfr; jfr print --events jdk.ExecutionSample muestra 27 muestras de ejecución; el resultado numérico es idéntico con JIT y con -Xint (-5158022051936701383), confirmando que -Xint solo cambia velocidad no corrección.",
+        "criticalSubtopics": [
+          "JFR y bajo overhead en producción",
+          "eventos y jfr print",
+          "interpretación vs JIT",
+          "warm-up",
+          "inlining del JIT",
+          "-Xint para contrastar"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jfr.html",
+          "https://docs.oracle.com/en/java/javase/27/jfapi/"
+        ]
+      }
     },
     {
       "id": "java/modulo-11::Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min",
       "track": "java",
       "module": 11,
       "topic": "Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: FugaCache con lista de referencias fuertes agota -Xmx128m y lanza 'OutOfMemoryError: Java heap space'; -XX:+HeapDumpOnOutOfMemoryError genera fuga.hprof (~70 MB) tal como anuncia la lección. El análisis visual del hprof en MAT/VisualVM queda como revisión manual pendiente (documentado).",
+        "criticalSubtopics": [
+          "referencia fuerte vs especial",
+          "SoftReference vs WeakReference",
+          "PhantomReference y ReferenceQueue",
+          "OutOfMemoryError por caché sin límite",
+          "heap dump (HeapDumpOnOutOfMemoryError)",
+          "análisis: retained size y dominators"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/27/docs/specs/man/jhsdb.html",
+          "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/ref/package-summary.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-11::Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min",
       "track": "java",
       "module": 11,
       "topic": "Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 con --enable-native-access=ALL-UNNAMED: LongitudNativa llama a strlen de libc vía Linker/MethodHandle/FunctionDescriptor y Arena.allocateFrom, devuelve 'longitud: 15' (coincide con el conteo real de 'entrega-RF-4471'); usar el MemorySegment tras cerrar el Arena confinado lanza IllegalStateException: Already closed.",
+        "criticalSubtopics": [
+          "FFM vs JNI",
+          "Linker y downcallHandle",
+          "FunctionDescriptor y layouts",
+          "MemorySegment y Arena",
+          "cierre del Arena e invalidez",
+          "--enable-native-access"
+        ],
+        "sources": [
+          "https://openjdk.org/jeps/454",
+          "https://docs.oracle.com/en/java/javase/27/core/foreign-function-and-memory-api.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-12::Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min",
       "track": "java",
       "module": 12,
       "topic": "Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: BuilderPedidoDemo imprime 'builder=Ana:RF-1:2'; omitir .codigo() lanza IllegalStateException 'cliente y codigo son obligatorios' en build() (ningún objeto parcial sale); unidades tiene default 1 y validación positiva.",
+        "criticalSubtopics": [
+          "el problema del constructor telescópico",
+          "encadenamiento fluido",
+          "validación en build()",
+          "campos obligatorios vs opcionales",
+          "producto inmutable con constructor privado",
+          "Builder vs record/constructor"
+        ],
+        "sources": [
+          "https://refactoring.guru/design-patterns/builder",
+          "https://docs.oracle.com/en/java/javase/27/"
+        ]
+      }
     },
     {
       "id": "java/modulo-12::Tema 2: Factory Method y Strategy · Intermedio · 55 min",
       "track": "java",
       "module": 12,
       "topic": "Tema 2: Factory Method y Strategy · Intermedio · 55 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: FactoryStrategyDemo imprime factory=email:RF-1,sms:RF-1 / normal=1500 / express=2400 / recogida=0; el modo fallo con tipo 'whatsapp' lanza IllegalArgumentException 'Tipo desconocido: whatsapp' desde el default de la Factory simple.",
+        "criticalSubtopics": [
+          "Factory simple (switch central)",
+          "Factory Method (GoF)",
+          "producto común y creador",
+          "Strategy (algoritmo intercambiable)",
+          "inyección de la estrategia",
+          "qué varía: creación o algoritmo"
+        ],
+        "sources": [
+          "https://refactoring.guru/design-patterns/factory-method",
+          "https://refactoring.guru/design-patterns/strategy"
+        ]
+      }
     },
     {
       "id": "java/modulo-12::Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min",
       "track": "java",
       "module": 12,
       "topic": "Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1 (código exacto de la lección): AbstractFactoryDemo imprime 'abstract-factory=LOCAL-RF-1,entrega-hoy;INT-RF-1,aduana-y-seguimiento'; el modo fallo mezcla etiqueta internacional con guía local produciendo 'mezcla=INT-RF-1,entrega-hoy' (bug de dominio, no de tipos: Java no lo impide).",
+        "criticalSubtopics": [
+          "familia de productos relacionados",
+          "la interfaz de la fábrica abstracta",
+          "fábricas concretas por familia",
+          "coherencia garantizada por la fábrica",
+          "selección en composición",
+          "Abstract Factory vs Factory Method"
+        ],
+        "sources": [
+          "https://refactoring.guru/design-patterns/abstract-factory",
+          "https://docs.oracle.com/en/java/javase/27/"
+        ]
+      }
     },
     {
       "id": "java/modulo-12::Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min",
       "track": "java",
       "module": 12,
       "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos",
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: SolidCotizadorDemo imprime normal=1500/express=2400/recogida=0 (Cotizador depende del contrato Tarifa, DIP); km negativo rechazado con IllegalArgumentException 'kilometros negativos'; cambiar Tarifa por el tipo concreto Normal rompe la compilación (el contrato admite la variación real).",
+        "criticalSubtopics": [
+          "SRP (responsabilidad única)",
+          "OCP (abierto/cerrado)",
+          "LSP (sustitución de Liskov)",
+          "ISP (segregación de interfaces)",
+          "DIP (inversión de dependencias)",
+          "cuándo NO aplicar un patrón"
+        ],
+        "sources": [
+          "https://dev.java/learn/classes-objects/",
+          "https://refactoring.guru/design-patterns"
+        ]
+      }
     },
     {
       "id": "java/modulo-12::Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min",
       "track": "java",
       "module": 12,
       "topic": "Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: PrototypeDemo imprime original=EXPRESS[fragil]/copia=EXPRESS[fragil, urgente]/independiente=true (constructor de copia crea lista nueva); el modo fallo con copiaSuperficialDefectuosa comparte la lista y lanza IllegalStateException 'copia superficial compartio etiquetas'.",
+        "criticalSubtopics": [
+          "clonar una configuración existente",
+          "copia superficial vs profunda",
+          "campos mutables y copia defensiva",
+          "clone()/Cloneable y sus problemas",
+          "Prototype vs Builder/new"
+        ],
+        "sources": [
+          "https://refactoring.guru/design-patterns/prototype",
+          "https://docs.oracle.com/en/java/javase/27/"
+        ]
+      }
     },
     {
       "id": "java/modulo-12::Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min",
       "track": "java",
       "module": 12,
       "topic": "Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [],
       "prioritySignals": [
         "lista conceptos clave sin mapa interno verificable"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-02",
+        "execution": "Temurin 27.0.1: StructuralPatternsDemo imprime adapter=LEGACY-42, decorator=log[email(RF-1)], facade=validado|reserva:RF-1|aviso:RF-1, composite=RF-1+RF-2+RF-3, proxy=1500, bridge=sms:estado=EN_CAMINO; cada patrón delega pero aísla un cambio distinto.",
+        "criticalSubtopics": [
+          "Adapter: traducir una interfaz",
+          "Decorator: añadir responsabilidad",
+          "Proxy: controlar el acceso",
+          "Facade: simplificar un subsistema",
+          "Bridge: separar abstracción de implementación",
+          "elegir por intención, no por forma"
+        ],
+        "sources": [
+          "https://refactoring.guru/design-patterns/adapter",
+          "https://refactoring.guru/design-patterns/decorator"
+        ]
+      }
     },
     {
       "id": "java/modulo-13::Tema 1: Arquitectura por capas del proyecto integrador · Avanzado · 50 min",

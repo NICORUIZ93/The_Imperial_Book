@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1159
-- Revisados humanamente para subtemas: 62
-- Pendientes: 1097
-- Candidatos prioritarios por señales: 1050
+- Revisados humanamente para subtemas: 75
+- Pendientes: 1084
+- Candidatos prioritarios por señales: 1037
 
 ## Cobertura por track
 
@@ -18,7 +18,7 @@
 | flutter | 63 | 0 | 63 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 109 | 60 | 49 |
+| java | 109 | 73 | 36 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | node | 77 | 0 | 77 |
@@ -654,19 +654,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-10` — Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-10` — Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-10` — Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-11` — Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-11` — Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-11` — Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-11` — Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-12` — Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-12` — Tema 2: Factory Method y Strategy · Intermedio · 55 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-12` — Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-12` — Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-12` — Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min — lista conceptos clave sin mapa interno verificable
-- `java/modulo-12` — Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min — lista conceptos clave sin mapa interno verificable
 - `java/modulo-13` — Tema 2: Integrando concurrencia, modelado y testing · Experto · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-13` — Tema 3: Build reproducible y cierre del track · Avanzado · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `java/modulo-14` — Tema 1: Compartir memoria requiere orden y visibilidad · Experto · 60 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1094,6 +1081,19 @@
 - `java/modulo-1` — Tema 2: Herencia y sobreescritura · Intermedio · 1 h — extends y qué se hereda; super(...) en el constructor; sobreescritura y @Override; polimorfismo de subtipo (dispatch dinámico); super.metodo(); Object y sus métodos; instanceof y downcasting; final/sealed para limitar herencia; @interface, @Target, @Retention; retención y reflexión
 - `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 50 min — interfaz como contrato; métodos default y static en interfaz; implementación múltiple; colisión de default (diamante); clase abstracta y método abstracto; clase abstracta no instanciable; interfaz vs clase abstracta; herencia simple vs múltiples interfaces; interfaz funcional
 - `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 55 min — sobrecarga: misma firma de nombre, distinta de parámetros; resolución de sobrecarga en compilación; sobreescritura (contraste); covarianza del tipo de retorno; private; package-private; protected; public; mínimo privilegio
+- `java/modulo-10` — Tema 1: module-info.java y encapsulación fuerte · Intermedio · 50 min — module-info.java; exports y encapsulación fuerte; requires; requires transitive; module path vs classpath; named/automatic/unnamed modules
+- `java/modulo-10` — Tema 2: Migración incremental y cuándo JPMS aporta valor · Avanzado · 55 min — migración bottom-up (hoja primero); automatic modules como puente; requires transitive en migración; module not found; costo/beneficio de JPMS
+- `java/modulo-10` — Tema 3: `opens` para acceso reflexivo controlado de frameworks · Avanzado · 60 min — exports vs opens; InaccessibleObjectException; opens ... to acotado; exports ... to cualificado; open module; cuándo NO abrir
+- `java/modulo-11` — Tema 1: Generaciones de memoria y recolectores · Avanzado · 55 min — hipótesis generacional débil; generación joven vs vieja; G1 (throughput/pausas, default JDK 27); ZGC (latencia); medir antes de tunear; heap vs memoria nativa
+- `java/modulo-11` — Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 55 min — JFR y bajo overhead en producción; eventos y jfr print; interpretación vs JIT; warm-up; inlining del JIT; -Xint para contrastar
+- `java/modulo-11` — Tema 3: Referencias especiales y heap dumps · Avanzado · 60 min — referencia fuerte vs especial; SoftReference vs WeakReference; PhantomReference y ReferenceQueue; OutOfMemoryError por caché sin límite; heap dump (HeapDumpOnOutOfMemoryError); análisis: retained size y dominators
+- `java/modulo-11` — Tema 4: Foreign Function & Memory API (Java 22) · Experto · 55 min — FFM vs JNI; Linker y downcallHandle; FunctionDescriptor y layouts; MemorySegment y Arena; cierre del Arena e invalidez; --enable-native-access
+- `java/modulo-12` — Tema 1: Builder — configuración paso a paso y validación · Intermedio · 45 min — el problema del constructor telescópico; encadenamiento fluido; validación en build(); campos obligatorios vs opcionales; producto inmutable con constructor privado; Builder vs record/constructor
+- `java/modulo-12` — Tema 2: Factory Method y Strategy · Intermedio · 55 min — Factory simple (switch central); Factory Method (GoF); producto común y creador; Strategy (algoritmo intercambiable); inyección de la estrategia; qué varía: creación o algoritmo
+- `java/modulo-12` — Tema 3: Abstract Factory y familias de productos compatibles · Avanzado · 50 min — familia de productos relacionados; la interfaz de la fábrica abstracta; fábricas concretas por familia; coherencia garantizada por la fábrica; selección en composición; Abstract Factory vs Factory Method
+- `java/modulo-12` — Tema 4: SOLID y cuándo NO aplicar un patrón · Avanzado · 60 min — SRP (responsabilidad única); OCP (abierto/cerrado); LSP (sustitución de Liskov); ISP (segregación de interfaces); DIP (inversión de dependencias); cuándo NO aplicar un patrón
+- `java/modulo-12` — Tema 5: Prototype — copiar configuración sin compartir estado mutable · Intermedio · 45 min — clonar una configuración existente; copia superficial vs profunda; campos mutables y copia defensiva; clone()/Cloneable y sus problemas; Prototype vs Builder/new
+- `java/modulo-12` — Tema 6: Patrones estructurales — elegir por intención · Avanzado · 65 min — Adapter: traducir una interfaz; Decorator: añadir responsabilidad; Proxy: controlar el acceso; Facade: simplificar un subsistema; Bridge: separar abstracción de implementación; elegir por intención, no por forma
 - `java/modulo-18` — Tema 3: Sockets TCP y UDP — la red que hay debajo de HttpClient · Avanzado · 2 h — modelo cliente/servidor y puertos; ServerSocket y accept(); Socket y streams de I/O con charset explícito; TCP fiable, ordenado, orientado a conexión; UDP DatagramSocket/DatagramPacket; TCP frente a UDP; timeouts de socket (setSoTimeout); cierre de recursos y puerto ocupado; un cliente por hilo frente a virtual threads
 - `java/modulo-18` — Tema 4: Seguridad defensiva — hash, HMAC, firma y cifrado · Avanzado · 2 h 30 min — hash criptográfico (MessageDigest); comparación en tiempo constante (MessageDigest.isEqual); hash no sirve para contraseñas; HMAC (Mac); firma digital (Signature, par de claves); cifrado simétrico AES-GCM (Cipher); IV/nonce único y gestión de claves; hash vs HMAC vs firma vs cifrado
 - `java/modulo-2` — Tema 1: List, Set, Map y sus implementaciones · Básico · 45 min — List y sus implementaciones (ArrayList/LinkedList); complejidad Big-O; Set y unicidad; equals/hashCode como contrato; orden de iteración por implementación; Map y sus implementaciones; colecciones inmutables (List.of); iteración y ConcurrentModificationException; medición informal vs benchmark
